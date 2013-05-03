@@ -5731,7 +5731,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (qemuTranslateDiskSourcePool(conn, disk) < 0)
         goto end;
 
-    if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
+    if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
         goto end;
 
     if (qemuSetUnprivSGIO(disk) < 0)
@@ -5777,8 +5777,8 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
          * if the operation is either ejecting or updating.
          */
         if (ret == 0)
-            ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
-                                              vm->def->name));
+            ignore_value(qemuRemoveSharedDevice(driver, dev_copy,
+                                                vm->def->name));
         break;
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
@@ -5815,7 +5815,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 
 end:
     if (ret != 0)
-        ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
+        ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
     virObjectUnref(caps);
     virDomainDeviceDefFree(dev_copy);
     return ret;
@@ -5931,7 +5931,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     }
 
     if (ret == 0)
-        ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
+        ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
 
     return ret;
 }
@@ -6038,7 +6038,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
         dev->data.disk = tmp;
 
         /* Add the new disk src into shared disk hash table */
-        if (qemuAddSharedDisk(driver, dev->data.disk, vm->def->name) < 0)
+        if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
             goto end;
 
         ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, force);
@@ -6051,8 +6051,8 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
          */
         if (ret == 0) {
             dev->data.disk = NULL;
-            ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
-                                              vm->def->name));
+            ignore_value(qemuRemoveSharedDevice(driver, dev_copy,
+                                                vm->def->name));
         }
         break;
     default:

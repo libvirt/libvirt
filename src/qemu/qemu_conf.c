@@ -1116,47 +1116,80 @@ cleanup:
     return NULL;
 }
 
-/* qemuAddSharedDisk:
+/* qemuAddSharedDevice:
  * @driver: Pointer to qemu driver struct
- * @disk: The disk def
+ * @dev: The device def
  * @name: The domain name
  *
  * Increase ref count and add the domain name into the list which
- * records all the domains that use the shared disk if the entry
+ * records all the domains that use the shared device if the entry
  * already exists, otherwise add a new entry.
  */
 int
-qemuAddSharedDisk(virQEMUDriverPtr driver,
-                  virDomainDiskDefPtr disk,
-                  const char *name)
+qemuAddSharedDevice(virQEMUDriverPtr driver,
+                    virDomainDeviceDefPtr dev,
+                    const char *name)
 {
     qemuSharedDeviceEntry *entry = NULL;
     qemuSharedDeviceEntry *new_entry = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
+    char *dev_name = NULL;
+    char *dev_path = NULL;
     char *key = NULL;
     int ret = -1;
 
-    /* Currently the only conflicts we have to care about
-     * for the shared disk is "sgio" setting, which is only
-     * valid for block disk.
+    /* Currently the only conflicts we have to care about for
+     * the shared disk and shared host device is "sgio" setting,
+     * which is only valid for block disk and scsi host device.
      */
-    if (!disk->shared ||
-        !disk->src ||
-        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-           disk->srcpool &&
-           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        disk = dev->data.disk;
+
+        if (disk->shared ||
+            !disk->src ||
+            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+               disk->srcpool &&
+               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+            return 0;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        hostdev = dev->data.hostdev;
+
+        if (!hostdev->shareable ||
+            !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+              hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+            return 0;
+    } else {
         return 0;
+    }
 
     qemuDriverLock(driver);
-    if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
-        goto cleanup;
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
+            goto cleanup;
 
-    if (!(key = qemuGetSharedDeviceKey(disk->src)))
-        goto cleanup;
+        if (!(key = qemuGetSharedDeviceKey(disk->src)))
+            goto cleanup;
+    } else {
+        if (!(dev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+                                                 hostdev->source.subsys.u.scsi.bus,
+                                                 hostdev->source.subsys.u.scsi.target,
+                                                 hostdev->source.subsys.u.scsi.unit)))
+            goto cleanup;
+
+        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!(key = qemuGetSharedDeviceKey(dev_path)))
+            goto cleanup;
+    }
 
     if ((entry = virHashLookup(driver->sharedDevices, key))) {
-        /* Nothing to do if the shared disk is already recorded
-         * in the table.
+        /* Nothing to do if the shared scsi host device is already
+         * recorded in the table.
          */
         if (qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
             ret = 0;
@@ -1195,41 +1228,77 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
     ret = 0;
 cleanup:
     qemuDriverUnlock(driver);
+    VIR_FREE(dev_name);
+    VIR_FREE(dev_path);
     VIR_FREE(key);
     return ret;
 }
 
-/* qemuRemoveSharedDisk:
+/* qemuRemoveSharedDevice:
  * @driver: Pointer to qemu driver struct
- * @disk: The disk def
+ * @device: The device def
  * @name: The domain name
  *
  * Decrease ref count and remove the domain name from the list which
- * records all the domains that use the shared disk if ref is not 1,
- * otherwise remove the entry.
+ * records all the domains that use the shared device if ref is not
+ * 1, otherwise remove the entry.
  */
 int
-qemuRemoveSharedDisk(virQEMUDriverPtr driver,
-                     virDomainDiskDefPtr disk,
-                     const char *name)
+qemuRemoveSharedDevice(virQEMUDriverPtr driver,
+                       virDomainDeviceDefPtr dev,
+                       const char *name)
 {
     qemuSharedDeviceEntryPtr entry = NULL;
     qemuSharedDeviceEntryPtr new_entry = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
     char *key = NULL;
+    char *dev_name = NULL;
+    char *dev_path = NULL;
     int ret = -1;
     int idx;
 
-    if (!disk->shared ||
-        !disk->src ||
-        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-           disk->srcpool &&
-           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        disk = dev->data.disk;
+
+        if (!disk->shared ||
+            !disk->src ||
+            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+               disk->srcpool &&
+               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+            return 0;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        hostdev = dev->data.hostdev;
+
+        if (!hostdev->shareable ||
+            !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+              hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+            return 0;
+    } else {
         return 0;
+    }
 
     qemuDriverLock(driver);
-    if (!(key = qemuGetSharedDeviceKey(disk->src)))
-        goto cleanup;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (!(key = qemuGetSharedDeviceKey(disk->src)))
+            goto cleanup;
+    } else {
+        if (!(dev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+                                                 hostdev->source.subsys.u.scsi.bus,
+                                                 hostdev->source.subsys.u.scsi.target,
+                                                 hostdev->source.subsys.u.scsi.unit)))
+            goto cleanup;
+
+        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!(key = qemuGetSharedDeviceKey(dev_path)))
+            goto cleanup;
+    }
 
     if (!(entry = virHashLookup(driver->sharedDevices, key)))
         goto cleanup;
@@ -1265,6 +1334,8 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
     ret = 0;
 cleanup:
     qemuDriverUnlock(driver);
+    VIR_FREE(dev_name);
+    VIR_FREE(dev_path);
     VIR_FREE(key);
     return ret;
 }

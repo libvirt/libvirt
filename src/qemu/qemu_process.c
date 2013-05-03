@@ -2982,10 +2982,14 @@ qemuProcessReconnect(void *opaque)
      * qemu_driver->sharedDevices.
      */
     for (i = 0; i < obj->def->ndisks; i++) {
+        virDomainDeviceDef dev;
+
         if (qemuTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
             goto error;
-        if (qemuAddSharedDisk(driver, obj->def->disks[i],
-                              obj->def->name) < 0)
+
+        dev.type = VIR_DOMAIN_DEVICE_DISK;
+        dev.data.disk = obj->def->disks[i];
+        if (qemuAddSharedDevice(driver, &dev, obj->def->name) < 0)
             goto error;
     }
 
@@ -3686,6 +3690,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
     for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDeviceDef dev;
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         if (vm->def->disks[i]->rawio == 1)
@@ -3696,7 +3701,9 @@ int qemuProcessStart(virConnectPtr conn,
                            _("Raw I/O is not supported on this platform"));
 #endif
 
-        if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
+        dev.type = VIR_DOMAIN_DEVICE_DISK;
+        dev.data.disk = disk;
+        if (qemuAddSharedDevice(driver, &dev, vm->def->name) < 0)
             goto cleanup;
 
         if (qemuSetUnprivSGIO(disk) < 0)
@@ -4107,8 +4114,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDeviceDef dev;
         virDomainDiskDefPtr disk = vm->def->disks[i];
-        ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
+
+        dev.type = VIR_DOMAIN_DEVICE_DISK;
+        dev.data.disk = disk;
+        ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
     }
 
     /* Clear out dynamically assigned labels */
