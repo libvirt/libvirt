@@ -66,10 +66,8 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
         goto cleanup;
     }
 
-    if (!(def->bridge = strdup(last_component(bridgePath)))) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->bridge, last_component(bridgePath)) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&bridgeAddressPath, "%s/%s/brport/bridge/address",
                     SYSFS_NET_DIR, ifname) < 0) {
@@ -130,10 +128,9 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
         goto cleanup;
     }
 
-    if (!(def->ips[0].family = strdup("ipv4"))) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->ips[0].family, "ipv4") < 0)
         goto cleanup;
-    };
+
     if (!(tmp = virJSONValueObjectGetString(jobj2, "IP address"))) {
         parallelsParseError();
         goto cleanup;
@@ -207,8 +204,8 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
-    if (!(def->name = strdup(tmp)))
-        goto no_memory;
+    if (VIR_STRDUP(def->name, tmp) < 0)
+        goto cleanup;
 
     /* Network names are unique in Parallels Cloud Server, so we can make
      * an UUID from it */
@@ -264,8 +261,8 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
 
     def->forward.type = VIR_NETWORK_FORWARD_ROUTE;
 
-    if (!(def->name = strdup(PARALLELS_ROUTED_NETWORK_NAME)))
-        goto no_memory;
+    if (VIR_STRDUP(def->name, PARALLELS_ROUTED_NETWORK_NAME) < 0)
+        goto cleanup;
 
     if (virUUIDParse(PARALLELS_ROUTED_NETWORK_UUID, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -390,9 +387,8 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
     for (i = 0 ; i < privconn->networks.count && got < nnames ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (virNetworkObjIsActive(privconn->networks.objs[i])) {
-            if (!(names[got] = strdup(privconn->networks.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], privconn->networks.objs[i]->def->name) < 0) {
                 virNetworkObjUnlock(privconn->networks.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -438,9 +434,8 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
     for (i = 0 ; i < privconn->networks.count && got < nnames ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (!virNetworkObjIsActive(privconn->networks.objs[i])) {
-            if (!(names[got] = strdup(privconn->networks.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], privconn->networks.objs[i]->def->name) < 0) {
                 virNetworkObjUnlock(privconn->networks.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
