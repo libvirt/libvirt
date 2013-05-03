@@ -237,7 +237,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
         switch (dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (dev->source.subsys.u.pci.backend
-                != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int rc;
 
                 pci = virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
@@ -323,7 +323,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
         switch (dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (dev->source.subsys.u.pci.backend
-                != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int rc;
 
                 pci = virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
