@@ -182,6 +182,8 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_PCI_BRIDGE  = 141, /* -device pci-bridge */
     QEMU_CAPS_DEVICE_VFIO_PCI    = 142, /* -device vfio-pci */
     QEMU_CAPS_VFIO_PCI_BOOTINDEX = 143, /* bootindex param for vfio-pci device */
+    QEMU_CAPS_DEVICE_SCSI_GENERIC = 144,  /* -device scsi-generic */
+    QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX = 145,  /* -device scsi-generic.bootindex */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

@@ -221,9 +221,12 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "tpm-tis",
 
               "nvram",  /* 140 */
-              "pci-bridge", /* 141 */
-              "vfio-pci", /* 142 */
-              "vfio-pci.bootindex", /* 143 */
+              "pci-bridge",
+              "vfio-pci",
+              "vfio-pci.bootindex",
+              "scsi-generic",
+
+              "scsi-generic.bootindex", /* 145 */
     );
 
 struct _virQEMUCaps {
@@ -1344,8 +1347,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "VGA", QEMU_CAPS_DEVICE_VGA },
     { "cirrus-vga", QEMU_CAPS_DEVICE_CIRRUS_VGA },
     { "vmware-svga", QEMU_CAPS_DEVICE_VMWARE_SVGA },
-    { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL},
-    { "usb-net", QEMU_CAPS_DEVICE_USB_NET},
+    { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL },
+    { "usb-net", QEMU_CAPS_DEVICE_USB_NET },
     { "virtio-rng-pci", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "virtio-rng-s390", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "virtio-rng-ccw", QEMU_CAPS_DEVICE_VIRTIO_RNG },
@@ -1354,6 +1357,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "spapr-nvram", QEMU_CAPS_DEVICE_NVRAM },
     { "pci-bridge", QEMU_CAPS_DEVICE_PCI_BRIDGE },
     { "vfio-pci", QEMU_CAPS_DEVICE_VFIO_PCI },
+    { "scsi-generic", QEMU_CAPS_DEVICE_SCSI_GENERIC },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
@@ -1403,6 +1407,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbHost[] = {
     { "bootindex", QEMU_CAPS_USB_HOST_BOOTINDEX },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsScsiGeneric[] = {
+    { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1438,6 +1446,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbRedir) },
     { "usb-host", virQEMUCapsObjectPropsUsbHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbHost) },
+    { "scsi-generic", virQEMUCapsObjectPropsScsiGeneric,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsScsiGeneric) },
 };
 
 
@@ -1635,6 +1645,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
                          "-device", "usb-redir,?",
                          "-device", "ide-drive,?",
                          "-device", "usb-host,?",
+                         "-device", "scsi-generic,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
