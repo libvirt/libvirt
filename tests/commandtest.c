@@ -685,7 +685,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
     VIR_FREE(outbuf);
-    if ((outbuf = strdup("should not be leaked")) == NULL) {
+    if (VIR_STRDUP(outbuf, "should not be leaked") < 0) {
         puts("test framework failure");
         goto cleanup;
     }

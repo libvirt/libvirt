@@ -23,6 +23,8 @@
 
 # include "testutilsqemu.h"
 
+# define VIR_FROM_THIS VIR_FROM_QEMU
+
 static const char *abs_top_srcdir;
 static virQEMUDriver driver;
 
@@ -32,10 +34,9 @@ fakeSecretGetValue(virSecretPtr obj ATTRIBUTE_UNUSED,
                    unsigned int fakeflags ATTRIBUTE_UNUSED,
                    unsigned int internalFlags ATTRIBUTE_UNUSED)
 {
-    char *secret = strdup("AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A");
-    if (!secret) {
+    char *secret;
+    if (VIR_STRDUP(secret, "AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A") < 0)
         return NULL;
-    }
     *value_size = strlen(secret);
     return (unsigned char *) secret;
 }
@@ -129,7 +130,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (STREQ(vmdef->os.machine, "pc") &&
         STREQ(vmdef->emulator, "/usr/bin/qemu-system-x86_64")) {
         VIR_FREE(vmdef->os.machine);
-        if (!(vmdef->os.machine = strdup("pc-0.11")))
+        if (VIR_STRDUP(vmdef->os.machine, "pc-0.11") < 0)
             goto out;
     }
 
@@ -288,10 +289,10 @@ mymain(void)
     VIR_FREE(driver.config->vncListen);
 
     VIR_FREE(driver.config->vncTLSx509certdir);
-    if ((driver.config->vncTLSx509certdir = strdup("/etc/pki/libvirt-vnc")) == NULL)
+    if (VIR_STRDUP_QUIET(driver.config->vncTLSx509certdir, "/etc/pki/libvirt-vnc") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->spiceTLSx509certdir);
-    if ((driver.config->spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")) == NULL)
+    if (VIR_STRDUP_QUIET(driver.config->spiceTLSx509certdir, "/etc/pki/libvirt-spice") < 0)
         return EXIT_FAILURE;
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
@@ -299,16 +300,16 @@ mymain(void)
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
     VIR_FREE(driver.config->stateDir);
-    if ((driver.config->stateDir = strdup("/nowhere")) == NULL)
+    if (VIR_STRDUP_QUIET(driver.config->stateDir, "/nowhere") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->hugetlbfsMount);
-    if ((driver.config->hugetlbfsMount = strdup("/dev/hugepages")) == NULL)
+    if (VIR_STRDUP_QUIET(driver.config->hugetlbfsMount, "/dev/hugepages") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->hugepagePath);
-    if ((driver.config->hugepagePath = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
+    if (VIR_STRDUP_QUIET(driver.config->hugepagePath, "/dev/hugepages/libvirt/qemu") < 0)
         return EXIT_FAILURE;
     driver.config->spiceTLS = 1;
-    if (!(driver.config->spicePassword = strdup("123456")))
+    if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
@@ -601,7 +602,7 @@ mymain(void)
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);
-    driver.config->vncSASLdir = strdup("/root/.sasl2");
+    ignore_value(VIR_STRDUP(driver.config->vncSASLdir, "/root/.sasl2"));
     DO_TEST("graphics-vnc-sasl", QEMU_CAPS_VNC, QEMU_CAPS_VGA);
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;

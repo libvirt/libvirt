@@ -13,6 +13,8 @@
 # include "openvz/openvz_conf.h"
 # include "virstring.h"
 
+# define VIR_FROM_THIS VIR_FROM_OPENVZ
+
 static int
 testLocateConfFile(int vpsid ATTRIBUTE_UNUSED, char **conffile,
                    const char *ext ATTRIBUTE_UNUSED)
@@ -103,8 +105,8 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
         "</domain>\n";
 
     if (VIR_ALLOC(def) < 0 ||
-        !(def->os.type = strdup("exe")) ||
-        !(def->os.init = strdup("/sbin/init")))
+        VIR_STRDUP(def->os.type, "exe") < 0 ||
+        VIR_STRDUP(def->os.init, "/sbin/init") < 0)
         goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_OPENVZ;

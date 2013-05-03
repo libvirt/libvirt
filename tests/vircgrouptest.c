@@ -501,7 +501,7 @@ mymain(void)
     int ret = 0;
     char *fakesysfsdir;
 
-    if (!(fakesysfsdir = strdup(FAKESYSFSDIRTEMPLATE))) {
+    if (VIR_STRDUP_QUIET(fakesysfsdir, FAKESYSFSDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");
         abort();
     }

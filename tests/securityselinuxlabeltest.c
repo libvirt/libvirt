@@ -116,10 +116,9 @@ testSELinuxLoadFileList(const char *testname,
             goto cleanup;
         }
         if (*tmp != '\0' && *tmp != '\n') {
-            if (!(context = strdup(tmp))) {
+            if (VIR_STRDUP(context, tmp) < 0) {
                 VIR_FREE(line);
                 VIR_FREE(file);
-                virReportOOMError();
                 goto cleanup;
             }
 

@@ -28,6 +28,7 @@
 # include <attr/xattr.h>
 #endif
 
+#include "virstring.h"
 
 /*
  * The kernel policy will not allow us to arbitrarily change
@@ -43,9 +44,7 @@ int getcon_raw(security_context_t *context)
         errno = EINVAL;
         return -1;
     }
-    if (!(*context = strdup(getenv("FAKE_CONTEXT"))))
-        return -1;
-    return 0;
+    return VIR_STRDUP_QUIET(*context, getenv("FAKE_CONTEXT"));
 }
 
 int getcon(security_context_t *context)
@@ -65,9 +64,7 @@ int getpidcon_raw(pid_t pid, security_context_t *context)
         errno = EINVAL;
         return -1;
     }
-    if (!(*context = strdup(getenv("FAKE_CONTEXT"))))
-        return -1;
-    return 0;
+    return VIR_STRDUP_QUIET(*context, getenv("FAKE_CONTEXT"));
 }
 
 int getpidcon(pid_t pid, security_context_t *context)

@@ -8,6 +8,9 @@
 # include "cpu_conf.h"
 # include "qemu/qemu_driver.h"
 # include "qemu/qemu_domain.h"
+# include "virstring.h"
+
+# define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
 {
@@ -38,7 +41,7 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
         "pc-0.11", "pc", "pc-0.10", "isapc"
     };
 
-    if ((canonical = strdup(x86_machines[0])) == NULL)
+    if (VIR_STRDUP(canonical, x86_machines[0]) < 0)
         return NULL;
 
     machines = virCapabilitiesAllocMachines(x86_machines,

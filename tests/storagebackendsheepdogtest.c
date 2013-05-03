@@ -57,8 +57,7 @@ test_node_info_parser(collie_test test, char *poolxml)
     if (!(pool = virStoragePoolDefParseString(poolXmlData)))
         goto cleanup;
 
-    output = strdup(test.output);
-    if (!output)
+    if (VIR_STRDUP(output, test.output) < 0)
         goto cleanup;
 
     if (virStorageBackendSheepdogParseNodeInfo(pool, output) !=
@@ -102,8 +101,7 @@ test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
     if (!(vol = virStorageVolDefParseString(pool, volXmlData)))
         goto cleanup;
 
-    output = strdup(test.output);
-    if (!output)
+    if (VIR_STRDUP(output, test.output) < 0)
         goto cleanup;
 
     if (virStorageBackendSheepdogParseVdiList(vol, output) !=

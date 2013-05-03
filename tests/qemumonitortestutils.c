@@ -159,10 +159,8 @@ static int qemuMonitorTestProcessCommandText(qemuMonitorTestPtr test,
     char *cmdname;
     int ret = -1;
 
-    if (!(cmdname = strdup(cmdstr))) {
-        virReportOOMError();
+    if (VIR_STRDUP(cmdname, cmdstr) < 0)
         return -1;
-    }
     if (!(tmp = strchr(cmdname, ' '))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Cannot find command name in '%s'", cmdstr);
@@ -407,9 +405,9 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     if (VIR_ALLOC(item) < 0)
         goto no_memory;
 
-    if (!(item->command_name = strdup(command_name)) ||
-        !(item->response = strdup(response)))
-        goto no_memory;
+    if (VIR_STRDUP(item->command_name, command_name) < 0 ||
+        VIR_STRDUP(item->response, response) < 0)
+        goto error;
 
     virMutexLock(&test->lock);
     if (VIR_EXPAND_N(test->items, test->nitems, 1) < 0) {
@@ -424,6 +422,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
 
 no_memory:
     virReportOOMError();
+error:
     qemuMonitorTestItemFree(item);
     return -1;
 }
@@ -467,8 +466,8 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
         return NULL;
     }
 
-    if (!(tmpdir_template = strdup("/tmp/libvirt_XXXXXX")))
-        goto no_memory;
+    if (VIR_STRDUP(tmpdir_template, "/tmp/libvirt_XXXXXX") < 0)
+        goto error;
 
     if (!(test->tmpdir = mkdtemp(tmpdir_template))) {
         virReportSystemError(errno, "%s",

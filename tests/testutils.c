@@ -512,7 +512,9 @@ virtTestLogContentAndReset(void)
     if (virBufferError(&testLog.buf))
         return NULL;
     ret = virBufferContentAndReset(&testLog.buf);
-    return ret ? ret : strdup("");
+    if (!ret)
+        ignore_value(VIR_STRDUP(ret, ""));
+    return ret;
 }
 
 #if TEST_OOM_TRACE

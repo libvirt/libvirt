@@ -31,6 +31,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "testutils.h"
+#include "virstring.h"
 
 #ifndef WIN32
 
@@ -42,9 +43,13 @@ static int envsort(const void *a, const void *b) {
     const char *bstr = *bstrptr;
     char *aeq = strchr(astr, '=');
     char *beq = strchr(bstr, '=');
-    char *akey = strndup(astr, aeq - astr);
-    char *bkey = strndup(bstr, beq - bstr);
-    int ret = strcmp(akey, bkey);
+    char *akey;
+    char *bkey;
+    int ret;
+
+    ignore_value(VIR_STRNDUP_QUIET(akey, astr, aeq - astr));
+    ignore_value(VIR_STRNDUP_QUIET(bkey, bstr, beq - bstr));
+    ret = strcmp(akey, bkey);
     VIR_FREE(akey);
     VIR_FREE(bkey);
     return ret;
