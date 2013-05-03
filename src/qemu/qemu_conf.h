@@ -210,7 +210,7 @@ struct _virQEMUDriver {
     virSCSIDeviceListPtr activeScsiHostdevs;
 
     /* Immutable pointer. Unsafe APIs. XXX */
-    virHashTablePtr sharedDisks;
+    virHashTablePtr sharedDevices;
 
     /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr remotePorts;
@@ -281,12 +281,12 @@ void virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
                               virConnectPtr conn,
                               virQEMUDriverPtr driver);
 
-typedef struct _qemuSharedDiskEntry qemuSharedDiskEntry;
-typedef qemuSharedDiskEntry *qemuSharedDiskEntryPtr;
+typedef struct _qemuSharedDeviceEntry qemuSharedDeviceEntry;
+typedef qemuSharedDeviceEntry *qemuSharedDeviceEntryPtr;
 
-bool qemuSharedDiskEntryDomainExists(qemuSharedDiskEntryPtr entry,
-                                     const char *name,
-                                     int *index)
+bool qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
+                                       const char *name,
+                                       int *index)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuAddSharedDisk(virQEMUDriverPtr driver,
@@ -299,10 +299,10 @@ int qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                          const char *name)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-char * qemuGetSharedDiskKey(const char *disk_path)
+char * qemuGetSharedDeviceKey(const char *disk_path)
     ATTRIBUTE_NONNULL(1);
 
-void qemuSharedDiskEntryFree(void *payload, const void *name)
+void qemuSharedDeviceEntryFree(void *payload, const void *name)
     ATTRIBUTE_NONNULL(1);
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver);

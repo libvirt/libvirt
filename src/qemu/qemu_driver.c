@@ -683,7 +683,7 @@ qemuStateInitialize(bool privileged,
     if ((qemu_driver->activeScsiHostdevs = virSCSIDeviceListNew()) == NULL)
         goto error;
 
-    if (!(qemu_driver->sharedDisks = virHashCreate(30, qemuSharedDiskEntryFree)))
+    if (!(qemu_driver->sharedDevices = virHashCreate(30, qemuSharedDeviceEntryFree)))
         goto error;
 
     if (privileged) {
@@ -954,7 +954,7 @@ qemuStateCleanup(void) {
     virObjectUnref(qemu_driver->activePciHostdevs);
     virObjectUnref(qemu_driver->inactivePciHostdevs);
     virObjectUnref(qemu_driver->activeUsbHostdevs);
-    virHashFree(qemu_driver->sharedDisks);
+    virHashFree(qemu_driver->sharedDevices);
     virObjectUnref(qemu_driver->caps);
     virQEMUCapsCacheFree(qemu_driver->qemuCapsCache);
 

@@ -2979,7 +2979,7 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     /* XXX: Need to change as long as lock is introduced for
-     * qemu_driver->sharedDisks.
+     * qemu_driver->sharedDevices.
      */
     for (i = 0; i < obj->def->ndisks; i++) {
         if (qemuTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)

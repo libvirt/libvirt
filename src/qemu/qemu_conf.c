@@ -947,23 +947,23 @@ virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
     VIR_FREE(list);
 }
 
-struct _qemuSharedDiskEntry {
+struct _qemuSharedDeviceEntry {
     size_t ref;
     char **domains; /* array of domain names */
 };
 
-/* Construct the hash key for sharedDisks as "major:minor" */
+/* Construct the hash key for sharedDevices as "major:minor" */
 char *
-qemuGetSharedDiskKey(const char *disk_path)
+qemuGetSharedDeviceKey(const char *device_path)
 {
     int maj, min;
     char *key = NULL;
     int rc;
 
-    if ((rc = virGetDeviceID(disk_path, &maj, &min)) < 0) {
+    if ((rc = virGetDeviceID(device_path, &maj, &min)) < 0) {
         virReportSystemError(-rc,
                              _("Unable to get minor number of device '%s'"),
-                             disk_path);
+                             device_path);
         return NULL;
     }
 
@@ -983,7 +983,7 @@ qemuGetSharedDiskKey(const char *disk_path)
  * Returns 0 if no conflicts, otherwise returns -1.
  */
 static int
-qemuCheckSharedDisk(virHashTablePtr sharedDisks,
+qemuCheckSharedDisk(virHashTablePtr sharedDevices,
                     virDomainDiskDefPtr disk)
 {
     char *sysfs_path = NULL;
@@ -1008,7 +1008,7 @@ qemuCheckSharedDisk(virHashTablePtr sharedDisks,
     if (!virFileExists(sysfs_path))
         goto cleanup;
 
-    if (!(key = qemuGetSharedDiskKey(disk->src))) {
+    if (!(key = qemuGetSharedDeviceKey(disk->src))) {
         ret = -1;
         goto cleanup;
     }
@@ -1016,7 +1016,7 @@ qemuCheckSharedDisk(virHashTablePtr sharedDisks,
     /* It can't be conflict if no other domain is
      * is sharing it.
      */
-    if (!(virHashLookup(sharedDisks, key)))
+    if (!(virHashLookup(sharedDevices, key)))
         goto cleanup;
 
     if (virGetDeviceUnprivSGIO(disk->src, NULL, &val) < 0) {
@@ -1052,9 +1052,9 @@ cleanup:
 }
 
 bool
-qemuSharedDiskEntryDomainExists(qemuSharedDiskEntryPtr entry,
-                                const char *name,
-                                int *idx)
+qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
+                                  const char *name,
+                                  int *idx)
 {
     size_t i;
 
@@ -1070,9 +1070,9 @@ qemuSharedDiskEntryDomainExists(qemuSharedDiskEntryPtr entry,
 }
 
 void
-qemuSharedDiskEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+qemuSharedDeviceEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
-    qemuSharedDiskEntryPtr entry = payload;
+    qemuSharedDeviceEntryPtr entry = payload;
     size_t i;
 
     if (!entry)
@@ -1085,10 +1085,10 @@ qemuSharedDiskEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
     VIR_FREE(entry);
 }
 
-static qemuSharedDiskEntryPtr
-qemuSharedDiskEntryCopy(const qemuSharedDiskEntryPtr entry)
+static qemuSharedDeviceEntryPtr
+qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntryPtr entry)
 {
-    qemuSharedDiskEntryPtr ret = NULL;
+    qemuSharedDeviceEntryPtr ret = NULL;
     size_t i;
 
     if (VIR_ALLOC(ret) < 0) {
@@ -1112,7 +1112,7 @@ qemuSharedDiskEntryCopy(const qemuSharedDiskEntryPtr entry)
     return ret;
 
 cleanup:
-    qemuSharedDiskEntryFree(ret, NULL);
+    qemuSharedDeviceEntryFree(ret, NULL);
     return NULL;
 }
 
@@ -1130,8 +1130,8 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
                   virDomainDiskDefPtr disk,
                   const char *name)
 {
-    qemuSharedDiskEntry *entry = NULL;
-    qemuSharedDiskEntry *new_entry = NULL;
+    qemuSharedDeviceEntry *entry = NULL;
+    qemuSharedDeviceEntry *new_entry = NULL;
     char *key = NULL;
     int ret = -1;
 
@@ -1148,47 +1148,47 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
         return 0;
 
     qemuDriverLock(driver);
-    if (qemuCheckSharedDisk(driver->sharedDisks, disk) < 0)
+    if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
         goto cleanup;
 
-    if (!(key = qemuGetSharedDiskKey(disk->src)))
+    if (!(key = qemuGetSharedDeviceKey(disk->src)))
         goto cleanup;
 
-    if ((entry = virHashLookup(driver->sharedDisks, key))) {
+    if ((entry = virHashLookup(driver->sharedDevices, key))) {
         /* Nothing to do if the shared disk is already recorded
          * in the table.
          */
-        if (qemuSharedDiskEntryDomainExists(entry, name, NULL)) {
+        if (qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
             ret = 0;
             goto cleanup;
         }
 
-        if (!(new_entry = qemuSharedDiskEntryCopy(entry)))
+        if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
             goto cleanup;
 
         if ((VIR_EXPAND_N(new_entry->domains, new_entry->ref, 1) < 0) ||
             !(new_entry->domains[new_entry->ref - 1] = strdup(name))) {
-            qemuSharedDiskEntryFree(new_entry, NULL);
+            qemuSharedDeviceEntryFree(new_entry, NULL);
             virReportOOMError();
             goto cleanup;
         }
 
-        if (virHashUpdateEntry(driver->sharedDisks, key, new_entry) < 0) {
-            qemuSharedDiskEntryFree(new_entry, NULL);
+        if (virHashUpdateEntry(driver->sharedDevices, key, new_entry) < 0) {
+            qemuSharedDeviceEntryFree(new_entry, NULL);
             goto cleanup;
         }
     } else {
         if ((VIR_ALLOC(entry) < 0) ||
             (VIR_ALLOC_N(entry->domains, 1) < 0) ||
             !(entry->domains[0] = strdup(name))) {
-            qemuSharedDiskEntryFree(entry, NULL);
+            qemuSharedDeviceEntryFree(entry, NULL);
             virReportOOMError();
             goto cleanup;
         }
 
         entry->ref = 1;
 
-        if (virHashAddEntry(driver->sharedDisks, key, entry))
+        if (virHashAddEntry(driver->sharedDevices, key, entry))
             goto cleanup;
     }
 
@@ -1213,8 +1213,8 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                      virDomainDiskDefPtr disk,
                      const char *name)
 {
-    qemuSharedDiskEntryPtr entry = NULL;
-    qemuSharedDiskEntryPtr new_entry = NULL;
+    qemuSharedDeviceEntryPtr entry = NULL;
+    qemuSharedDeviceEntryPtr new_entry = NULL;
     char *key = NULL;
     int ret = -1;
     int idx;
@@ -1228,22 +1228,22 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
         return 0;
 
     qemuDriverLock(driver);
-    if (!(key = qemuGetSharedDiskKey(disk->src)))
+    if (!(key = qemuGetSharedDeviceKey(disk->src)))
         goto cleanup;
 
-    if (!(entry = virHashLookup(driver->sharedDisks, key)))
+    if (!(entry = virHashLookup(driver->sharedDevices, key)))
         goto cleanup;
 
     /* Nothing to do if the shared disk is not recored in
      * the table.
      */
-    if (!qemuSharedDiskEntryDomainExists(entry, name, &idx)) {
+    if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx)) {
         ret = 0;
         goto cleanup;
     }
 
     if (entry->ref != 1) {
-        if (!(new_entry = qemuSharedDiskEntryCopy(entry)))
+        if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
             goto cleanup;
 
         if (idx != new_entry->ref - 1)
@@ -1253,12 +1253,12 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
 
         VIR_SHRINK_N(new_entry->domains, new_entry->ref, 1);
 
-        if (virHashUpdateEntry(driver->sharedDisks, key, new_entry) < 0){
-            qemuSharedDiskEntryFree(new_entry, NULL);
+        if (virHashUpdateEntry(driver->sharedDevices, key, new_entry) < 0){
+            qemuSharedDeviceEntryFree(new_entry, NULL);
             goto cleanup;
         }
     } else {
-        if (virHashRemoveEntry(driver->sharedDisks, key) < 0)
+        if (virHashRemoveEntry(driver->sharedDevices, key) < 0)
             goto cleanup;
     }
 
