@@ -87,6 +87,10 @@
                 <span>Ensuring exclusive guest access to disks</span>
               </li>
               <li>
+                <a href="cgroups.html">CGroups</a>
+                <span>Control groups integration</span>
+              </li>
+              <li>
                 <a href="hooks.html">Hooks</a>
                 <span>Hooks for system specific management</span>
               </li>

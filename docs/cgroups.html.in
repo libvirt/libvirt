@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Control Groups Resource Management</h1>
+
+    <ul id="toc"></ul>
+
+    <p>
+      The QEMU and LXC drivers make use of the Linux "Control Groups" facility
+      for applying resource management to their virtual machines and containers.
+    </p>
+
+    <h2><a name="requiredControllers">Required controllers</a></h2>
+
+    <p>
+      The control groups filesystem supports multiple "controllers". By default
+      the init system (such as systemd) should mount all controllers compiled
+      into the kernel at <code>/sys/fs/cgroup/$CONTROLLER-NAME</code>. Libvirt
+      will never attempt to mount any controllers itself, merely detect where
+      they are mounted.
+    </p>
+
+    <p>
+      The QEMU driver is capable of using the <code>cpuset</code>,
+      <code>cpu</code>, <code>memory</code>, <code>blkio</code> and
+      <code>devices</code> controllers. None of them are compulsory.
+      If any controller is not mounted, the resource management APIs
+      which use it will cease to operate. It is possible to explicitly
+      turn off use of a controller, even when mounted, via the
+      <code>/etc/libvirt/qemu.conf</code> configuration file.
+    </p>
+
+    <p>
+      The LXC driver is capable of using the <code>cpuset</code>,
+      <code>cpu</code>, <code>cpuset</code>, <code>freezer</code>,
+      <code>memory</code>, <code>blkio</code> and <code>devices</code>
+      controllers. The <code>cpuset</code>, <code>devices</code>
+      and <code>memory</code> controllers are compulsory. Without
+      them mounted, no containers can be started. If any of the
+      other controllers are not mounted, the resource management APIs
+      which use them will cease to operate.
+    </p>
+
+    <h2><a name="currentLayout">Current cgroups layout</a></h2>
+
+    <p>
+      As of libvirt 1.0.5 or later, the cgroups layout created by libvirt has been
+      simplified, in order to facilitate the setup of resource control policies by
+      administrators / management applications. The layout is based on the concepts of
+      "partitions" and "consumers". Each virtual machine or container is a consumer,
+      and has a corresponding cgroup named <code>$VMNAME.libvirt-{qemu,lxc}</code>.
+      Each consumer is associated with exactly one partition, which also have a
+      corresponding cgroup usually named <code>$PARTNAME.partition</code>. The
+      exceptions to this naming rule are the three top level default partitions,
+      named <code>/system</code> (for system services), <code>/user</code> (for
+      user login sessions) and <code>/machine</code> (for virtual machines and
+      containers). By default every consumer will of course be associated with
+      the <code>/machine</code> partition. This leads to a hierarchy that looks
+      like
+    </p>
+
+    <pre>
+$ROOT
+  |
+  +- system
+  |   |
+  |   +- libvirtd.service
+  |
+  +- machine
+      |
+      +- vm1.libvirt-qemu
+      |   |
+      |   +- emulator
+      |   +- vcpu0
+      |   +- vcpu1
+      |
+      +- vm2.libvirt-qemu
+      |   |
+      |   +- emulator
+      |   +- vcpu0
+      |   +- vcpu1
+      |
+      +- vm3.libvirt-qemu
+      |   |
+      |   +- emulator
+      |   +- vcpu0
+      |   +- vcpu1
+      |
+      +- container1.libvirt-lxc
+      |
+      +- container2.libvirt-lxc
+      |
+      +- container3.libvirt-lxc
+    </pre>
+
+    <p>
+      The default cgroups layout ensures that, when there is contention for
+      CPU time, it is shared equally between system services, user sessions
+      and virtual machines / containers. This prevents virtual machines from
+      locking the administrator out of the host, or impacting execution of
+      system services. Conversely, when there is no contention from
+      system services / user sessions, it is possible for virtual machines
+      to fully utilize the host CPUs.
+    </p>
+
+    <h2><a name="customPartiton">Using custom partitions</a></h2>
+
+    <p>
+      If there is a need to apply resource constraints to groups of
+      virtual machines or containers, then the single default
+      partition <code>/machine</code> may not be sufficiently
+      flexible. The administrator may wish to sub-divide the
+      default partition, for example into "testing" and "production"
+      partitions, and then assign each guest to a specific
+      sub-partition. This is achieved via a small element addition
+      to the guest domain XML config, just below the main <code>domain</code>
+      element
+    </p>
+
+    <pre>
+  ...
+  &lt;resource&gt;
+    &lt;partition&gt;/machine/production&lt;/partition&gt;
+  &lt;/resource&gt;
+  ...
+    </pre>
+
+    <p>
+      Libvirt will not auto-create the cgroups directory to back
+      this partition. In the future, libvirt / virsh will provide
+      APIs / commands to create custom partitions, but currently
+      this is left as an exercise for the administrator. For
+      example, given the XML config above, the admin would need
+      to create a cgroup named '/machine/production.partition'
+    </p>
+
+    <pre>
+# cd /sys/fs/cgroup
+# for i in blkio cpu,cpuacct cpuset devices freezer memory net_cls perf_event
+  do
+    mkdir $i/machine/production.partition
+  done
+# for i in cpuset.cpus  cpuset.mems
+  do
+    cat cpuset/machine/$i > cpuset/machine/production.partition/$i
+  done
+</pre>
+
+    <p>
+      <strong>Note:</strong> the cgroups directory created as a ".partition"
+      suffix, but the XML config does not require this suffix.
+    </p>
+
+    <p>
+      <strong>Note:</strong> the ability to place guests in custom
+      partitions is only available with libvirt &gt;= 1.0.5, using
+      the new cgroup layout. The legacy cgroups layout described
+      later did not support customization per guest.
+    </p>
+
+    <h2><a name="resourceAPIs">Resource management APIs/commands</a></h2>
+
+    <p>
+      Since libvirt aims to provide an API which is portable across
+      hypervisors, the concept of cgroups is not exposed directly
+      in the API or XML configuration. It is considered to be an
+      internal implementation detail. Instead libvirt provides a
+      set of APIs for applying resource controls, which are then
+      mapped to corresponding cgroup tunables
+    </p>
+
+    <h3>Scheduler tuning</h3>
+
+    <p>
+     Parameters from the "cpu" controller are exposed via the
+     <code>schedinfo</code> command in virsh.
+    </p>
+
+    <pre>
+# virsh schedinfo demo
+Scheduler      : posix
+cpu_shares     : 1024
+vcpu_period    : 100000
+vcpu_quota     : -1
+emulator_period: 100000
+emulator_quota : -1</pre>
+
+
+    <h3>Block I/O tuning</h3>
+
+    <p>
+     Parameters from the "blkio" controller are exposed via the
+     <code>bkliotune</code> command in virsh.
+    </p>
+
+
+    <pre>
+# virsh blkiotune demo
+weight         : 500
+device_weight  : </pre>
+
+    <h3>Memory tuning</h3>
+
+    <p>
+     Parameters from the "memory" controller are exposed via the
+     <code>memtune</code> command in virsh.
+    </p>
+
+    <pre>
+# virsh memtune demo
+hard_limit     : 580192
+soft_limit     : unlimited
+swap_hard_limit: unlimited
+    </pre>
+
+    <h3>Network tuning</h3>
+
+    <p>
+      The <code>net_cls</code> is not currently used. Instead traffic
+      filter policies are set directly against individual virtual
+      network interfaces.
+    </p>
+
+    <h2><a name="legacyLayout">Legacy cgroups layout</a></h2>
+
+    <p>
+      Prior to libvirt 1.0.5, the cgroups layout created by libvirt was different
+      from that described above, and did not allow for administrator customization.
+      Libvirt used a fixed, 3-level hierarchy <code>libvirt/{qemu,lxc}/$VMNAME</code>
+      which was rooted at the point in the hierarchy where libvirtd itself was
+      located. So if libvirtd was placed at <code>/system/libvirtd.service</code>
+      by systemd, the groups for each virtual machine / container would be located
+      at <code>/system/libvirtd.service/libvirt/{qemu,lxc}/$VMNAME</code>. In addition
+      to this, the QEMU drivers further child groups for each vCPU thread and the
+      emulator thread(s). This leads to a hierarchy that looked like
+    </p>
+
+
+    <pre>
+$ROOT
+  |
+  +- system
+      |
+      +- libvirtd.service
+           |
+           +- libvirt
+               |
+               +- qemu
+               |   |
+               |   +- vm1
+               |   |   |
+               |   |   +- emulator
+               |   |   +- vcpu0
+               |   |   +- vcpu1
+               |   |
+               |   +- vm2
+               |   |   |
+               |   |   +- emulator
+               |   |   +- vcpu0
+               |   |   +- vcpu1
+               |   |
+               |   +- vm3
+               |       |
+               |       +- emulator
+               |       +- vcpu0
+               |       +- vcpu1
+               |
+               +- lxc
+                   |
+                   +- container1
+                   |
+                   +- container2
+                   |
+                   +- container3
+    </pre>
+
+    <p>
+      Although current releases are much improved, historically the use of deep
+      hierarchies has had a significant negative impact on the kernel scalability.
+      The legacy libvirt cgroups layout highlighted these problems, to the detriment
+      of the performance of virtual machines and containers.
+    </p>
+  </body>
+</html>
