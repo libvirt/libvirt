@@ -1888,8 +1888,7 @@ libxlDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (!(type = strdup(vm->def->os.type)))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(type, vm->def->os.type));
 
 cleanup:
     if (vm)
@@ -4008,6 +4007,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
     libxlDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     char * ret = NULL;
+    const char *name = NULL;
     libxl_scheduler sched_id;
 
     libxlDriverLock(driver);
@@ -4031,18 +4031,18 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
         *nparams = 0;
     switch (sched_id) {
     case LIBXL_SCHEDULER_SEDF:
-        ret = strdup("sedf");
+        name = "sedf";
         break;
     case LIBXL_SCHEDULER_CREDIT:
-        ret = strdup("credit");
+        name = "credit";
         if (nparams)
             *nparams = XEN_SCHED_CREDIT_NPARAM;
         break;
     case LIBXL_SCHEDULER_CREDIT2:
-        ret = strdup("credit2");
+        name = "credit2";
         break;
     case LIBXL_SCHEDULER_ARINC653:
-        ret = strdup("arinc653");
+        name = "arinc653";
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4051,8 +4051,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
         goto cleanup;
     }
 
-    if (!ret)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, name));
 
 cleanup:
     if (vm)

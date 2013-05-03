@@ -302,10 +302,8 @@ libxlMakeDomCreateInfo(libxlDriverPrivatePtr driver,
     else
         c_info->type = LIBXL_DOMAIN_TYPE_PV;
 
-    if ((c_info->name = strdup(def->name)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(c_info->name, def->name) < 0)
         goto error;
-    }
 
     if (def->nseclabels &&
         def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_STATIC) {
@@ -403,10 +401,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         else {
             bootorder[def->os.nBootDevs] = '\0';
         }
-        if ((b_info->u.hvm.boot = strdup(bootorder)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(b_info->u.hvm.boot, bootorder) < 0)
             goto error;
-        }
 
         /*
          * The following comment and calculation were taken directly from
@@ -418,37 +414,23 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         b_info->shadow_memkb = 4 * (256 * libxl_bitmap_count_set(&b_info->avail_vcpus) +
                                     2 * (b_info->max_memkb / 1024));
     } else {
-        if (def->os.bootloader) {
-            if ((b_info->u.pv.bootloader = strdup(def->os.bootloader)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        }
+        if (VIR_STRDUP(b_info->u.pv.bootloader, def->os.bootloader) < 0)
+            goto error;
         if (def->os.bootloaderArgs) {
             if (!(b_info->u.pv.bootloader_args =
                   virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
                 goto error;
         }
-        if (def->os.cmdline) {
-            if ((b_info->u.pv.cmdline = strdup(def->os.cmdline)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        }
+        if (VIR_STRDUP(b_info->u.pv.cmdline, def->os.cmdline) < 0)
+            goto error;
         if (def->os.kernel) {
-            /* libxl_init_build_info() sets kernel.path = strdup("hvmloader") */
+            /* libxl_init_build_info() sets VIR_STRDUP(kernel.path, "hvmloader") */
             VIR_FREE(b_info->u.pv.kernel);
-            if ((b_info->u.pv.kernel = strdup(def->os.kernel)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(b_info->u.pv.kernel, def->os.kernel) < 0)
                 goto error;
-            }
         }
-        if (def->os.initrd) {
-            if ((b_info->u.pv.ramdisk = strdup(def->os.initrd)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        }
+        if (VIR_STRDUP(b_info->u.pv.ramdisk, def->os.initrd) < 0)
+            goto error;
     }
 
     return 0;
@@ -461,15 +443,11 @@ error:
 int
 libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
-    if (l_disk->src && (x_disk->pdev_path = strdup(l_disk->src)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(x_disk->pdev_path, l_disk->src) < 0)
         return -1;
-    }
 
-    if (l_disk->dst && (x_disk->vdev = strdup(l_disk->dst)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(x_disk->vdev, l_disk->dst) < 0)
         return -1;
-    }
 
     if (l_disk->driverName) {
         if (STREQ(l_disk->driverName, "tap") ||
@@ -575,31 +553,21 @@ libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
     if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
-        if ((x_nic->model = strdup(l_nic->model)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)
             return -1;
-        }
         x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
     } else {
         x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
-    if (l_nic->ifname && (x_nic->ifname = strdup(l_nic->ifname)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
         return -1;
-    }
 
     if (l_nic->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (l_nic->data.bridge.brname &&
-            (x_nic->bridge = strdup(l_nic->data.bridge.brname)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(x_nic->bridge, l_nic->data.bridge.brname) < 0)
             return -1;
-        }
-        if (l_nic->script &&
-            (x_nic->script = strdup(l_nic->script)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
             return -1;
-        }
     } else {
         if (l_nic->script) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -655,17 +623,10 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
-            if (l_vfb->data.sdl.display &&
-                (x_vfb->sdl.display = strdup(l_vfb->data.sdl.display)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(x_vfb->sdl.display, l_vfb->data.sdl.display) < 0)
                 return -1;
-            }
-            if (l_vfb->data.sdl.xauth &&
-                (x_vfb->sdl.xauthority =
-                    strdup(l_vfb->data.sdl.xauth)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(x_vfb->sdl.xauthority, l_vfb->data.sdl.xauth) < 0)
                 return -1;
-            }
             break;
         case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             libxl_defbool_set(&x_vfb->vnc.enable, 1);
@@ -686,19 +647,13 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
 
             listenAddr = virDomainGraphicsListenGetAddress(l_vfb, 0);
             if (listenAddr) {
-                /* libxl_device_vfb_init() does strdup("127.0.0.1") */
+                /* libxl_device_vfb_init() does VIR_STRDUP("127.0.0.1") */
                 VIR_FREE(x_vfb->vnc.listen);
-                if ((x_vfb->vnc.listen = strdup(listenAddr)) == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(x_vfb->vnc.listen, listenAddr) < 0)
                     return -1;
-                }
             }
-            if (l_vfb->data.vnc.keymap &&
-                (x_vfb->keymap =
-                    strdup(l_vfb->data.vnc.keymap)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(x_vfb->keymap, l_vfb->data.vnc.keymap) < 0)
                 return -1;
-            }
             break;
     }
 
