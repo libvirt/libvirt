@@ -675,6 +675,9 @@ qemuStateInitialize(bool privileged,
     if ((qemu_driver->inactivePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
 
+    if ((qemu_driver->activeScsiHostdevs = virSCSIDeviceListNew()) == NULL)
+        goto error;
+
     if (!(qemu_driver->sharedDisks = virHashCreate(30, qemuSharedDiskEntryFree)))
         goto error;
 

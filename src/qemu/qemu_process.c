@@ -2972,6 +2972,9 @@ qemuProcessReconnect(void *opaque)
     if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
         goto error;
 
+    if (qemuUpdateActiveScsiHostdevs(driver, obj->def) < 0)
+        goto error;
+
     if (qemuInitCgroup(driver, obj, false) < 0)
         goto error;
 

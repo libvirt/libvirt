@@ -31,6 +31,8 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
 int qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
+int qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
+                                 virDomainDefPtr def);
 int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  const unsigned char *uuid,
@@ -42,9 +44,17 @@ int qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
 int qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  virUSBDeviceListPtr list);
+int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
+                                  const char *name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs);
 int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            bool coldBoot);
+void qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
+                                       const char *name,
+                                       virDomainHostdevDefPtr *hostdevs,
+                                       int nhostdevs);
 void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver);
 void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
                                       const char *name,

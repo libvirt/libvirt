@@ -36,6 +36,7 @@
 # include "security/security_manager.h"
 # include "virpci.h"
 # include "virusb.h"
+# include "virscsi.h"
 # include "cpu_conf.h"
 # include "driver.h"
 # include "virportallocator.h"
@@ -203,6 +204,7 @@ struct _virQEMUDriver {
     virPCIDeviceListPtr activePciHostdevs;
     virPCIDeviceListPtr inactivePciHostdevs;
     virUSBDeviceListPtr activeUsbHostdevs;
+    virSCSIDeviceListPtr activeScsiHostdevs;
 
     /* Immutable pointer. Unsafe APIs. XXX */
     virHashTablePtr sharedDisks;
