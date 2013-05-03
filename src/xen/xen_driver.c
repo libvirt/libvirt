@@ -469,10 +469,8 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
     priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
 #endif
 
-    if (!(priv->saveDir = strdup(XEN_SAVE_DIR))) {
-        virReportOOMError();
+    if (VIR_STRDUP(priv->saveDir, XEN_SAVE_DIR) < 0)
         goto error;
-    }
 
     if (virFileMakePath(priv->saveDir) < 0) {
         VIR_ERROR(_("Errored to create save dir '%s': %s"), priv->saveDir,
@@ -2586,8 +2584,8 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
 
     if (VIR_ALLOC(info) < 0)
         goto memory_error;
-    if (!(info->name = strdup(name)))
-        goto memory_error;
+    if (VIR_STRDUP(info->name, name) < 0)
+        goto error;
 
     memcpy(info->uuid, uuid, VIR_UUID_BUFLEN);
     info->id = id;
@@ -2603,6 +2601,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     return 0;
 memory_error:
     virReportOOMError();
+error:
     if (info)
         VIR_FREE(info->name);
     VIR_FREE(info);

@@ -241,8 +241,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
             virReportOOMError();
             return -1;
         }
-        if ((entry->filename = strdup(filename)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(entry->filename, filename) < 0) {
             VIR_FREE(entry);
             return -1;
         }
@@ -1042,10 +1041,8 @@ xenXMDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
         goto error;
     }
 
-    if ((entry->filename = strdup(filename)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(entry->filename, filename) < 0)
         goto error;
-    }
     entry->def = def;
 
     if (virHashAddEntry(priv->configCache, filename, entry) < 0) {
@@ -1134,7 +1131,7 @@ xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) 
 
     def = xenDaemonLookupByName(ctx->conn, name);
     if (!def) {
-        if (!(ctx->names[ctx->count] = strdup(name)))
+        if (VIR_STRDUP(ctx->names[ctx->count], name) < 0)
             ctx->oom = 1;
         else
             ctx->count++;
@@ -1174,8 +1171,6 @@ xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     if (ctx.oom) {
         for (i = 0; i < ctx.count; i++)
             VIR_FREE(ctx.names[i]);
-
-        virReportOOMError();
         goto cleanup;
     }
 

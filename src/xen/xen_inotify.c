@@ -39,7 +39,7 @@
 #include "virlog.h"
 #include "viruuid.h"
 #include "virfile.h"
-
+#include "virstring.h"
 #include "xm_internal.h" /* for xenXMDomainConfigParse */
 
 #define VIR_FROM_THIS VIR_FROM_XEN_INOTIFY
@@ -58,12 +58,9 @@ xenInotifyXenCacheLookup(virConnectPtr conn,
         return -1;
     }
 
-    *name = strdup(entry->def->name);
     memcpy(uuid, entry->def->uuid, VIR_UUID_BUFLEN);
-
-    if (!*name) {
+    if (VIR_STRDUP(*name, entry->def->name) < 0) {
         VIR_DEBUG("Error getting dom from def");
-        virReportOOMError();
         return -1;
     }
     return 0;
@@ -103,11 +100,8 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
            list info */
         for (i = 0; i < priv->configInfoList->count; i++) {
             if (!memcmp(rawuuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
-                *name = strdup(priv->configInfoList->doms[i]->name);
-                if (!*name) {
-                    virReportOOMError();
+                if (VIR_STRDUP(*name, priv->configInfoList->doms[i]->name) < 0)
                     return -1;
-                }
                 memcpy(uuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN);
                 VIR_DEBUG("Found dom on list");
                 return 0;
@@ -118,8 +112,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
         return -1;
     }
 
-    if (!(*name = strdup(def->name))) {
-        virReportOOMError();
+    if (VIR_STRDUP(*name, def->name) < 0) {
         virDomainDefFree(def);
         return -1;
     }

@@ -50,6 +50,7 @@
 #include "xen_driver.h"
 #include "xs_internal.h"
 #include "xen_hypervisor.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -428,11 +429,7 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac)
         VIR_FREE(val);
 
         if (match) {
-            ret = strdup(list[i]);
-
-            if (ret == NULL)
-                virReportOOMError();
-
+            ignore_value(VIR_STRDUP(ret, list[i]));
             break;
         }
     }
@@ -481,10 +478,7 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev)
             if ((devlen != len) || memcmp(val, dev, len)) {
                 VIR_FREE(val);
             } else {
-                ret = strdup(list[i]);
-
-                if (ret == NULL)
-                    virReportOOMError();
+                ignore_value(VIR_STRDUP(ret, list[i]));
 
                 VIR_FREE(val);
                 VIR_FREE(list);
@@ -504,10 +498,7 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev)
             if ((devlen != len) || memcmp(val, dev, len)) {
                 VIR_FREE(val);
             } else {
-                ret = strdup(list[i]);
-
-                if (ret == NULL)
-                    virReportOOMError();
+                ignore_value(VIR_STRDUP(ret, list[i]));
 
                 VIR_FREE(val);
                 VIR_FREE(list);
@@ -559,7 +550,7 @@ xenStoreDomainGetPCIID(virConnectPtr conn, int id, const char *bdf)
         VIR_FREE(val);
 
         if (match) {
-            ret = strdup(list[i]);
+            ignore_value(VIR_STRDUP(ret, list[i]));
             break;
         }
     }
@@ -665,22 +656,22 @@ xenStoreAddWatch(virConnectPtr conn,
         }
     }
 
-    if (VIR_ALLOC(watch) < 0)
-        goto no_memory;
-
-    watch->path   = strdup(path);
-    watch->token  = strdup(token);
-    watch->cb     = cb;
-    watch->opaque = opaque;
-
-    if (watch->path == NULL || watch->token == NULL) {
-        goto no_memory;
+    if (VIR_ALLOC(watch) < 0) {
+        virReportOOMError();
+        goto error;
     }
+
+    watch->cb = cb;
+    watch->opaque = opaque;
+    if (VIR_STRDUP(watch->path, path) < 0 ||
+        VIR_STRDUP(watch->token, token) < 0)
+        goto error;
 
     /* Make space on list */
     n = list->count;
     if (VIR_REALLOC_N(list->watches, n + 1) < 0) {
-        goto no_memory;
+        virReportOOMError();
+        goto error;
     }
 
     list->watches[n] = watch;
@@ -688,15 +679,12 @@ xenStoreAddWatch(virConnectPtr conn,
 
     return xs_watch(priv->xshandle, watch->path, watch->token);
 
-  no_memory:
+  error:
     if (watch) {
         VIR_FREE(watch->path);
         VIR_FREE(watch->token);
         VIR_FREE(watch);
     }
-
-    virReportOOMError();
-
     return -1;
 }
 

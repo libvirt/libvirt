@@ -772,8 +772,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-        ret[i] = strdup(node->u.value);
-        if (!ret[i])
+        if (VIR_STRDUP(ret[i], node->u.value) < 0)
             goto no_memory;
         i++;
     }
@@ -1396,14 +1395,8 @@ xenDaemonDomainGetOSType(virConnectPtr conn,
     if (root == NULL)
         return NULL;
 
-    if (sexpr_lookup(root, "domain/image/hvm")) {
-        type = strdup("hvm");
-    } else {
-        type = strdup("linux");
-    }
-
-    if (type == NULL)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(type,
+                            sexpr_lookup(root, "domain/image/hvm") ? "hvm" : "linux"));
 
     sexpr_free(root);
 
@@ -2118,12 +2111,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         else
             id = -1;
 
-        if (domname) {
-            name = strdup(domname);
-
-            if (name == NULL)
-                virReportOOMError();
-        }
+        ignore_value(VIR_STRDUP(name, domname));
 
         sexpr_free(root);
     }
@@ -2284,12 +2272,9 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
                               priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
-        if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
-            if (!(target = strdup(dev->data.disk->dst))) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
+        if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            VIR_STRDUP(target, dev->data.disk->dst) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
@@ -2303,10 +2288,8 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
         char macStr[VIR_MAC_STRING_BUFLEN];
         virMacAddrFormat(&dev->data.net->mac, macStr);
 
-        if (!(target = strdup(macStr))) {
-            virReportOOMError();
+        if (VIR_STRDUP(target, macStr) < 0)
             goto cleanup;
-        }
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -2618,12 +2601,9 @@ xenDaemonDomainSetAutostart(virConnectPtr conn,
 
         /* Change the autostart value in place, then define the new sexpr */
         VIR_FREE(autonode->u.s.car->u.value);
-        autonode->u.s.car->u.value = (autostart ? strdup("start")
-                                                : strdup("ignore"));
-        if (!(autonode->u.s.car->u.value)) {
-            virReportOOMError();
+        if (VIR_STRDUP(autonode->u.s.car->u.value,
+                       autostart ? "start" : "ignore") < 0)
             goto error;
-        }
 
         if (sexpr2string(root, &buffer) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2783,9 +2763,7 @@ xenDaemonDomainMigratePerform(virConnectPtr conn,
             virURIFree(uriptr);
             return -1;
         }
-        hostname = strdup(uriptr->server);
-        if (!hostname) {
-            virReportOOMError();
+        if (VIR_STRDUP(hostname, uriptr->server) < 0) {
             virURIFree(uriptr);
             return -1;
         }
@@ -2805,19 +2783,13 @@ xenDaemonDomainMigratePerform(virConnectPtr conn,
 
         /* Get the hostname. */
         n = p - uri; /* n = Length of hostname in bytes. */
-        hostname = strdup(uri);
-        if (!hostname) {
-            virReportOOMError();
+        if (VIR_STRDUP(hostname, uri) < 0)
             return -1;
-        }
         hostname[n] = '\0';
     }
     else {                      /* "hostname" (or IP address) */
-        hostname = strdup(uri);
-        if (!hostname) {
-            virReportOOMError();
+        if (VIR_STRDUP(hostname, uri) < 0)
             return -1;
-        }
     }
 
     VIR_DEBUG("hostname = %s, port = %s", hostname, port);
@@ -2957,10 +2929,8 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
         if (node->kind != SEXPR_VALUE)
             continue;
 
-        if ((names[ret++] = strdup(node->u.value)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[ret++], node->u.value) < 0)
             goto error;
-        }
 
         if (ret >= maxnames)
             break;
@@ -3017,19 +2987,13 @@ xenDaemonGetSchedulerType(virConnectPtr conn,
         goto error;
     }
     if (STREQ(ret, "credit")) {
-        schedulertype = strdup("credit");
-        if (schedulertype == NULL){
-            virReportOOMError();
+        if (VIR_STRDUP(schedulertype, "credit") < 0)
             goto error;
-        }
         if (nparams)
             *nparams = XEN_SCHED_CRED_NPARAM;
     } else if (STREQ(ret, "sedf")) {
-        schedulertype = strdup("sedf");
-        if (schedulertype == NULL){
-            virReportOOMError();
+        if (VIR_STRDUP(schedulertype, "sedf") < 0)
             goto error;
-        }
         if (nparams)
             *nparams = XEN_SCHED_SEDF_NPARAM;
     } else {

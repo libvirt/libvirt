@@ -1142,16 +1142,12 @@ xenHypervisorGetSchedulerType(virConnectPtr conn,
 
         switch (op.u.getschedulerid.sched_id){
             case XEN_SCHEDULER_SEDF:
-                schedulertype = strdup("sedf");
-                if (schedulertype == NULL)
-                    virReportOOMError();
+                ignore_value(VIR_STRDUP(schedulertype, "sedf"));
                 if (nparams)
                     *nparams = XEN_SCHED_SEDF_NPARAM;
                 break;
             case XEN_SCHEDULER_CREDIT:
-                schedulertype = strdup("credit");
-                if (schedulertype == NULL)
-                    virReportOOMError();
+                ignore_value(VIR_STRDUP(schedulertype, "credit"));
                 if (nparams)
                     *nparams = XEN_SCHED_CRED_NPARAM;
                 break;
@@ -2541,14 +2537,9 @@ xenHypervisorDomainGetOSType(virConnectPtr conn,
         return NULL;
     }
 
-    if (XEN_GETDOMAININFO_FLAGS(dominfo) & DOMFLAGS_HVM)
-        ostype = strdup("hvm");
-    else
-        ostype = strdup("linux");
-
-    if (ostype == NULL)
-        virReportOOMError();
-
+    ignore_value(VIR_STRDUP(ostype,
+                            XEN_GETDOMAININFO_FLAGS(dominfo) & DOMFLAGS_HVM ?
+                            "hvm" : "linux"));
     return ostype;
 }
 

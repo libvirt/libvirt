@@ -292,14 +292,14 @@ xenLinuxDomainDeviceID(int domid, const char *path)
      * /sys/devices/xen-backend/(vbd|tap)-{domid}-{devid}/statistics/{...}
      */
 
-    if (strlen(path) >= 5 && STRPREFIX(path, "/dev/"))
-        mod_path = strdup(path);
-    else
-        ignore_value(virAsprintf(&mod_path, "/dev/%s", path));
-
-    if (!mod_path) {
-        virReportOOMError();
-        return -1;
+    if (strlen(path) >= 5 && STRPREFIX(path, "/dev/")) {
+        if (VIR_STRDUP(mod_path, path) < 0)
+            return -1;
+    } else {
+        if (virAsprintf(&mod_path, "/dev/%s", path) < 0) {
+            virReportOOMError();
+            return -1;
+        }
     }
 
     retval = -1;
