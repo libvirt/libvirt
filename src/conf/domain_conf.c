@@ -8730,6 +8730,9 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                                _("SCSI host devices must have address specified"));
                 goto error;
             }
+
+            if (virXPathBoolean("boolean(./readonly)", ctxt))
+                def->readonly = true;
             break;
         }
     }
@@ -15358,6 +15361,9 @@ virDomainHostdevDefFormat(virBufferPtr buf,
             return -1;
         break;
     }
+
+    if (def->readonly)
+        virBufferAddLit(buf, "<readonly/>\n");
     virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, def->info,

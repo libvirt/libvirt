@@ -287,6 +287,7 @@ mymain(void)
 
     DO_TEST("hostdev-scsi-lsi");
     DO_TEST("hostdev-scsi-virtio-scsi");
+    DO_TEST("hostdev-scsi-readonly");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

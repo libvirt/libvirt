@@ -3075,6 +3075,11 @@
         <optional>
           <ref name="address"/>
         </optional>
+        <optional>
+          <element name="readonly">
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

@@ -4754,6 +4754,17 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                       virDomainDeviceAddressTypeToString(dev->info->type),
                       dev->info->alias);
 
+    if (dev->readonly) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
+            virBufferAddLit(&buf, ",readonly=on");
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support 'readonly' "
+                             "for -drive"));
+            goto error;
+        }
+    }
+
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto error;

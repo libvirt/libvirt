@@ -2415,6 +2415,10 @@
         could be changed in the future with no impact to domains that
         don't specify anything.
       </dd>
+      <dt><code>readonly</code></dt>
+      <dd>Indicates that the device is readonly, only supported by SCSI host
+        device now. <span class="since">Since 1.0.6 (QEMU and KVM only)</span>
+      </dd>
     </dl>
 
 

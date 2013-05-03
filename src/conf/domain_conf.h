@@ -461,6 +461,7 @@ struct _virDomainHostdevDef {
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool managed;
     bool missing;
+    bool readonly;
     union {
         virDomainHostdevSubsys subsys;
         virDomainHostdevCaps caps;
