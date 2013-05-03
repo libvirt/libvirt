@@ -234,10 +234,12 @@ virNetSSHKbIntCb(const char *name ATTRIBUTE_UNUSED,
 
     /* fill data structures for auth callback */
     for (i = 0; i < num_prompts; i++) {
-        if (!(askcred[i].prompt = strdup(prompts[i].text))) {
+        char *prompt;
+        if (VIR_STRDUP(prompt, prompts[i].text) < 0) {
             priv->authCbErr = VIR_NET_SSH_AUTHCB_OOM;
             goto cleanup;
         }
+        askcred[i].prompt = prompt;
 
         /* remove colon and trailing spaces from prompts, as default behavior
          * of libvirt's auth callback is to add them */
@@ -739,7 +741,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSessionPtr sess,
                              "authentication credentials"));
             return -1;
         case VIR_NET_SSH_AUTHCB_OOM:
-            virReportOOMError();
+            /* OOM error already reported */
             return -1;
         case VIR_NET_SSH_AUTHCB_RETR_ERR:
             virReportError(VIR_ERR_SSH, "%s",
@@ -960,12 +962,14 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (!(user = strdup(username)) ||
-        !(pass = strdup(password)))
-        goto no_memory;
+    if (VIR_STRDUP(user, username) < 0 ||
+        VIR_STRDUP(pass, password) < 0)
+        goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto no_memory;
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
+        virReportOOMError();
+        goto error;
+    }
 
     auth->username = user;
     auth->password = pass;
@@ -974,10 +978,9 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(user);
     VIR_FREE(pass);
-    virReportOOMError();
     virObjectUnlock(sess);
     return -1;
 }
@@ -998,11 +1001,13 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (!(user = strdup(username)))
-        goto no_memory;
+    if (VIR_STRDUP(user, username) < 0)
+        goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto no_memory;
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
+        virReportOOMError();
+        goto error;
+    }
 
     auth->username = user;
     auth->method = VIR_NET_SSH_AUTH_AGENT;
@@ -1010,9 +1015,8 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(user);
-    virReportOOMError();
     virObjectUnlock(sess);
     return -1;
 }
@@ -1038,15 +1042,15 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (!(user = strdup(username)) ||
-        !(file = strdup(keyfile)))
-        goto no_memory;
+    if (VIR_STRDUP(user, username) < 0 ||
+        VIR_STRDUP(file, keyfile) < 0 ||
+        VIR_STRDUP(pass, password) < 0)
+        goto error;
 
-    if (password && !(pass = strdup(password)))
-        goto no_memory;
-
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto no_memory;
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
+        virReportOOMError();
+        goto error;
+    }
 
     auth->username = user;
     auth->password = pass;
@@ -1056,11 +1060,10 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(user);
     VIR_FREE(pass);
     VIR_FREE(file);
-    virReportOOMError();
     virObjectUnlock(sess);
     return -1;
 }
@@ -1082,11 +1085,13 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (!(user = strdup(username)))
-        goto no_memory;
+    if (VIR_STRDUP(user, username) < 0)
+        goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
-        goto no_memory;
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
+        virReportOOMError();
+        goto error;
+    }
 
     auth->username = user;
     auth->tries = tries;
@@ -1095,9 +1100,8 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
     virObjectUnlock(sess);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(user);
-    virReportOOMError();
     virObjectUnlock(sess);
     return -1;
 
@@ -1112,10 +1116,8 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
 
     VIR_FREE(sess->channelCommand);
 
-    if (command && !(sess->channelCommand = strdup(command))) {
-        virReportOOMError();
+    if (VIR_STRDUP(sess->channelCommand, command) < 0)
         ret = -1;
-    }
 
     virObjectUnlock(sess);
     return ret;
@@ -1138,8 +1140,8 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
 
     VIR_FREE(sess->hostname);
 
-    if (hostname && !(sess->hostname = strdup(hostname)))
-        goto no_memory;
+    if (VIR_STRDUP(sess->hostname, hostname) < 0)
+        goto error;
 
     /* load the known hosts file */
     if (hostsfile) {
@@ -1163,16 +1165,14 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
         /* set filename only if writing to the known hosts file is requested */
         if (!(flags & VIR_NET_SSH_HOSTKEY_FILE_READONLY)) {
             VIR_FREE(sess->knownHostsFile);
-            if (!(sess->knownHostsFile = strdup(hostsfile)))
-                goto no_memory;
+            if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
+                goto error;
         }
     }
 
     virObjectUnlock(sess);
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnlock(sess);
     return -1;

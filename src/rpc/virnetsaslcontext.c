@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "virthread.h"
 #include "virlog.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -385,10 +386,7 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
                        err, sasl_errdetail(sasl->conn));
         goto cleanup;
     }
-    if (!(ret = strdup(mechlist))) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    ignore_value(VIR_STRDUP(ret, mechlist));
 
 cleanup:
     virObjectUnlock(sasl);

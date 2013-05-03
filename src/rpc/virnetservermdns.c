@@ -479,9 +479,8 @@ virNetServerMDNSGroupPtr virNetServerMDNSAddGroup(virNetServerMDNS *mdns,
         return NULL;
     }
 
-    if (!(group->name = strdup(name))) {
+    if (VIR_STRDUP(group->name, name) < 0) {
         VIR_FREE(group);
-        virReportOOMError();
         return NULL;
     }
     group->mdns = mdns;
@@ -525,9 +524,8 @@ virNetServerMDNSEntryPtr virNetServerMDNSAddEntry(virNetServerMDNSGroupPtr group
     }
 
     entry->port = port;
-    if (!(entry->type = strdup(type))) {
+    if (VIR_STRDUP(entry->type, type) < 0) {
         VIR_FREE(entry);
-        virReportOOMError();
         return NULL;
     }
     entry->next = group->entry;

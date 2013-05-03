@@ -626,12 +626,10 @@ elsif ($mode eq "server") {
                         # SPECIAL: virConnectGetType returns a constant string that must
                         #          not be freed. Therefore, duplicate the string here.
                         push(@vars_list, "const char *$1");
-                        push(@ret_list, "/* We have to strdup because remoteDispatchClientRequest will");
+                        push(@ret_list, "/* We have to VIR_STRDUP because remoteDispatchClientRequest will");
                         push(@ret_list, " * free this string after it's been serialised. */");
-                        push(@ret_list, "if (!(ret->type = strdup(type))) {");
-                        push(@ret_list, "    virReportOOMError();");
+                        push(@ret_list, "if (VIR_STRDUP(ret->type, type) < 0)");
                         push(@ret_list, "    goto cleanup;");
-                        push(@ret_list, "}");
                     } else {
                         push(@vars_list, "char *$1");
                         push(@ret_list, "ret->$1 = $1;");
@@ -652,11 +650,8 @@ elsif ($mode eq "server") {
                          "        goto cleanup;\n" .
                          "    }\n" .
                          "    \n" .
-                         "    *$1_p = strdup($1);\n" .
-                         "    if (*$1_p == NULL) {\n" .
-                         "        virReportOOMError();\n" .
-                         "        goto cleanup;\n" .
-                         "    }\n");
+                         "    if (VIR_STRDUP(*$1_p, $1) < 0)\n".
+                         "        goto cleanup;\n");
 
                     $single_ret_var = $1;
                     $single_ret_by_ref = 0;
@@ -1578,16 +1573,14 @@ elsif ($mode eq "client") {
             print "\n";
             print "    /* This call is caller-frees (although that isn't clear from\n";
             print "     * the documentation).  However xdr_free will free up both the\n";
-            print "     * names and the list of pointers, so we have to strdup the\n";
+            print "     * names and the list of pointers, so we have to VIR_STRDUP the\n";
             print "     * names here. */\n";
             print "    for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; ++i) {\n";
-            print "        ${single_ret_list_name}[i] = strdup(ret.$single_ret_list_name.${single_ret_list_name}_val[i]);\n";
-            print "\n";
-            print "        if (${single_ret_list_name}[i] == NULL) {\n";
+            print "        if (VIR_STRDUP(${single_ret_list_name}[i],\n";
+            print "                       ret.$single_ret_list_name.${single_ret_list_name}_val[i]) < 0) {\n";
             print "            for (--i; i >= 0; --i)\n";
             print "                VIR_FREE(${single_ret_list_name}[i]);\n";
             print "\n";
-            print "            virReportOOMError();\n";
             print "            goto cleanup;\n";
             print "        }\n";
             print "    }\n";

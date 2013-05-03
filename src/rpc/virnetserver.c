@@ -37,6 +37,7 @@
 #include "virfile.h"
 #include "virnetservermdns.h"
 #include "virdbus.h"
+#include "virstring.h"
 
 #ifndef SA_SIGINFO
 # define SA_SIGINFO 0
@@ -387,11 +388,8 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->privileged = geteuid() == 0;
     srv->autoShutdownInhibitFd = -1;
 
-    if (mdnsGroupName &&
-        !(srv->mdnsGroupName = strdup(mdnsGroupName))) {
-        virReportOOMError();
+    if (VIR_STRDUP(srv->mdnsGroupName, mdnsGroupName) < 0)
         goto error;
-    }
     if (srv->mdnsGroupName) {
         if (!(srv->mdns = virNetServerMDNSNew()))
             goto error;

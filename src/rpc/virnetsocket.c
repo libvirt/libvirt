@@ -800,10 +800,10 @@ virNetSocketNewConnectLibSSH2(const char *host,
     if (virNetSSHSessionSetChannelCommand(sess, command) != 0)
         goto error;
 
-    if (!(authMethodNext = authMethodsCopy = strdup(authMethods))) {
-        virReportOOMError();
+    if (VIR_STRDUP(authMethodsCopy, authMethods) < 0)
         goto error;
-    }
+
+    authMethodNext = authMethodsCopy;
 
     while ((authMethod = strsep(&authMethodNext, ","))) {
         if (STRCASEEQ(authMethod, "keyboard-interactive"))
@@ -1191,10 +1191,8 @@ int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
         goto cleanup;
     }
 
-    if (!(*context = strdup(seccon))) {
-        virReportOOMError();
+    if (VIR_STRDUP(*context, seccon) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 cleanup:

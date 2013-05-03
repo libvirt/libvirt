@@ -693,22 +693,16 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 #if WITH_SASL
     if (client->sasl) {
         const char *identity = virNetSASLSessionGetIdentity(client->sasl);
-        if (identity &&
-            !(saslname = strdup(identity))) {
-            virReportOOMError();
+        if (VIR_STRDUP(saslname, identity) < 0)
             goto cleanup;
-        }
     }
 #endif
 
 #if WITH_GNUTLS
     if (client->tls) {
         const char *identity = virNetTLSSessionGetX509DName(client->tls);
-        if (identity &&
-            !(x509dname = strdup(identity))) {
-            virReportOOMError();
+        if (VIR_STRDUP(x509dname, identity) < 0)
             goto cleanup;
-        }
     }
 #endif
 

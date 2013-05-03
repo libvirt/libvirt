@@ -36,6 +36,7 @@
 #include "virlog.h"
 #include "virutil.h"
 #include "virerror.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -317,17 +318,14 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     client->wakeupSendFD = wakeupFD[1];
     wakeupFD[0] = wakeupFD[1] = -1;
 
-    if (hostname &&
-        !(client->hostname = strdup(hostname)))
-        goto no_memory;
+    if (VIR_STRDUP(client->hostname, hostname) < 0)
+        goto error;
 
     PROBE(RPC_CLIENT_NEW,
           "client=%p sock=%p",
           client, client->sock);
     return client;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
@@ -414,8 +412,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                     goto no_memory;
             }
         } else {
-            if (!(knownhosts = strdup(knownHostsPath)))
-                goto no_memory;
+            if (VIR_STRDUP(knownhosts, knownHostsPath) < 0)
+                goto cleanup;
         }
     }
 
@@ -438,8 +436,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                     VIR_FREE(privkey);
             }
         } else {
-            if (!(privkey = strdup(privkeyPath)))
-                goto no_memory;
+            if (VIR_STRDUP(privkey, privkeyPath) < 0)
+                goto cleanup;
         }
     }
 
