@@ -890,6 +890,9 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
 
         if (qemuAddSharedDevice(driver, &dev, name) < 0)
             return -1;
+
+        if (qemuSetUnprivSGIO(&dev) < 0)
+            return -1;
     }
 
     /* To prevent situation where SCSI device is assigned to two domains
