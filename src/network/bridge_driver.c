@@ -384,20 +384,19 @@ networkStateInitialize(bool privileged,
      * probably shouldn't change it now.
      */
     if (privileged) {
-        if (!(driverState->networkConfigDir
-              = strdup(SYSCONFDIR "/libvirt/qemu/networks")) ||
-            !(driverState->networkAutostartDir
-              = strdup(SYSCONFDIR "/libvirt/qemu/networks/autostart")) ||
-            !(driverState->stateDir
-              = strdup(LOCALSTATEDIR "/lib/libvirt/network")) ||
-            !(driverState->pidDir
-              = strdup(LOCALSTATEDIR "/run/libvirt/network")) ||
-            !(driverState->dnsmasqStateDir
-              = strdup(LOCALSTATEDIR "/lib/libvirt/dnsmasq")) ||
-            !(driverState->radvdStateDir
-              = strdup(LOCALSTATEDIR "/lib/libvirt/radvd"))) {
-            goto out_of_memory;
-        }
+        if (VIR_STRDUP(driverState->networkConfigDir,
+                       SYSCONFDIR "/libvirt/qemu/networks") < 0 ||
+            VIR_STRDUP(driverState->networkAutostartDir,
+                       SYSCONFDIR "/libvirt/qemu/networks/autostart") < 0 ||
+            VIR_STRDUP(driverState->stateDir,
+                       LOCALSTATEDIR "/lib/libvirt/network") < 0 ||
+            VIR_STRDUP(driverState->pidDir,
+                       LOCALSTATEDIR "/run/libvirt/network") < 0 ||
+            VIR_STRDUP(driverState->dnsmasqStateDir,
+                       LOCALSTATEDIR "/lib/libvirt/dnsmasq") < 0 ||
+            VIR_STRDUP(driverState->radvdStateDir,
+                       LOCALSTATEDIR "/lib/libvirt/radvd") < 0)
+            goto error;
     } else {
         configdir = virGetUserConfigDirectory();
         rundir = virGetUserRuntimeDirectory();
@@ -2843,9 +2842,8 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
     for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
-            if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -2887,9 +2885,8 @@ static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const na
     for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (!virNetworkObjIsActive(driver->networks.objs[i])) {
-            if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -3520,9 +3517,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
         goto cleanup;
     }
 
-    bridge = strdup(network->def->bridge);
-    if (!bridge)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(bridge, network->def->bridge));
 
 cleanup:
     if (network)
@@ -3710,13 +3705,9 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
             (netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
             netdef->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
             if (vfname[ii]) {
-                netdef->forward.ifs[ii].device.dev = strdup(vfname[ii]);
-                if (!netdef->forward.ifs[ii].device.dev) {
-                    virReportOOMError();
+                if (VIR_STRDUP(netdef->forward.ifs[ii].device.dev, vfname[ii]) < 0)
                     goto finish;
-                }
-            }
-            else {
+            } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Direct mode types require interface names"));
                 goto finish;
@@ -3859,11 +3850,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_BRIDGE;
-        iface->data.network.actual->data.bridge.brname = strdup(netdef->bridge);
-        if (!iface->data.network.actual->data.bridge.brname) {
-            virReportOOMError();
+        if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
+                       netdef->bridge) < 0)
             goto error;
-        }
 
         /* merge virtualports from interface, network, and portgroup to
          * arrive at actual virtualport to use
@@ -4080,11 +4069,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                netdef->name);
                 goto error;
             }
-            iface->data.network.actual->data.direct.linkdev = strdup(dev->device.dev);
-            if (!iface->data.network.actual->data.direct.linkdev) {
-                virReportOOMError();
+            if (VIR_STRDUP(iface->data.network.actual->data.direct.linkdev,
+                           dev->device.dev) < 0)
                 goto error;
-            }
         }
     }
 
