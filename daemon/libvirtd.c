@@ -241,8 +241,8 @@ daemonPidFilePath(bool privileged,
                   char **pidfile)
 {
     if (privileged) {
-        if (!(*pidfile = strdup(LOCALSTATEDIR "/run/libvirtd.pid")))
-            goto no_memory;
+        if (VIR_STRDUP(*pidfile, LOCALSTATEDIR "/run/libvirtd.pid") < 0)
+            goto error;
     } else {
         char *rundir = NULL;
         mode_t old_umask;
@@ -287,10 +287,9 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             goto no_memory;
     } else {
         if (privileged) {
-            if (!(*sockfile = strdup(LOCALSTATEDIR "/run/libvirt/libvirt-sock")))
-                goto no_memory;
-            if (!(*rosockfile = strdup(LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro")))
-                goto no_memory;
+            if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock") < 0 ||
+                VIR_STRDUP(*rosockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro") < 0)
+                goto error;
         } else {
             char *rundir = NULL;
             mode_t old_umask;
@@ -961,7 +960,8 @@ static int migrateProfile(void)
 
     config_home = getenv("XDG_CONFIG_HOME");
     if (config_home && config_home[0] != '\0') {
-        xdg_dir = strdup(config_home);
+        if (VIR_STRDUP(xdg_dir, config_home) < 0)
+            goto cleanup;
     } else {
         if (virAsprintf(&xdg_dir, "%s/.config", home) < 0) {
             goto cleanup;
@@ -1172,7 +1172,7 @@ int main(int argc, char **argv) {
 
         case 'p':
             VIR_FREE(pid_file);
-            if (!(pid_file = strdup(optarg))) {
+            if (VIR_STRDUP_QUIET(pid_file, optarg) < 0) {
                 VIR_ERROR(_("Can't allocate memory"));
                 exit(EXIT_FAILURE);
             }
@@ -1180,7 +1180,7 @@ int main(int argc, char **argv) {
 
         case 'f':
             VIR_FREE(remote_config_file);
-            if (!(remote_config_file = strdup(optarg))) {
+            if (VIR_STRDUP_QUIET(remote_config_file, optarg) < 0) {
                 VIR_ERROR(_("Can't allocate memory"));
                 exit(EXIT_FAILURE);
             }
@@ -1287,7 +1287,10 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        run_dir = strdup(LOCALSTATEDIR "/run/libvirt");
+        if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0) {
+            VIR_ERROR(_("Can't allocate memory"));
+            goto cleanup;
+        }
     } else {
         run_dir = virGetUserRuntimeDirectory();
 
@@ -1296,11 +1299,6 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
     }
-    if (!run_dir) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (privileged)
         old_umask = umask(022);
     else

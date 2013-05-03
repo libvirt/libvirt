@@ -59,15 +59,11 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                            key);
             return -1;
         }
-        list[0] = strdup(p->str);
-        list[1] = NULL;
-        if (list[0] == NULL) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("failed to allocate memory for %s config list value"),
-                           key);
+        if (VIR_STRDUP(list[0], p->str) < 0) {
             VIR_FREE(list);
             return -1;
         }
+        list[1] = NULL;
         break;
 
     case VIR_CONF_LIST: {
@@ -90,15 +86,11 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                 VIR_FREE(list);
                 return -1;
             }
-            list[i] = strdup(pp->str);
-            if (list[i] == NULL) {
+            if (VIR_STRDUP(list[i], pp->str) < 0) {
                 int j;
                 for (j = 0 ; j < i ; j++)
                     VIR_FREE(list[j]);
                 VIR_FREE(list);
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("failed to allocate memory for %s config list value"),
-                               key);
                 return -1;
             }
 
@@ -136,8 +128,8 @@ checkType(virConfValuePtr p, const char *filename,
 }
 
 /* If there is no config data for the key, #var_name, then do nothing.
-   If there is valid data of type VIR_CONF_STRING, and strdup succeeds,
-   store the result in var_name.  Otherwise, (i.e. invalid type, or strdup
+   If there is valid data of type VIR_CONF_STRING, and VIR_STRDUP succeeds,
+   store the result in var_name.  Otherwise, (i.e. invalid type, or VIR_STRDUP
    failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
 #define GET_CONF_STR(conf, filename, var_name)                          \
     do {                                                                \
@@ -146,10 +138,8 @@ checkType(virConfValuePtr p, const char *filename,
             if (checkType(p, filename, #var_name, VIR_CONF_STRING) < 0) \
                 goto error;                                             \
             VIR_FREE(data->var_name);                                   \
-            if (!(data->var_name = strdup(p->str))) {                   \
-                virReportOOMError();                                    \
+            if (VIR_STRDUP(data->var_name, p->str) < 0)                 \
                 goto error;                                             \
-            }                                                           \
         }                                                               \
     } while (0)
 
@@ -200,8 +190,8 @@ int
 daemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (!(*configfile = strdup(SYSCONFDIR "/libvirt/libvirtd.conf")))
-            goto no_memory;
+        if (VIR_STRDUP(*configfile, SYSCONFDIR "/libvirt/libvirtd.conf") < 0)
+            goto error;
     } else {
         char *configdir = NULL;
 
@@ -238,10 +228,9 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->listen_tls = 1;
     data->listen_tcp = 0;
 
-    if (!(data->tls_port = strdup(LIBVIRTD_TLS_PORT)))
-        goto no_memory;
-    if (!(data->tcp_port = strdup(LIBVIRTD_TCP_PORT)))
-        goto no_memory;
+    if (VIR_STRDUP(data->tls_port, LIBVIRTD_TLS_PORT) < 0 ||
+        VIR_STRDUP(data->tcp_port, LIBVIRTD_TCP_PORT) < 0)
+        goto error;
 
     /* Only default to PolicyKit if running as root */
 #if WITH_POLKIT
@@ -256,14 +245,10 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     }
 #endif
 
-    if (data->auth_unix_rw == REMOTE_AUTH_POLKIT)
-        data->unix_sock_rw_perms = strdup("0777"); /* Allow world */
-    else
-        data->unix_sock_rw_perms = strdup("0700"); /* Allow user only */
-    data->unix_sock_ro_perms = strdup("0777"); /* Always allow world */
-    if (!data->unix_sock_ro_perms ||
-        !data->unix_sock_rw_perms)
-        goto no_memory;
+    if (VIR_STRDUP(data->unix_sock_rw_perms,
+                   data->auth_unix_rw == REMOTE_AUTH_POLKIT ? "0777" : "0700") < 0 ||
+        VIR_STRDUP(data->unix_sock_ro_perms, "0777") < 0)
+        goto error;
 
 #if WITH_SASL
     data->auth_tcp = REMOTE_AUTH_SASL;
@@ -315,6 +300,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
 no_memory:
     virReportOOMError();
+error:
     daemonConfigFree(data);
     return NULL;
 }
@@ -382,10 +368,8 @@ daemonConfigLoadOptions(struct daemonConfig *data,
      */
     if (data->auth_unix_rw == REMOTE_AUTH_POLKIT) {
         VIR_FREE(data->unix_sock_rw_perms);
-        if (!(data->unix_sock_rw_perms = strdup("0777"))) {
-            virReportOOMError();
+        if (VIR_STRDUP(data->unix_sock_rw_perms, "0777") < 0)
             goto error;
-        }
     }
 #endif
     if (remoteConfigGetAuth(conf, "auth_unix_ro", &data->auth_unix_ro, filename) < 0)

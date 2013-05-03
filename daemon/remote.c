@@ -234,12 +234,9 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    data.srcPath = strdup(srcPath);
-    if (data.srcPath == NULL)
-        goto mem_error;
-    data.devAlias = strdup(devAlias);
-    if (data.devAlias == NULL)
-        goto mem_error;
+    if (VIR_STRDUP(data.srcPath, srcPath) < 0 ||
+        VIR_STRDUP(data.devAlias, devAlias) < 0)
+        goto error;
     make_nonnull_domain(&data.dom, dom);
     data.action = action;
 
@@ -248,8 +245,7 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   (xdrproc_t)xdr_remote_domain_event_io_error_msg, &data);
 
     return 0;
-mem_error:
-    virReportOOMError();
+error:
     VIR_FREE(data.srcPath);
     VIR_FREE(data.devAlias);
     return -1;
@@ -275,16 +271,11 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    data.srcPath = strdup(srcPath);
-    if (data.srcPath == NULL)
-        goto mem_error;
-    data.devAlias = strdup(devAlias);
-    if (data.devAlias == NULL)
-        goto mem_error;
+    if (VIR_STRDUP(data.srcPath, srcPath) < 0 ||
+        VIR_STRDUP(data.devAlias, devAlias) < 0 ||
+        VIR_STRDUP(data.reason, reason) < 0)
+        goto error;
     data.action = action;
-    data.reason = strdup(reason);
-    if (data.reason == NULL)
-        goto mem_error;
 
     make_nonnull_domain(&data.dom, dom);
 
@@ -294,8 +285,7 @@ static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUS
 
     return 0;
 
-mem_error:
-    virReportOOMError();
+error:
     VIR_FREE(data.srcPath);
     VIR_FREE(data.devAlias);
     VIR_FREE(data.reason);
@@ -334,35 +324,23 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
     data.phase = phase;
     data.local.family = local->family;
     data.remote.family = remote->family;
-    data.authScheme = strdup(authScheme);
-    if (data.authScheme == NULL)
-        goto mem_error;
-
-    data.local.node = strdup(local->node);
-    if (data.local.node == NULL)
-        goto mem_error;
-    data.local.service = strdup(local->service);
-    if (data.local.service == NULL)
-        goto mem_error;
-
-    data.remote.node = strdup(remote->node);
-    if (data.remote.node == NULL)
-        goto mem_error;
-    data.remote.service = strdup(remote->service);
-    if (data.remote.service == NULL)
-        goto mem_error;
+    if (VIR_STRDUP(data.authScheme, authScheme) < 0 ||
+        VIR_STRDUP(data.local.node, local->node) < 0 ||
+        VIR_STRDUP(data.local.service, local->service) < 0 ||
+        VIR_STRDUP(data.remote.node, remote->node) < 0 ||
+        VIR_STRDUP(data.remote.service, remote->service) < 0)
+        goto error;
 
     data.subject.subject_len = subject->nidentity;
-    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0)
-        goto mem_error;
+    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     for (i = 0 ; i < data.subject.subject_len ; i++) {
-        data.subject.subject_val[i].type = strdup(subject->identities[i].type);
-        if (data.subject.subject_val[i].type == NULL)
-            goto mem_error;
-        data.subject.subject_val[i].name = strdup(subject->identities[i].name);
-        if (data.subject.subject_val[i].name == NULL)
-            goto mem_error;
+        if (VIR_STRDUP(data.subject.subject_val[i].type, subject->identities[i].type) < 0 ||
+            VIR_STRDUP(data.subject.subject_val[i].name, subject->identities[i].name) < 0)
+            goto error;
     }
     make_nonnull_domain(&data.dom, dom);
 
@@ -372,8 +350,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
-mem_error:
-    virReportOOMError();
+error:
     VIR_FREE(data.authScheme);
     VIR_FREE(data.local.node);
     VIR_FREE(data.local.service);
@@ -407,9 +384,8 @@ static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    data.path = strdup(path);
-    if (data.path == NULL)
-        goto mem_error;
+    if (VIR_STRDUP(data.path, path) < 0)
+        goto error;
     data.type = type;
     data.status = status;
     make_nonnull_domain(&data.dom, dom);
@@ -419,9 +395,7 @@ static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   (xdrproc_t)xdr_remote_domain_event_block_job_msg, &data);
 
     return 0;
-
-mem_error:
-    virReportOOMError();
+error:
     VIR_FREE(data.path);
     return -1;
 }
@@ -473,18 +447,18 @@ static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     memset(&data, 0, sizeof(data));
     if (oldSrcPath &&
         ((VIR_ALLOC(oldSrcPath_p) < 0) ||
-         !(*oldSrcPath_p = strdup(oldSrcPath))))
+         VIR_STRDUP(*oldSrcPath_p, oldSrcPath) < 0))
         goto mem_error;
 
     if (newSrcPath &&
         ((VIR_ALLOC(newSrcPath_p) < 0) ||
-         !(*newSrcPath_p = strdup(newSrcPath))))
+         VIR_STRDUP(*newSrcPath_p, newSrcPath) < 0))
         goto mem_error;
 
     data.oldSrcPath = oldSrcPath_p;
     data.newSrcPath = newSrcPath_p;
-    if (!(data.devAlias = strdup(devAlias)))
-        goto mem_error;
+    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
+        goto error;
     data.reason = reason;
 
     make_nonnull_domain(&data.dom, dom);
@@ -496,9 +470,10 @@ static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 
 mem_error:
+    virReportOOMError();
+error:
     VIR_FREE(oldSrcPath_p);
     VIR_FREE(newSrcPath_p);
-    virReportOOMError();
     return -1;
 }
 
@@ -520,10 +495,8 @@ static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* build return data */
     memset(&data, 0, sizeof(data));
 
-    if (!(data.devAlias = strdup(devAlias))) {
-        virReportOOMError();
+    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
         return -1;
-    }
     data.reason = reason;
 
     make_nonnull_domain(&data.dom, dom);
@@ -850,11 +823,8 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
         }
 
         /* remoteDispatchClientRequest will free this: */
-        val[j].field = strdup(params[i].field);
-        if (val[j].field == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(val[j].field, params[i].field) < 0)
             goto cleanup;
-        }
         val[j].value.type = params[i].type;
         switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
@@ -876,12 +846,8 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
             val[j].value.remote_typed_param_value_u.b = params[i].value.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            val[j].value.remote_typed_param_value_u.s =
-                strdup(params[i].value.s);
-            if (val[j].value.remote_typed_param_value_u.s == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(val[j].value.remote_typed_param_value_u.s, params[i].value.s) < 0)
                 goto cleanup;
-            }
             break;
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
@@ -966,12 +932,9 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
                 args_params_val[i].value.remote_typed_param_value_u.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            params[i].value.s =
-                strdup(args_params_val[i].value.remote_typed_param_value_u.s);
-            if (params[i].value.s == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(params[i].value.s,
+                           args_params_val[i].value.remote_typed_param_value_u.s) < 0)
                 goto cleanup;
-            }
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, _("unknown parameter type: %d"),
@@ -2152,9 +2115,8 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     for (i = 0; i < nparams; ++i) {
         /* remoteDispatchClientRequest will free this: */
-        ret->params.params_val[i].field = strdup(params[i].field);
-        if (ret->params.params_val[i].field == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(ret->params.params_val[i].field, params[i].field) < 0)
+            goto cleanup;
 
         ret->params.params_val[i].value = params[i].value;
     }
@@ -2231,9 +2193,8 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     for (i = 0; i < nparams; ++i) {
         /* remoteDispatchClientRequest will free this: */
-        ret->params.params_val[i].field = strdup(params[i].field);
-        if (ret->params.params_val[i].field == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(ret->params.params_val[i].field, params[i].field) < 0)
+            goto cleanup;
 
         ret->params.params_val[i].value = params[i].value;
     }
@@ -3109,9 +3070,8 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
             virReportOOMError();
             goto cleanup;
         }
-        if (!(*parent_p = strdup(parent))) {
+        if (VIR_STRDUP(*parent_p, parent) < 0) {
             VIR_FREE(parent_p);
-            virReportOOMError();
             goto cleanup;
         }
         ret->parent = parent_p;
@@ -4779,14 +4739,14 @@ static void
 make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 {
     dom_dst->id = dom_src->id;
-    dom_dst->name = strdup(dom_src->name);
+    ignore_value(VIR_STRDUP_QUIET(dom_dst->name, dom_src->name));
     memcpy(dom_dst->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
 }
 
 static void
 make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src)
 {
-    net_dst->name = strdup(net_src->name);
+    ignore_value(VIR_STRDUP_QUIET(net_dst->name, net_src->name));
     memcpy(net_dst->uuid, net_src->uuid, VIR_UUID_BUFLEN);
 }
 
@@ -4794,29 +4754,29 @@ static void
 make_nonnull_interface(remote_nonnull_interface *interface_dst,
                        virInterfacePtr interface_src)
 {
-    interface_dst->name = strdup(interface_src->name);
-    interface_dst->mac = strdup(interface_src->mac);
+    ignore_value(VIR_STRDUP_QUIET(interface_dst->name, interface_src->name));
+    ignore_value(VIR_STRDUP_QUIET(interface_dst->mac, interface_src->mac));
 }
 
 static void
 make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src)
 {
-    pool_dst->name = strdup(pool_src->name);
+    ignore_value(VIR_STRDUP_QUIET(pool_dst->name, pool_src->name));
     memcpy(pool_dst->uuid, pool_src->uuid, VIR_UUID_BUFLEN);
 }
 
 static void
 make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src)
 {
-    vol_dst->pool = strdup(vol_src->pool);
-    vol_dst->name = strdup(vol_src->name);
-    vol_dst->key = strdup(vol_src->key);
+    ignore_value(VIR_STRDUP_QUIET(vol_dst->pool, vol_src->pool));
+    ignore_value(VIR_STRDUP_QUIET(vol_dst->name, vol_src->name));
+    ignore_value(VIR_STRDUP_QUIET(vol_dst->key, vol_src->key));
 }
 
 static void
 make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src)
 {
-    dev_dst->name = strdup(dev_src->name);
+    ignore_value(VIR_STRDUP_QUIET(dev_dst->name, dev_src->name));
 }
 
 static void
@@ -4824,20 +4784,20 @@ make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
     memcpy(secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
     secret_dst->usageType = secret_src->usageType;
-    secret_dst->usageID = strdup(secret_src->usageID);
+    ignore_value(VIR_STRDUP_QUIET(secret_dst->usageID, secret_src->usageID));
 }
 
 static void
 make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src)
 {
-    nwfilter_dst->name = strdup(nwfilter_src->name);
+    ignore_value(VIR_STRDUP_QUIET(nwfilter_dst->name, nwfilter_src->name));
     memcpy(nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
 }
 
 static void
 make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
 {
-    snapshot_dst->name = strdup(snapshot_src->name);
+    ignore_value(VIR_STRDUP_QUIET(snapshot_dst->name, snapshot_src->name));
     make_nonnull_domain(&snapshot_dst->dom, snapshot_src->domain);
 }
 
@@ -4850,12 +4810,14 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
     remote_domain_disk_error *val = NULL;
     int i = 0;
 
-    if (VIR_ALLOC_N(val, nerrors) < 0)
-        goto no_memory;
+    if (VIR_ALLOC_N(val, nerrors) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     for (i = 0; i < nerrors; i++) {
-        if (!(val[i].disk = strdup(errors[i].disk)))
-            goto no_memory;
+        if (VIR_STRDUP(val[i].disk, errors[i].disk) < 0)
+            goto error;
         val[i].error = errors[i].error;
     }
 
@@ -4864,13 +4826,12 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
 
     return 0;
 
-no_memory:
+error:
     if (val) {
         int j;
         for (j = 0; j < i; j++)
             VIR_FREE(val[j].disk);
         VIR_FREE(val);
     }
-    virReportOOMError();
     return -1;
 }
