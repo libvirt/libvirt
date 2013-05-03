@@ -1136,20 +1136,38 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)
 {
-    int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virUSBDeviceList *list = NULL;
+    virUSBDevicePtr usb = NULL;
     char *devstr = NULL;
+    bool added = false;
+    int ret = -1;
+
+    if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
+        return -1;
+
+    if (!(list = virUSBDeviceListNew()))
+        goto cleanup;
+
+    if (virUSBDeviceListAdd(list, usb) < 0)
+        goto cleanup;
+
+    if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0)
+        goto cleanup;
+
+    added = true;
+    virUSBDeviceListSteal(list, usb);
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
-            goto error;
+            goto cleanup;
         if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev, priv->qemuCaps)))
-            goto error;
+            goto cleanup;
     }
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
-        goto error;
+        goto cleanup;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1162,26 +1180,24 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
-        goto error;
+        goto cleanup;
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
+    ret = 0;
+cleanup:
+    if (added)
+        virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
+    virUSBDeviceFree(usb);
+    virObjectUnref(list);
     VIR_FREE(devstr);
-
-    return 0;
-
-error:
-    VIR_FREE(devstr);
-    return -1;
+    return ret;
 }
 
 int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
-    virUSBDeviceList *list;
-    virUSBDevicePtr usb = NULL;
-
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hostdev mode '%s' not supported"),
@@ -1189,33 +1205,12 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(list = virUSBDeviceListNew()))
-        goto cleanup;
-
-    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
-            goto cleanup;
-
-        if (virUSBDeviceListAdd(list, usb) < 0) {
-            virUSBDeviceFree(usb);
-            usb = NULL;
-            goto cleanup;
-        }
-
-        if (qemuPrepareHostdevUSBDevices(driver, vm->def->name, list) < 0) {
-            usb = NULL;
-            goto cleanup;
-        }
-
-        virUSBDeviceListSteal(list, usb);
-    }
-
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
-       goto cleanup;
+        return -1;
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, hostdev, NULL) < 0)
-        goto teardown_cgroup;
+        goto cleanup;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
@@ -1237,7 +1232,6 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    virObjectUnref(list);
     return 0;
 
 error:
@@ -1245,14 +1239,9 @@ error:
                                               vm->def, hostdev, NULL) < 0)
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
-teardown_cgroup:
+cleanup:
     if (qemuTeardownHostdevCgroup(vm, hostdev) < 0)
         VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
-
-cleanup:
-    virObjectUnref(list);
-    if (usb)
-        virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     return -1;
 }
 
