@@ -285,6 +285,8 @@ mymain(void)
     DO_TEST_DIFFERENT("pci-autoadd-addr");
     DO_TEST_DIFFERENT("pci-autoadd-idx");
 
+    DO_TEST("hostdev-scsi");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

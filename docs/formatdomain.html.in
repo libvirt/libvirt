@@ -2257,13 +2257,13 @@
 
     <h4><a name="elementsHostDev">Host device assignment</a></h4>
 
-    <h5><a href="elementsHostDevSubsys">USB / PCI devices</a></h5>
+    <h5><a href="elementsHostDevSubsys">USB / PCI / SCSI devices</a></h5>
 
     <p>
-      USB and PCI devices attached to the host can be passed through
+      USB, PCI and SCSI devices attached to the host can be passed through
       to the guest using the <code>hostdev</code> element.
-      <span class="since">since after 0.4.4 for USB and 0.6.0 for PCI
-        (KVM only)</span>:
+      <span class="since">since after 0.4.4 for USB, 0.6.0 for PCI(KVM only)
+        and 1.0.6 for SCSI(KVM only)</span>:
     </p>
 
 <pre>
@@ -2294,12 +2294,29 @@
   &lt;/devices&gt;
   ...</pre>
 
+    <p>or:</p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='scsi'&gt;
+      &lt;source&gt;
+        &lt;adapter name='scsi_host0'/&gt;
+        &lt;address type='scsi' bus='0' target='0' unit='0'/&gt;
+      &lt;/source&gt;
+      &lt;readonly/&gt;
+      &lt;address type='drive' controller='0' bus='0' target='0' unit='0'/&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
         host devices. For usb device passthrough <code>mode</code> is always
-        "subsystem" and <code>type</code> is "usb" for a USB device and "pci"
-        for a PCI device. When <code>managed</code> is "yes" for a PCI
+        "subsystem" and <code>type</code> is "usb" for a USB device, "pci"
+        for a PCI device and "scsi" for a SCSI device. When
+        <code>managed</code> is "yes" for a PCI
         device, it is detached from the host before being passed on to
         the guest, and reattached to the host after the guest exits.
         If <code>managed</code> is omitted or "no", and for USB
@@ -2309,13 +2326,16 @@
         hot-plugging the device,
         and <code>virNodeDeviceReAttach</code> (or <code>virsh
         nodedev-reattach</code>) after hot-unplug or stopping the
-        guest.</dd>
+        guest. For SCSI device, user is responsible to make sure the device
+        is not used by host.</dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the
       <code>vendor</code> and <code>product</code> elements or by the device's
       address on the hosts using the <code>address</code> element. PCI devices
       on the other hand can only be described by their <code>address</code>.
+      SCSI devices are described by both the <code>adapter</code> and
+      <code>address</code> elements.
 
       <span class="since">Since 1.0.0</span>, the <code>source</code> element
       of USB devices may contain <code>startupPolicy</code> attribute which can

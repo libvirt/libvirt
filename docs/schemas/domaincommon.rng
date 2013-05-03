@@ -3094,6 +3094,7 @@
     <choice>
       <ref name="hostdevsubsyspci"/>
       <ref name="hostdevsubsysusb"/>
+      <ref name="hostdevsubsysscsi"/>
     </choice>
   </define>
 
@@ -3162,6 +3163,20 @@
     </element>
   </define>
 
+  <define name="hostdevsubsysscsi">
+    <attribute name="type">
+      <value>scsi</value>
+    </attribute>
+    <element name="source">
+      <interleave>
+        <ref name="sourceinfoadapter"/>
+        <element name="address">
+          <ref name="scsiaddress"/>
+        </element>
+      </interleave>
+    </element>
+  </define>
+
   <define name="hostdevcapsstorage">
     <attribute name="type">
       <value>storage</value>
@@ -3216,6 +3231,17 @@
         <ref name="usbPort"/>
       </attribute>
     </element>
+  </define>
+  <define name="scsiaddress">
+    <attribute name="bus">
+      <ref name="driveBus"/>
+    </attribute>
+    <attribute name="target">
+      <ref name="driveTarget"/>
+    </attribute>
+    <attribute name="unit">
+      <ref name="driveUnit"/>
+    </attribute>
   </define>
   <define name="usbportaddress">
     <attribute name="bus">

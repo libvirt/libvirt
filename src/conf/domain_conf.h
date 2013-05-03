@@ -384,6 +384,7 @@ enum virDomainHostdevMode {
 enum virDomainHostdevSubsysType {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
 
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 };
@@ -417,6 +418,12 @@ struct _virDomainHostdevSubsys {
             virDevicePCIAddress addr; /* host address */
             int backend; /* enum virDomainHostdevSubsysPciBackendType */
         } pci;
+        struct {
+            char *adapter;
+            unsigned bus;
+            unsigned target;
+            unsigned unit;
+        } scsi;
     } u;
 };
 

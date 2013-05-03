@@ -399,6 +399,16 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
                 goto cleanup;
             }
             break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            if (virAsprintf(&address, "%s:%d:%d:%d",
+                            hostdev->source.subsys.u.scsi.adapter,
+                            hostdev->source.subsys.u.scsi.bus,
+                            hostdev->source.subsys.u.scsi.target,
+                            hostdev->source.subsys.u.scsi.unit) < 0) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+            break;
         default:
             VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
                      hostdev->source.subsys.type);
