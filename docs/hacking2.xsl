@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:import href="wrapstring.xsl"/>
 
@@ -30,7 +32,7 @@ from docs/hacking.html.in!
 
 
 <!-- title -->
-<xsl:template match="h1">
+<xsl:template match="html:h1">
 <xsl:text>                         </xsl:text>
 <xsl:value-of select="normalize-space(.)"/>
 <xsl:text>
@@ -65,14 +67,14 @@ from docs/hacking.html.in!
 
 
 
-<xsl:template match="h2">
+<xsl:template match="html:h2">
 <xsl:value-of select="$newline"/>
 <xsl:call-template name="underline"/>
 </xsl:template>
 
 
 
-<xsl:template match="h3">
+<xsl:template match="html:h3">
 <xsl:call-template name="underline">
 <xsl:with-param name="char" select="'-'"/>
 </xsl:call-template>
@@ -91,13 +93,13 @@ from docs/hacking.html.in!
 
 
 
-<xsl:template match="ol|ul|p">
+<xsl:template match="html:ol|html:ul|html:p">
 <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 </xsl:template>
 
 
 
-<xsl:template match="ol/li">
+<xsl:template match="html:ol/html:li">
 <xsl:choose>
 <xsl:when test=".//node()[position()=last()]/self::pre">(<xsl:value-of select="position()"/>) <xsl:apply-templates/>
 </xsl:when>
@@ -109,23 +111,23 @@ from docs/hacking.html.in!
 
 
 
-<xsl:template match="ul/li">- <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+<xsl:template match="html:ul/html:li">- <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 </xsl:template>
 
 
 
-<xsl:template match="li/ul/li">-- <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+<xsl:template match="html:li/html:ul/html:li">-- <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 </xsl:template>
 
 
 
 <!-- add newline before nested <ul> -->
-<xsl:template match="li/ul"><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/><xsl:apply-templates/>
+<xsl:template match="html:li/html:ul"><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/><xsl:apply-templates/>
 </xsl:template>
 
 
 
-<xsl:template match="pre">
+<xsl:template match="html:pre">
 <xsl:choose>
 <xsl:when test="starts-with(.,'&#xA;')"><xsl:value-of select="substring(.,2)"/><xsl:value-of select="$newline"/>
 </xsl:when>
@@ -137,7 +139,7 @@ from docs/hacking.html.in!
 
 
 
-<xsl:template match="a">
+<xsl:template match="html:a">
 <xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 <xsl:text>  </xsl:text><xsl:apply-templates/>
 <xsl:value-of select="$newline"/>

@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>libvirt-test-API:  Python based test suite </h1>
     <p>Libvirt-test-API is a powerful test tool designed to complement
@@ -24,7 +25,7 @@
     <ul>
       <li> A <a href="http://libvirt.org/sources/libvirt-test-API/Libvirt-test-API.pdf">documentation PDF</a>
            file describing the test suite and how to write test cases
-           and test scenarios.
+           and test scenarios.</li>
     </ul>
     <p> Libvirt-test-API is maintained using
         <a href="http://libvirt.org/git/?p=libvirt-test-API.git">a GIT

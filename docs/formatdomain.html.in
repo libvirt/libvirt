@@ -1,4 +1,6 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Domain XML format</h1>
 
@@ -182,6 +184,7 @@
         again in case the boot fails (according to BIOS). The value is
         in milliseconds with maximum of <code>65535</code> and special
         value <code>-1</code> disables the reboot.
+      </dd>
     </dl>
 
     <h4><a name="elementsOSBootloader">Host bootloader</a></h4>
@@ -641,6 +644,7 @@
         how to tune the performance of a NUMA host via controlling NUMA policy
         for domain process. NB, only supported by QEMU driver.
         <span class='since'>Since 0.9.3</span>
+      </dd>
       <dt><code>memory</code></dt>
       <dd>
         The optional <code>memory</code> element specifies how to allocate memory
@@ -1588,6 +1592,7 @@
           <dd>The optional <code>write_iops_sec</code> element is the
             write I/O operations per second.</dd>
         </dl>
+      </dd>
       <dt><code>driver</code></dt>
       <dd>
         The optional driver element allows specifying further details
@@ -1847,11 +1852,13 @@
             OS. For Linux this would be the value returned by the
             BLKSSZGET ioctl and describes the smallest units for disk
             I/O.
+          </dd>
           <dt><code>physical_block_size</code></dt>
           <dd>The physical block size the disk will report to the guest
             OS. For Linux this would be the value returned by the
             BLKPBSZGET ioctl and describes the disk's hardware sector
             size which can be relevant for the alignment of disk data.
+          </dd>
         </dl>
       </dd>
     </dl>
@@ -2067,6 +2074,7 @@
         additional attributes: <code>bus</code> (a 2-digit bus
         number), and <code>slot</code> attribute (a 2-digit slot
         within the bus).  <span class="since">Since 0.8.8.</span>
+      </dd>
       <dt><code>type='usb'</code></dt>
       <dd>USB addresses have the following additional
         attributes: <code>bus</code> (a hex value between 0 and 0xfff,
@@ -2342,6 +2350,7 @@
       <a href="#elementsOSBIOS">BIOS bootloader</a> section.
       <span class="since">Since 0.8.8</span> for PCI devices,
       <span class="since">Since 1.0.1</span> for USB devices.
+      </dd>
       <dt><code>rom</code></dt>
       <dd>The <code>rom</code> element is used to change how a PCI
         device's ROM is presented to the guest. The optional <code>bar</code>
@@ -4005,7 +4014,7 @@ qemu-kvm -net nic,model=? /dev/null
         usually care about the source path since it's libvirt who talks to
         the guest agent. In case users want to utilize this feature, they should
         leave <code>&lt;source&gt;</code> element out.
-
+      </dd>
       <dt><code>spicevmc</code></dt>
       <dd>Paravirtualized SPICE channel. The domain must also have a
         SPICE server as a <a href="#elementsGraphics">graphics
@@ -4564,7 +4573,7 @@ qemu-kvm -net nic,model=? /dev/null
           TPM device. The following types are supported:
         </p>
         <ul>
-          <li>'passthrough' &mdash; use the host's TPM device.
+          <li>'passthrough' &mdash; use the host's TPM device.</li>
         </ul>
       </dd>
       <dt><code>backend type='passthrough'</code></dt>

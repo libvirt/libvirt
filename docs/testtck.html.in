@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>libvirt TCK  : Technology Compatibility Kit</h1>
     <p>The libvirt TCK provides a framework for performing testing
@@ -26,7 +27,7 @@
     <ul>
       <li> The initial
 <a href="http://www.redhat.com/archives/libvir-list/2009-April/msg00176.html">mail
-           from Daniel Berrange</a> presenting the project.
+           from Daniel Berrange</a> presenting the project.</li>
       <li> The <a href="http://fedoraproject.org/wiki/Features/VirtTCK">page
            describing VirtTCK</a> the inclusion of libvirt-TCK as a
            Fedora Feature.</li>

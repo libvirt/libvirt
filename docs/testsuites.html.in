@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Test suites</h1>
     <p>There is a few test suites available to developers for testing
@@ -24,6 +25,7 @@
           in Fedora distributions, but best is probably to get
           the <a href="http://libvirt.org/git/?p=libvirt-tck.git">version
           from GIT</a>.
+      </li>
       <li>the <a href="testapi.html">libvirt-test-API</a> is also a functional
           test suite, but implemented using the
           <a href="python.html">Python bindings</a>
@@ -32,6 +34,7 @@
           or directly get
           the <a href="http://libvirt.org/git/?p=libvirt-test-API.git">version
           from GIT</a>.
+      </li>
     </ul>
   </body>
 </html>

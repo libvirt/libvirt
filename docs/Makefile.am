@@ -171,7 +171,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	  echo "Generating $@"; \
 	  $(MKDIR_P) internals; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --stringparam pagename $$name --nonet --html \
+	  $(XSLTPROC) --stringparam pagename $$name --nonet \
 	    $(top_srcdir)/docs/subsite.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 
@@ -179,7 +179,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --stringparam pagename $$name --nonet --html \
+	  $(XSLTPROC) --stringparam pagename $$name --nonet \
 	    $(top_srcdir)/docs/site.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 
@@ -196,7 +196,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 %.php.tmp: %.php.in site.xsl page.xsl sitemap.html.in
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
-	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) --nonet --html \
+	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) --nonet \
 	    $(top_srcdir)/docs/site.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 

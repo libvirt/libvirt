@@ -1,4 +1,6 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>Network Filters</h1>
 
@@ -113,7 +115,7 @@
     <p>
       Filtering rules are organized in filter chains. These chains can be
       thought of as having a tree structure with packet
-      filtering rules as entries in individual chains (branches). <br>
+      filtering rules as entries in individual chains (branches). <br/>
       Packets start their filter evaluation in the <code>root</code> chain
       and can then continue their evaluation in other chains, return from
       those chains back into the <code>root</code> chain or be
@@ -227,7 +229,7 @@
     <p>
       A chain with a lower priority value is accessed before one with a
       higher value.
-      <br><br>
+      <br/>
       <span class="since">Since 0.9.8</span> the above listed chains
       can be assigned custom priorities by writing a value in the
       range [-1000, 1000] into the priority (XML) attribute in the filter
@@ -370,7 +372,7 @@
     <p>
       Further, the notation of $VARIABLE is short-hand for $VARIABLE[@0]. The
       former notation always assumes the iterator with Id '0'.
-    <p>
+    </p>
 
     <h3><a name="nwfelemsRulesAdvIPAddrDetection">Automatic IP address detection</a></h3>
     <p>
@@ -394,7 +396,7 @@
        When a VM is migrated to another host or resumed after a suspend operation,
        the first packet sent by the VM will again determine the IP address it can
        use on a particular interface.
-       <br/><br>
+       <br/>
        A value of <code>dhcp</code> specifies that libvirt should only honor DHCP
        server-assigned addresses with valid leases. This method supports the detection
        and usage of multiple IP address per interface.
@@ -567,7 +569,7 @@
         (matching the rule passes this filter, but returns control to
         the calling filter for further
         analysis) <span class="since">(since 0.9.7)</span>,
-        or <code>continue<code> (matching the rule goes on to the next
+        or <code>continue</code> (matching the rule goes on to the next
         rule for further analysis) <span class="since">(since
         0.9.7)</span>.
      </li>
@@ -585,7 +587,7 @@
         <span class="since">Since 0.9.8</span> this has been extended to cover
         the range of -1000 to 1000. If this attribute is not
         provided, priority 500 will automatically be assigned.
-        <br>
+        <br/>
         Note that filtering rules in the <code>root</code> chain are sorted
         with filters connected to the <code>root</code> chain following
         their priorities. This allows to interleave filtering rules with

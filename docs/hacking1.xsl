@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:output method="xml" encoding="UTF-8" indent="no"/>
 
@@ -21,8 +23,8 @@
 
 <!-- resolve b/i/code tags in a first pass, because they interfere with line
      wrapping in the second pass -->
-<xsl:template match="b">*<xsl:apply-templates/>*</xsl:template>
-<xsl:template match="i">'<xsl:apply-templates/>'</xsl:template>
-<xsl:template match="code">"<xsl:apply-templates/>"</xsl:template>
+<xsl:template match="html:b">*<xsl:apply-templates/>*</xsl:template>
+<xsl:template match="html:i">'<xsl:apply-templates/>'</xsl:template>
+<xsl:template match="html:code">"<xsl:apply-templates/>"</xsl:template>
 
 </xsl:stylesheet>
