@@ -83,7 +83,7 @@
         <xsl:variable name="thish2" select="."/>
         <li>
           <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
-          <xsl:if test="count(./following-sibling::h3[preceding-sibling::h2[1] = $thish2 and count(html:a) = 1]) > 0">
+          <xsl:if test="count(./following-sibling::html:h3[preceding-sibling::html:h2[1] = $thish2 and count(html:a) = 1]) > 0">
             <ul>
               <xsl:for-each select="./following-sibling::html:h3[preceding-sibling::html:h2[1] = $thish2 and count(html:a) = 1]">
                 <xsl:variable name="thish3" select="."/>
@@ -94,13 +94,13 @@
                       <xsl:for-each select="./following-sibling::html:h4[preceding-sibling::html:h3[1] = $thish3 and count(html:a) = 1]">
                         <xsl:variable name="thish4" select="."/>
                         <li>
-                          <a href="#{html:a/@name}"><xsl:value-of select="a/text()"/></a>
+                          <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
                           <xsl:if test="count(./following-sibling::html:h5[preceding-sibling::html:h4[1] = $thish4 and count(html:a) = 1]) > 0">
                             <ul>
                               <xsl:for-each select="./following-sibling::html:h5[preceding-sibling::html:h4[1] = $thish4 and count(html:a) = 1]">
                                 <xsl:variable name="thish5" select="."/>
                                 <li>
-                                  <a href="#{html:a/@name}"><xsl:value-of select="a/text()"/></a>
+                                  <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
                                   <xsl:if test="count(./following-sibling::html:h6[preceding-sibling::html:h5[1] = $thish5 and count(html:a) = 1]) > 0">
                                     <ul>
                                       <xsl:for-each select="./following-sibling::html:h6[preceding-sibling::html:h5[1] = $thish5 and count(html:a) = 1]">
