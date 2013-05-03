@@ -546,6 +546,7 @@ static int virFileLoopDeviceOpen(char **dev_name)
         goto cleanup;
     }
 
+    errno = 0;
     while ((de = readdir(dh)) != NULL) {
         if (!STRPREFIX(de->d_name, "loop"))
             continue;
@@ -577,10 +578,15 @@ static int virFileLoopDeviceOpen(char **dev_name)
         /* Oh well, try the next device */
         VIR_FORCE_CLOSE(fd);
         VIR_FREE(looppath);
+        errno = 0;
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("Unable to find a free loop device in /dev"));
+    if (errno != 0)
+        virReportSystemError(errno, "%s",
+                             _("Unable to iterate over loop devices"));
+    else
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to find a free loop device in /dev"));
 
 cleanup:
     if (fd != -1) {
