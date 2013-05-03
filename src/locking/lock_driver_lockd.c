@@ -774,10 +774,11 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
     virNetClientPtr client = NULL;
     virNetClientProgramPtr program = NULL;
     int counter = 0;
-    virLockSpaceProtocolReleaseResourceArgs args;
     int rv = -1;
+    size_t i;
+    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
 
-    memset(&args, 0, sizeof(args));
+    virCheckFlags(0, -1);
 
     if (state)
         *state = NULL;
@@ -785,16 +786,29 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
     if (!(client = virLockManagerLockDaemonConnect(lock, &program, &counter)))
         goto cleanup;
 
-    args.flags = flags;
+    for (i = 0 ; i < priv->nresources ; i++) {
+        virLockSpaceProtocolReleaseResourceArgs args;
 
-    if (virNetClientProgramCall(program,
-                                client,
-                                counter++,
-                                VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE,
-                                0, NULL, NULL, NULL,
-                                (xdrproc_t)xdr_virLockSpaceProtocolReleaseResourceArgs, &args,
-                                (xdrproc_t)xdr_void, NULL) < 0)
-        goto cleanup;
+        memset(&args, 0, sizeof(args));
+
+        if (priv->resources[i].lockspace)
+            args.path = priv->resources[i].lockspace;
+        args.name = priv->resources[i].name;
+        args.flags = priv->resources[i].flags;
+
+        args.flags &=
+            ~(VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED |
+              VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE);
+
+        if (virNetClientProgramCall(program,
+                                    client,
+                                    counter++,
+                                    VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE,
+                                    0, NULL, NULL, NULL,
+                                    (xdrproc_t)xdr_virLockSpaceProtocolReleaseResourceArgs, &args,
+                                    (xdrproc_t)xdr_void, NULL) < 0)
+            goto cleanup;
+    }
 
     rv = 0;
 
