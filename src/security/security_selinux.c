@@ -38,6 +38,7 @@
 #include "virlog.h"
 #include "virpci.h"
 #include "virusb.h"
+#include "virscsi.h"
 #include "virstoragefile.h"
 #include "virfile.h"
 #include "virhash.h"
@@ -1277,10 +1278,8 @@ virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
                                        &cbdata);
 }
 
-
 static int
-virSecuritySELinuxSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
-                                      const char *file, void *opaque)
+virSecuritySELinuxSetSecurityHostdevLabelHelper(const char *file, void *opaque)
 {
     virSecurityLabelDefPtr secdef;
     virDomainDefPtr def = opaque;
@@ -1289,22 +1288,28 @@ virSecuritySELinuxSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
     if (secdef == NULL)
         return -1;
     return virSecuritySELinuxSetFilecon(file, secdef->imagelabel);
+}
+
+static int
+virSecuritySELinuxSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+                                      const char *file, void *opaque)
+{
+    return virSecuritySELinuxSetSecurityHostdevLabelHelper(file, opaque);
 }
 
 static int
 virSecuritySELinuxSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file, void *opaque)
 {
-    virSecurityLabelDefPtr secdef;
-    virDomainDefPtr def = opaque;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
-        return -1;
-
-    return virSecuritySELinuxSetFilecon(file, secdef->imagelabel);
+    return virSecuritySELinuxSetSecurityHostdevLabelHelper(file, opaque);
 }
 
+static int
+virSecuritySELinuxSetSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                                       const char *file, void *opaque)
+{
+    return virSecuritySELinuxSetSecurityHostdevLabelHelper(file, opaque);
+}
 
 static int
 virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
@@ -1356,6 +1361,23 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
             ret = virPCIDeviceFileIterate(pci, virSecuritySELinuxSetSecurityPCILabel, def);
         }
         virPCIDeviceFree(pci);
+        break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virSCSIDevicePtr scsi =
+            virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                             dev->source.subsys.u.scsi.bus,
+                             dev->source.subsys.u.scsi.target,
+                             dev->source.subsys.u.scsi.unit,
+                             dev->readonly);
+
+        if (!scsi)
+            goto done;
+
+        ret = virSCSIDeviceFileIterate(scsi, virSecuritySELinuxSetSecuritySCSILabel, def);
+        virSCSIDeviceFree(scsi);
+
         break;
     }
 
@@ -1456,7 +1478,6 @@ virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
     }
 }
 
-
 static int
 virSecuritySELinuxRestoreSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
                                           const char *file,
@@ -1477,6 +1498,16 @@ virSecuritySELinuxRestoreSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
     return virSecuritySELinuxRestoreSecurityFileLabel(mgr, file);
 }
 
+
+static int
+virSecuritySELinuxRestoreSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                                           const char *file,
+                                           void *opaque)
+{
+    virSecurityManagerPtr mgr = opaque;
+
+    return virSecuritySELinuxRestoreSecurityFileLabel(mgr, file);
+}
 
 static int
 virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
@@ -1531,6 +1562,23 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
         virPCIDeviceFree(pci);
         break;
     }
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virSCSIDevicePtr scsi =
+            virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                             dev->source.subsys.u.scsi.bus,
+                             dev->source.subsys.u.scsi.target,
+                             dev->source.subsys.u.scsi.unit,
+                             dev->readonly);
+
+            if (!scsi)
+                goto done;
+
+            ret = virSCSIDeviceFileIterate(scsi, virSecuritySELinuxRestoreSecuritySCSILabel, mgr);
+            virSCSIDeviceFree(scsi);
+
+            break;
+       }
 
     default:
         ret = 0;

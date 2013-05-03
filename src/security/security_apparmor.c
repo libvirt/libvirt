@@ -306,8 +306,7 @@ reload_profile(virSecurityManagerPtr mgr,
 }
 
 static int
-AppArmorSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
-                           const char *file, void *opaque)
+AppArmorSetSecurityHostdevLabelHelper(const char *file, void *opaque)
 {
     struct SDPDOP *ptr = opaque;
     virDomainDefPtr def = ptr->def;
@@ -328,25 +327,24 @@ AppArmorSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
+AppArmorSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+                            const char *file, void *opaque)
+{
+    return AppArmorSetSecurityHostdevLabelHelper(file, opaque);
+}
+
+static int
 AppArmorSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
                             const char *file, void *opaque)
 {
-    struct SDPDOP *ptr = opaque;
-    virDomainDefPtr def = ptr->def;
+    return AppArmorSetSecurityHostdevLabelHelper(file, opaque);
+}
 
-    if (reload_profile(ptr->mgr, def, file, true) < 0) {
-        const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
-                                                def, SECURITY_APPARMOR_NAME);
-        if (!secdef) {
-            virReportOOMError();
-            return -1;
-        }
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot update AppArmor profile \'%s\'"),
-                       secdef->imagelabel);
-        return -1;
-    }
-    return 0;
+static int
+AppArmorSetSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                             const char *file, void *opaque)
+{
+    return AppArmorSetSecurityHostdevLabelHelper(file, opaque);
 }
 
 /* Called on libvirtd startup to see if AppArmor is available */
@@ -845,6 +843,23 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
             ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
         }
         virPCIDeviceFree(pci);
+        break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virSCSIDevicePtr scsi =
+            virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                             dev->source.subsys.u.scsi.bus,
+                             dev->source.subsys.u.scsi.target,
+                             dev->source.subsys.u.scsi.unit,
+                             dev->readonly);
+
+         if (!scsi)
+             goto done;
+
+        ret = virSCSIDeviceFileIterate(scsi, AppArmorSetSecuritySCSILabel, ptr);
+        virSCSIDeviceFree(scsi);
+
         break;
     }
 

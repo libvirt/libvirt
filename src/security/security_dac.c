@@ -30,6 +30,7 @@
 #include "virlog.h"
 #include "virpci.h"
 #include "virusb.h"
+#include "virscsi.h"
 #include "virstoragefile.h"
 #include "virstring.h"
 
@@ -435,9 +436,8 @@ virSecurityDACRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
-                                  const char *file,
-                                  void *opaque)
+virSecurityDACSetSecurityHostdevLabelHelper(const char *file,
+                                            void *opaque)
 {
     void **params = opaque;
     virSecurityManagerPtr mgr = params[0];
@@ -454,21 +454,29 @@ virSecurityDACSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
+virSecurityDACSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+                                  const char *file,
+                                  void *opaque)
+{
+    return virSecurityDACSetSecurityHostdevLabelHelper(file, opaque);
+}
+
+
+static int
 virSecurityDACSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                   const char *file,
                                   void *opaque)
 {
-    void **params = opaque;
-    virSecurityManagerPtr mgr = params[0];
-    virDomainDefPtr def = params[1];
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    uid_t user;
-    gid_t group;
+    return virSecurityDACSetSecurityHostdevLabelHelper(file, opaque);
+}
 
-    if (virSecurityDACGetIds(def, priv, &user, &group))
-        return -1;
 
-    return virSecurityDACSetOwnership(file, user, group);
+static int
+virSecurityDACSetSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                                   const char *file,
+                                   void *opaque)
+{
+    return virSecurityDACSetSecurityHostdevLabelHelper(file, opaque);
 }
 
 
@@ -536,6 +544,24 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virSCSIDevicePtr scsi =
+            virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                             dev->source.subsys.u.scsi.bus,
+                             dev->source.subsys.u.scsi.target,
+                             dev->source.subsys.u.scsi.unit,
+                             dev->readonly);
+
+        if (!scsi)
+            goto done;
+
+        ret = virSCSIDeviceFileIterate(scsi, virSecurityDACSetSecuritySCSILabel,
+                                       params);
+        virSCSIDeviceFree(scsi);
+
+        break;
+    }
+
     default:
         ret = 0;
         break;
@@ -559,6 +585,15 @@ static int
 virSecurityDACRestoreSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file,
                                       void *opaque ATTRIBUTE_UNUSED)
+{
+    return virSecurityDACRestoreSecurityFileLabel(file);
+}
+
+
+static int
+virSecurityDACRestoreSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                                       const char *file,
+                                       void *opaque ATTRIBUTE_UNUSED)
 {
     return virSecurityDACRestoreSecurityFileLabel(file);
 }
@@ -623,6 +658,23 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
             ret = virPCIDeviceFileIterate(pci, virSecurityDACRestoreSecurityPCILabel, mgr);
         }
         virPCIDeviceFree(pci);
+        break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
+        virSCSIDevicePtr scsi =
+            virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                             dev->source.subsys.u.scsi.bus,
+                             dev->source.subsys.u.scsi.target,
+                             dev->source.subsys.u.scsi.unit,
+                             dev->readonly);
+
+        if (!scsi)
+            goto done;
+
+        ret = virSCSIDeviceFileIterate(scsi, virSecurityDACRestoreSecuritySCSILabel, mgr);
+        virSCSIDeviceFree(scsi);
+
         break;
     }
 
