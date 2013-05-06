@@ -1836,7 +1836,7 @@ cleanup:
 
 /* virGetHostNameByWWN:
  *
- * Iterate over the sysfs tree to get SCSI host name (e.g. scsi_host5)
+ * Iterate over the sysfs tree to get FC host name (e.g. host5)
  * by wwnn,wwpn pair.
  */
 char *
