@@ -735,6 +735,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     ret = 0;
 
 cleanup:
+    VIR_FREE(portal);
     VIR_FREE(session);
     return ret;
 }
