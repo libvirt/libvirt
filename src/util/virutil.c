@@ -1734,7 +1734,7 @@ virIsCapableVport(const char *sysfs_prefix,
     int ret = -1;
 
     if (virAsprintf(&fc_host_path,
-                    "%shost%d%s",
+                    "%shost%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host,
                     "vport_create") < 0) {
@@ -1743,7 +1743,7 @@ virIsCapableVport(const char *sysfs_prefix,
     }
 
     if (virAsprintf(&scsi_host_path,
-                    "%shost%d%s",
+                    "%shost%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
                     host,
                     "vport_create") < 0) {
