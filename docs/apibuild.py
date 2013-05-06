@@ -67,6 +67,7 @@ ignored_functions = {
   "virTypedParamsValidate": "internal function in virtypedparam.c",
   "virTypedParameterAssign": "internal function in virtypedparam.c",
   "virTypedParameterAssignFromStr": "internal function in virtypedparam.c",
+  "virTypedParamsCheck": "internal function in virtypedparam.c",
 }
 
 ignored_macros = {

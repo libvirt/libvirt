@@ -109,6 +109,32 @@ cleanup:
 
 }
 
+/* Check if params contains only specified parameter names. Return true if
+ * only specified names are present in params, false if params contains any
+ * unspecified parameter name. */
+bool
+virTypedParamsCheck(virTypedParameterPtr params,
+                    int nparams,
+                    const char **names,
+                    int nnames)
+{
+    int i, j;
+
+    for (i = 0; i < nparams; i++) {
+        bool found = false;
+        for (j = 0; j < nnames; j++) {
+            if (STREQ(params[i].field, names[j])) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return false;
+    }
+
+    return true;
+}
+
 /* Assign name, type, and the appropriately typed arg to param; in the
  * case of a string, the caller is assumed to have malloc'd a string,
  * or can pass NULL to have this function malloc an empty string.
