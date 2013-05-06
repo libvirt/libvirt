@@ -639,9 +639,16 @@ if test "$with_libxl" != "no" ; then
     CFLAGS="$CFLAGS $LIBXL_CFLAGS"
     LIBS="$LIBS $LIBXL_LIBS"
     AC_CHECK_LIB([xenlight], [libxl_domain_create_new], [
-        with_libxl=yes
+        dnl The v0.9.11-maint branch of libvirt is designed for Fedora 17, where
+        dnl libxl 4.1 was still experimental.  Make sure we don't try to compile
+        dnl against libxl 4.2 or greater (opposite what newer libvirt does).
+        AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
+          if test "$with_libxl" = "yes"; then
+              fail=1
+          fi
+          with_libxl=no], [with_libxl=yes])
         LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl"
-    ],[
+        ],[
         if test "$with_libxl" = "yes"; then
             fail=1
         fi
