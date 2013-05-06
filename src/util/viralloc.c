@@ -281,7 +281,7 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
  * virInsertElementsN:
  * @ptrptr:   pointer to hold address of allocated memory
  * @size:     the size of one element in bytes
- * @at:       index within array where new elements should be added
+ * @at:       index within array where new elements should be added, -1 for end
  * @countptr: variable tracking number of elements currently allocated
  * @add:      number of elements to add
  * @newelems: pointer to array of one or more new elements to move into
@@ -300,7 +300,8 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
  * items from newelems into ptrptr[at], then store the address of
  * allocated memory in *ptrptr and the new size in *countptr.  If
  * newelems is NULL, the new elements at ptrptr[at] are instead filled
- * with zero.
+ * with zero.  at must be between [0,*countptr], except that -1 is
+ * treated the same as *countptr for convenience.
  *
  * Returns -1 on failure, 0 on success
  */
@@ -310,7 +311,9 @@ virInsertElementsN(void *ptrptr, size_t size, size_t at,
                    size_t add, void *newelems,
                    bool clearOriginal, bool inPlace)
 {
-    if (at > *countptr) {
+    if (at == -1) {
+        at = *countptr;
+    } else if (at > *countptr) {
         VIR_WARN("out of bounds index - count %zu at %zu add %zu",
                  *countptr, at, add);
         return -1;

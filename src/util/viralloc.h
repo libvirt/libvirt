@@ -80,6 +80,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * the address of allocated memory in 'ptr'. Fill the
  * newly allocated memory with zeros.
  *
+ * This macro is safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
  */
 # define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
@@ -93,6 +95,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * bytes long and store the address of allocated memory in
  * 'ptr'. Fill the newly allocated memory with zeros.
  *
+ * This macro is safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
  */
 # define VIR_ALLOC_N(ptr, count) virAllocN(&(ptr), sizeof(*(ptr)), (count))
@@ -105,6 +109,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * Re-allocate an array of 'count' elements, each sizeof(*ptr)
  * bytes long and store the address of allocated memory in
  * 'ptr'. If 'ptr' grew, the added memory is uninitialized.
+ *
+ * This macro is safe to use on arguments with side effects.
  *
  * Returns -1 on failure, 0 on success
  */
@@ -120,6 +126,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * bytes long, to be 'count' + 'add' elements long, then store the
  * address of allocated memory in 'ptr' and the new size in 'count'.
  * The new elements are filled with zero.
+ *
+ * This macro is safe to use on arguments with side effects.
  *
  * Returns -1 on failure, 0 on success
  */
@@ -144,6 +152,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * the address of allocated memory in 'ptr' and the new size in 'alloc'.
  * The new elements are filled with zero.
  *
+ * This macro is safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
  */
 # define VIR_RESIZE_N(ptr, alloc, count, add) \
@@ -159,6 +169,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * bytes long, to be 'count' - 'remove' elements long, then store the
  * address of allocated memory in 'ptr' and the new size in 'count'.
  * If 'count' <= 'remove', the entire array is freed.
+ *
+ * This macro is safe to use on arguments with side effects.
  *
  * No return value.
  */
@@ -236,9 +248,9 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * replacing it with VIR_TYPECHECK(ptr, &newelem) so that we can be
  * assured ptr and &newelem are of compatible types.
  *
+ * These macros are safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
- *
- *
  */
 # define VIR_INSERT_ELEMENT(ptr, at, count, newelem) \
     virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
@@ -284,21 +296,21 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * replacing it with VIR_TYPECHECK(ptr, &newelem) so that we can be
  * assured ptr and &newelem are of compatible types.
  *
+ * These macros are safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
- *
- *
  */
 # define VIR_APPEND_ELEMENT(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
 # define VIR_APPEND_ELEMENT_COPY(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false)
 # define VIR_APPEND_ELEMENT_INPLACE(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true)
 # define VIR_APPEND_ELEMENT_COPY_INPLACE(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true)
 
 /**
@@ -314,6 +326,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  *
  * VIR_DELETE_ELEMENT_INPLACE is identical, but assumes any
  *   necessary memory re-allocation will be done later.
+ *
+ * These macros are safe to use on arguments with side effects.
  *
  * Returns -1 on failure, 0 on success
  */
@@ -348,7 +362,9 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * that will be returned and allocate a suitable buffer to contain the
  * returned data.  C99 refers to these variable length objects as
  * structs containing flexible array members.
-
+ *
+ * This macro is safe to use on arguments with side effects.
+ *
  * Returns -1 on failure, 0 on success
  */
 # define VIR_ALLOC_VAR(ptr, type, count) \
@@ -360,6 +376,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  *
  * Free the memory stored in 'ptr' and update to point
  * to NULL.
+ *
+ * This macro is safe to use on arguments with side effects.
  */
 # if !STATIC_ANALYSIS
 /* The ternary ensures that ptr is a pointer and not an integer type,

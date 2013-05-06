@@ -519,6 +519,13 @@
 
     <h2><a name="preprocessor">Preprocessor</a></h2>
 
+    <p>Macros defined with an ALL_CAPS name should generally be
+      assumed to be unsafe with regards to arguments with side-effects
+      (that is, MAX(a++, b--) might increment a or decrement b too
+      many or too few times).  Exceptions to this rule are explicitly
+      documented for macros in viralloc.h.
+    </p>
+
     <p>
       For variadic macros, stick with C99 syntax:
     </p>
@@ -616,7 +623,7 @@
       Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
       codebase, because they encourage a number of serious coding bugs and do
       not enable compile time verification of checks for NULL. Instead of these
-      routines, use the macros from memory.h.
+      routines, use the macros from viralloc.h.
     </p>
 
     <ul>
