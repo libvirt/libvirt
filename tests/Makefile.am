@@ -108,6 +108,7 @@ test_programs = virshtest sockettest \
 	sysinfotest \
 	virstoragetest \
         fdstreamtest \
+        fchosttest \
 	$(NULL)
 
 if WITH_GNUTLS
@@ -714,6 +715,10 @@ sysinfotest_LDADD = $(LDADDS)
 fdstreamtest_SOURCES = \
 	fdstreamtest.c testutils.h testutils.c
 fdstreamtest_LDADD = $(LDADDS)
+
+fchosttest_SOURCES = \
+       fchosttest.c testutils.h testutils.c
+fchosttest_LDADD = $(LDADDS)
 
 if WITH_CIL
 CILOPTFLAGS =
