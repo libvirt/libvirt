@@ -3422,6 +3422,14 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    /* network devices must be "prepared" before hostdevs, because
+     * setting up a network device might create a new hostdev that
+     * will need to be setup.
+     */
+    VIR_DEBUG("Preparing network devices");
+    if (qemuNetworkPrepareDevices(vm->def) < 0)
+       goto cleanup;
+
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def, !migrateFrom) < 0)

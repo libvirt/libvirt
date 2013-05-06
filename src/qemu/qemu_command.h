@@ -1,7 +1,7 @@
 /*
  * qemu_command.h: QEMU command generation
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -160,6 +160,8 @@ int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,
                      virQEMUCapsPtr qemuCaps,
                      int *vhostfd);
+
+int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
 /*
  * NB: def->name can be NULL upon return and the caller

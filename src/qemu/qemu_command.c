@@ -457,6 +457,58 @@ qemuOpenVhostNet(virDomainDefPtr def,
     return 0;
 }
 
+int
+qemuNetworkPrepareDevices(virDomainDefPtr def)
+{
+    int ret = -1;
+    int ii;
+
+    for (ii = 0; ii < def->nnets; ii++) {
+        virDomainNetDefPtr net = def->nets[ii];
+        int actualType;
+
+        /* If appropriate, grab a physical device from the configured
+         * network's pool of devices, or resolve bridge device name
+         * to the one defined in the network definition.
+         */
+        if (networkAllocateActualDevice(net) < 0)
+            goto cleanup;
+
+        actualType = virDomainNetGetActualType(net);
+        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* Each type='hostdev' network device must also have a
+             * corresponding entry in the hostdevs array. For netdevs
+             * that are hardcoded as type='hostdev', this is already
+             * done by the parser, but for those allocated from a
+             * network / determined at runtime, we need to do it
+             * separately.
+             */
+            virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+
+            if (virDomainHostdevFind(def, hostdev, NULL) >= 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("PCI device %04x:%02x:%02x.%x "
+                                 "allocated from network %s is already "
+                                 "in use by domain %s"),
+                               hostdev->source.subsys.u.pci.addr.domain,
+                               hostdev->source.subsys.u.pci.addr.bus,
+                               hostdev->source.subsys.u.pci.addr.slot,
+                               hostdev->source.subsys.u.pci.addr.function,
+                               net->data.network.name,
+                               def->name);
+                goto cleanup;
+            }
+            if (virDomainHostdevInsert(def, hostdev) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+    }
+    ret = 0;
+cleanup:
+    return ret;
+}
 
 static int qemuDomainDeviceAliasIndex(virDomainDeviceInfoPtr info,
                                       const char *prefix)
@@ -7106,7 +7158,14 @@ qemuBuildCommandLine(virConnectPtr conn,
             char vhostfd_name[50] = "";
             int vlan;
             int bootindex = bootNet;
-            int actualType;
+            int actualType = virDomainNetGetActualType(net);
+
+            if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
+                 * their commandlines are constructed with other hostdevs.
+                 */
+                continue;
+            }
 
             bootNet = 0;
             if (!bootindex)
@@ -7118,53 +7177,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                 vlan = -1;
             else
                 vlan = i;
-
-            /* If appropriate, grab a physical device from the configured
-             * network's pool of devices, or resolve bridge device name
-             * to the one defined in the network definition.
-             */
-            if (networkAllocateActualDevice(net) < 0)
-               goto error;
-
-            actualType = virDomainNetGetActualType(net);
-            if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-                if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-                    virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
-                    virDomainHostdevDefPtr found;
-                    /* For a network with <forward mode='hostdev'>, there is a need to
-                     * add the newly minted hostdev to the hostdevs array.
-                     */
-                    if (qemuAssignDeviceHostdevAlias(def, hostdev,
-                                                     (def->nhostdevs-1)) < 0) {
-                        goto error;
-                    }
-
-                    if (virDomainHostdevFind(def, hostdev, &found) < 0) {
-                        if (virDomainHostdevInsert(def, hostdev) < 0) {
-                            virReportOOMError();
-                            goto error;
-                        }
-                        if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
-                                                         &hostdev, 1) < 0) {
-                            goto error;
-                        }
-                    }
-                    else {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("PCI device %04x:%02x:%02x.%x "
-                                         "allocated from network %s is already "
-                                         "in use by domain %s"),
-                                       hostdev->source.subsys.u.pci.addr.domain,
-                                       hostdev->source.subsys.u.pci.addr.bus,
-                                       hostdev->source.subsys.u.pci.addr.slot,
-                                       hostdev->source.subsys.u.pci.addr.function,
-                                       net->data.network.name,
-                                       def->name);
-                        goto error;
-                    }
-                }
-                continue;
-            }
 
             if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
