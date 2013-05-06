@@ -1711,7 +1711,7 @@ virIsCapableFCHost(const char *sysfs_prefix,
     char *sysfs_path = NULL;
     int ret = -1;
 
-    if (virAsprintf(&sysfs_path, "%shost%d",
+    if (virAsprintf(&sysfs_path, "%s/host%d",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host) < 0) {
         virReportOOMError();
@@ -1734,7 +1734,7 @@ virIsCapableVport(const char *sysfs_prefix,
     int ret = -1;
 
     if (virAsprintf(&fc_host_path,
-                    "%shost%d/%s",
+                    "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host,
                     "vport_create") < 0) {
@@ -1743,7 +1743,7 @@ virIsCapableVport(const char *sysfs_prefix,
     }
 
     if (virAsprintf(&scsi_host_path,
-                    "%shost%d/%s",
+                    "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
                     host,
                     "vport_create") < 0) {
@@ -1785,7 +1785,7 @@ virManageVport(const int parent_host,
     }
 
     if (virAsprintf(&operation_path,
-                    "%shost%d/%s",
+                    "%s/host%d/%s",
                     SYSFS_FC_HOST_PATH,
                     parent_host,
                     operation_file) < 0) {
@@ -1796,7 +1796,7 @@ virManageVport(const int parent_host,
     if (!virFileExists(operation_path)) {
         VIR_FREE(operation_path);
         if (virAsprintf(&operation_path,
-                        "%shost%d/%s",
+                        "%s/host%d/%s",
                         SYSFS_SCSI_HOST_PATH,
                         parent_host,
                         operation_file) < 0) {
@@ -1877,7 +1877,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
         if (entry->d_name[0] == '.')
             continue;
 
-        if (virAsprintf(&wwnn_path, "%s%s/node_name", prefix,
+        if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
                         entry->d_name) < 0) {
             virReportOOMError();
             goto cleanup;
@@ -1896,7 +1896,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
             continue;
         }
 
-        if (virAsprintf(&wwpn_path, "%s%s/port_name", prefix,
+        if (virAsprintf(&wwpn_path, "%s/%s/port_name", prefix,
                         entry->d_name) < 0) {
             virReportOOMError();
             goto cleanup;
