@@ -1704,34 +1704,34 @@ cleanup:
     return ret;
 }
 
-int
+bool
 virIsCapableFCHost(const char *sysfs_prefix,
                    int host)
 {
     char *sysfs_path = NULL;
-    int ret = -1;
+    bool ret = false;
 
     if (virAsprintf(&sysfs_path, "%s/host%d",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host) < 0) {
         virReportOOMError();
-        return -1;
+        return false;
     }
 
     if (access(sysfs_path, F_OK) == 0)
-        ret = 0;
+        ret = true;
 
     VIR_FREE(sysfs_path);
     return ret;
 }
 
-int
+bool
 virIsCapableVport(const char *sysfs_prefix,
                   int host)
 {
     char *scsi_host_path = NULL;
     char *fc_host_path = NULL;
-    int ret = -1;
+    int ret = false;
 
     if (virAsprintf(&fc_host_path,
                     "%s/host%d/%s",
@@ -1739,7 +1739,7 @@ virIsCapableVport(const char *sysfs_prefix,
                     host,
                     "vport_create") < 0) {
         virReportOOMError();
-        return -1;
+        return false;
     }
 
     if (virAsprintf(&scsi_host_path,
@@ -1753,7 +1753,7 @@ virIsCapableVport(const char *sysfs_prefix,
 
     if ((access(fc_host_path, F_OK) == 0) ||
         (access(scsi_host_path, F_OK) == 0))
-        ret = 0;
+        ret = true;
 
 cleanup:
     VIR_FREE(fc_host_path);
@@ -2029,20 +2029,20 @@ virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
     return -1;
 }
 
-int
+bool
 virIsCapableFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                    int host ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
+    return false;
 }
 
-int
+bool
 virIsCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                   int host ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
+    return false;
 }
 
 int

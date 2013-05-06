@@ -47,7 +47,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
 
     VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 
-    if (virIsCapableFCHost(NULL, d->scsi_host.host) == 0) {
+    if (virIsCapableFCHost(NULL, d->scsi_host.host)) {
         d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
 
         if (virReadFCHost(NULL,
@@ -76,7 +76,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
         }
     }
 
-    if (virIsCapableVport(NULL, d->scsi_host.host) == 0) {
+    if (virIsCapableVport(NULL, d->scsi_host.host)) {
         d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
         if (virReadFCHost(NULL,
