@@ -891,7 +891,7 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = 0;
+    ret = checkoutput("test21");
 cleanup:
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);

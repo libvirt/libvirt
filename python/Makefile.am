@@ -142,7 +142,8 @@ uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt_lxc.py
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt_qemu.py
 
-CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED) $(GENERATE).stamp
+CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED) $(GENERATE).stamp \
+	*.pyc
 
 else
 all:
