@@ -1694,10 +1694,8 @@ virReadFCHost(const char *sysfs_prefix,
     else
         p = buf;
 
-    if (!(*result = strndup(p, sizeof(buf)))) {
-        virReportOOMError();
+    if (VIR_STRDUP(*result, p) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 cleanup:
