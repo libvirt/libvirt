@@ -1938,7 +1938,8 @@ cleanup:
 /* virFindFCHostCapableVport:
  *
  * Iterate over the sysfs and find out the first online HBA which
- * supports vport, and not saturated,.
+ * supports vport, and not saturated. Returns the host name (e.g.
+ * host5) on success, or NULL on failure.
  */
 char *
 virFindFCHostCapableVport(const char *sysfs_prefix)
@@ -1972,10 +1973,10 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
             continue;
         }
 
-        if (!virIsCapableVport(NULL, host))
+        if (!virIsCapableVport(prefix, host))
             continue;
 
-        if (virReadFCHost(NULL, host, "port_state", &state) < 0) {
+        if (virReadFCHost(prefix, host, "port_state", &state) < 0) {
              VIR_DEBUG("Failed to read port_state for host%d", host);
              continue;
         }
@@ -1987,12 +1988,12 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         }
         VIR_FREE(state);
 
-        if (virReadFCHost(NULL, host, "max_npiv_vports", &max_vports) < 0) {
+        if (virReadFCHost(prefix, host, "max_npiv_vports", &max_vports) < 0) {
              VIR_DEBUG("Failed to read max_npiv_vports for host%d", host);
              continue;
         }
 
-        if (virReadFCHost(NULL, host, "npiv_vports_inuse", &vports) < 0) {
+        if (virReadFCHost(prefix, host, "npiv_vports_inuse", &vports) < 0) {
              VIR_DEBUG("Failed to read npiv_vports_inuse for host%d", host);
              VIR_FREE(max_vports);
              continue;
