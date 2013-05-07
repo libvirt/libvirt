@@ -532,7 +532,7 @@ virArgvToString(const char *const *argv)
  * caller's body where virStrdup is called from. Consider
  * using VIR_STRDUP which sets these automatically.
  *
- * Returns: 0 on success, -1 otherwise.
+ * Returns: 0 for NULL src, 1 on successful copy, -1 otherwise.
  */
 int
 virStrdup(char **dest,
@@ -543,13 +543,15 @@ virStrdup(char **dest,
           const char *funcname,
           size_t linenr)
 {
+    if (!src)
+        return 0;
     if (!(*dest = strdup(src))) {
         if (report)
             virReportOOMErrorFull(domcode, filename, funcname, linenr);
         return -1;
     }
 
-    return 0;
+    return 1;
 }
 
 /**
@@ -569,7 +571,7 @@ virStrdup(char **dest,
  * caller's body where virStrndup is called from. Consider
  * using VIR_STRNDUP which sets these automatically.
  *
- * Returns: 0 on success, -1 otherwise.
+ * Returns: 0 for NULL src, 1 on successful copy, -1 otherwise.
  */
 int
 virStrndup(char **dest,
@@ -581,11 +583,13 @@ virStrndup(char **dest,
            const char *funcname,
            size_t linenr)
 {
+    if (!src)
+        return 0;
     if (!(*dest = strndup(src, n))) {
         if (report)
             virReportOOMErrorFull(domcode, filename, funcname, linenr);
         return -1;
     }
 
-   return 0;
+   return 1;
 }
