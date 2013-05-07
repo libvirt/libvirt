@@ -78,6 +78,11 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     regmatch_t *vars = NULL;
     char *p = NULL;
     int i, err, nextents, nvars, ret = -1;
+    const char *attrs = groups[9];
+
+    /* Skip inactive volume */
+    if (attrs[4] != 'a')
+        return 0;
 
     /* See if we're only looking for a specific volume */
     if (data != NULL) {
@@ -280,14 +285,17 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol)
 {
     /*
-     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,origin,uuid,devices,seg_size,vg_extent_size,size" VGNAME
-     *  RootLV,,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432,5234491392
-     *  SwapLV,,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432,1040187392
-     *  Test2,,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432,1073741824
-     *  Test3,,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432,2181038080
-     *  Test3,Test2,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432,1040187392
+     * # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options \
+     * "lv_name,origin,uuid,devices,seg_size,vg_extent_size,size,lv_attr" VGNAME
      *
-     * Pull out name, origin, & uuid, device, device extent start #, segment size, extent size.
+     * RootLV,,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432,5234491392,-wi-ao
+     * SwapLV,,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432,1040187392,-wi-ao
+     * Test2,,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432,1073741824,owi-a-
+     * Test3,,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432,2181038080,-wi-a-
+     * Test3,Test2,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432,1040187392,swi-a-
+     *
+     * Pull out name, origin, & uuid, device, device extent start #,
+     * segment size, extent size, size, attrs
      *
      * NB can be multiple rows per volume if they have many extents
      *
@@ -299,10 +307,10 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
      *    striped, so "," is not a suitable separator either (rhbz 727474).
      */
     const char *regexes[] = {
-       "^\\s*(\\S+)#(\\S*)#(\\S+)#(\\S+)#(\\S+)#([0-9]+)#(\\S+)#([0-9]+)#([0-9]+)#?\\s*$"
+       "^\\s*(\\S+)#(\\S*)#(\\S+)#(\\S+)#(\\S+)#([0-9]+)#(\\S+)#([0-9]+)#([0-9]+)#(\\S+)#?\\s*$"
     };
     int vars[] = {
-        9
+        10
     };
     int ret = -1;
     virCommandPtr cmd;
@@ -313,7 +321,8 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                "--units", "b",
                                "--unbuffered",
                                "--nosuffix",
-                               "--options", "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size,size",
+                               "--options",
+                               "lv_name,origin,uuid,devices,segtype,stripes,seg_size,vg_extent_size,size,lv_attr",
                                pool->def->source.name,
                                NULL);
     if (virStorageBackendRunProgRegex(pool,
