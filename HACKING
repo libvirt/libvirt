@@ -234,6 +234,11 @@ But if negating a complex condition is too ugly, then at least add braces:
 
 Preprocessor
 ============
+Macros defined with an ALL_CAPS name should generally be assumed to be unsafe
+with regards to arguments with side-effects (that is, MAX(a++, b--) might
+increment a or decrement b too many or too few times). Exceptions to this rule
+are explicitly documented for macros in viralloc.h and virstring.h.
+
 For variadic macros, stick with C99 syntax:
 
   #define vshPrint(_ctl, ...) fprintf(stdout, __VA_ARGS__)
@@ -539,12 +544,12 @@ virStrncpy(dest, src, strlen(src), sizeof(dest)).
   VIR_STRNDUP(char *dst, const char *src, size_t n);
 
 You should avoid using strdup or strndup directly as they do not report
-out-of-memory error. Use VIR_STRDUP or VIR_STRNDUP macros instead. Note, that
-these two behave similar to VIR_ALLOC: on success zero is returned, otherwise
-the result is -1 and dst is guaranteed to be NULL. In very specific cases,
-when you don't want to report the out-of-memory error, you can use
-VIR_STRDUP_QUIET or VIR_STRNDUP_QUIET, but such usage is very rare and usually
-considered a flaw.
+out-of-memory error, and do not allow a NULL source. Use VIR_STRDUP or
+VIR_STRNDUP macros instead, which return 0 for NULL source, 1 for successful
+copy, and -1 for allocation failure with the error already reported. In very
+specific cases, when you don't want to report the out-of-memory error, you can
+use VIR_STRDUP_QUIET or VIR_STRNDUP_QUIET, but such usage is very rare and
+usually considered a flaw.
 
 
 Variable length string buffer
