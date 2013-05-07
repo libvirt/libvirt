@@ -46,7 +46,7 @@ static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
     };
     /* According to doc to virNetMessageEncodeHeader(&msg):
      * msg->buffer will be this long */
-    unsigned long msg_buf_size = VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX;
+    unsigned long msg_buf_size = VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX;
     int ret = -1;
 
     if (!msg) {

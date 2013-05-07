@@ -34,7 +34,8 @@ typedef void (*virNetMessageFreeCallback)(virNetMessagePtr msg, void *opaque);
 struct _virNetMessage {
     bool tracked;
 
-    char *buffer; /* Typically VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX */
+    char *buffer; /* Initially VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX */
+                  /* Maximum   VIR_NET_MESSAGE_MAX     + VIR_NET_MESSAGE_LEN_MAX */
     size_t bufferLength;
     size_t bufferOffset;
 

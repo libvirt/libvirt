@@ -44,23 +44,31 @@
 
 /*----- Data types. -----*/
 
+/* Initial message size.
+ * When the message payload is larger this initial size will be
+ * quadrupled until the maximum total message size is reached.
+ */
+const VIR_NET_MESSAGE_INITIAL = 65536;
+
 /* Maximum total message size (serialised). */
-const VIR_NET_MESSAGE_MAX = 4194304;
+const VIR_NET_MESSAGE_MAX = 16777216;
 
 /* Size of struct virNetMessageHeader (serialised)*/
 const VIR_NET_MESSAGE_HEADER_MAX = 24;
 
 /* Size of message payload */
-const VIR_NET_MESSAGE_PAYLOAD_MAX = 4194280;
+const VIR_NET_MESSAGE_PAYLOAD_MAX = 16777192;
 
-/* Size of message length field. Not counted in VIR_NET_MESSAGE_MAX */
+/* Size of message length field. Not counted in VIR_NET_MESSAGE_MAX
+ * and VIR_NET_MESSAGE_INITIAL.
+ */
 const VIR_NET_MESSAGE_LEN_MAX = 4;
 
 /* Length of long, but not unbounded, strings.
  * This is an arbitrary limit designed to stop the decoder from trying
  * to allocate unbounded amounts of memory when fed with a bad message.
  */
-const VIR_NET_MESSAGE_STRING_MAX = 1048576;
+const VIR_NET_MESSAGE_STRING_MAX = 4194304;
 
 /* Limit on number of File Descriptors allowed to be
  * passed per message

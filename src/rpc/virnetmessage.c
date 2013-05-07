@@ -221,7 +221,7 @@ int virNetMessageEncodeHeader(virNetMessagePtr msg)
     int ret = -1;
     unsigned int len = 0;
 
-    msg->bufferLength = VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX;
+    msg->bufferLength = VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX;
     if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
         virReportOOMError();
         return ret;
@@ -351,9 +351,27 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
     xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
                   msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
 
-    if (!(*filter)(&xdr, data)) {
-        virReportError(VIR_ERR_RPC, "%s", _("Unable to encode message payload"));
-        goto error;
+    /* Try to encode the payload. If the buffer is too small increase it. */
+    while (!(*filter)(&xdr, data)) {
+        if ((msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4 > VIR_NET_MESSAGE_MAX) {
+            virReportError(VIR_ERR_RPC, "%s", _("Unable to encode message payload"));
+            goto error;
+        }
+
+        xdr_destroy(&xdr);
+
+        msg->bufferLength = (msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4 +
+            VIR_NET_MESSAGE_LEN_MAX;
+
+        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+
+        xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
+                      msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
+
+        VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
     }
 
     /* Get the length stored in buffer. */
@@ -415,11 +433,23 @@ int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
     XDR xdr;
     unsigned int msglen;
 
+    /* If the message buffer is too small for the payload increase it accordingly. */
     if ((msg->bufferLength - msg->bufferOffset) < len) {
-        virReportError(VIR_ERR_RPC,
-                    _("Stream data too long to send (%zu bytes needed, %zu bytes available)"),
-                    len, (msg->bufferLength - msg->bufferOffset));
-        return -1;
+        if ((msg->bufferOffset + len) > VIR_NET_MESSAGE_MAX) {
+            virReportError(VIR_ERR_RPC,
+                           _("Stream data too long to send (%zu bytes needed, %zu bytes available)"),
+                           len, (VIR_NET_MESSAGE_MAX - msg->bufferOffset));
+            return -1;
+        }
+
+        msg->bufferLength = msg->bufferOffset + len;
+
+        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+
+        VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
     }
 
     memcpy(msg->buffer + msg->bufferOffset, data, len);
