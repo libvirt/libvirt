@@ -24,6 +24,7 @@
 #ifndef __VIR_STORAGE_FILE_H__
 # define __VIR_STORAGE_FILE_H__
 
+# include "virbitmap.h"
 # include "virutil.h"
 
 enum virStorageFileFormat {
@@ -51,6 +52,15 @@ enum virStorageFileFormat {
 
 VIR_ENUM_DECL(virStorageFileFormat);
 
+enum virStorageFileFeature {
+    VIR_STORAGE_FILE_FEATURE_NONE = -1,
+    VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS,
+
+    VIR_STORAGE_FILE_FEATURE_LAST
+};
+
+VIR_ENUM_DECL(virStorageFileFeature);
+
 typedef struct _virStorageFileMetadata virStorageFileMetadata;
 typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
@@ -62,6 +72,8 @@ struct _virStorageFileMetadata {
     virStorageFileMetadataPtr backingMeta;
     unsigned long long capacity;
     bool encrypted;
+    virBitmapPtr features; /* bits described by enum virStorageFileFeature */
+    char *compat;
 };
 
 # ifndef DEV_BSIZE

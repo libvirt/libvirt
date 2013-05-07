@@ -59,6 +59,11 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               "qcow", "qcow2", "qed", "vmdk", "vpc",
               "fat", "vhd", "vdi")
 
+VIR_ENUM_IMPL(virStorageFileFeature,
+              VIR_STORAGE_FILE_FEATURE_LAST,
+              "lazy_refcounts",
+              )
+
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */
     LV_BIG_ENDIAN         /* 4321 */
@@ -69,6 +74,8 @@ enum {
     BACKING_STORE_INVALID,
     BACKING_STORE_ERROR,
 };
+
+#define FILE_TYPE_VERSIONS_LAST 2
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
@@ -81,7 +88,8 @@ struct FileTypeInfo {
                            * where we find version number,
                            * -1 to always fail the version test,
                            * -2 to always pass the version test */
-    int versionNumber;    /* Version number to validate */
+    int versionNumbers[FILE_TYPE_VERSIONS_LAST];
+                          /* Version numbers to validate. Zeroes are ignored. */
     int sizeOffset;       /* Byte offset from start of file
                            * where we find capacity info,
                            * -1 to use st_size as capacity */
@@ -95,6 +103,8 @@ struct FileTypeInfo {
                            * -1 if encryption is not used */
     int (*getBackingStore)(char **res, int *format,
                            const unsigned char *buf, size_t buf_size);
+    int (*getFeatures)(virBitmapPtr *features, int format,
+                       unsigned char *buf, ssize_t len);
 };
 
 static int cowGetBackingStore(char **, int *,
@@ -103,6 +113,8 @@ static int qcow1GetBackingStore(char **, int *,
                                 const unsigned char *, size_t);
 static int qcow2GetBackingStore(char **, int *,
                                 const unsigned char *, size_t);
+static int qcow2GetFeatures(virBitmapPtr *features, int format,
+                            unsigned char *buf, ssize_t len);
 static int vmdk4GetBackingStore(char **, int *,
                                 const unsigned char *, size_t);
 static int
@@ -122,6 +134,13 @@ qedGetBackingStore(char **, int *, const unsigned char *, size_t);
 #define QCOW2_HDR_EXTENSION_END 0
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
 
+#define QCOW2v3_HDR_FEATURES_INCOMPATIBLE (QCOW2_HDR_TOTAL_SIZE)
+#define QCOW2v3_HDR_FEATURES_COMPATIBLE (QCOW2v3_HDR_FEATURES_INCOMPATIBLE+8)
+#define QCOW2v3_HDR_FEATURES_AUTOCLEAR (QCOW2v3_HDR_FEATURES_COMPATIBLE+8)
+
+/* The location of the header size [4 bytes] */
+#define QCOW2v3_HDR_SIZE       (QCOW2_HDR_TOTAL_SIZE+8+8+8+4)
+
 #define QED_HDR_FEATURES_OFFSET (4+4+4+4)
 #define QED_HDR_IMAGE_SIZE (QED_HDR_FEATURES_OFFSET+8+8+8+8)
 #define QED_HDR_BACKING_FILE_OFFSET (QED_HDR_IMAGE_SIZE+8)
@@ -137,16 +156,16 @@ qedGetBackingStore(char **, int *, const unsigned char *, size_t);
 
 static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                                -1, 0, 0, 0, 0, 0, NULL },
+                                -1, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_RAW] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, 0, 0, 0, 0, NULL },
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_DIR] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, 0, 0, 0, 0, NULL },
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_BOCHS] = {
         /*"Bochs Virtual HD Image", */ /* Untested */
         0, NULL, NULL,
-        LV_LITTLE_ENDIAN, 64, 0x20000,
-        32+16+16+4+4+4+4+4, 8, 1, -1, NULL
+        LV_LITTLE_ENDIAN, 64, {0x20000},
+        32+16+16+4+4+4+4+4, 8, 1, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_CLOOP] = {
         /* #!/bin/sh
@@ -154,66 +173,81 @@ static struct FileTypeInfo const fileTypeInfo[] = {
            modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1
         */ /* Untested */
         0, NULL, NULL,
-        LV_LITTLE_ENDIAN, -1, 0,
-        -1, 0, 0, -1, NULL
+        LV_LITTLE_ENDIAN, -1, {0},
+        -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_COW] = {
         0, "OOOM", NULL,
-        LV_BIG_ENDIAN, 4, 2,
-        4+4+1024+4, 8, 1, -1, cowGetBackingStore
+        LV_BIG_ENDIAN, 4, {2},
+        4+4+1024+4, 8, 1, -1, cowGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_DMG] = {
         /* XXX QEMU says there's no magic for dmg,
          * /usr/share/misc/magic lists double magic (both offsets
          * would have to match) but then disables that check. */
         0, NULL, ".dmg",
-        0, -1, 0,
-        -1, 0, 0, -1, NULL
+        0, -1, {0},
+        -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_ISO] = {
         32769, "CD001", ".iso",
-        LV_LITTLE_ENDIAN, -2, 0,
-        -1, 0, 0, -1, NULL
+        LV_LITTLE_ENDIAN, -2, {0},
+        -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
         0, "QFI", NULL,
-        LV_BIG_ENDIAN, 4, 1,
-        QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore,
+        LV_BIG_ENDIAN, 4, {1},
+        QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW2] = {
         0, "QFI", NULL,
-        LV_BIG_ENDIAN, 4, 2,
+        LV_BIG_ENDIAN, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore,
+        qcow2GetFeatures
     },
     [VIR_STORAGE_FILE_QED] = {
         /* http://wiki.qemu.org/Features/QED */
         0, "QED", NULL,
-        LV_LITTLE_ENDIAN, -2, -1,
-        QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore,
+        LV_LITTLE_ENDIAN, -2, {0},
+        QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_VMDK] = {
         0, "KDMV", NULL,
-        LV_LITTLE_ENDIAN, 4, 1,
-        4+4+4, 8, 512, -1, vmdk4GetBackingStore
+        LV_LITTLE_ENDIAN, 4, {1},
+        4+4+4, 8, 512, -1, vmdk4GetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_VPC] = {
         0, "conectix", NULL,
-        LV_BIG_ENDIAN, 12, 0x10000,
-        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL
+        LV_BIG_ENDIAN, 12, {0x10000},
+        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL, NULL
     },
     /* TODO: add getBackingStore function */
     [VIR_STORAGE_FILE_VDI] = {
         64, "\x7f\x10\xda\xbe", ".vdi",
-        LV_LITTLE_ENDIAN, 68, 0x00010001,
-        64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL},
+        LV_LITTLE_ENDIAN, 68, {0x00010001},
+        64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL, NULL},
 
     /* Not direct file formats, but used for various drivers */
     [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, 0, 0, 0, 0, NULL },
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, 0, 0, 0, 0, NULL },
+                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
 };
 verify(ARRAY_CARDINALITY(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
+
+/* qcow2 compatible features in the order they appear on-disk */
+enum qcow2CompatibleFeature {
+    QCOW2_COMPATIBLE_FEATURE_LAZY_REFCOUNTS = 0,
+
+    QCOW2_COMPATIBLE_FEATURE_LAST
+};
+
+/* conversion to virStorageFileFeature */
+static const int qcow2CompatibleFeatureArray[] = {
+    VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS,
+};
+verify(ARRAY_CARDINALITY(qcow2CompatibleFeatureArray) ==
+       QCOW2_COMPATIBLE_FEATURE_LAST);
 
 static int
 cowGetBackingStore(char **res,
@@ -301,6 +335,8 @@ qcowXGetBackingStore(char **res,
 {
     unsigned long long offset;
     unsigned int size;
+    unsigned long long start;
+    int version;
 
     *res = NULL;
     if (format)
@@ -351,11 +387,20 @@ qcowXGetBackingStore(char **res,
      * Thus the file region to search for extensions is
      * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
      * and the start of the backingStoreName (offset)
+     *
+     * for qcow2 v3 images, the length of the header
+     * is stored at QCOW2v3_HDR_SIZE
      */
-    if (isQCow2 && format &&
-        qcow2GetBackingStoreFormat(format, buf, buf_size, QCOW2_HDR_TOTAL_SIZE,
-                                   offset) < 0)
-        return BACKING_STORE_INVALID;
+    if (isQCow2 && format) {
+        version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
+        if (version == 2)
+            start = QCOW2_HDR_TOTAL_SIZE;
+        else
+            start = virReadBufInt32BE(buf + QCOW2v3_HDR_SIZE);
+        if (qcow2GetBackingStoreFormat(format, buf, buf_size,
+                                       start, offset) < 0)
+            return BACKING_STORE_INVALID;
+    }
 
     return BACKING_STORE_OK;
 }
@@ -593,7 +638,7 @@ virStorageFileMatchesVersion(int format,
                              unsigned char *buf,
                              size_t buflen)
 {
-    int version;
+    int version, i;
 
     /* Validate version number info */
     if (fileTypeInfo[format].versionOffset == -1)
@@ -611,12 +656,16 @@ virStorageFileMatchesVersion(int format,
     else
         version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
 
-    VIR_DEBUG("Compare detected version %d vs expected version %d",
-              version, fileTypeInfo[format].versionNumber);
-    if (version != fileTypeInfo[format].versionNumber)
-        return false;
+    for (i = 0;
+         i < FILE_TYPE_VERSIONS_LAST && fileTypeInfo[format].versionNumbers[i];
+         i++) {
+        VIR_DEBUG("Compare detected version %d vs one of the expected versions %d",
+                  version, fileTypeInfo[format].versionNumbers[i]);
+        if (version == fileTypeInfo[format].versionNumbers[i])
+            return true;
+    }
 
-    return true;
+    return false;
 }
 
 static bool
@@ -666,6 +715,42 @@ virStorageFileProbeFormatFromBuf(const char *path,
 cleanup:
     VIR_DEBUG("format=%d", format);
     return format;
+}
+
+
+static int
+qcow2GetFeatures(virBitmapPtr *features,
+                 int format,
+                 unsigned char *buf,
+                 ssize_t len)
+{
+    int version = -1;
+    virBitmapPtr feat = NULL;
+    uint64_t bits;
+    int i;
+
+    version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
+
+    if (version == 2)
+        return 0;
+
+    if (len < QCOW2v3_HDR_SIZE)
+        return -1;
+
+    if (!(feat = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST))) {
+        virReportOOMError();
+        return -1;
+    }
+
+    /* todo: check for incompatible or autoclear features? */
+    bits = virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_COMPATIBLE);
+    for (i = 0; i < QCOW2_COMPATIBLE_FEATURE_LAST; i++) {
+        if (bits & ((uint64_t) 1 << i))
+            ignore_value(virBitmapSetBit(feat, qcow2CompatibleFeatureArray[i]));
+    }
+
+    *features = feat;
+    return 0;
 }
 
 
@@ -802,6 +887,14 @@ virStorageFileGetMetadataInternal(const char *path,
             meta->backingStoreFormat = VIR_STORAGE_FILE_NONE;
         }
     }
+
+    if (fileTypeInfo[format].getFeatures != NULL &&
+        fileTypeInfo[format].getFeatures(&meta->features, format, buf, len) < 0)
+        goto cleanup;
+
+    if (format == VIR_STORAGE_FILE_QCOW2 && meta->features &&
+        VIR_STRDUP(meta->compat, "1.1") < 0)
+        goto cleanup;
 
 done:
     ret = meta;
@@ -1032,7 +1125,9 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     virStorageFileFreeMetadata(meta->backingMeta);
     VIR_FREE(meta->backingStore);
     VIR_FREE(meta->backingStoreRaw);
+    VIR_FREE(meta->compat);
     VIR_FREE(meta->directory);
+    virBitmapFree(meta->features);
     VIR_FREE(meta);
 }
 
