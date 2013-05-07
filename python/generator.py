@@ -458,6 +458,8 @@ skip_impl = (
     'virNodeGetMemoryParameters',
     'virNodeSetMemoryParameters',
     'virNodeGetCPUMap',
+    'virDomainMigrate3',
+    'virDomainMigrateToURI3',
 )
 
 lxc_skip_impl = (

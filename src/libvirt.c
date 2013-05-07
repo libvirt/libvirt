@@ -5066,6 +5066,17 @@ virDomainMigrateVersion3(virDomainPtr domain,
                                         bandwidth, NULL, 0, false, flags);
 }
 
+static virDomainPtr
+virDomainMigrateVersion3Params(virDomainPtr domain,
+                               virConnectPtr dconn,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               unsigned int flags)
+{
+    return virDomainMigrateVersion3Full(domain, dconn, NULL, NULL, NULL, 0,
+                                        params, nparams, true, flags);
+}
+
 
  /*
   * In normal migration, the libvirt client co-ordinates communication
@@ -5161,6 +5172,17 @@ virDomainMigratePeer2Peer(virDomainPtr domain,
 {
     return virDomainMigratePeer2PeerFull(domain, dconnuri, xmlin, dname, uri,
                                          bandwidth, NULL, 0, false, flags);
+}
+
+static int
+virDomainMigratePeer2PeerParams(virDomainPtr domain,
+                                const char *dconnuri,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags)
+{
+    return virDomainMigratePeer2PeerFull(domain, dconnuri, NULL, NULL, NULL, 0,
+                                         params, nparams, true, flags);
 }
 
 
@@ -5705,6 +5727,208 @@ error:
 
 
 /**
+ * virDomainMigrate3:
+ * @domain: a domain object
+ * @dconn: destination host (a connection object)
+ * @params: (optional) migration parameters
+ * @nparams: (optional) number of migration parameters in @params
+ * @flags: bitwise-OR of virDomainMigrateFlags
+ *
+ * Migrate the domain object from its current host to the destination host
+ * given by dconn (a connection to the destination host).
+ *
+ * See virDomainMigrateFlags documentation for description of individual flags.
+ *
+ * VIR_MIGRATE_TUNNELLED and VIR_MIGRATE_PEER2PEER are not supported by this
+ * API, use virDomainMigrateToURI3 instead.
+ *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
+ * There are many limitations on migration imposed by the underlying
+ * technology - for example it may not be possible to migrate between
+ * different processors even with the same architecture, or between
+ * different types of hypervisor.
+ *
+ * Returns the new domain object if the migration was successful,
+ *   or NULL in case of error.  Note that the new domain object
+ *   exists in the scope of the destination connection (dconn).
+ */
+virDomainPtr
+virDomainMigrate3(virDomainPtr domain,
+                  virConnectPtr dconn,
+                  virTypedParameterPtr params,
+                  unsigned int nparams,
+                  unsigned int flags)
+{
+    virDomainPtr ddomain = NULL;
+    const char *compatParams[] = { VIR_MIGRATE_PARAM_URI,
+                                   VIR_MIGRATE_PARAM_DEST_NAME,
+                                   VIR_MIGRATE_PARAM_DEST_XML,
+                                   VIR_MIGRATE_PARAM_BANDWIDTH };
+    const char *uri = NULL;
+    const char *dname = NULL;
+    const char *dxml = NULL;
+    unsigned long long bandwidth = 0;
+
+    VIR_DOMAIN_DEBUG(domain, "dconn=%p, params=%p, nparms=%u flags=%x",
+                     dconn, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    /* First checkout the source */
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    /* Now checkout the destination */
+    if (!VIR_IS_CONNECT(dconn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        goto error;
+    }
+    if (dconn->flags & VIR_CONNECT_RO) {
+        /* NB, deliberately report error against source object, not dest */
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
+        goto error;
+    }
+    if (flags & (VIR_MIGRATE_PEER2PEER | VIR_MIGRATE_TUNNELLED)) {
+        virReportInvalidArg(flags, "%s",
+                            _("use virDomainMigrateToURI3 for peer-to-peer "
+                              "migration"));
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the source host"));
+            goto error;
+        }
+        if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the destination host"));
+            goto error;
+        }
+    }
+
+    /* Change protection requires support only on source side, and
+     * is only needed in v3 migration, which automatically re-adds
+     * the flag for just the source side.  We mask it out to allow
+     * migration from newer source to an older destination that
+     * rejects the flag.  */
+    if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
+        !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                  VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
+        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("cannot enforce change protection"));
+        goto error;
+    }
+    flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
+
+    /* Prefer extensible API but fall back to older migration APIs if params
+     * only contains parameters which were supported by the older API. */
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_PARAMS) &&
+        VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                 VIR_DRV_FEATURE_MIGRATION_PARAMS)) {
+        VIR_DEBUG("Using migration protocol 3 with extensible parameters");
+        ddomain = virDomainMigrateVersion3Params(domain, dconn, params,
+                                                 nparams, flags);
+        goto done;
+    }
+
+    if (!virTypedParamsCheck(params, nparams, compatParams,
+                             ARRAY_CARDINALITY(compatParams))) {
+        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("Migration APIs with extensible parameters are not "
+                          "supported but extended parameters were passed"));
+        goto error;
+    }
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &uri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &dxml) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        goto error;
+    }
+
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_V3) &&
+        VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
+        VIR_DEBUG("Using migration protocol 3");
+        ddomain = virDomainMigrateVersion3(domain, dconn, dxml, flags,
+                                           dname, uri, bandwidth);
+    } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                        VIR_DRV_FEATURE_MIGRATION_V2) &&
+               VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                      VIR_DRV_FEATURE_MIGRATION_V2)) {
+        VIR_DEBUG("Using migration protocol 2");
+        if (dxml) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("Unable to change target guest XML during "
+                              "migration"));
+            goto error;
+        }
+        ddomain = virDomainMigrateVersion2(domain, dconn, flags,
+                                           dname, uri, bandwidth);
+    } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                        VIR_DRV_FEATURE_MIGRATION_V1) &&
+               VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                        VIR_DRV_FEATURE_MIGRATION_V1)) {
+        VIR_DEBUG("Using migration protocol 1");
+        if (dxml) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("Unable to change target guest XML during "
+                              "migration"));
+            goto error;
+        }
+        ddomain = virDomainMigrateVersion1(domain, dconn, flags,
+                                           dname, uri, bandwidth);
+    } else {
+        /* This driver does not support any migration method */
+        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        goto error;
+    }
+
+done:
+    if (ddomain == NULL)
+        goto error;
+
+    return ddomain;
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
+
+/**
  * virDomainMigrateToURI:
  * @domain: a domain object
  * @duri: mandatory URI for the destination host
@@ -5999,6 +6223,158 @@ virDomainMigrateToURI2(virDomainPtr domain,
                               " connection driver"));
             goto error;
         }
+    }
+
+    return 0;
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainMigrateToURI3:
+ * @domain: a domain object
+ * @dconnuri: (optional) URI for target libvirtd if @flags includes VIR_MIGRATE_PEER2PEER
+ * @params: (optional) migration parameters
+ * @nparams: (optional) number of migration parameters in @params
+ * @flags: bitwise-OR of virDomainMigrateFlags
+ *
+ * Migrate the domain object from its current host to the destination host
+ * given by URI.
+ *
+ * See virDomainMigrateFlags documentation for description of individual flags.
+ *
+ * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
+ *
+ * If the VIR_MIGRATE_PEER2PEER flag is set, the @dconnuri parameter must be a
+ * valid libvirt connection URI, by which the source libvirt daemon can connect
+ * to the destination libvirt.
+ *
+ * If the VIR_MIGRATE_PEER2PEER flag is NOT set, then @dconnuri must be NULL
+ * and VIR_MIGRATE_PARAM_URI migration parameter must be filled in with
+ * hypervisor specific URI used to initiate the migration. This is called
+ * "direct" migration.
+ *
+ * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+ *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
+ * There are many limitations on migration imposed by the underlying
+ * technology - for example it may not be possible to migrate between
+ * different processors even with the same architecture, or between
+ * different types of hypervisor.
+ *
+ * Returns 0 if the migration succeeded, -1 upon error.
+ */
+int
+virDomainMigrateToURI3(virDomainPtr domain,
+                       const char *dconnuri,
+                       virTypedParameterPtr params,
+                       unsigned int nparams,
+                       unsigned int flags)
+{
+    bool compat;
+    const char *compatParams[] = { VIR_MIGRATE_PARAM_URI,
+                                   VIR_MIGRATE_PARAM_DEST_NAME,
+                                   VIR_MIGRATE_PARAM_DEST_XML,
+                                   VIR_MIGRATE_PARAM_BANDWIDTH };
+    const char *uri = NULL;
+    const char *dname = NULL;
+    const char *dxml = NULL;
+    unsigned long long bandwidth = 0;
+
+    VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparms=%u flags=%x",
+                     NULLSTR(dconnuri), params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    /* First checkout the source */
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
+        goto error;
+    }
+
+    compat = virTypedParamsCheck(params, nparams, compatParams,
+                                 ARRAY_CARDINALITY(compatParams));
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &uri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &dxml) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
+            virLibConnError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                            _("Peer-to-peer migration is not supported by "
+                              "the connection driver"));
+            goto error;
+        }
+
+        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                     VIR_DRV_FEATURE_MIGRATION_PARAMS)) {
+            VIR_DEBUG("Using peer2peer migration with extensible parameters");
+            if (virDomainMigratePeer2PeerParams(domain, dconnuri, params,
+                                                nparams, flags) < 0)
+                goto error;
+        } else if (compat) {
+            VIR_DEBUG("Using peer2peer migration");
+            if (virDomainMigratePeer2Peer(domain, dxml, flags, dname,
+                                          dconnuri, uri, bandwidth) < 0)
+                goto error;
+        } else {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("Peer-to-peer migration with extensible "
+                              "parameters is not supported but extended "
+                              "parameters were passed"));
+            goto error;
+        }
+    } else {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
+            /* Cannot do a migration with only the perform step */
+            virLibConnError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                            _("Direct migration is not supported by the"
+                              " connection driver"));
+            goto error;
+        }
+
+        if (!compat) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("Direct migration does not support extensible "
+                              "parameters"));
+            goto error;
+        }
+
+        VIR_DEBUG("Using direct migration");
+        if (virDomainMigrateDirect(domain, dxml, flags,
+                                   dname, uri, bandwidth) < 0)
+            goto error;
     }
 
     return 0;

@@ -621,4 +621,10 @@ LIBVIRT_1.0.6 {
         virGetLastErrorMessage;
 } LIBVIRT_1.0.5;
 
+LIBVIRT_1.1.0 {
+    global:
+        virDomainMigrate3;
+        virDomainMigrateToURI3;
+} LIBVIRT_1.0.6;
+
 # .... define new API here using predicted next version number ....
