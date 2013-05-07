@@ -1503,7 +1503,7 @@ virLogGetOutputs(void)
     for (i = 0; i < virLogNbOutputs; i++) {
         virLogDestination dest = virLogOutputs[i].dest;
         if (i)
-            virBufferAsprintf(&outputbuf, " ");
+            virBufferAddChar(&outputbuf, ' ');
         switch (dest) {
             case VIR_LOG_TO_SYSLOG:
             case VIR_LOG_TO_FILE:

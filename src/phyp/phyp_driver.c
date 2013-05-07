@@ -1684,12 +1684,12 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
         virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferAsprintf(&buf, "lsmap -all -field svsa backing -fmt , ");
+    virBufferAddLit(&buf, "lsmap -all -field svsa backing -fmt , ");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed '/,[^.*]/d; s/,//g; q'");
+    virBufferAddLit(&buf, "|sed '/,[^.*]/d; s/,//g; q'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1882,7 +1882,7 @@ phypStorageVolGetKey(virConnectPtr conn, const char *name)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed -e 's/^LV IDENTIFIER://' -e 's/ //g'");
+    virBufferAddLit(&buf, "|sed -e 's/^LV IDENTIFIER://' -e 's/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1912,7 +1912,7 @@ phypGetStoragePoolDevice(virConnectPtr conn, char *name)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed '1d; s/ //g'");
+    virBufferAddLit(&buf, "|sed '1d; s/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -1941,7 +1941,7 @@ phypGetStoragePoolSize(virConnectPtr conn, char *name)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed '1d; s/ //g'");
+    virBufferAddLit(&buf, "|sed '1d; s/ //g'");
     phypExecInt(session, &buf, conn, &sp_size);
     return sp_size;
 }
@@ -2123,7 +2123,7 @@ phypStorageVolGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed 1d");
+    virBufferAddLit(&buf, "|sed 1d");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0)
@@ -2155,7 +2155,7 @@ phypStorageVolLookupByPath(virConnectPtr conn, const char *volname)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
+    virBufferAddLit(&buf, "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, true);
 
     if (exit_status < 0 || ret == NULL)
@@ -2199,7 +2199,7 @@ phypGetStoragePoolUUID(virConnectPtr conn, unsigned char *uuid,
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed '1,2d'");
+    virBufferAddLit(&buf, "|sed '1,2d'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0 || ret == NULL)
@@ -2385,7 +2385,7 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|sed '1,2d'");
+    virBufferAddLit(&buf, "|sed '1,2d'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     /* I need to parse the textual return in order to get the volumes */
@@ -2442,7 +2442,7 @@ phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     virBufferAsprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
-    virBufferAsprintf(&buf, "|grep -c '^.*$'");
+    virBufferAddLit(&buf, "|grep -c '^.*$'");
     if (phypExecInt(session, &buf, conn, &nvolumes) < 0)
         return -1;
 
@@ -2551,12 +2551,12 @@ phypConnectNumOfStoragePools(virConnectPtr conn)
         virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferAsprintf(&buf, "lsvg");
+    virBufferAddLit(&buf, "lsvg");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferAsprintf(&buf, "|grep -c '^.*$'");
+    virBufferAddLit(&buf, "|grep -c '^.*$'");
     phypExecInt(session, &buf, conn, &nsp);
     return nsp;
 }
@@ -2583,7 +2583,7 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
         virBufferAsprintf(&buf, "viosvrcmd -m %s --id %d -c '",
                           managed_system, vios_id);
 
-    virBufferAsprintf(&buf, "lsvg");
+    virBufferAddLit(&buf, "lsvg");
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -3219,7 +3219,7 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferAsprintf(&buf, " -m %s", managed_system);
-    virBufferAsprintf(&buf, " -F name,state"
+    virBufferAddLit(&buf, " -F name,state"
                       "|sed -n '/Not Activated/ {\n s/,.*$//\n p\n}'");
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 

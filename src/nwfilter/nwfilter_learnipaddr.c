@@ -417,7 +417,7 @@ learnIPAddressThread(void *arg)
             req->status = EINVAL;
             goto done;
         }
-        virBufferAsprintf(&buf, "src port 67 and dst port 68");
+        virBufferAddLit(&buf, "src port 67 and dst port 68");
         break;
     default:
         if (techdriver->applyBasicRules(req->ifname,

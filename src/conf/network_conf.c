@@ -2011,7 +2011,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
             if (def->srvs[i].weight)
                 virBufferAsprintf(buf, " weight='%d'", def->srvs[i].weight);
 
-            virBufferAsprintf(buf, "/>\n");
+            virBufferAddLit(buf, "/>\n");
         }
     }
 
@@ -2028,7 +2028,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
                                   def->hosts[ii].names[j]);
 
             virBufferAdjustIndent(buf, -2);
-            virBufferAsprintf(buf, "</host>\n");
+            virBufferAddLit(buf, "</host>\n");
             VIR_FREE(ip);
         }
     }

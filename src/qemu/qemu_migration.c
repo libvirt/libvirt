@@ -572,7 +572,7 @@ qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
         /* If optr->net[i].vporttype is not set, there is nothing to transfer */
         if (optr->net[i].vporttype != VIR_NETDEV_VPORT_PROFILE_NONE) {
             if (empty) {
-                virBufferAsprintf(buf, "  <network>\n");
+                virBufferAddLit(buf, "  <network>\n");
                 empty = false;
             }
             virBufferAsprintf(buf, "    <interface index='%d' vporttype='%s'",
@@ -604,7 +604,7 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
     virUUIDFormat(mig->uuid, uuidstr);
     virUUIDFormat(mig->localHostuuid, hostuuidstr);
 
-    virBufferAsprintf(buf, "<qemu-migration>\n");
+    virBufferAddLit(buf, "<qemu-migration>\n");
     virBufferEscapeString(buf, "  <name>%s</name>\n", mig->name);
     virBufferAsprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
     virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->localHostname);

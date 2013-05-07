@@ -13255,7 +13255,7 @@ static void
 virSecurityDeviceLabelDefFormat(virBufferPtr buf,
                                 virSecurityDeviceLabelDefPtr def)
 {
-    virBufferAsprintf(buf, "<seclabel");
+    virBufferAddLit(buf, "<seclabel");
 
     if (def->model)
         virBufferAsprintf(buf, " model='%s'", def->model);
@@ -13542,9 +13542,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <auth username='%s'>\n",
                               def->auth.username);
         if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
-            virBufferAsprintf(buf, "        <secret type='iscsi'");
+            virBufferAddLit(buf, "        <secret type='iscsi'");
         } else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
-            virBufferAsprintf(buf, "        <secret type='ceph'");
+            virBufferAddLit(buf, "        <secret type='ceph'");
         }
 
         if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
@@ -15010,13 +15010,13 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, " port='0'");
 
         if (def->data.rdp.autoport)
-            virBufferAsprintf(buf, " autoport='yes'");
+            virBufferAddLit(buf, " autoport='yes'");
 
         if (def->data.rdp.replaceUser)
-            virBufferAsprintf(buf, " replaceUser='yes'");
+            virBufferAddLit(buf, " replaceUser='yes'");
 
         if (def->data.rdp.multiUser)
-            virBufferAsprintf(buf, " multiUser='yes'");
+            virBufferAddLit(buf, " multiUser='yes'");
 
         if (listenAddr)
             virBufferAsprintf(buf, " listen='%s'", listenAddr);
@@ -15536,7 +15536,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->cputune.emulatorpin) {
         char *cpumask;
-        virBufferAsprintf(buf, "    <emulatorpin ");
+        virBufferAddLit(buf, "    <emulatorpin ");
 
         if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

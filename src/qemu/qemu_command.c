@@ -2226,7 +2226,7 @@ static void
 qemuUsbId(virBufferPtr buf, int idx)
 {
     if (idx == 0)
-        virBufferAsprintf(buf, "usb");
+        virBufferAddLit(buf, "usb");
     else
         virBufferAsprintf(buf, "usb%d", idx);
 }
@@ -2271,9 +2271,9 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             }
         } else {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS))
-                virBufferAsprintf(buf, ",bus=pci.0");
+                virBufferAddLit(buf, ",bus=pci.0");
             else
-                virBufferAsprintf(buf, ",bus=pci");
+                virBufferAddLit(buf, ",bus=pci");
         }
         if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_ON)
             virBufferAddLit(buf, ",multifunction=on");
@@ -2283,7 +2283,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         if (info->addr.pci.function != 0)
            virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-        virBufferAsprintf(buf, ",bus=");
+        virBufferAddLit(buf, ",bus=");
         qemuUsbId(buf, info->addr.usb.bus);
         virBufferAsprintf(buf, ".0,port=%s", info->addr.usb.port);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
@@ -3818,11 +3818,11 @@ qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
     virBufferAsprintf(buf, "%s", smodel);
 
     if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
-        virBufferAsprintf(buf, ",masterbus=");
+        virBufferAddLit(buf, ",masterbus=");
         qemuUsbId(buf, def->idx);
         virBufferAsprintf(buf, ".0,firstport=%d", def->info.master.usb.startport);
     } else {
-        virBufferAsprintf(buf, ",id=");
+        virBufferAddLit(buf, ",id=");
         qemuUsbId(buf, def->idx);
     }
 
@@ -4567,33 +4567,33 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
             goto error;
         }
 
-        virBufferAsprintf(&buf, ",filter=");
+        virBufferAddLit(&buf, ",filter=");
 
         for (i = 0; i < redirfilter->nusbdevs; i++) {
             virDomainRedirFilterUsbDevDefPtr usbdev = redirfilter->usbdevs[i];
             if (usbdev->usbClass >= 0)
                 virBufferAsprintf(&buf, "0x%02X:", usbdev->usbClass);
             else
-                virBufferAsprintf(&buf, "-1:");
+                virBufferAddLit(&buf, "-1:");
 
             if (usbdev->vendor >= 0)
                 virBufferAsprintf(&buf, "0x%04X:", usbdev->vendor);
             else
-                virBufferAsprintf(&buf, "-1:");
+                virBufferAddLit(&buf, "-1:");
 
             if (usbdev->product >= 0)
                 virBufferAsprintf(&buf, "0x%04X:", usbdev->product);
             else
-                virBufferAsprintf(&buf, "-1:");
+                virBufferAddLit(&buf, "-1:");
 
             if (usbdev->version >= 0)
                 virBufferAsprintf(&buf, "0x%04X:", usbdev->version);
             else
-                virBufferAsprintf(&buf, "-1:");
+                virBufferAddLit(&buf, "-1:");
 
             virBufferAsprintf(&buf, "%u", usbdev->allow);
             if (i < redirfilter->nusbdevs -1)
-                virBufferAsprintf(&buf, "|");
+                virBufferAddLit(&buf, "|");
         }
     }
 
@@ -5740,7 +5740,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
          * machine->init in QEMU, it needs to set usb=off
          */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
-            virBufferAsprintf(&buf, ",usb=off");
+            virBufferAddLit(&buf, ",usb=off");
 
         if (def->mem.dump_core) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
@@ -6057,10 +6057,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.spice.mousemode) {
         switch (graphics->data.spice.mousemode) {
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
-            virBufferAsprintf(&opt, ",agent-mouse=off");
+            virBufferAddLit(&opt, ",agent-mouse=off");
             break;
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
-            virBufferAsprintf(&opt, ",agent-mouse=on");
+            virBufferAddLit(&opt, ",agent-mouse=on");
             break;
         default:
             break;
@@ -6079,10 +6079,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
     switch (defaultMode) {
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-        virBufferAsprintf(&opt, ",tls-channel=default");
+        virBufferAddLit(&opt, ",tls-channel=default");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-        virBufferAsprintf(&opt, ",plaintext-channel=default");
+        virBufferAddLit(&opt, ",plaintext-channel=default");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
         /* nothing */
@@ -6750,9 +6750,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virBufferAddChar(&boot_buf, ',');
 
                 if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_ENABLED)
-                    virBufferAsprintf(&boot_buf, "menu=on");
+                    virBufferAddLit(&boot_buf, "menu=on");
                 else
-                    virBufferAsprintf(&boot_buf, "menu=off");
+                    virBufferAddLit(&boot_buf, "menu=off");
             } else {
                 /* We cannot emit an error when bootmenu is enabled but
                  * unsupported because of backward compatibility */

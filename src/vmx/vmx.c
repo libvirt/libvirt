@@ -3396,7 +3396,7 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
         return -1;
     }
 
-    virBufferAsprintf(buffer, "RemoteDisplay.vnc.enabled = \"true\"\n");
+    virBufferAddLit(buffer, "RemoteDisplay.vnc.enabled = \"true\"\n");
 
     if (def->data.vnc.autoport) {
         VIR_WARN("VNC autoport is enabled, but the automatically assigned "

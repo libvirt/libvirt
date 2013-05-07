@@ -790,7 +790,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
 
     virBufferAsprintf(buf, "  \"%s\" %s,\n", tmp, perms);
     if (readonly) {
-        virBufferAsprintf(buf, "  # don't audit writes to readonly files\n");
+        virBufferAddLit(buf, "  # don't audit writes to readonly files\n");
         virBufferAsprintf(buf, "  deny \"%s\" w,\n", tmp);
     }
 

@@ -330,7 +330,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     priv->job.active = job;
 
     if (priv->fakeReboot)
-        virBufferAsprintf(buf, "  <fakereboot/>\n");
+        virBufferAddLit(buf, "  <fakereboot/>\n");
 
     return 0;
 }

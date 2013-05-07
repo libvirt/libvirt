@@ -1092,7 +1092,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferAsprintf(buf,"    <auth username='%s' type='ceph'>\n",
                           src->auth.cephx.username);
 
-        virBufferAsprintf(buf,"      %s", "<secret");
+        virBufferAddLit(buf,"      <secret");
         if (src->auth.cephx.secret.uuidUsable) {
             virUUIDFormat(src->auth.cephx.secret.uuid, uuid);
             virBufferAsprintf(buf," uuid='%s'", uuid);
@@ -1101,9 +1101,9 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         if (src->auth.cephx.secret.usage != NULL) {
             virBufferAsprintf(buf," usage='%s'", src->auth.cephx.secret.usage);
         }
-        virBufferAsprintf(buf,"%s", "/>\n");
+        virBufferAddLit(buf,"/>\n");
 
-        virBufferAsprintf(buf,"    %s", "</auth>\n");
+        virBufferAddLit(buf,"    </auth>\n");
     }
 
     if (src->vendor != NULL) {

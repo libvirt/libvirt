@@ -526,7 +526,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAddLit(&buf, ">\n");
 
     if (driver || subdriver || cache) {
-        virBufferAsprintf(&buf, "  <driver");
+        virBufferAddLit(&buf, "  <driver");
 
         if (driver)
             virBufferAsprintf(&buf, " name='%s'", driver);
@@ -550,7 +550,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "  <serial>%s</serial>\n", serial);
 
     if (vshCommandOptBool(cmd, "shareable"))
-        virBufferAsprintf(&buf, "  <shareable/>\n");
+        virBufferAddLit(&buf, "  <shareable/>\n");
 
     if (straddr) {
         if (str2DiskAddress(straddr, &diskAddr) != 0) {
@@ -814,14 +814,14 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferAsprintf(&buf, "  <model type='%s'/>\n", model);
 
     if (inboundStr || outboundStr) {
-        virBufferAsprintf(&buf, "  <bandwidth>\n");
+        virBufferAddLit(&buf, "  <bandwidth>\n");
         if (inboundStr && inbound.average > 0) {
             virBufferAsprintf(&buf, "    <inbound average='%llu'", inbound.average);
             if (inbound.peak > 0)
                 virBufferAsprintf(&buf, " peak='%llu'", inbound.peak);
             if (inbound.burst > 0)
                 virBufferAsprintf(&buf, " burst='%llu'", inbound.burst);
-            virBufferAsprintf(&buf, "/>\n");
+            virBufferAddLit(&buf, "/>\n");
         }
         if (outboundStr && outbound.average > 0) {
             virBufferAsprintf(&buf, "    <outbound average='%llu'", outbound.average);
@@ -829,9 +829,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
                 virBufferAsprintf(&buf, " peak='%llu'", outbound.peak);
             if (outbound.burst > 0)
                 virBufferAsprintf(&buf, " burst='%llu'", outbound.burst);
-            virBufferAsprintf(&buf, "/>\n");
+            virBufferAddLit(&buf, "/>\n");
         }
-        virBufferAsprintf(&buf, "  </bandwidth>\n");
+        virBufferAddLit(&buf, "  </bandwidth>\n");
     }
 
     virBufferAddLit(&buf, "</interface>\n");
