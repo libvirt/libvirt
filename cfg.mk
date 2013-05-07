@@ -490,6 +490,11 @@ sc_prohibit_virBufferAdd_with_string_literal:
 	halt='use virBufferAddLit, not virBufferAdd, with a string literal' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_virBufferAsprintf_with_string_literal:
+	@prohibit='\<virBufferAsprintf *\([^,]+, *"([^%"\]|\\.|%%)*"\)'		\
+	halt='use virBufferAddLit, not virBufferAsprintf, with a string literal' \
+	  $(_sc_search_regexp)
+
 # Not only do they fail to deal well with ipv6, but the gethostby*
 # functions are also not thread-safe.
 sc_prohibit_gethostby:
