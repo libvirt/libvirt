@@ -6,6 +6,8 @@
   Daniel Veillard
 -->
 <xsl:stylesheet version="1.0"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exsl="http://exslt.org/common"
   xmlns:str="http://exslt.org/strings"
