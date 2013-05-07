@@ -1498,6 +1498,7 @@ virMacAddrSetRaw;
 
 
 # util/virnetdev.h
+virNetDevAddRoute;
 virNetDevClearIPv4Address;
 virNetDevExists;
 virNetDevGetIndex;

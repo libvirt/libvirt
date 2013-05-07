@@ -822,6 +822,52 @@ cleanup:
 }
 
 /**
+ * virNetDevAddRoute:
+ * @ifname: the interface name
+ * @addr: the IP network address (IPv4 or IPv6)
+ * @prefix: number of 1 bits in the netmask
+ * @gateway: via address for route (same as @addr)
+ *
+ * Add a route for a network IP address to an interface. This function
+ * *does not* remove any previously added IP static routes.
+ *
+ * Returns 0 in case of success or -1 in case of error.
+ */
+
+int
+virNetDevAddRoute(const char *ifname,
+                  virSocketAddrPtr addr,
+                  unsigned int prefix,
+                  virSocketAddrPtr gateway,
+                  unsigned int metric)
+{
+    virCommandPtr cmd = NULL;
+    char *addrstr = NULL, *gatewaystr = NULL;
+    int ret = -1;
+
+    if (!(addrstr = virSocketAddrFormat(addr)))
+        goto cleanup;
+    if (!(gatewaystr = virSocketAddrFormat(gateway)))
+        goto cleanup;
+    cmd = virCommandNew(IP_PATH);
+    virCommandAddArgList(cmd, "route", "add", NULL);
+    virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    virCommandAddArgList(cmd, "via", gatewaystr, "dev", ifname,
+                              "proto", "static", "metric", NULL);
+    virCommandAddArgFormat(cmd, "%u", metric);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(addrstr);
+    VIR_FREE(gatewaystr);
+    virCommandFree(cmd);
+    return ret;
+}
+
+/**
  * virNetDevClearIPv4Address:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)

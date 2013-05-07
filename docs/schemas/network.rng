@@ -316,6 +316,28 @@
             </optional>
           </element>
         </zeroOrMore>
+        <!-- <route> element -->
+        <zeroOrMore>
+          <!-- The (static) route element specifies a network address and gateway
+               address to access that network. Both the network address and
+               the gateway address must be specified. -->
+          <element name="route">
+            <optional>
+              <attribute name="family"><ref name="addr-family"/></attribute>
+            </optional>
+            <attribute name="address"><ref name="ipAddr"/></attribute>
+            <optional>
+              <choice>
+                <attribute name="netmask"><ref name="ipv4Addr"/></attribute>
+                <attribute name="prefix"><ref name="ipPrefix"/></attribute>
+              </choice>
+            </optional>
+            <attribute name="gateway"><ref name="ipAddr"/></attribute>
+            <optional>
+              <attribute name="metric"><ref name="unsignedInt"/></attribute>
+            </optional>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>

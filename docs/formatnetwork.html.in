@@ -546,6 +546,62 @@
       starting.
     </p>
 
+    <h5><a name="elementsStaticroute">Static Routes</a></h5>
+    <p>
+      Static route definitions are used to provide routing information
+      to the virtualization host for networks which are not directly
+      reachable from the virtualization host, but *are* reachable from
+      a guest domain that is itself reachable from the
+      host <span class="since">since 1.0.6</span>.
+    </p>
+
+    <p>
+      As shown in <a href="formatnetwork.html#examplesNoGateway">this
+      example</a>, it is possible to define a virtual network
+      interface with no IPv4 or IPv6 addresses.  Such networks are
+      useful to provide host connectivity to networks which are only
+      reachable via a guest.  A guest with connectivity both to the
+      guest-only network and to another network that is directly
+      reachable from the host can act as a gateway between the
+      networks.  A static route added to the "host-visible" network
+      definition provides the routing information so that IP packets
+      can be sent from the virtualization host to guests on the hidden
+      network.
+    </p>
+
+    <p>
+      Here is a fragment of a definition which shows the static
+      route specification as well as the  IPv4 and IPv6 definitions
+      for network addresses which are referred to in the
+      <code>gateway</code> gateway address specifications.  Note
+      that the third static route specification includes the
+      <code>metric</code> attribute specification with a value of 2.
+      This particular route would *not* be preferred if there was
+      another existing rout on the system with the same address and
+      prefix but with a lower value for the metric. If there is a
+      route in the host system configuration that should be overriden
+      by a route in a virtual network whenever the virtual network is
+      running, the configuration for the system-defined route should
+      be modified to have a higher metric, and the route on the
+      virtual network given a lower metric (for example, the default
+      metric of "1").
+    </p>
+
+    <pre>
+      ...
+        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+          &lt;dhcp&gt;
+            &lt;range start="192.168.122.128" end="192.168.122.254" /&gt;
+          &lt;/dhcp&gt;
+        &lt;/ip&gt;
+        &lt;route address="192.168.222.0" prefix="24" gateway="192.168.122.2" /&gt;
+        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+        &lt;route family="ipv6" address="2001:db8:ca2:3::" prefix="64" gateway="2001:db8:ca2:2::2"/&gt;
+        &lt;route family="ipv6" address="2001:db9:4:1::" prefix="64" gateway="2001:db8:ca2:2::3" metric='2'&gt;
+        &lt;/route&gt;
+      ...
+    </pre>
+
     <h3><a name="elementsAddress">Addressing</a></h3>
 
     <p>
@@ -577,6 +633,7 @@
           &lt;/dhcp&gt;
         &lt;/ip&gt;
         &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+        &lt;route family="ipv6" address="2001:db9:ca1:1::" prefix="64" gateway="2001:db8:ca2:2::2" /&gt;
       &lt;/network&gt;</pre>
 
     <dl>
@@ -824,6 +881,33 @@
             &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="badbob" ip="2001:db8:ca2:2:3::4" /&gt;
           &lt;/dhcp&gt;
         &lt;/ip&gt;
+      &lt;/network&gt;</pre>
+
+    <p>
+      Below is yet another IPv6 variation.  This variation has only
+      IPv6 defined with DHCPv6 on the primary IPv6 network.  A static
+      link if defined for a second IPv6 network which will not be
+      directly visible on the bridge interface but there will be a
+      static route defined for this network via the specified
+      gateway. Note that the gateway address must be directly
+      reachable via (on the same subnet as) one of the &lt;ip&gt;
+      addresses defined for this &lt;network&gt;.
+      <span class="since">Since 1.0.6</span>
+    </p>
+
+    <pre>
+      &lt;network&gt;
+        &lt;name&gt;net7&lt;/name&gt;
+        &lt;bridge name="virbr7" /&gt;
+        &lt;forward mode="route"/&gt;
+        &lt;ip family="ipv6" address="2001:db8:ca2:7::1" prefix="64" &gt;
+          &lt;dhcp&gt;
+            &lt;range start="2001:db8:ca2:7::100" end="2001:db8:ca2::1ff" /&gt;
+            &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="lucas" ip="2001:db8:ca2:2:3::4" /&gt;
+          &lt;/dhcp&gt;
+        &lt;/ip&gt;
+        &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4" &gt;
+        &lt;/route&gt;
       &lt;/network&gt;</pre>
 
     <h3><a name="examplesPrivate">Isolated network config</a></h3>
