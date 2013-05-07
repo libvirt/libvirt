@@ -12,66 +12,22 @@
       as well but we either haven't tested or received reports for them.
     </p>
 
-    <h2><a name="installer">Experimental installation package</a></h2>
+    <h2><a name="installer">Installation packages</a></h2>
 
     <p>
-      A windows installation package is in development.  An experimental
-      version is available here:
-    </p>
-
-    <a href="http://libvirt.org/sources/win32_experimental/Libvirt-0.8.8-0.exe">http://libvirt.org/sources/win32_experimental/Libvirt-0.8.8-0.exe</a>
-
-    <p>
-      <b>It is not production ready.</b>
+      Users who need pre-built Windows DLLs of libvirt are advised
+      to use the <a href="http://virt-manager.org">Virt Viewer</a>
+      pre-compiled <a href="http://virt-manager.org/download/">Windows MSI packages</a>
     </p>
 
     <p>
-      This version includes the libvirt development headers and libraries
-      for compiling against, the virsh shell with its needed dependencies,
-      and untested Python bindings.
+      These installers include the libvirt, gtk-vnc and spice-gtk DLLs
+      along with any of their pre-requisite supporting DLLs, the virsh
+      command line tool and the virt-viewer &amp; remote-viewer graphical
+      tools. The development headers are not currently provided in this
+      installer, so this cannot be used for compiling new applications
+      against libvirt.
     </p>
-
-    <h3><a name="caveats">Caveats</a></h3>
-
-    <ul>
-      <li>
-        This installer just repackages the files compiled using Matthias
-        Bolte's msys_setup scripting (described below).
-      </li>
-      <li>
-        This is a .exe installer, created using NSIS.  We're looking into
-        something to create .msi installers as well.
-      </li>
-      <li>
-        The script for the NSIS installer is available online
-        <a href="https://github.com/justinclift/nsis_libvirt_installer">here</a>.
-      </li>
-    </ul>
-
-    <h3><a name="knowninstallerprobs">Existing problems with this installer we know about</a></h3>
-
-    <p>
-      These are problems we know about, and need to be fixed in subsequent
-      versions of the installer (assistance welcomed):
-    </p>
-
-    <ul>
-      <li>
-        New versions install over other libvirt versions
-        <br /><br />
-        If a version of this installer has installed libvirt on the system
-        already, this installer will automatically suggest the same
-        installation location, then overwrite the version already there
-        without checking.
-        <br /><br />
-        This is fairly non-optimal, and should be fixed.  What should
-        probably happen, is for this installer to detect an existing
-        installation then offer to either uninstall it first or ask for a
-        new installation location.
-        <br /><br />
-      </li>
-
-    </ul>
 
     <h2><a name="conntypes">Connection types</a></h2>
 
