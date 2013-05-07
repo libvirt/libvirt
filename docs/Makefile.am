@@ -149,7 +149,7 @@ todo.html.in: todo.pl
 		|| { rm $@ && exit 1; }; \
 	else \
 		echo "Stubbing $@"; \
-		echo "<html><body><h1>Todo list</h1></body></html>" > $@ ; \
+		echo "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><h1>Todo list unavailable: no config file</h1></body></html>" > $@ ; \
 	fi
 
 todo:
