@@ -2378,13 +2378,48 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
 }
 
+/* Capabilities that are architecture depending
+ * initialized for QEMU.
+ */
+static int
+virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
+                            qemuMonitorPtr mon)
+{
+    char *archstr = NULL;
+    int ret = -1;
+
+    if (!(archstr = qemuMonitorGetTargetArch(mon)))
+        return -1;
+
+    if ((qemuCaps->arch = virQEMUCapsArchFromString(archstr)) == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown QEMU arch %s"), archstr);
+        goto cleanup;
+    }
+
+    /*
+     * Currently only x86_64 and i686 support PCI-multibus,
+     * -no-acpi and -no-kvm-pit-reinjection.
+     */
+    if (qemuCaps->arch == VIR_ARCH_X86_64 ||
+        qemuCaps->arch == VIR_ARCH_I686) {
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(archstr);
+    return ret;
+}
 
 static int
 virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
@@ -2402,7 +2437,6 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     char *monarg = NULL;
     char *monpath = NULL;
     char *pidfile = NULL;
-    char *archstr;
     pid_t pid = 0;
     virDomainObj vm;
 
@@ -2515,27 +2549,12 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasic(qemuCaps);
 
+    if (virQEMUCapsInitArchQMPBasic(qemuCaps, mon) < 0)
+        goto cleanup;
+
     /* USB option is supported v1.3.0 onwards */
     if (qemuCaps->version >= 1003000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
-
-    if (!(archstr = qemuMonitorGetTargetArch(mon)))
-        goto cleanup;
-
-    if ((qemuCaps->arch = virQEMUCapsArchFromString(archstr)) == VIR_ARCH_NONE) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown QEMU arch %s"), archstr);
-        VIR_FREE(archstr);
-        goto cleanup;
-    }
-    VIR_FREE(archstr);
-
-    /* Currently only x86_64 and i686 support PCI-multibus and -no-acpi. */
-    if (qemuCaps->arch == VIR_ARCH_X86_64 ||
-        qemuCaps->arch == VIR_ARCH_I686) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
-    }
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;
