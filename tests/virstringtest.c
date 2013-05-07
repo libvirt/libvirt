@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -108,6 +108,95 @@ cleanup:
     return ret;
 }
 
+static bool fail;
+
+static const char *
+testStrdupLookup1(size_t i)
+{
+    switch (i) {
+    case 0:
+        return "hello";
+    case 1:
+        return NULL;
+    default:
+        fail = true;
+        return "oops";
+    }
+}
+
+static size_t
+testStrdupLookup2(size_t i)
+{
+    if (i)
+        fail = true;
+    return 5;
+}
+
+static int
+testStrdup(const void *data ATTRIBUTE_UNUSED)
+{
+    char *array[] = { NULL, NULL };
+    size_t i = 0;
+    size_t j = 0;
+    size_t k = 0;
+    int ret = -1;
+    int value;
+
+    value = VIR_STRDUP(array[i++], testStrdupLookup1(j++));
+    if (value != 1) {
+        fprintf(stderr, "unexpected strdup result %d, expected 1\n", value);
+        goto cleanup;
+    }
+    if (i != 1) {
+        fprintf(stderr, "unexpected side effects i=%zu, expected 1\n", i);
+        goto cleanup;
+    }
+    if (j != 1) {
+        fprintf(stderr, "unexpected side effects j=%zu, expected 1\n", j);
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(array[0], "hello") || array[1]) {
+        fprintf(stderr, "incorrect array contents '%s' '%s'\n",
+                NULLSTR(array[0]), NULLSTR(array[1]));
+        goto cleanup;
+    }
+
+    value = VIR_STRNDUP(array[i++], testStrdupLookup1(j++),
+                        testStrdupLookup2(k++));
+    if (value != 0) {
+        fprintf(stderr, "unexpected strdup result %d, expected 0\n", value);
+        goto cleanup;
+    }
+    if (i != 2) {
+        fprintf(stderr, "unexpected side effects i=%zu, expected 2\n", i);
+        goto cleanup;
+    }
+    if (j != 2) {
+        fprintf(stderr, "unexpected side effects j=%zu, expected 2\n", j);
+        goto cleanup;
+    }
+    if (k != 1) {
+        fprintf(stderr, "unexpected side effects k=%zu, expected 1\n", k);
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(array[0], "hello") || array[1]) {
+        fprintf(stderr, "incorrect array contents '%s' '%s'\n",
+                NULLSTR(array[0]), NULLSTR(array[1]));
+        goto cleanup;
+    }
+
+    if (fail) {
+        fprintf(stderr, "side effects failed\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    for (i = 0; i < ARRAY_CARDINALITY(array); i++)
+        VIR_FREE(array[i]);
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -154,6 +243,8 @@ mymain(void)
     const char *tokens7[] = { "The", "quick", "brown", "fox", "", NULL };
     TEST_SPLIT("The quick brown fox ", " ", 0, tokens7);
 
+    if (virtTestRun("strdup", 1, testStrdup, NULL) < 0)
+        ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
