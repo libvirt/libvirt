@@ -152,7 +152,11 @@ setPyVirTypedParameter(PyObject *info,
                        const virTypedParameterPtr params, int nparams)
 {
     PyObject *key, *value;
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 4
+    int pos = 0;
+#else
     Py_ssize_t pos = 0;
+#endif
     virTypedParameterPtr temp = NULL, ret = NULL;
     Py_ssize_t size;
     int i;
