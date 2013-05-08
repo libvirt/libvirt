@@ -891,7 +891,7 @@ virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
     int fd, ret;
 
     if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
-        virReportSystemError(errno, _("cannot open file '%s'"), path);
+        virReportSystemError(-fd, _("Failed to open file '%s'"), path);
         return -1;
     }
 
@@ -950,7 +950,7 @@ virStorageFileGetMetadataRecurse(const char *path, const char *directory,
         return NULL;
 
     if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
-        virReportSystemError(-fd, _("cannot open file '%s'"), path);
+        virReportSystemError(-fd, _("Failed to open file '%s'"), path);
         return NULL;
     }
 

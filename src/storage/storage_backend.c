@@ -405,7 +405,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
                             vol->target.perms.gid,
                             operation_flags)) < 0) {
         virReportSystemError(-fd,
-                             _("cannot create path '%s'"),
+                             _("Failed to create file '%s'"),
                              vol->target.path);
         goto cleanup;
     }

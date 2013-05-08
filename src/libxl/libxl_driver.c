@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*/
-/*  Copyright (C) 2006-2012 Red Hat, Inc.
+/*  Copyright (C) 2006-2013 Red Hat, Inc.
  *  Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *  Copyright (C) 2011 Univention GmbH.
  *
@@ -549,8 +549,8 @@ libxlSaveImageOpen(libxlDriverPrivatePtr driver, const char *from,
     char *xml = NULL;
 
     if ((fd = virFileOpenAs(from, O_RDONLY, 0, -1, -1, 0)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot read domain image"));
+        virReportSystemError(-fd,
+                             _("Failed to open domain image file '%s'"), from);
         goto error;
     }
 

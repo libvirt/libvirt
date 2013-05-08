@@ -2562,10 +2562,9 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
 
     /* First try creating the file as root */
     if (!is_reg) {
-        fd = open(path, oflags & ~O_CREAT);
-        if (fd < 0) {
-            virReportSystemError(errno, _("unable to open %s"), path);
-            goto cleanup;
+        if ((fd = open(path, oflags & ~O_CREAT)) < 0) {
+            fd = -errno;
+            goto error;
         }
     } else {
         if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR, uid, gid,
@@ -2576,36 +2575,30 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
                qemu user (cfg->user) is non-root, just set a flag to
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
-            if ((fd != -EACCES && fd != -EPERM) ||
-                cfg->user == getuid()) {
-                virReportSystemError(-fd,
-                                     _("Failed to create file '%s'"),
-                                     path);
-                goto cleanup;
-            }
+            if ((fd != -EACCES && fd != -EPERM) || cfg->user == getuid())
+                goto error;
 
             /* On Linux we can also verify the FS-type of the directory. */
             switch (path_shared) {
                 case 1:
-                   /* it was on a network share, so we'll continue
-                    * as outlined above
-                    */
-                   break;
+                    /* it was on a network share, so we'll continue
+                     * as outlined above
+                     */
+                    break;
 
                 case -1:
-                   virReportSystemError(errno,
-                                        _("Failed to create file "
-                                          "'%s': couldn't determine fs type"),
-                                        path);
-                   goto cleanup;
+                    virReportSystemError(-fd, oflags & O_CREAT
+                                         ? _("Failed to create file "
+                                             "'%s': couldn't determine fs type")
+                                         : _("Failed to open file "
+                                             "'%s': couldn't determine fs type"),
+                                         path);
+                    goto cleanup;
 
                 case 0:
                 default:
-                   /* local file - log the error returned by virFileOpenAs */
-                   virReportSystemError(-fd,
-                                        _("Failed to create file '%s'"),
-                                        path);
-                   goto cleanup;
+                    /* local file - log the error returned by virFileOpenAs */
+                    goto error;
             }
 
             /* Retry creating the file as cfg->user */
@@ -2614,8 +2607,9 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
                                     S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                     cfg->user, cfg->group,
                                     vfoflags | VIR_FILE_OPEN_FORK)) < 0) {
-                virReportSystemError(-fd,
-                                   _("Error from child process creating '%s'"),
+                virReportSystemError(-fd, oflags & O_CREAT
+                                     ? _("Error from child process creating '%s'")
+                                     : _("Error from child process opening '%s'"),
                                      path);
                 goto cleanup;
             }
@@ -2634,6 +2628,13 @@ cleanup:
         *bypassSecurityDriver = bypass_security;
     virObjectUnref(cfg);
     return fd;
+
+error:
+    virReportSystemError(-fd, oflags & O_CREAT
+                         ? _("Failed to create file '%s'")
+                         : _("Failed to open file '%s'"),
+                         path);
+    goto cleanup;
 }
 
 /* Helper function to execute a migration to file with a correct save header
