@@ -973,9 +973,11 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
  * uid:gid before returning (even if it already existed with a
  * different owner). If @flags includes VIR_FILE_OPEN_FORCE_MODE,
  * ensure it has those permissions before returning (again, even if
- * the file already existed with different permissions).  The return
- * value (if non-negative) is the file descriptor, left open.  Returns
- * -errno on failure.  */
+ * the file already existed with different permissions).
+ *
+ * The return value (if non-negative) is the file descriptor, left
+ * open.  Returns -errno on failure.
+ */
 int
 virFileOpenAs(const char *path, int openflags, mode_t mode,
               uid_t uid, gid_t gid, unsigned int flags)
@@ -999,6 +1001,8 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 
         if ((fd = open(path, openflags, mode)) < 0) {
             ret = -errno;
+            if (!(flags & VIR_FILE_OPEN_FORK))
+                goto error;
         } else {
             ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
             if (ret < 0)
@@ -1024,45 +1028,26 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 
             /* On Linux we can also verify the FS-type of the
              * directory.  (this is a NOP on other platforms). */
-            switch (virStorageFileIsSharedFS(path)) {
-            case 1:
-                /* it was on a network share, so we'll re-try */
-                break;
-            case -1:
-                /* failure detecting fstype */
-                virReportSystemError(errno, _("couldn't determine fs type "
-                                              "of mount containing '%s'"), path);
+            if (virStorageFileIsSharedFS(path) <= 0)
                 goto error;
-            case 0:
-            default:
-                /* file isn't on a recognized network FS */
-                goto error;
-            }
         }
 
         /* passed all prerequisites - retry the open w/fork+setuid */
         if ((fd = virFileOpenForked(path, openflags, mode, uid, gid, flags)) < 0) {
             ret = fd;
-            fd = -1;
             goto error;
         }
     }
 
     /* File is successfully opened */
-
     return fd;
 
 error:
-    if (fd < 0) {
-        /* whoever failed the open last has already set ret = -errno */
-        virReportSystemError(-ret, openflags & O_CREAT
-                             ? _("failed to create file '%s'")
-                             : _("failed to open file '%s'"),
-                             path);
-    } else {
+    if (fd >= 0) {
         /* some other failure after the open succeeded */
         VIR_FORCE_CLOSE(fd);
     }
+    /* whoever failed the open last has already set ret = -errno */
     return ret;
 }
 
