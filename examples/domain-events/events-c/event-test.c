@@ -473,7 +473,12 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    virEventRegisterDefaultImpl();
+    if (virEventRegisterDefaultImpl() < 0) {
+        virErrorPtr err = virGetLastError();
+        fprintf(stderr, "Failed to register event implementation: %s\n",
+                err && err->message ? err->message: "Unknown error");
+        return -1;
+    }
 
     virConnectPtr dconn = NULL;
     dconn = virConnectOpenAuth(argc > 1 ? argv[1] : NULL,
