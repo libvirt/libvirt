@@ -5853,7 +5853,7 @@ qemuDomainAttachDeviceControllerLive(virQEMUDriverPtr driver,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk controller bus '%s' cannot be hotplugged."),
+                       _("'%s' controller cannot be hotplugged."),
                        virDomainControllerTypeToString(cont->type));
         break;
     }
@@ -5968,7 +5968,7 @@ qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
         break;
     default :
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk controller bus '%s' cannot be hotunplugged."),
+                       _("'%s' controller cannot be hotunplugged."),
                        virDomainControllerTypeToString(cont->type));
     }
     return ret;
