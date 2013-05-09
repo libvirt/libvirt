@@ -468,6 +468,11 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    if (virInitialize() < 0) {
+        fprintf(stderr, "Failed to initialize libvirt");
+        return -1;
+    }
+
     virEventRegisterDefaultImpl();
 
     virConnectPtr dconn = NULL;
