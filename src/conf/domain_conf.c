@@ -6990,6 +6990,12 @@ virDomainTPMDefParseXML(const xmlNodePtr node,
         goto error;
     }
 
+    if (nbackends == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing TPM device backend"));
+        goto error;
+    }
+
     if (!(backend = virXMLPropString(backends[0], "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing TPM device backend type"));
