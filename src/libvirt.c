@@ -13701,10 +13701,10 @@ virStorageVolDownload(virStorageVolPtr vol,
         vol->conn->storageDriver->storageVolDownload) {
         int ret;
         ret = vol->conn->storageDriver->storageVolDownload(vol,
-                                                    stream,
-                                                    offset,
-                                                    length,
-                                                    flags);
+                                                           stream,
+                                                           offset,
+                                                           length,
+                                                           flags);
         if (ret < 0)
             goto error;
         return ret;
