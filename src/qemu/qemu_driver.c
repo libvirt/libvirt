@@ -7362,9 +7362,12 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
         case 2: /* fill swap hard limit here */
             rc = virCgroupGetMemSwapHardLimit(priv->cgroup, &val);
             if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get swap hard limit"));
-                goto cleanup;
+                if (rc != -ENOENT) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to get swap hard limit"));
+                    goto cleanup;
+                }
+                val = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
             }
             if (virTypedParameterAssign(param,
                                         VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
