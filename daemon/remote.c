@@ -2899,6 +2899,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     DBusConnection *sysbus;
+    unsigned long long timestamp;
 
     virMutexLock(&priv->lock);
 
@@ -2913,7 +2914,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
 
     if (virNetServerClientGetUNIXIdentity(client, &callerUid, &callerGid,
-                                          &callerPid) < 0) {
+                                          &callerPid, &timestamp) < 0) {
         VIR_ERROR(_("cannot get peer socket identity"));
         goto authfail;
     }
