@@ -1,7 +1,7 @@
 /*
  * virnetsshsession.c: ssh network transport provider based on libssh2
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,7 @@
 #include "virthread.h"
 #include "virutil.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virobject.h"
 #include "virstring.h"
 

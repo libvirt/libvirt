@@ -32,6 +32,7 @@
 #include "storage_backend_disk.h"
 #include "viralloc.h"
 #include "vircommand.h"
+#include "virfile.h"
 #include "configmake.h"
 #include "virstring.h"
 

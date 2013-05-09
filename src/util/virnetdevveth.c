@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * This library is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virstring.h"
 #include "virutil.h"
 

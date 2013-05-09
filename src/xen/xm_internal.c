@@ -36,6 +36,7 @@
 #include <xen/dom0_ops.h>
 
 #include "virerror.h"
+#include "virfile.h"
 #include "datatypes.h"
 #include "xm_internal.h"
 #include "xen_driver.h"

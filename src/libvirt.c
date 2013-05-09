@@ -59,6 +59,7 @@
 # include "rpc/virnettlscontext.h"
 #endif
 #include "vircommand.h"
+#include "virfile.h"
 #include "virrandom.h"
 #include "viruri.h"
 #include "virthread.h"

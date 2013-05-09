@@ -34,6 +34,7 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virxml.h"
 #include "conf/node_device_conf.h"
 

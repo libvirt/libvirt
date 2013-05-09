@@ -53,6 +53,7 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
 # include "virutil.h"
 # include "virerror.h"
 # include "viralloc.h"
+# include "virfile.h"
 # include "virlog.h"
 # include "virportallocator.h"
 # include "virstring.h"

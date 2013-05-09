@@ -27,6 +27,7 @@
 #include "dirname.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "md5.h"
 #include "parallels_utils.h"
 #include "virstring.h"

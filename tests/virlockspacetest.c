@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 
 #include "virlockspace.h"

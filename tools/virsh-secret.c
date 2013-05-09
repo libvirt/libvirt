@@ -1,7 +1,7 @@
 /*
  * virsh-secret.c: Commands to manage secret
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@
 #include "base64.h"
 #include "virbuffer.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virutil.h"
 #include "virxml.h"
 

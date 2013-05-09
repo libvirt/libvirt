@@ -46,6 +46,7 @@
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virthread.h"
 #include "virstring.h"

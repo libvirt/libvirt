@@ -1,7 +1,7 @@
 /*
  * virsysinfo.c: get SMBIOS/sysinfo information from the host
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
  *
  * This library is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "vircommand.h"
+#include "virfile.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO

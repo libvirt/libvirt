@@ -1,7 +1,7 @@
 /*
  * virfile.h: safer file handling
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
  * Copyright (C) 2010 Eric Blake
@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __VIR_FILES_H_
-# define __VIR_FILES_H_
+#ifndef __VIR_FILE_H_
+# define __VIR_FILE_H_
 
 # include <stdio.h>
 
@@ -35,6 +35,12 @@ typedef enum virFileCloseFlags {
     VIR_FILE_CLOSE_IGNORE_EBADF = 1 << 1,
     VIR_FILE_CLOSE_DONT_LOG = 1 << 2,
 } virFileCloseFlags;
+
+ssize_t saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
+ssize_t safewrite(int fd, const void *buf, size_t count)
+    ATTRIBUTE_RETURN_CHECK;
+int safezero(int fd, off_t offset, off_t len)
+    ATTRIBUTE_RETURN_CHECK;
 
 /* Don't call these directly - use the macros below */
 int virFileClose(int *fdptr, virFileCloseFlags flags)
@@ -110,4 +116,111 @@ int virFileLoopDeviceAssociate(const char *file,
 
 int virFileDeleteTree(const char *dir);
 
-#endif /* __VIR_FILES_H */
+int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
+
+int virFileReadAll(const char *path, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
+
+int virFileWriteStr(const char *path, const char *str, mode_t mode)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virFileMatchesNameSuffix(const char *file,
+                             const char *name,
+                             const char *suffix);
+
+int virFileHasSuffix(const char *str,
+                     const char *suffix);
+
+int virFileStripSuffix(char *str,
+                       const char *suffix) ATTRIBUTE_RETURN_CHECK;
+
+int virFileLinkPointsTo(const char *checkLink,
+                        const char *checkDest);
+
+int virFileResolveLink(const char *linkpath,
+                       char **resultpath) ATTRIBUTE_RETURN_CHECK;
+int virFileResolveAllLinks(const char *linkpath,
+                           char **resultpath) ATTRIBUTE_RETURN_CHECK;
+
+int virFileIsLink(const char *linkpath)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
+char *virFindFileInPath(const char *file);
+
+bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
+bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
+bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
+
+char *virFileSanitizePath(const char *path);
+
+enum {
+    VIR_FILE_OPEN_NONE        = 0,
+    VIR_FILE_OPEN_NOFORK      = (1 << 0),
+    VIR_FILE_OPEN_FORK        = (1 << 1),
+    VIR_FILE_OPEN_FORCE_MODE  = (1 << 2),
+    VIR_FILE_OPEN_FORCE_OWNER = (1 << 3),
+};
+int virFileAccessibleAs(const char *path, int mode,
+                        uid_t uid, gid_t gid)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+int virFileOpenAs(const char *path, int openflags, mode_t mode,
+                  uid_t uid, gid_t gid,
+                  unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
+enum {
+    VIR_DIR_CREATE_NONE        = 0,
+    VIR_DIR_CREATE_AS_UID      = (1 << 0),
+    VIR_DIR_CREATE_FORCE_PERMS = (1 << 1),
+    VIR_DIR_CREATE_ALLOW_EXIST = (1 << 2),
+};
+int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
+                 unsigned int flags) ATTRIBUTE_RETURN_CHECK;
+int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
+int virFileMakePathWithMode(const char *path,
+                            mode_t mode) ATTRIBUTE_RETURN_CHECK;
+
+char *virFileBuildPath(const char *dir,
+                       const char *name,
+                       const char *ext) ATTRIBUTE_RETURN_CHECK;
+
+
+# ifdef WIN32
+/* On Win32, the canonical directory separator is the backslash, and
+ * the search path separator is the semicolon. Note that also the
+ * (forward) slash works as directory separator.
+ */
+#  define VIR_FILE_DIR_SEPARATOR '\\'
+#  define VIR_FILE_DIR_SEPARATOR_S "\\"
+#  define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR || (c) == '/')
+#  define VIR_FILE_PATH_SEPARATOR ';'
+#  define VIR_FILE_PATH_SEPARATOR_S ";"
+
+# else  /* !WIN32 */
+
+#  define VIR_FILE_DIR_SEPARATOR '/'
+#  define VIR_FILE_DIR_SEPARATOR_S "/"
+#  define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR)
+#  define VIR_FILE_PATH_SEPARATOR ':'
+#  define VIR_FILE_PATH_SEPARATOR_S ":"
+
+# endif /* !WIN32 */
+
+bool virFileIsAbsPath(const char *path);
+int virFileAbsPath(const char *path,
+                   char **abspath) ATTRIBUTE_RETURN_CHECK;
+const char *virFileSkipRoot(const char *path);
+
+int virFileOpenTty(int *ttymaster,
+                   char **ttyName,
+                   int rawmode);
+
+char *virFileFindMountPoint(const char *type);
+
+void virFileWaitForDevices(void);
+
+/* NB: this should be combined with virFileBuildPath */
+# define virBuildPath(path, ...) \
+    virBuildPathInternal(path, __VA_ARGS__, NULL)
+int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
+
+#endif /* __VIR_FILE_H */

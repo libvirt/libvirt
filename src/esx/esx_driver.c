@@ -2,7 +2,7 @@
 /*
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2009-2013 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -29,6 +29,7 @@
 #include "snapshot_conf.h"
 #include "virauth.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "vmx.h"
@@ -44,8 +45,8 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
-#include "viruri.h"
 #include "virstring.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

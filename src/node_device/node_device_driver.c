@@ -1,7 +1,7 @@
 /*
  * node_device.c: node device enumeration
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -32,6 +32,7 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "node_device_conf.h"

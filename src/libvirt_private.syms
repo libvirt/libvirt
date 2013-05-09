@@ -1271,18 +1271,51 @@ virEventPollUpdateTimeout;
 
 
 # util/virfile.h
+saferead;
+safewrite;
+safezero;
+virBuildPathInternal;
+virDirCreate;
+virFileAbsPath;
+virFileAccessibleAs;
+virFileBuildPath;
 virFileClose;
 virFileDeleteTree;
 virFileDirectFdFlag;
+virFileExists;
 virFileFclose;
 virFileFdopen;
+virFileFindMountPoint;
+virFileHasSuffix;
+virFileIsAbsPath;
+virFileIsDir;
+virFileIsExecutable;
+virFileIsLink;
+virFileLinkPointsTo;
+virFileLock;
 virFileLoopDeviceAssociate;
+virFileMakePath;
+virFileMakePathWithMode;
+virFileMatchesNameSuffix;
+virFileOpenAs;
+virFileOpenTty;
+virFileReadAll;
+virFileReadLimFD;
+virFileResolveAllLinks;
+virFileResolveLink;
 virFileRewrite;
+virFileSanitizePath;
+virFileSkipRoot;
+virFileStripSuffix;
 virFileTouch;
+virFileUnlock;
 virFileUpdatePerm;
+virFileWaitForDevices;
 virFileWrapperFdClose;
 virFileWrapperFdFree;
 virFileWrapperFdNew;
+virFileWriteStr;
+virFindFileInPath;
 
 
 # util/virhash.h
@@ -1861,44 +1894,11 @@ virUSBDeviceSetUsedBy;
 
 
 # util/virutil.h
-saferead;
-safewrite;
-safezero;
-virBuildPathInternal;
 virCompareLimitUlong;
-virDirCreate;
 virDoubleToStr;
 virEnumFromString;
 virEnumToString;
-virFileAbsPath;
-virFileAccessibleAs;
-virFileBuildPath;
-virFileExists;
-virFileFindMountPoint;
-virFileHasSuffix;
-virFileIsAbsPath;
-virFileIsDir;
-virFileIsExecutable;
-virFileIsLink;
-virFileLinkPointsTo;
-virFileLock;
-virFileMakePath;
-virFileMakePathWithMode;
-virFileMatchesNameSuffix;
-virFileOpenAs;
-virFileOpenTty;
-virFileReadAll;
-virFileReadLimFD;
-virFileResolveAllLinks;
-virFileResolveLink;
-virFileSanitizePath;
-virFileSkipRoot;
-virFileStripSuffix;
-virFileUnlock;
-virFileWaitForDevices;
-virFileWriteStr;
 virFindFCHostCapableVport;
-virFindFileInPath;
 virFormatIntDecimal;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;

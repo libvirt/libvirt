@@ -37,6 +37,7 @@
 #include "viralloc.h"
 #include "viruuid.h"
 #include "virbuffer.h"
+#include "virfile.h"
 #include "virpci.h"
 #include "virstring.h"
 
