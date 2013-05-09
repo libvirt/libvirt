@@ -20,6 +20,18 @@ do
     result=`$cmd 2>&1`
     ret=$?
 
+    grep -- '-invalid.xml$' <<< "$xml" 2>&1 >/dev/null
+    invalid=$?
+
+    # per xmllint man page, the return codes for validation error
+    # are 3 and 4
+    if test $invalid -eq 0; then
+        if test $ret -eq 4 || test $ret -eq 3; then
+            ret=0
+        elif test $ret -eq 0; then
+            ret=3
+        fi
+    fi
     test_result $n $(basename $(dirname $xml))"/"$(basename $xml) $ret
     if test "$verbose" = "1" && test $ret != 0 ; then
         printf '%s\n' "$cmd" "$result"
