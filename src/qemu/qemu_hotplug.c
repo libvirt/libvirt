@@ -2301,7 +2301,7 @@ int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
                                        dev->data.controller->type,
                                        dev->data.controller->idx)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("disk controller %s:%d not found"),
+                       _("controller %s:%d not found"),
                        virDomainControllerTypeToString(dev->data.controller->type),
                        dev->data.controller->idx);
         goto cleanup;

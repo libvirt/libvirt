@@ -12026,7 +12026,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->ncontrollers != dst->ncontrollers) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain disk controller count %zu "
+                       _("Target domain controller count %zu "
                          "does not match source %zu"),
                        dst->ncontrollers, src->ncontrollers);
         return false;
