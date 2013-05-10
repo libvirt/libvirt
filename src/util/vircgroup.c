@@ -1168,14 +1168,14 @@ static int virCgroupPartitionEscape(char **path)
     return 0;
 }
 
-static char *virCgroupSetPartitionSuffix(const char *path)
+static int virCgroupSetPartitionSuffix(const char *path, char **res)
 {
     char **tokens = virStringSplit(path, "/", 0);
     size_t i;
-    char *ret = NULL;
+    int ret = -1;
 
     if (!tokens)
-        return NULL;
+        return ret;
 
     for (i = 0 ; tokens[i] != NULL ; i++) {
         /* Whitelist the 3 top level fixed dirs
@@ -1194,20 +1194,27 @@ static char *virCgroupSetPartitionSuffix(const char *path)
             !strchr(tokens[i], '.')) {
             if (VIR_REALLOC_N(tokens[i],
                               strlen(tokens[i]) + strlen(".partition") + 1) < 0) {
+                ret = -ENOMEM;
                 virReportOOMError();
                 goto cleanup;
             }
             strcat(tokens[i], ".partition");
         }
 
-        if (virCgroupPartitionEscape(&(tokens[i])) < 0) {
-            virReportOOMError();
+        ret = virCgroupPartitionEscape(&(tokens[i]));
+        if (ret < 0) {
+            if (ret == -ENOMEM)
+                virReportOOMError();
             goto cleanup;
         }
     }
 
-    if (!(ret = virStringJoin((const char **)tokens, "/")))
+    if (!(*res = virStringJoin((const char **)tokens, "/"))) {
+        ret = -ENOMEM;
         goto cleanup;
+    }
+
+    ret = 0;
 
 cleanup:
     virStringFreeList(tokens);
@@ -1242,9 +1249,9 @@ int virCgroupNewPartition(const char *path,
 
     /* XXX convert all cgroups APIs to use error report
      * APIs instead of returning errno */
-    if (!(newpath = virCgroupSetPartitionSuffix(path))) {
+    rc = virCgroupSetPartitionSuffix(path, &newpath);
+    if (rc < 0) {
         virResetLastError();
-        rc = -ENOMEM;
         goto cleanup;
     }
 
