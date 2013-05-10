@@ -616,4 +616,9 @@ LIBVIRT_1.0.5 {
         virNodeDeviceDetachFlags;
 } LIBVIRT_1.0.3;
 
+LIBVIRT_1.0.6 {
+    global:
+        virGetLastErrorMessage;
+} LIBVIRT_1.0.5;
+
 # .... define new API here using predicted next version number ....

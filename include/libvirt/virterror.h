@@ -313,6 +313,8 @@ void			virResetLastError	(void);
 void			virResetError		(virErrorPtr err);
 void			virFreeError		(virErrorPtr err);
 
+const char *            virGetLastErrorMessage  (void);
+
 virErrorPtr		virConnGetLastError	(virConnectPtr conn);
 void			virConnResetLastError	(virConnectPtr conn);
 int			virCopyLastError	(virErrorPtr to);

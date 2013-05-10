@@ -233,6 +233,27 @@ virGetLastError(void)
     return err;
 }
 
+
+/**
+ * virGetLastErrorMessage:
+ *
+ * Get the most recent error message
+ *
+ * Returns the most recent error message string in this
+ * thread, or a generic message if none is set
+ */
+const char *
+virGetLastErrorMessage(void)
+{
+    virErrorPtr err = virLastErrorObject();
+    if (!err || err->code == VIR_ERR_OK)
+        return _("no error");
+    if (err->message == NULL)
+        return _("unknown error");
+    return err->message;
+}
+
+
 /**
  * virSetError:
  * @newerr: previously saved error object
