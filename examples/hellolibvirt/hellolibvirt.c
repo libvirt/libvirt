@@ -9,42 +9,6 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
-static void
-showError(virConnectPtr conn)
-{
-    int ret;
-    virErrorPtr err;
-
-    err = malloc(sizeof(*err));
-    if (!err) {
-        printf("Could not allocate memory for error data\n");
-        goto out;
-    }
-
-    ret = virConnCopyLastError(conn, err);
-
-    switch (ret) {
-    case 0:
-        printf("No error found\n");
-        break;
-
-    case -1:
-        printf("Parameter error when attempting to get last error\n");
-        break;
-
-    default:
-        printf("libvirt reported: \"%s\"\n", err->message);
-        break;
-    }
-
-    virResetError(err);
-    free(err);
-
-out:
-    return;
-}
-
-
 static int
 showHypervisorInfo(virConnectPtr conn)
 {
@@ -59,15 +23,15 @@ showHypervisorInfo(virConnectPtr conn)
     hvType = virConnectGetType(conn);
     if (!hvType) {
         ret = 1;
-        printf("Failed to get hypervisor type\n");
-        showError(conn);
+        printf("Failed to get hypervisor type: %s\n",
+               virGetLastErrorMessage());
         goto out;
     }
 
     if (0 != virConnectGetVersion(conn, &hvVer)) {
         ret = 1;
-        printf("Failed to get hypervisor version\n");
-        showError(conn);
+        printf("Failed to get hypervisor version: %s\n",
+               virGetLastErrorMessage());
         goto out;
     }
 
@@ -102,16 +66,16 @@ showDomains(virConnectPtr conn)
     numActiveDomains = virConnectNumOfDomains(conn);
     if (numActiveDomains == -1) {
         ret = 1;
-        printf("Failed to get number of active domains\n");
-        showError(conn);
+        printf("Failed to get number of active domains: %s\n",
+               virGetLastErrorMessage());
         goto out;
     }
 
     numInactiveDomains = virConnectNumOfDefinedDomains(conn);
     if (numInactiveDomains == -1) {
         ret = 1;
-        printf("Failed to get number of inactive domains\n");
-        showError(conn);
+        printf("Failed to get number of inactive domains: %s\n",
+               virGetLastErrorMessage());
         goto out;
     }
 
@@ -157,16 +121,16 @@ main(int argc, char *argv[])
 
     if (!conn) {
         ret = 1;
-        printf("No connection to hypervisor\n");
-        showError(conn);
+        printf("No connection to hypervisor: %s\n",
+               virGetLastErrorMessage());
         goto out;
     }
 
     uri = virConnectGetURI(conn);
     if (!uri) {
         ret = 1;
-        printf("Failed to get URI for hypervisor connection\n");
-        showError(conn);
+        printf("Failed to get URI for hypervisor connection: %s\n",
+               virGetLastErrorMessage());
         goto disconnect;
     }
 
@@ -185,8 +149,8 @@ main(int argc, char *argv[])
 
 disconnect:
     if (0 != virConnectClose(conn)) {
-        printf("Failed to disconnect from hypervisor\n");
-        showError(conn);
+        printf("Failed to disconnect from hypervisor: %s\n",
+               virGetLastErrorMessage());
         ret = 1;
     } else {
         printf("Disconnected from hypervisor\n");
