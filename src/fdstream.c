@@ -640,7 +640,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         virCommandTransferFD(cmd, fd);
         virCommandAddArgFormat(cmd, "%d", fd);
 
-        if (oflags == O_RDONLY) {
+        if ((oflags & O_ACCMODE) == O_RDONLY) {
             childfd = fds[1];
             fd = fds[0];
             virCommandSetOutputFD(cmd, &childfd);
