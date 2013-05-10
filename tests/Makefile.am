@@ -107,6 +107,7 @@ test_programs = virshtest sockettest \
         virportallocatortest \
 	sysinfotest \
 	virstoragetest \
+        fdstreamtest \
 	$(NULL)
 
 if WITH_GNUTLS
@@ -709,6 +710,10 @@ shunloadtest_DEPENDENCIES = libshunload.la
 sysinfotest_SOURCES = \
 	sysinfotest.c testutils.h testutils.c
 sysinfotest_LDADD = $(LDADDS)
+
+fdstreamtest_SOURCES = \
+	fdstreamtest.c testutils.h testutils.c
+fdstreamtest_LDADD = $(LDADDS)
 
 if WITH_CIL
 CILOPTFLAGS =

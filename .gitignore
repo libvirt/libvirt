@@ -144,6 +144,7 @@
 /tests/domainsnapshotxml2xmltest
 /tests/esxutilstest
 /tests/eventtest
+/tests/fdstreamtest
 /tests/hashtest
 /tests/jsontest
 /tests/libvirtdconftest
