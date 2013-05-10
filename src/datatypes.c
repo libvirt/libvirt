@@ -520,6 +520,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
         virLibConnError(VIR_ERR_INVALID_CONN, "%s", _("no connection"));
         return NULL;
     }
+    virCheckNonNullArgReturn(pool, NULL);
     virCheckNonNullArgReturn(name, NULL);
     virCheckNonNullArgReturn(key, NULL);
 
