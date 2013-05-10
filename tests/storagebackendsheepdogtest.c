@@ -34,6 +34,7 @@
 #include "storage/storage_backend_sheepdog.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 typedef struct {
     const char *output;
