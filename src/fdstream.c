@@ -74,6 +74,18 @@ struct virFDStreamData {
     virMutex lock;
 };
 
+
+static const char *iohelper_path = LIBEXECDIR "/libvirt_iohelper";
+
+void virFDStreamSetIOHelper(const char *path)
+{
+    if (path == NULL)
+        iohelper_path = LIBEXECDIR "/libvirt_iohelper";
+    else
+        iohelper_path = path;
+}
+
+
 static int virFDStreamRemoveCallback(virStreamPtr stream)
 {
     struct virFDStreamData *fdst = stream->privateData;
@@ -634,7 +646,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
             goto error;
         }
 
-        cmd = virCommandNewArgList(LIBEXECDIR "/libvirt_iohelper",
+        cmd = virCommandNewArgList(iohelper_path,
                                    path,
                                    NULL);
         virCommandAddArgFormat(cmd, "%llu", length);

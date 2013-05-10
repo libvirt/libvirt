@@ -699,6 +699,7 @@ virFDStreamConnectUNIX;
 virFDStreamCreateFile;
 virFDStreamOpen;
 virFDStreamOpenFile;
+virFDStreamSetIOHelper;
 
 
 # libvirt_internal.h
