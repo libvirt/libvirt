@@ -12596,13 +12596,13 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->vcpus != dst->vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain vpu count %d does not match source %d"),
+                       _("Target domain vCPU count %d does not match source %d"),
                        dst->vcpus, src->vcpus);
         return false;
     }
     if (src->maxvcpus != dst->maxvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain vpu max %d does not match source %d"),
+                       _("Target domain vCPU max %d does not match source %d"),
                        dst->maxvcpus, src->maxvcpus);
         return false;
     }
