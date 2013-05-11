@@ -1090,6 +1090,10 @@ if test "x$with_gnutls" != "xno"; then
     dnl it explicitly for the calls to gcry_control/check_version
     GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
 
+    dnl We're not using gcrypt deprecated features so define GCRYPT_NO_DEPRECATED
+    dnl to avoid deprecated warnings
+    GNUTLS_CFLAGS="$GNUTLS_CFLAGS -DGCRYPT_NO_DEPRECATED"
+
     with_gnutls=yes
   fi
 
