@@ -39,6 +39,9 @@
 # include <mntent.h>
 #endif
 #include <stdlib.h>
+#if HAVE_MMAP
+# include <sys/mman.h>
+#endif
 
 #if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
 # include <linux/loop.h>

@@ -36,9 +36,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
-#if HAVE_MMAP
-# include <sys/mman.h>
-#endif
 #include <string.h>
 #include <termios.h>
 #include <locale.h>
