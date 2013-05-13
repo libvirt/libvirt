@@ -41,7 +41,7 @@
 static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
 {
     int fd = -1;
-    char *tmpfile = NULL;
+    char *file = NULL;
     int ret = -1;
     char *pattern = NULL;
     char *buf = NULL;
@@ -63,10 +63,10 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
     for (i = 0 ; i < PATTERN_LEN ; i++)
         pattern[i] = i;
 
-    if (virAsprintf(&tmpfile, "%s/input.data", scratchdir) < 0)
+    if (virAsprintf(&file, "%s/input.data", scratchdir) < 0)
         goto cleanup;
 
-    if ((fd = open(tmpfile, O_CREAT|O_WRONLY|O_EXCL, 0600)) < 0)
+    if ((fd = open(file, O_CREAT|O_WRONLY|O_EXCL, 0600)) < 0)
         goto cleanup;
 
     for (i = 0 ; i < 10 ; i++) {
@@ -83,7 +83,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
     /* Start reading 1/2 way through first pattern
      * and end 1/2 way through last pattern
      */
-    if (virFDStreamOpenFile(st, tmpfile,
+    if (virFDStreamOpenFile(st, file,
                             PATTERN_LEN / 2, PATTERN_LEN * 9,
                             O_RDONLY) < 0)
         goto cleanup;
@@ -149,11 +149,11 @@ cleanup:
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
-    if (tmpfile != NULL)
-        unlink(tmpfile);
+    if (file != NULL)
+        unlink(file);
     if (conn)
         virConnectClose(conn);
-    VIR_FREE(tmpfile);
+    VIR_FREE(file);
     VIR_FREE(pattern);
     VIR_FREE(buf);
     return ret;
@@ -173,7 +173,7 @@ static int testFDStreamReadNonblock(const void *data)
 static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
 {
     int fd = -1;
-    char *tmpfile = NULL;
+    char *file = NULL;
     int ret = -1;
     char *pattern = NULL;
     char *buf = NULL;
@@ -195,7 +195,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
     for (i = 0 ; i < PATTERN_LEN ; i++)
         pattern[i] = i;
 
-    if (virAsprintf(&tmpfile, "%s/input.data", scratchdir) < 0)
+    if (virAsprintf(&file, "%s/input.data", scratchdir) < 0)
         goto cleanup;
 
     if (!(st = virStreamNew(conn, flags)))
@@ -204,7 +204,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
     /* Start writing 1/2 way through first pattern
      * and end 1/2 way through last pattern
      */
-    if (virFDStreamCreateFile(st, tmpfile,
+    if (virFDStreamCreateFile(st, file,
                               PATTERN_LEN / 2, PATTERN_LEN * 9,
                               O_WRONLY, 0600) < 0)
         goto cleanup;
@@ -244,7 +244,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
         goto cleanup;
    }
 
-    if ((fd = open(tmpfile, O_RDONLY)) < 0)
+    if ((fd = open(file, O_RDONLY)) < 0)
         goto cleanup;
 
     for (i = 0 ; i < 10 ; i++) {
@@ -292,11 +292,11 @@ cleanup:
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
-    if (tmpfile != NULL)
-        unlink(tmpfile);
+    if (file != NULL)
+        unlink(file);
     if (conn)
         virConnectClose(conn);
-    VIR_FREE(tmpfile);
+    VIR_FREE(file);
     VIR_FREE(pattern);
     VIR_FREE(buf);
     return ret;
