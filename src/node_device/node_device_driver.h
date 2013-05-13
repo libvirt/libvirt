@@ -28,15 +28,6 @@
 # include "driver.h"
 # include "node_device_conf.h"
 
-# define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host/"
-# define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
-# define LINUX_SYSFS_FC_HOST_PREFIX "/sys/class/fc_host/"
-
-# define VPORT_CREATE 0
-# define VPORT_DELETE 1
-# define LINUX_SYSFS_VPORT_CREATE_POSTFIX "/vport_create"
-# define LINUX_SYSFS_VPORT_DELETE_POSTFIX "/vport_delete"
-
 # define LINUX_NEW_DEVICE_WAIT_TIME 60
 
 # ifdef WITH_HAL
