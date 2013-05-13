@@ -4781,15 +4781,22 @@ finish:
  *  Src: Confirm
  *        - Kill off VM if success, resume if failed
  *
+  * If useParams is true, params and nparams contain migration parameters and
+  * we know it's safe to call the API which supports extensible parameters.
+  * Otherwise, we have to use xmlin, dname, uri, and bandwidth and pass them
+  * to the old-style APIs.
  */
 static virDomainPtr
-virDomainMigrateVersion3(virDomainPtr domain,
-                         virConnectPtr dconn,
-                         const char *xmlin,
-                         unsigned long flags,
-                         const char *dname,
-                         const char *uri,
-                         unsigned long bandwidth)
+virDomainMigrateVersion3Full(virDomainPtr domain,
+                             virConnectPtr dconn,
+                             const char *xmlin,
+                             const char *dname,
+                             const char *uri,
+                             unsigned long long bandwidth,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             bool useParams,
+                             unsigned int flags)
 {
     virDomainPtr ddomain = NULL;
     char *uri_out = NULL;
@@ -4805,47 +4812,82 @@ virDomainMigrateVersion3(virDomainPtr domain,
     unsigned long protection = 0;
     bool notify_source = true;
     unsigned int destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    int state;
+    virTypedParameterPtr tmp;
 
-    VIR_DOMAIN_DEBUG(domain, "dconn=%p xmlin=%s, flags=%lx, "
-                     "dname=%s, uri=%s, bandwidth=%lu",
-                     dconn, NULLSTR(xmlin), flags,
-                     NULLSTR(dname), NULLSTR(uri), bandwidth);
+    VIR_DOMAIN_DEBUG(domain,
+                     "dconn=%p, xmlin=%s, dname=%s, uri=%s, bandwidth=%llu, "
+                     "params=%p, nparams=%d, useParams=%d, flags=%x",
+                     dconn, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
+                     bandwidth, params, nparams, useParams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
-    if (!domain->conn->driver->domainMigrateBegin3 ||
-        !domain->conn->driver->domainMigratePerform3 ||
-        !domain->conn->driver->domainMigrateConfirm3 ||
-        !dconn->driver->domainMigratePrepare3 ||
-        !dconn->driver->domainMigrateFinish3) {
+    if ((!useParams &&
+         (!domain->conn->driver->domainMigrateBegin3 ||
+          !domain->conn->driver->domainMigratePerform3 ||
+          !domain->conn->driver->domainMigrateConfirm3 ||
+          !dconn->driver->domainMigratePrepare3 ||
+          !dconn->driver->domainMigrateFinish3)) ||
+        (useParams &&
+         (!domain->conn->driver->domainMigrateBegin3Params ||
+          !domain->conn->driver->domainMigratePerform3Params ||
+          !domain->conn->driver->domainMigrateConfirm3Params ||
+          !dconn->driver->domainMigratePrepare3Params ||
+          !dconn->driver->domainMigrateFinish3Params))) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
-        virDispatchError(domain->conn);
         return NULL;
     }
+
+    if (virTypedParamsCopy(&tmp, params, nparams) < 0)
+        return NULL;
+    params = tmp;
 
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION))
         protection = VIR_MIGRATE_CHANGE_PROTECTION;
 
     VIR_DEBUG("Begin3 %p", domain->conn);
-    dom_xml = domain->conn->driver->domainMigrateBegin3
-        (domain, xmlin, &cookieout, &cookieoutlen,
-         flags | protection, dname, bandwidth);
+    if (useParams) {
+        dom_xml = domain->conn->driver->domainMigrateBegin3Params
+            (domain, params, nparams, &cookieout, &cookieoutlen,
+             flags | protection);
+    } else {
+        dom_xml = domain->conn->driver->domainMigrateBegin3
+            (domain, xmlin, &cookieout, &cookieoutlen,
+             flags | protection, dname, bandwidth);
+    }
     if (!dom_xml)
         goto done;
 
-    ret = virDomainGetInfo(domain, &info);
-    if (ret == 0 && info.state == VIR_DOMAIN_PAUSED) {
-        flags |= VIR_MIGRATE_PAUSED;
+    if (useParams) {
+        /* If source is new enough to support extensible migration parameters,
+         * it's certainly new enough to support virDomainGetState. */
+        ret = virDomainGetState(domain, &state, NULL, 0);
+    } else {
+        ret = virDomainGetInfo(domain, &info);
+        state = info.state;
     }
+    if (ret == 0 && state == VIR_DOMAIN_PAUSED)
+        flags |= VIR_MIGRATE_PAUSED;
 
-    VIR_DEBUG("Prepare3 %p flags=%lx", dconn, flags);
+    VIR_DEBUG("Prepare3 %p flags=%x", dconn, flags);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
-    ret = dconn->driver->domainMigratePrepare3
-        (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         uri, &uri_out, destflags, dname, bandwidth, dom_xml);
-    VIR_FREE(dom_xml);
+    if (useParams) {
+        if (virTypedParamsReplaceString(&params, &nparams,
+                                        VIR_MIGRATE_PARAM_DEST_XML,
+                                        dom_xml) < 0)
+            goto done;
+        ret = dconn->driver->domainMigratePrepare3Params
+            (dconn, params, nparams, cookiein, cookieinlen,
+             &cookieout, &cookieoutlen, &uri_out, destflags);
+    } else {
+        ret = dconn->driver->domainMigratePrepare3
+            (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+             uri, &uri_out, destflags, dname, bandwidth, dom_xml);
+    }
     if (ret == -1) {
         if (protection) {
             /* Begin already started a migration job so we need to cancel it by
@@ -4858,14 +4900,20 @@ virDomainMigrateVersion3(virDomainPtr domain,
         }
     }
 
-    if (uri == NULL && uri_out == NULL) {
+    /* Did domainMigratePrepare3 change URI? */
+    if (uri_out) {
+        uri = uri_out;
+        if (useParams &&
+            virTypedParamsReplaceString(&params, &nparams,
+                                        VIR_MIGRATE_PARAM_URI,
+                                        uri_out) < 0)
+            goto finish;
+    } else if (!uri &&
+               virTypedParamsGetString(params, nparams,
+                                       VIR_MIGRATE_PARAM_URI, &uri) <= 0) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("domainMigratePrepare3 did not set uri"));
-        virDispatchError(domain->conn);
-        goto finish;
     }
-    if (uri_out)
-        uri = uri_out; /* Did domainMigratePrepare3 change URI? */
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         VIR_DEBUG("Offline migration, skipping Perform phase");
@@ -4887,10 +4935,16 @@ virDomainMigrateVersion3(virDomainPtr domain,
     cookieout = NULL;
     cookieoutlen = 0;
     /* dconnuri not relevant in non-P2P modes, so left NULL here */
-    ret = domain->conn->driver->domainMigratePerform3
-        (domain, NULL, cookiein, cookieinlen,
-         &cookieout, &cookieoutlen, NULL,
-         uri, flags | protection, dname, bandwidth);
+    if (useParams) {
+        ret = domain->conn->driver->domainMigratePerform3Params
+            (domain, NULL, params, nparams, cookiein, cookieinlen,
+             &cookieout, &cookieoutlen, flags | protection);
+    } else {
+        ret = domain->conn->driver->domainMigratePerform3
+            (domain, NULL, cookiein, cookieinlen,
+             &cookieout, &cookieoutlen, NULL,
+             uri, flags | protection, dname, bandwidth);
+    }
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0) {
@@ -4919,10 +4973,24 @@ finish:
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
-    dname = dname ? dname : domain->name;
-    ddomain = dconn->driver->domainMigrateFinish3
-        (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         NULL, uri, destflags, cancelled);
+    if (useParams) {
+        if (virTypedParamsGetString(params, nparams,
+                                    VIR_MIGRATE_PARAM_DEST_NAME, NULL) <= 0 &&
+            virTypedParamsReplaceString(&params, &nparams,
+                                        VIR_MIGRATE_PARAM_DEST_NAME,
+                                        domain->name) < 0) {
+            domain = NULL;
+        } else {
+            ddomain = dconn->driver->domainMigrateFinish3Params
+                (dconn, params, nparams, cookiein, cookieinlen,
+                 &cookieout, &cookieoutlen, destflags, cancelled);
+        }
+    } else {
+        dname = dname ? dname : domain->name;
+        ddomain = dconn->driver->domainMigrateFinish3
+            (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+             NULL, uri, destflags, cancelled);
+    }
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
@@ -4953,9 +5021,15 @@ confirm:
         cookieinlen = cookieoutlen;
         cookieout = NULL;
         cookieoutlen = 0;
-        ret = domain->conn->driver->domainMigrateConfirm3
-            (domain, cookiein, cookieinlen,
-             flags | protection, cancelled);
+        if (useParams) {
+            ret = domain->conn->driver->domainMigrateConfirm3Params
+                (domain, params, nparams, cookiein, cookieinlen,
+                 flags | protection, cancelled);
+        } else {
+            ret = domain->conn->driver->domainMigrateConfirm3
+                (domain, cookiein, cookieinlen,
+                 flags | protection, cancelled);
+        }
         /* If Confirm3 returns -1, there's nothing more we can
          * do, but fortunately worst case is that there is a
          * domain left in 'paused' state on source.
@@ -4971,10 +5045,25 @@ confirm:
         virSetError(orig_err);
         virFreeError(orig_err);
     }
+    VIR_FREE(dom_xml);
     VIR_FREE(uri_out);
     VIR_FREE(cookiein);
     VIR_FREE(cookieout);
+    virTypedParamsFree(params, nparams);
     return ddomain;
+}
+
+static virDomainPtr
+virDomainMigrateVersion3(virDomainPtr domain,
+                         virConnectPtr dconn,
+                         const char *xmlin,
+                         unsigned long flags,
+                         const char *dname,
+                         const char *uri,
+                         unsigned long bandwidth)
+{
+    return virDomainMigrateVersion3Full(domain, dconn, xmlin, dname, uri,
+                                        bandwidth, NULL, 0, false, flags);
 }
 
 
