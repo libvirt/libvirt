@@ -40,6 +40,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <domain_event.h>
+#include <poll.h>
 
 #include "internal.h"
 #include "virauth.h"
@@ -72,29 +73,22 @@ static unsigned const int PHYP_MAC_SIZE= 12;
 static int
 waitsocket(int socket_fd, LIBSSH2_SESSION * session)
 {
-    struct timeval timeout;
-    fd_set fd;
-    fd_set *writefd = NULL;
-    fd_set *readfd = NULL;
+    struct pollfd fds[1];
     int dir;
 
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 1000;
-
-    FD_ZERO(&fd);
-
-    FD_SET(socket_fd, &fd);
+    memset(fds, 0, sizeof(fds));
+    fds[0].fd = socket_fd;
 
     /* now make sure we wait in the correct direction */
     dir = libssh2_session_block_directions(session);
 
     if (dir & LIBSSH2_SESSION_BLOCK_INBOUND)
-        readfd = &fd;
+        fds[0].events |= POLLIN;
 
     if (dir & LIBSSH2_SESSION_BLOCK_OUTBOUND)
-        writefd = &fd;
+        fds[0].events |= POLLOUT;
 
-    return select(socket_fd + 1, readfd, writefd, NULL, &timeout);
+    return poll(fds, ARRAY_CARDINALITY(fds), -1);
 }
 
 /* this function is the layer that manipulates the ssh channel itself

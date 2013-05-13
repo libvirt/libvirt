@@ -48,7 +48,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
-#define NETLINK_ACK_TIMEOUT_S  2
+#define NETLINK_ACK_TIMEOUT_S  (2*1000)
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
 /* State for a single netlink event handle */
@@ -185,10 +185,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
             .nl_groups = 0,
     };
     ssize_t nbytes;
-    struct timeval tv = {
-        .tv_sec = NETLINK_ACK_TIMEOUT_S,
-    };
-    fd_set readfds;
+    struct pollfd fds[1];
     int fd;
     int n;
     struct nlmsghdr *nlmsg = nlmsg_hdr(nl_msg);
@@ -242,14 +239,15 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         goto error;
     }
 
-    FD_ZERO(&readfds);
-    FD_SET(fd, &readfds);
+    memset(fds, 0, sizeof(fds));
+    fds[0].fd = fd;
+    fds[0].events = POLLIN;
 
-    n = select(fd + 1, &readfds, NULL, NULL, &tv);
+    n = poll(fds, ARRAY_CARDINALITY(fds), NETLINK_ACK_TIMEOUT_S);
     if (n <= 0) {
         if (n < 0)
             virReportSystemError(errno, "%s",
-                                 _("error in select call"));
+                                 _("error in poll call"));
         if (n == 0)
             virReportSystemError(ETIMEDOUT, "%s",
                                  _("no valid netlink response was received"));

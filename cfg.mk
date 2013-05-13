@@ -444,6 +444,11 @@ sc_prohibit_nonreentrant:
 	done ; \
 	exit $$fail
 
+sc_prohibit_select:
+	@prohibit="\\<select *\\("					\
+	halt="use poll(), not se""lect()"				\
+	  $(_sc_search_regexp)
+
 # Prohibit the inclusion of <ctype.h>.
 sc_prohibit_ctype_h:
 	@prohibit='^# *include  *<ctype\.h>'				\
