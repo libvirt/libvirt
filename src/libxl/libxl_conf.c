@@ -484,14 +484,34 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 break;
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("libxenlight does not support disk driver %s"),
-                               virStorageFileFormatTypeToString(l_disk->format));
+                               _("libxenlight does not support disk format %s "
+                                 "with disk driver %s"),
+                               virStorageFileFormatTypeToString(l_disk->format),
+                               l_disk->driverName);
                 return -1;
             }
         } else if (STREQ(l_disk->driverName, "file")) {
+            if (l_disk->format != VIR_STORAGE_FILE_NONE &&
+                l_disk->format != VIR_STORAGE_FILE_RAW) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("libxenlight does not support disk format %s "
+                                 "with disk driver %s"),
+                               virStorageFileFormatTypeToString(l_disk->format),
+                               l_disk->driverName);
+                return -1;
+            }
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
             x_disk->backend = LIBXL_DISK_BACKEND_TAP;
         } else if (STREQ(l_disk->driverName, "phy")) {
+            if (l_disk->format != VIR_STORAGE_FILE_NONE &&
+                l_disk->format != VIR_STORAGE_FILE_RAW) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("libxenlight does not support disk format %s "
+                                 "with disk driver %s"),
+                               virStorageFileFormatTypeToString(l_disk->format),
+                               l_disk->driverName);
+                return -1;
+            }
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
             x_disk->backend = LIBXL_DISK_BACKEND_PHY;
         } else {
