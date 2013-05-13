@@ -490,6 +490,31 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                                l_disk->driverName);
                 return -1;
             }
+        } else if (STREQ(l_disk->driverName, "qemu")) {
+            x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
+            switch (l_disk->format) {
+            case VIR_STORAGE_FILE_QCOW:
+                x_disk->format = LIBXL_DISK_FORMAT_QCOW;
+                break;
+            case VIR_STORAGE_FILE_QCOW2:
+                x_disk->format = LIBXL_DISK_FORMAT_QCOW2;
+                break;
+            case VIR_STORAGE_FILE_VHD:
+                x_disk->format = LIBXL_DISK_FORMAT_VHD;
+                break;
+            case VIR_STORAGE_FILE_NONE:
+                /* No subtype specified, default to raw */
+            case VIR_STORAGE_FILE_RAW:
+                x_disk->format = LIBXL_DISK_FORMAT_RAW;
+                break;
+            default:
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("libxenlight does not support disk format %s "
+                                 "with disk driver %s"),
+                               virStorageFileFormatTypeToString(l_disk->format),
+                               l_disk->driverName);
+                return -1;
+            }
         } else if (STREQ(l_disk->driverName, "file")) {
             if (l_disk->format != VIR_STORAGE_FILE_NONE &&
                 l_disk->format != VIR_STORAGE_FILE_RAW) {
