@@ -2383,6 +2383,13 @@ qemuBuildRBDString(virConnectPtr conn,
     char *secret = NULL;
     size_t secret_size;
 
+    if (strchr(disk->src, ':')) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("':' not allowed in RBD source volume name '%s'"),
+                       disk->src);
+        return -1;
+    }
+
     virBufferEscape(opt, ',', ",", "rbd:%s", disk->src);
     if (disk->auth.username) {
         virBufferEscape(opt, '\\', ":", ":id=%s", disk->auth.username);

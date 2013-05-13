@@ -160,6 +160,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP))) {
         if (flags & FLAG_EXPECT_FAILURE) {
             ret = 0;
+            if (virTestGetDebug() > 1)
+                fprintf(stderr, "Got expected error: %s\n",
+                        virGetLastErrorMessage());
             virResetLastError();
         }
         goto out;
@@ -528,6 +531,8 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-network-rbd-ipv6",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
+    DO_TEST_FAILURE("disk-drive-network-rbd-invalid",
+                    QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-no-boot",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
     DO_TEST("disk-usb",  NONE);
