@@ -897,11 +897,8 @@ create_name:
         }
 
         virMutexUnlock(&virNetDevMacVLanCreateMutex);
-        if (!cr_ifname) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Unable to create macvlan device"));
+        if (!cr_ifname)
             return -1;
-        }
     }
 
     if (virNetDevVPortProfileAssociate(cr_ifname,
