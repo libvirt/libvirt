@@ -98,7 +98,6 @@ virt_host_validate_SOURCES = \
 		$(NULL)
 
 virt_host_validate_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
 		$(COVERAGE_LDFLAGS) \
@@ -131,10 +130,9 @@ virsh_SOURCES =							\
 		virsh-volume.c virsh-volume.h			\
 		$(NULL)
 
-virsh_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
+virsh_LDFLAGS = $(COVERAGE_LDFLAGS)
 virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
-		$(WARN_LDFLAGS)					\
 		$(PIE_LDFLAGS)					\
 		$(RELRO_LDFLAGS) \
 		../src/libvirt.la				\

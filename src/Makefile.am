@@ -1979,7 +1979,6 @@ if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_iohelper
 libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
 libvirt_iohelper_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
@@ -2003,7 +2002,6 @@ libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
@@ -2036,7 +2034,6 @@ libvirt_sanlock_helper_CFLAGS = \
 		$(PIE_CFLAGS) \
 		$(NULL)
 libvirt_sanlock_helper_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
@@ -2053,7 +2050,6 @@ libvirt_lxc_SOURCES =						\
 		$(NODE_INFO_SOURCES)				\
 		$(DATATYPES_SOURCES)
 libvirt_lxc_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
@@ -2098,7 +2094,6 @@ libexec_PROGRAMS += virt-aa-helper
 virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 virt_aa_helper_LDFLAGS = \
-		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \

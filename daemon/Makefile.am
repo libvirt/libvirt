@@ -111,7 +111,6 @@ libvirtd_CFLAGS = \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\""
 
 libvirtd_LDFLAGS =					\
-	$(WARN_LDFLAGS)					\
 	$(PIE_LDFLAGS)					\
 	$(RELRO_LDFLAGS)				\
 	$(COVERAGE_LDFLAGS)

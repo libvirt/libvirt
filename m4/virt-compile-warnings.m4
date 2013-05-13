@@ -224,10 +224,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       gl_WARN_ADD([-Werror])
     fi
 
-    WARN_LDFLAGS=$WARN_CFLAGS
-    AC_SUBST([WARN_CFLAGS])
-    AC_SUBST([WARN_LDFLAGS])
-
     dnl Needed to keep compile quiet on python 2.4
     save_WARN_CFLAGS=$WARN_CFLAGS
     WARN_CFLAGS=
