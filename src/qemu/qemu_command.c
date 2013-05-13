@@ -6419,6 +6419,117 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 }
 
+static int
+qemuBuildInterfaceCommandLine(virCommandPtr cmd,
+                              virQEMUDriverPtr driver,
+                              virConnectPtr conn,
+                              virDomainDefPtr def,
+                              virDomainNetDefPtr net,
+                              virQEMUCapsPtr qemuCaps,
+                              int vlan,
+                              int bootindex,
+                              enum virNetDevVPortProfileOp vmop)
+{
+    int ret = -1;
+    int tapfd = -1;
+    int vhostfd = -1;
+    char *nic = NULL, *host = NULL;
+    char *tapfdName = NULL;
+    char *vhostfdName = NULL;
+    int actualType = virDomainNetGetActualType(net);
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
+         * their commandlines are constructed with other hostdevs.
+         */
+        return 0;
+    }
+
+    if (!bootindex)
+        bootindex = net->info.bootIndex;
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        tapfd = qemuNetworkIfaceConnect(def, conn, driver, net, qemuCaps);
+        if (tapfd < 0)
+            goto cleanup;
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        tapfd = qemuPhysIfaceConnect(def, driver, net, qemuCaps, vmop);
+        if (tapfd < 0)
+            goto cleanup;
+    }
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+        actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        /* Attempt to use vhost-net mode for these types of
+           network device */
+        if (qemuOpenVhostNet(def, net, qemuCaps, &vhostfd) < 0)
+            goto cleanup;
+    }
+
+    if (tapfd >= 0) {
+        virCommandTransferFD(cmd, tapfd);
+        if (virAsprintf(&tapfdName, "%d", tapfd) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    if (vhostfd >= 0) {
+        virCommandTransferFD(cmd, vhostfd);
+        if (virAsprintf(&vhostfdName, "%d", vhostfd) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    /* Possible combinations:
+     *
+     *  1. Old way:   -net nic,model=e1000,vlan=1 -net tap,vlan=1
+     *  2. Semi-new:  -device e1000,vlan=1        -net tap,vlan=1
+     *  3. Best way:  -netdev type=tap,id=netdev1 -device e1000,id=netdev1
+     *
+     * NB, no support for -netdev without use of -device
+     */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (!(host = qemuBuildHostNetStr(net, driver,
+                                         ',', vlan, tapfdName,
+                                         vhostfdName)))
+            goto cleanup;
+        virCommandAddArgList(cmd, "-netdev", host, NULL);
+    }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+        if (!(nic = qemuBuildNicDevStr(net, vlan, bootindex, qemuCaps)))
+            goto cleanup;
+        virCommandAddArgList(cmd, "-device", nic, NULL);
+    } else {
+        if (!(nic = qemuBuildNicStr(net, "nic,", vlan)))
+            goto cleanup;
+        virCommandAddArgList(cmd, "-net", nic, NULL);
+    }
+    if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
+          virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+        if (!(host = qemuBuildHostNetStr(net, driver,
+                                         ',', vlan, tapfdName,
+                                         vhostfdName)))
+            goto cleanup;
+        virCommandAddArgList(cmd, "-net", host, NULL);
+    }
+
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        virDomainConfNWFilterTeardown(net);
+    VIR_FREE(nic);
+    VIR_FREE(host);
+    VIR_FREE(tapfdName);
+    VIR_FREE(vhostfdName);
+    return ret;
+}
+
 qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
     .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
 };
@@ -7357,118 +7468,18 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr net = def->nets[i];
-            char *nic, *host;
-            char tapfd_name[50] = "";
-            char vhostfd_name[50] = "";
-            int vlan;
-            int bootindex = bootNet;
-            int actualType = virDomainNetGetActualType(net);
-
-            if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-                /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
-                 * their commandlines are constructed with other hostdevs.
-                 */
-                continue;
-            }
-
-            bootNet = 0;
-            if (!bootindex)
-                bootindex = net->info.bootIndex;
+            int vlan = i;
 
             /* VLANs are not used with -netdev, so don't record them */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
                 vlan = -1;
-            else
-                vlan = i;
 
-            if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
-                                                    qemuCaps);
-                if (tapfd < 0)
-                    goto error;
-
-                last_good_net = i;
-                virCommandTransferFD(cmd, tapfd);
-
-                if (snprintf(tapfd_name, sizeof(tapfd_name), "%d",
-                             tapfd) >= sizeof(tapfd_name))
-                    goto no_memory;
-            } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                int tapfd = qemuPhysIfaceConnect(def, driver, net,
-                                                 qemuCaps, vmop);
-                if (tapfd < 0)
-                    goto error;
-
-                last_good_net = i;
-                virCommandTransferFD(cmd, tapfd);
-
-                if (snprintf(tapfd_name, sizeof(tapfd_name), "%d",
-                             tapfd) >= sizeof(tapfd_name))
-                    goto no_memory;
-            }
-
-            if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-                actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-                actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                /* Attempt to use vhost-net mode for these types of
-                   network device */
-                int vhostfd;
-
-                if (qemuOpenVhostNet(def, net, qemuCaps, &vhostfd) < 0)
-                    goto error;
-                if (vhostfd >= 0) {
-                    virCommandTransferFD(cmd, vhostfd);
-
-                    if (snprintf(vhostfd_name, sizeof(vhostfd_name), "%d",
-                                 vhostfd) >= sizeof(vhostfd_name))
-                        goto no_memory;
-                }
-            }
-            /* Possible combinations:
-             *
-             *  1. Old way:   -net nic,model=e1000,vlan=1 -net tap,vlan=1
-             *  2. Semi-new:  -device e1000,vlan=1        -net tap,vlan=1
-             *  3. Best way:  -netdev type=tap,id=netdev1 -device e1000,id=netdev1
-             *
-             * NB, no support for -netdev without use of -device
-             */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virCommandAddArg(cmd, "-netdev");
-                if (!(host = qemuBuildHostNetStr(net, driver,
-                                                 ',', vlan, tapfd_name,
-                                                 vhostfd_name)))
-                    goto error;
-                virCommandAddArg(cmd, host);
-                VIR_FREE(host);
-            }
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virCommandAddArg(cmd, "-device");
-                nic = qemuBuildNicDevStr(net, vlan, bootindex, qemuCaps);
-                if (!nic)
-                    goto error;
-                virCommandAddArg(cmd, nic);
-                VIR_FREE(nic);
-            } else {
-                virCommandAddArg(cmd, "-net");
-                if (!(nic = qemuBuildNicStr(net, "nic,", vlan)))
-                    goto error;
-                virCommandAddArg(cmd, nic);
-                VIR_FREE(nic);
-            }
-            if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
-                virCommandAddArg(cmd, "-net");
-                if (!(host = qemuBuildHostNetStr(net, driver,
-                                                 ',', vlan, tapfd_name,
-                                                 vhostfd_name)))
-                    goto error;
-                virCommandAddArg(cmd, host);
-                VIR_FREE(host);
-            }
+            if (qemuBuildInterfaceCommandLine(cmd, driver, conn, def, net,
+                                              qemuCaps, vlan, bootNet, vmop) < 0)
+                goto error;
+            last_good_net = i;
+            bootNet = 0;
         }
     }
 
