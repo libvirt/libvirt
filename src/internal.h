@@ -215,7 +215,7 @@
 # endif				/* __GNUC__ */
 
 
-# if __GNUC_PREREQ (4, 6)
+# if WORKING_PRAGMA_PUSH
 #  define VIR_WARNINGS_NO_CAST_ALIGN \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wcast-align\"")

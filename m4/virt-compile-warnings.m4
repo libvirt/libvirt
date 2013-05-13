@@ -94,6 +94,9 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       dontwarn="$dontwarn -Wmissing-prototypes"
       dontwarn="$dontwarn -Wmissing-declarations"
       dontwarn="$dontwarn -Wcast-align"
+    else
+      AC_DEFINE_UNQUOTED([WORKING_PRAGMA_PUSH], 1,
+       [Define to 1 if gcc supports pragma push/pop])
     fi
 
     dnl Check whether strchr(s, char variable) causes a bogus compile
