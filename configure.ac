@@ -2158,7 +2158,7 @@ if test "$with_driver_modules" = "yes" || test "$with_driver_modules" = "check";
 fi
 
 if test "$with_driver_modules" = "yes" ; then
-  DRIVER_MODULE_CFLAGS="-export-dynamic"
+  DRIVER_MODULE_LDFLAGS="-export-dynamic"
   case $ac_cv_search_dlopen in
     no*) DRIVER_MODULE_LIBS= ;;
     *) DRIVER_MODULE_LIBS=$ac_cv_search_dlopen ;;
@@ -2166,7 +2166,7 @@ if test "$with_driver_modules" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
 fi
 AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
-AC_SUBST([DRIVER_MODULE_CFLAGS])
+AC_SUBST([DRIVER_MODULE_LDFLAGS])
 AC_SUBST([DRIVER_MODULE_LIBS])
 
 
