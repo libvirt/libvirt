@@ -37,7 +37,12 @@ static int (*realaccess)(const char *path, int mode);
 static int (*reallstat)(const char *path, struct stat *sb);
 static int (*real__lxstat)(int ver, const char *path, struct stat *sb);
 static int (*realmkdir)(const char *path, mode_t mode);
-static char *fakesysfsdir;
+
+/* Don't make static, since it causes problems with clang
+ * when passed as an arg to asprintf()
+ * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
+ */
+char *fakesysfsdir;
 
 
 # define SYSFS_PREFIX "/not/really/sys/fs/cgroup/"
