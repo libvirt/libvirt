@@ -49,6 +49,7 @@
 #include "vircommand.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virscsi.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"
