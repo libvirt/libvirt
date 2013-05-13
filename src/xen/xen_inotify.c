@@ -278,7 +278,10 @@ reread:
         if (got < sizeof(struct inotify_event))
             goto cleanup; /* bad */
 
+        VIR_WARNINGS_NO_CAST_ALIGN
         e = (struct inotify_event *)tmp;
+        VIR_WARNINGS_RESET
+
         tmp += sizeof(struct inotify_event);
         got -= sizeof(struct inotify_event);
 
