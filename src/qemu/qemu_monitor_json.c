@@ -4281,7 +4281,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                               char ***params)
 {
     int ret;
-    virJSONValuePtr cmd;
+    virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data = NULL;
     virJSONValuePtr array = NULL;
