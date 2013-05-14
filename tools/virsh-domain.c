@@ -7670,7 +7670,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     }
     result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
 
-    if (result) printf("%s\n", result);
+    vshPrint(ctl, "%s\n", result);
 
     ret = true;
 
