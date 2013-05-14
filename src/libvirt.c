@@ -13307,7 +13307,8 @@ error:
  * Changes the capacity of the storage volume @vol to @capacity. The
  * operation will fail if the new capacity requires allocation that would
  * exceed the remaining free space in the parent pool.  The contents of
- * the new capacity will appear as all zero bytes.
+ * the new capacity will appear as all zero bytes. The capacity value will
+ * be rounded to the granularity supported by the hypervisor.
  *
  * Normally, the operation will attempt to affect capacity with a minimum
  * impact on allocation (that is, the default operation favors a sparse

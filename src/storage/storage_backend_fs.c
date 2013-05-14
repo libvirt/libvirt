@@ -1204,6 +1204,10 @@ virStorageBackendFilesystemResizeQemuImg(const char *path,
         return -1;
     }
 
+    /* Round capacity as qemu-img resize errors out on sizes which are not
+     * a multiple of 512 */
+    capacity = VIR_ROUND_UP(capacity, 512);
+
     cmd = virCommandNew(img_tool);
     virCommandAddArgList(cmd, "resize", path, NULL);
     virCommandAddArgFormat(cmd, "%llu", capacity);
