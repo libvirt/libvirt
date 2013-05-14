@@ -682,10 +682,21 @@ sc_copyright_format:
 	  $(_sc_search_regexp)
 
 # Prefer the new URL listing over the old street address listing when
-# calling out where to get a copy of the [L]GPL.
-sc_copyright_address:
+# calling out where to get a copy of the [L]GPL.  Also, while we have
+# to ship COPYING (GPL) alongside COPYING.LESSER (LGPL), we want any
+# source file that calls out a top-level file to call out the LGPL
+# version.  Note that our typical copyright boilerplate refers to the
+# license by name, not by reference to a top-level file.
+sc_copyright_usage:
 	@prohibit=Boston,' MA'						\
 	halt='Point to <http://www.gnu.org/licenses/>, not an address'	\
+	  $(_sc_search_regexp)
+	@require='COPYING\.LESSER'					\
+	containing='COPYING'						\
+	halt='Refer to COPYING.LESSER for LGPL'				\
+	  $(_sc_search_regexp)
+	@prohibit='COPYING\.LIB'					\
+	halt='Refer to COPYING.LESSER for LGPL'				\
 	  $(_sc_search_regexp)
 
 # Some functions/macros produce messages intended solely for developers
@@ -853,7 +864,7 @@ exclude_file_name_regexp--sc_avoid_write = \
 
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
 
-exclude_file_name_regexp--sc_copyright_address = \
+exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$|tests/vircgroupmock\.c$$)
