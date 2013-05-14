@@ -7605,6 +7605,10 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
      .type = VSH_OT_BOOL,
      .help = N_("execute command without timeout")
     },
+    {.name = "pretty",
+     .type = VSH_OT_BOOL,
+     .help = N_("pretty-print the output")
+    },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_REQ,
@@ -7626,6 +7630,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool pad = false;
+    virJSONValuePtr pretty = NULL;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -7669,6 +7674,17 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
     result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
+
+    if (vshCommandOptBool(cmd, "pretty")) {
+        char *tmp;
+        pretty = virJSONValueFromString(result);
+        if (pretty && (tmp = virJSONValueToString(pretty, true))) {
+            VIR_FREE(result);
+            result = tmp;
+        } else {
+            vshResetLibvirtError();
+        }
+    }
 
     vshPrint(ctl, "%s\n", result);
 
