@@ -246,6 +246,8 @@ mymain(void)
 
     DO_TEST("pseries-nvram");
 
+    DO_TEST("nosharepages");
+
     DO_TEST_FULL("restore-v1", 0, "stdio");
     DO_TEST_FULL("restore-v2", 0, "stdio");
     DO_TEST_FULL("restore-v2", 0, "exec:cat");

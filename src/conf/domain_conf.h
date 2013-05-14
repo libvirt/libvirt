@@ -1850,6 +1850,7 @@ struct _virDomainDef {
         unsigned long long max_balloon; /* in kibibytes */
         unsigned long long cur_balloon; /* in kibibytes */
         bool hugepage_backed;
+        bool nosharepages;
         int dump_core; /* enum virDomainMemDump */
         unsigned long long hard_limit; /* in kibibytes */
         unsigned long long soft_limit; /* in kibibytes */

@@ -490,11 +490,18 @@
       </optional>
       <optional>
         <element name="memoryBacking">
-          <optional>
-            <element name="hugepages">
-              <empty/>
-            </element>
-          </optional>
+          <interleave>
+            <optional>
+              <element name="hugepages">
+                <empty/>
+              </element>
+            </optional>
+            <optional>
+              <element name="nosharepages">
+                <empty/>
+              </element>
+            </optional>
+          </interleave>
         </element>
       </optional>
 

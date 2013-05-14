@@ -561,6 +561,7 @@
   ...
   &lt;memoryBacking&gt;
     &lt;hugepages/&gt;
+    &lt;nosharepages/&gt;
   &lt;/memoryBacking&gt;
   ...
 &lt;/domain&gt;
@@ -568,10 +569,15 @@
 
     <dl>
       <dt><code>memoryBacking</code></dt>
-      <dd>The optional <code>memoryBacking</code> element, may have an
-        <code>hugepages</code> element set within it. This tells the
-        hypervisor that the guest should have its memory allocated using
-        hugepages instead of the normal native page size.</dd>
+      <dd>The optional <code>memoryBacking</code> element has two
+        optional elements. The element <code>hugepages</code> tells
+        the hypervisor that the guest should have its memory allocated
+        using hugepages instead of the normal native page size. And the
+        optional element <code>nosharepages</code>
+        (<span class="since">since 1.0.6</span>) tells the hypervisor
+        that share pages (memory merge, KSM) should be disabled on guest
+        startup.
+      </dd>
     </dl>
 
 

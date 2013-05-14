@@ -5845,6 +5845,14 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                              "with this QEMU binary"));
             return -1;
         }
+
+        if (def->mem.nosharepages) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disable shared memory is not available "
+                             "with this QEMU binary"));
+             return -1;
+        }
+
         obsoleteAccel = true;
     } else {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -5876,6 +5884,18 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
 
             virBufferAsprintf(&buf, ",dump-guest-core=%s",
                               virDomainMemDumpTypeToString(def->mem.dump_core));
+        }
+
+        if (def->mem.nosharepages) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
+                virBufferAddLit(&buf, ",mem-merge=off");
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("disable shared memory is not available "
+                                 "with this QEMU binary"));
+                virBufferFreeAndReset(&buf);
+                return -1;
+            }
         }
 
         virCommandAddArgBuffer(cmd, &buf);
@@ -10183,6 +10203,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                             def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
                         if (params)
                             VIR_FREE(tmp);
+                    } else if (STRPREFIX(tmp, "mem-merge=off")) {
+                        def->mem.nosharepages = true;
                     }
                 }
             }

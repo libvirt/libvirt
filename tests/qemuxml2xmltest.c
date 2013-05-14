@@ -158,6 +158,7 @@ mymain(void)
     DO_TEST("hyperv");
 
     DO_TEST("hugepages");
+    DO_TEST("nosharepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-floppy");
