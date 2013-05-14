@@ -290,6 +290,9 @@
 /* divide value by size, rounding up */
 # define VIR_DIV_UP(value, size) (((value) + (size) - 1) / (size))
 
+/* round up value to the closest multiple of size */
+# define VIR_ROUND_UP(value, size) (VIR_DIV_UP(value, size) * (size))
+
 
 # if WITH_DTRACE_PROBES
 #  ifndef LIBVIRT_PROBES_H
