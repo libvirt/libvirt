@@ -1702,7 +1702,7 @@ fi
 %files daemon
 %defattr(-, root, root)
 
-%doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
+%doc AUTHORS ChangeLog.gz NEWS README COPYING COPYING.LESSER TODO
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
     %if %{with_network}
@@ -1963,7 +1963,7 @@ fi
 
 %files client -f %{name}.lang
 %defattr(-, root, root)
-%doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
+%doc AUTHORS ChangeLog.gz NEWS README COPYING COPYING.LESSER TODO
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %{_mandir}/man1/virsh.1*
@@ -2043,7 +2043,7 @@ fi
 %files python
 %defattr(-, root, root)
 
-%doc AUTHORS NEWS README COPYING.LIB
+%doc AUTHORS NEWS README COPYING COPYING.LESSER
 %{_libdir}/python*/site-packages/libvirt.py*
 %{_libdir}/python*/site-packages/libvirt_qemu.py*
 %{_libdir}/python*/site-packages/libvirt_lxc.py*

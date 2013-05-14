@@ -2396,14 +2396,6 @@ AC_CHECK_DECLS([link_addr],
                 #include <net/if_dl.h>
                ])
 
-
-# Only COPYING.LIB is under version control, yet COPYING
-# is included as part of the distribution tarball.
-# Copy one to the other, but only if this is a srcdir-build.
-# You are unlikely to be doing distribution-related things in a non-srcdir build
-test "x$srcdir" = x. && ! test -f COPYING &&
-cp -f COPYING.LIB COPYING
-
 # Detect when running under the clang static analyzer's scan-build driver
 # or Coverity-prevent's cov-build.  Define STATIC_ANALYSIS accordingly.
 AC_CACHE_CHECK([whether this build is done by a static analysis tool],

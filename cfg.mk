@@ -854,7 +854,7 @@ exclude_file_name_regexp--sc_avoid_write = \
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
 
 exclude_file_name_regexp--sc_copyright_address = \
-  ^COPYING\.LIB$$
+  ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$|tests/vircgroupmock\.c$$)
 
