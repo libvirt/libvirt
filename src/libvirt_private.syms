@@ -142,6 +142,7 @@ virDomainDiskDefFree;
 virDomainDiskDefGenSecurityLabelDef;
 virDomainDiskDefGetSecurityLabelDef;
 virDomainDiskDeviceTypeToString;
+virDomainDiskDiscardTypeToString;
 virDomainDiskErrorPolicyTypeFromString;
 virDomainDiskErrorPolicyTypeToString;
 virDomainDiskFindByBusAndDst;

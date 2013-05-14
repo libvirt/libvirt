@@ -229,6 +229,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "scsi-generic.bootindex", /* 145 */
               "mem-merge",
               "vnc-websocket",
+              "drive-discard",
     );
 
 struct _virQEMUCaps {
@@ -2244,6 +2245,7 @@ struct virQEMUCapsCommandLineProps {
 
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
+    { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
 };
 
 static int

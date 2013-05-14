@@ -1311,6 +1311,9 @@
       <optional>
         <ref name="copy_on_read"/>
       </optional>
+      <optional>
+        <ref name="discard"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -1401,6 +1404,14 @@
   </define>
   <define name="copy_on_read">
     <attribute name='copy_on_read'>
+      <choice>
+        <value>on</value>
+        <value>off</value>
+      </choice>
+    </attribute>
+    </define>
+  <define name="discard">
+    <attribute name='discard'>
       <choice>
         <value>on</value>
         <value>off</value>

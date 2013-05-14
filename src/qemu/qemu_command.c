@@ -3274,6 +3274,17 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
+    if (disk->discard) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
+            virBufferAsprintf(&opt, ",discard=%s",
+                              virDomainDiskDiscardTypeToString(disk->discard));
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported by this QEMU binary"));
+            goto error;
+        }
+    }
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
         const char *wpolicy = NULL, *rpolicy = NULL;
 

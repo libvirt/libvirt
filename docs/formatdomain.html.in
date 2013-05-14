@@ -1702,6 +1702,14 @@
             network. By default copy-on-read is off.
             <span class='since'>Since 0.9.10 (QEMU and KVM only)</span>
           </li>
+          <li>
+            The optional <code>discard</code> attribute controls whether
+            to discard (also known as "trim" or "unmap") requests are
+            ignored or passed to the filesystem. The value can be either
+            "on" (allow the discard request to be passed) or "off" (ingore
+            the discard request).
+            <span class='since'>Since 1.0.6 (QEMU and KVM only)</span>
+          </li>
         </ul>
       </dd>
       <dt><code>boot</code></dt>

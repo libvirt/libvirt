@@ -743,6 +743,10 @@ VIR_ENUM_IMPL(virDomainTPMModel, VIR_DOMAIN_TPM_MODEL_LAST,
 VIR_ENUM_IMPL(virDomainTPMBackend, VIR_DOMAIN_TPM_TYPE_LAST,
               "passthrough")
 
+VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
+              "default",
+              "on",
+              "off")
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
@@ -4534,6 +4538,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *wwn = NULL;
     char *vendor = NULL;
     char *product = NULL;
+    char *discard = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
 
@@ -4761,6 +4766,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
                 copy_on_read = virXMLPropString(cur, "copy_on_read");
+                discard = virXMLPropString(cur, "discard");
             } else if (!mirror && xmlStrEqual(cur->name, BAD_CAST "mirror") &&
                        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
                 char *ready;
@@ -5207,6 +5213,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->copy_on_read = cor;
     }
 
+    if (discard) {
+        if ((def->discard = virDomainDiskDiscardTypeFromString(discard)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk discard mode '%s'"), discard);
+            goto error;
+        }
+    }
+
     if (devaddr) {
         if (virDomainParseLegacyDeviceAddress(devaddr,
                                               &def->info.addr.pci) < 0) {
@@ -5326,6 +5340,7 @@ cleanup:
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
     VIR_FREE(copy_on_read);
+    VIR_FREE(discard);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
@@ -13658,6 +13673,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
     const char *copy_on_read = virDomainVirtioEventIdxTypeToString(def->copy_on_read);
     const char *sgio = virDomainDiskSGIOTypeToString(def->sgio);
+    const char *discard = virDomainDiskDiscardTypeToString(def->discard);
 
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -13734,6 +13750,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " event_idx='%s'", event_idx);
         if (def->copy_on_read)
             virBufferAsprintf(buf, " copy_on_read='%s'", copy_on_read);
+        if (def->discard)
+            virBufferAsprintf(buf, " discard='%s'", discard);
         virBufferAddLit(buf, "/>\n");
     }
 

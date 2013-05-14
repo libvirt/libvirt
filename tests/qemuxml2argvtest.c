@@ -585,6 +585,9 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_COPY_ON_READ,
             QEMU_CAPS_VIRTIO_TX_ALG, QEMU_CAPS_DEVICE,
             QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+    DO_TEST("disk-drive-discard",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_DISCARD,
+            QEMU_CAPS_DEVICE);
     DO_TEST("disk-snapshot",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("event_idx",

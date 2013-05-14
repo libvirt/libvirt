@@ -261,6 +261,8 @@ mymain(void)
     DO_TEST("disk-scsi-disk-vpd");
     DO_TEST("disk-source-pool");
 
+    DO_TEST("disk-drive-discard");
+
     DO_TEST("virtio-rng-random");
     DO_TEST("virtio-rng-egd");
 

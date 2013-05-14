@@ -625,6 +625,14 @@ enum virDomainDiskSGIO {
     VIR_DOMAIN_DISK_SGIO_LAST
 };
 
+enum virDomainDiskDiscard {
+    VIR_DOMAIN_DISK_DISCARD_DEFAULT = 0,
+    VIR_DOMAIN_DISK_DISCARD_ON,
+    VIR_DOMAIN_DISK_DISCARD_OFF,
+
+    VIR_DOMAIN_DISK_DISCARD_LAST
+};
+
 typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 struct _virDomainBlockIoTuneInfo {
     unsigned long long total_bytes_sec;
@@ -707,6 +715,7 @@ struct _virDomainDiskDef {
     bool rawio_specified;
     int rawio; /* no = 0, yes = 1 */
     int sgio; /* enum virDomainDiskSGIO */
+    int discard; /* enum virDomainDiskDiscard */
 
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
@@ -2464,6 +2473,7 @@ VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDiskSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
+VIR_ENUM_DECL(virDomainDiskDiscard)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
 VIR_ENUM_DECL(virDomainDiskCopyOnRead)
