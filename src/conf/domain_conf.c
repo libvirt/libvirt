@@ -13708,7 +13708,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *iomode = virDomainDiskIoTypeToString(def->iomode);
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
-    const char *copy_on_read = virDomainVirtioEventIdxTypeToString(def->copy_on_read);
+    const char *copy_on_read = virDomainDiskCopyOnReadTypeToString(def->copy_on_read);
     const char *sgio = virDomainDiskSGIOTypeToString(def->sgio);
     const char *discard = virDomainDiskDiscardTypeToString(def->discard);
 

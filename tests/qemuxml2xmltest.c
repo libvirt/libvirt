@@ -293,6 +293,8 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-scsi");
     DO_TEST("hostdev-scsi-readonly");
 
+    DO_TEST("disk-copy_on_read");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
