@@ -48,7 +48,7 @@ int virNetDevAddRoute(const char *ifname,
                       virSocketAddrPtr gateway,
                       unsigned int metric)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_RETURN_CHECK;
 int virNetDevClearIPv4Address(const char *ifname,
                               virSocketAddr *addr,
                               unsigned int prefix)
