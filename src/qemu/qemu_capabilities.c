@@ -227,6 +227,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "scsi-generic",
 
               "scsi-generic.bootindex", /* 145 */
+              "mem-merge",
     );
 
 struct _virQEMUCaps {
@@ -2234,6 +2235,40 @@ virQEMUCapsProbeQMPKVMState(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
+struct virQEMUCapsCommandLineProps {
+    const char *option;
+    const char *param;
+    int flag;
+};
+
+static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
+    { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
+};
+
+static int
+virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
+                               qemuMonitorPtr mon)
+{
+    int nvalues;
+    char **values;
+    size_t i, j;
+
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsCommandLine); i++) {
+        if ((nvalues = qemuMonitorGetCommandLineOptionParameters(mon,
+                                                                 virQEMUCapsCommandLine[i].option,
+                                                                 &values)) < 0)
+            return -1;
+        for (j = 0; j < nvalues; j++) {
+            if (STREQ(virQEMUCapsCommandLine[i].param, values[j])) {
+                virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
+                break;
+            }
+        }
+        virStringFreeList(values);
+    }
+
+    return 0;
+}
 
 int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
                         qemuMonitorPtr mon)
@@ -2580,6 +2615,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
         goto cleanup;
 
     ret = 0;
