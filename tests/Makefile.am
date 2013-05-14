@@ -86,7 +86,8 @@ EXTRA_DIST =		\
 	xmconfigdata \
 	xml2sexprdata \
 	xml2vmxdata \
-	.valgrind.supp
+	.valgrind.supp \
+	fchostdata
 
 test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
