@@ -531,7 +531,7 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-network-rbd-ipv6",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST_FAILURE("disk-drive-network-rbd-invalid",
+    DO_TEST_FAILURE("disk-drive-network-rbd-no-colon",
                     QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-no-boot",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
