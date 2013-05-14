@@ -3,49 +3,100 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1>LXC container driver</h1>
+
+    <ul id="toc"></ul>
+
 <p>
-The libvirt LXC driver manages "Linux Containers".  Containers are sets of processes
-with private namespaces which can (but don't always) look like separate machines, but
-do not have their own OS.  Here are two example configurations.  The first is a very
-light-weight "application container" which does not have its own root image.
+The libvirt LXC driver manages "Linux Containers". At their simplest, containers
+can just be thought of as a collection of processes, separated from the main
+host processes via a set of resource namespaces and constrained via control
+groups resource tunables. The libvirt LXC driver has no dependency on the LXC
+userspace tools hosted on sourceforge.net. It directly utilizes the relevant
+kernel features to build the container environment. This allows for sharing
+of many libvirt technologies across both the QEMU/KVM and LXC drivers. In
+particular sVirt for mandatory access control, auditing of operations,
+integration with control groups and many other features.
 </p>
 
-    <h2><a name="project">Project Links</a></h2>
-
-    <ul>
-      <li>
-        The <a href="http://lxc.sourceforge.net/">LXC</a> Linux
-        container system
-      </li>
-    </ul>
-
-<h2>Cgroups Requirements</h2>
+<h2><a name="cgroups">Control groups Requirements</a></h2>
 
 <p>
-The libvirt LXC driver requires that certain cgroups controllers are
-mounted on the host OS. The minimum required controllers are 'cpuacct',
-'memory' and 'devices', while recommended extra controllers are
-'cpu', 'freezer' and 'blkio'. The /etc/cgconfig.conf &amp; cgconfig
-init service used to mount cgroups at host boot time. To manually
-mount them use:
+In order to control the resource usage of processes inside containers, the
+libvirt LXC driver requires that certain cgroups controllers are mounted on
+the host OS. The minimum required controllers are 'cpuacct', 'memory' and
+'devices', while recommended extra controllers are 'cpu', 'freezer' and
+'blkio'. Libvirt will not mount the cgroups filesystem itself, leaving
+this up to the init system to take care of. Systemd will do the right thing
+in this respect, while for other init systems the <code>cgconfig</code>
+init service will be required. For further information, consult the general
+libvirt <a href="cgroups.html">cgroups documentation</a>.
+</p>
+
+<h2><a name="namespaces">Namespace requirements</a></h2>
+
+<p>
+In order to separate processes inside a container from those in the
+primary "host" OS environment, the libvirt LXC driver requires that
+certain kernel namespaces are compiled in. Libvirt currently requires
+the 'mount', 'ipc', 'pid', and 'uts' namespaces to be available. If
+separate network interfaces are desired, then the 'net' namespace is
+required. In the near future, the 'user' namespace will optionally be
+supported.
+</p>
+
+<p>
+<strong>NOTE: In the absence of support for the 'user' namespace,
+processes inside containers cannot be securely isolated from host
+process without the use of a mandatory access control technology
+such as SELinux or AppArmor.</strong>
+</p>
+
+<h2><a name="init">Default container setup</a></h2>
+
+<h3><a name="cliargs">Command line arguments</a></h3>
+
+<p>
+When the container "init" process is started, it will typically
+not be given any command line arguments (eg the equivalent of
+the bootloader args visible in <code>/proc/cmdline</code>). If
+any arguments are desired, then must be explicitly set in the
+container XML configuration via one or more <code>initarg</code>
+elements. For example, to run <code>systemd --unit emergency.service</code>
+would use the following XML
 </p>
 
 <pre>
- # mount -t cgroup cgroup /dev/cgroup -o cpuacct,memory,devices,cpu,freezer,blkio
+  &lt;os&gt;
+    &lt;type arch='x86_64'&gt;exe&lt;/type&gt;
+    &lt;init&gt;/bin/systemd&lt;/init&gt;
+    &lt;initarg&gt;--unit&lt;/initarg&gt;
+    &lt;initarg&gt;emergency.service&lt;/initarg&gt;
+  &lt;/os&gt;
 </pre>
 
-<p>
-NB, the blkio controller in some kernels will not allow creation of nested
-sub-directories which will prevent correct operation of the libvirt LXC
-driver. On such kernels, it may be necessary to unmount the blkio controller.
-</p>
-
-
-<h2>Environment setup for the container init</h2>
+<h3><a name="envvars">Environment variables</a></h3>
 
 <p>
 When the container "init" process is started, it will be given several useful
-environment variables.
+environment variables. The following standard environment variables are mandated
+by <a href="http://www.freedesktop.org/wiki/Software/systemd/ContainerInterface">systemd container interface</a>
+to be provided by all container technologies on Linux.
+</p>
+
+<dl>
+<dt>container</dt>
+<dd>The fixed string <code>libvirt-lxc</code> to identify libvirt as the creator</dd>
+<dt>container_uuid</dt>
+<dd>The UUID assigned to the container by libvirt</dd>
+<dt>PATH</dt>
+<dd>The fixed string <code>/bin:/usr/bin</code></dd>
+<dt>TERM</dt>
+<dd>The fixed string <code>linux</code></dd>
+</dl>
+
+<p>
+In addition to the standard variables, the following libvirt specific
+environment variables are also provided
 </p>
 
 <dl>
@@ -54,9 +105,152 @@ environment variables.
 <dt>LIBVIRT_LXC_UUID</dt>
 <dd>The UUID assigned to the container by libvirt</dd>
 <dt>LIBVIRT_LXC_CMDLINE</dt>
-<dd>The unparsed command line arguments specified in the container configuration</dd>
+<dd>The unparsed command line arguments specified in the container configuration.
+Use of this is discouraged, in favour of passing arguments directly to the
+container init process via the <code>initarg</code> config element.</dd>
 </dl>
 
+<h3><a name="fsmounts">Filesystem mounts</a></h3>
+
+<p>
+In the absence of any explicit configuration, the container will
+inherit the host OS filesystem mounts. A number of mount points will
+be made read only, or re-mounted with new instances to provide
+container specific data. The following special mounts are setup
+by libvirt
+</p>
+
+<ul>
+<li><code>/dev</code> a new "tmpfs" pre-populated with authorized device nodes</li>
+<li><code>/dev/pts</code> a new private "devpts" instance for console devices</li>
+<li><code>/sys</code> the host "sysfs" instance remounted read-only</li>
+<li><code>/proc</code> a new instance of the "proc" filesystem</li>
+<li><code>/proc/sys</code> the host "/proc/sys" bind-mounted read-only</li>
+<li><code>/sys/fs/selinux</code> the host "selinux" instance remounted read-only</li>
+<li><code>/sys/fs/cgroup/NNNN</code> the host cgroups controllers bind-mounted to
+only expose the sub-tree associated with the container</li>
+<li><code>/proc/meminfo</code> a FUSE backed file reflecting memory limits of the container</li>
+</ul>
+
+
+<h3><a name="devnodes">Device nodes</a></h3>
+
+<p>
+The container init process will be started with <code>CAP_MKNOD</code>
+capability removed and blocked from re-acquiring it. As such it will
+not be able to create any device nodes in <code>/dev</code> or anywhere
+else in its filesystems. Libvirt itself will take care of pre-populating
+the <code>/dev</code> filesystem with any devices that the container
+is authorized to use. The current devices that will be made available
+to all containers are
+</p>
+
+<ul>
+<li><code>/dev/zero</code></li>
+<li><code>/dev/null</code></li>
+<li><code>/dev/full</code></li>
+<li><code>/dev/random</code></li>
+<li><code>/dev/urandom</code></li>
+<li><code>/dev/stdin</code> symlinked to <code>/proc/self/fd/0</code></li>
+<li><code>/dev/stdout</code> symlinked to <code>/proc/self/fd/1</code></li>
+<li><code>/dev/stderr</code> symlinked to <code>/proc/self/fd/2</code></li>
+<li><code>/dev/fd</code> symlinked to <code>/proc/self/fd</code></li>
+<li><code>/dev/ptmx</code> symlinked to <code>/dev/pts/ptmx</code></li>
+<li><code>/dev/console</code> symlinked to <code>/dev/pts/0</code></li>
+</ul>
+
+<p>
+In addition, for every console defined in the guest configuration,
+a symlink will be created from <code>/dev/ttyN</code> symlinked to
+the corresponding <code>/dev/pts/M</code> pseudo TTY device. The
+first console will be <code>/dev/tty1</code>, with further consoles
+numbered incrementally from there.
+</p>
+
+<p>
+Further block or character devices will be made available to containers
+depending on their configuration.
+</p>
+
+<!--
+<h2>Container configuration</h2>
+
+<h3>Init process</h3>
+
+<h3>Console devices</h3>
+
+<h3>Filesystem devices</h3>
+
+<h3>Disk devices</h3>
+
+<h3>Block devices</h3>
+
+<h3>USB devices</h3>
+
+<h3>Character devices</h3>
+
+<h3>Network devices</h3>
+-->
+
+<h2>Container security</h2>
+
+<h3>sVirt SELinux</h3>
+
+<p>
+In the absence of the "user" namespace being used, containers cannot
+be considered secure against exploits of the host OS. The sVirt SELinux
+driver provides a way to secure containers even when the "user" namespace
+is not used. The cost is that writing a policy to allow execution of
+arbitrary OS is not practical. The SELinux sVirt policy is typically
+tailored to work with an simpler application confinement use case,
+as provided by the "libvirt-sandbox" project.
+</p>
+
+<h3>Auditing</h3>
+
+<p>
+The LXC driver is integrated with libvirt's auditing subsystem, which
+causes audit messages to be logged whenever there is an operation
+performed against a container which has impact on host resources.
+So for example, start/stop, device hotplug will all log audit messages
+providing details about what action occurred and any resources
+associated with it. There are the following 3 types of audit messages
+</p>
+
+<ul>
+<li><code>VIRT_MACHINE_ID</code> - details of the SELinux process and
+image security labels assigned to the container.</li>
+<li><code>VIRT_CONTROL</code> - details of an action / operation
+performed against a container. There are the following types of
+operation
+  <ul>
+    <li><code>op=start</code> - a container has been started. Provides
+      the machine name, uuid and PID of the <code>libvirt_lxc</code>
+      controller process</li>
+    <li><code>op=init</code> - the init PID of the container has been
+      started. Provides the machine name, uuid and PID of the
+      <code>libvirt_lxc</code> controller process and PID of the
+      init process (in the host PID namespace)</li>
+    <li><code>op=stop</code> - a container has been stopped. Provides
+      the machine name, uuid</li>
+  </ul>
+</li>
+<li><code>VIRT_RESOURCE</code> - details of a host resource
+associated with a container action.</li>
+</ul>
+
+<h3>Device access</h3>
+
+<p>
+All containers are launched with the CAP_MKNOD capability cleared
+and removed from the bounding set. Libvirt will ensure that the
+/dev filesystem is pre-populated with all devices that a container
+is allowed to use. In addition, the cgroup "device" controller is
+configured to block read/write/mknod from all devices except those
+that a container is authorized to use.
+</p>
+
+<h2><a name="exconfig">Example configurations</a></h2>
 
 <h3>Example config version 1</h3>
 <p></p>
@@ -121,21 +315,158 @@ debootstrap, whatever) under /opt/vm-1-root:
 &lt;/domain&gt;
 </pre>
 
+
+<h2><a name="usage">Container usage / management</a></h2>
+
 <p>
-In both cases, you can define and start a container using:</p>
-<pre>
-virsh --connect lxc:/// define v1.xml
-virsh --connect lxc:/// start vm1
-</pre>
-and then get a console  using:
-<pre>
-virsh --connect lxc:/// console vm1
-</pre>
-<p>Now doing 'ps -ef' will only show processes in the container, for
-instance.  You can undefine it using
+As with any libvirt virtualization driver, LXC containers can be
+managed via a wide variety of libvirt based tools. At the lowest
+level the <code>virsh</code> command can be used to perform many
+tasks, by passing the <code>-c lxc:///</code> argument. As an
+alternative to repeating the URI with every command, the <code>LIBVIRT_DEFAULT_URI</code>
+environment variable can be set to <code>lxc:///</code>. The
+examples that follow outline some common operations with virsh
+and LXC. For further details about usage of virsh consult its
+manual page.
 </p>
+
+<h3><a name="usageSave">Defining (saving) container configuration></a></h3>
+
+<p>
+The <code>virsh define</code> command takes an XML configuration
+document and loads it into libvirt, saving the configuration on disk
+</p>
+
 <pre>
-virsh --connect lxc:/// undefine vm1
+# virsh -c lxc:/// define myguest.xml
 </pre>
+
+<h3><a name="usageView">Viewing container configuration</a></h3>
+
+<p>
+The <code>virsh dumpxml</code> command can be used to view the
+current XML configuration of a container. By default the XML
+output reflects the current state of the container. If the
+container is running, it is possible to explicitly request the
+persistent configuration, instead of the current live configuration
+using the <code>--inactive</code> flag
+</p>
+
+<pre>
+# virsh -c lxc:/// dumpxml myguest
+</pre>
+
+<h3><a name="usageStart">Starting containers</a></h3>
+
+<p>
+The <code>virsh start</code> command can be used to start a
+container from a previously defined persistent configuration
+</p>
+
+<pre>
+# virsh -c lxc:/// start myguest
+</pre>
+
+<p>
+It is also possible to start so called "transient" containers,
+which do not require a persistent configuration to be saved
+by libvirt, using the <code>virsh create</code> command.
+</p>
+
+<pre>
+# virsh -c lxc:/// create myguest.xml
+</pre>
+
+
+<h3><a name="usageStop">Stopping containers</a></h3>
+
+<p>
+The <code>virsh shutdown</code> command can be used
+to request a graceful shutdown of the container. By default
+this command will first attempt to send a message to the
+init process via the <code>/dev/initctl</code> device node.
+If no such device node exists, then it will send SIGTERM
+to PID 1 inside the container.
+</p>
+
+<pre>
+# virsh -c lxc:/// shutdown myguest
+</pre>
+
+<p>
+If the container does not respond to the graceful shutdown
+request, it can be forceably stopped using the <code>virsh destroy</code>
+</p>
+
+<pre>
+# virsh -c lxc:/// destroy myguest
+</pre>
+
+
+<h3><a name="usageReboot">Rebooting a container</a></h3>
+
+<p>
+The <code>virsh reboot</code> command can be used
+to request a graceful shutdown of the container. By default
+this command will first attempt to send a message to the
+init process via the <code>/dev/initctl</code> device node.
+If no such device node exists, then it will send SIGHUP
+to PID 1 inside the container.
+</p>
+
+<pre>
+# virsh -c lxc:/// reboot myguest
+</pre>
+
+<h3><a name="usageDelete">Undefining (deleting) a container configuration</a></h3>
+
+<p>
+The <code>virsh undefine</code> command can be used to delete the
+persistent configuration of a container. If the guest is currently
+running, this will turn it into a "transient" guest.
+</p>
+
+<pre>
+# virsh -c lxc:/// undefine myguest
+</pre>
+
+<h3><a name="usageConnect">Connecting to a container console</a></h3>
+
+<p>
+The <code>virsh console</code> command can be used to connect
+to the text console associated with a container. If the container
+has been configured with multiple console devices, then the
+<code>--devname</code> argument can be used to choose the
+console to connect to
+</p>
+
+<pre>
+# virsh -c lxc:/// console myguest
+</pre>
+
+<h3><a name="usageEnter">Running commands in a container</a></h3>
+
+<p>
+The <code>virsh lxc-enter-namespace</code> command can be used
+to enter the namespaces and security context of a container
+and then execute an arbitrary command.
+</p>
+
+<pre>
+# virsh -c lxc:/// lxc-enter-namespace myguest -- /bin/ls -al /dev
+</pre>
+
+<h3><a name="usageTop">Monitoring container utilization</a></h3>
+
+<p>
+The <code>virt-top</code> command can be used to monitor the
+activity and resource utilization of all containers on a
+host
+</p>
+
+<pre>
+# virt-top -c lxc:///
+</pre>
+
   </body>
 </html>
