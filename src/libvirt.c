@@ -81,9 +81,6 @@
 #ifdef WITH_PHYP
 # include "phyp/phyp_driver.h"
 #endif
-#ifdef WITH_VBOX
-# include "vbox/vbox_driver.h"
-#endif
 #ifdef WITH_ESX
 # include "esx/esx_driver.h"
 #endif
@@ -463,10 +460,6 @@ virGlobalInit(void)
 #endif
 #ifdef WITH_PHYP
     if (phypRegister() == -1)
-        goto error;
-#endif
-#ifdef WITH_VBOX
-    if (vboxRegister() == -1)
         goto error;
 #endif
 #ifdef WITH_ESX

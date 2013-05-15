@@ -958,12 +958,26 @@ libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
 endif
 
 if WITH_VBOX
+noinst_LTLIBRARIES += libvirt_driver_vbox_impl.la
+libvirt_driver_vbox_la_SOURCES =
+libvirt_driver_vbox_la_LIBADD = libvirt_driver_vbox_impl.la
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_vbox.la
+libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version
+else
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
-libvirt_driver_vbox_la_CFLAGS = \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS) $(MSCOM_LIBS)
-libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
+# GPLv2-only license requries that it be linked into
+# libvirtd and *not* libvirt.so
+#libvirt_la_BUILT_LIBADD += libvirt_driver_vbox.la
+endif
+
+libvirt_driver_vbox_impl_la_CFLAGS =				\
+		-I$(top_srcdir)/src/conf			\
+		$(AM_CFLAGS)
+libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS) $(MSCOM_LIBS)
+libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif
 
 if WITH_XENAPI

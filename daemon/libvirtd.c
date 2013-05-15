@@ -73,6 +73,9 @@
 # ifdef WITH_UML
 #  include "uml/uml_driver.h"
 # endif
+# ifdef WITH_VBOX
+#  include "vbox/vbox_driver.h"
+# endif
 # ifdef WITH_NETWORK
 #  include "network/bridge_driver.h"
 # endif
@@ -400,6 +403,9 @@ static void daemonInitialize(void)
 # ifdef WITH_UML
     virDriverLoadModule("uml");
 # endif
+# ifdef WITH_VBOX
+    virDriverLoadModule("vbox");
+# endif
 #else
 # ifdef WITH_NETWORK
     networkRegister();
@@ -433,6 +439,9 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_UML
     umlRegister();
+# endif
+# ifdef WITH_VBOX
+    vboxRegister();
 # endif
 #endif
 }
