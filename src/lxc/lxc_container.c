@@ -702,6 +702,12 @@ static int lxcContainerMountBasicFS(char *sec_mount_options)
             (access(srcpath, R_OK) < 0))
             continue;
 
+#if WITH_SELINUX
+        if (STREQ(mnts[i].src, SELINUX_MOUNT) &&
+            !is_selinux_enabled())
+            continue;
+#endif
+
         if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
