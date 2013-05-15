@@ -5140,8 +5140,14 @@ esxVI_LookupManagedObjectHelper(esxVI_Context *ctx,
 
     if (candidate == NULL) {
         if (occurrence != esxVI_Occurrence_OptionalItem) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find %s with name '%s'"), type, name);
+            if (name != NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find %s with name '%s'"), type, name);
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find %s"), type);
+            }
+
             goto cleanup;
         }
 
