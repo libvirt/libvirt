@@ -52,6 +52,10 @@
 # include <blkid/blkid.h>
 #endif
 
+#if WITH_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #include "virerror.h"
 #include "virlog.h"
 #include "lxc_container.h"
@@ -756,6 +760,26 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def)
                            def->name)) < 0)
         return ret;
 
+# if WITH_SELINUX
+    if (is_selinux_enabled() > 0) {
+        security_context_t scon;
+        ret = getfilecon("/proc/meminfo", &scon);
+        if (ret < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to get security context of %s for /proc/meminfo mount point"),
+                                 meminfo_path);
+            return ret;
+        }
+        ret = setfilecon(meminfo_path, scon);
+        freecon(scon);
+        if (ret < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to set security context of %s for /proc/meminfo mount point"),
+                                 meminfo_path);
+            return ret;
+        }
+    }
+# endif
     if ((ret = mount(meminfo_path, "/proc/meminfo",
                      NULL, MS_BIND, NULL)) < 0) {
         virReportSystemError(errno,
