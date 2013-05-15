@@ -1333,16 +1333,14 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
 
 
 static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
-                                  bool skipRoot,
                                   char *sec_mount_options)
 {
     size_t i;
-    VIR_DEBUG("Mounting %d", skipRoot);
+    VIR_DEBUG("Mounting all non-root filesystems");
 
     /* Pull in rest of container's mounts */
     for (i = 0 ; i < vmDef->nfss ; i++) {
-        if (skipRoot &&
-            STREQ(vmDef->fss[i]->dst, "/"))
+        if (STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
         if (lxcContainerUnmountSubtree(vmDef->fss[i]->dst,
@@ -1353,7 +1351,7 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
             return -1;
     }
 
-    VIR_DEBUG("Mounted all filesystems");
+    VIR_DEBUG("Mounted all non-root filesystems");
     return 0;
 }
 
@@ -1791,7 +1789,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Sets up any non-root mounts from guest config */
-    if (lxcContainerMountAllFS(vmDef, true, sec_mount_options) < 0)
+    if (lxcContainerMountAllFS(vmDef, sec_mount_options) < 0)
         goto cleanup;
 
     /* Sets up any extra disks from guest config */
