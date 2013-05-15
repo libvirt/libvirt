@@ -1,3 +1,15 @@
+    Licensing
+
+Note that much of the vbox in this directory is LGPLv2-only.  Thus, it
+cannot be linked into any software that also wants to use GPLv3+ code.
+This readme file is:
+
+Copyright (C) 2009, 2013 Red Hat, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without warranty of any kind.
 
     Explanation about the how multi-version support
     for VirtualBox libvirt driver is implemented.
