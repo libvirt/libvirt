@@ -52,6 +52,7 @@ EXTRA_DIST =		\
 	domainsnapshotschematest \
 	domainsnapshotxml2xmlin \
 	domainsnapshotxml2xmlout \
+	fchostdata \
 	interfaceschemadata \
 	lxcxml2xmldata \
 	networkschematest \
@@ -86,8 +87,7 @@ EXTRA_DIST =		\
 	xmconfigdata \
 	xml2sexprdata \
 	xml2vmxdata \
-	.valgrind.supp \
-	fchostdata
+	.valgrind.supp
 
 test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
