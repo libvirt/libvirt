@@ -749,14 +749,17 @@ cleanup:
 }
 
 #if WITH_FUSE
-static int lxcContainerMountProcFuse(virDomainDefPtr def)
+static int lxcContainerMountProcFuse(virDomainDefPtr def,
+                                     const char *stateDir)
 {
     int ret;
     char *meminfo_path = NULL;
 
+    VIR_DEBUG("Mount /proc/meminfo stateDir=%s", stateDir);
+
     if ((ret = virAsprintf(&meminfo_path,
                            "/.oldroot/%s/%s.fuse/meminfo",
-                           LXC_STATE_DIR,
+                           stateDir,
                            def->name)) < 0)
         return ret;
 
@@ -791,20 +794,24 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def)
     return ret;
 }
 #else
-static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED)
+static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                     const char *stateDir ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 #endif
 
-static int lxcContainerMountFSDevPTS(virDomainDefPtr def)
+static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
+                                     const char *stateDir)
 {
     int ret;
     char *path = NULL;
 
+    VIR_DEBUG("Mount /dev/pts stateDir=%s", stateDir);
+
     if ((ret = virAsprintf(&path,
                            "/.oldroot/%s/%s.devpts",
-                           LXC_STATE_DIR,
+                           stateDir,
                            def->name)) < 0)
         return ret;
 
@@ -1747,6 +1754,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     int rc;
     int ret = -1;
     char *sec_mount_options;
+    char *stateDir = NULL;
 
     if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
         return -1;
@@ -1758,6 +1766,9 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                              _("Cannot identify cgroup placement"));
         goto cleanup;
     }
+
+    if (virFileResolveAllLinks(LXC_STATE_DIR, &stateDir) < 0)
+        goto cleanup;
 
     /* Ensure the root filesystem is mounted */
     if (lxcContainerPrepareRoot(vmDef, root) < 0)
@@ -1796,7 +1807,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
-    if (lxcContainerMountProcFuse(vmDef) < 0)
+    if (lxcContainerMountProcFuse(vmDef, stateDir) < 0)
         goto cleanup;
 
     /* Now we can re-mount the cgroups controllers in the
@@ -1805,7 +1816,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts /dev/pts */
-    if (lxcContainerMountFSDevPTS(vmDef) < 0)
+    if (lxcContainerMountFSDevPTS(vmDef, stateDir) < 0)
         goto cleanup;
 
     /* Populates device nodes in /dev/ */
@@ -1831,6 +1842,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     ret = 0;
 
 cleanup:
+    VIR_FREE(stateDir);
     virCgroupFree(&cgroup);
     VIR_FREE(sec_mount_options);
     return ret;
