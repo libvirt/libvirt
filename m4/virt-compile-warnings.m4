@@ -191,7 +191,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
     dnl on Mingw32, but fails when actually used
     case $host in
-       *-*-linux*|*-*-freebsd*)
+       *-*-linux*)
        dnl Fedora only uses -fstack-protector, but doesn't seem to
        dnl be great overhead in adding -fstack-protector-all instead
        dnl gl_WARN_ADD([-fstack-protector])
@@ -203,6 +203,13 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        dnl that just link together .o files. Unfortunately
        dnl we can't avoid that with automake, so we must turn
        dnl off the following clang specific warning
+       gl_WARN_ADD([-Wno-unused-command-line-argument])
+       ;;
+       *-*-freebsd*)
+       dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
+       dnl -fstack-protector-all well
+       gl_WARN_ADD([-fstack-protector])
+
        gl_WARN_ADD([-Wno-unused-command-line-argument])
        ;;
     esac
