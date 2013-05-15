@@ -183,6 +183,13 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        gl_WARN_ADD([-fstack-protector-all])
        gl_WARN_ADD([--param=ssp-buffer-size=4])
        ;;
+       *-*-freebsd*)
+       dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
+       dnl -fstack-protector-all well
+       gl_WARN_ADD([-fstack-protector])
+
+       gl_WARN_ADD([-Wno-unused-command-line-argument])
+       ;;
     esac
     gl_WARN_ADD([-fexceptions])
     gl_WARN_ADD([-fasynchronous-unwind-tables])
