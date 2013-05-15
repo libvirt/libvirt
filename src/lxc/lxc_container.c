@@ -655,8 +655,7 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(bool pivotRoot,
-                                    char *sec_mount_options)
+static int lxcContainerMountBasicFS(char *sec_mount_options)
 {
     const struct {
         const char *src;
@@ -684,7 +683,7 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
     int i, rc = -1;
     char *opts = NULL;
 
-    VIR_DEBUG("Mounting basic filesystems pivotRoot=%d", pivotRoot);
+    VIR_DEBUG("Mounting basic filesystems sec_mount_options=%s", sec_mount_options);
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
         const char *srcpath = NULL;
@@ -717,27 +716,24 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
         }
     }
 
-    if (pivotRoot) {
-        /*
-         * tmpfs is limited to 64kb, since we only have device nodes in there
-         * and don't want to DOS the entire OS RAM usage
-         */
+    /*
+     * tmpfs is limited to 64kb, since we only have device nodes in there
+     * and don't want to DOS the entire OS RAM usage
+     */
 
-        ignore_value(virAsprintf(&opts,
-                                 "mode=755,size=65536%s", sec_mount_options));
-        if (!opts) {
-            virReportOOMError();
-            goto cleanup;
-        }
+    if (virAsprintf(&opts,
+                    "mode=755,size=65536%s", sec_mount_options) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
-        VIR_DEBUG("Mount devfs on /dev type=tmpfs flags=%x, opts=%s",
-                  MS_NOSUID, opts);
-        if (mount("devfs", "/dev", "tmpfs", MS_NOSUID, opts) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to mount %s on %s type %s (%s)"),
-                                 "devfs", "/dev", "tmpfs", opts);
-            goto cleanup;
-        }
+    VIR_DEBUG("Mount devfs on /dev type=tmpfs flags=%x, opts=%s",
+              MS_NOSUID, opts);
+    if (mount("devfs", "/dev", "tmpfs", MS_NOSUID, opts) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on %s type %s (%s)"),
+                             "devfs", "/dev", "tmpfs", opts);
+        goto cleanup;
     }
 
     rc = 0;
@@ -1789,7 +1785,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(true, sec_mount_options) < 0)
+    if (lxcContainerMountBasicFS(sec_mount_options) < 0)
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
