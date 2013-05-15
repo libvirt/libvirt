@@ -1022,7 +1022,7 @@ Requires: ncurses
 # So remote clients can access libvirt over SSH tunnel
 # (client invokes 'nc' against the UNIX socket on the server)
 Requires: nc
-# Needed by libvirt-guests init script.
+# Needed by /usr/libexec/libvirt-guests.sh script.
 Requires: gettext
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
