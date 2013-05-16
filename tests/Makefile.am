@@ -73,6 +73,7 @@ EXTRA_DIST =		\
 	securityselinuxlabeldata \
 	schematestutils.sh \
 	sexpr2xmldata \
+	storagepoolschemadata \
 	storagepoolschematest \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \

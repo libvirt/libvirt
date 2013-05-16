@@ -1,0 +1,12 @@
+<pool type='dir'>
+  <name>test</name>
+  <source>
+  </source>
+  <target>
+    <permissions>
+      <mode>0700</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+    </permissions>
+  </target>
+</pool>

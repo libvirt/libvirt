@@ -200,11 +200,9 @@
 
   <define name='target'>
     <element name='target'>
-      <optional>
-        <element name='path'>
-          <ref name='absFilePath'/>
-        </element>
-      </optional>
+      <element name='path'>
+        <ref name='absFilePath'/>
+      </element>
       <ref name='permissions'/>
     </element>
   </define>
