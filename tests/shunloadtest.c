@@ -56,17 +56,22 @@
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 bool running = false;
+bool failstart = false;
 bool quit = false;
 
 static void *threadMain(void *arg)
 {
-    void (*startup)(void) = arg;
+    int (*startup)(void) = arg;
 
-    startup();
-
-    pthread_mutex_lock(&lock);
-    running = true;
-    pthread_cond_signal(&cond);
+    if (startup() < 0) {
+        pthread_mutex_lock(&lock);
+        failstart = true;
+        pthread_cond_signal(&cond);
+    } else {
+        pthread_mutex_lock(&lock);
+        running = true;
+        pthread_cond_signal(&cond);
+    }
 
     while (!quit) {
         pthread_cond_wait(&cond, &lock);
@@ -119,7 +124,7 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
 
     /* Wait for the thread to start and call libvirt */
     pthread_mutex_lock(&lock);
-    while (!running) {
+    while (!running && !failstart) {
         pthread_cond_wait(&cond, &lock);
     }
 
@@ -138,7 +143,10 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
      * causing a SEGV !
      */
 
-    fprintf(stderr, "OK\n");
+    if (failstart)
+        fprintf(stderr, "FAIL to initialize libvirt\n");
+    else
+        fprintf(stderr, "OK\n");
 
     return 0;
 }

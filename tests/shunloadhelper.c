@@ -36,16 +36,20 @@ static void shunloadError(void *userData ATTRIBUTE_UNUSED,
 {
 }
 
-void shunloadStart(void);
+int shunloadStart(void);
 
-void shunloadStart(void) {
+int shunloadStart(void) {
     virConnectPtr conn;
 
     virSetErrorFunc(NULL, shunloadError);
-    virInitialize();
+    if (virInitialize() < 0)
+        return -1;
 
     conn = virConnectOpen("test:///default");
     virDomainDestroy(NULL);
-    if (conn)
+    if (conn) {
         virConnectClose(conn);
+        return 0;
+    }
+    return -1;
 }
