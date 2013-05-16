@@ -7719,7 +7719,6 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
-    virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
     unsigned long long value_ul;
@@ -7797,7 +7796,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
-                if ((rc = qemuSetVcpusBWLive(vm, group, value_ul, 0)))
+                if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, value_ul, 0)))
                     goto cleanup;
 
                 vm->def->cputune.period = value_ul;
@@ -7811,7 +7810,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
-                if ((rc = qemuSetVcpusBWLive(vm, group, 0, value_l)))
+                if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, 0, value_l)))
                     goto cleanup;
 
                 vm->def->cputune.quota = value_l;
@@ -7825,7 +7824,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
-                if ((rc = qemuSetEmulatorBandwidthLive(vm, group, value_ul, 0)))
+                if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
+                                                       value_ul, 0)))
                     goto cleanup;
 
                 vm->def->cputune.emulator_period = value_ul;
@@ -7839,7 +7839,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
-                if ((rc = qemuSetEmulatorBandwidthLive(vm, group, 0, value_l)))
+                if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
+                                                       0, value_l)))
                     goto cleanup;
 
                 vm->def->cputune.emulator_quota = value_l;
