@@ -548,6 +548,33 @@ cleanup:
     return ret;
 }
 
+static void
+virDomainSnapshotDiskDefFormat(virBufferPtr buf,
+                               virDomainSnapshotDiskDefPtr disk)
+{
+    if (!disk->name)
+        return;
+
+    virBufferEscapeString(buf, "    <disk name='%s'", disk->name);
+    if (disk->snapshot > 0)
+        virBufferAsprintf(buf, " snapshot='%s'",
+                          virDomainSnapshotLocationTypeToString(disk->snapshot));
+    if (!disk->file && disk->format == 0) {
+        virBufferAddLit(buf, "/>\n");
+        return;
+    }
+
+    virBufferAddLit(buf, ">\n");
+
+    virBufferAdjustIndent(buf, 6);
+    if (disk->format > 0)
+        virBufferEscapeString(buf, "<driver type='%s'/>\n",
+                              virStorageFileFormatTypeToString(disk->format));
+    virBufferEscapeString(buf, "<source file='%s'/>\n", disk->file);
+    virBufferAdjustIndent(buf, -6);
+    virBufferAddLit(buf, "    </disk>\n");
+}
+
 char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
                                  unsigned int flags,
@@ -583,30 +610,8 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
     }
     if (def->ndisks) {
         virBufferAddLit(&buf, "  <disks>\n");
-        for (i = 0; i < def->ndisks; i++) {
-            virDomainSnapshotDiskDefPtr disk = &def->disks[i];
-
-            if (!disk->name)
-                continue;
-
-            virBufferEscapeString(&buf, "    <disk name='%s'", disk->name);
-            if (disk->snapshot)
-                virBufferAsprintf(&buf, " snapshot='%s'",
-                                  virDomainSnapshotLocationTypeToString(disk->snapshot));
-            if (disk->file || disk->format > 0) {
-                virBufferAddLit(&buf, ">\n");
-                if (disk->format > 0)
-                    virBufferEscapeString(&buf, "      <driver type='%s'/>\n",
-                                          virStorageFileFormatTypeToString(
-                                              disk->format));
-                if (disk->file)
-                    virBufferEscapeString(&buf, "      <source file='%s'/>\n",
-                                          disk->file);
-                virBufferAddLit(&buf, "    </disk>\n");
-            } else {
-                virBufferAddLit(&buf, "/>\n");
-            }
-        }
+        for (i = 0; i < def->ndisks; i++)
+            virDomainSnapshotDiskDefFormat(&buf, &def->disks[i]);
         virBufferAddLit(&buf, "  </disks>\n");
     }
     if (def->dom) {
