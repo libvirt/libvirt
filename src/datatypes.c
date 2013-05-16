@@ -421,7 +421,7 @@ virInterfaceDispose(void *obj)
  * and register it in the table. In any case a corresponding call to
  * virObjectUnref() is needed to not leak data.
  *
- * Returns a pointer to the network, or NULL in case of failure
+ * Returns a pointer to the storage pool, or NULL in case of failure
  */
 virStoragePoolPtr
 virGetStoragePool(virConnectPtr conn, const char *name,
