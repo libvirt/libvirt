@@ -595,22 +595,28 @@
   &lt;memoryBacking&gt;
     &lt;hugepages/&gt;
     &lt;nosharepages/&gt;
+    &lt;locked/&gt;
   &lt;/memoryBacking&gt;
   ...
 &lt;/domain&gt;
 </pre>
 
+    <p>The optional <code>memoryBacking</code> element may contain several
+      elements that influence how virtual memory pages are backed by host
+      pages.</p>
+
     <dl>
-      <dt><code>memoryBacking</code></dt>
-      <dd>The optional <code>memoryBacking</code> element has two
-        optional elements. The element <code>hugepages</code> tells
-        the hypervisor that the guest should have its memory allocated
-        using hugepages instead of the normal native page size. And the
-        optional element <code>nosharepages</code>
-        (<span class="since">since 1.0.6</span>) tells the hypervisor
-        that share pages (memory merge, KSM) should be disabled on guest
-        startup.
-      </dd>
+      <dt><code>hugepages</code></dt>
+      <dd>This tells the hypervisor that the guest should have its memory
+        allocated using hugepages instead of the normal native page size.</dd>
+      <dt><code>nosharepages</code></dt>
+      <dd>Instructs hypervisor to disable shared pages (memory merge, KSM) for
+        this domain. <span class="since">Since 1.0.6</span></dd>
+      <dt><code>locked</code></dt>
+      <dd>When set and supported by the hypervisor, memory pages belonging
+        to the domain will be locked in host's memory and the host will not
+        be allowed to swap them out.
+        <span class="since">Since 1.0.6</span></dd>
     </dl>
 
 

@@ -10411,6 +10411,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((node = virXPathNode("./memoryBacking/nosharepages", ctxt)))
         def->mem.nosharepages = true;
 
+    if (virXPathBoolean("boolean(./memoryBacking/locked)", ctxt))
+        def->mem.locked = true;
+
     /* Extract blkio cgroup tunables */
     if (virXPathUInt("string(./blkiotune/weight)", ctxt,
                      &def->blkio.weight) < 0)
@@ -15766,17 +15769,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->mem.swap_hard_limit)
         virBufferAddLit(buf, "  </memtune>\n");
 
-    if (def->mem.hugepage_backed || def->mem.nosharepages)
+    if (def->mem.hugepage_backed || def->mem.nosharepages || def->mem.locked) {
         virBufferAddLit(buf, "  <memoryBacking>\n");
-
-    if (def->mem.hugepage_backed)
-        virBufferAddLit(buf, "    <hugepages/>\n");
-
-    if (def->mem.nosharepages)
-        virBufferAddLit(buf, "    <nosharepages/>\n");
-
-    if (def->mem.hugepage_backed || def->mem.nosharepages)
+        if (def->mem.hugepage_backed)
+            virBufferAddLit(buf, "    <hugepages/>\n");
+        if (def->mem.nosharepages)
+            virBufferAddLit(buf, "    <nosharepages/>\n");
+        if (def->mem.locked)
+            virBufferAddLit(buf, "    <locked/>\n");
         virBufferAddLit(buf, "  </memoryBacking>\n");
+    }
 
     virBufferAddLit(buf, "  <vcpu");
     virBufferAsprintf(buf, " placement='%s'",

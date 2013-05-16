@@ -501,6 +501,11 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="locked">
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </element>
       </optional>
