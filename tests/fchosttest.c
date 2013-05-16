@@ -19,10 +19,13 @@
 
 #include <config.h>
 
+#include "virstring.h"
 #include "virutil.h"
 #include "testutils.h"
 
-#define TEST_FC_HOST_PREFIX "./fchostdata/fc_host/"
+static char *fchost_prefix;
+
+#define TEST_FC_HOST_PREFIX fchost_prefix
 #define TEST_FC_HOST_NUM 5
 
 /* Test virIsCapableFCHost */
@@ -158,6 +161,12 @@ mymain(void)
 {
     int ret = 0;
 
+    if (virAsprintf(&fchost_prefix, "%s/%s", abs_srcdir,
+                    "fchostdata/fc_host/") < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
     if (virtTestRun("test1", 1, test1, NULL) < 0)
         ret = -1;
     if (virtTestRun("test2", 1, test2, NULL) < 0)
@@ -169,6 +178,8 @@ mymain(void)
     if (virtTestRun("test5", 1, test5, NULL) < 0)
         ret = -1;
 
+cleanup:
+    VIR_FREE(fchost_prefix);
     return ret;
 }
 
