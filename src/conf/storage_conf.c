@@ -110,16 +110,14 @@ struct _virStorageVolOptions {
 
 /* Flags to indicate mandatory components in the pool source */
 enum {
-    VIR_STORAGE_POOL_SOURCE_HOST            = (1<<0),
-    VIR_STORAGE_POOL_SOURCE_DEVICE          = (1<<1),
-    VIR_STORAGE_POOL_SOURCE_DIR             = (1<<2),
-    VIR_STORAGE_POOL_SOURCE_ADAPTER         = (1<<3),
-    VIR_STORAGE_POOL_SOURCE_NAME            = (1<<4),
-    VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN   = (1<<5),
-    VIR_STORAGE_POOL_SOURCE_NETWORK         = (1<<6),
+    VIR_STORAGE_POOL_SOURCE_HOST            = (1 << 0),
+    VIR_STORAGE_POOL_SOURCE_DEVICE          = (1 << 1),
+    VIR_STORAGE_POOL_SOURCE_DIR             = (1 << 2),
+    VIR_STORAGE_POOL_SOURCE_ADAPTER         = (1 << 3),
+    VIR_STORAGE_POOL_SOURCE_NAME            = (1 << 4),
+    VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN   = (1 << 5),
+    VIR_STORAGE_POOL_SOURCE_NETWORK         = (1 << 6),
 };
-
-
 
 typedef struct _virStoragePoolOptions virStoragePoolOptions;
 typedef virStoragePoolOptions *virStoragePoolOptionsPtr;
