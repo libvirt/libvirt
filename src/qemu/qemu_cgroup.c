@@ -415,8 +415,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
         if (rc != 0) {
             if (rc == -ENXIO ||
                 rc == -EPERM ||
-                rc == -EACCES ||
-                rc == -ENOENT) { /* No cgroups mounts == success */
+                rc == -EACCES) { /* No cgroups mounts == success */
                 VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
                 goto done;
             }

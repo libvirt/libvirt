@@ -1122,8 +1122,13 @@ static int virCgroupPartitionNeedsEscaping(const char *path)
         path[0] == '.')
         return 1;
 
-    if (!(fp = fopen("/proc/cgroups", "r")))
+    if (!(fp = fopen("/proc/cgroups", "r"))) {
+        /* The API contract is that we return ENXIO
+         * if cgroups are not available on a host */
+        if (errno == ENOENT)
+            errno = ENXIO;
         return -errno;
+    }
 
     /*
      * Data looks like this:
