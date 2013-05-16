@@ -26,6 +26,7 @@
 
 #include <config.h>
 
+#include <stdlib.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdarg.h>
