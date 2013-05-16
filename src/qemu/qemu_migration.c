@@ -1723,7 +1723,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
-    char *listenAddress = cookie->graphics->listen;
+    char *listenAddress;
 
     if (!cookie)
         return 0;
@@ -1737,6 +1737,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
     if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
         return 0;
 
+    listenAddress = cookie->graphics->listen;
     if (!listenAddress ||
         STREQ(listenAddress, "0.0.0.0") ||
         STREQ(listenAddress, "::"))
