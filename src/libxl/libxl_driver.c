@@ -711,10 +711,10 @@ libxlVmReap(libxlDriverPrivatePtr driver,
 #endif
 
 static void
-libxlEventHandler(void *data ATTRIBUTE_UNUSED,
-                  VIR_LIBXL_EVENT_CONST libxl_event *event)
+libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
     libxlDriverPrivatePtr driver = libxl_driver;
+    libxlDomainObjPrivatePtr priv = ((virDomainObjPtr)data)->privateData;
     virDomainObjPtr vm = NULL;
     virDomainEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
@@ -771,6 +771,8 @@ cleanup:
         libxlDomainEventQueue(driver, dom_event);
         libxlDriverUnlock(driver);
     }
+    /* Cast away any const */
+    libxl_event_free(priv->ctx, (libxl_event *)event);
 }
 
 static const struct libxl_event_hooks ev_hooks = {
