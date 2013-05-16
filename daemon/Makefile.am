@@ -155,6 +155,10 @@ if WITH_UML
     libvirtd_LDADD += ../src/libvirt_driver_uml.la
 endif
 
+if WITH_VBOX
+    libvirtd_LDADD += ../src/libvirt_driver_vbox.la
+endif
+
 if WITH_STORAGE
     libvirtd_LDADD += ../src/libvirt_driver_storage.la
 endif
