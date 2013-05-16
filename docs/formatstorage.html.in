@@ -334,6 +334,10 @@
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
+          &lt;compat&gt;1.1&lt;/compat&gt;
+          &lt;features&gt;
+            &lt;lazy_refcounts/&gt;
+          &lt;/features&gt;
         &lt;/target&gt;</pre>
 
     <dl>
@@ -361,6 +365,22 @@
         element contains the numeric group ID. The <code>label</code> element
         contains the MAC (eg SELinux) label string.
         <span class="since">Since 0.4.1</span>
+      </dd>
+      <dt><code>compat</code></dt>
+      <dd>Specify compatibility level. So far, this is only used for
+        <code>type='qcow2'</code> volumes. Valid values are <code>0.10</code>
+        and <code>1.1</code> so far, specifying QEMU version the images should
+        be compatible with. If the <code>feature</code> element is present,
+        1.1 is used. If omitted, qemu-img default is used.
+        <span class="since">Since 1.0.7</span>
+      </dd>
+      <dt><code>features</code></dt>
+      <dd>Format-specific features. Only used for <code>qcow2</code> now.
+        Valid sub-elements are:
+        <ul>
+          <li><code>&lt;lazy_refcounts/&gt;</code> - allow delayed reference
+          counter updates. <span class="since">Since 1.0.7</span></li>
+        </ul>
       </dd>
     </dl>
 

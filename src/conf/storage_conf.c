@@ -97,6 +97,8 @@ VIR_ENUM_IMPL(virStoragePoolSourceAdapterType,
 
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);
+typedef const char *(*virStorageVolFeatureToString)(int feature);
+typedef int (*virStorageVolFeatureFromString)(const char *feature);
 
 typedef const char *(*virStoragePoolFormatToString)(int format);
 typedef int (*virStoragePoolFormatFromString)(const char *format);
@@ -107,6 +109,8 @@ struct _virStorageVolOptions {
     int defaultFormat;
     virStorageVolFormatToString formatToString;
     virStorageVolFormatFromString formatFromString;
+    virStorageVolFeatureToString featureToString;
+    virStorageVolFeatureFromString featureFromString;
 };
 
 /* Flags to indicate mandatory components in the pool source */
@@ -161,6 +165,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
+         .featureFromString = virStorageFileFeatureTypeFromString,
+         .featureToString = virStorageFileFeatureTypeToString,
      },
     },
     {.poolType = VIR_STORAGE_POOL_FS,
@@ -174,6 +180,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
+         .featureFromString = virStorageFileFeatureTypeFromString,
+         .featureToString = virStorageFileFeatureTypeToString,
       },
     },
     {.poolType = VIR_STORAGE_POOL_NETFS,
@@ -188,6 +196,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
+         .featureFromString = virStorageFileFeatureTypeFromString,
+         .featureToString = virStorageFileFeatureTypeToString,
       },
     },
     {.poolType = VIR_STORAGE_POOL_ISCSI,
@@ -299,6 +309,8 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     }
     VIR_FREE(def->source.extents);
 
+    VIR_FREE(def->target.compat);
+    virBitmapFree(def->target.features);
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
     VIR_FREE(def->target.timestamps);
@@ -1248,6 +1260,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     char *capacity = NULL;
     char *unit = NULL;
     xmlNodePtr node;
+    xmlNodePtr *nodes = NULL;
+    int i, n;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1335,17 +1349,59 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(format);
     }
 
+    ret->target.compat = virXPathString("string(./target/compat)", ctxt);
+    if (ret->target.compat) {
+        char **version = virStringSplit(ret->target.compat, ".", 2);
+        unsigned int result;
+
+        if (!version || !version[1] ||
+            virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
+            virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
+            virStringFreeList(version);
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("forbidden characters in 'compat' attribute"));
+            goto error;
+        }
+        virStringFreeList(version);
+    }
+
+    if (options->featureFromString && virXPathNode("./target/features", ctxt)) {
+        if ((n = virXPathNodeSet("./target/features/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        if (!ret->target.compat && VIR_STRDUP(ret->target.compat, "1.1") < 0)
+            goto error;
+
+        if (!(ret->target.features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
+            goto no_memory;
+
+        for (i = 0; i < n; i++) {
+            int f = options->featureFromString((const char*)nodes[i]->name);
+
+            if (f < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unsupported feature %s"),
+                               (const char*)nodes[i]->name);
+                goto error;
+            }
+            ignore_value(virBitmapSetBit(ret->target.features, f));
+        }
+        VIR_FREE(nodes);
+    }
+
     if (virStorageDefParsePerms(ctxt, &ret->backingStore.perms,
                                 "./backingStore/permissions",
                                 DEFAULT_VOL_PERM_MODE) < 0)
         goto error;
 
 cleanup:
+    VIR_FREE(nodes);
     VIR_FREE(allocation);
     VIR_FREE(capacity);
     VIR_FREE(unit);
     return ret;
 
+no_memory:
+    virReportOOMError();
 error:
     virStorageVolDefFree(ret);
     ret = NULL;
@@ -1474,6 +1530,28 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         if (virStorageEncryptionFormat(buf, def->encryption) < 0)
             return -1;
         virBufferAdjustIndent(buf, -4);
+    }
+
+    virBufferEscapeString(buf, "    <compat>%s</compat>\n", def->compat);
+
+    if (options->featureToString && def->features) {
+        int i;
+        bool b;
+        bool empty = virBitmapIsAllClear(def->features);
+
+        if (empty)
+            virBufferAddLit(buf, "    <features/>\n");
+        else
+            virBufferAddLit(buf, "    <features>\n");
+
+        for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
+            ignore_value(virBitmapGetBit(def->features, i, &b));
+            if (b)
+                virBufferAsprintf(buf, "      <%s/>\n",
+                                  options->featureToString(i));
+        }
+        if (!empty)
+            virBufferAddLit(buf, "    </features>\n");
     }
 
     virBufferAsprintf(buf, "  </%s>\n", type);

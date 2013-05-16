@@ -8,6 +8,7 @@
   </start>
 
   <include href='storageencryption.rng'/>
+  <include href='storagefilefeatures.rng'/>
 
 
   <define name='vol'>
@@ -112,6 +113,12 @@
       <ref name='timestamps'/>
       <optional>
         <ref name='encryption'/>
+      </optional>
+      <optional>
+        <ref name='compat'/>
+      </optional>
+      <optional>
+        <ref name='fileFormatFeatures'/>
       </optional>
     </element>
   </define>

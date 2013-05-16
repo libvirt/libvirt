@@ -213,6 +213,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/nwfilter.rng
 %{mingw32_datadir}/libvirt/schemas/secret.rng
 %{mingw32_datadir}/libvirt/schemas/storageencryption.rng
+%{mingw32_datadir}/libvirt/schemas/storagefilefeatures.rng
 %{mingw32_datadir}/libvirt/schemas/storagepool.rng
 %{mingw32_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw32_datadir}/libvirt/api/
@@ -273,6 +274,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/nwfilter.rng
 %{mingw64_datadir}/libvirt/schemas/secret.rng
 %{mingw64_datadir}/libvirt/schemas/storageencryption.rng
+%{mingw64_datadir}/libvirt/schemas/storagefilefeatures.rng
 %{mingw64_datadir}/libvirt/schemas/storagepool.rng
 %{mingw64_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw64_datadir}/libvirt/api/

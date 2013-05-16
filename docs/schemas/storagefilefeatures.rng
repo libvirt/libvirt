@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- A Relax NG schema for the libvirt volume features XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <define name='compat'>
+    <element name='compat'>
+      <data type='string'>
+        <param name='pattern'>[0-9]+\.[0-9]+</param>
+      </data>
+    </element>
+  </define>
+  <define name='fileFormatFeatures'>
+    <element name='features'>
+      <interleave>
+        <optional>
+          <element name='lazy_refcounts'>
+            <empty/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+</grammar>

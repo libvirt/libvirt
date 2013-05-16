@@ -26,6 +26,7 @@
 
 # include "internal.h"
 # include "storage_encryption_conf.h"
+# include "virbitmap.h"
 # include "virthread.h"
 
 # include <libxml/tree.h>
@@ -84,9 +85,11 @@ struct _virStorageVolTarget {
     virStoragePerms perms;
     virStorageTimestampsPtr timestamps;
     int type; /* only used by disk backend for partition type */
-
-    /* only used in vol->target, not in vol->backingstore. */
+    /* The next three are currently only used in vol->target,
+     * not in vol->backingStore. */
     virStorageEncryptionPtr encryption;
+    virBitmapPtr features;
+    char *compat;
 };
 
 typedef struct _virStorageVolDef virStorageVolDef;

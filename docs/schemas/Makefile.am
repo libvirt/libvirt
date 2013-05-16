@@ -28,6 +28,7 @@ schema_DATA = \
 	nwfilter.rng \
 	secret.rng \
 	storageencryption.rng \
+	storagefilefeatures.rng \
 	storagepool.rng \
 	storagevol.rng
 

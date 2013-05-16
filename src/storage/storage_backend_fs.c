@@ -150,6 +150,16 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
          */
     }
 
+    virBitmapFree(target->features);
+    target->features = meta->features;
+    meta->features = NULL;
+
+    if (meta->compat) {
+        VIR_FREE(target->compat);
+        target->compat = meta->compat;
+        meta->compat = NULL;
+    }
+
     virStorageFileFreeMetadata(meta);
 
     return ret;

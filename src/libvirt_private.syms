@@ -1799,6 +1799,8 @@ virSocketAddrSetPort;
 
 # util/virstoragefile.h
 virStorageFileChainLookup;
+virStorageFileFeatureTypeFromString;
+virStorageFileFeatureTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileFormatTypeToString;
 virStorageFileFreeMetadata;
