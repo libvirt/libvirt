@@ -187,6 +187,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_MEM_MERGE          = 146, /* -machine mem-merge */
     QEMU_CAPS_VNC_WEBSOCKET      = 147, /* -vnc x:y,websocket */
     QEMU_CAPS_DRIVE_DISCARD      = 148, /* -drive discard=off(ignore)|on(unmap) */
+    QEMU_CAPS_MLOCK              = 149, /* -realtime mlock=on|off */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

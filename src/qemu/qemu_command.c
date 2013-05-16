@@ -6541,6 +6541,17 @@ qemuBuildCommandLine(virConnectPtr conn,
                              cfg->hugepagePath, NULL);
     }
 
+    if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory locking not supported by QEMU binary"));
+        goto error;
+    }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
+        virCommandAddArg(cmd, "-realtime");
+        virCommandAddArgFormat(cmd, "mlock=%s",
+                               def->mem.locked ? "on" : "off");
+    }
+
     virCommandAddArg(cmd, "-smp");
     if (!(smp = qemuBuildSmpArgStr(def, qemuCaps)))
         goto error;

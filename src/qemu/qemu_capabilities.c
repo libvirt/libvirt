@@ -230,6 +230,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "mem-merge",
               "vnc-websocket",
               "drive-discard",
+              "mlock",
     );
 
 struct _virQEMUCaps {
@@ -2246,6 +2247,7 @@ struct virQEMUCapsCommandLineProps {
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
+    { "realtime", "mlock", QEMU_CAPS_MLOCK },
 };
 
 static int

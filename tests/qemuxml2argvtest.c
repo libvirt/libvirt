@@ -1007,6 +1007,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCSI_GENERIC,
             QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX);
 
+    DO_TEST("mlock-on", QEMU_CAPS_MLOCK);
+    DO_TEST_FAILURE("mlock-on", NONE);
+    DO_TEST("mlock-off", QEMU_CAPS_MLOCK);
+    DO_TEST("mlock-unsupported", NONE);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
