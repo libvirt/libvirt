@@ -468,7 +468,8 @@ DRIVER_SOURCE_FILES = \
 
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
-		$(DRIVER_SOURCE_FILES)
+		$(filter /%,$(DRIVER_SOURCE_FILES)) \
+		$(addprefix $(srcdir)/,$(filter-out /%,$(DRIVER_SOURCE_FILES)))
 
 EXTRA_DIST += check-driverimpls.pl
 
