@@ -663,10 +663,22 @@ libxlVmReap(libxlDriverPrivatePtr driver,
 }
 
 /*
- * Handle previously registered event notification from libxenlight
+ * Handle previously registered event notification from libxenlight.
+ *
+ * Note: Xen 4.3 removed the const from the event handler signature.
+ * Detect which signature to use based on
+ * LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG.
  */
+
+#ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
+# define VIR_LIBXL_EVENT_CONST /* empty */
+#else
+# define VIR_LIBXL_EVENT_CONST const
+#endif
+
 static void
-libxlEventHandler(void *data ATTRIBUTE_UNUSED, const libxl_event *event)
+libxlEventHandler(void *data ATTRIBUTE_UNUSED,
+                  VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
     libxlDriverPrivatePtr driver = libxl_driver;
     virDomainObjPtr vm = NULL;
