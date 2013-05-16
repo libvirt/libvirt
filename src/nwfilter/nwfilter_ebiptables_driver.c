@@ -27,6 +27,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/utsname.h>
 
 #include "internal.h"
 
@@ -84,6 +85,17 @@ static char *ebtables_cmd_path;
 static char *iptables_cmd_path;
 static char *ip6tables_cmd_path;
 static char *grep_cmd_path;
+
+/*
+ * --ctdir original vs. --ctdir reply's meaning was inverted in netfilter
+ * at some point (Linux 2.6.39)
+ */
+enum ctdirStatus {
+    CTDIR_STATUS_UNKNOWN    = 0,
+    CTDIR_STATUS_CORRECTED  = 1,
+    CTDIR_STATUS_OLD        = 2,
+};
+static enum ctdirStatus iptables_ctdir_corrected;
 
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
     snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
@@ -1262,6 +1274,17 @@ iptablesEnforceDirection(int directionIn,
                          virNWFilterRuleDefPtr rule,
                          virBufferPtr buf)
 {
+    switch (iptables_ctdir_corrected) {
+    case CTDIR_STATUS_UNKNOWN:
+        /* could not be determined or s.th. is seriously wrong */
+        return;
+    case CTDIR_STATUS_CORRECTED:
+        directionIn = !directionIn;
+        break;
+    case CTDIR_STATUS_OLD:
+        break;
+    }
+
     if (rule->tt != VIR_NWFILTER_RULE_DIRECTION_INOUT)
         virBufferAsprintf(buf, " -m conntrack --ctdir %s",
                           (directionIn) ? "Original"
@@ -4304,6 +4327,32 @@ ebiptablesDriverTestCLITools(void)
     return ret;
 }
 
+static void
+ebiptablesDriverProbeCtdir(void)
+{
+    struct utsname utsname;
+    unsigned long thisversion;
+
+    iptables_ctdir_corrected = CTDIR_STATUS_UNKNOWN;
+
+    if (uname(&utsname) < 0) {
+        VIR_ERROR(_("Call to utsname failed: %d"), errno);
+        return;
+    }
+
+    /* following Linux lxr, the logic was inverted in 2.6.39 */
+    if (virParseVersionString(utsname.release, &thisversion, true) < 0) {
+        VIR_ERROR(_("Could not determine kernel version from string %s"),
+                  utsname.release);
+        return;
+    }
+
+    if (thisversion >= 2 * 1000000 + 6 * 1000 + 39)
+        iptables_ctdir_corrected = CTDIR_STATUS_CORRECTED;
+    else
+        iptables_ctdir_corrected = CTDIR_STATUS_OLD;
+}
+
 static int
 ebiptablesDriverInit(bool privileged)
 {
@@ -4340,6 +4389,9 @@ ebiptablesDriverInit(bool privileged)
         ebiptablesDriverShutdown();
         return -ENOTSUP;
     }
+
+    if (iptables_cmd_path)
+        ebiptablesDriverProbeCtdir();
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 
