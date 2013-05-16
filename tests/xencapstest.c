@@ -161,7 +161,8 @@ mymain(void)
     int ret = 0;
 
     xenHypervisorInit(&hv_versions);
-    virInitialize();
+    if (virInitialize() < 0)
+        return EXIT_FAILURE;
 
     if (virtTestRun("Capabilities for i686, no PAE, no HVM",
                     1, testXeni686, NULL) != 0)
