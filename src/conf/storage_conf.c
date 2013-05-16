@@ -146,106 +146,106 @@ virStorageVolumeFormatFromString(const char *format)
 }
 
 static virStoragePoolTypeInfo poolTypeInfo[] = {
-    { .poolType = VIR_STORAGE_POOL_LOGICAL,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_NAME |
-                      VIR_STORAGE_POOL_SOURCE_DEVICE),
-            .defaultFormat = VIR_STORAGE_POOL_LOGICAL_LVM2,
-            .formatFromString = virStoragePoolFormatLogicalTypeFromString,
-            .formatToString = virStoragePoolFormatLogicalTypeToString,
-        },
+    {.poolType = VIR_STORAGE_POOL_LOGICAL,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_NAME |
+                   VIR_STORAGE_POOL_SOURCE_DEVICE),
+         .defaultFormat = VIR_STORAGE_POOL_LOGICAL_LVM2,
+         .formatFromString = virStoragePoolFormatLogicalTypeFromString,
+         .formatToString = virStoragePoolFormatLogicalTypeToString,
+     },
     },
-    { .poolType = VIR_STORAGE_POOL_DIR,
+    {.poolType = VIR_STORAGE_POOL_DIR,
+     .volOptions = {
+         .defaultFormat = VIR_STORAGE_FILE_RAW,
+         .formatFromString = virStorageVolumeFormatFromString,
+         .formatToString = virStorageFileFormatTypeToString,
+     },
+    },
+    {.poolType = VIR_STORAGE_POOL_FS,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
+         .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
+         .formatFromString = virStoragePoolFormatFileSystemTypeFromString,
+         .formatToString = virStoragePoolFormatFileSystemTypeToString,
+      },
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageVolumeFormatFromString,
-            .formatToString = virStorageFileFormatTypeToString,
-        },
+         .defaultFormat = VIR_STORAGE_FILE_RAW,
+         .formatFromString = virStorageVolumeFormatFromString,
+         .formatToString = virStorageFileFormatTypeToString,
+      },
     },
-    { .poolType = VIR_STORAGE_POOL_FS,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
-            .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
-            .formatFromString = virStoragePoolFormatFileSystemTypeFromString,
-            .formatToString = virStoragePoolFormatFileSystemTypeToString,
-        },
+    {.poolType = VIR_STORAGE_POOL_NETFS,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_DIR),
+         .defaultFormat = VIR_STORAGE_POOL_NETFS_AUTO,
+         .formatFromString = virStoragePoolFormatFileSystemNetTypeFromString,
+         .formatToString = virStoragePoolFormatFileSystemNetTypeToString,
+      },
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageVolumeFormatFromString,
-            .formatToString = virStorageFileFormatTypeToString,
-        },
+         .defaultFormat = VIR_STORAGE_FILE_RAW,
+         .formatFromString = virStorageVolumeFormatFromString,
+         .formatToString = virStorageFileFormatTypeToString,
+      },
     },
-    { .poolType = VIR_STORAGE_POOL_NETFS,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
-                      VIR_STORAGE_POOL_SOURCE_DIR),
-            .defaultFormat = VIR_STORAGE_POOL_NETFS_AUTO,
-            .formatFromString = virStoragePoolFormatFileSystemNetTypeFromString,
-            .formatToString = virStoragePoolFormatFileSystemNetTypeToString,
-        },
+    {.poolType = VIR_STORAGE_POOL_ISCSI,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_DEVICE |
+                   VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
+      },
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageVolumeFormatFromString,
-            .formatToString = virStorageFileFormatTypeToString,
-        },
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+      }
     },
-    { .poolType = VIR_STORAGE_POOL_ISCSI,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
-                      VIR_STORAGE_POOL_SOURCE_DEVICE |
-                      VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN),
-        },
+    {.poolType = VIR_STORAGE_POOL_SCSI,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_ADAPTER),
+     },
+     .volOptions = {
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+     }
+    },
+    {.poolType = VIR_STORAGE_POOL_RBD,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_NETWORK |
+                   VIR_STORAGE_POOL_SOURCE_NAME),
+      },
       .volOptions = {
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        }
+          .defaultFormat = VIR_STORAGE_FILE_RAW,
+          .formatToString = virStoragePoolFormatDiskTypeToString,
+      }
     },
-    { .poolType = VIR_STORAGE_POOL_SCSI,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_ADAPTER),
-        },
-      .volOptions = {
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        }
+    {.poolType = VIR_STORAGE_POOL_SHEEPDOG,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_NETWORK |
+                   VIR_STORAGE_POOL_SOURCE_NAME),
+     },
+     .volOptions = {
+         .defaultFormat = VIR_STORAGE_FILE_RAW,
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+     }
     },
-    { .poolType = VIR_STORAGE_POOL_RBD,
-      .poolOptions = {
-             .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
-                       VIR_STORAGE_POOL_SOURCE_NETWORK |
-                       VIR_STORAGE_POOL_SOURCE_NAME),
-        },
-       .volOptions = {
-            .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        }
+    {.poolType = VIR_STORAGE_POOL_MPATH,
+     .volOptions = {
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+     }
     },
-    { .poolType = VIR_STORAGE_POOL_SHEEPDOG,
-      .poolOptions = {
-             .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
-                       VIR_STORAGE_POOL_SOURCE_NETWORK |
-                       VIR_STORAGE_POOL_SOURCE_NAME),
-        },
-       .volOptions = {
-            .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        }
-    },
-    { .poolType = VIR_STORAGE_POOL_MPATH,
-      .volOptions = {
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        }
-    },
-    { .poolType = VIR_STORAGE_POOL_DISK,
-      .poolOptions = {
-            .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
-            .defaultFormat = VIR_STORAGE_POOL_DISK_UNKNOWN,
-            .formatFromString = virStoragePoolFormatDiskTypeFromString,
-            .formatToString = virStoragePoolFormatDiskTypeToString,
-        },
-      .volOptions = {
-            .defaultFormat = VIR_STORAGE_VOL_DISK_NONE,
-            .formatFromString = virStorageVolFormatDiskTypeFromString,
-            .formatToString = virStorageVolFormatDiskTypeToString,
-        },
+    {.poolType = VIR_STORAGE_POOL_DISK,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
+         .defaultFormat = VIR_STORAGE_POOL_DISK_UNKNOWN,
+         .formatFromString = virStoragePoolFormatDiskTypeFromString,
+         .formatToString = virStoragePoolFormatDiskTypeToString,
+     },
+     .volOptions = {
+         .defaultFormat = VIR_STORAGE_VOL_DISK_NONE,
+         .formatFromString = virStorageVolFormatDiskTypeFromString,
+         .formatToString = virStorageVolFormatDiskTypeToString,
+     },
     }
 };
 
