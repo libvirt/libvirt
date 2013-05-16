@@ -188,6 +188,12 @@ mymain(void)
             "qcow2-nobacking-none", 0, FMT_NONE);
     DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", "vol-file",
             "qcow2-nobacking-convert-none", 0, FMT_NONE);
+    DO_TEST(false, "pool-dir", "vol-qcow2-lazy", NULL, "qcow2-lazy", 0,
+            FMT_OPTIONS);
+    DO_TEST(false, "pool-dir", "vol-qcow2-1.1", NULL, "qcow2-1.1", 0,
+            FMT_OPTIONS);
+    DO_TEST(true, "pool-dir", "vol-qcow2-0.10-lazy", NULL, "qcow2-0.10-lazy", 0,
+            FMT_OPTIONS);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -633,9 +633,15 @@ static int
 virStorageBackendCreateQemuImgOpts(char **opts,
                                    const char *backingType,
                                    bool encryption,
-                                   bool preallocate)
+                                   bool preallocate,
+                                   int format,
+                                   const char *compat,
+                                   virBitmapPtr features)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool b;
+    int i;
+
     if (backingType)
         virBufferAsprintf(&buf, "backing_fmt=%s,", backingType);
     if (encryption)
@@ -643,16 +649,46 @@ virStorageBackendCreateQemuImgOpts(char **opts,
     if (preallocate)
         virBufferAddLit(&buf, "preallocation=metadata,");
 
+    if (compat)
+        virBufferAsprintf(&buf, "compat=%s,", compat);
+    if (features && format == VIR_STORAGE_FILE_QCOW2) {
+        for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
+            ignore_value(virBitmapGetBit(features, i, &b));
+            if (b) {
+                switch ((enum virStorageFileFeature) i) {
+                case VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS:
+                    if (STREQ_NULLABLE(compat, "0.10")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("Feature %s not supported with compat"
+                                         " level %s"),
+                                       virStorageFileFeatureTypeToString(i),
+                                       compat);
+                        goto error;
+                    }
+                    break;
+                case VIR_STORAGE_FILE_FEATURE_NONE:
+                case VIR_STORAGE_FILE_FEATURE_LAST:
+                    ;
+                }
+                virBufferAsprintf(&buf, "%s,",
+                                  virStorageFileFeatureTypeToString(i));
+            }
+        }
+    }
+
     virBufferTrim(&buf, ",", -1);
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
-        return -1;
-    }
+    if (virBufferError(&buf))
+        goto no_memory;
 
     *opts = virBufferContentAndReset(&buf);
     return 0;
+
+no_memory:
+    virReportOOMError();
+error:
+    virBufferFreeAndReset(&buf);
+    return -1;
 }
 
 virCommandPtr
@@ -693,6 +729,16 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     if (preallocate && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation only available with qcow2"));
+        return NULL;
+    }
+    if (vol->target.compat && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("compatibility option only available with qcow2"));
+        return NULL;
+    }
+    if (vol->target.features && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("format features only available with qcow2"));
         return NULL;
     }
 
@@ -816,7 +862,10 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
         if (virStorageBackendCreateQemuImgOpts(&opts,
                                                backing ? backingType : NULL,
-                                               do_encryption, preallocate) < 0)
+                                               do_encryption, preallocate,
+                                               vol->target.format,
+                                               vol->target.compat,
+                                               vol->target.features) < 0)
             return NULL;
         if (opts)
             virCommandAddArgList(cmd, "-o", opts, NULL);
