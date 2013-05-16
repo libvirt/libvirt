@@ -20,7 +20,9 @@
           <text/>
         </element>
       </optional>
-      <ref name='source'/>
+      <optional>
+        <ref name='source'/>
+      </optional>
       <ref name='sizing'/>
       <ref name='target'/>
       <optional>

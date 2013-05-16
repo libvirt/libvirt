@@ -4,7 +4,7 @@
 . $srcdir/test-lib.sh
 . $abs_srcdir/schematestutils.sh
 
-DIRS="storagevolxml2xmlin storagevolxml2xmlout"
+DIRS="storagevolxml2xmlin storagevolxml2xmlout storagevolschemadata"
 SCHEMA="storagevol.rng"
 
 check_schema "$DIRS" "$SCHEMA"

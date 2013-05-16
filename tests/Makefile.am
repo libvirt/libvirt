@@ -78,6 +78,7 @@ EXTRA_DIST =		\
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \
 	storagevolxml2argvdata \
+	storagevolschemadata \
 	storagevolschematest \
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
