@@ -52,6 +52,10 @@
 # include <blkid/blkid.h>
 #endif
 
+#if WITH_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #include "virerror.h"
 #include "virlog.h"
 #include "lxc_container.h"
