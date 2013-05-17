@@ -310,8 +310,9 @@ virProcessKillPainfully(pid_t pid, bool force)
         usleep(200 * 1000);
     }
 
-    VIR_DEBUG("Timed out waiting after SIGKILL to process %lld",
-              (long long)pid);
+    virReportSystemError(EBUSY,
+                         _("Failed to terminate process %lld with SIG%s"),
+                         (long long)pid, signame);
 
 cleanup:
     return ret;

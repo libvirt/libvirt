@@ -3930,7 +3930,7 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
         }
     }
 
-    if ((flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
+    if (flags & VIR_QEMU_PROCESS_KILL_NOWAIT) {
         virProcessKill(vm->pid,
                        (flags & VIR_QEMU_PROCESS_KILL_FORCE) ?
                        SIGKILL : SIGTERM);
