@@ -4349,33 +4349,57 @@ libvirt_virDomainGetBlockJobInfo(PyObject *self ATTRIBUTE_UNUSED,
     unsigned int flags;
     virDomainBlockJobInfo info;
     int c_ret;
-    PyObject *ret;
+    PyObject *type = NULL, *bandwidth = NULL, *cur = NULL, *end = NULL;
+    PyObject *dict;
 
     if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainGetBlockJobInfo",
                           &pyobj_domain, &path, &flags))
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-LIBVIRT_BEGIN_ALLOW_THREADS;
+    if ((dict = PyDict_New()) == NULL)
+        return NULL;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
     c_ret = virDomainGetBlockJobInfo(domain, path, &info, flags);
-LIBVIRT_END_ALLOW_THREADS;
+    LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_ret != 1)
+    if (c_ret == 0) {
+        return dict;
+    } else if (c_ret < 0) {
+        Py_DECREF(dict);
         return VIR_PY_NONE;
+    }
 
-    if ((ret = PyDict_New()) == NULL)
-        return VIR_PY_NONE;
+    if ((type = libvirt_intWrap(info.type)) == NULL ||
+        PyDict_SetItemString(dict, "type", type) < 0)
+        goto error;
+    Py_DECREF(type);
 
-    PyDict_SetItem(ret, libvirt_constcharPtrWrap("type"),
-                   libvirt_intWrap(info.type));
-    PyDict_SetItem(ret, libvirt_constcharPtrWrap("bandwidth"),
-                   libvirt_ulongWrap(info.bandwidth));
-    PyDict_SetItem(ret, libvirt_constcharPtrWrap("cur"),
-                   libvirt_ulonglongWrap(info.cur));
-    PyDict_SetItem(ret, libvirt_constcharPtrWrap("end"),
-                   libvirt_ulonglongWrap(info.end));
+    if ((bandwidth = libvirt_ulongWrap(info.bandwidth)) == NULL ||
+        PyDict_SetItemString(dict, "bandwidth", bandwidth) < 0)
+        goto error;
+    Py_DECREF(bandwidth);
 
-    return ret;
+    if ((cur = libvirt_ulonglongWrap(info.cur)) == NULL ||
+        PyDict_SetItemString(dict, "cur", cur) < 0)
+        goto error;
+    Py_DECREF(cur);
+
+    if ((end = libvirt_ulonglongWrap(info.end)) == NULL ||
+        PyDict_SetItemString(dict, "end", end) < 0)
+        goto error;
+    Py_DECREF(end);
+
+    return dict;
+
+error:
+    Py_DECREF(dict);
+    Py_XDECREF(type);
+    Py_XDECREF(bandwidth);
+    Py_XDECREF(cur);
+    Py_XDECREF(end);
+    return NULL;
 }
 
 static PyObject *
