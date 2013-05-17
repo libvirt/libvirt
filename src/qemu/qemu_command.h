@@ -51,6 +51,16 @@
 # define QEMU_WEBSOCKET_PORT_MIN  5700
 # define QEMU_WEBSOCKET_PORT_MAX  65535
 
+typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
+typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
+struct _qemuBuildCommandLineCallbacks {
+    char * (*qemuGetSCSIDeviceSgName) (const char *adapter,
+                                       unsigned int bus,
+                                       unsigned int target,
+                                       unsigned int unit);
+};
+
+extern qemuBuildCommandLineCallbacks buildCommandLineCallbacks;
 
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virQEMUDriverPtr driver,
@@ -61,8 +71,9 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    const char *migrateFrom,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
-                                   enum virNetDevVPortProfileOp vmop)
-    ATTRIBUTE_NONNULL(1);
+                                   enum virNetDevVPortProfileOp vmop,
+                                   qemuBuildCommandLineCallbacksPtr callbacks)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
 /* Generate string for arch-specific '-device' parameter */
 char *
@@ -142,7 +153,9 @@ char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);
 
 char * qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
-                                  virQEMUCapsPtr qemuCaps);
+                                  virQEMUCapsPtr qemuCaps,
+                                  qemuBuildCommandLineCallbacksPtr callbacks)
+    ATTRIBUTE_NONNULL(3);
 char * qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
                                   virDomainHostdevDefPtr dev,
                                   virQEMUCapsPtr qemuCaps);

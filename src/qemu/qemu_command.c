@@ -4757,17 +4757,18 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
 
 char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
-                           virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+                           virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                           qemuBuildCommandLineCallbacksPtr callbacks)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *sg = NULL;
 
-    if (!(sg = virSCSIDeviceGetSgName(dev->source.subsys.u.scsi.adapter,
-                                      dev->source.subsys.u.scsi.bus,
-                                      dev->source.subsys.u.scsi.target,
-                                      dev->source.subsys.u.scsi.unit))) {
+    sg = (callbacks->qemuGetSCSIDeviceSgName)(dev->source.subsys.u.scsi.adapter,
+                                              dev->source.subsys.u.scsi.bus,
+                                              dev->source.subsys.u.scsi.target,
+                                              dev->source.subsys.u.scsi.unit);
+    if (!sg)
         goto error;
-    }
 
     virBufferAsprintf(&buf, "file=/dev/%s,if=none", sg);
     virBufferAsprintf(&buf, ",id=%s-%s",
@@ -6405,6 +6406,10 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 }
 
+qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
+    .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
+};
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -6422,7 +6427,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *migrateFrom,
                      int migrateFd,
                      virDomainSnapshotObjPtr snapshot,
-                     enum virNetDevVPortProfileOp vmop)
+                     enum virNetDevVPortProfileOp vmop,
+                     qemuBuildCommandLineCallbacksPtr callbacks)
 {
     virErrorPtr originalError = NULL;
     int i, j;
@@ -8254,7 +8260,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 char *drvstr;
 
                 virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps, callbacks)))
                     goto error;
                 virCommandAddArg(cmd, drvstr);
                 VIR_FREE(drvstr);

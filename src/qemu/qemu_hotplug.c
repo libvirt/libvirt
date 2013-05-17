@@ -1226,7 +1226,8 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, 0) < 0)
         goto cleanup;
 
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps,
+                                              &buildCommandLineCallbacks)))
         goto cleanup;
 
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
@@ -2543,7 +2544,8 @@ qemuDomainDetachHostScsiDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(detach, priv->qemuCaps)))
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(detach, priv->qemuCaps,
+                                              &buildCommandLineCallbacks)))
         goto cleanup;
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, detach, priv->qemuCaps)))
         goto cleanup;
