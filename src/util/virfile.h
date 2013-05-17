@@ -229,4 +229,7 @@ void virFileWaitForDevices(void);
     virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 
+int virFilePrintf(FILE *fp, const char *msg, ...)
+    ATTRIBUTE_FMT_PRINTF(2, 3);
+
 #endif /* __VIR_FILE_H */

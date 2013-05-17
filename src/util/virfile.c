@@ -2318,3 +2318,37 @@ virFileSanitizePath(const char *path)
 
     return cleanpath;
 }
+
+
+/**
+ * virFilePrintf:
+ *
+ * A replacement for fprintf() which uses virVasprintf to
+ * ensure that portable string format placeholders can be
+ * used, since gnulib's fprintf() replacement is not
+ * LGPLV2+ compatible
+ */
+int virFilePrintf(FILE *fp, const char *msg, ...)
+{
+    va_list vargs;
+    char *str;
+    int ret;
+
+    va_start(vargs, msg);
+
+    if ((ret = virVasprintf(&str, msg, vargs)) < 0)
+        goto cleanup;
+
+    if (fwrite(str, 1, ret, fp) != ret) {
+        virReportSystemError(errno, "%s",
+                             _("Could not write to stream"));
+        ret = -1;
+    }
+
+    VIR_FREE(str);
+
+cleanup:
+    va_end(vargs);
+
+    return ret;
+}

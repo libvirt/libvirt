@@ -25,8 +25,8 @@
 #include "testutils.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
-
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -62,18 +62,18 @@ static int testSplit(const void *args)
     tmp2 = data->tokens;
     while (*tmp1 && *tmp2) {
         if (STRNEQ(*tmp1, *tmp2)) {
-            fprintf(stderr, "Mismatch '%s' vs '%s'\n", *tmp1, *tmp2);
+            virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", *tmp1, *tmp2);
             goto cleanup;
         }
         tmp1++;
         tmp2++;
     }
     if (*tmp1) {
-        fprintf(stderr, "Too many pieces returned\n");
+        virFilePrintf(stderr, "Too many pieces returned\n");
         goto cleanup;
     }
     if (*tmp2) {
-        fprintf(stderr, "Too few pieces returned\n");
+        virFilePrintf(stderr, "Too few pieces returned\n");
         goto cleanup;
     }
 
@@ -96,7 +96,7 @@ static int testJoin(const void *args)
         return -1;
     }
     if (STRNEQ(got, data->string)) {
-        fprintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
+        virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
         goto cleanup;
     }
 
@@ -143,49 +143,49 @@ testStrdup(const void *data ATTRIBUTE_UNUSED)
 
     value = VIR_STRDUP(array[i++], testStrdupLookup1(j++));
     if (value != 1) {
-        fprintf(stderr, "unexpected strdup result %d, expected 1\n", value);
+        virFilePrintf(stderr, "unexpected strdup result %d, expected 1\n", value);
         goto cleanup;
     }
     if (i != 1) {
-        fprintf(stderr, "unexpected side effects i=%zu, expected 1\n", i);
+        virFilePrintf(stderr, "unexpected side effects i=%zu, expected 1\n", i);
         goto cleanup;
     }
     if (j != 1) {
-        fprintf(stderr, "unexpected side effects j=%zu, expected 1\n", j);
+        virFilePrintf(stderr, "unexpected side effects j=%zu, expected 1\n", j);
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(array[0], "hello") || array[1]) {
-        fprintf(stderr, "incorrect array contents '%s' '%s'\n",
-                NULLSTR(array[0]), NULLSTR(array[1]));
+        virFilePrintf(stderr, "incorrect array contents '%s' '%s'\n",
+                      NULLSTR(array[0]), NULLSTR(array[1]));
         goto cleanup;
     }
 
     value = VIR_STRNDUP(array[i++], testStrdupLookup1(j++),
                         testStrdupLookup2(k++));
     if (value != 0) {
-        fprintf(stderr, "unexpected strdup result %d, expected 0\n", value);
+        virFilePrintf(stderr, "unexpected strdup result %d, expected 0\n", value);
         goto cleanup;
     }
     if (i != 2) {
-        fprintf(stderr, "unexpected side effects i=%zu, expected 2\n", i);
+        virFilePrintf(stderr, "unexpected side effects i=%zu, expected 2\n", i);
         goto cleanup;
     }
     if (j != 2) {
-        fprintf(stderr, "unexpected side effects j=%zu, expected 2\n", j);
+        virFilePrintf(stderr, "unexpected side effects j=%zu, expected 2\n", j);
         goto cleanup;
     }
     if (k != 1) {
-        fprintf(stderr, "unexpected side effects k=%zu, expected 1\n", k);
+        virFilePrintf(stderr, "unexpected side effects k=%zu, expected 1\n", k);
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(array[0], "hello") || array[1]) {
-        fprintf(stderr, "incorrect array contents '%s' '%s'\n",
-                NULLSTR(array[0]), NULLSTR(array[1]));
+        virFilePrintf(stderr, "incorrect array contents '%s' '%s'\n",
+                      NULLSTR(array[0]), NULLSTR(array[1]));
         goto cleanup;
     }
 
     if (fail) {
-        fprintf(stderr, "side effects failed\n");
+        virFilePrintf(stderr, "side effects failed\n");
         goto cleanup;
     }
 

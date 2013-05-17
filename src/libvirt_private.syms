@@ -1305,6 +1305,7 @@ virFileMatchesNameSuffix;
 virFileNBDDeviceAssociate;
 virFileOpenAs;
 virFileOpenTty;
+virFilePrintf;
 virFileReadAll;
 virFileReadLimFD;
 virFileResolveAllLinks;
