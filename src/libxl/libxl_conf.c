@@ -414,8 +414,17 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         b_info->shadow_memkb = 4 * (256 * libxl_bitmap_count_set(&b_info->avail_vcpus) +
                                     2 * (b_info->max_memkb / 1024));
     } else {
-        if (VIR_STRDUP(b_info->u.pv.bootloader, def->os.bootloader) < 0)
-            goto error;
+        /*
+         * For compatibility with the legacy xen toolstack, default to pygrub
+         * if bootloader is not specified AND direct kernel boot is not specified.
+         */
+        if (def->os.bootloader) {
+            if (VIR_STRDUP(b_info->u.pv.bootloader, def->os.bootloader) < 0)
+                goto error;
+        } else if (def->os.kernel == NULL) {
+            if (VIR_STRDUP(b_info->u.pv.bootloader, LIBXL_BOOTLOADER_PATH) < 0)
+                goto error;
+        }
         if (def->os.bootloaderArgs) {
             if (!(b_info->u.pv.bootloader_args =
                   virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
