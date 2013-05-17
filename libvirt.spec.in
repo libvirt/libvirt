@@ -376,6 +376,9 @@ Requires: libvirt-daemon-driver-uml = %{version}-%{release}
         %if %{with_xen}
 Requires: libvirt-daemon-driver-xen = %{version}-%{release}
         %endif
+        %if %{with_vbox}
+Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
+        %endif
 
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
@@ -880,6 +883,19 @@ Xen
         %endif
 
 
+        %if %{with_vbox}
+%package daemon-driver-vbox
+Summary: VirtualBox driver plugin for the libvirtd daemon
+Group: Development/Libraries
+Requires: libvirt-daemon = %{version}-%{release}
+
+%description daemon-driver-vbox
+The vbox driver plugin for the libvirtd daemon, providing
+an implementation of the hypervisor driver APIs using
+VirtualBox
+        %endif
+
+
         %if %{with_libxl}
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
@@ -1011,6 +1027,28 @@ Requires: xen
 %description daemon-xen
 Server side daemon and driver required to manage the virtualization
 capabilities of XEN
+    %endif
+
+    %if %{with_vbox}
+%package daemon-vbox
+Summary: Server side daemon & driver required to run VirtualBox guests
+Group: Development/Libraries
+
+Requires: libvirt-daemon = %{version}-%{release}
+        %if %{with_driver_modules}
+Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
+Requires: libvirt-daemon-driver-interface = %{version}-%{release}
+Requires: libvirt-daemon-driver-network = %{version}-%{release}
+Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
+Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
+Requires: libvirt-daemon-driver-secret = %{version}-%{release}
+Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+        %endif
+Requires: vbox
+
+%description daemon-vbox
+Server side daemon and driver required to manage the virtualization
+capabilities of VirtualBox
     %endif
 %endif # %{with_libvirtd}
 
@@ -1869,6 +1907,12 @@ fi
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
         %endif
+
+        %if %{with_vbox}
+%files daemon-driver-vbox
+%defattr(-, root, root)
+%{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
+        %endif
     %endif # %{with_driver_modules}
 
     %if %{with_qemu_tcg}
@@ -1893,6 +1937,11 @@ fi
 
     %if %{with_xen} || %{with_libxl}
 %files daemon-xen
+%defattr(-, root, root)
+    %endif
+
+    %if %{with_vbox}
+%files daemon-vbox
 %defattr(-, root, root)
     %endif
 %endif # %{with_libvirtd}
