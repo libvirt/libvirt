@@ -1405,7 +1405,7 @@ libxlConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 static const char *
 libxlConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    return "xenlight";
+    return "Xen";
 }
 
 static int
