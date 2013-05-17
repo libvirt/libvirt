@@ -1418,8 +1418,8 @@
   <define name="discard">
     <attribute name='discard'>
       <choice>
-        <value>on</value>
-        <value>off</value>
+        <value>unmap</value>
+        <value>ignore</value>
       </choice>
     </attribute>
   </define>

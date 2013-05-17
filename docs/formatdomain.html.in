@@ -1745,8 +1745,8 @@
             The optional <code>discard</code> attribute controls whether
             to discard (also known as "trim" or "unmap") requests are
             ignored or passed to the filesystem. The value can be either
-            "on" (allow the discard request to be passed) or "off" (ingore
-            the discard request).
+            "unmap" (allow the discard request to be passed) or "ignore"
+            (ignore the discard request).
             <span class='since'>Since 1.0.6 (QEMU and KVM only)</span>
           </li>
         </ul>
