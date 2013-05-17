@@ -204,6 +204,13 @@
     <h2><a name="iaas">Infrastructure as a Service (IaaS)</a></h2>
 
     <dl>
+      <dt><a href="http://cc1.ifj.edu.pl">Cracow Cloud One</a></dt>
+      <dd>The CC1 system provides a complete solution for Private
+        Cloud Computing. An intuitive web access interface with an
+        administration module and simple installation procedure make
+        it easy to benefit from private Cloud Computing technology.
+      </dd>
+
       <dt><a href="http://www.emotivecloud.net">EMOTIVE Cloud</a></dt>
       <dd>The EMOTIVE (Elastic Management Of Tasks In Virtualized
         Environments) middleware allows executing tasks and providing
