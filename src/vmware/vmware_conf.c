@@ -490,6 +490,6 @@ vmwareCopyVMXFileName(const char *datastorePath, void *opaque ATTRIBUTE_UNUSED)
 {
     char *path;
 
-    ignore_value(VIR_STRDUP_QUIET(path, datastorePath));
+    ignore_value(VIR_STRDUP(path, datastorePath));
     return path;
 }
