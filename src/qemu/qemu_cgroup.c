@@ -627,6 +627,52 @@ cleanup:
 }
 
 
+static int
+qemuSetupCpusetCgroup(virDomainObjPtr vm,
+                      virBitmapPtr nodemask)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *mask = NULL;
+    int rc;
+    int ret = -1;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if ((vm->def->numatune.memory.nodemask ||
+         (vm->def->numatune.memory.placement_mode ==
+          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) &&
+        vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+
+        if (vm->def->numatune.memory.placement_mode ==
+            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
+            mask = virBitmapFormat(nodemask);
+        else
+            mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
+
+        if (!mask) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to convert memory nodemask"));
+            goto cleanup;
+        }
+
+        rc = virCgroupSetCpusetMems(priv->cgroup, mask);
+
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set cpuset.mems for domain %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(mask);
+    return ret;
+}
+
+
 int qemuInitCgroup(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    bool startup)
@@ -774,32 +820,8 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
         }
     }
 
-    if ((vm->def->numatune.memory.nodemask ||
-         (vm->def->numatune.memory.placement_mode ==
-          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) &&
-        vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-        char *mask = NULL;
-        if (vm->def->numatune.memory.placement_mode ==
-            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
-            mask = virBitmapFormat(nodemask);
-        else
-            mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
-        if (!mask) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to convert memory nodemask"));
-            goto cleanup;
-        }
-
-        rc = virCgroupSetCpusetMems(priv->cgroup, mask);
-        VIR_FREE(mask);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set cpuset.mems for domain %s"),
-                                 vm->def->name);
-            goto cleanup;
-        }
-    }
+    if (qemuSetupCpusetCgroup(vm, nodemask) < 0)
+        goto cleanup;
 
 done:
     rc = 0;
