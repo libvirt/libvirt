@@ -59,6 +59,8 @@
 #include "virstoragefile.h"
 #include "virutil.h"
 
+#include "c-ctype.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 int virFileClose(int *fdptr, virFileCloseFlags flags)
