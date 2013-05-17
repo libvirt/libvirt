@@ -1031,7 +1031,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
             }
         } else {
             /* Fall back to the path as key */
-            if (esxVI_String_DeepCopyValue(&key, datastorePath) < 0) {
+            if (VIR_STRDUP(key, datastorePath) < 0) {
                 goto cleanup;
             }
         }
@@ -1233,7 +1233,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
             }
         } else {
             /* Fall back to the path as key */
-            if (esxVI_String_DeepCopyValue(&key, datastorePath) < 0) {
+            if (VIR_STRDUP(key, datastorePath) < 0) {
                 goto cleanup;
             }
         }

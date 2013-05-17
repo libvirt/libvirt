@@ -478,10 +478,8 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         if (esxVI_HostPortGroupSpec_Alloc(&hostPortGroupSpec) < 0 ||
             esxVI_HostNetworkPolicy_Alloc(&hostPortGroupSpec->policy) < 0 ||
             esxVI_Int_Alloc(&hostPortGroupSpec->vlanId) < 0 ||
-            esxVI_String_DeepCopyValue(&hostPortGroupSpec->name,
-                                       def->portGroups[i].name) < 0 ||
-            esxVI_String_DeepCopyValue(&hostPortGroupSpec->vswitchName,
-                                       def->name) < 0) {
+            VIR_STRDUP(hostPortGroupSpec->name, def->portGroups[i].name) < 0 ||
+            VIR_STRDUP(hostPortGroupSpec->vswitchName, def->name) < 0) {
             goto cleanup;
         }
 

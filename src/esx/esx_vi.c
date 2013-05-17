@@ -801,10 +801,10 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 
     if (esxVI_CURL_Alloc(&ctx->curl) < 0 ||
         esxVI_CURL_Connect(ctx->curl, parsedUri) < 0 ||
-        esxVI_String_DeepCopyValue(&ctx->url, url) < 0 ||
-        esxVI_String_DeepCopyValue(&ctx->ipAddress, ipAddress) < 0 ||
-        esxVI_String_DeepCopyValue(&ctx->username, username) < 0 ||
-        esxVI_String_DeepCopyValue(&ctx->password, password) < 0) {
+        VIR_STRDUP(ctx->url, url) < 0 ||
+        VIR_STRDUP(ctx->ipAddress, ipAddress) < 0 ||
+        VIR_STRDUP(ctx->username, username) < 0 ||
+        VIR_STRDUP(ctx->password, password) < 0) {
         return -1;
     }
 
@@ -1779,9 +1779,9 @@ esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,
     }
 
     if (esxVI_TraversalSpec_Alloc(&traversalSpec) < 0 ||
-        esxVI_String_DeepCopyValue(&traversalSpec->name, name) < 0 ||
-        esxVI_String_DeepCopyValue(&traversalSpec->type, type) < 0 ||
-        esxVI_String_DeepCopyValue(&traversalSpec->path, path) < 0) {
+        VIR_STRDUP(traversalSpec->name, name) < 0 ||
+        VIR_STRDUP(traversalSpec->type, type) < 0 ||
+        VIR_STRDUP(traversalSpec->path, path) < 0) {
         goto failure;
     }
 
@@ -1792,8 +1792,7 @@ esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,
 
         while (currentSelectSetName != NULL && *currentSelectSetName != '\0') {
             if (esxVI_SelectionSpec_Alloc(&selectionSpec) < 0 ||
-                esxVI_String_DeepCopyValue(&selectionSpec->name,
-                                           currentSelectSetName) < 0 ||
+                VIR_STRDUP(selectionSpec->name, currentSelectSetName) < 0 ||
                 esxVI_SelectionSpec_AppendToList(&traversalSpec->selectSet,
                                                  selectionSpec) < 0) {
                 goto failure;
@@ -3486,7 +3485,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
             goto cleanup;
         }
 
-        if (esxVI_String_DeepCopyValue(&fileName, directoryAndFileName) < 0) {
+        if (VIR_STRDUP(fileName, directoryAndFileName) < 0) {
             goto cleanup;
         }
     } else {
@@ -3506,8 +3505,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
             goto cleanup;
         }
 
-        if (esxVI_String_DeepCopyValue(&fileName,
-                                       directoryAndFileName + length + 1) < 0) {
+        if (VIR_STRDUP(fileName, directoryAndFileName + length + 1) < 0) {
             goto cleanup;
         }
     }
@@ -3803,7 +3801,7 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
 
     if (*key == NULL) {
         /* Other files don't have a UUID, fall back to the path as key */
-        if (esxVI_String_DeepCopyValue(key, datastorePath) < 0) {
+        if (VIR_STRDUP(*key, datastorePath) < 0) {
             goto cleanup;
         }
     }

@@ -672,7 +672,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     virUUIDFormat(md5, uuid_string);
 
-    if (esxVI_String_DeepCopyValue(&def.key, uuid_string) < 0) {
+    if (VIR_STRDUP(def.key, uuid_string) < 0) {
         goto cleanup;
     }
 

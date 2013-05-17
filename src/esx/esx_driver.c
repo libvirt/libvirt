@@ -183,7 +183,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
                 ++tmp;
             }
 
-            if (esxVI_String_DeepCopyValue(&strippedFileName, tmp) < 0) {
+            if (VIR_STRDUP(strippedFileName, tmp) < 0) {
                 goto cleanup;
             }
 
@@ -209,7 +209,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
 
         /* Fallback to direct datastore name match */
         if (result == NULL && STRPREFIX(fileName, "/vmfs/volumes/")) {
-            if (esxVI_String_DeepCopyValue(&copyOfFileName, fileName) < 0) {
+            if (VIR_STRDUP(copyOfFileName, fileName) < 0) {
                 goto cleanup;
             }
 
@@ -248,7 +248,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
         /* If it's an absolute path outside of a datastore just use it as is */
         if (result == NULL && *fileName == '/') {
             /* FIXME: need to deal with Windows paths here too */
-            if (esxVI_String_DeepCopyValue(&result, fileName) < 0) {
+            if (VIR_STRDUP(result, fileName) < 0) {
                 goto cleanup;
             }
         }
@@ -353,7 +353,7 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         result = virBufferContentAndReset(&buffer);
     } else if (*fileName == '/') {
         /* FIXME: need to deal with Windows paths here too */
-        if (esxVI_String_DeepCopyValue(&result, fileName) < 0) {
+        if (VIR_STRDUP(result, fileName) < 0) {
             goto cleanup;
         }
     } else {

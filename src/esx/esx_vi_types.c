@@ -963,8 +963,8 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 
     (*dest)->type = src->type;
 
-    if (esxVI_String_DeepCopyValue(&(*dest)->other, src->other) < 0 ||
-        esxVI_String_DeepCopyValue(&(*dest)->value, src->value) < 0) {
+    if (VIR_STRDUP((*dest)->other, src->other) < 0 ||
+        VIR_STRDUP((*dest)->value, src->value) < 0) {
         goto failure;
     }
 

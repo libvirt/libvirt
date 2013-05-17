@@ -237,7 +237,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         return -1;
     }
 
-    if (esxVI_String_DeepCopyValue(&copyOfDatastorePath, datastorePath) < 0) {
+    if (VIR_STRDUP(copyOfDatastorePath, datastorePath) < 0) {
         goto cleanup;
     }
 
@@ -251,8 +251,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
     }
 
     if (datastoreName != NULL &&
-        esxVI_String_DeepCopyValue(datastoreName,
-                                   preliminaryDatastoreName) < 0) {
+        VIR_STRDUP(*datastoreName, preliminaryDatastoreName) < 0) {
         goto cleanup;
     }
 
@@ -266,8 +265,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
     }
 
     if (directoryAndFileName != NULL &&
-        esxVI_String_DeepCopyValue(directoryAndFileName,
-                                   preliminaryDirectoryAndFileName) < 0) {
+        VIR_STRDUP(*directoryAndFileName, preliminaryDirectoryAndFileName) < 0) {
         goto cleanup;
     }
 
@@ -279,8 +277,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
             *tmp = '\0';
         }
 
-        if (esxVI_String_DeepCopyValue(directoryName,
-                                       preliminaryDirectoryAndFileName) < 0) {
+        if (VIR_STRDUP(*directoryName, preliminaryDirectoryAndFileName) < 0) {
             goto cleanup;
         }
     }
