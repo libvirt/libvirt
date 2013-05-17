@@ -521,6 +521,112 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
 }
 
 
+static int
+qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
+    const char *const *deviceACL = NULL;
+    int rc = -1;
+    int ret = -1;
+    int i;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    rc = virCgroupDenyAllDevices(priv->cgroup);
+    virDomainAuditCgroup(vm, priv->cgroup, "deny", "all", rc == 0);
+    if (rc != 0) {
+        if (rc == -EPERM) {
+            VIR_WARN("Group devices ACL is not accessible, disabling whitelisting");
+            return 0;
+        }
+
+        virReportSystemError(-rc,
+                             _("Unable to deny all devices for %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ndisks ; i++) {
+        if (qemuSetupDiskCgroup(vm, vm->def->disks[i]) < 0)
+            goto cleanup;
+    }
+
+    rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_PTY_MAJOR,
+                                   VIR_CGROUP_DEVICE_RW);
+    virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_PTY_MAJOR,
+                              "pty", "rw", rc == 0);
+    if (rc != 0) {
+        virReportSystemError(-rc, "%s",
+                             _("unable to allow /dev/pts/ devices"));
+        goto cleanup;
+    }
+
+    cfg = virQEMUDriverGetConfig(driver);
+    deviceACL = cfg->cgroupDeviceACL ?
+                (const char *const *)cfg->cgroupDeviceACL :
+                defaultDeviceACL;
+
+    if (vm->def->nsounds &&
+        (!vm->def->ngraphics ||
+         ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+           cfg->vncAllowHostAudio) ||
+           (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
+        rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_SND_MAJOR,
+                                       VIR_CGROUP_DEVICE_RW);
+        virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_SND_MAJOR,
+                                  "sound", "rw", rc == 0);
+        if (rc != 0) {
+            virReportSystemError(-rc, "%s",
+                                     _("unable to allow /dev/snd/ devices"));
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; deviceACL[i] != NULL ; i++) {
+        if (access(deviceACL[i], F_OK) < 0) {
+            VIR_DEBUG("Ignoring non-existant device %s",
+                      deviceACL[i]);
+            continue;
+        }
+
+        rc = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
+                                      VIR_CGROUP_DEVICE_RW);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rc);
+        if (rc < 0 &&
+            rc != -ENOENT) {
+            virReportSystemError(-rc,
+                                 _("unable to allow device %s"),
+                                 deviceACL[i]);
+            goto cleanup;
+        }
+    }
+
+    if (virDomainChrDefForeach(vm->def,
+                               true,
+                               qemuSetupChardevCgroup,
+                               vm) < 0)
+        goto cleanup;
+
+    if (vm->def->tpm &&
+        (qemuSetupTPMCgroup(vm->def,
+                            vm->def->tpm,
+                            vm) < 0))
+        goto cleanup;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        if (qemuSetupHostdevCGroup(vm, vm->def->hostdevs[i]) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 int qemuInitCgroup(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    bool startup)
@@ -636,13 +742,7 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virBitmapPtr nodemask)
 {
     int rc = -1;
-    unsigned int i;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    const char *const *deviceACL =
-        cfg->cgroupDeviceACL ?
-        (const char *const *)cfg->cgroupDeviceACL :
-        defaultDeviceACL;
 
     if (qemuInitCgroup(driver, vm, true) < 0)
         return -1;
@@ -650,87 +750,8 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
     if (!priv->cgroup)
         goto done;
 
-    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        rc = virCgroupDenyAllDevices(priv->cgroup);
-        virDomainAuditCgroup(vm, priv->cgroup, "deny", "all", rc == 0);
-        if (rc != 0) {
-            if (rc == -EPERM) {
-                VIR_WARN("Group devices ACL is not accessible, disabling whitelisting");
-                goto done;
-            }
-
-            virReportSystemError(-rc,
-                                 _("Unable to deny all devices for %s"), vm->def->name);
-            goto cleanup;
-        }
-
-        for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuSetupDiskCgroup(vm, vm->def->disks[i]) < 0)
-                goto cleanup;
-        }
-
-        rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_PTY_MAJOR,
-                                       VIR_CGROUP_DEVICE_RW);
-        virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_PTY_MAJOR,
-                                  "pty", "rw", rc == 0);
-        if (rc != 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("unable to allow /dev/pts/ devices"));
-            goto cleanup;
-        }
-
-        if (vm->def->nsounds &&
-            (!vm->def->ngraphics ||
-             ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-               cfg->vncAllowHostAudio) ||
-              (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
-            rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_SND_MAJOR,
-                                           VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_SND_MAJOR,
-                                      "sound", "rw", rc == 0);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to allow /dev/snd/ devices"));
-                goto cleanup;
-            }
-        }
-
-        for (i = 0; deviceACL[i] != NULL ; i++) {
-            if (access(deviceACL[i], F_OK) < 0) {
-                VIR_DEBUG("Ignoring non-existant device %s",
-                          deviceACL[i]);
-                continue;
-            }
-
-            rc = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
-                                          VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rc);
-            if (rc < 0 &&
-                rc != -ENOENT) {
-                virReportSystemError(-rc,
-                                     _("unable to allow device %s"),
-                                     deviceACL[i]);
-                goto cleanup;
-            }
-        }
-
-        if (virDomainChrDefForeach(vm->def,
-                                   true,
-                                   qemuSetupChardevCgroup,
-                                   vm) < 0)
-            goto cleanup;
-
-        if (vm->def->tpm &&
-            (qemuSetupTPMCgroup(vm->def,
-                                vm->def->tpm,
-                                vm) < 0))
-            goto cleanup;
-
-        for (i = 0; i < vm->def->nhostdevs; i++) {
-            if (qemuSetupHostdevCGroup(vm, vm->def->hostdevs[i]) < 0)
-                goto cleanup;
-        }
-    }
+    if (qemuSetupDevicesCgroup(driver, vm) < 0)
+        goto cleanup;
 
     if (qemuSetupBlkioCgroup(vm) < 0)
         goto cleanup;
@@ -783,7 +804,6 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
 done:
     rc = 0;
 cleanup:
-    virObjectUnref(cfg);
     return rc == 0 ? 0 : -1;
 }
 
