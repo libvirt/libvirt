@@ -720,10 +720,9 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
                       BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
     if (type == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s is missing 'type' property"),
-                       esxVI_Type_ToString(baseType));
-        return -1;
+        /* no actual type specified, use base type instead */
+        *actualType = baseType;
+        return 0;
     }
 
     *actualType = esxVI_Type_FromString(type);
