@@ -547,6 +547,7 @@ qemuProcessFakeReboot(void *opaque)
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainEventPtr event = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
@@ -585,6 +586,11 @@ qemuProcessFakeReboot(void *opaque)
                                      VIR_DOMAIN_EVENT_RESUMED,
                                      VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
 
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
+    }
+
     ret = 0;
 
 endjob:
@@ -601,6 +607,7 @@ cleanup:
     }
     if (event)
         qemuDomainEventQueue(driver, event);
+    virObjectUnref(cfg);
 }
 
 
