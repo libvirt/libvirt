@@ -88,15 +88,6 @@ static void openvzDriverUnlock(struct openvz_driver *driver)
 
 struct openvz_driver ovz_driver;
 
-static void cmdExecFree(const char *cmdExec[])
-{
-    int i=-1;
-    while (cmdExec[++i]) {
-        VIR_FREE(cmdExec[i]);
-    }
-}
-
-
 static int
 openvzDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -827,22 +818,12 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
                        virDomainNetDefPtr net,
                        virBufferPtr configBuf)
 {
-    int rc = 0, narg;
-    const char *prog[OPENVZ_MAX_ARG];
+    int rc = -1;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     virMacAddr host_mac;
     char host_macaddr[VIR_MAC_STRING_BUFLEN];
     struct openvz_driver *driver =  conn->privateData;
-    char *opt = NULL;
-
-#define ADD_ARG_LIT(thisarg)                                            \
-    do {                                                                \
-        if (narg >= OPENVZ_MAX_ARG)                                             \
-                 goto no_memory;                                        \
-        if ((prog[narg++] = strdup(thisarg)) == NULL)                   \
-            goto no_memory;                                             \
-    } while (0)
-
+    virCommandPtr cmd = NULL;
 
     if (net == NULL)
        return 0;
@@ -852,18 +833,11 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         return -1;
     }
 
-    for (narg = 0; narg < OPENVZ_MAX_ARG; narg++)
-        prog[narg] = NULL;
+    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
+        net->type != VIR_DOMAIN_NET_TYPE_ETHERNET)
+        return 0;
 
-    narg = 0;
-
-    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-        net->type == VIR_DOMAIN_NET_TYPE_ETHERNET) {
-        ADD_ARG_LIT(VZCTL);
-        ADD_ARG_LIT("--quiet");
-        ADD_ARG_LIT("set");
-        ADD_ARG_LIT(vpsid);
-    }
+    cmd = virCommandNewArgList(VZCTL, "--quiet", "set", vpsid, NULL);
 
     virMacAddrFormat(&net->mac, macaddr);
     virDomainNetGenerateMAC(driver->xmlopt, &host_mac);
@@ -875,9 +849,6 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         int veid = openvzGetVEID(vpsid);
 
-        /* --netif_add ifname[,mac,host_ifname,host_mac] */
-        ADD_ARG_LIT("--netif_add") ;
-
         /* if user doesn't specify guest interface name,
          * then we need to generate it */
         if (net->data.ethernet.dev == NULL) {
@@ -885,8 +856,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             if (net->data.ethernet.dev == NULL) {
                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Could not generate eth name for container"));
-               rc = -1;
-               goto exit;
+               goto cleanup;
             }
         }
 
@@ -897,8 +867,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             if (net->ifname == NULL) {
                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Could not generate veth name"));
-               rc = -1;
-               goto exit;
+               goto cleanup;
             }
         }
 
@@ -919,40 +888,23 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             }
         }
 
-        if (!(opt = virBufferContentAndReset(&buf)))
-            goto no_memory;
-
-        ADD_ARG_LIT(opt) ;
-        VIR_FREE(opt);
+        /* --netif_add ifname[,mac,host_ifname,host_mac] */
+        virCommandAddArg(cmd, "--netif_add");
+        virCommandAddArgBuffer(cmd, &buf);
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
               net->data.ethernet.ipaddr != NULL) {
         /* --ipadd ip */
-        ADD_ARG_LIT("--ipadd") ;
-        ADD_ARG_LIT(net->data.ethernet.ipaddr) ;
+        virCommandAddArgList(cmd, "--ipadd", net->data.ethernet.ipaddr, NULL);
     }
 
     /* TODO: processing NAT and physical device */
 
-    if (prog[0] != NULL) {
-        ADD_ARG_LIT("--save");
-        if (virRun(prog, NULL) < 0) {
-           rc = -1;
-           goto exit;
-        }
-    }
+    virCommandAddArg(cmd, "--save");
+    rc = virCommandRun(cmd, NULL);
 
- exit:
-    cmdExecFree(prog);
+ cleanup:
+    virCommandFree(cmd);
     return rc;
-
- no_memory:
-    VIR_FREE(opt);
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Could not put argument to %s"), VZCTL);
-    cmdExecFree(prog);
-    return -1;
-
-#undef ADD_ARG_LIT
 }
 
 
