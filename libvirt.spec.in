@@ -2005,6 +2005,9 @@ fi
 %endif
 
 %changelog
+* Sun May 19 2013 Cole Robinson <crobinso@redhat.com> - 1.0.5.1-1
+- Maintenance release 1.0.5.1
+
 * Thu May  2 2013 Daniel Veillard <veillard@redhat.com> - 1.0.5-1
 - add support for NVRAM device
 - Add XML config for resource partitions
