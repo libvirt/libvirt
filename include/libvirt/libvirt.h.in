@@ -4504,8 +4504,8 @@ typedef enum {
  */
 struct _virDomainEventGraphicsAddress {
     int family;               /* Address family, virDomainEventGraphicsAddressType */
-    const char *node;         /* Address of node (eg IP address, or UNIX path) */
-    const char *service;      /* Service name/number (eg TCP port, or NULL) */
+    char *node;               /* Address of node (eg IP address, or UNIX path) */
+    char *service;            /* Service name/number (eg TCP port, or NULL) */
 };
 typedef struct _virDomainEventGraphicsAddress virDomainEventGraphicsAddress;
 typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
@@ -4520,8 +4520,8 @@ typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
  * some examples are 'x509dname' and 'saslUsername'.
  */
 struct _virDomainEventGraphicsSubjectIdentity {
-    const char *type;     /* Type of identity */
-    const char *name;     /* Identity value */
+    char *type;     /* Type of identity */
+    char *name;     /* Identity value */
 };
 typedef struct _virDomainEventGraphicsSubjectIdentity virDomainEventGraphicsSubjectIdentity;
 typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIdentityPtr;
@@ -4560,10 +4560,10 @@ typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
 typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
                                                       int phase,
-                                                      virDomainEventGraphicsAddressPtr local,
-                                                      virDomainEventGraphicsAddressPtr remote,
+                                                      const virDomainEventGraphicsAddressPtr local,
+                                                      const virDomainEventGraphicsAddressPtr remote,
                                                       const char *authScheme,
-                                                      virDomainEventGraphicsSubjectPtr subject,
+                                                      const virDomainEventGraphicsSubjectPtr subject,
                                                       void *opaque);
 
 /**
