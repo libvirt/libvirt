@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-04-01 15:34-0400\n"
+"POT-Creation-Date: 2013-05-19 18:17-0400\n"
 "PO-Revision-Date: 2012-09-18 15:49+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
@@ -304,8 +304,8 @@ msgstr "не вдалося створити каталог запуску %s: %
 #: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
 #: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
 #: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
-#: daemon/remote.c:4233 daemon/remote.c:4287 daemon/remote.c:4341
-#: daemon/remote.c:4395 daemon/remote.c:4449 daemon/remote.c:4504
+#: daemon/remote.c:4235 daemon/remote.c:4289 daemon/remote.c:4343
+#: daemon/remote.c:4397 daemon/remote.c:4451 daemon/remote.c:4506
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -443,7 +443,7 @@ msgstr "невідомий тип параметра: %d"
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
 #: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
-#: daemon/remote.c:4511
+#: daemon/remote.c:4513
 msgid "nparams too large"
 msgstr "надто великий розмір nparams"
 
@@ -5742,8 +5742,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 "Параметр запиту «proxy» містить неочікуваний тип «%s» (мало бути вказано "
 "(http|socks(|4|4a|5))"
@@ -22358,8 +22358,8 @@ msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
-"некоректний шлях, назви пристроїв мають належати діапазону sda[1-15] — sdiv"
-"[1-15] для домену %d"
+"некоректний шлях, назви пристроїв мають належати діапазону sda[1-15] — "
+"sdiv[1-15] для домену %d"
 
 #: src/xen/block_stats.c:344
 #, c-format
@@ -22367,8 +22367,8 @@ msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
-"некоректний шлях, назви пристроїв мають належати діапазону hda[1-63] — hdt"
-"[1-63] для домену %d"
+"некоректний шлях, назви пристроїв мають належати діапазону hda[1-63] — "
+"hdt[1-63] для домену %d"
 
 #: src/xen/block_stats.c:348
 #, c-format
@@ -22376,8 +22376,8 @@ msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
-"некоректний шлях, назви пристроїв мають належати діапазону xvda[1-15] — xvdiz"
-"[1-15] для домену %d"
+"некоректний шлях, назви пристроїв мають належати діапазону xvda[1-15] — "
+"xvdiz[1-15] для домену %d"
 
 #: src/xen/block_stats.c:352
 #, c-format
