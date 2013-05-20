@@ -2688,9 +2688,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 if (hddType == HardDiskType_Immutable)
                     def->disks[hddNum]->readonly = true;
-                if (VIR_STRDUP_QUIET(def->disks[hddNum]->src, hddlocation) == 0 &&
-                    VIR_STRDUP_QUIET(def->disks[hddNum]->dst, "hdd") == 0)
-                    hddNum++;
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->src, hddlocation));
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hdd"));
+                hddNum++;
 
                 VBOX_UTF8_FREE(hddlocation);
                 VBOX_UTF16_FREE(hddlocationUtf16);
@@ -7507,7 +7507,7 @@ static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int n
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-                    if (VIR_STRDUP(names[ret], nameUtf8) == 0)
+                    if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
                         ret++;
 
                     VBOX_UTF8_FREE(nameUtf8);
@@ -7585,7 +7585,7 @@ static int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-                    if (VIR_STRDUP(names[ret], nameUtf8) == 0)
+                    if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
                         ret++;
 
                     VBOX_UTF8_FREE(nameUtf8);
@@ -8087,7 +8087,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
         networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
 
         if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            if (VIR_STRDUP(def->name, network->name) == 0) {
+            if (VIR_STRDUP(def->name, network->name) >= 0) {
                 PRUnichar *networkNameUtf16 = NULL;
                 IDHCPServer *dhcpServer     = NULL;
                 vboxIID vboxnet0IID = VBOX_IID_INITIALIZER;
