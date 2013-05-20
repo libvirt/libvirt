@@ -1353,6 +1353,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 cleanup:
     VIR_FREE(opts);
     VIR_FREE(devpts);
+    VIR_FREE(mount_options);
     return ret;
 }
 
