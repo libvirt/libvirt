@@ -1259,6 +1259,27 @@ virLXCControllerSetupPrivateNS(void)
 {
     int ret = -1;
 
+    /*
+     * If doing a chroot style setup, we need to prepare
+     * a private /dev/pts for the child now, which they
+     * will later move into position.
+     *
+     * This is complex because 'virsh console' needs to
+     * use /dev/pts from the host OS, and the guest OS
+     * needs to use /dev/pts from the guest.
+     *
+     * This means that we (libvirt_lxc) need to see and
+     * use both /dev/pts instances. We're running in the
+     * host OS context though and don't want to expose
+     * the guest OS /dev/pts there.
+     *
+     * Thus we call unshare(CLONE_NS) so that we can see
+     * the guest's new /dev/pts, without it becoming
+     * visible to the host OS. We also put the root FS
+     * into slave mode, just in case it was currently
+     * marked as shared
+     */
+
     if (unshare(CLONE_NEWNS) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot unshare mount namespace"));
@@ -1287,26 +1308,6 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 
     VIR_DEBUG("Setting up private /dev/pts");
 
-    /*
-     * If doing a chroot style setup, we need to prepare
-     * a private /dev/pts for the child now, which they
-     * will later move into position.
-     *
-     * This is complex because 'virsh console' needs to
-     * use /dev/pts from the host OS, and the guest OS
-     * needs to use /dev/pts from the guest.
-     *
-     * This means that we (libvirt_lxc) need to see and
-     * use both /dev/pts instances. We're running in the
-     * host OS context though and don't want to expose
-     * the guest OS /dev/pts there.
-     *
-     * Thus we call unshare(CLONE_NS) so that we can see
-     * the guest's new /dev/pts, without it becoming
-     * visible to the host OS. We also put the root FS
-     * into slave mode, just in case it was currently
-     * marked as shared
-     */
     mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
                                                       ctrl->def);
 
