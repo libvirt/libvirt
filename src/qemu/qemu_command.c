@@ -326,10 +326,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
             return ret;
 
     } else if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (!(brname = strdup(virDomainNetGetActualBridgeName(net)))) {
-            virReportOOMError();
+        if (VIR_STRDUP(brname, virDomainNetGetActualBridgeName(net)) < 0)
             return ret;
-        }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Network type %d is not supported"),
@@ -341,10 +339,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (!(net->ifname = strdup(VIR_NET_GENERATED_PREFIX "%d"))) {
-            virReportOOMError();
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
             goto cleanup;
-        }
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = true;
     }
@@ -583,17 +579,10 @@ static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
 {
     char *dev_name;
 
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        STREQ(disk->dst, "hdc"))
-        dev_name = strdup("cdrom");
-    else
-        dev_name = strdup(disk->dst);
-
-    if (!dev_name) {
-        virReportOOMError();
+    if (VIR_STRDUP(dev_name,
+                   disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+                   STREQ(disk->dst, "hdc") ? "cdrom" : disk->dst) < 0)
         return -1;
-    }
-
     disk->info.alias = dev_name;
     return 0;
 }
@@ -610,10 +599,7 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
             return NULL;
         }
     } else {
-        if (!(ret = strdup(disk->info.alias))) {
-            virReportOOMError();
-            return NULL;
-        }
+        ignore_value(VIR_STRDUP(ret, disk->info.alias));
     }
     return ret;
 }
@@ -2531,13 +2517,11 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
     if (port) {
         *port = '\0';
         port += skip;
-        disk->hosts[disk->nhosts-1].port = strdup(port);
-        if (!disk->hosts[disk->nhosts-1].port)
-            goto no_memory;
+        if (VIR_STRDUP(disk->hosts[disk->nhosts - 1].port, port) < 0)
+            goto error;
     } else {
-        disk->hosts[disk->nhosts-1].port = strdup("6789");
-        if (!disk->hosts[disk->nhosts-1].port)
-            goto no_memory;
+        if (VIR_STRDUP(disk->hosts[disk->nhosts - 1].port, "6789") < 0)
+            goto error;
     }
 
     parts = virStringSplit(hostport, "\\:", 0);
@@ -2555,6 +2539,7 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
 
 no_memory:
     virReportOOMError();
+error:
     VIR_FREE(disk->hosts[disk->nhosts-1].port);
     VIR_FREE(disk->hosts[disk->nhosts-1].name);
     return -1;
@@ -2568,9 +2553,8 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
 
     p = strchr(disk->src, ':');
     if (p) {
-        options = strdup(p + 1);
-        if (!options)
-            goto no_memory;
+        if (VIR_STRDUP(options, p + 1) < 0)
+            goto error;
         *p = '\0';
     }
 
@@ -2595,11 +2579,9 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
             *e = '\0';
         }
 
-        if (STRPREFIX(p, "id=")) {
-            disk->auth.username = strdup(p + strlen("id="));
-            if (!disk->auth.username)
-                goto no_memory;
-        }
+        if (STRPREFIX(p, "id=") &&
+            VIR_STRDUP(disk->auth.username, p + strlen("id=")) < 0)
+            goto error;
         if (STRPREFIX(p, "mon_host=")) {
             char *h, *sep;
 
@@ -2626,9 +2608,8 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
     VIR_FREE(options);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(options);
-    virReportOOMError();
     return -1;
 }
 
@@ -2668,9 +2649,8 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     def->nhosts = 0; /* set to 1 once everything succeeds */
 
     if (def->hosts->transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
-        def->hosts->name = strdup(uri->server);
-        if (!def->hosts->name)
-            goto no_memory;
+        if (VIR_STRDUP(def->hosts->name, uri->server) < 0)
+            goto error;
 
         if (virAsprintf(&def->hosts->port, "%d", uri->port) < 0)
             goto no_memory;
@@ -2680,9 +2660,8 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
         if (uri->query) {
             if (STRPREFIX(uri->query, "socket=")) {
                 sock = strchr(uri->query, '=') + 1;
-                def->hosts->socket = strdup(sock);
-                if (!def->hosts->socket)
-                    goto no_memory;
+                if (VIR_STRDUP(def->hosts->socket, sock) < 0)
+                    goto error;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid query parameter '%s'"), uri->query);
@@ -2693,9 +2672,8 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     if (uri->path) {
         volimg = uri->path + 1; /* skip the prefix slash */
         VIR_FREE(def->src);
-        def->src = strdup(volimg);
-        if (!def->src)
-            goto no_memory;
+        if (VIR_STRDUP(def->src, volimg) < 0)
+            goto error;
     } else {
         VIR_FREE(def->src);
         def->src = NULL;
@@ -2706,9 +2684,8 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
         if (secret)
             *secret = '\0';
 
-        def->auth.username = strdup(uri->user);
-        if (!def->auth.username)
-            goto no_memory;
+        if (VIR_STRDUP(def->auth.username, uri->user) < 0)
+            goto error;
     }
 
     def->nhosts = 1;
@@ -2788,7 +2765,8 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
             *src++ = '\0';
 
         h->transport = VIR_DOMAIN_DISK_PROTO_TRANS_UNIX;
-        h->socket = strdup(host + strlen("unix:"));
+        if (VIR_STRDUP(h->socket, host + strlen("unix:")) < 0)
+            goto error;
     } else {
         port = strchr(host, ':');
         if (!port) {
@@ -2798,23 +2776,20 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         }
 
         *port++ = '\0';
-        h->name = strdup(host);
-        if (!h->name)
-            goto no_memory;
+        if (VIR_STRDUP(h->name, host) < 0)
+            goto error;
 
         src = strchr(port, ':');
         if (src)
             *src++ = '\0';
 
-        h->port = strdup(port);
-        if (!h->port)
-            goto no_memory;
+        if (VIR_STRDUP(h->port, port) < 0)
+            goto error;
     }
 
     if (src && STRPREFIX(src, "exportname=")) {
-        src = strdup(strchr(src, '=') + 1);
-        if (!src)
-            goto no_memory;
+        if (VIR_STRDUP(src, strchr(src, '=') + 1) < 0)
+            goto error;
     } else {
         src = NULL;
     }
@@ -2864,9 +2839,8 @@ qemuBuildDriveURIString(virConnectPtr conn,
     transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
 
     if (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
-        tmpscheme = strdup(scheme);
-        if (tmpscheme == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(tmpscheme, scheme) < 0)
+            goto cleanup;
     } else {
         if (virAsprintf(&tmpscheme, "%s+%s", scheme, transp) < 0)
             goto no_memory;
@@ -5711,9 +5685,12 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
             }
             virBufferAddLit(&buf, "host");
         } else {
-            if (VIR_ALLOC(guest) < 0 ||
-                (cpu->vendor_id && !(guest->vendor_id = strdup(cpu->vendor_id))))
-                goto no_memory;
+            if (VIR_ALLOC(guest) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            if (VIR_STRDUP(guest->vendor_id, cpu->vendor_id) < 0)
+                goto cleanup;
 
             guest->arch = host->arch;
             if (cpu->match == VIR_CPU_MATCH_MINIMUM)
@@ -5812,8 +5789,10 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
         }
     }
 
-    if (virBufferError(&buf))
-        goto no_memory;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     *opt = virBufferContentAndReset(&buf);
 
@@ -5827,10 +5806,6 @@ cleanup:
     virCPUDefFree(cpu);
     virObjectUnref(caps);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 static int
@@ -7525,14 +7500,15 @@ qemuBuildCommandLine(virConnectPtr conn,
                     fmt = "fat:%s";
 
                 if (virAsprintf(&file, fmt, disk->src) < 0) {
-                    goto no_memory;
+                    virReportOOMError();
+                    goto error;
                 }
             } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("network disks are only supported with -drive"));
             } else {
-                if (!(file = strdup(disk->src))) {
-                    goto no_memory;
+                if (VIR_STRDUP(file, disk->src) < 0) {
+                    goto error;
                 }
             }
 
@@ -8176,8 +8152,10 @@ qemuBuildCommandLine(virConnectPtr conn,
         } else {
             int size = 100;
             char *modstr;
-            if (VIR_ALLOC_N(modstr, size+1) < 0)
-                goto no_memory;
+            if (VIR_ALLOC_N(modstr, size+1) < 0) {
+                virReportOOMError();
+                goto error;
+            }
 
             for (i = 0; i < def->nsounds && size > 0; i++) {
                 virDomainSoundDefPtr sound = def->sounds[i];
@@ -8227,8 +8205,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            if (!(optstr = strdup(model)))
-                goto no_memory;
+            if (VIR_STRDUP(optstr, model) < 0)
+                goto error;
         }
         virCommandAddArg(cmd, optstr);
         VIR_FREE(optstr);
@@ -8374,7 +8352,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                     if (configfd >= 0) {
                         if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
                             VIR_FORCE_CLOSE(configfd);
-                            goto no_memory;
+                            virReportOOMError();
+                            goto error;
                         }
 
                         virCommandTransferFD(cmd, configfd);
@@ -8583,8 +8562,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     virObjectUnref(cfg);
     return cmd;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(cfg);
     /* free up any resources in the network driver
@@ -8697,17 +8674,11 @@ static int qemuStringToArgvEnv(const char *args,
         if (!next)
             next = strchr(curr, '\n');
 
-        if (next) {
-            arg = strndup(curr, next-curr);
-            if (*next == '\'' ||
-                *next == '"')
-                next++;
-        } else {
-            arg = strdup(curr);
-        }
+        if (VIR_STRNDUP(arg, curr, next ? next - curr : strlen(curr)) < 0)
+            goto error;
 
-        if (!arg)
-            goto no_memory;
+        if (next && (*next == '\'' || *next == '"'))
+            next++;
 
         if (argalloc == argcount) {
             if (VIR_REALLOC_N(arglist, argalloc+10) < 0) {
@@ -8758,13 +8729,14 @@ static int qemuStringToArgvEnv(const char *args,
     return 0;
 
 no_memory:
+    virReportOOMError();
+error:
     for (i = 0; progenv && progenv[i]; i++)
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
     for (i = 0; i < argcount; i++)
         VIR_FREE(arglist[i]);
     VIR_FREE(arglist);
-    virReportOOMError();
     return -1;
 }
 
@@ -8838,14 +8810,14 @@ qemuParseKeywords(const char *str,
             separator = endmark;
         }
 
-        if (!(keyword = strndup(start, separator - start)))
-            goto no_memory;
+        if (VIR_STRNDUP(keyword, start, separator - start) < 0)
+            goto error;
 
         if (separator < endmark) {
             separator++;
-            if (!(value = strndup(separator, endmark - separator))) {
+            if (VIR_STRNDUP(value, separator, endmark - separator) < 0) {
                 VIR_FREE(keyword);
-                goto no_memory;
+                goto error;
             }
             if (strchr(value, ',')) {
                 char *p = strchr(value, ',') + 1;
@@ -8949,11 +8921,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
 
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
-                    def->src = strdup(p + strlen("rbd:"));
-                    if (!def->src) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(def->src, p + strlen("rbd:")) < 0)
                         goto error;
-                    }
                     /* old-style CEPH_ARGS env variable is parsed later */
                     if (!old_style_ceph_args && qemuParseRBDString(def) < 0)
                         goto cleanup;
@@ -8978,11 +8947,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
 
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
-                    def->src = strdup(p + strlen("sheepdog:"));
-                    if (!def->src) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(def->src, p + strlen("sheepdog:")) < 0)
                         goto error;
-                    }
 
                     /* def->src must be [vdiname] or [host]:[port]:[vdiname] */
                     port = strchr(def->src, ':');
@@ -9001,18 +8967,12 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                         }
                         def->nhosts = 1;
                         def->hosts->name = def->src;
-                        def->hosts->port = strdup(port);
-                        if (!def->hosts->port) {
-                            virReportOOMError();
+                        if (VIR_STRDUP(def->hosts->port, port) < 0)
                             goto error;
-                        }
                         def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
                         def->hosts->socket = NULL;
-                        def->src = strdup(vdi);
-                        if (!def->src) {
-                            virReportOOMError();
+                        if (VIR_STRDUP(def->src, vdi) < 0)
                             goto error;
-                        }
                     }
 
                     VIR_FREE(p);
@@ -9037,11 +8997,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             } else if (STREQ(values[i], "floppy"))
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
         } else if (STREQ(keywords[i], "format")) {
-            def->driverName = strdup("qemu");
-            if (!def->driverName) {
-                virReportOOMError();
+            if (VIR_STRDUP(def->driverName, "qemu") < 0)
                 goto error;
-            }
             def->format = virStorageFileFormatTypeFromString(values[i]);
         } else if (STREQ(keywords[i], "cache")) {
             if (STREQ(values[i], "off") ||
@@ -9181,21 +9138,19 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     }
 
     if (def->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-        def->dst = strdup("hda");
+        ignore_value(VIR_STRDUP(def->dst, "hda"));
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-        def->dst = strdup("sda");
+        ignore_value(VIR_STRDUP(def->dst, "sda"));
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-        def->dst = strdup("vda");
+        ignore_value(VIR_STRDUP(def->dst, "vda"));
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_XEN) {
-        def->dst = strdup("xvda");
+        ignore_value(VIR_STRDUP(def->dst, "xvda"));
     } else {
-        def->dst = strdup("hda");
+        ignore_value(VIR_STRDUP(def->dst, "hda"));
     }
 
-    if (!def->dst) {
-        virReportOOMError();
+    if (!def->dst)
         goto error;
-    }
     if (STREQ(def->dst, "xvda"))
         def->dst[3] = 'a' + idx;
     else
@@ -9547,14 +9502,12 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
         source->type = VIR_DOMAIN_CHR_TYPE_PTY;
     } else if (STRPREFIX(val, "file:")) {
         source->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        source->data.file.path = strdup(val+strlen("file:"));
-        if (!source->data.file.path)
-            goto no_memory;
+        if (VIR_STRDUP(source->data.file.path, val + strlen("file:")) < 0)
+            goto error;
     } else if (STRPREFIX(val, "pipe:")) {
         source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        source->data.file.path = strdup(val+strlen("pipe:"));
-        if (!source->data.file.path)
-            goto no_memory;
+        if (VIR_STRDUP(source->data.file.path, val + strlen("pipe:")) < 0)
+            goto error;
     } else if (STREQ(val, "stdio")) {
         source->type = VIR_DOMAIN_CHR_TYPE_STDIO;
     } else if (STRPREFIX(val, "udp:")) {
@@ -9565,40 +9518,29 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
         host2 = svc1 ? strchr(svc1, '@') : NULL;
         svc2 = host2 ? strchr(host2, ':') : NULL;
 
-        if (svc1 && (svc1 != val)) {
-            source->data.udp.connectHost = strndup(val, svc1-val);
-
-            if (!source->data.udp.connectHost)
-                goto no_memory;
-        }
+        if (svc1 && svc1 != val &&
+            VIR_STRNDUP(source->data.udp.connectHost, val, svc1 - val) < 0)
+            goto error;
 
         if (svc1) {
             svc1++;
-            if (host2)
-                source->data.udp.connectService = strndup(svc1, host2-svc1);
-            else
-                source->data.udp.connectService = strdup(svc1);
-
-            if (!source->data.udp.connectService)
-                goto no_memory;
+            if (VIR_STRNDUP(source->data.udp.connectService, svc1,
+                            host2 ? host2 - svc1 : strlen(svc1)) < 0)
+                goto error;
         }
 
         if (host2) {
             host2++;
-            if (svc2 && (svc2 != host2)) {
-                source->data.udp.bindHost = strndup(host2, svc2-host2);
-
-                if (!source->data.udp.bindHost)
-                    goto no_memory;
-            }
+            if (svc2 && svc2 != host2 &&
+                VIR_STRNDUP(source->data.udp.bindHost, host2, svc2 - host2) < 0)
+                goto no_memory;
         }
 
         if (svc2) {
             svc2++;
             if (STRNEQ(svc2, "0")) {
-                source->data.udp.bindService = strdup(svc2);
-                if (!source->data.udp.bindService)
-                    goto no_memory;
+                if (VIR_STRDUP(source->data.udp.bindService, svc2) < 0)
+                    goto error;
             }
         }
     } else if (STRPREFIX(val, "tcp:") ||
@@ -9621,37 +9563,25 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
         if (opt && strstr(opt, "server"))
             source->data.tcp.listen = true;
 
-        source->data.tcp.host = strndup(val, svc-val);
-        if (!source->data.tcp.host)
-            goto no_memory;
+        if (VIR_STRNDUP(source->data.tcp.host, val, svc - val) < 0)
+            goto error;
         svc++;
-        if (opt) {
-            source->data.tcp.service = strndup(svc, opt-svc);
-        } else {
-            source->data.tcp.service = strdup(svc);
-        }
-        if (!source->data.tcp.service)
-            goto no_memory;
+        if (VIR_STRNDUP(source->data.tcp.service, svc,
+                        opt ? opt - svc : strlen(svc)) < 0)
+            goto error;
     } else if (STRPREFIX(val, "unix:")) {
         const char *opt;
         val += strlen("unix:");
         opt = strchr(val, ',');
         source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        if (opt) {
-            if (strstr(opt, "listen"))
-                source->data.nix.listen = true;
-            source->data.nix.path = strndup(val, opt-val);
-        } else {
-            source->data.nix.path = strdup(val);
-        }
-        if (!source->data.nix.path)
-            goto no_memory;
+        if (VIR_STRNDUP(source->data.nix.path, val,
+                        opt ? opt - val : strlen(val)) < 0)
+            goto error;
 
     } else if (STRPREFIX(val, "/dev")) {
         source->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        source->data.file.path = strdup(val);
-        if (!source->data.file.path)
-            goto no_memory;
+        if (VIR_STRDUP(source->data.file.path, val) < 0)
+            goto error;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown character device syntax %s"), val);
@@ -9704,13 +9634,8 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             next++;
 
         if (p == val) {
-            if (next)
-                model = strndup(p, next - p - 1);
-            else
-                model = strdup(p);
-
-            if (!model)
-                goto no_memory;
+            if (VIR_STRNDUP(model, p, next ? next - p - 1 : strlen(p)) < 0)
+                goto error;
 
             if (!STREQ(model, "qemu32") && !STREQ(model, "qemu64")) {
                 if (!(cpu = qemuInitGuestCPU(dom)))
@@ -9733,13 +9658,8 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*p == '\0' || *p == ',')
                 goto syntax;
 
-            if (next)
-                feature = strndup(p, next - p - 1);
-            else
-                feature = strdup(p);
-
-            if (!feature)
-                goto no_memory;
+            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : strlen(p)) < 0)
+                goto error;
 
             if (STREQ(feature, "kvmclock")) {
                 bool present = (policy == VIR_CPU_FEATURE_REQUIRE);
@@ -9797,13 +9717,8 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*p == '\0' || *p == ',')
                 goto syntax;
 
-            if (next)
-                feature = strndup(p, next - p - 1);
-            else
-                feature = strdup(p);
-
-            if (!feature)
-                goto no_memory;
+            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : strlen(p)) < 0)
+                goto error;
 
             dom->features |= (1 << VIR_DOMAIN_FEATURE_HYPERV);
 
@@ -10021,8 +9936,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
     def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
     def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
     def->virtType = VIR_DOMAIN_VIRT_QEMU;
-    if (!(def->emulator = strdup(progargv[0])))
-        goto no_memory;
+    if (VIR_STRDUP(def->emulator, progargv[0]) < 0)
+        goto error;
 
     if (strstr(def->emulator, "kvm")) {
         def->virtType = VIR_DOMAIN_VIRT_KVM;
@@ -10032,12 +9947,12 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
 
     if (strstr(def->emulator, "xenner")) {
         def->virtType = VIR_DOMAIN_VIRT_KVM;
-        def->os.type = strdup("xen");
+        if (VIR_STRDUP(def->os.type, "xen") < 0)
+            goto error;
     } else {
-        def->os.type = strdup("hvm");
+        if (VIR_STRDUP(def->os.type, "hvm") < 0)
+            goto error;
     }
-    if (!def->os.type)
-        goto no_memory;
 
     if (STRPREFIX(def->emulator, "qemu"))
         path = def->emulator;
@@ -10100,10 +10015,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
 
             if (STRPREFIX(val, "unix:")) {
                 /* -vnc unix:/some/big/path */
-                vnc->data.vnc.socket = strdup(val + 5);
-                if (!vnc->data.vnc.socket) {
+                if (VIR_STRDUP(vnc->data.vnc.socket, val + 5) < 0) {
                     virDomainGraphicsDefFree(vnc);
-                    goto no_memory;
+                    goto error;
                 }
             } else {
                 /*
@@ -10143,10 +10057,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 }
 
                 if (*opts == ',') {
-                    char *orig_opts = strdup(opts + 1);
-                    if (!orig_opts) {
+                    char *orig_opts;
+
+                    if (VIR_STRDUP(orig_opts, opts + 1) < 0) {
                         virDomainGraphicsDefFree(vnc);
-                        goto no_memory;
+                        goto error;
                     }
                     opts = orig_opts;
 
@@ -10265,9 +10180,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                disk->dst = strdup("hdc");
-                if (!disk->dst)
-                    goto no_memory;
+                if (VIR_STRDUP(disk->dst, "hdc") < 0)
+                    goto error;
                 disk->readonly = true;
             } else {
                 if (STRPREFIX(arg, "-fd")) {
@@ -10280,13 +10194,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
-                disk->dst = strdup(arg + 1);
-                if (!disk->dst)
-                    goto no_memory;
+                if (VIR_STRDUP(disk->dst, arg + 1) < 0)
+                    goto error;
             }
-            disk->src = strdup(val);
-            if (!disk->src)
-                goto no_memory;
+            if (VIR_STRDUP(disk->src, val) < 0)
+                goto error;
 
             if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
                 char *port;
@@ -10319,12 +10231,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                             goto no_memory;
                         disk->nhosts = 1;
                         disk->hosts->name = disk->src;
-                        disk->hosts->port = strdup(port);
-                        if (!disk->hosts->port)
-                            goto no_memory;
-                        disk->src = strdup(vdi);
-                        if (!disk->src)
-                            goto no_memory;
+                        if (VIR_STRDUP(disk->hosts->port, port) < 0)
+                            goto error;
+                        if (VIR_STRDUP(disk->src, vdi) < 0)
+                            goto error;
                     }
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
@@ -10371,24 +10281,24 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
         } else if (STREQ(arg, "-kernel")) {
             WANT_VALUE();
-            if (!(def->os.kernel = strdup(val)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.kernel, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-bios")) {
             WANT_VALUE();
-            if (!(def->os.loader = strdup(val)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.loader, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-initrd")) {
             WANT_VALUE();
-            if (!(def->os.initrd = strdup(val)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.initrd, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-append")) {
             WANT_VALUE();
-            if (!(def->os.cmdline = strdup(val)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.cmdline, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-dtb")) {
             WANT_VALUE();
-            if (!(def->os.dtb = strdup(val)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.dtb, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-boot")) {
             const char *token = NULL;
             WANT_VALUE();
@@ -10432,11 +10342,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
             process = strstr(val, ",process=");
             if (process == NULL) {
-                if (!(def->name = strdup(val)))
-                    goto no_memory;
+                if (VIR_STRDUP(def->name, val) < 0)
+                    goto error;
             } else {
-                if (!(def->name = strndup(val, process - val)))
-                    goto no_memory;
+                if (VIR_STRNDUP(def->name, val, process - val) < 0)
+                    goto error;
             }
             if (STREQ(def->name, ""))
                 VIR_FREE(def->name);
@@ -10446,11 +10356,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
             params = strchr(val, ',');
             if (params == NULL) {
-                if (!(def->os.machine = strdup(val)))
-                    goto no_memory;
+                if (VIR_STRDUP(def->os.machine, val) < 0)
+                    goto error;
             } else {
-                if (!(def->os.machine = strndup(val, params - val)))
-                    goto no_memory;
+                if (VIR_STRNDUP(def->os.machine, val, params - val) < 0)
+                    goto error;
 
                 while (params++) {
                     /* prepared for more "-machine" parameters */
@@ -10459,11 +10369,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
 
                     if (STRPREFIX(tmp, "dump-guest-core=")) {
                         tmp += strlen("dump-guest-core=");
-                        if (params) {
-                            tmp = strndup(tmp, params - tmp);
-                            if (tmp == NULL)
-                                goto no_memory;
-                        }
+                        if (params && VIR_STRNDUP(tmp, tmp, params - tmp) < 0)
+                            goto error;
                         def->mem.dump_core = virDomainMemDumpTypeFromString(tmp);
                         if (def->mem.dump_core <= 0)
                             def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
@@ -10534,17 +10441,17 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             } else if (STRPREFIX(val, "disk:")) {
                 if (VIR_ALLOC(disk) < 0)
                     goto no_memory;
-                disk->src = strdup(val + strlen("disk:"));
-                if (!disk->src)
-                    goto no_memory;
+                if (VIR_STRDUP(disk->src, val + strlen("disk:")) < 0)
+                    goto error;
                 if (STRPREFIX(disk->src, "/dev/"))
                     disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
                 else
                     disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 disk->bus = VIR_DOMAIN_DISK_BUS_USB;
-                if (!(disk->dst = strdup("sda")) ||
-                    VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+                if (VIR_STRDUP(disk->dst, "sda") < 0)
+                    goto error;
+                if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                     goto no_memory;
                 def->disks[def->ndisks++] = disk;
                 disk = NULL;
@@ -10646,9 +10553,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 def->watchdog->action = action;
         } else if (STREQ(arg, "-bootloader")) {
             WANT_VALUE();
-            def->os.bootloader = strdup(val);
-            if (!def->os.bootloader)
-                goto no_memory;
+            if (VIR_STRDUP(def->os.bootloader, val) < 0)
+                goto error;
         } else if (STREQ(arg, "-vmwarevga")) {
             video = VIR_DOMAIN_VIDEO_TYPE_VMVGA;
         } else if (STREQ(arg, "-std-vga")) {
@@ -10681,8 +10587,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
         } else if (STREQ(arg, "-pidfile")) {
             WANT_VALUE();
             if (pidfile)
-                if (!(*pidfile = strdup(val)))
-                    goto no_memory;
+                if (VIR_STRDUP(*pidfile, val) < 0)
+                    goto error;
         } else if (STREQ(arg, "-incoming")) {
             WANT_VALUE();
             /* ignore, used via restore/migrate APIs */
@@ -10764,9 +10670,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                      arg);
             if (VIR_REALLOC_N(cmd->args, cmd->num_args+1) < 0)
                 goto no_memory;
-            cmd->args[cmd->num_args] = strdup(arg);
-            if (cmd->args[cmd->num_args] == NULL)
-                goto no_memory;
+            if (VIR_STRDUP(cmd->args[cmd->num_args], arg) < 0)
+                goto error;
             cmd->num_args++;
         }
     }
@@ -10795,9 +10700,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                            _("could not parse CEPH_ARGS '%s'"), ceph_args);
             goto error;
         }
-        hosts = strdup(strchr(ceph_args, ' ') + 1);
-        if (!hosts)
-            goto no_memory;
+        if (VIR_STRDUP(hosts, strchr(ceph_args, ' ') + 1) < 0)
+            goto error;
         first_rbd_disk->nhosts = 0;
         token = strtok_r(hosts, ",", &saveptr);
         while (token != NULL) {
@@ -10808,17 +10712,16 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             port = strchr(token, ':');
             if (port) {
                 *port++ = '\0';
-                port = strdup(port);
-                if (!port) {
+                if (VIR_STRDUP(port, port) < 0) {
                     VIR_FREE(hosts);
-                    goto no_memory;
+                    goto error;
                 }
             }
             first_rbd_disk->hosts[first_rbd_disk->nhosts].port = port;
-            first_rbd_disk->hosts[first_rbd_disk->nhosts].name = strdup(token);
-            if (!first_rbd_disk->hosts[first_rbd_disk->nhosts].name) {
+            if (VIR_STRDUP(first_rbd_disk->hosts[first_rbd_disk->nhosts].name,
+                           token) < 0) {
                 VIR_FREE(hosts);
-                goto no_memory;
+                goto error;
             }
             first_rbd_disk->hosts[first_rbd_disk->nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
             first_rbd_disk->hosts[first_rbd_disk->nhosts].socket = NULL;
@@ -10842,8 +10745,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                                                            def->os.arch,
                                                            virDomainVirtTypeToString(def->virtType));
         if (defaultMachine != NULL)
-            if (!(def->os.machine = strdup(defaultMachine)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
+                goto error;
     }
 
     if (!nographics && def->ngraphics == 0) {
@@ -10854,15 +10757,13 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             goto no_memory;
         sdl->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
         sdl->data.sdl.fullscreen = fullscreen;
-        if (display &&
-            !(sdl->data.sdl.display = strdup(display))) {
+        if (VIR_STRDUP(sdl->data.sdl.display, display) < 0) {
             VIR_FREE(sdl);
-            goto no_memory;
+            goto error;
         }
-        if (xauth &&
-            !(sdl->data.sdl.xauth = strdup(xauth))) {
+        if (VIR_STRDUP(sdl->data.sdl.xauth, xauth) < 0) {
             VIR_FREE(sdl);
-            goto no_memory;
+            goto error;
         }
 
         if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {
@@ -10979,7 +10880,7 @@ static int qemuParseProcFileStrings(int pid_value,
     ssize_t len;
     char *tmp;
     size_t nstr = 0;
-    const char **str = NULL;
+    char **str = NULL;
     int i;
 
     if (virAsprintf(&path, "/proc/%d/%s", pid_value, name) < 0) {
@@ -10997,10 +10898,8 @@ static int qemuParseProcFileStrings(int pid_value,
             goto cleanup;
         }
 
-        if (!(str[nstr-1] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(str[nstr-1], tmp) < 0)
             goto cleanup;
-        }
         /* Skip arg */
         tmp += strlen(tmp);
         /* Skip \0 separator */
@@ -11015,7 +10914,7 @@ static int qemuParseProcFileStrings(int pid_value,
     str[nstr-1] = NULL;
 
     ret = nstr-1;
-    *list = str;
+    *list = (const char **) str;
 
 cleanup:
     if (ret < 0) {

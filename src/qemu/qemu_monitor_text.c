@@ -258,11 +258,8 @@ qemuMonitorTextCommandWithHandler(qemuMonitorPtr mon,
         if (msg.rxBuffer) {
             *reply = msg.rxBuffer;
         } else {
-            *reply = strdup("");
-            if (!*reply) {
-                virReportOOMError();
+            if (VIR_STRDUP(*reply, "") < 0)
                 return -1;
-            }
         }
     }
 
@@ -330,10 +327,8 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
 
     /* Extra the path */
     pathStart += strlen(DISK_ENCRYPTION_PREFIX);
-    if (!(path = strndup(pathStart, pathEnd - pathStart))) {
-        virReportOOMError();
+    if (VIR_STRNDUP(path, pathStart, pathEnd - pathStart) < 0)
         return -1;
-    }
 
     /* Fetch the disk password if possible */
     res = qemuMonitorGetDiskSecret(mon,
@@ -2283,11 +2278,9 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
 
         /* Path is everything after needle to the end of the line */
         *eol = '\0';
-        char *path = strdup(needle + strlen(NEEDLE));
-        if (path == NULL) {
-            virReportOOMError();
+        char *path;
+        if (VIR_STRDUP(path, needle + strlen(NEEDLE)) < 0)
             goto cleanup;
-        }
 
         if (virHashAddEntry(paths, id, path) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,

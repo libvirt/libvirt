@@ -32,6 +32,7 @@
 #include "virerror.h"
 #include "domain_audit.h"
 #include "virscsi.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -697,8 +698,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!(res->partition = strdup("/machine"))) {
-            virReportOOMError();
+        if (VIR_STRDUP(res->partition, "/machine") < 0) {
             VIR_FREE(res);
             goto cleanup;
         }

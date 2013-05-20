@@ -1456,10 +1456,8 @@ qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 
     if (STRNEQ(canon, def->os.machine)) {
         char *tmp;
-        if (!(tmp = strdup(canon))) {
-            virReportOOMError();
+        if (VIR_STRDUP(tmp, canon) < 0)
             return -1;
-        }
         VIR_FREE(def->os.machine);
         def->os.machine = tmp;
     }
@@ -2047,8 +2045,7 @@ static char *qemuDomainGetOSType(virDomainPtr dom) {
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (!(type = strdup(vm->def->os.type)))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(type, vm->def->os.type));
 
 cleanup:
     if (vm)
@@ -3426,7 +3423,7 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
-    ret = strdup("image/x-portable-pixmap");
+    ignore_value(VIR_STRDUP(ret, "image/x-portable-pixmap"));
 
 endjob:
     VIR_FORCE_CLOSE(tmp_fd);
@@ -5174,11 +5171,8 @@ static char *qemuConnectDomainXMLFromNative(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    if (!def->name &&
-        !(def->name = strdup("unnamed"))) {
-        virReportOOMError();
+    if (!def->name && VIR_STRDUP(def->name, "unnamed") < 0)
         goto cleanup;
-    }
 
     xml = qemuDomainDefFormatXML(driver, def, VIR_DOMAIN_XML_INACTIVE);
 
@@ -5244,11 +5238,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
             if ((actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
                 (brname = virDomainNetGetActualBridgeName(net))) {
 
-                char *brnamecopy = strdup(brname);
-                if (!brnamecopy) {
-                    virReportOOMError();
+                char *brnamecopy;
+                if (VIR_STRDUP(brnamecopy, brname) < 0)
                     goto cleanup;
-                }
 
                 virDomainActualNetDefFree(net->data.network.actual);
 
@@ -6923,9 +6915,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
             *nparams = 5;
     }
 
-    ret = strdup("posix");
-    if (!ret)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, "posix"));
 
 cleanup:
     if (vm)
@@ -6983,11 +6973,8 @@ qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
         if (!p)
             goto error;
 
-        result[i].path = strndup(temp, p - temp);
-        if (!result[i].path) {
-            virReportOOMError();
+        if (VIR_STRNDUP(result[i].path, temp, p - temp) < 0)
             goto cleanup;
-        }
 
         /* weight */
         temp = p + 1;
@@ -7351,13 +7338,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                     }
                     param->value.s = virBufferContentAndReset(&buf);
                 }
-                if (!param->value.s) {
-                    param->value.s = strdup("");
-                    if (!param->value.s) {
-                        virReportOOMError();
-                        goto cleanup;
-                    }
-                }
+                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
+                    goto cleanup;
                 param->type = VIR_TYPED_PARAM_STRING;
                 if (virStrcpyStatic(param->field,
                                     VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) == NULL) {
@@ -7882,8 +7864,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 nodeset = virBitmapFormat(persistentDef->numatune.memory.nodemask);
-                if (!nodeset)
-                    nodeset = strdup("");
+                if (!nodeset && VIR_STRDUP(nodeset, "") < 0)
+                    goto cleanup;
             } else {
                 rc = virCgroupGetCpusetMems(priv->cgroup, &nodeset);
                 if (rc != 0) {
@@ -9560,10 +9542,8 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     if (dname) {
         VIR_FREE(def->name);
-        if (!(def->name = strdup(dname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->name, dname) < 0)
             goto cleanup;
-        }
     }
 
     ret = qemuMigrationPrepareTunnel(driver, dconn,
@@ -9633,10 +9613,8 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
 
     if (dname) {
         VIR_FREE(def->name);
-        if (!(def->name = strdup(dname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->name, dname) < 0)
             goto cleanup;
-        }
     }
 
     /* Do not use cookies in v2 protocol, since the cookie
@@ -9874,10 +9852,8 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
 
     if (dname) {
         VIR_FREE(def->name);
-        if (!(def->name = strdup(dname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->name, dname) < 0)
             goto cleanup;
-        }
     }
 
     ret = qemuMigrationPrepareDirect(driver, dconn,
@@ -9939,10 +9915,8 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
     if (dname) {
         VIR_FREE(def->name);
-        if (!(def->name = strdup(dname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->name, dname) < 0)
             goto cleanup;
-        }
     }
 
     ret = qemuMigrationPrepareTunnel(driver, dconn,
@@ -10959,9 +10933,8 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
 
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             VIR_FREE(defdisk->src);
-            if (!(defdisk->src = strdup(snapdisk->file))) {
+            if (VIR_STRDUP(defdisk->src, snapdisk->file) < 0) {
                 /* we cannot rollback here in a sane way */
-                virReportOOMError();
                 goto cleanup;
             }
             defdisk->format = snapdisk->format;
@@ -11250,9 +11223,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
-        !(source = strdup(snap->file)) ||
-        (persistDisk &&
-         !(persistSource = strdup(source)))) {
+        VIR_STRDUP(source, snap->file) < 0 ||
+        (persistDisk && VIR_STRDUP(persistSource, source) < 0)) {
         virReportOOMError();
         goto cleanup;
     }
@@ -11329,12 +11301,9 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     char *persistSource = NULL;
     struct stat st;
 
-    if (!(source = strdup(origdisk->src)) ||
-        (persistDisk &&
-         !(persistSource = strdup(source)))) {
-        virReportOOMError();
+    if (VIR_STRDUP(source, origdisk->src) < 0 ||
+        (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
-    }
 
     qemuDomainPrepareDiskChainElement(driver, vm, disk, origdisk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
@@ -11938,13 +11907,9 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (update_current)
         snap->def->current = true;
     if (vm->current_snapshot) {
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
-            snap->def->parent = strdup(vm->current_snapshot->def->name);
-            if (snap->def->parent == NULL) {
-                virReportOOMError();
+        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
+            VIR_STRDUP(snap->def->parent, vm->current_snapshot->def->name) < 0)
                 goto cleanup;
-            }
-        }
         if (update_current) {
             vm->current_snapshot->def->current = false;
             if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
@@ -12723,14 +12688,10 @@ qemuDomainSnapshotReparentChildren(void *payload,
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
 
-    if (rep->parent->def) {
-        snap->def->parent = strdup(rep->parent->def->name);
-
-        if (snap->def->parent == NULL) {
-            virReportOOMError();
-            rep->err = -1;
-            return;
-        }
+    if (rep->parent->def &&
+        VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
+        rep->err = -1;
+        return;
     }
 
     if (!snap->sibling)
@@ -13637,10 +13598,8 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     }
     if (!format && disk->mirrorFormat > 0)
         format = virStorageFileFormatTypeToString(disk->mirrorFormat);
-    if (!(mirror = strdup(dest))) {
-        virReportOOMError();
+    if (VIR_STRDUP(mirror, dest) < 0)
         goto endjob;
-    }
 
     if (qemuDomainPrepareDiskChainElement(driver, vm, disk, dest,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0) {
@@ -14271,10 +14230,8 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
             if (n == nerrors)
                 break;
 
-            if (!(errors[n].disk = strdup(disk->dst))) {
-                virReportOOMError();
+            if (VIR_STRDUP(errors[n].disk, disk->dst) < 0)
                 goto endjob;
-            }
             errors[n].error = info->io_status;
             n++;
         }
@@ -14331,15 +14288,13 @@ qemuDomainSetMetadata(virDomainPtr dom,
         switch ((virDomainMetadataType) type) {
         case VIR_DOMAIN_METADATA_DESCRIPTION:
             VIR_FREE(vm->def->description);
-            if (metadata &&
-                !(vm->def->description = strdup(metadata)))
-                goto no_memory;
+            if (VIR_STRDUP(vm->def->description, metadata) < 0)
+                goto cleanup;
             break;
         case VIR_DOMAIN_METADATA_TITLE:
             VIR_FREE(vm->def->title);
-            if (metadata &&
-                !(vm->def->title = strdup(metadata)))
-                goto no_memory;
+            if (VIR_STRDUP(vm->def->title, metadata) < 0)
+                goto cleanup;
             break;
         case VIR_DOMAIN_METADATA_ELEMENT:
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -14359,15 +14314,13 @@ qemuDomainSetMetadata(virDomainPtr dom,
         switch ((virDomainMetadataType) type) {
         case VIR_DOMAIN_METADATA_DESCRIPTION:
             VIR_FREE(persistentDef->description);
-            if (metadata &&
-                !(persistentDef->description = strdup(metadata)))
-                goto no_memory;
+            if (VIR_STRDUP(persistentDef->description, metadata) < 0)
+                goto cleanup;
             break;
         case VIR_DOMAIN_METADATA_TITLE:
             VIR_FREE(persistentDef->title);
-            if (metadata &&
-                !(persistentDef->title = strdup(metadata)))
-                goto no_memory;
+            if (VIR_STRDUP(persistentDef->title, metadata) < 0)
+                goto cleanup;
             break;
         case VIR_DOMAIN_METADATA_ELEMENT:
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -14393,9 +14346,6 @@ cleanup:
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 static char *
@@ -14453,10 +14403,7 @@ qemuDomainGetMetadata(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(ret = strdup(field))) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    ignore_value(VIR_STRDUP(ret, field));
 
 cleanup:
     if (vm)

@@ -316,8 +316,8 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
             goto error;
 #endif
     }
-    if (!(mig->listen = strdup(listenAddr)))
-        goto no_memory;
+    if (VIR_STRDUP(mig->listen, listenAddr) < 0)
+        goto error;
 
     virObjectUnref(cfg);
     return mig;
@@ -400,8 +400,8 @@ qemuMigrationCookieNew(virDomainObjPtr dom)
         name = priv->origname;
     else
         name = dom->def->name;
-    if (!(mig->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(mig->name, name) < 0)
+        goto error;
     memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
     if (!(mig->localHostname = virGetHostname()))
@@ -460,15 +460,14 @@ qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
     }
 
     if (virDomainObjGetState(dom, NULL) == VIR_DOMAIN_PAUSED) {
-        if (priv->lockState &&
-            !(mig->lockState = strdup(priv->lockState)))
+        if (VIR_STRDUP(mig->lockState, priv->lockState) < 0)
             return -1;
     } else {
         if (virDomainLockProcessInquire(driver->lockManager, dom, &mig->lockState) < 0)
             return -1;
     }
 
-    if (!(mig->lockDriver = strdup(virLockManagerPluginGetName(driver->lockManager)))) {
+    if (VIR_STRDUP(mig->lockDriver, virLockManagerPluginGetName(driver->lockManager)) < 0) {
         VIR_FREE(mig->lockState);
         return -1;
     }
@@ -2081,10 +2080,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         /* QEMU will be started with -incoming stdio
          * (which qemu_command might convert to exec:cat or fd:n)
          */
-        if (!(migrateFrom = strdup("stdio"))) {
-            virReportOOMError();
+        if (VIR_STRDUP(migrateFrom, "stdio") < 0)
             goto cleanup;
-        }
     } else {
         virQEMUCapsPtr qemuCaps = NULL;
         struct addrinfo *info = NULL;

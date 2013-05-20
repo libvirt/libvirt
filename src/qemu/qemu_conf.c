@@ -140,8 +140,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) < 0)
             goto no_memory;
 
-        if ((cfg->configBaseDir = strdup(SYSCONFDIR "/libvirt")) == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(cfg->configBaseDir, SYSCONFDIR "/libvirt") < 0)
+            goto error;
 
         if (virAsprintf(&cfg->stateDir,
                       "%s/run/libvirt/qemu", LOCALSTATEDIR) < 0)
@@ -210,19 +210,17 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         goto no_memory;
 
 
-    if (!(cfg->vncListen = strdup("127.0.0.1")))
-        goto no_memory;
+    if (VIR_STRDUP(cfg->vncListen, "127.0.0.1") < 0)
+        goto error;
 
-    if (!(cfg->vncTLSx509certdir
-          = strdup(SYSCONFDIR "/pki/libvirt-vnc")))
-        goto no_memory;
+    if (VIR_STRDUP(cfg->vncTLSx509certdir, SYSCONFDIR "/pki/libvirt-vnc") < 0)
+        goto error;
 
-    if (!(cfg->spiceListen = strdup("127.0.0.1")))
-        goto no_memory;
+    if (VIR_STRDUP(cfg->spiceListen, "127.0.0.1") < 0)
+        goto error;
 
-    if (!(cfg->spiceTLSx509certdir
-          = strdup(SYSCONFDIR "/pki/libvirt-spice")))
-        goto no_memory;
+    if (VIR_STRDUP(cfg->spiceTLSx509certdir , SYSCONFDIR "/pki/libvirt-spice") < 0)
+        goto error;
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
@@ -243,8 +241,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         }
     }
 #endif
-    if (!(cfg->bridgeHelperName = strdup("/usr/libexec/qemu-bridge-helper")))
-        goto no_memory;
+    if (VIR_STRDUP(cfg->bridgeHelperName, "/usr/libexec/qemu-bridge-helper") < 0)
+        goto error;
 
     cfg->clearEmulatorCapabilities = true;
 
@@ -350,8 +348,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     CHECK_TYPE(NAME, VIR_CONF_STRING);     \
     if (p && p->str) {                     \
         VIR_FREE(VAR);                     \
-        if (!(VAR = strdup(p->str)))       \
-            goto no_memory;                \
+        if (VIR_STRDUP(VAR, p->str) < 0)   \
+            goto cleanup;                  \
     }
 
     GET_VALUE_BOOL("vnc_auto_unix_socket", cfg->vncAutoUnixSocket);
@@ -382,16 +380,17 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             goto no_memory;
 
         for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
-            if (!(cfg->securityDriverNames[i] = strdup(pp->str)))
-                goto no_memory;
+            if (VIR_STRDUP(cfg->securityDriverNames[i], pp->str) < 0)
+                goto cleanup;
         }
         cfg->securityDriverNames[len] = NULL;
     } else {
         CHECK_TYPE("security_driver", VIR_CONF_STRING);
         if (p && p->str) {
-            if (VIR_ALLOC_N(cfg->securityDriverNames, 2) < 0 ||
-                !(cfg->securityDriverNames[0] = strdup(p->str)))
+            if (VIR_ALLOC_N(cfg->securityDriverNames, 2) < 0)
                 goto no_memory;
+            if (VIR_STRDUP(cfg->securityDriverNames[0], p->str) < 0)
+                goto cleanup;
 
             cfg->securityDriverNames[1] = NULL;
         }
@@ -518,8 +517,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                  "list of strings"));
                 goto cleanup;
             }
-            if (!(cfg->cgroupDeviceACL[i] = strdup(pp->str)))
-                goto no_memory;
+            if (VIR_STRDUP(cfg->cgroupDeviceACL[i], pp->str) < 0)
+                goto cleanup;
         }
         cfg->cgroupDeviceACL[i] = NULL;
     }
@@ -618,10 +617,9 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     for (i = 0; sec_managers[i]; i++) {
         doi = virSecurityManagerGetDOI(sec_managers[i]);
         model = virSecurityManagerGetModel(sec_managers[i]);
-        if (!(caps->host.secModels[i].model = strdup(model)))
-            goto no_memory;
-        if (!(caps->host.secModels[i].doi = strdup(doi)))
-            goto no_memory;
+        if (VIR_STRDUP(caps->host.secModels[i].model, model) < 0 ||
+            VIR_STRDUP(caps->host.secModels[i].doi, doi) < 0)
+            goto error;
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
                   "DOI \"%s\"", model, doi);
     }
@@ -1140,10 +1138,8 @@ qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntryPtr entry)
     }
 
     for (i = 0; i < entry->ref; i++) {
-        if (!(ret->domains[i] = strdup(entry->domains[i]))) {
-            virReportOOMError();
+        if (VIR_STRDUP(ret->domains[i], entry->domains[i]) < 0)
             goto cleanup;
-        }
         ret->ref++;
     }
 
@@ -1237,8 +1233,8 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
         if (!(new_entry = qemuSharedDeviceEntryCopy(entry)))
             goto cleanup;
 
-        if ((VIR_EXPAND_N(new_entry->domains, new_entry->ref, 1) < 0) ||
-            !(new_entry->domains[new_entry->ref - 1] = strdup(name))) {
+        if (VIR_EXPAND_N(new_entry->domains, new_entry->ref, 1) < 0 ||
+            VIR_STRDUP(new_entry->domains[new_entry->ref - 1], name) < 0) {
             qemuSharedDeviceEntryFree(new_entry, NULL);
             virReportOOMError();
             goto cleanup;
@@ -1249,9 +1245,9 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
     } else {
-        if ((VIR_ALLOC(entry) < 0) ||
-            (VIR_ALLOC_N(entry->domains, 1) < 0) ||
-            !(entry->domains[0] = strdup(name))) {
+        if (VIR_ALLOC(entry) < 0 ||
+            VIR_ALLOC_N(entry->domains, 1) < 0 ||
+            VIR_STRDUP(entry->domains[0], name) < 0) {
             qemuSharedDeviceEntryFree(entry, NULL);
             virReportOOMError();
             goto cleanup;

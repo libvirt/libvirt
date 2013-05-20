@@ -371,8 +371,8 @@ virQEMUCapsParseMachineTypesStr(const char *output,
         if (!(t = strchr(p, ' ')) || (next && t >= next))
             continue;
 
-        if (!(name = strndup(p, t - p)))
-            goto no_memory;
+        if (VIR_STRNDUP(name, p, t - p) < 0)
+            return -1;
 
         p = t;
         if ((t = strstr(p, "(default)")) && (!next || t < next))
@@ -383,9 +383,9 @@ virQEMUCapsParseMachineTypesStr(const char *output,
             if (!(t = strchr(p, ')')) || (next && t >= next))
                 continue;
 
-            if (!(canonical = strndup(p, t - p))) {
+            if (VIR_STRNDUP(canonical, p, t - p) < 0) {
                 VIR_FREE(name);
-                goto no_memory;
+                return -1;
             }
         }
 
@@ -393,7 +393,8 @@ virQEMUCapsParseMachineTypesStr(const char *output,
             VIR_REALLOC_N(qemuCaps->machineAliases, qemuCaps->nmachineTypes + 1) < 0) {
             VIR_FREE(name);
             VIR_FREE(canonical);
-            goto no_memory;
+            virReportOOMError();
+            return -1;
         }
         qemuCaps->nmachineTypes++;
         if (canonical) {
@@ -410,10 +411,6 @@ virQEMUCapsParseMachineTypesStr(const char *output,
         virQEMUCapsSetDefaultMachine(qemuCaps, defIdx);
 
     return 0;
-
-no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 static int
@@ -508,10 +505,8 @@ virQEMUCapsParseX86Models(const char *output,
             len -= 2;
         }
 
-        if (!(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1] = strndup(p, len))) {
-            virReportOOMError();
+        if (VIR_STRNDUP(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1], p, len) < 0)
             goto cleanup;
-        }
     } while ((p = next));
 
     ret = 0;
@@ -561,10 +556,8 @@ virQEMUCapsParsePPCModels(const char *output,
 
         len = t - p - 1;
 
-        if (!(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1] = strndup(p, len))) {
-            virReportOOMError();
+        if (VIR_STRNDUP(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1], p, len) < 0)
             goto cleanup;
-        }
     } while ((p = next));
 
     ret = 0;
@@ -1516,10 +1509,8 @@ virQEMUCapsParseDeviceStrObjectTypes(const char *str,
             virReportOOMError();
             goto cleanup;
         }
-        if (!(typelist[ntypelist-1] = strndup(tmp, end-tmp))) {
-            virReportOOMError();
+        if (VIR_STRNDUP(typelist[ntypelist - 1], tmp, end-tmp) < 0)
             goto cleanup;
-        }
     }
 
     *types = typelist;
@@ -1573,10 +1564,8 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
             virReportOOMError();
             goto cleanup;
         }
-        if (!(proplist[nproplist-1] = strndup(tmp, end-tmp))) {
-            virReportOOMError();
+        if (VIR_STRNDUP(proplist[nproplist - 1], tmp, end-tmp) < 0)
             goto cleanup;
-        }
     }
 
     *props = proplist;
@@ -1745,8 +1734,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         goto no_memory;
     ret->ncpuDefinitions = qemuCaps->ncpuDefinitions;
     for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
-        if (!(ret->cpuDefinitions[i] = strdup(qemuCaps->cpuDefinitions[i])))
-            goto no_memory;
+        if (VIR_STRDUP(ret->cpuDefinitions[i], qemuCaps->cpuDefinitions[i]) < 0)
+            goto error;
     }
 
     if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
@@ -1755,17 +1744,16 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         goto no_memory;
     ret->nmachineTypes = qemuCaps->nmachineTypes;
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (!(ret->machineTypes[i] = strdup(qemuCaps->machineTypes[i])))
-            goto no_memory;
-        if (qemuCaps->machineAliases[i] &&
-            !(ret->machineAliases[i] = strdup(qemuCaps->machineAliases[i])))
-            goto no_memory;
+        if (VIR_STRDUP(ret->machineTypes[i], qemuCaps->machineTypes[i]) < 0 ||
+            VIR_STRDUP(ret->machineAliases[i], qemuCaps->machineAliases[i]) < 0)
+            goto error;
     }
 
     return ret;
 
 no_memory:
     virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -1867,11 +1855,10 @@ unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps)
 int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
                                 const char *name)
 {
-    char *tmp = strdup(name);
-    if (!tmp) {
-        virReportOOMError();
+    char *tmp;
+
+    if (VIR_STRDUP(tmp, name) < 0)
         return -1;
-    }
     if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0) {
         VIR_FREE(tmp);
         virReportOOMError();
@@ -1908,28 +1895,27 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
     *nmachines = 0;
     *machines = NULL;
     if (VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
-        goto no_memory;
+        goto error;
     *nmachines = qemuCaps->nmachineTypes;
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         virCapsGuestMachinePtr mach;
         if (VIR_ALLOC(mach) < 0)
-            goto no_memory;
+            goto error;
         if (qemuCaps->machineAliases[i]) {
-            if (!(mach->name = strdup(qemuCaps->machineAliases[i])))
-                goto no_memory;
-            if (!(mach->canonical = strdup(qemuCaps->machineTypes[i])))
-                goto no_memory;
+            if (VIR_STRDUP(mach->name, qemuCaps->machineAliases[i]) < 0 ||
+                VIR_STRDUP(mach->canonical, qemuCaps->machineTypes[i]) < 0)
+                goto error;
         } else {
-            if (!(mach->name = strdup(qemuCaps->machineTypes[i])))
-                goto no_memory;
+            if (VIR_STRDUP(mach->name, qemuCaps->machineTypes[i]) < 0)
+                goto error;
         }
         (*machines)[i] = mach;
     }
 
     return 0;
 
-no_memory:
+error:
     virCapabilitiesFreeMachines(*machines, *nmachines);
     *nmachines = 0;
     *machines = NULL;
@@ -2110,16 +2096,9 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     }
 
     for (i = 0; i < nmachines; i++) {
-        if (machines[i]->alias) {
-            if (!(qemuCaps->machineAliases[i] = strdup(machines[i]->alias))) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
-        if (!(qemuCaps->machineTypes[i] = strdup(machines[i]->name))) {
-            virReportOOMError();
+        if (VIR_STRDUP(qemuCaps->machineAliases[i], machines[i]->alias) < 0 ||
+            VIR_STRDUP(qemuCaps->machineTypes[i], machines[i]->name) < 0)
             goto cleanup;
-        }
         if (machines[i]->isDefault)
             defIdx = i;
     }
@@ -2671,8 +2650,8 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
     struct stat sb;
     int rv;
 
-    if (!(qemuCaps->binary = strdup(binary)))
-        goto no_memory;
+    if (VIR_STRDUP(qemuCaps->binary, binary) < 0)
+        goto error;
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
@@ -2702,8 +2681,6 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
 
     return qemuCaps;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(qemuCaps);
     qemuCaps = NULL;
@@ -2753,10 +2730,8 @@ virQEMUCapsCacheNew(const char *libDir,
 
     if (!(cache->binaries = virHashCreate(10, virQEMUCapsHashDataFree)))
         goto error;
-    if (!(cache->libDir = strdup(libDir))) {
-        virReportOOMError();
+    if (VIR_STRDUP(cache->libDir, libDir) < 0)
         goto error;
-    }
 
     cache->runUid = runUid;
     cache->runGid = runGid;

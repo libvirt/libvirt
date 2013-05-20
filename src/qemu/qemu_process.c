@@ -1000,16 +1000,16 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(localAddr) < 0)
         goto no_memory;
     localAddr->family = localFamily;
-    if (!(localAddr->service = strdup(localService)) ||
-        !(localAddr->node = strdup(localNode)))
-        goto no_memory;
+    if (VIR_STRDUP(localAddr->service, localService) < 0 ||
+        VIR_STRDUP(localAddr->node, localNode) < 0)
+        goto error;
 
     if (VIR_ALLOC(remoteAddr) < 0)
         goto no_memory;
     remoteAddr->family = remoteFamily;
-    if (!(remoteAddr->service = strdup(remoteService)) ||
-        !(remoteAddr->node = strdup(remoteNode)))
-        goto no_memory;
+    if (VIR_STRDUP(remoteAddr->service, remoteService) < 0 ||
+        VIR_STRDUP(remoteAddr->node, remoteNode) < 0)
+        goto error;
 
     if (VIR_ALLOC(subject) < 0)
         goto no_memory;
@@ -1017,17 +1017,17 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
             goto no_memory;
         subject->nidentity++;
-        if (!(subject->identities[subject->nidentity-1].type = strdup("x509dname")) ||
-            !(subject->identities[subject->nidentity-1].name = strdup(x509dname)))
-            goto no_memory;
+        if (VIR_STRDUP(subject->identities[subject->nidentity-1].type, "x509dname") < 0 ||
+            VIR_STRDUP(subject->identities[subject->nidentity-1].name, x509dname) < 0)
+            goto error;
     }
     if (saslUsername) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
             goto no_memory;
         subject->nidentity++;
-        if (!(subject->identities[subject->nidentity-1].type = strdup("saslUsername")) ||
-            !(subject->identities[subject->nidentity-1].name = strdup(saslUsername)))
-            goto no_memory;
+        if (VIR_STRDUP(subject->identities[subject->nidentity-1].type, "saslUsername") < 0 ||
+            VIR_STRDUP(subject->identities[subject->nidentity-1].name, saslUsername) < 0)
+            goto error;
     }
 
     virObjectLock(vm);
@@ -1041,6 +1041,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 no_memory:
     virReportOOMError();
+error:
     if (localAddr) {
         VIR_FREE(localAddr->service);
         VIR_FREE(localAddr->node);
@@ -1480,11 +1481,8 @@ qemuProcessExtractTTYPath(const char *haystack,
      */
     while (*tmp) {
         if (c_isspace(*tmp)) {
-            *path = strndup(dev, tmp-dev);
-            if (*path == NULL) {
-                virReportOOMError();
+            if (VIR_STRNDUP(*path, dev, tmp - dev) < 0)
                 return -1;
-            }
 
             /* ... now further update offset till we get EOL */
             *offset = tmp - haystack;
@@ -1539,12 +1537,8 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
             }
 
             VIR_FREE(chr->source.data.file.path);
-            chr->source.data.file.path = strdup(path);
-
-            if (chr->source.data.file.path == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(chr->source.data.file.path, path) < 0)
                 return -1;
-            }
         }
     }
 
@@ -2666,12 +2660,12 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
     if (state == VIR_DOMAIN_PAUSED && running) {
         newState = VIR_DOMAIN_RUNNING;
         newReason = VIR_DOMAIN_RUNNING_UNPAUSED;
-        msg = strdup("was unpaused");
+        ignore_value(VIR_STRDUP_QUIET(msg, "was unpaused"));
     } else if (state == VIR_DOMAIN_RUNNING && !running) {
         if (reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN) {
             newState = VIR_DOMAIN_SHUTDOWN;
             newReason = VIR_DOMAIN_SHUTDOWN_UNKNOWN;
-            msg = strdup("shutdown");
+            ignore_value(VIR_STRDUP_QUIET(msg, "shutdown"));
         } else {
             newState = VIR_DOMAIN_PAUSED;
             newReason = reason;
@@ -2681,19 +2675,14 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
     } else if (state == VIR_DOMAIN_SHUTOFF && running) {
         newState = VIR_DOMAIN_RUNNING;
         newReason = VIR_DOMAIN_RUNNING_BOOTED;
-        msg = strdup("finished booting");
+        ignore_value(VIR_STRDUP_QUIET(msg, "finished booting"));
     }
 
     if (newState != VIR_DOMAIN_NOSTATE) {
-        if (!msg) {
-            virReportOOMError();
-            return -1;
-        }
-
         VIR_DEBUG("Domain %s %s while its monitor was disconnected;"
                   " changing state to %s (%s)",
                   vm->def->name,
-                  msg,
+                  NULLSTR(msg),
                   virDomainStateTypeToString(newState),
                   virDomainStateReasonToString(newState, newReason));
         VIR_FREE(msg);
@@ -3476,13 +3465,10 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
                 graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
-                if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
-                    graphics->listens[0].address = strdup(cfg->vncListen);
-                else
-                    graphics->listens[0].address = strdup(cfg->spiceListen);
-                if (!graphics->listens[0].address) {
+                if (VIR_STRDUP(graphics->listens[0].address,
+                               graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
+                               cfg->vncListen : cfg->spiceListen) < 0) {
                     VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
-                    virReportOOMError();
                     goto cleanup;
                 }
             }
@@ -4257,9 +4243,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     VIR_FREE(priv->pidfile);
-    if (pidfile &&
-        !(priv->pidfile = strdup(pidfile)))
-        goto no_memory;
+    if (VIR_STRDUP(priv->pidfile, pidfile) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Detect security driver config");
     sec_managers = virSecurityManagerGetNested(driver->securityManager);
@@ -4280,11 +4265,11 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               vm->def, vm->pid, seclabel) < 0)
             goto cleanup;
 
-        if (!(seclabeldef->model = strdup(model)))
-            goto no_memory;
+        if (VIR_STRDUP(seclabeldef->model, model) < 0)
+            goto cleanup;
 
-        if (!(seclabeldef->label = strdup(seclabel->label)))
-            goto no_memory;
+        if (VIR_STRDUP(seclabeldef->label, seclabel->label) < 0)
+            goto cleanup;
         VIR_FREE(seclabel);
     }
 

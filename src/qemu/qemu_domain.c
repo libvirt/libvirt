@@ -727,14 +727,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !dev->data.net->model) {
-        if (def->os.arch == VIR_ARCH_S390 ||
-            def->os.arch == VIR_ARCH_S390X)
-            dev->data.net->model = strdup("virtio");
-        else
-            dev->data.net->model = strdup("rtl8139");
-
-        if (!dev->data.net->model)
-            goto no_memory;
+        if (VIR_STRDUP(dev->data.net->model,
+                       def->os.arch == VIR_ARCH_S390 ||
+                       def->os.arch == VIR_ARCH_S390X ? "virtio" : "rtl8139") < 0)
+            goto cleanup;
     }
 
     /* set default disk types and drivers */
@@ -758,8 +754,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             } else {
                 /* default driver if probing is forbidden */
                 if (!disk->driverName &&
-                    !(disk->driverName = strdup("qemu")))
-                        goto no_memory;
+                    VIR_STRDUP(disk->driverName, "qemu") < 0)
+                        goto cleanup;
 
                 /* default disk format for drives */
                 if (disk->format == VIR_STORAGE_FILE_NONE &&
@@ -801,8 +797,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         if (virAsprintf(&dev->data.chr->source.data.nix.path,
                         "%s/channel/target/%s.%s",
                         cfg->libDir, def->name,
-                        dev->data.chr->target.name) < 0)
-            goto no_memory;
+                        dev->data.chr->target.name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
         dev->data.chr->source.data.nix.listen = true;
     }
 
@@ -811,10 +809,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 cleanup:
     virObjectUnref(cfg);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 

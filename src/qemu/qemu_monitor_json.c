@@ -201,11 +201,9 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
 
         if (nl) {
             int got = nl - (data + used);
-            char *line = strndup(data + used, got);
-            if (!line) {
-                virReportOOMError();
+            char *line;
+            if (VIR_STRNDUP(line, data + used, got) < 0)
                 return -1;
-            }
             used += got + strlen(LINE_ENDING);
             line[got] = '\0'; /* kill \n */
             if (qemuMonitorJSONIOProcessLine(mon, line, msg) < 0) {
@@ -958,15 +956,9 @@ qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
     if (reply_str) {
         const char *data;
 
-        if ((data = virJSONValueGetString(obj)))
-            *reply_str = strdup(data);
-        else
-            *reply_str = strdup("");
-
-        if (!*reply_str) {
-            virReportOOMError();
+        data = virJSONValueGetString(obj);
+        if (VIR_STRDUP(*reply_str, data ? data : "") < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -2946,11 +2938,9 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
         }
 
         if (STRPREFIX(type, "pty:")) {
-            char *path = strdup(type + strlen("pty:"));
-            if (!path) {
-                virReportOOMError();
+            char *path;
+            if (VIR_STRDUP(path, type + strlen("pty:")) < 0)
                 goto cleanup;
-            }
 
             if (virHashAddEntry(paths, id, path) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
@@ -3925,10 +3915,8 @@ int qemuMonitorJSONGetVersion(qemuMonitorPtr mon,
                            _("query-version reply was missing 'package' version"));
             goto cleanup;
         }
-        if (!(*package = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(*package, tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -4002,10 +3990,8 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(info->name = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(info->name, tmp) < 0)
             goto cleanup;
-        }
 
         if (virJSONValueObjectHasKey(child, "is-default") &&
             virJSONValueObjectGetBoolean(child, "is-default", &info->isDefault) < 0) {
@@ -4020,10 +4006,8 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
                                _("query-machines reply has malformed 'alias' data"));
                 goto cleanup;
             }
-            if (!(info->alias = strdup(tmp))) {
-                virReportOOMError();
+            if (VIR_STRDUP(info->alias, tmp) < 0)
                 goto cleanup;
-            }
         }
     }
 
@@ -4108,10 +4092,8 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(cpulist[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(cpulist[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
@@ -4180,10 +4162,8 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(commandlist[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(commandlist[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
@@ -4257,10 +4237,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(eventlist[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(eventlist[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
@@ -4500,10 +4478,8 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(typelist[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(typelist[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
@@ -4580,10 +4556,8 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (!(proplist[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(proplist[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
@@ -4631,10 +4605,7 @@ qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon)
         goto cleanup;
     }
 
-    if (!(ret = strdup(arch))) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    ignore_value(VIR_STRDUP(ret, arch));
 
 cleanup:
     virJSONValueFree(cmd);
@@ -4928,10 +4899,8 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
             goto cleanup;
         }
 
-        if (!(list[i] = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(list[i], tmp) < 0)
             goto cleanup;
-        }
     }
 
     ret = n;
