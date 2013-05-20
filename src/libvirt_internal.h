@@ -110,6 +110,11 @@ enum {
      * Support for offline migration.
      */
     VIR_DRV_FEATURE_MIGRATION_OFFLINE = 12,
+
+    /*
+     * Support for migration parameters.
+     */
+    VIR_DRV_FEATURE_MIGRATION_PARAMS = 13,
 };
 
 
@@ -221,4 +226,58 @@ int virDomainMigrateConfirm3(virDomainPtr domain,
                              unsigned long flags,
                              int restart); /* Restart the src VM */
 
+char *virDomainMigrateBegin3Params(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   char **cookieout,
+                                   int *cookieoutlen,
+                                   unsigned int flags);
+
+int virDomainMigratePrepare3Params(virConnectPtr dconn,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   char **cookieout,
+                                   int *cookieoutlen,
+                                   char **uri_out,
+                                   unsigned int flags);
+
+int virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
+                                         virStreamPtr st,
+                                         virTypedParameterPtr params,
+                                         int nparams,
+                                         const char *cookiein,
+                                         int cookieinlen,
+                                         char **cookieout,
+                                         int *cookieoutlen,
+                                         unsigned int flags);
+
+int virDomainMigratePerform3Params(virDomainPtr domain,
+                                   const char *dconnuri,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   char **cookieout,
+                                   int *cookieoutlen,
+                                   unsigned int flags);
+
+virDomainPtr virDomainMigrateFinish3Params(virConnectPtr dconn,
+                                           virTypedParameterPtr params,
+                                           int nparams,
+                                           const char *cookiein,
+                                           int cookieinlen,
+                                           char **cookieout,
+                                           int *cookieoutlen,
+                                           unsigned int flags,
+                                           int cancelled);
+
+int virDomainMigrateConfirm3Params(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   unsigned int flags,
+                                   int cancelled);
 #endif

@@ -2744,6 +2744,70 @@ struct remote_domain_fstrim_args {
     unsigned int flags;
 };
 
+struct remote_domain_migrate_begin3_params_args {
+    remote_nonnull_domain dom;
+    remote_typed_param params<>;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_begin3_params_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_nonnull_string xml;
+};
+
+struct remote_domain_migrate_prepare3_params_args {
+    remote_typed_param params<>;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_prepare3_params_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_string uri_out;
+};
+
+struct remote_domain_migrate_prepare_tunnel3_params_args {
+    remote_typed_param params<>;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_prepare_tunnel3_params_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_perform3_params_args {
+    remote_nonnull_domain dom;
+    remote_string dconnuri;
+    remote_typed_param params<>;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_perform3_params_ret {
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_finish3_params_args {
+    remote_typed_param params<>;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned int flags;
+    int cancelled;
+};
+
+struct remote_domain_migrate_finish3_params_ret {
+    remote_nonnull_domain dom;
+    opaque cookie_out<REMOTE_MIGRATE_COOKIE_MAX>;
+};
+
+struct remote_domain_migrate_confirm3_params_args {
+    remote_nonnull_domain dom;
+    remote_typed_param params<>;
+    opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
+    unsigned int flags;
+    int cancelled;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -4840,6 +4904,46 @@ enum remote_procedure {
      * @generate: server
      * @acl: node_device:dettach
      */
-    REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301
+    REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3_PARAMS = 302,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     * @acl: domain:start
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3_PARAMS = 303,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     * @acl: domain:start
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS = 304,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3_PARAMS = 305,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_FINISH3_PARAMS = 306,
+
+    /**
+     * @generate: none
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3_PARAMS = 307
 
 };

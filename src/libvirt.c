@@ -6547,6 +6547,330 @@ error:
 }
 
 
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+char *
+virDomainMigrateBegin3Params(virDomainPtr domain,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, "
+                     "cookieout=%p, cookieoutlen=%p, flags=%x",
+                     params, nparams, cookieout, cookieoutlen, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateBegin3Params) {
+        char *xml;
+        xml = conn->driver->domainMigrateBegin3Params(domain, params, nparams,
+                                                      cookieout, cookieoutlen,
+                                                      flags);
+        VIR_DEBUG("xml %s", NULLSTR(xml));
+        if (!xml)
+            goto error;
+        return xml;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePrepare3Params(virConnectPtr dconn,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               const char *cookiein,
+                               int cookieinlen,
+                               char **cookieout,
+                               int *cookieoutlen,
+                               char **uri_out,
+                               unsigned int flags)
+{
+    VIR_DEBUG("dconn=%p, params=%p, nparams=%d, cookiein=%p, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, uri_out=%p, flags=%x",
+              dconn, params, nparams, cookiein, cookieinlen,
+              cookieout, cookieoutlen, uri_out, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(dconn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dconn->driver->domainMigratePrepare3Params) {
+        int ret;
+        ret = dconn->driver->domainMigratePrepare3Params(dconn, params, nparams,
+                                                         cookiein, cookieinlen,
+                                                         cookieout, cookieoutlen,
+                                                         uri_out, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dconn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
+                                     virStreamPtr st,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     const char *cookiein,
+                                     int cookieinlen,
+                                     char **cookieout,
+                                     int *cookieoutlen,
+                                     unsigned int flags)
+
+{
+    VIR_DEBUG("conn=%p, stream=%p, params=%p, nparams=%d, cookiein=%p, "
+              "cookieinlen=%d, cookieout=%p, cookieoutlen=%p, flags=%x",
+              conn, st, params, nparams, cookiein, cookieinlen,
+              cookieout, cookieoutlen, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn != st->conn) {
+        virReportInvalidArg(conn,
+                            _("conn in %s must match stream connection"),
+                            __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigratePrepareTunnel3Params) {
+        int rv;
+        rv = conn->driver->domainMigratePrepareTunnel3Params(
+                conn, st, params, nparams, cookiein, cookieinlen,
+                cookieout, cookieoutlen, flags);
+        if (rv < 0)
+            goto error;
+        return rv;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePerform3Params(virDomainPtr domain,
+                               const char *dconnuri,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               const char *cookiein,
+                               int cookieinlen,
+                               char **cookieout,
+                               int *cookieoutlen,
+                               unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, cookiein=%p, "
+                     "cookieinlen=%d, cookieout=%p, cookieoutlen=%p, flags=%x",
+                     NULLSTR(dconnuri), params, nparams, cookiein,
+                     cookieinlen, cookieout, cookieoutlen, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigratePerform3Params) {
+        int ret;
+        ret = conn->driver->domainMigratePerform3Params(
+                domain, dconnuri, params, nparams, cookiein, cookieinlen,
+                cookieout, cookieoutlen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+virDomainPtr
+virDomainMigrateFinish3Params(virConnectPtr dconn,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              unsigned int flags,
+                              int cancelled)
+{
+    VIR_DEBUG("dconn=%p, params=%p, nparams=%d, cookiein=%p, cookieinlen=%d, "
+              "cookieout=%p, cookieoutlen=%p, flags=%x, cancelled=%d",
+              dconn, params, nparams, cookiein, cookieinlen, cookieout,
+              cookieoutlen, flags, cancelled);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(dconn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dconn->driver->domainMigrateFinish3Params) {
+        virDomainPtr ret;
+        ret = dconn->driver->domainMigrateFinish3Params(
+                dconn, params, nparams, cookiein, cookieinlen,
+                cookieout, cookieoutlen, flags, cancelled);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dconn);
+    return NULL;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigrateConfirm3Params(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               const char *cookiein,
+                               int cookieinlen,
+                               unsigned int flags,
+                               int cancelled)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, cookiein=%p, "
+                     "cookieinlen=%d, flags=%x, cancelled=%d",
+                     params, nparams, cookiein, cookieinlen, flags, cancelled);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateConfirm3Params) {
+        int ret;
+        ret = conn->driver->domainMigrateConfirm3Params(
+                domain, params, nparams,
+                cookiein, cookieinlen, flags, cancelled);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
 /**
  * virNodeGetInfo:
  * @conn: pointer to the hypervisor connection

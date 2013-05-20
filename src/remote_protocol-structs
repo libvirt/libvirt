@@ -2192,6 +2192,107 @@ struct remote_domain_fstrim_args {
         uint64_t                   minimum;
         u_int                      flags;
 };
+struct remote_domain_migrate_begin3_params_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
+struct remote_domain_migrate_begin3_params_ret {
+        struct {
+                u_int              cookie_out_len;
+                char *             cookie_out_val;
+        } cookie_out;
+        remote_nonnull_string      xml;
+};
+struct remote_domain_migrate_prepare3_params_args {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        struct {
+                u_int              cookie_in_len;
+                char *             cookie_in_val;
+        } cookie_in;
+        u_int                      flags;
+};
+struct remote_domain_migrate_prepare3_params_ret {
+        struct {
+                u_int              cookie_out_len;
+                char *             cookie_out_val;
+        } cookie_out;
+        remote_string              uri_out;
+};
+struct remote_domain_migrate_prepare_tunnel3_params_args {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        struct {
+                u_int              cookie_in_len;
+                char *             cookie_in_val;
+        } cookie_in;
+        u_int                      flags;
+};
+struct remote_domain_migrate_prepare_tunnel3_params_ret {
+        struct {
+                u_int              cookie_out_len;
+                char *             cookie_out_val;
+        } cookie_out;
+};
+struct remote_domain_migrate_perform3_params_args {
+        remote_nonnull_domain      dom;
+        remote_string              dconnuri;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        struct {
+                u_int              cookie_in_len;
+                char *             cookie_in_val;
+        } cookie_in;
+        u_int                      flags;
+};
+struct remote_domain_migrate_perform3_params_ret {
+        struct {
+                u_int              cookie_out_len;
+                char *             cookie_out_val;
+        } cookie_out;
+};
+struct remote_domain_migrate_finish3_params_args {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        struct {
+                u_int              cookie_in_len;
+                char *             cookie_in_val;
+        } cookie_in;
+        u_int                      flags;
+        int                        cancelled;
+};
+struct remote_domain_migrate_finish3_params_ret {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              cookie_out_len;
+                char *             cookie_out_val;
+        } cookie_out;
+};
+struct remote_domain_migrate_confirm3_params_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        struct {
+                u_int              cookie_in_len;
+                char *             cookie_in_val;
+        } cookie_in;
+        u_int                      flags;
+        int                        cancelled;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2494,4 +2595,10 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MIGRATE_GET_COMPRESSION_CACHE = 299,
         REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300,
         REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301,
+        REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3_PARAMS = 302,
+        REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3_PARAMS = 303,
+        REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS = 304,
+        REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3_PARAMS = 305,
+        REMOTE_PROC_DOMAIN_MIGRATE_FINISH3_PARAMS = 306,
+        REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3_PARAMS = 307,
 };

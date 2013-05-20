@@ -885,7 +885,7 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
     virTypedParameterPtr params = NULL;
 
     /* Check the length of the returned list carefully. */
-    if (args_params_len > limit) {
+    if (limit && args_params_len > limit) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
@@ -4676,6 +4676,335 @@ cleanup:
         virDomainFree(dom);
     return rv;
 }
+
+static int
+remoteDispatchDomainMigrateBegin3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_begin3_params_args *args,
+        remote_domain_migrate_begin3_params_ret *ret)
+{
+    char *xml = NULL;
+    virDomainPtr dom = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    if (!(xml = virDomainMigrateBegin3Params(dom, params, nparams,
+                                             &cookieout, &cookieoutlen,
+                                             args->flags)))
+        goto cleanup;
+
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+    ret->xml = xml;
+
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+static int
+remoteDispatchDomainMigratePrepare3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_prepare3_params_args *args,
+        remote_domain_migrate_prepare3_params_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    char **uri_out;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    /* Wacky world of XDR ... */
+    if (VIR_ALLOC(uri_out) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virDomainMigratePrepare3Params(priv->conn, params, nparams,
+                                       args->cookie_in.cookie_in_val,
+                                       args->cookie_in.cookie_in_len,
+                                       &cookieout, &cookieoutlen,
+                                       uri_out, args->flags) < 0)
+        goto cleanup;
+
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+    ret->uri_out = !*uri_out ? NULL : uri_out;
+
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+        VIR_FREE(uri_out);
+    }
+    return rv;
+}
+
+static int
+remoteDispatchDomainMigratePrepareTunnel3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client,
+        virNetMessagePtr msg,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_prepare_tunnel3_params_args *args,
+        remote_domain_migrate_prepare_tunnel3_params_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    virStreamPtr st = NULL;
+    daemonClientStreamPtr stream = NULL;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)) ||
+        !(stream = daemonCreateClientStream(client, st, remoteProgram,
+                                            &msg->header)))
+        goto cleanup;
+
+    if (virDomainMigratePrepareTunnel3Params(priv->conn, st, params, nparams,
+                                             args->cookie_in.cookie_in_val,
+                                             args->cookie_in.cookie_in_len,
+                                             &cookieout, &cookieoutlen,
+                                             args->flags) < 0)
+        goto cleanup;
+
+    if (daemonAddClientStream(client, stream, false) < 0)
+        goto cleanup;
+
+    ret->cookie_out.cookie_out_val = cookieout;
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+        VIR_FREE(cookieout);
+        if (stream) {
+            virStreamAbort(st);
+            daemonFreeClientStream(client, stream);
+        } else {
+            virStreamFree(st);
+        }
+    }
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigratePerform3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_perform3_params_args *args,
+        remote_domain_migrate_perform3_params_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    virDomainPtr dom = NULL;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    char *dconnuri;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    dconnuri = args->dconnuri == NULL ? NULL : *args->dconnuri;
+
+    if (virDomainMigratePerform3Params(dom, dconnuri, params, nparams,
+                                       args->cookie_in.cookie_in_val,
+                                       args->cookie_in.cookie_in_len,
+                                       &cookieout, &cookieoutlen,
+                                       args->flags) < 0)
+        goto cleanup;
+
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigrateFinish3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_finish3_params_args *args,
+        remote_domain_migrate_finish3_params_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    virDomainPtr dom = NULL;
+    char *cookieout = NULL;
+    int cookieoutlen = 0;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    dom = virDomainMigrateFinish3Params(priv->conn, params, nparams,
+                                        args->cookie_in.cookie_in_val,
+                                        args->cookie_in.cookie_in_len,
+                                        &cookieout, &cookieoutlen,
+                                        args->flags, args->cancelled);
+    if (!dom)
+        goto cleanup;
+
+    make_nonnull_domain(&ret->dom, dom);
+
+    ret->cookie_out.cookie_out_len = cookieoutlen;
+    ret->cookie_out.cookie_out_val = cookieout;
+
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0) {
+        virNetMessageSaveError(rerr);
+        VIR_FREE(cookieout);
+    }
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainMigrateConfirm3Params(
+        virNetServerPtr server ATTRIBUTE_UNUSED,
+        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+        virNetMessageErrorPtr rerr,
+        remote_domain_migrate_confirm3_params_args *args)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    virDomainPtr dom = NULL;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
+                                                    args->params.params_len,
+                                                    0, &nparams)))
+        goto cleanup;
+
+    if (virDomainMigrateConfirm3Params(dom, params, nparams,
+                                       args->cookie_in.cookie_in_val,
+                                       args->cookie_in.cookie_in_len,
+                                       args->flags, args->cancelled) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
 
 /*----- Helpers. -----*/
 

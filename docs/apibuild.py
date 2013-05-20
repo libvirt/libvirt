@@ -70,6 +70,12 @@ ignored_functions = {
   "virTypedParameterToString": "internal function in virtypedparam.c",
   "virTypedParamsCheck": "internal function in virtypedparam.c",
   "virTypedParamsCopy": "internal function in virtypedparam.c",
+  "virDomainMigrateBegin3Params": "private function for migration",
+  "virDomainMigrateFinish3Params": "private function for migration",
+  "virDomainMigratePerform3Params": "private function for migration",
+  "virDomainMigratePrepare3Params": "private function for migration",
+  "virDomainMigrateConfirm3Params": "private function for migration",
+  "virDomainMigratePrepareTunnel3Params": "private function for tunnelled migration",
 }
 
 ignored_macros = {

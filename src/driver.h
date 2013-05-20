@@ -1045,6 +1045,67 @@ typedef int
                                 int **fdlist,
                                 unsigned int flags);
 
+typedef char *
+(*virDrvDomainMigrateBegin3Params)(virDomainPtr domain,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   char **cookieout,
+                                   int *cookieoutlen,
+                                   unsigned int flags);
+
+typedef int
+(*virDrvDomainMigratePrepare3Params)(virConnectPtr dconn,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     const char *cookiein,
+                                     int cookieinlen,
+                                     char **cookieout,
+                                     int *cookieoutlen,
+                                     char **uri_out,
+                                     unsigned int flags);
+
+typedef int
+(*virDrvDomainMigratePrepareTunnel3Params)(virConnectPtr dconn,
+                                           virStreamPtr st,
+                                           virTypedParameterPtr params,
+                                           int nparams,
+                                           const char *cookiein,
+                                           int cookieinlen,
+                                           char **cookieout,
+                                           int *cookieoutlen,
+                                           unsigned int flags);
+
+typedef int
+(*virDrvDomainMigratePerform3Params)(virDomainPtr dom,
+                                     const char *dconnuri,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     const char *cookiein,
+                                     int cookieinlen,
+                                     char **cookieout,
+                                     int *cookieoutlen,
+                                     unsigned int flags);
+
+typedef virDomainPtr
+(*virDrvDomainMigrateFinish3Params)(virConnectPtr dconn,
+                                    virTypedParameterPtr params,
+                                    int nparams,
+                                    const char *cookiein,
+                                    int cookieinlen,
+                                    char **cookieout,
+                                    int *cookieoutlen,
+                                    unsigned int flags,
+                                    int cancelled);
+
+typedef int
+(*virDrvDomainMigrateConfirm3Params)(virDomainPtr domain,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     const char *cookiein,
+                                     int cookieinlen,
+                                     unsigned int flags,
+                                     int cancelled);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -1246,6 +1307,12 @@ struct _virDriver {
     virDrvDomainFSTrim domainFSTrim;
     virDrvDomainSendProcessSignal domainSendProcessSignal;
     virDrvDomainLxcOpenNamespace domainLxcOpenNamespace;
+    virDrvDomainMigrateBegin3Params domainMigrateBegin3Params;
+    virDrvDomainMigratePrepare3Params domainMigratePrepare3Params;
+    virDrvDomainMigratePrepareTunnel3Params domainMigratePrepareTunnel3Params;
+    virDrvDomainMigratePerform3Params domainMigratePerform3Params;
+    virDrvDomainMigrateFinish3Params domainMigrateFinish3Params;
+    virDrvDomainMigrateConfirm3Params domainMigrateConfirm3Params;
 };
 
 

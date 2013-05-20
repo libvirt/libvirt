@@ -169,6 +169,13 @@ $apis{virDomainMigratePerform3} = "0.9.2";
 $apis{virDomainMigrateFinish3} = "0.9.2";
 $apis{virDomainMigrateConfirm3} = "0.9.2";
 
+$apis{virDomainMigrateBegin3Params} = "1.1.0";
+$apis{virDomainMigratePrepare3Params} = "1.1.0";
+$apis{virDomainMigratePrepareTunnel3Params} = "1.1.0";
+$apis{virDomainMigratePerform3Params} = "1.1.0";
+$apis{virDomainMigrateFinish3Params} = "1.1.0";
+$apis{virDomainMigrateConfirm3Params} = "1.1.0";
+
 
 
 # Now we want to get the mapping between public APIs
