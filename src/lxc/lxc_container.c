@@ -1940,17 +1940,13 @@ static int lxcContainerChild(void *data)
     root = virDomainGetRootFilesystem(vmDef);
 
     if (argv->nttyPaths) {
-        if (root) {
-            const char *tty = argv->ttyPaths[0];
-            if (STRPREFIX(tty, "/dev/pts/"))
-                tty += strlen("/dev/pts/");
-            if (virAsprintf(&ttyPath, "%s/%s.devpts/%s",
-                            LXC_STATE_DIR, vmDef->name, tty) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else if (VIR_STRDUP(ttyPath, argv->ttyPaths[0]) < 0) {
-                goto cleanup;
+        const char *tty = argv->ttyPaths[0];
+        if (STRPREFIX(tty, "/dev/pts/"))
+            tty += strlen("/dev/pts/");
+        if (virAsprintf(&ttyPath, "%s/%s.devpts/%s",
+                        LXC_STATE_DIR, vmDef->name, tty) < 0) {
+            virReportOOMError();
+            goto cleanup;
         }
     } else if (VIR_STRDUP(ttyPath, "/dev/null") < 0) {
             goto cleanup;

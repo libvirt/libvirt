@@ -1280,21 +1280,10 @@ cleanup:
 static int
 virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 {
-    virDomainFSDefPtr root = virDomainGetRootFilesystem(ctrl->def);
     char *mount_options = NULL;
     char *opts = NULL;
     char *devpts = NULL;
     int ret = -1;
-
-    if (!root) {
-        if (ctrl->nconsoles != 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Expected exactly one console, but got %zu"),
-                           ctrl->nconsoles);
-            return -1;
-        }
-        return 0;
-    }
 
     VIR_DEBUG("Setting up private /dev/pts");
 
