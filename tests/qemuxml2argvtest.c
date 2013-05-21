@@ -263,13 +263,13 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
     };
     size_t i;
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(newModels) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(newModels); i++) {
         if (virQEMUCapsAddCPUDefinition(caps, newModels[i]) < 0)
             return -1;
     }
     if (skipLegacy)
         return 0;
-    for (i = 0 ; i < ARRAY_CARDINALITY(legacyModels) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(legacyModels); i++) {
         if (virQEMUCapsAddCPUDefinition(caps, legacyModels[i]) < 0)
             return -1;
     }

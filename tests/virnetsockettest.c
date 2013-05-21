@@ -86,7 +86,7 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
 
     freeifaddrs(ifaddr);
 
-    for (i = 0 ; i < 50 ; i++) {
+    for (i = 0; i < 50; i++) {
         int only = 1;
         if ((s4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
             goto cleanup;
@@ -165,7 +165,7 @@ static int testSocketTCPAccept(const void *opaque)
     if (virNetSocketNewListenTCP(data->lnode, portstr, &lsock, &nlsock) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < nlsock ; i++) {
+    for (i = 0; i < nlsock; i++) {
         if (virNetSocketListen(lsock[i], 0) < 0)
             goto cleanup;
     }
@@ -175,7 +175,7 @@ static int testSocketTCPAccept(const void *opaque)
 
     virObjectUnref(csock);
 
-    for (i = 0 ; i < nlsock ; i++) {
+    for (i = 0; i < nlsock; i++) {
         if (virNetSocketAccept(lsock[i], &ssock) != -1 && ssock) {
             char c = 'a';
             if (virNetSocketWrite(ssock, &c, 1) != -1 &&
@@ -192,7 +192,7 @@ static int testSocketTCPAccept(const void *opaque)
 
 cleanup:
     virObjectUnref(ssock);
-    for (i = 0 ; i < nlsock ; i++)
+    for (i = 0; i < nlsock; i++)
         virObjectUnref(lsock[i]);
     VIR_FREE(lsock);
     return ret;
@@ -346,7 +346,7 @@ static int testSocketCommandNormal(const void *data ATTRIBUTE_UNUSED)
     if (virNetSocketRead(csock, buf, sizeof(buf)) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < sizeof(buf) ; i++)
+    for (i = 0; i < sizeof(buf); i++)
         if (buf[i] != '\0')
             goto cleanup;
 

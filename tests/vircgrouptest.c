@@ -49,7 +49,7 @@ static int validateCgroup(virCgroupPtr cgroup,
         return -1;
     }
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (STRNEQ_NULLABLE(expectMountPoint[i],
                             cgroup->controllers[i].mountPoint)) {
             fprintf(stderr, "Wrong mount '%s', expected '%s' for '%s'\n",

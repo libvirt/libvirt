@@ -24,7 +24,7 @@ static void printMismatchedFlags(virQEMUCapsPtr got,
 {
     int i;
 
-    for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
+    for (i = 0; i < QEMU_CAPS_LAST; i++) {
         bool gotFlag = virQEMUCapsGet(got, i);
         bool expectFlag = virQEMUCapsGet(expect, i);
         if (gotFlag && !expectFlag)

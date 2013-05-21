@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     int failConnect = 0; /* Exit -1, with no data on stdout, msg on stderr */
     int dieEarly = 0;    /* Exit -1, with partial data on stdout, msg on stderr */
 
-    for (i = 1 ; i < argc ; i++) {
+    for (i = 1; i < argc; i++) {
         if (STREQ(argv[i], "nosuchhost"))
             failConnect = 1;
         else if (STREQ(argv[i], "crashinghost"))
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    for (i = 1 ; i < argc ; i++)
+    for (i = 1; i < argc; i++)
         printf("%s%c", argv[i], i == (argc -1) ? '\n' : ' ');
 
     return 0;

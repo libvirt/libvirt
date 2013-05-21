@@ -139,7 +139,7 @@ mymain(void)
     if (virInitialize() < 0)
         return EXIT_FAILURE;
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(nodeData); i++)
+    for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
       if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
         ret = -1;
 

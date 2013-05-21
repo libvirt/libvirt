@@ -60,7 +60,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
         VIR_ALLOC_N(buf, PATTERN_LEN) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < PATTERN_LEN ; i++)
+    for (i = 0; i < PATTERN_LEN; i++)
         pattern[i] = i;
 
     if (virAsprintf(&file, "%s/input.data", scratchdir) < 0)
@@ -69,7 +69,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
     if ((fd = open(file, O_CREAT|O_WRONLY|O_EXCL, 0600)) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < 10 ; i++) {
+    for (i = 0; i < 10; i++) {
         if (safewrite(fd, pattern, PATTERN_LEN) != PATTERN_LEN)
             goto cleanup;
     }
@@ -88,7 +88,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
                             O_RDONLY) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < 10 ; i++) {
+    for (i = 0; i < 10; i++) {
         size_t offset = 0;
         size_t want;
         if (i == 0)
@@ -192,7 +192,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
         VIR_ALLOC_N(buf, PATTERN_LEN) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < PATTERN_LEN ; i++)
+    for (i = 0; i < PATTERN_LEN; i++)
         pattern[i] = i;
 
     if (virAsprintf(&file, "%s/input.data", scratchdir) < 0)
@@ -209,7 +209,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
                               O_WRONLY, 0600) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < 10 ; i++) {
+    for (i = 0; i < 10; i++) {
         size_t offset = 0;
         size_t want;
         if (i == 0)
@@ -247,7 +247,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
     if ((fd = open(file, O_RDONLY)) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < 10 ; i++) {
+    for (i = 0; i < 10; i++) {
         size_t want;
         if (i == 9)
             want = PATTERN_LEN / 2;
@@ -261,7 +261,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
 
         if (i == 0) {
             size_t j;
-            for (j = 0 ; j < (PATTERN_LEN / 2) ; j++) {
+            for (j = 0; j < (PATTERN_LEN / 2); j++) {
                 if (buf[j] != 0) {
                     fprintf(stderr, "Mismatched pattern data iteration %zu\n", i);
                     goto cleanup;

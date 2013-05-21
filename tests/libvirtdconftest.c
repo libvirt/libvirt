@@ -223,7 +223,7 @@ mymain(void)
         goto cleanup;
     }
     VIR_DEBUG("Initial config [%s]", filedata);
-    for (i = 0 ; params[i] != 0 ; i++) {
+    for (i = 0; params[i] != 0; i++) {
         const struct testCorruptData data = { params, filedata, filename, i };
         if (virtTestRun("Test corruption", 1, testCorrupt, &data) < 0)
             ret = -1;

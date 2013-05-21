@@ -92,7 +92,7 @@ static int testURIParse(const void *args)
         goto cleanup;
     }
 
-    for (i = 0 ; data->params && data->params[i].name && i < uri->paramsCount ; i++) {
+    for (i = 0; data->params && data->params[i].name && i < uri->paramsCount; i++) {
         if (!STREQ_NULLABLE(data->params[i].name, uri->params[i].name)) {
             VIR_DEBUG("Expected param name %zu '%s', actual '%s'",
                       i, data->params[i].name, uri->params[i].name);

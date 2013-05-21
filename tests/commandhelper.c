@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     if (!log)
         goto error;
 
-    for (i = 1 ; i < argc ; i++) {
+    for (i = 1; i < argc; i++) {
         fprintf(log, "ARG:%s\n", argv[i]);
     }
 
@@ -88,14 +88,14 @@ int main(int argc, char **argv) {
     }
     qsort(newenv, n, sizeof(newenv[0]), envsort);
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         /* Ignore the variables used to instruct the loader into
          * behaving differently, as they could throw the tests off. */
         if (!STRPREFIX(newenv[i], "LD_"))
             fprintf(log, "ENV:%s\n", newenv[i]);
     }
 
-    for (i = 0 ; i < sysconf(_SC_OPEN_MAX) ; i++) {
+    for (i = 0; i < sysconf(_SC_OPEN_MAX); i++) {
         int f;
         int closed;
         if (i == fileno(log))

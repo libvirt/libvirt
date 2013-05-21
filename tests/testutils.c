@@ -420,7 +420,7 @@ int virtTestDifferenceBin(FILE *stream,
 
     if (virTestGetDebug() < 2) {
         /* Skip to first character where they differ */
-        for (i = 0 ; i < length ; i++) {
+        for (i = 0; i < length; i++) {
             if (expect[i] != actual[i]) {
                 start = i;
                 break;
@@ -428,7 +428,7 @@ int virtTestDifferenceBin(FILE *stream,
         }
 
         /* Work backwards to last character where they differ */
-        for (i = (length -1) ; i >= 0 ; i--) {
+        for (i = (length -1); i >= 0; i--) {
             if (expect[i] != actual[i]) {
                 end = i;
                 break;
@@ -443,14 +443,14 @@ int virtTestDifferenceBin(FILE *stream,
 
     /* Show the trimmed differences */
     fprintf(stream, "\nExpect [ Region %d-%d", (int)start, (int)end);
-    for (i = start; i < end ; i++) {
+    for (i = start; i < end; i++) {
         if ((i % 4) == 0)
             fprintf(stream, "\n    ");
         fprintf(stream, "0x%02x, ", ((int)expect[i])&0xff);
     }
     fprintf(stream, "]\n");
     fprintf(stream, "Actual [ Region %d-%d", (int)start, (int)end);
-    for (i = start; i < end ; i++) {
+    for (i = start; i < end; i++) {
         if ((i % 4) == 0)
             fprintf(stream, "\n    ");
         fprintf(stream, "0x%02x, ", ((int)actual[i])&0xff);
@@ -530,7 +530,7 @@ virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
     symbols = backtrace_symbols(trace, ntrace);
     if (symbols) {
         fprintf(stderr, "Failing allocation %d at:\n", n);
-        for (i = 0 ; i < ntrace ; i++) {
+        for (i = 0; i < ntrace; i++) {
             if (symbols[i])
                 fprintf(stderr, "  TRACE:  %s\n", symbols[i]);
         }
@@ -666,7 +666,7 @@ int virtTestMain(int argc,
 
         if (mp) {
             int i;
-            for (i = 0 ; i < mp ; i++) {
+            for (i = 0; i < mp; i++) {
                 workers[i] = fork();
                 if (workers[i] == 0) {
                     worker = i + 1;
@@ -677,7 +677,7 @@ int virtTestMain(int argc,
 
         /* Run once for each alloc, failing a different one
            and validating that the test case failed */
-        for (n = 0; n < approxAlloc && (!mp || worker) ; n++) {
+        for (n = 0; n < approxAlloc && (!mp || worker); n++) {
             if (mp &&
                 (n % mp) != (worker - 1))
                 continue;
@@ -701,7 +701,7 @@ int virtTestMain(int argc,
                 _exit(ret);
             } else {
                 int i;
-                for (i = 0 ; i < mp ; i++) {
+                for (i = 0; i < mp; i++) {
                     if (virProcessWait(workers[i], NULL) < 0)
                         ret = EXIT_FAILURE;
                 }

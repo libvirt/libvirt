@@ -144,7 +144,7 @@ verifyFired(const char *name, int handle, int timer)
     int handleFired = 0;
     int timerFired = 0;
     int i;
-    for (i = 0 ; i < NUM_FDS ; i++) {
+    for (i = 0; i < NUM_FDS; i++) {
         if (handles[i].fired) {
             if (i != handle) {
                 virtTestResult(name, 1,
@@ -177,7 +177,7 @@ verifyFired(const char *name, int handle, int timer)
     }
 
 
-    for (i = 0 ; i < NUM_TIME ; i++) {
+    for (i = 0; i < NUM_TIME; i++) {
         if (timers[i].fired) {
             if (i != timer) {
                 virtTestResult(name, 1,
@@ -248,11 +248,11 @@ static void
 resetAll(void)
 {
     int i;
-    for (i = 0 ; i < NUM_FDS ; i++) {
+    for (i = 0; i < NUM_FDS; i++) {
         handles[i].fired = 0;
         handles[i].error = EV_ERROR_NONE;
     }
-    for (i = 0 ; i < NUM_TIME ; i++) {
+    for (i = 0; i < NUM_TIME; i++) {
         timers[i].fired = 0;
         timers[i].error = EV_ERROR_NONE;
     }
@@ -265,7 +265,7 @@ mymain(void)
     pthread_t eventThread;
     char one = '1';
 
-    for (i = 0 ; i < NUM_FDS ; i++) {
+    for (i = 0; i < NUM_FDS; i++) {
         if (pipe(handles[i].pipeFD) < 0) {
             fprintf(stderr, "Cannot create pipe: %d", errno);
             return EXIT_FAILURE;
@@ -282,7 +282,7 @@ mymain(void)
 
     virEventPollInit();
 
-    for (i = 0 ; i < NUM_FDS ; i++) {
+    for (i = 0; i < NUM_FDS; i++) {
         handles[i].delete = -1;
         handles[i].watch =
             virEventPollAddHandle(handles[i].pipeFD[0],
@@ -291,7 +291,7 @@ mymain(void)
                                   &handles[i], NULL);
     }
 
-    for (i = 0 ; i < NUM_TIME ; i++) {
+    for (i = 0; i < NUM_TIME; i++) {
         timers[i].delete = -1;
         timers[i].timeout = -1;
         timers[i].timer =
@@ -432,9 +432,9 @@ mymain(void)
     if (finishJob("Deleted during dispatch", -1, 2) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
-    for (i = 0 ; i < NUM_FDS - 1 ; i++)
+    for (i = 0; i < NUM_FDS - 1; i++)
         virEventPollRemoveHandle(handles[i].watch);
-    for (i = 0 ; i < NUM_TIME - 1 ; i++)
+    for (i = 0; i < NUM_TIME - 1; i++)
         virEventPollRemoveTimeout(timers[i].timer);
 
     resetAll();

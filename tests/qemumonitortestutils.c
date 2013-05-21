@@ -381,7 +381,7 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test)
     VIR_FREE(test->incoming);
     VIR_FREE(test->outgoing);
 
-    for (i = 0 ; i < test->nitems ; i++)
+    for (i = 0; i < test->nitems; i++)
         qemuMonitorTestItemFree(test->items[i]);
     VIR_FREE(test->items);
 
