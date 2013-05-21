@@ -471,6 +471,8 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory cgroup is not available on this host"));
             return -1;
+        } else {
+            return 0;
         }
     }
 
