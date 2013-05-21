@@ -338,7 +338,7 @@ static int udevGenerateDeviceName(struct udev_device *device,
 
     def->name = virBufferContentAndReset(&buf);
 
-    for (i = 0; i < strlen(def->name) ; i++) {
+    for (i = 0; i < strlen(def->name); i++) {
         if (!(c_isalnum(*(def->name + i)))) {
             *(def->name + i) = '_';
         }
