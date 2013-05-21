@@ -285,6 +285,71 @@ cleanup:
 }
 
 
+/**
+ * virTypedParamsReplaceString:
+ * @params: pointer to the array of typed parameters
+ * @nparams: number of parameters in the @params array
+ * @name: name of the parameter to set
+ * @value: the value to store into the parameter
+ *
+ * Sets new value @value to parameter called @name with char * type. If the
+ * parameter does not exist yet in @params, it is automatically created and
+ * @naprams is incremented by one. Otherwise current value of the parameter
+ * is freed on success. The function creates its own copy of @value string,
+ * which needs to be freed using virTypedParamsFree or virTypedParamsClear.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virTypedParamsReplaceString(virTypedParameterPtr *params,
+                            int *nparams,
+                            const char *name,
+                            const char *value)
+{
+    char *str = NULL;
+    char *old = NULL;
+    size_t n = *nparams;
+    virTypedParameterPtr param;
+
+    virResetLastError();
+
+    param = virTypedParamsGet(*params, n, name);
+    if (param) {
+        if (param->type != VIR_TYPED_PARAM_STRING) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Parameter '%s' is not a string"),
+                           param->field);
+            goto error;
+        }
+        old = param->value.s;
+    } else {
+        if (VIR_EXPAND_N(*params, n, 1) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+        param = *params + n - 1;
+    }
+
+    if (VIR_STRDUP(str, value) < 0)
+        goto error;
+
+    if (virTypedParameterAssign(param, name,
+                                VIR_TYPED_PARAM_STRING, str) < 0) {
+        param->value.s = old;
+        VIR_FREE(str);
+        goto error;
+    }
+    VIR_FREE(old);
+
+    *nparams = n;
+    return 0;
+
+error:
+    virDispatchError(NULL);
+    return -1;
+}
+
+
 /* The following APIs are public and their signature may never change. */
 
 /**

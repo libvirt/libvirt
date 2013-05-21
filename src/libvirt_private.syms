@@ -1944,6 +1944,7 @@ virTPMCreateCancelPath;
 virTypedParameterAssign;
 virTypedParameterAssignFromStr;
 virTypedParamsCheck;
+virTypedParamsReplaceString;
 virTypedParamsValidate;
 
 

@@ -44,4 +44,9 @@ int virTypedParameterAssignFromStr(virTypedParameterPtr param,
                                    const char *val)
     ATTRIBUTE_RETURN_CHECK;
 
+int virTypedParamsReplaceString(virTypedParameterPtr *params,
+                                int *nparams,
+                                const char *name,
+                                const char *value);
+
 #endif /* __VIR_TYPED_PARAM_H */
