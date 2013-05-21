@@ -315,7 +315,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
               authScheme);
 
     VIR_DEBUG("Subject %d", subject->nidentity);
-    for (i = 0 ; i < subject->nidentity ; i++) {
+    for (i = 0; i < subject->nidentity; i++) {
         VIR_DEBUG("  %s=%s", subject->identities[i].type, subject->identities[i].name);
     }
 
@@ -337,7 +337,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
     }
 
-    for (i = 0 ; i < data.subject.subject_len ; i++) {
+    for (i = 0; i < data.subject.subject_len; i++) {
         if (VIR_STRDUP(data.subject.subject_val[i].type, subject->identities[i].type) < 0 ||
             VIR_STRDUP(data.subject.subject_val[i].name, subject->identities[i].name) < 0)
             goto error;
@@ -357,7 +357,7 @@ error:
     VIR_FREE(data.remote.node);
     VIR_FREE(data.remote.service);
     if (data.subject.subject_val != NULL) {
-        for (i = 0 ; i < data.subject.subject_len ; i++) {
+        for (i = 0; i < data.subject.subject_len; i++) {
             VIR_FREE(data.subject.subject_val[i].type);
             VIR_FREE(data.subject.subject_val[i].name);
         }
@@ -640,7 +640,7 @@ void remoteClientFreeFunc(void *data)
     if (priv->conn) {
         int i;
 
-        for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++) {
+        for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
             if (priv->domainEventCallbackID[i] != -1) {
                 VIR_DEBUG("Deregistering to relay remote events %d", i);
                 virConnectDomainEventDeregisterAny(priv->conn,
@@ -681,7 +681,7 @@ void *remoteClientInitHook(virNetServerClientPtr client,
         return NULL;
     }
 
-    for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++)
+    for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++)
         priv->domainEventCallbackID[i] = -1;
 
     virNetServerClientSetCloseHook(client, remoteClientCloseFunc);
@@ -4616,7 +4616,7 @@ lxcDispatchDomainOpenNamespace(virNetServerPtr server ATTRIBUTE_UNUSED,
      * but in case they're playing games with us, prevent
      * a resource leak
      */
-    for (i = 0 ; i < msg->nfds ; i++)
+    for (i = 0; i < msg->nfds; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
     VIR_FREE(msg->fds);
     msg->nfds = 0;

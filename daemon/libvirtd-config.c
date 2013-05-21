@@ -88,7 +88,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
             }
             if (VIR_STRDUP(list[i], pp->str) < 0) {
                 int j;
-                for (j = 0 ; j < i ; j++)
+                for (j = 0; j < i; j++)
                     VIR_FREE(list[j]);
                 VIR_FREE(list);
                 return -1;
