@@ -844,7 +844,11 @@ static int virCgroupAddTaskStrController(virCgroupPtr group,
             goto cleanup;
 
         rc = virCgroupAddTaskController(group, p, controller);
-        if (rc != 0)
+        /* A thread that exits between when we first read the source
+         * tasks and now is not fatal.  */
+        if (rc == -ESRCH)
+            rc = 0;
+        else if (rc != 0)
             goto cleanup;
 
         next = strchr(cur, '\n');
@@ -873,7 +877,7 @@ cleanup:
 int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group,
                       int controller)
 {
-    int rc = 0, err = 0;
+    int rc = 0;
     char *content = NULL;
 
     if (controller < VIR_CGROUP_CONTROLLER_CPU ||
@@ -885,28 +889,25 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group,
         return -EINVAL;
     }
 
-    rc = virCgroupGetValueStr(src_group, controller, "tasks", &content);
-    if (rc != 0)
-        return rc;
+    /* New threads are created in the same group as their parent;
+     * but if a thread is created after we first read we aren't
+     * aware that it needs to move.  Therefore, we must iterate
+     * until content is empty.  */
+    while (1) {
+        rc = virCgroupGetValueStr(src_group, controller, "tasks", &content);
+        if (rc != 0)
+            return rc;
 
-    rc = virCgroupAddTaskStrController(dest_group, content, controller);
-    if (rc != 0)
-        goto cleanup;
+        rc = virCgroupAddTaskStrController(dest_group, content, controller);
+        if (rc != 0)
+            goto cleanup;
 
-    VIR_FREE(content);
+        VIR_FREE(content);
+    }
 
     return 0;
 
 cleanup:
-    /*
-     * We don't need to recover dest_cgroup because cgroup will make sure
-     * that one task only resides in one cgroup of the same controller.
-     */
-    err = virCgroupAddTaskStrController(src_group, content, controller);
-    if (err != 0)
-        VIR_ERROR(_("Cannot recover cgroup %s from %s"),
-                  src_group->controllers[controller].mountPoint,
-                  dest_group->controllers[controller].mountPoint);
     VIR_FREE(content);
 
     return rc;
