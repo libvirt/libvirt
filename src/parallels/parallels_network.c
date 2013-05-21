@@ -366,7 +366,7 @@ static int parallelsConnectNumOfNetworks(virConnectPtr conn)
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
-    for (i = 0 ; i < privconn->networks.count ; i++) {
+    for (i = 0; i < privconn->networks.count; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (virNetworkObjIsActive(privconn->networks.objs[i]))
             nactive++;
@@ -385,7 +385,7 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
     int got = 0, i;
 
     parallelsDriverLock(privconn);
-    for (i = 0 ; i < privconn->networks.count && got < nnames ; i++) {
+    for (i = 0; i < privconn->networks.count && got < nnames; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (virNetworkObjIsActive(privconn->networks.objs[i])) {
             if (VIR_STRDUP(names[got], privconn->networks.objs[i]->def->name) < 0) {
@@ -402,7 +402,7 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
 
  cleanup:
     parallelsDriverUnlock(privconn);
-    for (i = 0 ; i < got ; i++)
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
     return -1;
 }
@@ -413,7 +413,7 @@ static int parallelsConnectNumOfDefinedNetworks(virConnectPtr conn)
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
-    for (i = 0 ; i < privconn->networks.count ; i++) {
+    for (i = 0; i < privconn->networks.count; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (!virNetworkObjIsActive(privconn->networks.objs[i]))
             ninactive++;
@@ -432,7 +432,7 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
     int got = 0, i;
 
     parallelsDriverLock(privconn);
-    for (i = 0 ; i < privconn->networks.count && got < nnames ; i++) {
+    for (i = 0; i < privconn->networks.count && got < nnames; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
         if (!virNetworkObjIsActive(privconn->networks.objs[i])) {
             if (VIR_STRDUP(names[got], privconn->networks.objs[i]->def->name) < 0) {
@@ -448,7 +448,7 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
 
  cleanup:
     parallelsDriverUnlock(privconn);
-    for (i = 0 ; i < got ; i++)
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
     return -1;
 }
