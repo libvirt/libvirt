@@ -918,7 +918,7 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     int first = 1;
     struct openvz_driver *driver =  conn->privateData;
 
-    for (i = 0 ; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         if (driver->version < VZCTL_BRIDGE_MIN_VERSION &&
             def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             if (first)
@@ -1621,7 +1621,7 @@ out:
     VIR_FORCE_CLOSE(outfd);
     virCommandFree(cmd);
     if (rc < 0) {
-        for (; got >= 0 ; got--)
+        for (; got >= 0; got--)
             VIR_FREE(names[got]);
     }
     return rc;
@@ -1990,7 +1990,7 @@ openvzDomainInterfaceStats(virDomainPtr dom,
     }
 
     /* Check the path is one of the domain's network interfaces. */
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i]->ifname &&
             STREQ(vm->def->nets[i]->ifname, path)) {
             ret = 0;
