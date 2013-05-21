@@ -847,14 +847,14 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     VIR_DEBUG("Restoring security label on %s migrated=%d",
               def->name, migrated);
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (virSecurityDACRestoreSecurityHostdevLabel(mgr,
                                                       def,
                                                       def->hostdevs[i],
                                                       NULL) < 0)
             rc = -1;
     }
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (virSecurityDACRestoreSecurityImageLabelInt(mgr,
                                                        def,
                                                        def->disks[i],
@@ -914,7 +914,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
         if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
             continue;
@@ -923,7 +923,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                                 def->disks[i]) < 0)
             return -1;
     }
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (virSecurityDACSetSecurityHostdevLabel(mgr,
                                                   def,
                                                   def->hostdevs[i],

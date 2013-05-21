@@ -1887,14 +1887,14 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
             rc = -1;
     }
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (virSecuritySELinuxRestoreSecurityHostdevLabel(mgr,
                                                           def,
                                                           def->hostdevs[i],
                                                           NULL) < 0)
             rc = -1;
     }
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (virSecuritySELinuxRestoreSecurityImageLabelInt(mgr,
                                                            def,
                                                            def->disks[i],
@@ -2281,7 +2281,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (secdef->norelabel || data->skipAllLabel)
         return 0;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         /* XXX fixme - we need to recursively label the entire tree :-( */
         if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR) {
             VIR_WARN("Unable to relabel directory tree %s for disk %s",
@@ -2294,7 +2294,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
     }
     /* XXX fixme process  def->fss if relabel == true */
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (virSecuritySELinuxSetSecurityHostdevLabel(mgr,
                                                       def,
                                                       def->hostdevs[i],

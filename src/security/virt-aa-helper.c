@@ -952,7 +952,7 @@ get_files(vahControl * ctl)
                              ctl->def->consoles[i]->source.data.file.path, "rw") != 0)
                 goto cleanup;
 
-    for (i = 0 ; i < ctl->def->nparallels; i++)
+    for (i = 0; i < ctl->def->nparallels; i++)
         if (ctl->def->parallels[i] &&
             (ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
              ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
@@ -965,7 +965,7 @@ get_files(vahControl * ctl)
                                      ctl->def->parallels[i]->source.type) != 0)
                 goto cleanup;
 
-    for (i = 0 ; i < ctl->def->nchannels; i++)
+    for (i = 0; i < ctl->def->nchannels; i++)
         if (ctl->def->channels[i] &&
             (ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
              ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||

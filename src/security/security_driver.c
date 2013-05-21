@@ -57,7 +57,7 @@ virSecurityDriverPtr virSecurityDriverLookup(const char *name,
 
     VIR_DEBUG("name=%s", NULLSTR(name));
 
-    for (i = 0; i < ARRAY_CARDINALITY(security_drivers) && !drv ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(security_drivers) && !drv; i++) {
         virSecurityDriverPtr tmp = security_drivers[i];
 
         if (name &&
