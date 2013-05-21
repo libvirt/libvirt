@@ -897,6 +897,8 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group,
         rc = virCgroupGetValueStr(src_group, controller, "tasks", &content);
         if (rc != 0)
             return rc;
+        if (!*content)
+            break;
 
         rc = virCgroupAddTaskStrController(dest_group, content, controller);
         if (rc != 0)
