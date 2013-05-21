@@ -540,7 +540,7 @@ static int virLockManagerSanlockDiskLeaseName(const char *path,
         return -1;
     }
 
-    for (i = 0 ; i < MD5_DIGEST_SIZE ; i++) {
+    for (i = 0; i < MD5_DIGEST_SIZE; i++) {
         str[i*2] = hex[(buf[i] >> 4) & 0xf];
         str[(i*2)+1] = hex[buf[i] & 0xf];
     }
@@ -1020,7 +1020,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     VIR_DEBUG("Acquire completed fd=%d", sock);
 
     if (res_free) {
-        for (i = 0 ; i < res_count ; i++) {
+        for (i = 0; i < res_count; i++) {
             VIR_FREE(res_args[i]);
         }
         VIR_FREE(res_args);
@@ -1033,7 +1033,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
 
 error:
     if (res_free) {
-        for (i = 0 ; i < res_count ; i++) {
+        for (i = 0; i < res_count; i++) {
             VIR_FREE(res_args[i]);
         }
         VIR_FREE(res_args);

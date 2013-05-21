@@ -79,7 +79,7 @@ static void virLockManagerLogParams(size_t nparams,
 {
     int i;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    for (i = 0 ; i < nparams ; i++) {
+    for (i = 0; i < nparams; i++) {
         switch (params[i].type) {
         case VIR_LOCK_MANAGER_PARAM_TYPE_INT:
             VIR_DEBUG("  key=%s type=int value=%d", params[i].key, params[i].value.i);

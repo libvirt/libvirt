@@ -215,7 +215,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
         goto error;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virLockSpacePtr lockspace;
 
         child = virJSONValueArrayGet(lockspaces, i);
@@ -749,7 +749,7 @@ virLockDaemonClientFree(void *opaque)
          * closed the connection, we must kill it off
          * to make sure it doesn't do nasty stuff */
         if (data.gotError || data.hadSomeLeases) {
-            for (i = 0 ; i < 15 ; i++) {
+            for (i = 0; i < 15; i++) {
                 int signum;
                 if (i == 0)
                     signum = SIGTERM;

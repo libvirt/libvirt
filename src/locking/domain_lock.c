@@ -138,12 +138,12 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
 
     if (withResources) {
         VIR_DEBUG("Adding leases");
-        for (i = 0 ; i < dom->def->nleases ; i++)
+        for (i = 0; i < dom->def->nleases; i++)
             if (virDomainLockManagerAddLease(lock, dom->def->leases[i]) < 0)
                 goto error;
 
         VIR_DEBUG("Adding disks");
-        for (i = 0 ; i < dom->def->ndisks ; i++)
+        for (i = 0; i < dom->def->ndisks; i++)
             if (virDomainLockManagerAddDisk(lock, dom->def->disks[i]) < 0)
                 goto error;
     }

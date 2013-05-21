@@ -428,7 +428,7 @@ static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
 
     lock->privateData = NULL;
 
-    for (i = 0 ; i < priv->nresources ; i++) {
+    for (i = 0; i < priv->nresources; i++) {
         VIR_FREE(priv->resources[i].lockspace);
         VIR_FREE(priv->resources[i].name);
     }
@@ -459,7 +459,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
 
     switch (type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:
-        for (i = 0 ; i < nparams ; i++) {
+        for (i = 0; i < nparams; i++) {
             if (STREQ(params[i].key, "uuid")) {
                 memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
@@ -530,7 +530,7 @@ static char *virLockManagerLockDaemonDiskLeaseName(const char *path)
         return NULL;
     }
 
-    for (i = 0 ; i < SHA256_DIGEST_SIZE ; i++) {
+    for (i = 0; i < SHA256_DIGEST_SIZE; i++) {
         ret[i*2] = hex[(buf[i] >> 4) & 0xf];
         ret[(i*2)+1] = hex[buf[i] & 0xf];
     }
@@ -629,7 +629,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         size_t i;
         char *path = NULL;
         char *lockspace = NULL;
-        for (i = 0 ; i < nparams ; i++) {
+        for (i = 0; i < nparams; i++) {
             if (STREQ(params[i].key, "offset")) {
                 if (params[i].value.ul != 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -725,7 +725,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
 
     if (!(flags & VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY)) {
         size_t i;
-        for (i = 0 ; i < priv->nresources ; i++) {
+        for (i = 0; i < priv->nresources; i++) {
             virLockSpaceProtocolAcquireResourceArgs args;
 
             memset(&args, 0, sizeof(args));
@@ -781,7 +781,7 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
     if (!(client = virLockManagerLockDaemonConnect(lock, &program, &counter)))
         goto cleanup;
 
-    for (i = 0 ; i < priv->nresources ; i++) {
+    for (i = 0; i < priv->nresources; i++) {
         virLockSpaceProtocolReleaseResourceArgs args;
 
         memset(&args, 0, sizeof(args));
