@@ -501,8 +501,8 @@ int qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
  */
 int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
                               const char *netstr,
-                              int tapfd, const char *tapfd_name,
-                              int vhostfd, const char *vhostfd_name);
+                              int *tapfd, char **tapfdName, int tapfdSize,
+                              int *vhostfd, char **vhostfdName, int vhostfdSize);
 
 int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
                                  int vlan,
@@ -510,8 +510,8 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          const char *netdevstr,
-                         int tapfd, const char *tapfd_name,
-                         int vhostfd, const char *vhostfd_name);
+                         int *tapfd, char **tapfdName, int tapfdSize,
+                         int *vhostfd, char **vhostfdName, int vhostfdSize);
 
 int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
                             const char *alias);

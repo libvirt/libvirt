@@ -2477,14 +2477,16 @@ cleanup:
 
 int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
                               const char *netstr,
-                              int tapfd, const char *tapfd_name,
-                              int vhostfd, const char *vhostfd_name)
+                              int *tapfd, char **tapfdName, int tapfdSize,
+                              int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p netstr=%s tapfd=%d tapfd_name=%s "
-              "vhostfd=%d vhostfd_name=%s",
-              mon, netstr, tapfd, NULLSTR(tapfd_name),
-              vhostfd, NULLSTR(vhostfd_name));
+    int i = 0, j = 0;
+
+    VIR_DEBUG("mon=%p netstr=%s tapfd=%p tapfdName=%p tapfdSize=%d "
+              "vhostfd=%p vhostfdName=%p vhostfdSize=%d",
+              mon, netstr, tapfd, tapfdName, tapfdSize,
+              vhostfd, vhostfdName, vhostfdSize);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2492,12 +2494,13 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (tapfd >= 0 && qemuMonitorSendFileHandle(mon, tapfd_name, tapfd) < 0)
-        return -1;
-    if (vhostfd >= 0 &&
-        qemuMonitorSendFileHandle(mon, vhostfd_name, vhostfd) < 0) {
-        vhostfd = -1;
-        goto cleanup;
+    for (i = 0; i < tapfdSize; i++) {
+        if (qemuMonitorSendFileHandle(mon, tapfdName[i], tapfd[i]) < 0)
+            goto cleanup;
+    }
+    for (j = 0; j < vhostfdSize; j++) {
+        if (qemuMonitorSendFileHandle(mon, vhostfdName[j], vhostfd[j]) < 0)
+            goto cleanup;
     }
 
     if (mon->json)
@@ -2508,10 +2511,14 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
 
 cleanup:
     if (ret < 0) {
-        if (tapfd >= 0 && qemuMonitorCloseFileHandle(mon, tapfd_name) < 0)
-            VIR_WARN("failed to close device handle '%s'", tapfd_name);
-        if (vhostfd >= 0 && qemuMonitorCloseFileHandle(mon, vhostfd_name) < 0)
-            VIR_WARN("failed to close device handle '%s'", vhostfd_name);
+        while (i--) {
+            if (qemuMonitorCloseFileHandle(mon, tapfdName[i]) < 0)
+                VIR_WARN("failed to close device handle '%s'", tapfdName[i]);
+        }
+        while (j--) {
+            if (qemuMonitorCloseFileHandle(mon, vhostfdName[j]) < 0)
+                VIR_WARN("failed to close device handle '%s'", vhostfdName[j]);
+        }
     }
 
     return ret;
@@ -2543,14 +2550,16 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          const char *netdevstr,
-                         int tapfd, const char *tapfd_name,
-                         int vhostfd, const char *vhostfd_name)
+                         int *tapfd, char **tapfdName, int tapfdSize,
+                         int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p netdevstr=%s tapfd=%d tapfd_name=%s "
-              "vhostfd=%d vhostfd_name=%s",
-              mon, netdevstr, tapfd, NULLSTR(tapfd_name),
-              vhostfd, NULLSTR(vhostfd_name));
+    int i = 0, j = 0;
+
+    VIR_DEBUG("mon=%p netdevstr=%s tapfd=%p tapfdName=%p tapfdSize=%d"
+              "vhostfd=%p vhostfdName=%p vhostfdSize=%d",
+              mon, netdevstr, tapfd, tapfdName, tapfdSize,
+              vhostfd, vhostfdName, tapfdSize);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2558,12 +2567,13 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (tapfd >= 0 && qemuMonitorSendFileHandle(mon, tapfd_name, tapfd) < 0)
-        return -1;
-    if (vhostfd >= 0 &&
-        qemuMonitorSendFileHandle(mon, vhostfd_name, vhostfd) < 0) {
-        vhostfd = -1;
-        goto cleanup;
+    for (i = 0; i < tapfdSize; i++) {
+        if (qemuMonitorSendFileHandle(mon, tapfdName[i], tapfd[i]) < 0)
+            goto cleanup;
+    }
+    for (j = 0; j < vhostfdSize; j++) {
+        if (qemuMonitorSendFileHandle(mon, vhostfdName[j], vhostfd[j]) < 0)
+            goto cleanup;
     }
 
     if (mon->json)
@@ -2573,10 +2583,14 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
 
 cleanup:
     if (ret < 0) {
-        if (tapfd >= 0 && qemuMonitorCloseFileHandle(mon, tapfd_name) < 0)
-            VIR_WARN("failed to close device handle '%s'", tapfd_name);
-        if (vhostfd >= 0 && qemuMonitorCloseFileHandle(mon, vhostfd_name) < 0)
-            VIR_WARN("failed to close device handle '%s'", vhostfd_name);
+        while (i--) {
+            if (qemuMonitorCloseFileHandle(mon, tapfdName[i]) < 0)
+                VIR_WARN("failed to close device handle '%s'", tapfdName[i]);
+        }
+        while (j--) {
+            if (qemuMonitorCloseFileHandle(mon, vhostfdName[j]) < 0)
+                VIR_WARN("failed to close device handle '%s'", vhostfdName[j]);
+        }
     }
 
     return ret;

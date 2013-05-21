@@ -690,10 +690,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                               virDomainNetDefPtr net)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *tapfd_name = NULL;
-    int tapfd = -1;
-    char *vhostfd_name = NULL;
-    int vhostfd = -1;
+    char **tapfdName = NULL;
+    int *tapfd = NULL;
+    int tapfdSize = 0;
+    char **vhostfdName = NULL;
+    int *vhostfd = NULL;
+    int vhostfdSize = 0;
     char *nicstr = NULL;
     char *netstr = NULL;
     virNetDevVPortProfilePtr vport = NULL;
@@ -704,6 +706,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     bool iface_connected = false;
     int actualType;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int i;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
@@ -739,22 +742,37 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
 
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
-                                             priv->qemuCaps)) < 0)
+        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        tapfdSize = vhostfdSize = 1;
+        if (qemuNetworkIfaceConnect(vm->def, conn, driver, net,
+                                    priv->qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
+        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if ((tapfd = qemuPhysIfaceConnect(vm->def, driver, net,
-                                          priv->qemuCaps,
-                                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
+        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        tapfdSize = vhostfdSize = 1;
+        if ((tapfd[0] = qemuPhysIfaceConnect(vm->def, driver, net,
+                                             priv->qemuCaps,
+                                             VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
+        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
+        if (VIR_ALLOC(vhostfd) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        vhostfdSize = 1;
+        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
 
@@ -792,41 +810,51 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         }
     }
 
-    if (tapfd != -1) {
-        if (virAsprintf(&tapfd_name, "fd-%s", net->info.alias) < 0)
+    if (VIR_ALLOC_N(tapfdName, tapfdSize) < 0 ||
+        VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < tapfdSize; i++) {
+        if (virAsprintf(&tapfdName[i], "fd-%s%d", net->info.alias, i) < 0)
             goto no_memory;
     }
 
-    if (vhostfd != -1) {
-        if (virAsprintf(&vhostfd_name, "vhostfd-%s", net->info.alias) < 0)
+    for (i = 0; i < vhostfdSize; i++) {
+        if (virAsprintf(&vhostfdName[i], "vhostfd-%s%d", net->info.alias, i) < 0)
             goto no_memory;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (!(netstr = qemuBuildHostNetStr(net, driver,
-                                           ',', -1, tapfd_name,
-                                           vhostfd_name)))
+                                           ',', -1,
+                                           tapfdName, tapfdSize,
+                                           vhostfdName, vhostfdSize)))
             goto cleanup;
     } else {
         if (!(netstr = qemuBuildHostNetStr(net, driver,
-                                           ' ', vlan, tapfd_name,
-                                           vhostfd_name)))
+                                           ' ', vlan,
+                                           tapfdName, tapfdSize,
+                                           vhostfdName, vhostfdSize)))
             goto cleanup;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorAddNetdev(priv->mon, netstr, tapfd, tapfd_name,
-                                 vhostfd, vhostfd_name) < 0) {
+        if (qemuMonitorAddNetdev(priv->mon, netstr,
+                                 tapfd, tapfdName, tapfdSize,
+                                 vhostfd, vhostfdName, vhostfdSize) < 0) {
             qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditNet(vm, NULL, net, "attach", false);
             goto cleanup;
         }
     } else {
-        if (qemuMonitorAddHostNetwork(priv->mon, netstr, tapfd, tapfd_name,
-                                      vhostfd, vhostfd_name) < 0) {
+        if (qemuMonitorAddHostNetwork(priv->mon, netstr,
+                                      tapfd, tapfdName, tapfdSize,
+                                      vhostfd, vhostfdName, vhostfdSize) < 0) {
             qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditNet(vm, NULL, net, "attach", false);
             goto cleanup;
@@ -834,8 +862,10 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    VIR_FORCE_CLOSE(tapfd);
-    VIR_FORCE_CLOSE(vhostfd);
+    for (i = 0; i < tapfdSize; i++)
+        VIR_FORCE_CLOSE(tapfd[i]);
+    for (i = 0; i < vhostfdSize; i++)
+        VIR_FORCE_CLOSE(vhostfd[i]);
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -931,10 +961,18 @@ cleanup:
 
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
-    VIR_FREE(tapfd_name);
-    VIR_FORCE_CLOSE(tapfd);
-    VIR_FREE(vhostfd_name);
-    VIR_FORCE_CLOSE(vhostfd);
+    for (i = 0; i < tapfdSize; i++) {
+        VIR_FORCE_CLOSE(tapfd[i]);
+        VIR_FREE(tapfdName[i]);
+    }
+    VIR_FREE(tapfd);
+    VIR_FREE(tapfdName);
+    for (i = 0; i < vhostfdSize; i++) {
+        VIR_FORCE_CLOSE(vhostfd[i]);
+        VIR_FREE(vhostfdName[i]);
+    }
+    VIR_FREE(vhostfd);
+    VIR_FREE(vhostfdName);
     virObjectUnref(cfg);
 
     return ret;

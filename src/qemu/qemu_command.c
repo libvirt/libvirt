@@ -281,11 +281,12 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virConnectPtr conn,
                         virQEMUDriverPtr driver,
                         virDomainNetDefPtr net,
-                        virQEMUCapsPtr qemuCaps)
+                        virQEMUCapsPtr qemuCaps,
+                        int *tapfd,
+                        int *tapfdSize)
 {
     char *brname = NULL;
-    int err;
-    int tapfd = -1;
+    int ret = -1;
     unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
     int actualType = virDomainNetGetActualType(net);
@@ -297,7 +298,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                        net->data.network.name);
         if (!network)
-            return -1;
+            return ret;
 
         active = virNetworkIsActive(network);
         if (active != 1) {
@@ -322,18 +323,18 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         virFreeError(errobj);
 
         if (fail)
-            return -1;
+            return ret;
 
     } else if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         if (!(brname = strdup(virDomainNetGetActualBridgeName(net)))) {
             virReportOOMError();
-            return -1;
+            return ret;
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Network type %d is not supported"),
                        virDomainNetGetActualType(net));
-        return -1;
+        return ret;
     }
 
     if (!net->ifname ||
@@ -353,69 +354,98 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
     }
 
-    if (cfg->privileged)
-        err = virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
-                                             def->uuid, &tapfd,
-                                             virDomainNetGetActualVirtPortProfile(net),
-                                             virDomainNetGetActualVlan(net),
-                                             tap_create_flags);
-    else
-        err = qemuCreateInBridgePortWithHelper(cfg, brname,
-                                               &net->ifname,
-                                               &tapfd, tap_create_flags);
-
-    virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
-    if (err < 0) {
-        if (template_ifname)
-            VIR_FREE(net->ifname);
-        tapfd = -1;
-    }
-
-    if (cfg->macFilter) {
-        if ((err = networkAllowMacOnPort(driver, net->ifname, &net->mac))) {
-            virReportSystemError(err,
-                 _("failed to add ebtables rule to allow MAC address on '%s'"),
-                                 net->ifname);
+    if (cfg->privileged) {
+        if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
+                                           def->uuid, tapfd, *tapfdSize,
+                                           virDomainNetGetActualVirtPortProfile(net),
+                                           virDomainNetGetActualVlan(net),
+                                           tap_create_flags) < 0) {
+            virDomainAuditNetDevice(def, net, "/dev/net/tun", false);
+            goto cleanup;
+        }
+    } else {
+        if (qemuCreateInBridgePortWithHelper(cfg, brname,
+                                             &net->ifname,
+                                             tapfd, tap_create_flags) < 0) {
+            virDomainAuditNetDevice(def, net, "/dev/net/tun", false);
+            goto cleanup;
+        }
+        /* qemuCreateInBridgePortWithHelper can only create a single FD */
+        if (*tapfdSize > 1) {
+            VIR_WARN("Ignoring multiqueue network request");
+            *tapfdSize = 1;
         }
     }
 
-    if (tapfd >= 0 &&
-        virNetDevBandwidthSet(net->ifname,
+    virDomainAuditNetDevice(def, net, "/dev/net/tun", true);
+
+    if (cfg->macFilter &&
+        (ret = networkAllowMacOnPort(driver, net->ifname, &net->mac)) < 0) {
+        virReportSystemError(ret,
+                             _("failed to add ebtables rule "
+                               "to allow MAC address on '%s'"),
+                             net->ifname);
+    }
+
+    if (virNetDevBandwidthSet(net->ifname,
                               virDomainNetGetActualBandwidth(net),
                               false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
                        net->ifname);
-        VIR_FORCE_CLOSE(tapfd);
         goto cleanup;
     }
 
-    if (tapfd >= 0) {
-        if ((net->filter) && (net->ifname)) {
-            if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0)
-                VIR_FORCE_CLOSE(tapfd);
-        }
+    if (net->filter && net->ifname &&
+        virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
+        goto cleanup;
     }
 
+    ret = 0;
+
 cleanup:
+    if (ret < 0) {
+        int i;
+        for (i = 0; i < *tapfdSize; i++)
+            VIR_FORCE_CLOSE(tapfd[i]);
+        if (template_ifname)
+            VIR_FREE(net->ifname);
+    }
     VIR_FREE(brname);
     virObjectUnref(cfg);
 
-    return tapfd;
+    return ret;
 }
 
 
+/**
+ * qemuOpenVhostNet:
+ * @def: domain definition
+ * @net: network definition
+ * @qemuCaps: qemu binary capabilities
+ * @vhostfd: array of opened vhost-net device
+ * @vhostfdSize: number of file descriptors in @vhostfd array
+ *
+ * Open vhost-net, multiple times - if requested.
+ * In case, no vhost-net is needed, @vhostfdSize is set to 0
+ * and 0 is returned.
+ *
+ * Returns: 0 on success
+ *         -1 on failure
+ */
 int
 qemuOpenVhostNet(virDomainDefPtr def,
                  virDomainNetDefPtr net,
                  virQEMUCapsPtr qemuCaps,
-                 int *vhostfd)
+                 int *vhostfd,
+                 int *vhostfdSize)
 {
-    *vhostfd = -1;   /* assume we won't use vhost */
+    int i;
 
     /* If the config says explicitly to not use vhost, return now */
     if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
-       return 0;
+        *vhostfdSize = 0;
+        return 0;
     }
 
     /* If qemu doesn't support vhost-net mode (including the -netdev command
@@ -430,6 +460,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
                                    "this QEMU binary"));
             return -1;
         }
+        *vhostfdSize = 0;
         return 0;
     }
 
@@ -441,23 +472,34 @@ qemuOpenVhostNet(virDomainDefPtr def,
                                    "virtio network interfaces"));
             return -1;
         }
+        *vhostfdSize = 0;
         return 0;
     }
 
-    *vhostfd = open("/dev/vhost-net", O_RDWR);
-    virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfd >= 0);
+    for (i = 0; i < *vhostfdSize; i++) {
+        vhostfd[i] = open("/dev/vhost-net", O_RDWR);
 
-    /* If the config says explicitly to use vhost and we couldn't open it,
-     * report an error.
-     */
-    if ((*vhostfd < 0) &&
-        (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("vhost-net was requested for an interface, "
-                               "but is unavailable"));
-        return -1;
+        /* If the config says explicitly to use vhost and we couldn't open it,
+         * report an error.
+         */
+        if (vhostfd[i] < 0) {
+            virDomainAuditNetDevice(def, net, "/dev/vhost-net", false);
+            if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("vhost-net was requested for an interface, "
+                                       "but is unavailable"));
+                goto error;
+            }
+        }
     }
+    virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfdSize);
     return 0;
+
+error:
+    while (i--)
+        VIR_FORCE_CLOSE(vhostfd[i]);
+
+    return -1;
 }
 
 int
@@ -4109,13 +4151,16 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     virQEMUDriverPtr driver,
                     char type_sep,
                     int vlan,
-                    const char *tapfd,
-                    const char *vhostfd)
+                    char **tapfd,
+                    int tapfdSize,
+                    char **vhostfd,
+                    int vhostfdSize)
 {
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     enum virDomainNetType netType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int i;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4134,7 +4179,19 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferAsprintf(&buf, "tap%cfd=%s", type_sep, tapfd);
+        virBufferAsprintf(&buf, "tap%c", type_sep);
+        /* for one tapfd 'fd=' shall be used,
+         * for more than one 'fds=' is the right choice */
+        if (tapfdSize == 1) {
+            virBufferAsprintf(&buf, "fd=%s", tapfd[0]);
+        } else {
+            virBufferAddLit(&buf, "fds=");
+            for (i = 0; i < tapfdSize; i++) {
+                if (i)
+                    virBufferAddChar(&buf, ':');
+                virBufferAdd(&buf, tapfd[i], -1);
+            }
+        }
         type_sep = ',';
         is_tap = true;
         break;
@@ -4194,8 +4251,19 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     }
 
     if (is_tap) {
-        if (vhostfd && *vhostfd)
-            virBufferAsprintf(&buf, ",vhost=on,vhostfd=%s", vhostfd);
+        if (vhostfdSize) {
+            virBufferAddLit(&buf, ",vhost=on,");
+            if (vhostfdSize == 1) {
+                virBufferAsprintf(&buf, "vhostfd=%s", vhostfd[0]);
+            } else {
+                virBufferAddLit(&buf, "vhostfds=");
+                for (i = 0; i < vhostfdSize; i++) {
+                    if (i)
+                        virBufferAddChar(&buf, ':');
+                    virBufferAdd(&buf, vhostfd[i], -1);
+                }
+            }
+        }
         if (net->tune.sndbuf_specified)
             virBufferAsprintf(&buf, ",sndbuf=%lu", net->tune.sndbuf);
     }
@@ -6431,12 +6499,15 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               enum virNetDevVPortProfileOp vmop)
 {
     int ret = -1;
-    int tapfd = -1;
-    int vhostfd = -1;
     char *nic = NULL, *host = NULL;
-    char *tapfdName = NULL;
-    char *vhostfdName = NULL;
+    int *tapfd = NULL;
+    int tapfdSize = 0;
+    int *vhostfd = NULL;
+    int vhostfdSize = 0;
+    char **tapfdName = NULL;
+    char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);
+    int i;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
@@ -6450,12 +6521,24 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        tapfd = qemuNetworkIfaceConnect(def, conn, driver, net, qemuCaps);
-        if (tapfd < 0)
+        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        tapfdSize = 1;
+        if (qemuNetworkIfaceConnect(def, conn, driver, net,
+                                    qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        tapfd = qemuPhysIfaceConnect(def, driver, net, qemuCaps, vmop);
-        if (tapfd < 0)
+        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        tapfdSize = 1;
+        tapfd[0] = qemuPhysIfaceConnect(def, driver, net,
+                                        qemuCaps, vmop);
+        if (tapfd[0] < 0)
             goto cleanup;
     }
 
@@ -6465,23 +6548,31 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         /* Attempt to use vhost-net mode for these types of
            network device */
-        if (qemuOpenVhostNet(def, net, qemuCaps, &vhostfd) < 0)
+        if (VIR_ALLOC(vhostfd) < 0 || VIR_ALLOC(vhostfdName)) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        vhostfdSize = 1;
+
+        if (qemuOpenVhostNet(def, net, qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
 
-    if (tapfd >= 0) {
-        virCommandTransferFD(cmd, tapfd);
-        if (virAsprintf(&tapfdName, "%d", tapfd) < 0) {
+    for (i = 0; i < tapfdSize; i++) {
+        virCommandTransferFD(cmd, tapfd[i]);
+        if (virAsprintf(&tapfdName[i], "%d", tapfd[i]) < 0) {
             virReportOOMError();
             goto cleanup;
         }
     }
 
-    if (vhostfd >= 0) {
-        virCommandTransferFD(cmd, vhostfd);
-        if (virAsprintf(&vhostfdName, "%d", vhostfd) < 0) {
-            virReportOOMError();
-            goto cleanup;
+    for (i = 0; i < vhostfdSize; i++) {
+        if (vhostfd[i] >= 0) {
+            virCommandTransferFD(cmd, vhostfd[i]);
+            if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
         }
     }
 
@@ -6496,8 +6587,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         if (!(host = qemuBuildHostNetStr(net, driver,
-                                         ',', vlan, tapfdName,
-                                         vhostfdName)))
+                                         ',', vlan,
+                                         tapfdName, tapfdSize,
+                                         vhostfdName, vhostfdSize)))
             goto cleanup;
         virCommandAddArgList(cmd, "-netdev", host, NULL);
     }
@@ -6513,8 +6605,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
         if (!(host = qemuBuildHostNetStr(net, driver,
-                                         ',', vlan, tapfdName,
-                                         vhostfdName)))
+                                         ',', vlan,
+                                         tapfdName, tapfdSize,
+                                         vhostfdName, vhostfdSize)))
             goto cleanup;
         virCommandAddArgList(cmd, "-net", host, NULL);
     }
@@ -6523,6 +6616,18 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 cleanup:
     if (ret < 0)
         virDomainConfNWFilterTeardown(net);
+    for (i = 0; i < tapfdSize; i++) {
+        if (ret < 0)
+            VIR_FORCE_CLOSE(tapfd[i]);
+        VIR_FREE(tapfdName[i]);
+    }
+    for (i = 0; i < vhostfdSize; i++) {
+        if (ret < 0)
+            VIR_FORCE_CLOSE(vhostfd[i]);
+        VIR_FREE(vhostfdName[i]);
+    }
+    VIR_FREE(tapfd);
+    VIR_FREE(vhostfd);
     VIR_FREE(nic);
     VIR_FREE(host);
     VIR_FREE(tapfdName);

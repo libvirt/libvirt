@@ -87,8 +87,10 @@ char * qemuBuildHostNetStr(virDomainNetDefPtr net,
                            virQEMUDriverPtr driver,
                            char type_sep,
                            int vlan,
-                           const char *tapfd,
-                           const char *vhostfd);
+                           char **tapfd,
+                           int tapfdSize,
+                           char **vhostfd,
+                           int vhostfdSize);
 
 /* Legacy, pre device support */
 char * qemuBuildNicStr(virDomainNetDefPtr net,
@@ -169,7 +171,9 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virConnectPtr conn,
                             virQEMUDriverPtr driver,
                             virDomainNetDefPtr net,
-                            virQEMUCapsPtr qemuCaps)
+                            virQEMUCapsPtr qemuCaps,
+                            int *tapfd,
+                            int *tapfdSize)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
@@ -181,7 +185,8 @@ int qemuPhysIfaceConnect(virDomainDefPtr def,
 int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,
                      virQEMUCapsPtr qemuCaps,
-                     int *vhostfd);
+                     int *vhostfd,
+                     int *vhostfdSize);
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 

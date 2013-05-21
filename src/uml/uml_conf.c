@@ -109,6 +109,7 @@ umlConnectTapDevice(virConnectPtr conn,
                     const char *bridge)
 {
     bool template_ifname = false;
+    int tapfd;
 
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
@@ -121,7 +122,7 @@ umlConnectTapDevice(virConnectPtr conn,
     }
 
     if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, &net->mac,
-                                       vm->uuid, NULL,
+                                       vm->uuid, &tapfd, 1,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        virDomainNetGetActualVlan(net),
                                        VIR_NETDEV_TAP_CREATE_IFUP |
@@ -139,9 +140,11 @@ umlConnectTapDevice(virConnectPtr conn,
         }
     }
 
+    VIR_FORCE_CLOSE(tapfd);
     return 0;
 
 error:
+    VIR_FORCE_CLOSE(tapfd);
     return -1;
 }
 
