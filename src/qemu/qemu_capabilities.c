@@ -231,6 +231,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vnc-websocket",
               "drive-discard",
               "mlock",
+
+              "vnc-share-policy", /* 150 */
     );
 
 struct _virQEMUCaps {
@@ -1188,8 +1190,10 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (version >= 11000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_HOST);
 
-    if (version >= 1001000)
+    if (version >= 1001000) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
+    }
 
     if (version >= 1002000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
@@ -2433,6 +2437,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
 }
 
 /* Capabilities that are architecture depending
