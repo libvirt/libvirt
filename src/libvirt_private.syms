@@ -203,6 +203,8 @@ virDomainGraphicsSpiceZlibCompressionTypeFromString;
 virDomainGraphicsSpiceZlibCompressionTypeToString;
 virDomainGraphicsTypeFromString;
 virDomainGraphicsTypeToString;
+virDomainGraphicsVNCSharePolicyTypeFromString;
+virDomainGraphicsVNCSharePolicyTypeToString;
 virDomainHasDiskMirror;
 virDomainHostdevCapsTypeToString;
 virDomainHostdevDefAlloc;

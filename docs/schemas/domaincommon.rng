@@ -2135,6 +2135,15 @@
                   <ref name="addrIPorName"/>
                 </attribute>
               </optional>
+              <optional>
+                <attribute name='sharePolicy'>
+                  <choice>
+                    <value>allow-exclusive</value>
+                    <value>force-shared</value>
+                    <value>ignore</value>
+                  </choice>
+                </attribute>
+              </optional>
             </group>
             <group>
               <optional>

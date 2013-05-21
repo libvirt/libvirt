@@ -3621,7 +3621,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;graphics type='sdl' display=':0.0'/&gt;
-    &lt;graphics type='vnc' port='5904'&gt;
+    &lt;graphics type='vnc' port='5904' sharePolicy='allow-exclusive'&gt;
       &lt;listen type='address' address='1.2.3.4'/&gt;
     &lt;/graphics&gt;
     &lt;graphics type='rdp' autoport='yes' multiUser='yes' /&gt;
@@ -3664,7 +3664,16 @@ qemu-kvm -net nic,model=? /dev/null
             allows control of connected client during password changes.
             VNC accepts <code>keep</code> value only.
             <span class="since">since 0.9.3</span>
-            NB, this may not be supported by all hypervisors.<br/>  <br/>
+            NB, this may not be supported by all hypervisors.<br/>
+            The optional <code>sharePolicy</code> attribute specifies vnc server
+            display sharing policy. "allow-exclusive" allows clients to ask
+            for exclusive access by dropping other connections. Connecting
+            multiple clients in parallel requires all clients asking for a
+            shared session (vncviewer: -Shared switch). This is the default
+            value. "force-shared" disables exclusive client access, every
+            connection has to specify -Shared switch for vncviewer. "ignore"
+            welcomes every connection unconditionally
+            <span class="since">since 1.0.6</span>. <br/> <br/>
             Rather than using listen/port, QEMU supports a
             <code>socket</code> attribute for listening on a unix
             domain socket path.<span class="since">Since 0.8.8</span>
