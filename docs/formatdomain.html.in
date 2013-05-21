@@ -2350,7 +2350,7 @@
 
     <h4><a name="elementsHostDev">Host device assignment</a></h4>
 
-    <h5><a href="elementsHostDevSubsys">USB / PCI / SCSI devices</a></h5>
+    <h5><a name="elementsHostDevSubsys">USB / PCI / SCSI devices</a></h5>
 
     <p>
       USB, PCI and SCSI devices attached to the host can be passed through
@@ -2526,7 +2526,7 @@
     </dl>
 
 
-    <h5><a href="elementsHostDevCaps">Block / character devices</a></h5>
+    <h5><a name="elementsHostDevCaps">Block / character devices</a></h5>
 
     <p>
       Block / character devices from the host can be passed through
