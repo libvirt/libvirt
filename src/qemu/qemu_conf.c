@@ -1184,7 +1184,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (disk->shared ||
+        if (!disk->shared ||
             !disk->src ||
             (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
              !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
