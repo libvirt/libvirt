@@ -276,13 +276,13 @@ umlIdentifyChrPTY(struct uml_driver *driver,
 {
     int i;
 
-    for (i = 0 ; i < dom->def->nconsoles; i++)
+    for (i = 0; i < dom->def->nconsoles; i++)
         if (dom->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
         if (umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->consoles[i], "con") < 0)
             return -1;
 
-    for (i = 0 ; i < dom->def->nserials; i++)
+    for (i = 0; i < dom->def->nserials; i++)
         if (dom->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
             umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->serials[i], "ssl") < 0)
@@ -1004,7 +1004,7 @@ error:
 static void umlCleanupTapDevices(virDomainObjPtr vm) {
     int i;
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr def = vm->def->nets[i];
 
         if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
@@ -1092,7 +1092,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     if (!(cmd = umlBuildCommandLine(conn, driver, vm)))
         goto cleanup;
 
-    for (i = 0 ; i < vm->def->nconsoles ; i++) {
+    for (i = 0; i < vm->def->nconsoles; i++) {
         VIR_FREE(vm->def->consoles[i]->info.alias);
         if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0) {
             virReportOOMError();
@@ -2037,7 +2037,7 @@ static int umlDomainAttachUmlDisk(struct uml_driver *driver,
     char *cmd = NULL;
     char *reply = NULL;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), disk->dst);
@@ -2163,7 +2163,7 @@ static int umlDomainDetachUmlDisk(struct uml_driver *driver,
     char *cmd;
     char *reply;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
             break;
         }
@@ -2456,7 +2456,7 @@ umlDomainOpenConsole(virDomainPtr dom,
     }
 
     if (dev_name) {
-        for (i = 0 ; i < vm->def->nconsoles ; i++) {
+        for (i = 0; i < vm->def->nconsoles; i++) {
             if (vm->def->consoles[i]->info.alias &&
                 STREQ(vm->def->consoles[i]->info.alias, dev_name)) {
                 chr = vm->def->consoles[i];

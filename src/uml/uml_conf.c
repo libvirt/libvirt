@@ -407,7 +407,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
     if (vm->def->os.root)
         virCommandAddArgPair(cmd, "root", vm->def->os.root);
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         if (!STRPREFIX(disk->dst, "ubd")) {
@@ -419,7 +419,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         virCommandAddArgPair(cmd, disk->dst, disk->src);
     }
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         char *ret = umlBuildCommandLineNet(conn, vm->def, vm->def->nets[i], i);
         if (!ret)
             goto error;
@@ -427,10 +427,10 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         VIR_FREE(ret);
     }
 
-    for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
+    for (i = 0; i < UML_MAX_CHAR_DEVICE; i++) {
         virDomainChrDefPtr chr = NULL;
         char *ret = NULL;
-        for (j = 0 ; j < vm->def->nconsoles ; j++)
+        for (j = 0; j < vm->def->nconsoles; j++)
             if (vm->def->consoles[j]->target.port == i)
                 chr = vm->def->consoles[j];
         if (chr)
@@ -442,10 +442,10 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         VIR_FREE(ret);
     }
 
-    for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
+    for (i = 0; i < UML_MAX_CHAR_DEVICE; i++) {
         virDomainChrDefPtr chr = NULL;
         char *ret = NULL;
-        for (j = 0 ; j < vm->def->nserials ; j++)
+        for (j = 0; j < vm->def->nserials; j++)
             if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
