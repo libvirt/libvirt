@@ -1478,9 +1478,9 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     }
 
     id = 0;
-    for (s = 0 ; s < nodeinfo.sockets ; s++) {
-        for (c = 0 ; c < nodeinfo.cores ; c++) {
-            for (t = 0 ; t < nodeinfo.threads ; t++) {
+    for (s = 0; s < nodeinfo.sockets; s++) {
+        for (c = 0; c < nodeinfo.cores; c++) {
+            for (t = 0; t < nodeinfo.threads; t++) {
                 cpus[id].id = id;
                 cpus[id].socket_id = s;
                 cpus[id].core_id = c;
@@ -1502,7 +1502,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     return 0;
 
  error:
-    for (; id >= 0 ; id--)
+    for (; id >= 0; id--)
         virBitmapFree(cpus[id].siblings);
     VIR_FREE(cpus);
     return -1;
@@ -1637,7 +1637,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
         goto cleanup;
     memset(allonesmask, 0xff, mask_n_bytes);
 
-    for (n = 0 ; n <= numa_max_node() ; n++) {
+    for (n = 0; n <= numa_max_node(); n++) {
         int i;
         /* The first time this returns -1, ENOENT if node doesn't exist... */
         if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
@@ -1655,14 +1655,14 @@ nodeCapsInitNUMA(virCapsPtr caps)
         /* Detect the amount of memory in the numa cell */
         memory = nodeGetCellMemory(n);
 
-        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
+        for (ncpus = 0, i = 0; i < max_n_cpus; i++)
             if (MASK_CPU_ISSET(mask, i))
                 ncpus++;
 
         if (VIR_ALLOC_N(cpus, ncpus) < 0)
             goto cleanup;
 
-        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++) {
+        for (ncpus = 0, i = 0; i < max_n_cpus; i++) {
             if (MASK_CPU_ISSET(mask, i)) {
                 if (virNodeCapsFillCPUInfo(i, cpus + ncpus++) < 0) {
                     topology_failed = true;
@@ -1714,7 +1714,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
     if (lastCell > maxCell)
         lastCell = maxCell;
 
-    for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
+    for (numCells = 0, n = startCell; n <= lastCell; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1740,7 +1740,7 @@ nodeGetFreeMemory(void)
         return nodeGetFreeMemoryFake();
 
 
-    for (n = 0 ; n <= numa_max_node() ; n++) {
+    for (n = 0; n <= numa_max_node(); n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

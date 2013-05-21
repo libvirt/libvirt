@@ -151,7 +151,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
 
     if (virProcessSetNamespaces(nfdlist, fdlist) < 0) {
         if (oldfdlist && noldfdlist) {
-            for (i = 0 ; i < *noldfdlist ; i++) {
+            for (i = 0; i < *noldfdlist; i++) {
                 VIR_FORCE_CLOSE((*oldfdlist)[i]);
             }
             VIR_FREE(*oldfdlist);

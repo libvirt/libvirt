@@ -150,7 +150,7 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                                          void *cbdata ATTRIBUTE_UNUSED) {
     int i;
 
-    for (i = 0 ; i < ncred ; i++) {
+    for (i = 0; i < ncred; i++) {
         char buf[1024];
         char *bufptr = buf;
         size_t len;
@@ -820,7 +820,7 @@ int virStateInitialize(bool privileged,
     if (virInitialize() < 0)
         return -1;
 
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+    for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateInitialize) {
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
@@ -846,7 +846,7 @@ int virStateInitialize(bool privileged,
 int virStateCleanup(void) {
     int i, ret = 0;
 
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+    for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateCleanup &&
             virStateDriverTab[i]->stateCleanup() < 0)
             ret = -1;
@@ -864,7 +864,7 @@ int virStateCleanup(void) {
 int virStateReload(void) {
     int i, ret = 0;
 
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+    for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateReload &&
             virStateDriverTab[i]->stateReload() < 0)
             ret = -1;
@@ -882,7 +882,7 @@ int virStateReload(void) {
 int virStateStop(void) {
     int i, ret = 0;
 
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+    for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateStop &&
             virStateDriverTab[i]->stateStop())
             ret = 1;
