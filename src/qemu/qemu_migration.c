@@ -610,7 +610,7 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
     virBufferEscapeString(buf, "  <hostname>%s</hostname>\n", mig->localHostname);
     virBufferAsprintf(buf, "  <hostuuid>%s</hostuuid>\n", hostuuidstr);
 
-    for (i = 0 ; i < QEMU_MIGRATION_COOKIE_FLAG_LAST ; i++) {
+    for (i = 0; i < QEMU_MIGRATION_COOKIE_FLAG_LAST; i++) {
         if (mig->flagsMandatory & (1 << i))
             virBufferAsprintf(buf, "  <feature name='%s'/>\n",
                               qemuMigrationCookieFlagTypeToString(i));
@@ -866,7 +866,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
         goto error;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         int val;
         char *str = virXMLPropString(nodes[i], "name");
         if (!str) {
@@ -1467,7 +1467,7 @@ qemuMigrationIsSafe(virDomainDefPtr def)
 {
     int i;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
         /* Our code elsewhere guarantees shared disks are either readonly (in

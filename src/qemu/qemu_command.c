@@ -756,7 +756,7 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
     if (idx == -1) {
         int i;
         idx = 0;
-        for (i = 0 ; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             int thisidx;
 
             if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
@@ -788,7 +788,7 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
     if (idx == -1) {
         int i;
         idx = 0;
-        for (i = 0 ; i < def->nhostdevs ; i++) {
+        for (i = 0; i < def->nhostdevs; i++) {
             int thisidx;
             if ((thisidx = qemuDomainDeviceAliasIndex(def->hostdevs[i]->info, "hostdev")) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -824,7 +824,7 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redir
     if (idx == -1) {
         int i;
         idx = 0;
-        for (i = 0 ; i < def->nredirdevs ; i++) {
+        for (i = 0; i < def->nredirdevs; i++) {
             int thisidx;
             if ((thisidx = qemuDomainDeviceAliasIndex(&def->redirdevs[i]->info, "redir")) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -865,13 +865,13 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
     int i;
 
-    for (i = 0; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (qemuAssignDeviceDiskAlias(def, def->disks[i], qemuCaps) < 0)
             return -1;
     }
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NET_NAME) ||
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        for (i = 0; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             /* type='hostdev' interfaces are also on the hostdevs list,
              * and will have their alias assigned with other hostdevs.
              */
@@ -885,55 +885,55 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         return 0;
 
-    for (i = 0; i < def->nfss ; i++) {
+    for (i = 0; i < def->nfss; i++) {
         if (virAsprintf(&def->fss[i]->info.alias, "fs%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nsounds ; i++) {
+    for (i = 0; i < def->nsounds; i++) {
         if (virAsprintf(&def->sounds[i]->info.alias, "sound%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (qemuAssignDeviceHostdevAlias(def, def->hostdevs[i], i) < 0)
             return -1;
     }
-    for (i = 0; i < def->nredirdevs ; i++) {
+    for (i = 0; i < def->nredirdevs; i++) {
         if (qemuAssignDeviceRedirdevAlias(def, def->redirdevs[i], i) < 0)
             return -1;
     }
-    for (i = 0; i < def->nvideos ; i++) {
+    for (i = 0; i < def->nvideos; i++) {
         if (virAsprintf(&def->videos[i]->info.alias, "video%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         if (qemuAssignDeviceControllerAlias(def->controllers[i]) < 0)
             return -1;
     }
-    for (i = 0; i < def->ninputs ; i++) {
+    for (i = 0; i < def->ninputs; i++) {
         if (virAsprintf(&def->inputs[i]->info.alias, "input%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nparallels ; i++) {
+    for (i = 0; i < def->nparallels; i++) {
         if (virAsprintf(&def->parallels[i]->info.alias, "parallel%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nserials ; i++) {
+    for (i = 0; i < def->nserials; i++) {
         if (virAsprintf(&def->serials[i]->info.alias, "serial%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         if (virAsprintf(&def->channels[i]->info.alias, "channel%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nconsoles ; i++) {
+    for (i = 0; i < def->nconsoles; i++) {
         if (virAsprintf(&def->consoles[i]->info.alias, "console%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nhubs ; i++) {
+    for (i = 0; i < def->nhubs; i++) {
         if (virAsprintf(&def->hubs[i]->info.alias, "hub%d", i) < 0)
             goto no_memory;
     }
-    for (i = 0; i < def->nsmartcards ; i++) {
+    for (i = 0; i < def->nsmartcards; i++) {
         if (virAsprintf(&def->smartcards[i]->info.alias, "smartcard%d", i) < 0)
             goto no_memory;
     }
@@ -1066,20 +1066,20 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
     */
     int i;
 
-    for (i = 0; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
             def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->disks[i]->info.type = type;
     }
 
-    for (i = 0; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         if (STREQ(def->nets[i]->model,"virtio") &&
             def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             def->nets[i]->info.type = type;
         }
     }
 
-    for (i = 0; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type ==
              VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL ||
              def->controllers[i]->type ==
@@ -1292,7 +1292,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
-    for (i = 0 ; i < def->nnets; i++) {
+    for (i = 0; i < def->nnets; i++) {
         if (def->nets[i]->model &&
             STREQ(def->nets[i]->model, "spapr-vlan"))
             def->nets[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
@@ -1301,7 +1301,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             goto cleanup;
     }
 
-    for (i = 0 ; i < def->ncontrollers; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         model = def->controllers[i]->model;
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             if (qemuSetScsiControllerModel(def, qemuCaps, &model) < 0)
@@ -1316,7 +1316,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             goto cleanup;
     }
 
-    for (i = 0 ; i < def->nserials; i++) {
+    for (i = 0; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             (def->os.arch == VIR_ARCH_PPC64) &&
             STREQ(def->os.machine, "pseries"))
@@ -1909,7 +1909,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     virDevicePCIAddressPtr addrptr;
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
-    for (i = 0; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             def->controllers[i]->idx == 0) {
@@ -2027,7 +2027,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         }
     }
 
-    for (i = 0; i < def->nfss ; i++) {
+    for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
 
@@ -2038,7 +2038,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Network interfaces */
-    for (i = 0; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         /* type='hostdev' network devices might be USB, and are also
          * in hostdevs list anyway, so handle them with other hostdevs
          * instead of here.
@@ -2052,7 +2052,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Sound cards */
-    for (i = 0; i < def->nsounds ; i++) {
+    for (i = 0; i < def->nsounds; i++) {
         if (def->sounds[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
         /* Skip ISA sound card, and PCSPK */
@@ -2065,7 +2065,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Device controllers (SCSI, USB, but not IDE, FDC or CCID) */
-    for (i = 0; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         /* PCI controllers have been dealt with earlier */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
             continue;
@@ -2095,7 +2095,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
             virDevicePCIAddress addr = { 0, 0, 0, 0, false };
             memset(&tmp_addr, 0, sizeof(tmp_addr));
-            for (j = 0 ; j < i ; j++) {
+            for (j = 0; j < i; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
                     def->controllers[j]->idx == def->controllers[i]->idx) {
                     addr = def->controllers[j]->info.addr.pci;
@@ -2141,7 +2141,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Disks (VirtIO only for now) */
-    for (i = 0; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         /* Only VirtIO disks use PCI addrs */
         if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
             continue;
@@ -2165,7 +2165,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Host PCI devices */
-    for (i = 0; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
         if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
@@ -2201,7 +2201,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* Further non-primary video cards which have to be qxl type */
-    for (i = 1; i < def->nvideos ; i++) {
+    for (i = 1; i < def->nvideos; i++) {
         if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("non-primary video device must be type of 'qxl'"));
@@ -2212,19 +2212,19 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
             goto error;
     }
-    for (i = 0; i < def->ninputs ; i++) {
+    for (i = 0; i < def->ninputs; i++) {
         /* Nada - none are PCI based (yet) */
     }
-    for (i = 0; i < def->nparallels ; i++) {
+    for (i = 0; i < def->nparallels; i++) {
         /* Nada - none are PCI based (yet) */
     }
-    for (i = 0; i < def->nserials ; i++) {
+    for (i = 0; i < def->nserials; i++) {
         /* Nada - none are PCI based (yet) */
     }
-    for (i = 0; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         /* Nada - none are PCI based (yet) */
     }
-    for (i = 0; i < def->nhubs ; i++) {
+    for (i = 0; i < def->nhubs; i++) {
         /* Nada - none are PCI based (yet) */
     }
 
@@ -6255,7 +6255,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         break;
     }
 
-    for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+    for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
         switch (graphics->data.spice.channels[i]) {
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
             if (tlsPort <= 0) {
@@ -6910,7 +6910,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (!emitBootindex) {
             char boot[VIR_DOMAIN_BOOT_LAST+1];
 
-            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            for (i = 0; i < def->os.nBootDevs; i++) {
                 switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_CDROM:
                     boot[i] = 'd';
@@ -7003,7 +7003,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgList(cmd, "-bootloader", def->os.bootloader, NULL);
     }
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
         if (disk->driverName != NULL &&
@@ -7083,7 +7083,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (usbcontroller == 0)
         virCommandAddArg(cmd, "-usb");
 
-    for (i = 0 ; i < def->nhubs ; i++) {
+    for (i = 0; i < def->nhubs; i++) {
         virDomainHubDefPtr hub = def->hubs[i];
         char *optstr;
 
@@ -7101,7 +7101,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if ((virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) || emitBootindex)) {
             /* bootDevs will get translated into either bootindex=N or boot=on
              * depending on what qemu supports */
-            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            for (i = 0; i < def->os.nBootDevs; i++) {
                 switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_CDROM:
                     bootCD = i + 1;
@@ -7116,7 +7116,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
         }
 
-        for (i = 0 ; i < def->ndisks ; i++) {
+        for (i = 0; i < def->ndisks; i++) {
             char *optstr;
             int bootindex = 0;
             virDomainDiskDefPtr disk = def->disks[i];
@@ -7212,7 +7212,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
         }
     } else {
-        for (i = 0 ; i < def->ndisks ; i++) {
+        for (i = 0; i < def->ndisks; i++) {
             char dev[NAME_MAX];
             char *file;
             const char *fmt;
@@ -7299,7 +7299,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV)) {
-        for (i = 0 ; i < def->nfss ; i++) {
+        for (i = 0; i < def->nfss; i++) {
             char *optstr;
             virDomainFSDefPtr fs = def->fss[i];
 
@@ -7334,7 +7334,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             /* convert <boot dev='network'/> to bootindex since we didn't emit
              * -boot n
              */
-            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            for (i = 0; i < def->os.nBootDevs; i++) {
                 if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
                     bootNet = i + 1;
                     break;
@@ -7342,7 +7342,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
         }
 
-        for (i = 0 ; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
             char tapfd_name[50] = "";
@@ -7567,7 +7567,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
             virCommandAddArgList(cmd, "-serial", "none", NULL);
     } else {
-        for (i = 0 ; i < def->nserials ; i++) {
+        for (i = 0; i < def->nserials; i++) {
             virDomainChrDefPtr serial = def->serials[i];
             char *devstr;
 
@@ -7604,7 +7604,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
             virCommandAddArgList(cmd, "-parallel", "none", NULL);
     } else {
-        for (i = 0 ; i < def->nparallels ; i++) {
+        for (i = 0; i < def->nparallels; i++) {
             virDomainChrDefPtr parallel = def->parallels[i];
             char *devstr;
 
@@ -7633,7 +7633,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    for (i = 0 ; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
         char *devstr;
         char *addr;
@@ -7703,7 +7703,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     /* Explicit console devices */
-    for (i = 0 ; i < def->nconsoles ; i++) {
+    for (i = 0; i < def->nconsoles; i++) {
         virDomainChrDefPtr console = def->consoles[i];
         char *devstr;
 
@@ -7786,7 +7786,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         VIR_FREE(optstr);
     }
 
-    for (i = 0 ; i < def->ninputs ; i++) {
+    for (i = 0; i < def->ninputs; i++) {
         virDomainInputDefPtr input = def->inputs[i];
 
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
@@ -7805,7 +7805,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    for (i = 0 ; i < def->ngraphics ; ++i) {
+    for (i = 0; i < def->ngraphics; ++i) {
         switch (def->graphics[i]->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             ++sdl;
@@ -7830,7 +7830,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
     }
 
-    for (i = 0 ; i < def->ngraphics ; ++i) {
+    for (i = 0; i < def->ngraphics; ++i) {
         if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps,
                                          def->graphics[i]) < 0)
             goto error;
@@ -7847,7 +7847,7 @@ qemuBuildCommandLine(virConnectPtr conn,
              (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL &&
                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)))
            ) {
-            for (i = 0 ; i < def->nvideos ; i++) {
+            for (i = 0; i < def->nvideos; i++) {
                 char *str;
                 virCommandAddArg(cmd, "-device");
                 if (!(str = qemuBuildDeviceVideoStr(def->videos[i], qemuCaps, !i)))
@@ -7913,7 +7913,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (def->nvideos > 1) {
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                    for (i = 1 ; i < def->nvideos ; i++) {
+                    for (i = 1; i < def->nvideos; i++) {
                         char *str;
                         if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -7977,7 +7977,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     /* Add sound hardware */
     if (def->nsounds) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            for (i = 0 ; i < def->nsounds ; i++) {
+            for (i = 0; i < def->nsounds; i++) {
                 virDomainSoundDefPtr sound = def->sounds[i];
                 char *str = NULL;
 
@@ -7997,7 +7997,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                         char *codecstr = NULL;
                         int ii;
 
-                        for (ii = 0 ; ii < sound->ncodecs ; ii++) {
+                        for (ii = 0; ii < sound->ncodecs; ii++) {
                             virCommandAddArg(cmd, "-device");
                             if (!(codecstr = qemuBuildSoundCodecStr(sound, sound->codecs[ii], qemuCaps))) {
                                 goto error;
@@ -8030,7 +8030,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (VIR_ALLOC_N(modstr, size+1) < 0)
                 goto no_memory;
 
-            for (i = 0 ; i < def->nsounds && size > 0 ; i++) {
+            for (i = 0; i < def->nsounds && size > 0; i++) {
                 virDomainSoundDefPtr sound = def->sounds[i];
                 const char *model = virDomainSoundModelTypeToString(sound->model);
                 if (!model) {
@@ -8097,7 +8097,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     /* Add redirected devices */
-    for (i = 0 ; i < def->nredirdevs ; i++) {
+    for (i = 0; i < def->nredirdevs; i++) {
         virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
         char *devstr;
 
@@ -8123,7 +8123,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
 
     /* Add host passthrough hardware */
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         char *devstr;
 
@@ -8578,7 +8578,7 @@ static int qemuStringToArgvEnv(const char *args,
 
     /* Iterate over list of args, finding first arg not containing
      * the '=' character (eg, skip over env vars FOO=bar) */
-    for (envend = 0 ; ((envend < argcount) &&
+    for (envend = 0; ((envend < argcount) &&
                        (strchr(arglist[envend], '=') != NULL));
          envend++)
         ; /* nada */
@@ -8587,7 +8587,7 @@ static int qemuStringToArgvEnv(const char *args,
     if (envend > 0) {
         if (VIR_REALLOC_N(progenv, envend+1) < 0)
             goto no_memory;
-        for (i = 0 ; i < envend ; i++) {
+        for (i = 0; i < envend; i++) {
             progenv[i] = arglist[i];
             arglist[i] = NULL;
         }
@@ -8597,7 +8597,7 @@ static int qemuStringToArgvEnv(const char *args,
     /* Copy the list of argv */
     if (VIR_REALLOC_N(progargv, argcount-envend + 1) < 0)
         goto no_memory;
-    for (i = envend ; i < argcount ; i++)
+    for (i = envend; i < argcount; i++)
         progargv[i-envend] = arglist[i];
     progargv[i-envend] = NULL;
 
@@ -8609,10 +8609,10 @@ static int qemuStringToArgvEnv(const char *args,
     return 0;
 
 no_memory:
-    for (i = 0 ; progenv && progenv[i] ; i++)
+    for (i = 0; progenv && progenv[i]; i++)
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
-    for (i = 0 ; i < argcount ; i++)
+    for (i = 0; i < argcount; i++)
         VIR_FREE(arglist[i]);
     VIR_FREE(arglist);
     virReportOOMError();
@@ -8629,7 +8629,7 @@ static const char *qemuFindEnv(const char **progenv,
     int i;
     int len = strlen(name);
 
-    for (i = 0 ; progenv && progenv[i] ; i++) {
+    for (i = 0; progenv && progenv[i]; i++) {
         if (STREQLEN(progenv[i], name, len) &&
             progenv[i][len] == '=')
             return progenv[i] + len + 1;
@@ -8735,7 +8735,7 @@ qemuParseKeywords(const char *str,
 no_memory:
     virReportOOMError();
 error:
-    for (i = 0 ; i < keywordCount ; i++) {
+    for (i = 0; i < keywordCount; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
     }
@@ -8781,7 +8781,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
 
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         if (STREQ(keywords[i], "file")) {
             if (values[i] && STRNEQ(values[i], "")) {
                 def->src = values[i];
@@ -9061,7 +9061,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     }
 
 cleanup:
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
     }
@@ -9084,7 +9084,7 @@ qemuFindNICForVLAN(int nnics,
                    int wantvlan)
 {
     int i;
-    for (i = 0 ; i < nnics ; i++) {
+    for (i = 0; i < nnics; i++) {
         int gotvlan;
         const char *tmp = strstr(nics[i], "vlan=");
         char *end;
@@ -9160,7 +9160,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     else
         def->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
 
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         if (STREQ(keywords[i], "vlan")) {
             if (virStrToLong_i(values[i], NULL, 10, &wantvlan) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9200,7 +9200,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
     }
 
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
     }
@@ -9219,7 +9219,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
         nkeywords = 0;
     }
 
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         if (STREQ(keywords[i], "macaddr")) {
             genmac = 0;
             if (virMacAddrParse(values[i], &def->mac) < 0) {
@@ -9255,7 +9255,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
         virDomainNetGenerateMAC(xmlopt, &def->mac);
 
 cleanup:
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
     }
@@ -9794,7 +9794,7 @@ static void
 qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str) {
     int n, b = 0;
 
-    for (n = 0 ; str[n] && b < VIR_DOMAIN_BOOT_LAST ; n++) {
+    for (n = 0; str[n] && b < VIR_DOMAIN_BOOT_LAST; n++) {
         if (str[n] == 'a')
             def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_FLOPPY;
         else if (str[n] == 'c')
@@ -9916,7 +9916,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
 
     /* One initial loop to get list of NICs, so we
      * can correlate them later */
-    for (i = 1 ; progargv[i] ; i++) {
+    for (i = 1; progargv[i]; i++) {
         const char *arg = progargv[i];
         /* Make sure we have a single - for all options to
            simplify next logic */
@@ -9934,7 +9934,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
     }
 
     /* Now the real processing loop */
-    for (i = 1 ; progargv[i] ; i++) {
+    for (i = 1; progargv[i]; i++) {
         const char *arg = progargv[i];
         /* Make sure we have a single - for all options to
            simplify next logic */
@@ -10603,7 +10603,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
     if (def->ndisks > 0 && ceph_args) {
         char *hosts, *port, *saveptr = NULL, *token;
         virDomainDiskDefPtr first_rbd_disk = NULL;
-        for (i = 0 ; i < def->ndisks ; i++) {
+        for (i = 0; i < def->ndisks; i++) {
             if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
                 def->disks[i]->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
                 first_rbd_disk = def->disks[i];
@@ -10785,11 +10785,11 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
                                pidfile, monConfig, monJSON);
 
 cleanup:
-    for (i = 0 ; progargv && progargv[i] ; i++)
+    for (i = 0; progargv && progargv[i]; i++)
         VIR_FREE(progargv[i]);
     VIR_FREE(progargv);
 
-    for (i = 0 ; progenv && progenv[i] ; i++)
+    for (i = 0; progenv && progenv[i]; i++)
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
 
@@ -10847,7 +10847,7 @@ static int qemuParseProcFileStrings(int pid_value,
 
 cleanup:
     if (ret < 0) {
-        for (i = 0 ; str && str[i] ; i++)
+        for (i = 0; str && str[i]; i++)
             VIR_FREE(str[i]);
         VIR_FREE(str);
     }
@@ -10897,10 +10897,10 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
 
 cleanup:
     VIR_FREE(exepath);
-    for (i = 0 ; progargv && progargv[i] ; i++)
+    for (i = 0; progargv && progargv[i]; i++)
         VIR_FREE(progargv[i]);
     VIR_FREE(progargv);
-    for (i = 0 ; progenv && progenv[i] ; i++)
+    for (i = 0; progenv && progenv[i]; i++)
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
     return def;

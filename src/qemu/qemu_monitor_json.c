@@ -515,7 +515,7 @@ static void
 qemuFreeKeywords(int nkeywords, char **keywords, char **values)
 {
     int i;
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
     }
@@ -540,7 +540,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     if (nkeywords < 0)
         goto error;
 
-    for (i = 0 ; i < nkeywords ; i++) {
+    for (i = 0; i < nkeywords; i++) {
         if (values[i] == NULL) {
             if (i != 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1208,7 +1208,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         goto cleanup;
     }
 
-    for (i = 0 ; i < ncpus ; i++) {
+    for (i = 0; i < ncpus; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         int thread;
         if (!entry) {
@@ -1643,7 +1643,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < virJSONValueArraySize(devices) ; i++) {
+    for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         virJSONValuePtr stats;
         const char *thisdev;
@@ -1797,7 +1797,7 @@ int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < stats->data.object.npairs; i++) {
+    for (i = 0; i < stats->data.object.npairs; i++) {
         const char *key = stats->data.object.pairs[i].key;
 
         if (STREQ(key, "rd_bytes") ||
@@ -1857,7 +1857,7 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < virJSONValueArraySize(devices) ; i++) {
+    for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         virJSONValuePtr stats;
         virJSONValuePtr parent;
@@ -2923,7 +2923,7 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
         goto cleanup;
     }
 
-    for (i = 0 ; i < virJSONValueArraySize(data) ; i++) {
+    for (i = 0; i < virJSONValueArraySize(data); i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         const char *type;
         const char *id;
@@ -3984,7 +3984,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
         qemuMonitorMachineInfoPtr info;
@@ -4032,7 +4032,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
 
 cleanup:
     if (ret < 0 && infolist) {
-        for (i = 0 ; i < n ; i++)
+        for (i = 0; i < n; i++)
             qemuMonitorMachineInfoFree(infolist[i]);
         VIR_FREE(infolist);
     }
@@ -4098,7 +4098,7 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4170,7 +4170,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4247,7 +4247,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4328,7 +4328,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(array, i);
         const char *tmp;
 
@@ -4363,7 +4363,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4490,7 +4490,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4570,7 +4570,7 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
@@ -4917,7 +4917,7 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 

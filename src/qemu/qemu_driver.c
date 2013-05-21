@@ -911,7 +911,7 @@ qemuStateStop(void) {
     /* First we pause all VMs to make them stop dirtying
        pages, etc. We remember if any VMs were paused so
        we can restore that on resume. */
-    for (i = 0 ; i < numDomains ; i++) {
+    for (i = 0; i < numDomains; i++) {
         flags[i] = VIR_DOMAIN_SAVE_RUNNING;
         if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
             if (state == VIR_DOMAIN_PAUSED) {
@@ -923,12 +923,12 @@ qemuStateStop(void) {
 
     ret = 0;
     /* Then we save the VMs to disk */
-    for (i = 0 ; i < numDomains ; i++)
+    for (i = 0; i < numDomains; i++)
         if (virDomainManagedSave(domains[i], flags[i]) < 0)
             ret = -1;
 
  cleanup:
-    for (i = 0 ; i < numDomains ; i++)
+    for (i = 0; i < numDomains; i++)
         virDomainFree(domains[i]);
     VIR_FREE(domains);
     VIR_FREE(flags);
@@ -3535,7 +3535,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
      * in reverse order to onlining, so any partial fail leaves us in a
      * reasonably sensible state */
     if (nvcpus > vcpus) {
-        for (i = vcpus ; i < nvcpus ; i++) {
+        for (i = vcpus; i < nvcpus; i++) {
             /* Online new CPU */
             rc = qemuMonitorSetCPU(priv->mon, i, 1);
             if (rc == 0)
@@ -3546,7 +3546,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             vcpus++;
         }
     } else {
-        for (i = vcpus - 1 ; i >= nvcpus ; i--) {
+        for (i = vcpus - 1; i >= nvcpus; i--) {
             /* Offline old CPU */
             rc = qemuMonitorSetCPU(priv->mon, i, 0);
             if (rc == 0)
@@ -4345,7 +4345,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
     if (maxinfo >= 1) {
         if (info != NULL) {
             memset(info, 0, sizeof(*info) * maxinfo);
-            for (i = 0 ; i < maxinfo ; i++) {
+            for (i = 0; i < maxinfo; i++) {
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
 
@@ -4365,7 +4365,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
         if (cpumaps != NULL) {
             memset(cpumaps, 0, maplen * maxinfo);
             if (priv->vcpupids != NULL) {
-                for (v = 0 ; v < maxinfo ; v++) {
+                for (v = 0; v < maxinfo; v++) {
                     unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
                     virBitmapPtr map = NULL;
                     unsigned char *tmpmap = NULL;
@@ -5230,7 +5230,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
      * directly. We convert those configs into generic 'ethernet'
      * config and assume the user has suitable 'ifup-qemu' scripts
      */
-    for (i = 0 ; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         int bootIndex = net->info.bootIndex;
         char *model = net->model;
@@ -5309,7 +5309,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     /* do fake auto-alloc of graphics ports, if such config is used */
-    for (i = 0 ; i < def->ngraphics; ++i) {
+    for (i = 0; i < def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             !graphics->data.vnc.socket && graphics->data.vnc.autoport) {
@@ -5322,7 +5322,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
             if (graphics->data.spice.autoport) {
                 /* check if tlsPort or port need allocation */
-                for (j = 0 ; j < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; j++) {
+                for (j = 0; j < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; j++) {
                     switch (graphics->data.spice.channels[j]) {
                     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
                         needTLSPort = true;
@@ -8766,7 +8766,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
     }
 
     /* Check the path is one of the domain's network interfaces. */
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i]->ifname &&
             STREQ(vm->def->nets[i]->ifname, path)) {
             ret = 0;
@@ -13019,16 +13019,16 @@ qemuDomainOpenConsole(virDomainPtr dom,
     priv = vm->privateData;
 
     if (dev_name) {
-        for (i = 0 ; !chr && i < vm->def->nconsoles ; i++) {
+        for (i = 0; !chr && i < vm->def->nconsoles; i++) {
             if (vm->def->consoles[i]->info.alias &&
                 STREQ(dev_name, vm->def->consoles[i]->info.alias))
                 chr = vm->def->consoles[i];
         }
-        for (i = 0 ; !chr && i < vm->def->nserials ; i++) {
+        for (i = 0; !chr && i < vm->def->nserials; i++) {
             if (STREQ(dev_name, vm->def->serials[i]->info.alias))
                 chr = vm->def->serials[i];
         }
-        for (i = 0 ; !chr && i < vm->def->nparallels ; i++) {
+        for (i = 0; !chr && i < vm->def->nparallels; i++) {
             if (STREQ(dev_name, vm->def->parallels[i]->info.alias))
                 chr = vm->def->parallels[i];
         }
@@ -13097,7 +13097,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
     priv = vm->privateData;
 
     if (name) {
-        for (i = 0 ; !chr && i < vm->def->nchannels ; i++) {
+        for (i = 0; !chr && i < vm->def->nchannels; i++) {
             if (STREQ(name, vm->def->channels[i]->info.alias))
                 chr = vm->def->channels[i];
 

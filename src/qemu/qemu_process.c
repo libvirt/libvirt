@@ -199,7 +199,7 @@ qemuFindAgentConfig(virDomainDefPtr def)
     virDomainChrSourceDefPtr config = NULL;
     int i;
 
-    for (i = 0 ; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
 
         if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
@@ -1052,7 +1052,7 @@ no_memory:
         VIR_FREE(remoteAddr);
     }
     if (subject) {
-        for (i = 0 ; i < subject->nidentity ; i++) {
+        for (i = 0; i < subject->nidentity; i++) {
             VIR_FREE(subject->identities[i].type);
             VIR_FREE(subject->identities[i].name);
         }
@@ -1511,7 +1511,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
     int i;
     const char *prefix = chardevfmt ? "char" : "";
 
-    for (i = 0 ; i < count ; i++) {
+    for (i = 0; i < count; i++) {
         virDomainChrDefPtr chr = devices[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             char id[32];
@@ -1606,7 +1606,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
        device args. This code must match that ordering.... */
 
     /* first comes the serial devices */
-    for (i = 0 ; i < vm->def->nserials ; i++) {
+    for (i = 0; i < vm->def->nserials; i++) {
         virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
@@ -1616,7 +1616,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
     }
 
     /* then the parallel devices */
-    for (i = 0 ; i < vm->def->nparallels ; i++) {
+    for (i = 0; i < vm->def->nparallels; i++) {
         virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
@@ -1626,7 +1626,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
     }
 
     /* then the channel devices */
-    for (i = 0 ; i < vm->def->nchannels ; i++) {
+    for (i = 0; i < vm->def->nchannels; i++) {
         virDomainChrDefPtr chr = vm->def->channels[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
@@ -1635,7 +1635,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         }
     }
 
-    for (i = 0 ; i < vm->def->nconsoles ; i++) {
+    for (i = 0; i < vm->def->nconsoles; i++) {
         virDomainChrDefPtr chr = vm->def->consoles[i];
         /* For historical reasons, console[0] can be just an alias
          * for serial[0]; That's why we need to update it as well */
@@ -1989,7 +1989,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int i;
 
-    for (i = 0 ; i < vm->def->ngraphics; ++i) {
+    for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
@@ -2008,7 +2008,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
         goto cleanup;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
+        for (i = 0; i < vm->def->ndisks; i++) {
             char *secret;
             size_t secretLen;
             const char *alias;
@@ -2082,7 +2082,7 @@ qemuProcessAssignNextPCIAddress(virDomainDeviceInfo *info,
 
     VIR_DEBUG("Look for %x:%x out of %d", vendor, product, naddrs);
 
-    for (i = 0 ; (i < naddrs) && !found; i++) {
+    for (i = 0; (i < naddrs) && !found; i++) {
         VIR_DEBUG("Maybe %x:%x", addrs[i].vendor, addrs[i].product);
         if (addrs[i].vendor == vendor &&
             addrs[i].product == product) {
@@ -2299,7 +2299,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
      * actual device data structure instead ?
      */
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuProcessGetPCIDiskVendorProduct(vm->def->disks[i], &vendor, &product) < 0)
             continue;
 
@@ -2313,7 +2313,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
         }
     }
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         if (qemuProcessGetPCINetVendorProduct(vm->def->nets[i], &vendor, &product) < 0)
             continue;
 
@@ -2327,7 +2327,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
         }
     }
 
-    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+    for (i = 0; i < vm->def->ncontrollers; i++) {
         if (qemuProcessGetPCIControllerVendorProduct(vm->def->controllers[i], &vendor, &product) < 0)
             continue;
 
@@ -2341,7 +2341,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
         }
     }
 
-    for (i = 0 ; i < vm->def->nvideos ; i++) {
+    for (i = 0; i < vm->def->nvideos; i++) {
         if (qemuProcessGetPCIVideoVendorProduct(vm->def->videos[i], &vendor, &product) < 0)
             continue;
 
@@ -2355,7 +2355,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
         }
     }
 
-    for (i = 0 ; i < vm->def->nsounds ; i++) {
+    for (i = 0; i < vm->def->nsounds; i++) {
         if (qemuProcessGetPCISoundVendorProduct(vm->def->sounds[i], &vendor, &product) < 0)
             continue;
 
@@ -2611,7 +2611,7 @@ qemuProcessNotifyNets(virDomainDefPtr def)
 {
     int ii;
 
-    for (ii = 0 ; ii < def->nnets ; ii++) {
+    for (ii = 0; ii < def->nnets; ii++) {
         virDomainNetDefPtr net = def->nets[ii];
         if (networkNotifyActualDevice(net) < 0)
             return -1;
@@ -2629,7 +2629,7 @@ qemuProcessFiltersInstantiate(virConnectPtr conn,
     if (!conn)
         return 1;
 
-    for (i = 0 ; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
            if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
@@ -3242,7 +3242,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 
     if (graphics->data.spice.autoport) {
         /* check if tlsPort or port need allocation */
-        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+        for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
             switch (graphics->data.spice.channels[i]) {
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
                 needTLSPort = true;
@@ -3458,7 +3458,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(vm);
 
-    for (i = 0 ; i < vm->def->ngraphics; ++i) {
+    for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
@@ -3525,7 +3525,7 @@ int qemuProcessStart(virConnectPtr conn,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 
-    for (i = 0; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuDomainDetermineDiskChain(driver, vm->def->disks[i],
                                          false) < 0)
             goto cleanup;
@@ -4013,7 +4013,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     if (cfg->macFilter) {
         def = vm->def;
-        for (i = 0 ; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr net = def->nets[i];
             if (net->ifname == NULL)
                 continue;
@@ -4146,7 +4146,7 @@ retry:
     /* Remove VNC and Spice ports from port reservation bitmap, but only if
        they were reserved by the driver (autoport=yes)
     */
-    for (i = 0 ; i < vm->def->ngraphics; ++i) {
+    for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             if (graphics->data.vnc.autoport) {

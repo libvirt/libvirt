@@ -235,7 +235,7 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
     }
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), disk->dst);
@@ -426,7 +426,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
     int i;
     virDomainControllerDefPtr cont;
 
-    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+    for (i = 0; i < vm->def->ncontrollers; i++) {
         cont = vm->def->controllers[i];
 
         if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
@@ -478,7 +478,7 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), disk->dst);
@@ -515,7 +515,7 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
         goto error;
 
-    for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
+    for (i = 0; i <= disk->info.addr.drive.controller; i++) {
         cont = qemuDomainFindOrCreateSCSIDiskController(driver, vm, i);
         if (!cont)
             goto error;
@@ -601,7 +601,7 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     char *devstr = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), disk->dst);
@@ -1897,7 +1897,7 @@ static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
 {
     int i;
 
-    for (i = 0 ; i < vm->def->ngraphics ; i++) {
+    for (i = 0; i < vm->def->ngraphics; i++) {
         if (vm->def->graphics[i]->type == dev->type)
             return vm->def->graphics[i];
     }
@@ -2061,7 +2061,7 @@ static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
 {
     int i;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (STREQ(def->disks[i]->dst, dst)) {
             return i;
         }

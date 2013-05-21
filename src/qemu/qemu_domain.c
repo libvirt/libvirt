@@ -291,7 +291,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     if (priv->nvcpupids) {
         int i;
         virBufferAddLit(buf, "  <vcpus>\n");
-        for (i = 0 ; i < priv->nvcpupids ; i++) {
+        for (i = 0; i < priv->nvcpupids; i++) {
             virBufferAsprintf(buf, "    <vcpu pid='%d'/>\n", priv->vcpupids[i]);
         }
         virBufferAddLit(buf, "  </vcpus>\n");
@@ -300,7 +300,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     if (priv->qemuCaps) {
         int i;
         virBufferAddLit(buf, "  <qemuCaps>\n");
-        for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
+        for (i = 0; i < QEMU_CAPS_LAST; i++) {
             if (virQEMUCapsGet(priv->qemuCaps, i)) {
                 virBufferAsprintf(buf, "    <flag name='%s'/>\n",
                                   virQEMUCapsTypeToString(i));
@@ -392,7 +392,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
             goto error;
         }
 
-        for (i = 0 ; i < n ; i++) {
+        for (i = 0; i < n; i++) {
             char *pidstr = virXMLPropString(nodes[i], "pid");
             if (!pidstr)
                 goto error;
@@ -415,7 +415,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         if (!(qemuCaps = virQEMUCapsNew()))
             goto error;
 
-        for (i = 0 ; i < n ; i++) {
+        for (i = 0; i < n; i++) {
             char *str = virXMLPropString(nodes[i], "name");
             if (str) {
                 int flag = virQEMUCapsTypeFromString(str);
@@ -1502,10 +1502,10 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     if (obj->def->cpu && obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logFD);
 
-    for (i = 0 ; i < obj->def->ndisks ; i++)
+    for (i = 0; i < obj->def->ndisks; i++)
         qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logFD);
 
-    for (i = 0 ; i < obj->def->nnets ; i++)
+    for (i = 0; i < obj->def->nnets; i++)
         qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
 
     virObjectUnref(cfg);

@@ -225,7 +225,7 @@ static char * qemuMonitorEscapeNonPrintable(const char *text)
 {
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    for (i = 0 ; text[i] != '\0' ; i++) {
+    for (i = 0; text[i] != '\0'; i++) {
         if (c_isprint(text[i]) ||
             text[i] == '\n' ||
             (text[i] == '\r' && text[i+1] == '\n'))

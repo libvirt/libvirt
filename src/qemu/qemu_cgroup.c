@@ -550,7 +550,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    for (i = 0; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuSetupDiskCgroup(vm, vm->def->disks[i]) < 0)
             goto cleanup;
     }
@@ -586,7 +586,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
         }
     }
 
-    for (i = 0; deviceACL[i] != NULL ; i++) {
+    for (i = 0; deviceACL[i] != NULL; i++) {
         if (access(deviceACL[i], F_OK) < 0) {
             VIR_DEBUG("Ignoring non-existant device %s",
                       deviceACL[i]);

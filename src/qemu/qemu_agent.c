@@ -139,7 +139,7 @@ qemuAgentEscapeNonPrintable(const char *text)
 {
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    for (i = 0 ; text[i] != '\0' ; i++) {
+    for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\')
             virBufferAddLit(&buf, "\\\\");
         else if (c_isprint(text[i]) || text[i] == '\n' ||
@@ -281,7 +281,7 @@ qemuAgentIOProcessEvent(qemuAgentPtr mon,
     }
 
 /*
-    for (i = 0 ; i < ARRAY_CARDINALITY(eventHandlers) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(eventHandlers); i++) {
         if (STREQ(eventHandlers[i].type, type)) {
             virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
             VIR_DEBUG("handle %s handler=%p data=%p", type,

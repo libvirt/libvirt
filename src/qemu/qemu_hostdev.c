@@ -43,7 +43,7 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     if (!(list = virPCIDeviceListNew()))
         return NULL;
 
-    for (i = 0 ; i < nhostdevs ; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virPCIDevicePtr dev;
 
@@ -93,7 +93,7 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
     if (!(list = virPCIDeviceListNew()))
         return NULL;
 
-    for (i = 0 ; i < nhostdevs ; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virPCIDevicePtr dev;
         virPCIDevicePtr activeDev;
@@ -822,7 +822,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
 
     /* Loop 1: build temporary list
      */
-    for (i = 0 ; i < nhostdevs ; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         bool required = true;
         virUSBDevicePtr usb;
@@ -904,7 +904,7 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Loop 2: build temporary list */
-    for (i = 0 ; i < nhostdevs ; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virSCSIDevicePtr scsi;
 

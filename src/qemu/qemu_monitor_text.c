@@ -168,7 +168,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
                     /* Blank out the password prompt so we don't re-trigger
                      * if we have to go back to sleep for more I/O */
-                    for (i = 0 ; i < strlen(PASSWORD_PROMPT) ; i++)
+                    for (i = 0; i < strlen(PASSWORD_PROMPT); i++)
                         start[i] = ' ';
 
                     /* Handled, so skip forward over password prompt */

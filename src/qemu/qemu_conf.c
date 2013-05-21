@@ -922,13 +922,13 @@ virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
     if (!list)
         return;
 
-    for (i = 0 ; i < list->nentries ; i++) {
+    for (i = 0; i < list->nentries; i++) {
         virHashRemoveEntry(closeCallbacks->list,
                            list->entries[i].uuid);
     }
     virObjectUnlock(closeCallbacks);
 
-    for (i = 0 ; i < list->nentries ; i++) {
+    for (i = 0; i < list->nentries; i++) {
         virDomainObjPtr vm;
 
         if (!(vm = virDomainObjListFindByUUID(driver->domains,

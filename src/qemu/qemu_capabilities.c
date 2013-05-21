@@ -905,7 +905,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
      * so just probe for them all - we gracefully fail
      * if a qemu-system-$ARCH binary can't be found
      */
-    for (i = 0 ; i < VIR_ARCH_LAST ; i++)
+    for (i = 0; i < VIR_ARCH_LAST; i++)
         if (virQEMUCapsInitGuest(caps, cache,
                                  hostarch,
                                  i) < 0)
@@ -1463,8 +1463,8 @@ virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
                               char *const*values)
 {
     size_t i, j;
-    for (i = 0 ; i < nflags ; i++) {
-        for (j = 0 ; j < nvalues ; j++) {
+    for (i = 0; i < nflags; i++) {
+        for (j = 0; j < nvalues; j++) {
             if (STREQ(values[j], flags[i].value)) {
                 virQEMUCapsSet(qemuCaps, flags[i].flag);
                 break;
@@ -1479,7 +1479,7 @@ virQEMUCapsFreeStringList(size_t len,
                           char **values)
 {
     size_t i;
-    for (i = 0 ; i < len ; i++)
+    for (i = 0; i < len; i++)
         VIR_FREE(values[i]);
     VIR_FREE(values);
 }
@@ -1600,7 +1600,7 @@ virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str)
                                   nvalues, values);
     virQEMUCapsFreeStringList(nvalues, values);
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
         const char *type = virQEMUCapsObjectProps[i].type;
         if ((nvalues = virQEMUCapsParseDeviceStrObjectProps(str,
                                                             type,
@@ -1740,7 +1740,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     if (VIR_ALLOC_N(ret->cpuDefinitions, qemuCaps->ncpuDefinitions) < 0)
         goto no_memory;
     ret->ncpuDefinitions = qemuCaps->ncpuDefinitions;
-    for (i = 0 ; i < qemuCaps->ncpuDefinitions ; i++) {
+    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
         if (!(ret->cpuDefinitions[i] = strdup(qemuCaps->cpuDefinitions[i])))
             goto no_memory;
     }
@@ -1750,7 +1750,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     if (VIR_ALLOC_N(ret->machineAliases, qemuCaps->nmachineTypes) < 0)
         goto no_memory;
     ret->nmachineTypes = qemuCaps->nmachineTypes;
-    for (i = 0 ; i < qemuCaps->nmachineTypes ; i++) {
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         if (!(ret->machineTypes[i] = strdup(qemuCaps->machineTypes[i])))
             goto no_memory;
         if (qemuCaps->machineAliases[i] &&
@@ -1772,14 +1772,14 @@ void virQEMUCapsDispose(void *obj)
     virQEMUCapsPtr qemuCaps = obj;
     size_t i;
 
-    for (i = 0 ; i < qemuCaps->nmachineTypes ; i++) {
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         VIR_FREE(qemuCaps->machineTypes[i]);
         VIR_FREE(qemuCaps->machineAliases[i]);
     }
     VIR_FREE(qemuCaps->machineTypes);
     VIR_FREE(qemuCaps->machineAliases);
 
-    for (i = 0 ; i < qemuCaps->ncpuDefinitions ; i++) {
+    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
         VIR_FREE(qemuCaps->cpuDefinitions[i]);
     }
     VIR_FREE(qemuCaps->cpuDefinitions);
@@ -1907,7 +1907,7 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
         goto no_memory;
     *nmachines = qemuCaps->nmachineTypes;
 
-    for (i = 0 ; i < qemuCaps->nmachineTypes ; i++) {
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         virCapsGuestMachinePtr mach;
         if (VIR_ALLOC(mach) < 0)
             goto no_memory;
@@ -1943,7 +1943,7 @@ const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
     if (!name)
         return NULL;
 
-    for (i = 0 ; i < qemuCaps->nmachineTypes ; i++) {
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         if (!qemuCaps->machineAliases[i])
             continue;
         if (STREQ(qemuCaps->machineAliases[i], name))
@@ -1965,7 +1965,7 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
     if ((ncommands = qemuMonitorGetCommands(mon, &commands)) < 0)
         return -1;
 
-    for (i = 0 ; i < ncommands ; i++) {
+    for (i = 0; i < ncommands; i++) {
         char *name = commands[i];
         if (STREQ(name, "system_wakeup"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
@@ -2028,7 +2028,7 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
     if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
         return -1;
 
-    for (i = 0 ; i < nevents ; i++) {
+    for (i = 0; i < nevents; i++) {
         char *name = events[i];
 
         if (STREQ(name, "BALLOON_CHANGE"))
@@ -2059,7 +2059,7 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                   nvalues, values);
     virQEMUCapsFreeStringList(nvalues, values);
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
         const char *type = virQEMUCapsObjectProps[i].type;
         if ((nvalues = qemuMonitorGetObjectProps(mon,
                                                  type,
@@ -2105,7 +2105,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
-    for (i = 0 ; i < nmachines ; i++) {
+    for (i = 0; i < nmachines; i++) {
         if (machines[i]->alias) {
             if (!(qemuCaps->machineAliases[i] = strdup(machines[i]->alias))) {
                 virReportOOMError();
@@ -2127,7 +2127,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     ret = 0;
 
 cleanup:
-    for (i = 0 ; i < nmachines ; i++)
+    for (i = 0; i < nmachines; i++)
         qemuMonitorMachineInfoFree(machines[i]);
     VIR_FREE(machines);
     return ret;
