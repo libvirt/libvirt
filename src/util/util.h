@@ -261,6 +261,8 @@ char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);
 char *virGetUserName(uid_t uid);
 char *virGetGroupName(gid_t gid);
+int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
+    ATTRIBUTE_NONNULL(3);
 int virGetUserID(const char *name,
                  uid_t *uid) ATTRIBUTE_RETURN_CHECK;
 int virGetGroupID(const char *name,
