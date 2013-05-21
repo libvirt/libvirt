@@ -553,7 +553,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
        aligned to the cylinder boundary */
     extraBytes = cylinderSize - (allocation % cylinderSize);
 
-    for (i = 0 ; i < dev->nfreeExtent ; i++) {
+    for (i = 0; i < dev->nfreeExtent; i++) {
          unsigned long long size =
              dev->freeExtents[i].end -
              dev->freeExtents[i].start;

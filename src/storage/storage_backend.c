@@ -1485,14 +1485,14 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    for (i = 0 ; i < nregex ; i++) {
+    for (i = 0; i < nregex; i++) {
         err = regcomp(&reg[i], regex[i], REG_EXTENDED);
         if (err != 0) {
             char error[100];
             regerror(err, &reg[i], error, sizeof(error));
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to compile regex %s"), error);
-            for (j = 0 ; j <= i ; j++)
+            for (j = 0; j <= i; j++)
                 regfree(&reg[j]);
             VIR_FREE(reg);
             return -1;
@@ -1538,7 +1538,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
         if (!p)
             p = line;
 
-        for (i = 0 ; i <= maxReg && i < nregex ; i++) {
+        for (i = 0; i <= maxReg && i < nregex; i++) {
             if (regexec(&reg[i], p, nvars[i]+1, vars, 0) == 0) {
                 maxReg++;
 
@@ -1546,7 +1546,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                     ngroup = 0;
 
                 /* NULL terminate each captured group in the line */
-                for (j = 0 ; j < nvars[i] ; j++) {
+                for (j = 0; j < nvars[i]; j++) {
                     /* NB vars[0] is the full pattern, so we offset j by 1 */
                     p[vars[j+1].rm_eo] = '\0';
                     if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
@@ -1559,7 +1559,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                         goto cleanup;
 
                     /* Release matches & restart to matching the first regex */
-                    for (j = 0 ; j < totgroups ; j++)
+                    for (j = 0; j < totgroups; j++)
                         VIR_FREE(groups[j]);
                     maxReg = 0;
                     ngroup = 0;
@@ -1571,13 +1571,13 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
     ret = virCommandWait(cmd, NULL);
 cleanup:
     if (groups) {
-        for (j = 0 ; j < totgroups ; j++)
+        for (j = 0; j < totgroups; j++)
             VIR_FREE(groups[j]);
         VIR_FREE(groups);
     }
     VIR_FREE(vars);
 
-    for (i = 0 ; i < nregex ; i++)
+    for (i = 0; i < nregex; i++)
         regfree(&reg[i]);
 
     VIR_FREE(reg);

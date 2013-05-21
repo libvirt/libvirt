@@ -562,7 +562,7 @@ virStorageBackendISCSIScanTargets(const char *portal,
                                       &list, NULL) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < list.ntargets ; i++) {
+    for (i = 0; i < list.ntargets; i++) {
         /* We have to ignore failure, because we can't undo
          * the results of 'sendtargets', unless we go scrubbing
          * around in the dirt in /var/lib/iscsi.
@@ -578,7 +578,7 @@ virStorageBackendISCSIScanTargets(const char *portal,
         *ntargetsret = list.ntargets;
         *targetsret = list.targets;
     } else {
-        for (i = 0 ; i < list.ntargets ; i++) {
+        for (i = 0; i < list.ntargets; i++) {
             VIR_FREE(list.targets[i]);
         }
         VIR_FREE(list.targets);
@@ -640,7 +640,7 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    for (i = 0 ; i < ntargets ; i++) {
+    for (i = 0; i < ntargets; i++) {
         if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
             VIR_ALLOC_N(list.sources[i].hosts, 1) < 0) {
             virReportOOMError();
@@ -661,13 +661,13 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 cleanup:
     if (list.sources) {
-        for (i = 0 ; i < ntargets ; i++) {
+        for (i = 0; i < ntargets; i++) {
             VIR_FREE(list.sources[i].hosts);
             VIR_FREE(list.sources[i].devices);
         }
         VIR_FREE(list.sources);
     }
-    for (i = 0 ; i < ntargets ; i++)
+    for (i = 0; i < ntargets; i++)
         VIR_FREE(targets[i]);
     VIR_FREE(targets);
     VIR_FREE(portal);

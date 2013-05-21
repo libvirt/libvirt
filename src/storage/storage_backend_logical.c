@@ -364,7 +364,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
         goto error;
 
     thisSource = NULL;
-    for (i = 0 ; i < sourceList->nsources; i++) {
+    for (i = 0; i < sourceList->nsources; i++) {
         if (STREQ(sourceList->sources[i].name, vgname)) {
             thisSource = &sourceList->sources[i];
             break;
@@ -514,7 +514,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     vgcmd = virCommandNewArgList(VGCREATE, pool->def->source.name, NULL);
 
-    for (i = 0 ; i < pool->def->source.ndevice ; i++) {
+    for (i = 0; i < pool->def->source.ndevice; i++) {
         virCommandPtr pvcmd;
         /*
          * LVM requires that the first sector is blanked if using
@@ -669,7 +669,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* now remove the pv devices and clear them out */
     ret = 0;
-    for (i = 0 ; i < pool->def->source.ndevice ; i++) {
+    for (i = 0; i < pool->def->source.ndevice; i++) {
         cmd = virCommandNewArgList(PVREMOVE,
                                    pool->def->source.devices[i].path,
                                    NULL);
