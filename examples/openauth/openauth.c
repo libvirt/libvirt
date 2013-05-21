@@ -135,7 +135,7 @@ showDomains(virConnectPtr conn)
         printf("Inactive domains:\n");
     }
 
-    for (i = 0 ; i < numNames ; i++) {
+    for (i = 0; i < numNames; i++) {
         printf("  %s\n", *(nameList + i));
         /* The API documentation doesn't say so, but the names
          * returned by virConnectListDefinedDomains are strdup'd and
@@ -175,7 +175,7 @@ authCallback(virConnectCredentialPtr cred, unsigned int ncred, void *cbdata)
      * For example the ESX driver passes the hostname of the ESX or vCenter
      * server as challenge. This allows a auth callback to return the
      * proper credentials. */
-    for (i = 0; i < ncred ; ++i) {
+    for (i = 0; i < ncred; ++i) {
         switch (cred[i].type) {
         case VIR_CRED_AUTHNAME:
             cred[i].result = strdup(authData->username);

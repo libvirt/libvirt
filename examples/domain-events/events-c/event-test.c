@@ -332,7 +332,7 @@ static int myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
            remote->family, remote->node, remote->service);
 
     printf("auth: %s ", authScheme);
-    for (i = 0 ; i < subject->nidentity ; i++) {
+    for (i = 0; i < subject->nidentity; i++) {
         printf(" identity: %s=%s",
                subject->identities[i].type,
                subject->identities[i].name);
