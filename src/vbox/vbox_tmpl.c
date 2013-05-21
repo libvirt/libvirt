@@ -3478,7 +3478,7 @@ static int vboxConnectListDefinedDomains(virConnectPtr conn, char ** const names
                     if (VIR_STRDUP(names[j], machineName) < 0) {
                         VBOX_UTF16_FREE(machineNameUtf16);
                         VBOX_UTF8_FREE(machineName);
-                        for (; j >= 0 ; j--)
+                        for (; j >= 0; j--)
                             VIR_FREE(names[j]);
                         ret = -1;
                         goto cleanup;
