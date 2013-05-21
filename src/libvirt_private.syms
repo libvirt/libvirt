@@ -1889,6 +1889,7 @@ virGetDeviceID;
 virGetDeviceUnprivSGIO;
 virGetFCHostNameByWWN;
 virGetGroupID;
+virGetGroupList;
 virGetGroupName;
 virGetHostname;
 virGetUnprivSGIOSysfsPath;

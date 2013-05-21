@@ -2675,6 +2675,68 @@ virGetGroupID(const char *group, gid_t *gid)
     return 0;
 }
 
+
+/* Compute the list of supplementary groups associated with @uid, and
+ * including @gid in the list (unless it is -1), storing a malloc'd
+ * result into @list.  Return the size of the list on success, or -1
+ * on failure with error reported and errno set. May not be called
+ * between fork and exec. */
+int
+virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
+{
+    int ret = -1;
+    char *user = NULL;
+
+    *list = NULL;
+    if (uid == (uid_t)-1)
+        return 0;
+
+    if (virGetUserEnt(uid, &user,
+                      gid == (gid_t)-1 ? &gid : NULL, NULL) < 0)
+        return -1;
+
+# if HAVE_GETGROUPLIST
+    /* Borrowing from gnulib's LGPLv2+ mgetgroups.c as of July 2013. */
+    /* Avoid a bug in older glibc with size 0, by pre-allocating a
+     * list size and then enlarging if needed.  */
+    int max = 10;
+    if (VIR_ALLOC_N(*list, max) < 0)
+        goto no_memory;
+    while (1)
+    {
+        int ngroups;
+        int last = max;
+
+        ngroups = getgrouplist(user, gid, *list, &max);
+
+        /* Avoid a bug in Darwin where max is not increased.  */
+        if (ngroups < 0 && last == max)
+            max *= 2;
+        if (VIR_REALLOC_N(*list, max) < 0) {
+            VIR_FREE(*list);
+            goto no_memory;
+        }
+        if (0 <= ngroups) {
+            ret = ngroups;
+            break;
+        }
+    }
+# else
+    if (VIR_ALLOC_N(*list, 1) < 0)
+        goto no_memory;
+    (*list)[0] = gid;
+    ret = 1;
+# endif
+
+cleanup:
+    VIR_FREE(user);
+    return ret;
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+
 /* Set the real and effective uid and gid to the given values, and call
  * initgroups so that the process has all the assumed group membership of
  * that uid. return 0 on success, -1 on failure (the original system error
