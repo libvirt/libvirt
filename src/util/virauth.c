@@ -57,7 +57,7 @@ int virAuthGetConfigFilePath(virConnectPtr conn,
     }
 
     if (conn && conn->uri) {
-        for (i = 0 ; i < conn->uri->paramsCount ; i++) {
+        for (i = 0; i < conn->uri->paramsCount; i++) {
             if (STREQ_NULLABLE(conn->uri->params[i].name, "authfile") &&
                 conn->uri->params[i].value) {
                 VIR_DEBUG("Using path from URI '%s'",

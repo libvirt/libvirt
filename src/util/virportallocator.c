@@ -104,7 +104,7 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
     *port = 0;
     virObjectLock(pa);
 
-    for (i = pa->start ; i <= pa->end && !*port; i++) {
+    for (i = pa->start; i <= pa->end && !*port; i++) {
         int reuse = 1;
         struct sockaddr_in addr;
         bool used = false;

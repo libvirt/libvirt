@@ -641,7 +641,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
     VIR_DEBUG("path=%s", path);
 
     /* First check file magic */
-    for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
+    for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
         if (virStorageFileMatchesMagic(i, buf, buflen)) {
             if (!virStorageFileMatchesVersion(i, buf, buflen)) {
                 possibleFormat = i;
@@ -658,7 +658,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
                  path, virStorageFileFormatTypeToString(possibleFormat));
 
     /* No magic, so check file extension */
-    for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
+    for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
         if (virStorageFileMatchesExtension(i, path)) {
             format = i;
             goto cleanup;

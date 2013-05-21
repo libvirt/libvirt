@@ -276,7 +276,7 @@ virProcessKillPainfully(pid_t pid, bool force)
      *
      * Note that setting @force could result in dataloss for the process.
      */
-    for (i = 0 ; i < 75; i++) {
+    for (i = 0; i < 75; i++) {
         int signum;
         if (i == 0) {
             signum = SIGTERM; /* kindly suggest it should exit */
@@ -348,7 +348,7 @@ realloc:
     }
 
     CPU_ZERO_S(masklen, mask);
-    for (i = 0 ; i < virBitmapSize(map); i++) {
+    for (i = 0; i < virBitmapSize(map); i++) {
         if (virBitmapGetBit(map, i, &set) < 0)
             return -1;
         if (set)
@@ -372,7 +372,7 @@ realloc:
     cpu_set_t mask;
 
     CPU_ZERO(&mask);
-    for (i = 0 ; i < virBitmapSize(map); i++) {
+    for (i = 0; i < virBitmapSize(map); i++) {
         if (virBitmapGetBit(map, i, &set) < 0)
             return -1;
         if (set)
@@ -435,7 +435,7 @@ realloc:
         return -1;
     }
 
-    for (i = 0 ; i < maxcpu ; i++)
+    for (i = 0; i < maxcpu; i++)
         if (CPU_ISSET_S(i, masklen, mask))
             ignore_value(virBitmapSetBit(*map, i));
     CPU_FREE(mask);
@@ -450,7 +450,7 @@ realloc:
         return -1;
     }
 
-    for (i = 0 ; i < maxcpu ; i++)
+    for (i = 0; i < maxcpu; i++)
         if (CPU_ISSET(i, &mask))
             ignore_value(virBitmapSetBit(*map, i));
 # endif
@@ -570,7 +570,7 @@ cleanup:
     VIR_FREE(nsdir);
     VIR_FREE(nsfile);
     if (ret < 0) {
-        for (i = 0 ; i < *nfdlist ; i++) {
+        for (i = 0; i < *nfdlist; i++) {
             VIR_FORCE_CLOSE((*fdlist)[i]);
         }
         VIR_FREE(*fdlist);
@@ -589,7 +589,7 @@ int virProcessSetNamespaces(size_t nfdlist,
                              _("Expected at least one file descriptor"));
         return -1;
     }
-    for (i = 0 ; i < nfdlist ; i++) {
+    for (i = 0; i < nfdlist; i++) {
         if (setns(fdlist[i], 0) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to join domain namespace"));

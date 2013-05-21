@@ -56,7 +56,7 @@ void virThreadOnExit(void)
 {
     unsigned int i;
     virMutexLock(&virThreadLocalLock);
-    for (i = 0 ; i < virThreadLocalCount ; i++) {
+    for (i = 0; i < virThreadLocalCount; i++) {
         if (virThreadLocalList[i].cleanup) {
             void *data = TlsGetValue(virThreadLocalList[i].key);
             if (data) {
@@ -220,7 +220,7 @@ void virCondBroadcast(virCondPtr c)
 
     if (c->nwaiters) {
         unsigned int i;
-        for (i = 0 ; i < c->nwaiters ; i++) {
+        for (i = 0; i < c->nwaiters; i++) {
             HANDLE event = c->waiters[i];
             SetEvent(event);
         }

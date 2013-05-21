@@ -70,14 +70,14 @@ void virJSONValueFree(virJSONValuePtr value)
 
     switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_OBJECT:
-        for (i = 0 ; i < value->data.object.npairs; i++) {
+        for (i = 0; i < value->data.object.npairs; i++) {
             VIR_FREE(value->data.object.pairs[i].key);
             virJSONValueFree(value->data.object.pairs[i].value);
         }
         VIR_FREE(value->data.object.pairs);
         break;
     case VIR_JSON_TYPE_ARRAY:
-        for (i = 0 ; i < value->data.array.nvalues ; i++)
+        for (i = 0; i < value->data.array.nvalues; i++)
             virJSONValueFree(value->data.array.values[i]);
         VIR_FREE(value->data.array.values);
         break;
@@ -406,7 +406,7 @@ int virJSONValueObjectHasKey(virJSONValuePtr object, const char *key)
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return -1;
 
-    for (i = 0 ; i < object->data.object.npairs ; i++) {
+    for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key))
             return 1;
     }
@@ -421,7 +421,7 @@ virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key)
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return NULL;
 
-    for (i = 0 ; i < object->data.object.npairs ; i++) {
+    for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key))
             return object->data.object.pairs[i].value;
     }
@@ -463,7 +463,7 @@ virJSONValueObjectRemoveKey(virJSONValuePtr object, const char *key,
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return -1;
 
-    for (i = 0 ; i < object->data.object.npairs ; i++) {
+    for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key)) {
             if (value) {
                 *value = object->data.object.pairs[i].value;
@@ -1013,7 +1013,7 @@ cleanup:
 
     if (parser.nstate) {
         int i;
-        for (i = 0 ; i < parser.nstate ; i++) {
+        for (i = 0; i < parser.nstate; i++) {
             VIR_FREE(parser.state[i].key);
         }
     }
@@ -1035,7 +1035,7 @@ static int virJSONValueToStringOne(virJSONValuePtr object,
     case VIR_JSON_TYPE_OBJECT:
         if (yajl_gen_map_open(g) != yajl_gen_status_ok)
             return -1;
-        for (i = 0; i < object->data.object.npairs ; i++) {
+        for (i = 0; i < object->data.object.npairs; i++) {
             if (yajl_gen_string(g,
                                 (unsigned char *)object->data.object.pairs[i].key,
                                 strlen(object->data.object.pairs[i].key))
@@ -1050,7 +1050,7 @@ static int virJSONValueToStringOne(virJSONValuePtr object,
     case VIR_JSON_TYPE_ARRAY:
         if (yajl_gen_array_open(g) != yajl_gen_status_ok)
             return -1;
-        for (i = 0; i < object->data.array.nvalues ; i++) {
+        for (i = 0; i < object->data.array.nvalues; i++) {
             if (virJSONValueToStringOne(object->data.array.values[i], g) < 0)
                 return -1;
         }

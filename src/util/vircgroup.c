@@ -79,7 +79,7 @@ void virCgroupFree(virCgroupPtr *group)
     if (*group == NULL)
         return;
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         VIR_FREE((*group)->controllers[i].mountPoint);
         VIR_FREE((*group)->controllers[i].linkPoint);
         VIR_FREE((*group)->controllers[i].placement);
@@ -112,7 +112,7 @@ static int virCgroupCopyMounts(virCgroupPtr group,
                                virCgroupPtr parent)
 {
     int i;
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!parent->controllers[i].mountPoint)
             continue;
 
@@ -154,7 +154,7 @@ static int virCgroupDetectMounts(virCgroupPtr group)
         if (STRNEQ(entry.mnt_type, "cgroup"))
             continue;
 
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             const char *typestr = virCgroupControllerTypeToString(i);
             int typelen = strlen(typestr);
             char *tmp = entry.mnt_opts;
@@ -234,7 +234,7 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
                                   virCgroupPtr parent)
 {
     int i;
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!group->controllers[i].mountPoint)
             continue;
 
@@ -311,7 +311,7 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
         controllers++;
         selfpath++;
 
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             const char *typestr = virCgroupControllerTypeToString(i);
             int typelen = strlen(typestr);
             char *tmp = controllers;
@@ -376,7 +376,7 @@ static int virCgroupDetect(virCgroupPtr group,
 
     if (controllers >= 0) {
         VIR_DEBUG("Validating controllers %d", controllers);
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
                       virCgroupControllerTypeToString(i),
                       (1 << i) & controllers ? "yes" : "no",
@@ -391,7 +391,7 @@ static int virCgroupDetect(virCgroupPtr group,
             } else {
                 /* Check whether a request to disable a controller
                  * clashes with co-mounting of controllers */
-                for (j = 0 ; j < VIR_CGROUP_CONTROLLER_LAST ; j++) {
+                for (j = 0; j < VIR_CGROUP_CONTROLLER_LAST; j++) {
                     if (j == i)
                         continue;
                     if (!((1 << j) & controllers))
@@ -411,7 +411,7 @@ static int virCgroupDetect(virCgroupPtr group,
     } else {
         VIR_DEBUG("Auto-detecting controllers");
         controllers = 0;
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             VIR_DEBUG("Controller '%s' present=%s",
                       virCgroupControllerTypeToString(i),
                       group->controllers[i].mountPoint ? "yes" : "no");
@@ -434,7 +434,7 @@ static int virCgroupDetect(virCgroupPtr group,
 
     if (rc == 0) {
         /* Check that for every mounted controller, we found our placement */
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             if (!group->controllers[i].mountPoint)
                 continue;
 
@@ -467,7 +467,7 @@ int virCgroupPathOfController(virCgroupPtr group,
 {
     if (controller == -1) {
         int i;
-        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             if (group->controllers[i].mountPoint &&
                 group->controllers[i].placement) {
                 controller = i;
@@ -645,7 +645,7 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
     };
 
     VIR_DEBUG("Setting up inheritance %s -> %s", parent->path, group->path);
-    for (i = 0; i < ARRAY_CARDINALITY(inherit_values) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(inherit_values); i++) {
         char *value;
 
         rc = virCgroupGetValueStr(parent,
@@ -713,7 +713,7 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
     int rc = 0;
 
     VIR_DEBUG("Make group %s", group->path);
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         char *path = NULL;
 
         /* Skip over controllers that aren't mounted */
@@ -949,7 +949,7 @@ int virCgroupRemove(virCgroupPtr group)
     char *grppath = NULL;
 
     VIR_DEBUG("Removing cgroup %s", group->path);
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
         if (!group->controllers[i].mountPoint)
             continue;
@@ -983,7 +983,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
     int rc = 0;
     int i;
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
         if (!group->controllers[i].mountPoint)
             continue;
@@ -1069,7 +1069,7 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
     char *content = NULL;
     int i;
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!src_group->controllers[i].mountPoint ||
             !dest_group->controllers[i].mountPoint)
             continue;
@@ -1182,7 +1182,7 @@ static int virCgroupSetPartitionSuffix(const char *path, char **res)
     if (!tokens)
         return ret;
 
-    for (i = 0 ; tokens[i] != NULL ; i++) {
+    for (i = 0; tokens[i] != NULL; i++) {
         /* Whitelist the 3 top level fixed dirs
          * NB i == 0 is "", since we have leading '/'
          */
@@ -2499,7 +2499,7 @@ int virCgroupKillPainfully(virCgroupPtr group)
     int i;
     int rc;
     VIR_DEBUG("cgroup=%p path=%s", group, group->path);
-    for (i = 0 ; i < 15 ; i++) {
+    for (i = 0; i < 15; i++) {
         int signum;
         if (i == 0)
             signum = SIGTERM;
@@ -2544,7 +2544,7 @@ static char *virCgroupIdentifyRoot(virCgroupPtr group)
     char *ret = NULL;
     size_t i;
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         char *tmp;
         if (!group->controllers[i].mountPoint)
             continue;
@@ -2604,7 +2604,7 @@ int virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
         goto cleanup;
     }
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!group->controllers[i].mountPoint)
             continue;
 

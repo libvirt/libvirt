@@ -217,7 +217,7 @@ static void virIdentityDispose(void *object)
     virIdentityPtr ident = object;
     size_t i;
 
-    for (i = 0 ; i < VIR_IDENTITY_ATTR_LAST ; i++)
+    for (i = 0; i < VIR_IDENTITY_ATTR_LAST; i++)
         VIR_FREE(ident->attrs[i]);
 }
 
@@ -300,7 +300,7 @@ bool virIdentityIsEqual(virIdentityPtr identA,
     size_t i;
     VIR_DEBUG("identA=%p identB=%p", identA, identB);
 
-    for (i = 0 ; i < VIR_IDENTITY_ATTR_LAST ; i++) {
+    for (i = 0; i < VIR_IDENTITY_ATTR_LAST; i++) {
         if (STRNEQ_NULLABLE(identA->attrs[i],
                             identB->attrs[i]))
             goto cleanup;

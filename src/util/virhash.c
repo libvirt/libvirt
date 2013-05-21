@@ -505,7 +505,7 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
 
     table->iterating = true;
     table->current = NULL;
-    for (i = 0 ; i < table->size ; i++) {
+    for (i = 0; i < table->size; i++) {
         virHashEntryPtr entry = table->table[i];
         while (entry) {
             virHashEntryPtr next = entry->next;
@@ -551,7 +551,7 @@ virHashRemoveSet(virHashTablePtr table,
 
     table->iterating = true;
     table->current = NULL;
-    for (i = 0 ; i < table->size ; i++) {
+    for (i = 0; i < table->size; i++) {
         virHashEntryPtr *nextptr = table->table + i;
 
         while (*nextptr) {
@@ -625,7 +625,7 @@ void *virHashSearch(virHashTablePtr table,
 
     table->iterating = true;
     table->current = NULL;
-    for (i = 0 ; i < table->size ; i++) {
+    for (i = 0; i < table->size; i++) {
         virHashEntryPtr entry;
         for (entry = table->table[i]; entry; entry = entry->next) {
             if (iter(entry->payload, entry->name, data)) {

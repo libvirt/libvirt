@@ -128,7 +128,7 @@ const char *virArchToString(virArch arch)
 virArch virArchFromString(const char *archstr)
 {
     size_t i;
-    for (i = 1 ; i < VIR_ARCH_LAST ; i++) {
+    for (i = 1; i < VIR_ARCH_LAST; i++) {
         if (STREQ(virArchData[i].name, archstr))
             return i;
     }

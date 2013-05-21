@@ -890,7 +890,7 @@ virCommandKeepFD(virCommandPtr cmd, int fd, bool transfer)
         (transfer && (ret = virCommandFDSet(fd, &cmd->transfer,
                                             &cmd->transfer_size)))) {
         if (!cmd->has_error)
-            cmd->has_error = ret ? ret : -1 ;
+            cmd->has_error = ret ? ret : -1;
         VIR_DEBUG("cannot preserve %d", fd);
         return fd > STDERR_FILENO;
     }
@@ -1739,13 +1739,13 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
     if (!cmd || cmd->has_error)
         return;
 
-    for (i = 0 ; i < cmd->nenv ; i++) {
+    for (i = 0; i < cmd->nenv; i++) {
         if (safewrite(logfd, cmd->env[i], strlen(cmd->env[i])) < 0)
             ioError = errno;
         if (safewrite(logfd, " ", 1) < 0)
             ioError = errno;
     }
-    for (i = 0 ; i < cmd->nargs ; i++) {
+    for (i = 0; i < cmd->nargs; i++) {
         if (safewrite(logfd, cmd->args[i], strlen(cmd->args[i])) < 0)
             ioError = errno;
         if (safewrite(logfd, i == cmd->nargs - 1 ? "\n" : " ", 1) < 0)
@@ -1894,7 +1894,7 @@ virCommandProcessIO(virCommandPtr cmd)
             goto cleanup;
         }
 
-        for (i = 0; i < nfds ; i++) {
+        for (i = 0; i < nfds; i++) {
             if (fds[i].revents & (POLLIN | POLLHUP | POLLERR) &&
                 (fds[i].fd == errfd || fds[i].fd == outfd)) {
                 char data[1024];
@@ -2564,11 +2564,11 @@ virCommandFree(virCommandPtr cmd)
     VIR_FORCE_CLOSE(cmd->outfd);
     VIR_FORCE_CLOSE(cmd->errfd);
 
-    for (i = 0 ; i < cmd->nargs ; i++)
+    for (i = 0; i < cmd->nargs; i++)
         VIR_FREE(cmd->args[i]);
     VIR_FREE(cmd->args);
 
-    for (i = 0 ; i < cmd->nenv ; i++)
+    for (i = 0; i < cmd->nenv; i++)
         VIR_FREE(cmd->env[i]);
     VIR_FREE(cmd->env);
 

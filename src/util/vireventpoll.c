@@ -152,7 +152,7 @@ void virEventPollUpdateHandle(int watch, int events) {
     }
 
     virMutexLock(&eventLoop.lock);
-    for (i = 0 ; i < eventLoop.handlesCount ; i++) {
+    for (i = 0; i < eventLoop.handlesCount; i++) {
         if (eventLoop.handles[i].watch == watch) {
             eventLoop.handles[i].events =
                     virEventPollToNativeEvents(events);
@@ -185,7 +185,7 @@ int virEventPollRemoveHandle(int watch) {
     }
 
     virMutexLock(&eventLoop.lock);
-    for (i = 0 ; i < eventLoop.handlesCount ; i++) {
+    for (i = 0; i < eventLoop.handlesCount; i++) {
         if (eventLoop.handles[i].deleted)
             continue;
 
@@ -269,7 +269,7 @@ void virEventPollUpdateTimeout(int timer, int frequency)
     }
 
     virMutexLock(&eventLoop.lock);
-    for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
+    for (i = 0; i < eventLoop.timeoutsCount; i++) {
         if (eventLoop.timeouts[i].timer == timer) {
             eventLoop.timeouts[i].frequency = frequency;
             eventLoop.timeouts[i].expiresAt =
@@ -305,7 +305,7 @@ int virEventPollRemoveTimeout(int timer) {
     }
 
     virMutexLock(&eventLoop.lock);
-    for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
+    for (i = 0; i < eventLoop.timeoutsCount; i++) {
         if (eventLoop.timeouts[i].deleted)
             continue;
 
@@ -331,7 +331,7 @@ static int virEventPollCalculateTimeout(int *timeout) {
     int i;
     EVENT_DEBUG("Calculate expiry of %zu timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
-    for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
+    for (i = 0; i < eventLoop.timeoutsCount; i++) {
         if (eventLoop.timeouts[i].deleted)
             continue;
         if (eventLoop.timeouts[i].frequency < 0)
@@ -373,7 +373,7 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     int i;
 
     *nfds = 0;
-    for (i = 0 ; i < eventLoop.handlesCount ; i++) {
+    for (i = 0; i < eventLoop.handlesCount; i++) {
         if (eventLoop.handles[i].events && !eventLoop.handles[i].deleted)
             (*nfds)++;
     }
@@ -385,7 +385,7 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     }
 
     *nfds = 0;
-    for (i = 0 ; i < eventLoop.handlesCount ; i++) {
+    for (i = 0; i < eventLoop.handlesCount; i++) {
         EVENT_DEBUG("Prepare n=%d w=%d, f=%d e=%d d=%d", i,
                     eventLoop.handles[i].watch,
                     eventLoop.handles[i].fd,
@@ -427,7 +427,7 @@ static int virEventPollDispatchTimeouts(void)
     if (virTimeMillisNow(&now) < 0)
         return -1;
 
-    for (i = 0 ; i < ntimeouts ; i++) {
+    for (i = 0; i < ntimeouts; i++) {
         if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)
             continue;
 
@@ -472,7 +472,7 @@ static int virEventPollDispatchHandles(int nfds, struct pollfd *fds) {
     /* NB, use nfds not eventLoop.handlesCount, because new
      * fds might be added on end of list, and they're not
      * in the fds array we've got */
-    for (i = 0, n = 0 ; n < nfds && i < eventLoop.handlesCount ; n++) {
+    for (i = 0, n = 0; n < nfds && i < eventLoop.handlesCount; n++) {
         while ((eventLoop.handles[i].fd != fds[n].fd ||
                 eventLoop.handles[i].events == 0) &&
                i < eventLoop.handlesCount) {
@@ -518,7 +518,7 @@ static void virEventPollCleanupTimeouts(void) {
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
      */
-    for (i = 0 ; i < eventLoop.timeoutsCount ;) {
+    for (i = 0; i < eventLoop.timeoutsCount;) {
         if (!eventLoop.timeouts[i].deleted) {
             i++;
             continue;
@@ -566,7 +566,7 @@ static void virEventPollCleanupHandles(void) {
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
      */
-    for (i = 0 ; i < eventLoop.handlesCount ;) {
+    for (i = 0; i < eventLoop.handlesCount;) {
         if (!eventLoop.handles[i].deleted) {
             i++;
             continue;

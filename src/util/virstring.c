@@ -109,7 +109,7 @@ char **virStringSplit(const char *string,
 
 no_memory:
     virReportOOMError();
-    for (i = 0 ; i < ntokens ; i++)
+    for (i = 0; i < ntokens; i++)
         VIR_FREE(tokens[i]);
     VIR_FREE(tokens);
     return NULL;

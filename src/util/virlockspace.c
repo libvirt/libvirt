@@ -342,7 +342,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         goto error;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(resources, i);
         virLockSpaceResourcePtr res;
         const char *tmp;
@@ -426,7 +426,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             goto error;
         }
 
-        for (j = 0 ; j < res->nOwners ; j++) {
+        for (j = 0; j < res->nOwners; j++) {
             unsigned long long int owner;
             virJSONValuePtr ownerval = virJSONValueArrayGet(owners, j);
 
@@ -517,7 +517,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
             goto error;
         }
 
-        for (i = 0 ; i < res->nOwners ; i++) {
+        for (i = 0; i < res->nOwners; i++) {
             virJSONValuePtr owner = virJSONValueNewNumberUlong(res->owners[i]);
             if (!owner)
                 goto error;
@@ -701,7 +701,7 @@ int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
         goto cleanup;
     }
 
-    for (i = 0 ; i < res->nOwners ; i++) {
+    for (i = 0; i < res->nOwners; i++) {
         if (res->owners[i] == owner) {
             break;
         }
@@ -749,7 +749,7 @@ virLockSpaceRemoveResourcesForOwner(const void *payload,
 
     VIR_DEBUG("res %s owner %lld", res->name, (unsigned long long)data->owner);
 
-    for (i = 0 ; i < res->nOwners ; i++) {
+    for (i = 0; i < res->nOwners; i++) {
         if (res->owners[i] == data->owner) {
             break;
         }

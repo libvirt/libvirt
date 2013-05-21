@@ -386,7 +386,7 @@ int virEnumFromString(const char *const*types,
     if (!type)
         return -1;
 
-    for (i = 0 ; i < ntypes ; i++)
+    for (i = 0; i < ntypes; i++)
         if (STREQ(types[i], type))
             return i;
 

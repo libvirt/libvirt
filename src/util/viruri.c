@@ -328,7 +328,7 @@ void virURIFree(virURIPtr uri)
     VIR_FREE(uri->query);
     VIR_FREE(uri->fragment);
 
-    for (i = 0 ; i < uri->paramsCount ; i++) {
+    for (i = 0; i < uri->paramsCount; i++) {
         VIR_FREE(uri->params[i].name);
         VIR_FREE(uri->params[i].value);
     }
