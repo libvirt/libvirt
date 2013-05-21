@@ -81,7 +81,7 @@ libvirt_lxc_virDomainLxcOpenNamespace(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
 
     py_retval = PyList_New(c_retval);
-    for (i = 0 ; i < c_retval ; i++) {
+    for (i = 0; i < c_retval; i++) {
         PyObject *item = NULL;
 
         if ((item = PyInt_FromLong(fdlist[i])) == NULL)
@@ -95,7 +95,7 @@ libvirt_lxc_virDomainLxcOpenNamespace(PyObject *self ATTRIBUTE_UNUSED,
     return py_retval;
 
 error:
-    for (i = 0 ; i < c_retval ; i++) {
+    for (i = 0; i < c_retval; i++) {
         VIR_FORCE_CLOSE(fdlist[i]);
     }
     VIR_FREE(fdlist);

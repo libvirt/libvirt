@@ -81,7 +81,7 @@ getPyVirTypedParameter(const virTypedParameterPtr params, int nparams)
     if ((info = PyDict_New()) == NULL)
         return NULL;
 
-    for (i = 0 ; i < nparams ; i++) {
+    for (i = 0; i < nparams; i++) {
         switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
             val = PyInt_FromLong(params[i].value.i);
@@ -1409,7 +1409,7 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     if ((pycpumap = PyList_New(dominfo.nrVirtCpu)) == NULL)
         goto cleanup;
 
-    for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
+    for (i = 0; i < dominfo.nrVirtCpu; i++) {
         PyObject *info = PyTuple_New(4);
         PyObject *item = NULL;
 
@@ -1441,12 +1441,12 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
             Py_XDECREF(item);
             goto cleanup;
     }
-    for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
+    for (i = 0; i < dominfo.nrVirtCpu; i++) {
         PyObject *info = PyTuple_New(cpunum);
         int j;
         if (info == NULL)
             goto cleanup;
-        for (j = 0 ; j < cpunum ; j++) {
+        for (j = 0; j < cpunum; j++) {
             PyObject *item = NULL;
             if ((item = PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen, i, j))) == NULL ||
                 PyTuple_SetItem(info, j, item) < 0) {
@@ -1950,7 +1950,7 @@ static int virConnectCredCallbackWrapper(virConnectCredentialPtr cred,
 
     list = PyTuple_New(2);
     pycred = PyTuple_New(ncred);
-    for (i = 0 ; i < ncred ; i++) {
+    for (i = 0; i < ncred; i++) {
         PyObject *pycreditem;
         pycreditem = PyList_New(5);
         Py_INCREF(Py_None);
@@ -1985,7 +1985,7 @@ static int virConnectCredCallbackWrapper(virConnectCredentialPtr cred,
 
     ret = PyLong_AsLong(pyret);
     if (ret == 0) {
-        for (i = 0 ; i < ncred ; i++) {
+        for (i = 0; i < ncred; i++) {
             PyObject *pycreditem;
             PyObject *pyresult;
             char *result = NULL;
@@ -2036,7 +2036,7 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
         int i;
         if (VIR_ALLOC_N(auth.credtype, auth.ncredtype) < 0)
             return VIR_PY_NONE;
-        for (i = 0 ; i < auth.ncredtype ; i++) {
+        for (i = 0; i < auth.ncredtype; i++) {
             PyObject *val;
             val = PyList_GetItem(pycredtype, i);
             auth.credtype[i] = (int)PyLong_AsLong(val);
@@ -5655,7 +5655,7 @@ libvirt_virConnectDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSE
                    libvirt_constcharPtrWrap(remote->service));
 
     pyobj_subject = PyList_New(subject->nidentity);
-    for (i = 0 ; i < subject->nidentity ; i++) {
+    for (i = 0; i < subject->nidentity; i++) {
         PyObject *pair = PyTuple_New(2);
         PyTuple_SetItem(pair, 0, libvirt_constcharPtrWrap(subject->identities[i].type));
         PyTuple_SetItem(pair, 1, libvirt_constcharPtrWrap(subject->identities[i].name));
