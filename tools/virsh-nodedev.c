@@ -277,7 +277,7 @@ fallback:
     list->ndevices = 0;
 
     /* get the node devices */
-    for (i = 0; i < ndevices ; i++) {
+    for (i = 0; i < ndevices; i++) {
         if (!(device = virNodeDeviceLookupByName(ctl->conn, names[i])))
             continue;
         list->devices[list->ndevices++] = device;
@@ -481,14 +481,14 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             }
         }
 
-        for (i = 0 ; i < list->ndevices; i++) {
+        for (i = 0; i < list->ndevices; i++) {
             if (parents[i] == NULL &&
                 vshTreePrint(ctl, vshNodeListLookup, &arrays,
                              list->ndevices, i) < 0)
                 ret = false;
         }
 
-        for (i = 0 ; i < list->ndevices; i++)
+        for (i = 0; i < list->ndevices; i++)
             VIR_FREE(parents[i]);
         VIR_FREE(parents);
         for (i = 0; i < list->ndevices; i++)

@@ -610,7 +610,7 @@ vshTreePrintInternal(vshControl *ctl,
     }
 
     /* Determine the index of the last child device */
-    for (i = 0 ; i < num_devices ; i++) {
+    for (i = 0; i < num_devices; i++) {
         const char *parent = (lookup)(i, true, opaque);
 
         if (parent && STREQ(parent, dev))
@@ -625,7 +625,7 @@ vshTreePrintInternal(vshControl *ctl,
     virBufferAddLit(indent, "  ");
     if (virBufferError(indent))
         goto cleanup;
-    for (i = 0 ; i < num_devices ; i++) {
+    for (i = 0; i < num_devices; i++) {
         const char *parent = (lookup)(i, true, opaque);
 
         if (parent && STREQ(parent, dev) &&

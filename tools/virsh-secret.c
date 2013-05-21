@@ -439,7 +439,7 @@ fallback:
     list->nsecrets = 0;
 
     /* get the secrets */
-    for (i = 0; i < nsecrets ; i++) {
+    for (i = 0; i < nsecrets; i++) {
         if (!(secret = virSecretLookupByUUIDString(ctl->conn, uuids[i])))
             continue;
         list->secrets[list->nsecrets++] = secret;

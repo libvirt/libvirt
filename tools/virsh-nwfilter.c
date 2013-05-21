@@ -309,7 +309,7 @@ fallback:
     list->nfilters = 0;
 
     /* get the network filters */
-    for (i = 0; i < nfilters ; i++) {
+    for (i = 0; i < nfilters; i++) {
         if (!(filter = virNWFilterLookupByName(ctl->conn, names[i])))
             continue;
         list->filters[list->nfilters++] = filter;

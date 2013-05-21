@@ -5295,7 +5295,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     if ((ncpus = virDomainGetVcpus(dom,
                                    cpuinfo, info.nrVirtCpu,
                                    cpumaps, cpumaplen)) >= 0) {
-        for (n = 0 ; n < ncpus ; n++) {
+        for (n = 0; n < ncpus; n++) {
             vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
@@ -6819,7 +6819,7 @@ static int getSignalNumber(vshControl *ctl, const char *signame)
     char *lower = vshStrdup(ctl, signame);
     char *tmp = lower;
 
-    for (i = 0 ; signame[i] ; i++)
+    for (i = 0; signame[i]; i++)
         lower[i] = c_tolower(signame[i]);
 
     if (virStrToLong_i(lower, NULL, 10, &signum) >= 0)
@@ -7808,7 +7808,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         }
         _exit(0);
     } else {
-        for (i = 0 ; i < nfdlist ; i++)
+        for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
         VIR_FREE(fdlist);
         if (virProcessWait(pid, NULL) < 0)
