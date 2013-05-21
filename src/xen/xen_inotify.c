@@ -101,7 +101,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
         /* If we are here, the domain has gone away.
            search for, and create a domain from the stored
            list info */
-        for (i = 0 ; i < priv->configInfoList->count ; i++) {
+        for (i = 0; i < priv->configInfoList->count; i++) {
             if (!memcmp(rawuuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
                 *name = strdup(priv->configInfoList->doms[i]->name);
                 if (!*name) {
@@ -175,7 +175,7 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn, const char *fname)
     }
 
     /* match and remove on uuid */
-    for (i = 0 ; i < priv->configInfoList->count ; i++) {
+    for (i = 0; i < priv->configInfoList->count; i++) {
         if (!memcmp(uuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
             VIR_FREE(priv->configInfoList->doms[i]->name);
             VIR_FREE(priv->configInfoList->doms[i]);

@@ -223,8 +223,8 @@ xenDomainUsedCpus(virDomainPtr dom)
 
     if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
                                           cpumap, cpumaplen)) >= 0) {
-        for (n = 0 ; n < ncpus ; n++) {
-            for (m = 0 ; m < priv->nbNodeCpus; m++) {
+        for (n = 0; n < ncpus; n++) {
+            for (m = 0; m < priv->nbNodeCpus; m++) {
                 bool used;
                 ignore_value(virBitmapGetBit(cpulist, m, &used));
                 if ((!used) &&
@@ -2622,7 +2622,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
                            unsigned char *uuid)
 {
     int i;
-    for (i = 0 ; i < list->count ; i++) {
+    for (i = 0; i < list->count; i++) {
         if (list->doms[i]->id == id &&
             STREQ(list->doms[i]->name, name) &&
             !memcmp(list->doms[i]->uuid, uuid, VIR_UUID_BUFLEN)) {

@@ -718,7 +718,7 @@ xenStoreRemoveWatch(virConnectPtr conn, const char *path, const char *token)
     if (!list)
         return -1;
 
-    for (i = 0 ; i < list->count ; i++) {
+    for (i = 0; i < list->count; i++) {
         if (STREQ(list->watches[i]->path, path) &&
             STREQ(list->watches[i]->token, token)) {
 
@@ -757,7 +757,7 @@ xenStoreFindWatch(xenStoreWatchListPtr list,
                   const char *token)
 {
     int i;
-    for (i = 0 ; i < list->count ; i++)
+    for (i = 0; i < list->count; i++)
         if (STREQ(path, list->watches[i]->path) &&
             STREQ(token, list->watches[i]->token))
             return list->watches[i];
@@ -841,9 +841,9 @@ retry:
     }
 
     missing = 0;
-    for (i=0 ; i < new_domain_cnt ; i++) {
+    for (i=0; i < new_domain_cnt; i++) {
         found = 0;
-        for (j = 0 ; j < priv->activeDomainList->count ; j++) {
+        for (j = 0; j < priv->activeDomainList->count; j++) {
             if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
                 found = 1;
                 break;
@@ -925,9 +925,9 @@ retry:
     }
 
     removed = 0;
-    for (j=0 ; j < priv->activeDomainList->count ; j++) {
+    for (j=0; j < priv->activeDomainList->count; j++) {
         found = 0;
-        for (i=0 ; i < new_domain_cnt ; i++) {
+        for (i=0; i < new_domain_cnt; i++) {
             if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
                 found = 1;
                 break;

@@ -2390,7 +2390,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
                 }
 
                 /* Search for existing matching (model,hvm) tuple */
-                for (i = 0 ; i < nr_guest_archs ; i++) {
+                for (i = 0; i < nr_guest_archs; i++) {
                     if (guest_archs[i].arch == arch &&
                         guest_archs[i].hvm == hvm) {
                         break;
@@ -2639,7 +2639,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
 
     id = -1;
-    for (i = 0 ; i < nids ; i++) {
+    for (i = 0; i < nids; i++) {
         if (memcmp(XEN_GETDOMAININFOLIST_UUID(dominfos, i), uuid, VIR_UUID_BUFLEN) == 0) {
             id = XEN_GETDOMAININFOLIST_DOMAIN(dominfos, i);
             break;

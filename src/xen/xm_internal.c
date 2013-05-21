@@ -1355,7 +1355,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
     {
-        for (i = 0 ; i < def->ndisks ; i++) {
+        for (i = 0; i < def->ndisks; i++) {
             if (def->disks[i]->dst &&
                 dev->data.disk->dst &&
                 STREQ(def->disks[i]->dst, dev->data.disk->dst)) {
@@ -1374,7 +1374,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
 
     case VIR_DOMAIN_DEVICE_NET:
     {
-        for (i = 0 ; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             if (!virMacAddrCmp(&def->nets[i]->mac, &dev->data.net->mac)) {
                 virDomainNetDefFree(def->nets[i]);
                 if (i < (def->nnets - 1))

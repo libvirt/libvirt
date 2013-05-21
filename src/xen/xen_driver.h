@@ -172,7 +172,7 @@ struct _xenUnifiedPrivate {
     int inotifyFD;
     int inotifyWatch;
 
-    int  useXenConfigCache ;
+    int  useXenConfigCache;
     xenUnifiedDomainInfoListPtr configInfoList;
 # endif
 
