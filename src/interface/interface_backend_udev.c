@@ -42,7 +42,7 @@ typedef enum {
     VIR_UDEV_IFACE_ACTIVE,
     VIR_UDEV_IFACE_INACTIVE,
     VIR_UDEV_IFACE_ALL
-} virUdevStatus ;
+} virUdevStatus;
 
 static virInterfaceDef *udevGetIfaceDef(struct udev *udev, const char *name);
 
