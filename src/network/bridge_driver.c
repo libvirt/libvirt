@@ -264,7 +264,7 @@ networkFindActiveConfigs(struct network_driver *driver)
 {
     unsigned int i;
 
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
 
         virNetworkObjLock(obj);
@@ -317,7 +317,7 @@ static void
 networkAutostartConfigs(struct network_driver *driver) {
     unsigned int i;
 
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (driver->networks.objs[i]->autostart &&
             !virNetworkObjIsActive(driver->networks.objs[i])) {
@@ -888,7 +888,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     ipdef = ipv4def ? ipv4def : ipv6def;
 
     while (ipdef) {
-        for (r = 0 ; r < ipdef->nranges ; r++) {
+        for (r = 0; r < ipdef->nranges; r++) {
             char *saddr = virSocketAddrFormat(&ipdef->ranges[r].start);
             if (!saddr)
                 goto cleanup;
@@ -1521,7 +1521,7 @@ networkRefreshDaemons(struct network_driver *driver)
 
     VIR_INFO("Refreshing network daemons");
 
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr network = driver->networks.objs[i];
 
         virNetworkObjLock(network);
@@ -2187,7 +2187,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 
     VIR_INFO("Reloading iptables rules");
 
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr network = driver->networks.objs[i];
 
         virNetworkObjLock(network);
@@ -2887,7 +2887,7 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
     struct network_driver *driver = conn->networkPrivateData;
 
     networkDriverLock(driver);
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (virNetworkObjIsActive(driver->networks.objs[i]))
             nactive++;
@@ -2903,7 +2903,7 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
     int got = 0, i;
 
     networkDriverLock(driver);
-    for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
+    for (i = 0; i < driver->networks.count && got < nnames; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
             if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
@@ -2920,7 +2920,7 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
 
  cleanup:
     networkDriverUnlock(driver);
-    for (i = 0 ; i < got ; i++)
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
     return -1;
 }
@@ -2930,7 +2930,7 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
     struct network_driver *driver = conn->networkPrivateData;
 
     networkDriverLock(driver);
-    for (i = 0 ; i < driver->networks.count ; i++) {
+    for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (!virNetworkObjIsActive(driver->networks.objs[i]))
             ninactive++;
@@ -2946,7 +2946,7 @@ static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const na
     int got = 0, i;
 
     networkDriverLock(driver);
-    for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
+    for (i = 0; i < driver->networks.count && got < nnames; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (!virNetworkObjIsActive(driver->networks.objs[i])) {
             if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
@@ -2962,7 +2962,7 @@ static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const na
 
  cleanup:
     networkDriverUnlock(driver);
-    for (i = 0 ; i < got ; i++)
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
     return -1;
 }
