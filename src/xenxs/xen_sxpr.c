@@ -676,7 +676,7 @@ xenParseSxprSound(virDomainDefPtr def,
             goto no_memory;
 
 
-        for (i = 0 ; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) ; i++) {
+        for (i = 0; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1); i++) {
             virDomainSoundDefPtr sound;
             if (VIR_ALLOC(sound) < 0)
                 goto no_memory;
@@ -1387,7 +1387,7 @@ xenParseSxpr(const struct sexpr *root,
     if (hvm) {
         const char *const fds[] = { "fda", "fdb" };
         int i;
-        for (i = 0 ; i < ARRAY_CARDINALITY(fds) ; i++) {
+        for (i = 0; i < ARRAY_CARDINALITY(fds); i++) {
             tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
             if ((tmp != NULL) && (tmp[0] != 0)) {
                 virDomainDiskDefPtr disk;
@@ -2101,7 +2101,7 @@ xenFormatSxprAllPCI(virDomainDefPtr def,
     int hasPCI = 0;
     int i;
 
-    for (i = 0 ; i < def->nhostdevs ; i++)
+    for (i = 0; i < def->nhostdevs; i++)
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             hasPCI = 1;
@@ -2124,7 +2124,7 @@ xenFormatSxprAllPCI(virDomainDefPtr def,
      */
 
     virBufferAddLit(buf, "(device (pci ");
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             if (def->hostdevs[i]->managed) {
@@ -2158,7 +2158,7 @@ xenFormatSxprSound(virDomainDefPtr def,
     const char *str;
     int i;
 
-    for (i = 0 ; i < def->nsounds ; i++) {
+    for (i = 0; i < def->nsounds; i++) {
         if (!(str = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected sound model %d"),
@@ -2333,7 +2333,7 @@ xenFormatSxpr(virConnectPtr conn,
                 virBufferAsprintf(&buf, "(vcpu_avail %lu)",
                                   (1UL << def->vcpus) - 1);
 
-            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            for (i = 0; i < def->os.nBootDevs; i++) {
                 switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_FLOPPY:
                     bootorder[i] = 'a';
@@ -2359,7 +2359,7 @@ xenFormatSxpr(virConnectPtr conn,
             virBufferAsprintf(&buf, "(boot %s)", bootorder);
 
             /* some disk devices are defined here */
-            for (i = 0 ; i < def->ndisks ; i++) {
+            for (i = 0; i < def->ndisks; i++) {
                 switch (def->disks[i]->device) {
                 case VIR_DOMAIN_DISK_DEVICE_CDROM:
                     /* Only xend <= 3.0.2 wants cdrom config here */
@@ -2397,7 +2397,7 @@ xenFormatSxpr(virConnectPtr conn,
 
             virBufferAddLit(&buf, "(usb 1)");
 
-            for (i = 0 ; i < def->ninputs ; i++)
+            for (i = 0; i < def->ninputs; i++)
                 if (xenFormatSxprInput(def->inputs[i], &buf) < 0)
                     goto error;
 
@@ -2571,12 +2571,12 @@ xenFormatSxpr(virConnectPtr conn,
     virBufferAsprintf(&buf, "(localtime %d)", vmlocaltime);
 
 
-    for (i = 0 ; i < def->ndisks ; i++)
+    for (i = 0; i < def->ndisks; i++)
         if (xenFormatSxprDisk(def->disks[i],
                               &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
 
-    for (i = 0 ; i < def->nnets ; i++)
+    for (i = 0; i < def->nnets; i++)
         if (xenFormatSxprNet(conn, def->nets[i],
                              &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;

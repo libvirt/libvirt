@@ -319,7 +319,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         if (xenXMConfigGetString(conf, "boot", &boot, "c") < 0)
             goto cleanup;
 
-        for (i = 0 ; i < VIR_DOMAIN_BOOT_LAST && boot[i] ; i++) {
+        for (i = 0; i < VIR_DOMAIN_BOOT_LAST && boot[i]; i++) {
             switch (*boot) {
             case 'a':
                 def->os.bootDevs[i] = VIR_DOMAIN_BOOT_FLOPPY;
@@ -1448,7 +1448,7 @@ xenFormatXMPCI(virConfPtr conf,
     int hasPCI = 0;
     int i;
 
-    for (i = 0 ; i < def->nhostdevs ; i++)
+    for (i = 0; i < def->nhostdevs; i++)
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             hasPCI = 1;
@@ -1464,7 +1464,7 @@ xenFormatXMPCI(virConfPtr conf,
     pciVal->type = VIR_CONF_LIST;
     pciVal->list = NULL;
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             virConfValuePtr val, tmp;
@@ -1575,7 +1575,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             xenXMConfigSetString(conf, "kernel", def->os.loader) < 0)
             goto no_memory;
 
-        for (i = 0 ; i < def->os.nBootDevs ; i++) {
+        for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
             case VIR_DOMAIN_BOOT_FLOPPY:
                 boot[i] = 'a';
@@ -1637,7 +1637,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         }
 
         if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-            for (i = 0 ; i < def->ndisks ; i++) {
+            for (i = 0; i < def->ndisks; i++) {
                 if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
                     def->disks[i]->dst &&
                     STREQ(def->disks[i]->dst, "hdc") &&
@@ -1774,7 +1774,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             xenXMConfigSetString(conf, "device_model", def->emulator) < 0)
             goto no_memory;
 
-        for (i = 0 ; i < def->ninputs ; i++) {
+        for (i = 0; i < def->ninputs; i++) {
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenXMConfigSetInt(conf, "usb", 1) < 0)
                     goto no_memory;
@@ -1894,7 +1894,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     diskVal->type = VIR_CONF_LIST;
     diskVal->list = NULL;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2 &&
             def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
             def->disks[i]->dst &&
@@ -1921,7 +1921,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     netVal->type = VIR_CONF_LIST;
     netVal->list = NULL;
 
-    for (i = 0 ; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         if (xenFormatXMNet(conn, netVal,def->nets[i],
                            hvm, xendConfigVersion) < 0)
             goto cleanup;
