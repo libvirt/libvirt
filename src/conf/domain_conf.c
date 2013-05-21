@@ -1186,7 +1186,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
         VIR_FREE(def->seclabels);
     }
 
-    for (i = 0 ; i < def->nhosts ; i++)
+    for (i = 0; i < def->nhosts; i++)
         virDomainDiskHostDefFree(&def->hosts[i]);
     VIR_FREE(def->hosts);
 
@@ -1562,7 +1562,7 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     virDomainDeviceInfoClear(&def->info);
 
     int i;
-    for (i = 0 ; i < def->ncodecs ; i++)
+    for (i = 0; i < def->ncodecs; i++)
         virDomainSoundCodecDefFree(def->codecs[i]);
     VIR_FREE(def->codecs);
 
@@ -1885,71 +1885,71 @@ void virDomainDefFree(virDomainDefPtr def)
      * so the original object must still be available during the call
      * to virDomainHostdevDefFree().
      */
-    for (i = 0 ; i < def->nhostdevs ; i++)
+    for (i = 0; i < def->nhostdevs; i++)
         virDomainHostdevDefFree(def->hostdevs[i]);
     VIR_FREE(def->hostdevs);
 
-    for (i = 0 ; i < def->nleases ; i++)
+    for (i = 0; i < def->nleases; i++)
         virDomainLeaseDefFree(def->leases[i]);
     VIR_FREE(def->leases);
 
-    for (i = 0 ; i < def->ngraphics ; i++)
+    for (i = 0; i < def->ngraphics; i++)
         virDomainGraphicsDefFree(def->graphics[i]);
     VIR_FREE(def->graphics);
 
-    for (i = 0 ; i < def->ninputs ; i++)
+    for (i = 0; i < def->ninputs; i++)
         virDomainInputDefFree(def->inputs[i]);
     VIR_FREE(def->inputs);
 
-    for (i = 0 ; i < def->ndisks ; i++)
+    for (i = 0; i < def->ndisks; i++)
         virDomainDiskDefFree(def->disks[i]);
     VIR_FREE(def->disks);
 
-    for (i = 0 ; i < def->ncontrollers ; i++)
+    for (i = 0; i < def->ncontrollers; i++)
         virDomainControllerDefFree(def->controllers[i]);
     VIR_FREE(def->controllers);
 
-    for (i = 0 ; i < def->nfss ; i++)
+    for (i = 0; i < def->nfss; i++)
         virDomainFSDefFree(def->fss[i]);
     VIR_FREE(def->fss);
 
-    for (i = 0 ; i < def->nnets ; i++)
+    for (i = 0; i < def->nnets; i++)
         virDomainNetDefFree(def->nets[i]);
     VIR_FREE(def->nets);
 
-    for (i = 0 ; i < def->nsmartcards ; i++)
+    for (i = 0; i < def->nsmartcards; i++)
         virDomainSmartcardDefFree(def->smartcards[i]);
     VIR_FREE(def->smartcards);
 
-    for (i = 0 ; i < def->nserials ; i++)
+    for (i = 0; i < def->nserials; i++)
         virDomainChrDefFree(def->serials[i]);
     VIR_FREE(def->serials);
 
-    for (i = 0 ; i < def->nparallels ; i++)
+    for (i = 0; i < def->nparallels; i++)
         virDomainChrDefFree(def->parallels[i]);
     VIR_FREE(def->parallels);
 
-    for (i = 0 ; i < def->nchannels ; i++)
+    for (i = 0; i < def->nchannels; i++)
         virDomainChrDefFree(def->channels[i]);
     VIR_FREE(def->channels);
 
-    for (i = 0 ; i < def->nconsoles ; i++)
+    for (i = 0; i < def->nconsoles; i++)
         virDomainChrDefFree(def->consoles[i]);
     VIR_FREE(def->consoles);
 
-    for (i = 0 ; i < def->nsounds ; i++)
+    for (i = 0; i < def->nsounds; i++)
         virDomainSoundDefFree(def->sounds[i]);
     VIR_FREE(def->sounds);
 
-    for (i = 0 ; i < def->nvideos ; i++)
+    for (i = 0; i < def->nvideos; i++)
         virDomainVideoDefFree(def->videos[i]);
     VIR_FREE(def->videos);
 
-    for (i = 0 ; i < def->nhubs ; i++)
+    for (i = 0; i < def->nhubs; i++)
         virDomainHubDefFree(def->hubs[i]);
     VIR_FREE(def->hubs);
 
-    for (i = 0 ; i < def->nredirdevs ; i++)
+    for (i = 0; i < def->nredirdevs; i++)
         virDomainRedirdevDefFree(def->redirdevs[i]);
     VIR_FREE(def->redirdevs);
 
@@ -1960,7 +1960,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
-    for (i = 0 ; def->os.initargv && def->os.initargv[i] ; i++)
+    for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         VIR_FREE(def->os.initargv[i]);
     VIR_FREE(def->os.initargv);
     VIR_FREE(def->os.kernel);
@@ -2482,64 +2482,64 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     virDomainDeviceDef device;
 
     device.type = VIR_DOMAIN_DEVICE_DISK;
-    for (i = 0; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         device.data.disk = def->disks[i];
         if (cb(def, &device, &def->disks[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_NET;
-    for (i = 0; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         device.data.net = def->nets[i];
         if (cb(def, &device, &def->nets[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_SOUND;
-    for (i = 0; i < def->nsounds ; i++) {
+    for (i = 0; i < def->nsounds; i++) {
         device.data.sound = def->sounds[i];
         if (cb(def, &device, &def->sounds[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_HOSTDEV;
-    for (i = 0; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         device.data.hostdev = def->hostdevs[i];
         if (cb(def, &device, def->hostdevs[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_VIDEO;
-    for (i = 0; i < def->nvideos ; i++) {
+    for (i = 0; i < def->nvideos; i++) {
         device.data.video = def->videos[i];
         if (cb(def, &device, &def->videos[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_CONTROLLER;
-    for (i = 0; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         device.data.controller = def->controllers[i];
         if (cb(def, &device, &def->controllers[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_SMARTCARD;
-    for (i = 0; i < def->nsmartcards ; i++) {
+    for (i = 0; i < def->nsmartcards; i++) {
         device.data.smartcard = def->smartcards[i];
         if (cb(def, &device, &def->smartcards[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_CHR;
-    for (i = 0; i < def->nserials ; i++) {
+    for (i = 0; i < def->nserials; i++) {
         device.data.chr = def->serials[i];
         if (cb(def, &device, &def->serials[i]->info, opaque) < 0)
             return -1;
     }
-    for (i = 0; i < def->nparallels ; i++) {
+    for (i = 0; i < def->nparallels; i++) {
         device.data.chr = def->parallels[i];
         if (cb(def, &device, &def->parallels[i]->info, opaque) < 0)
             return -1;
     }
-    for (i = 0; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         device.data.chr = def->channels[i];
         if (cb(def, &device, &def->channels[i]->info, opaque) < 0)
             return -1;
     }
-    for (i = 0; i < def->nconsoles ; i++) {
+    for (i = 0; i < def->nconsoles; i++) {
         if (!all &&
             i == 0 &&
             (def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
@@ -2551,13 +2551,13 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_INPUT;
-    for (i = 0; i < def->ninputs ; i++) {
+    for (i = 0; i < def->ninputs; i++) {
         device.data.input = def->inputs[i];
         if (cb(def, &device, &def->inputs[i]->info, opaque) < 0)
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_FS;
-    for (i = 0; i < def->nfss ; i++) {
+    for (i = 0; i < def->nfss; i++) {
         device.data.fs = def->fss[i];
         if (cb(def, &device, &def->fss[i]->info, opaque) < 0)
             return -1;
@@ -2587,7 +2587,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
     device.type = VIR_DOMAIN_DEVICE_HUB;
-    for (i = 0; i < def->nhubs ; i++) {
+    for (i = 0; i < def->nhubs; i++) {
         device.data.hub = def->hubs[i];
         if (cb(def, &device, &def->hubs[i]->info, opaque) < 0)
             return -1;
@@ -4026,7 +4026,7 @@ virDomainDiskFindByBusAndDst(virDomainDefPtr def,
     if (!dst)
         return NULL;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->bus == bus &&
             STREQ(def->disks[i]->dst, dst)) {
             return def->disks[i];
@@ -9512,7 +9512,7 @@ virDomainHostdevFind(virDomainDefPtr def,
         found = &local_found;
     *found = NULL;
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (virDomainHostdevMatch(match, def->hostdevs[i])) {
             *found = def->hostdevs[i];
             break;
@@ -9585,7 +9585,7 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
      * index greater than the new one, insert at
      * that position
      */
-    for (i = (def->ndisks - 1) ; i >= 0 ; i--) {
+    for (i = (def->ndisks - 1); i >= 0; i--) {
         /* If bus matches and current disk is after
          * new disk, then new disk should go here */
         if (def->disks[i]->bus == disk->bus &&
@@ -9684,7 +9684,7 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
     bool PCIAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
 
-    for (ii = 0 ; ii < def->nnets ; ii++) {
+    for (ii = 0; ii < def->nnets; ii++) {
         if (virMacAddrCmp(&def->nets[ii]->mac, &net->mac))
             continue;
 
@@ -9774,7 +9774,7 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
      * index greater than the new one, insert at
      * that position
      */
-    for (i = (def->ncontrollers - 1) ; i >= 0 ; i--) {
+    for (i = (def->ncontrollers - 1); i >= 0; i--) {
         /* If bus matches and current controller is after
          * new controller, then new controller should go here */
         if (def->controllers[i]->type == controller->type &&
@@ -9808,7 +9808,7 @@ virDomainControllerFind(virDomainDefPtr def,
 {
     int i;
 
-    for (i = 0 ; i < def->ncontrollers ; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type == type) &&
             (def->controllers[i]->idx == idx)) {
             return i;
@@ -9988,7 +9988,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    for (i = 0 ; i < n && i < VIR_DOMAIN_BOOT_LAST ; i++) {
+    for (i = 0; i < n && i < VIR_DOMAIN_BOOT_LAST; i++) {
         int val;
         char *dev = virXMLPropString(nodes[i], "dev");
         if (!dev) {
@@ -10636,7 +10636,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
 
@@ -10859,7 +10859,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./features/*", ctxt, &nodes)) < 0)
         goto error;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -11043,7 +11043,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
                                                                ctxt);
         if (!timer)
@@ -11159,7 +11159,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
             goto no_memory;
-        for (i = 0 ; i < n ; i++) {
+        for (i = 0; i < n; i++) {
             if (!nodes[i]->children ||
                 !nodes[i]->children->content) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -11200,7 +11200,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(xmlopt,
                                                             nodes[i],
                                                             ctxt,
@@ -11222,7 +11222,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->controllers, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
                                                                               flags);
         if (!controller)
@@ -11278,7 +11278,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->leases, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainLeaseDefPtr lease = virDomainLeaseDefParseXML(nodes[i]);
         if (!lease)
             goto error;
@@ -11293,7 +11293,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainFSDefPtr fs = virDomainFSDefParseXML(nodes[i], ctxt,
                                                       flags);
         if (!fs)
@@ -11309,7 +11309,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->nets, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainNetDefPtr net = virDomainNetDefParseXML(xmlopt,
                                                          nodes[i],
                                                          ctxt,
@@ -11336,7 +11336,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->smartcards, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(nodes[i],
                                                                       flags);
         if (!card)
@@ -11354,7 +11354,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->parallels, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
@@ -11366,7 +11366,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (chr->target.port == -1) {
             int maxport = -1;
             int j;
-            for (j = 0 ; j < i ; j++) {
+            for (j = 0; j < i; j++) {
                 if (def->parallels[j]->target.port > maxport)
                     maxport = def->parallels[j]->target.port;
             }
@@ -11382,7 +11382,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->serials, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
@@ -11394,7 +11394,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (chr->target.port == -1) {
             int maxport = -1;
             int j;
-            for (j = 0 ; j < i ; j++) {
+            for (j = 0; j < i; j++) {
                 if (def->serials[j]->target.port > maxport)
                     maxport = def->serials[j]->target.port;
             }
@@ -11412,7 +11412,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->consoles, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
@@ -11432,7 +11432,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->channels, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
@@ -11452,7 +11452,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             chr->info.addr.vioserial.port == 0) {
             int maxport = 0;
             int j;
-            for (j = 0 ; j < i ; j++) {
+            for (j = 0; j < i; j++) {
                 virDomainChrDefPtr thischr = def->channels[j];
                 if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
                     thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
@@ -11473,7 +11473,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->inputs, n) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainInputDefPtr input = virDomainInputDefParseXML(def->os.type,
                                                                nodes[i],
                                                                flags);
@@ -11512,7 +11512,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->graphics, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(nodes[i],
                                                                         ctxt,
                                                                         flags);
@@ -11553,7 +11553,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(nodes[i],
                                                                ctxt,
                                                                flags);
@@ -11570,7 +11570,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         size_t ii = def->nvideos;
         virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[i],
                                                                def,
@@ -11627,7 +11627,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainHostdevDefPtr hostdev;
 
         hostdev = virDomainHostdevDefParseXML(nodes[i], ctxt, bootHash, flags);
@@ -11755,7 +11755,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->hubs, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainHubDefPtr hub = virDomainHubDefParseXML(nodes[i], flags);
         if (!hub)
             goto error;
@@ -11778,7 +11778,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n && VIR_ALLOC_N(def->redirdevs, n) < 0)
         goto no_memory;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
                                                                         bootHash,
                                                                         flags);
@@ -11971,7 +11971,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0) {
         goto error;
     }
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         char *str = virXMLPropString(nodes[i], "flag");
         if (str) {
             int flag = virDomainTaintTypeFromString(str);
@@ -12905,7 +12905,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->clock.ntimers ; i++) {
+    for (i = 0; i < src->clock.ntimers; i++) {
         if (!virDomainTimerDefCheckABIStability(src->clock.timers[i],
                                                 dst->clock.timers[i]))
             return false;
@@ -12924,7 +12924,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->ndisks ; i++)
+    for (i = 0; i < src->ndisks; i++)
         if (!virDomainDiskDefCheckABIStability(src->disks[i], dst->disks[i]))
             return false;
 
@@ -12936,7 +12936,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->ncontrollers ; i++)
+    for (i = 0; i < src->ncontrollers; i++)
         if (!virDomainControllerDefCheckABIStability(src->controllers[i],
                                                      dst->controllers[i]))
             return false;
@@ -12949,7 +12949,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nfss ; i++)
+    for (i = 0; i < src->nfss; i++)
         if (!virDomainFsDefCheckABIStability(src->fss[i], dst->fss[i]))
             return false;
 
@@ -12961,7 +12961,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nnets ; i++)
+    for (i = 0; i < src->nnets; i++)
         if (!virDomainNetDefCheckABIStability(src->nets[i], dst->nets[i]))
             return false;
 
@@ -12973,7 +12973,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->ninputs ; i++)
+    for (i = 0; i < src->ninputs; i++)
         if (!virDomainInputDefCheckABIStability(src->inputs[i], dst->inputs[i]))
             return false;
 
@@ -12985,7 +12985,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nsounds ; i++)
+    for (i = 0; i < src->nsounds; i++)
         if (!virDomainSoundDefCheckABIStability(src->sounds[i], dst->sounds[i]))
             return false;
 
@@ -12997,7 +12997,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nvideos ; i++)
+    for (i = 0; i < src->nvideos; i++)
         if (!virDomainVideoDefCheckABIStability(src->videos[i], dst->videos[i]))
             return false;
 
@@ -13009,7 +13009,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nhostdevs ; i++)
+    for (i = 0; i < src->nhostdevs; i++)
         if (!virDomainHostdevDefCheckABIStability(src->hostdevs[i],
                                                   dst->hostdevs[i]))
             return false;
@@ -13022,7 +13022,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nsmartcards ; i++)
+    for (i = 0; i < src->nsmartcards; i++)
         if (!virDomainSmartcardDefCheckABIStability(src->smartcards[i],
                                                     dst->smartcards[i]))
             return false;
@@ -13035,7 +13035,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nserials ; i++)
+    for (i = 0; i < src->nserials; i++)
         if (!virDomainSerialDefCheckABIStability(src->serials[i],
                                                  dst->serials[i]))
             return false;
@@ -13048,7 +13048,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nparallels ; i++)
+    for (i = 0; i < src->nparallels; i++)
         if (!virDomainParallelDefCheckABIStability(src->parallels[i],
                                                    dst->parallels[i]))
             return false;
@@ -13061,7 +13061,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nchannels ; i++)
+    for (i = 0; i < src->nchannels; i++)
         if (!virDomainChannelDefCheckABIStability(src->channels[i],
                                                   dst->channels[i]))
             return false;
@@ -13074,7 +13074,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nconsoles ; i++)
+    for (i = 0; i < src->nconsoles; i++)
         if (!virDomainConsoleDefCheckABIStability(src->consoles[i],
                                                   dst->consoles[i]))
             return false;
@@ -13087,7 +13087,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    for (i = 0 ; i < src->nhubs ; i++)
+    for (i = 0; i < src->nhubs; i++)
         if (!virDomainHubDefCheckABIStability(src->hubs[i], dst->hubs[i]))
             return false;
 
@@ -13147,7 +13147,7 @@ virDomainDefAddDiskControllersForType(virDomainDefPtr def,
     int i;
     int maxController = -1;
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->bus != diskBus)
             continue;
 
@@ -13158,7 +13158,7 @@ virDomainDefAddDiskControllersForType(virDomainDefPtr def,
             maxController = def->disks[i]->info.addr.drive.controller;
     }
 
-    for (i = 0 ; i <= maxController ; i++) {
+    for (i = 0; i <= maxController; i++) {
         if (virDomainDefMaybeAddController(def, controllerType, i, -1) < 0)
             return -1;
     }
@@ -13173,7 +13173,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
     /* Look for any virtio serial or virtio console devs */
     int i;
 
-    for (i = 0 ; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
 
         if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
@@ -13187,7 +13187,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
         }
     }
 
-    for (i = 0 ; i < def->nconsoles ; i++) {
+    for (i = 0; i < def->nconsoles; i++) {
         virDomainChrDefPtr console = def->consoles[i];
 
         if (console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
@@ -13212,7 +13212,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
     /* Look for any smartcard devs */
     int i;
 
-    for (i = 0 ; i < def->nsmartcards ; i++) {
+    for (i = 0; i < def->nsmartcards; i++) {
         virDomainSmartcardDefPtr smartcard = def->smartcards[i];
         int idx = 0;
 
@@ -15391,7 +15391,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+        for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
             int mode = def->data.spice.channels[i];
             if (mode == VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
                 continue;
@@ -15949,7 +15949,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferEscapeString(buf, "    <init>%s</init>\n",
                           def->os.init);
-    for (i = 0 ; def->os.initargv && def->os.initargv[i] ; i++)
+    for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         virBufferEscapeString(buf, "    <initarg>%s</initarg>\n",
                               def->os.initargv[i]);
     virBufferEscapeString(buf, "    <loader>%s</loader>\n",
@@ -15966,7 +15966,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           def->os.root);
 
     if (!def->os.bootloader) {
-        for (n = 0 ; n < def->os.nBootDevs ; n++) {
+        for (n = 0; n < def->os.nBootDevs; n++) {
             const char *boottype =
                 virDomainBootTypeToString(def->os.bootDevs[n]);
             if (!boottype) {
@@ -16015,7 +16015,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->features) {
         virBufferAddLit(buf, "  <features>\n");
-        for (i = 0 ; i < VIR_DOMAIN_FEATURE_LAST ; i++) {
+        for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
             if (def->features & (1 << i) && i != VIR_DOMAIN_FEATURE_HYPERV) {
                 const char *name = virDomainFeatureTypeToString(i);
                 if (!name) {
@@ -16123,39 +16123,39 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferEscapeString(buf, "    <emulator>%s</emulator>\n",
                           def->emulator);
 
-    for (n = 0 ; n < def->ndisks ; n++)
+    for (n = 0; n < def->ndisks; n++)
         if (virDomainDiskDefFormat(buf, def->disks[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->ncontrollers ; n++)
+    for (n = 0; n < def->ncontrollers; n++)
         if (virDomainControllerDefFormat(buf, def->controllers[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nleases ; n++)
+    for (n = 0; n < def->nleases; n++)
         if (virDomainLeaseDefFormat(buf, def->leases[n]) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nfss ; n++)
+    for (n = 0; n < def->nfss; n++)
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nnets ; n++)
+    for (n = 0; n < def->nnets; n++)
         if (virDomainNetDefFormat(buf, def->nets[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nsmartcards ; n++)
+    for (n = 0; n < def->nsmartcards; n++)
         if (virDomainSmartcardDefFormat(buf, def->smartcards[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nserials ; n++)
+    for (n = 0; n < def->nserials; n++)
         if (virDomainChrDefFormat(buf, def->serials[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nparallels ; n++)
+    for (n = 0; n < def->nparallels; n++)
         if (virDomainChrDefFormat(buf, def->parallels[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nconsoles ; n++) {
+    for (n = 0; n < def->nconsoles; n++) {
         virDomainChrDef console;
         /* Back compat, ignore the console element for hvm guests
          * if it is type == serial
@@ -16184,11 +16184,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
     }
 
-    for (n = 0 ; n < def->nchannels ; n++)
+    for (n = 0; n < def->nchannels; n++)
         if (virDomainChrDefFormat(buf, def->channels[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->ninputs ; n++)
+    for (n = 0; n < def->ninputs; n++)
         if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
             virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
             goto error;
@@ -16210,20 +16210,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
             goto error;
 
-        for (n = 0 ; n < def->ngraphics ; n++)
+        for (n = 0; n < def->ngraphics; n++)
             if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
                 goto error;
     }
 
-    for (n = 0 ; n < def->nsounds ; n++)
+    for (n = 0; n < def->nsounds; n++)
         if (virDomainSoundDefFormat(buf, def->sounds[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nvideos ; n++)
+    for (n = 0; n < def->nvideos; n++)
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
             goto error;
 
-    for (n = 0 ; n < def->nhostdevs ; n++) {
+    for (n = 0; n < def->nhostdevs; n++) {
         /* If parent.type != NONE, this is just a pointer to the
          * hostdev in a higher-level device (e.g. virDomainNetDef),
          * and will have already been formatted there.
@@ -16234,14 +16234,14 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
-    for (n = 0 ; n < def->nredirdevs ; n++)
+    for (n = 0; n < def->nredirdevs; n++)
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)
             goto error;
 
     if (def->redirfilter)
         virDomainRedirFilterDefFormat(buf, def->redirfilter);
 
-    for (n = 0 ; n < def->nhubs ; n++)
+    for (n = 0; n < def->nhubs; n++)
         if (virDomainHubDefFormat(buf, def->hubs[n], flags) < 0)
             goto error;
 
@@ -16312,7 +16312,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                       virDomainStateReasonToString(state, reason),
                       (long long)obj->pid);
 
-    for (i = 0 ; i < VIR_DOMAIN_TAINT_LAST ; i++) {
+    for (i = 0; i < VIR_DOMAIN_TAINT_LAST; i++) {
         if (obj->taint & (1 << i))
             virBufferAsprintf(&buf, "  <taint flag='%s'/>\n",
                               virDomainTaintTypeToString(i));
@@ -16723,7 +16723,7 @@ virDomainGetRootFilesystem(virDomainDefPtr def)
 {
     int i;
 
-    for (i = 0 ; i < def->nfss ; i++) {
+    for (i = 0; i < def->nfss; i++) {
         if (STREQ(def->fss[i]->dst, "/"))
             return def->fss[i];
     }
@@ -16843,7 +16843,7 @@ virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
     virObjectUnlock(doms);
     if (data.oom) {
-        for (i = 0 ; i < data.numnames ; i++)
+        for (i = 0; i < data.numnames; i++)
             VIR_FREE(data.names[i]);
         virReportOOMError();
         return -1;
@@ -16894,7 +16894,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
     int i;
     int rc = 0;
 
-    for (i = 0 ; i < def->nserials ; i++) {
+    for (i = 0; i < def->nserials; i++) {
         if ((iter)(def,
                    def->serials[i],
                    opaque) < 0)
@@ -16904,7 +16904,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             goto done;
     }
 
-    for (i = 0 ; i < def->nparallels ; i++) {
+    for (i = 0; i < def->nparallels; i++) {
         if ((iter)(def,
                    def->parallels[i],
                    opaque) < 0)
@@ -16914,7 +16914,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             goto done;
     }
 
-    for (i = 0 ; i < def->nchannels ; i++) {
+    for (i = 0; i < def->nchannels; i++) {
         if ((iter)(def,
                    def->channels[i],
                    opaque) < 0)
@@ -16923,7 +16923,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
         if (abortOnError && rc != 0)
             goto done;
     }
-    for (i = 0 ; i < def->nconsoles ; i++) {
+    for (i = 0; i < def->nconsoles; i++) {
         if ((iter)(def,
                    def->consoles[i],
                    opaque) < 0)
@@ -16947,7 +16947,7 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
     int i;
     int rc = 0;
 
-    for (i = 0 ; i < def->nsmartcards ; i++) {
+    for (i = 0; i < def->nsmartcards; i++) {
         if ((iter)(def,
                    def->smartcards[i],
                    opaque) < 0)

@@ -795,28 +795,28 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 {
     int i;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         if (disk->src) /* Skips CDROM without media initially inserted */
             virDomainAuditDisk(vm, NULL, disk->src, "start", true);
     }
 
-    for (i = 0 ; i < vm->def->nfss ; i++) {
+    for (i = 0; i < vm->def->nfss; i++) {
         virDomainFSDefPtr fs = vm->def->fss[i];
         virDomainAuditFS(vm, NULL, fs, "start", true);
     }
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
         virDomainAuditNet(vm, NULL, net, "start", true);
     }
 
-    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+    for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
         virDomainAuditHostdev(vm, hostdev, "start", true);
     }
 
-    for (i = 0 ; i < vm->def->nredirdevs ; i++) {
+    for (i = 0; i < vm->def->nredirdevs; i++) {
         virDomainRedirdevDefPtr redirdev = vm->def->redirdevs[i];
         virDomainAuditRedirdev(vm, redirdev, "start", true);
     }

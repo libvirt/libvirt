@@ -349,7 +349,7 @@ void
 virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
 {
     unsigned int i;
-    for (i = 0 ; i < nwfilters->count ; i++)
+    for (i = 0; i < nwfilters->count; i++)
         virNWFilterObjFree(nwfilters->objs[i]);
     VIR_FREE(nwfilters->objs);
     nwfilters->count = 0;
@@ -421,7 +421,7 @@ virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
 
     virNWFilterObjUnlock(nwfilter);
 
-    for (i = 0 ; i < nwfilters->count ; i++) {
+    for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
         if (nwfilters->objs[i] == nwfilter) {
             virNWFilterObjUnlock(nwfilters->objs[i]);
@@ -2688,7 +2688,7 @@ virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
 {
     unsigned int i;
 
-    for (i = 0 ; i < nwfilters->count ; i++) {
+    for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
         if (!memcmp(nwfilters->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
             return nwfilters->objs[i];
@@ -2704,7 +2704,7 @@ virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters, const char *name)
 {
     unsigned int i;
 
-    for (i = 0 ; i < nwfilters->count ; i++) {
+    for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
         if (STREQ(nwfilters->objs[i]->def->name, name))
             return nwfilters->objs[i];

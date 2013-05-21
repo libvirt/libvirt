@@ -156,7 +156,7 @@ void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
 void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 {
     unsigned int i;
-    for (i = 0 ; i < devs->count ; i++)
+    for (i = 0; i < devs->count; i++)
         virNodeDeviceObjFree(devs->objs[i]);
     VIR_FREE(devs->objs);
     devs->count = 0;
@@ -317,7 +317,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             }
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION) {
                 virBufferAddLit(&buf, "    <capability type='virt_functions'>\n");
-                for (i = 0 ; i < data->pci_dev.num_virtual_functions ; i++) {
+                for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
                     virBufferAsprintf(&buf,
                                       "      <address domain='0x%.4x' bus='0x%.2x' "
                                       "slot='0x%.2x' function='0x%.1x'/>\n",
@@ -571,7 +571,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
         goto out;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         char *type = virXMLPropString(nodes[i], "type");
 
         if (!type) {
@@ -734,7 +734,7 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
         goto out;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         type = virXMLPropString(nodes[i], "type");
 
         if (!type) {
@@ -1189,7 +1189,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     next_cap = &def->caps;
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         *next_cap = virNodeDevCapsDefParseXML(ctxt, def,
                                               nodes[i],
                                               create,
@@ -1380,7 +1380,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->pci_dev.product_name);
         VIR_FREE(data->pci_dev.vendor_name);
         VIR_FREE(data->pci_dev.physical_function);
-        for (i = 0 ; i < data->pci_dev.num_virtual_functions ; i++) {
+        for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
             VIR_FREE(data->pci_dev.virtual_functions[i]);
         }
         break;

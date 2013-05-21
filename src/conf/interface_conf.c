@@ -1171,7 +1171,7 @@ int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
 {
     unsigned int i, matchct = 0;
 
-    for (i = 0 ; i < interfaces->count ; i++) {
+    for (i = 0; i < interfaces->count; i++) {
 
         virInterfaceObjLock(interfaces->objs[i]);
         if (STRCASEEQ(interfaces->objs[i]->def->mac, mac)) {
@@ -1195,7 +1195,7 @@ virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
 {
     unsigned int i;
 
-    for (i = 0 ; i < interfaces->count ; i++) {
+    for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjLock(interfaces->objs[i]);
         if (STREQ(interfaces->objs[i]->def->name, name))
             return interfaces->objs[i];
@@ -1209,7 +1209,7 @@ void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
 {
     unsigned int i;
 
-    for (i = 0 ; i < interfaces->count ; i++)
+    for (i = 0; i < interfaces->count; i++)
         virInterfaceObjFree(interfaces->objs[i]);
 
     VIR_FREE(interfaces->objs);
@@ -1298,7 +1298,7 @@ void virInterfaceRemove(virInterfaceObjListPtr interfaces,
     unsigned int i;
 
     virInterfaceObjUnlock(iface);
-    for (i = 0 ; i < interfaces->count ; i++) {
+    for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjLock(interfaces->objs[i]);
         if (interfaces->objs[i] == iface) {
             virInterfaceObjUnlock(interfaces->objs[i]);

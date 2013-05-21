@@ -404,7 +404,7 @@ void
 virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
 {
     unsigned int i;
-    for (i = 0 ; i < pools->count ; i++)
+    for (i = 0; i < pools->count; i++)
         virStoragePoolObjFree(pools->objs[i]);
     VIR_FREE(pools->objs);
     pools->count = 0;
@@ -591,7 +591,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        for (i = 0 ; i < nsource ; i++) {
+        for (i = 0; i < nsource; i++) {
             char *path = virXMLPropString(nodeset[i], "path");
             if (path == NULL) {
                 VIR_FREE(nodeset);
@@ -1558,7 +1558,7 @@ virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
 {
     unsigned int i;
 
-    for (i = 0 ; i < pools->count ; i++) {
+    for (i = 0; i < pools->count; i++) {
         virStoragePoolObjLock(pools->objs[i]);
         if (STREQ(pools->objs[i]->def->name, name))
             return pools->objs[i];
@@ -1614,7 +1614,7 @@ virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
 {
     unsigned int i;
 
-    for (i = 0 ; i < pool->volumes.count ; i++)
+    for (i = 0; i < pool->volumes.count; i++)
         if (STREQ(pool->volumes.objs[i]->target.path, path))
             return pool->volumes.objs[i];
 

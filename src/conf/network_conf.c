@@ -71,7 +71,7 @@ virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
 {
     unsigned int i;
 
-    for (i = 0 ; i < nets->count ; i++) {
+    for (i = 0; i < nets->count; i++) {
         virNetworkObjLock(nets->objs[i]);
         if (!memcmp(nets->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
             return nets->objs[i];
@@ -86,7 +86,7 @@ virNetworkObjPtr virNetworkFindByName(const virNetworkObjListPtr nets,
 {
     unsigned int i;
 
-    for (i = 0 ; i < nets->count ; i++) {
+    for (i = 0; i < nets->count; i++) {
         virNetworkObjLock(nets->objs[i]);
         if (STREQ(nets->objs[i]->def->name, name))
             return nets->objs[i];
@@ -197,12 +197,12 @@ virNetworkForwardDefClear(virNetworkForwardDefPtr def)
 {
     int ii;
 
-    for (ii = 0 ; ii < def->npfs && def->pfs ; ii++) {
+    for (ii = 0; ii < def->npfs && def->pfs; ii++) {
         virNetworkForwardPfDefClear(&def->pfs[ii]);
     }
     VIR_FREE(def->pfs);
 
-    for (ii = 0 ; ii < def->nifs && def->ifs ; ii++) {
+    for (ii = 0; ii < def->nifs && def->ifs; ii++) {
         virNetworkForwardIfDefClear(&def->ifs[ii]);
     }
     VIR_FREE(def->ifs);
@@ -222,12 +222,12 @@ virNetworkDefFree(virNetworkDefPtr def)
 
     virNetworkForwardDefClear(&def->forward);
 
-    for (ii = 0 ; ii < def->nips && def->ips ; ii++) {
+    for (ii = 0; ii < def->nips && def->ips; ii++) {
         virNetworkIpDefClear(&def->ips[ii]);
     }
     VIR_FREE(def->ips);
 
-    for (ii = 0 ; ii < def->nroutes && def->routes ; ii++) {
+    for (ii = 0; ii < def->nroutes && def->routes; ii++) {
         virNetworkRouteDefClear(&def->routes[ii]);
     }
     VIR_FREE(def->routes);
@@ -264,7 +264,7 @@ void virNetworkObjListFree(virNetworkObjListPtr nets)
 {
     unsigned int i;
 
-    for (i = 0 ; i < nets->count ; i++)
+    for (i = 0; i < nets->count; i++)
         virNetworkObjFree(nets->objs[i]);
 
     VIR_FREE(nets->objs);
@@ -548,7 +548,7 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
     unsigned int i;
 
     virNetworkObjUnlock(net);
-    for (i = 0 ; i < nets->count ; i++) {
+    for (i = 0; i < nets->count; i++) {
         virNetworkObjLock(nets->objs[i]);
         if (nets->objs[i] == net) {
             virNetworkObjUnlock(nets->objs[i]);
@@ -2291,13 +2291,13 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<dns>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0 ; i < def->ntxts ; i++) {
+    for (i = 0; i < def->ntxts; i++) {
         virBufferAsprintf(buf, "<txt name='%s' value='%s' />\n",
                               def->txts[i].name,
                               def->txts[i].value);
     }
 
-    for (i = 0 ; i < def->nsrvs ; i++) {
+    for (i = 0; i < def->nsrvs; i++) {
         if (def->srvs[i].service && def->srvs[i].protocol) {
             virBufferAsprintf(buf, "<srv service='%s' protocol='%s'",
                                   def->srvs[i].service,
@@ -2321,7 +2321,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     if (def->nhosts) {
         int ii, j;
 
-        for (ii = 0 ; ii < def->nhosts; ii++) {
+        for (ii = 0; ii < def->nhosts; ii++) {
             char *ip = virSocketAddrFormat(&def->hosts[ii].ip);
 
             virBufferAsprintf(buf, "<host ip='%s'>\n", ip);
@@ -2381,7 +2381,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<dhcp>\n");
         virBufferAdjustIndent(buf, 2);
 
-        for (ii = 0 ; ii < def->nranges ; ii++) {
+        for (ii = 0; ii < def->nranges; ii++) {
             char *saddr = virSocketAddrFormat(&def->ranges[ii].start);
             if (!saddr)
                 goto error;
@@ -2395,7 +2395,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
         }
-        for (ii = 0 ; ii < def->nhosts ; ii++) {
+        for (ii = 0; ii < def->nhosts; ii++) {
             virBufferAddLit(buf, "<host ");
             if (def->hosts[ii].mac)
                 virBufferAsprintf(buf, "mac='%s' ", def->hosts[ii].mac);
@@ -3136,7 +3136,7 @@ int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
     unsigned int i;
     unsigned int ret = 0;
 
-    for (i = 0 ; i < nets->count ; i++) {
+    for (i = 0; i < nets->count; i++) {
         virNetworkObjLock(nets->objs[i]);
         if (nets->objs[i]->def->bridge &&
             STREQ(nets->objs[i]->def->bridge, bridge) &&

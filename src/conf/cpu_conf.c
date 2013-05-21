@@ -81,7 +81,7 @@ virCPUDefFree(virCPUDefPtr def)
 
     virCPUDefFreeModel(def);
 
-    for (i = 0 ; i < def->ncells ; i++) {
+    for (i = 0; i < def->ncells; i++) {
         virBitmapFree(def->cells[i].cpumask);
         VIR_FREE(def->cells[i].cpustr);
     }
@@ -387,7 +387,7 @@ virCPUDefParseXML(const xmlNodePtr node,
         def->nfeatures = n;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         char *name;
         int policy; /* enum virDomainCPUFeaturePolicy */
         unsigned int j;
@@ -418,7 +418,7 @@ virCPUDefParseXML(const xmlNodePtr node,
             goto error;
         }
 
-        for (j = 0 ; j < i ; j++) {
+        for (j = 0; j < i; j++) {
             if (STREQ(name, def->features[j].name)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("CPU feature `%s' specified more than once"),
@@ -447,7 +447,7 @@ virCPUDefParseXML(const xmlNodePtr node,
 
         def->ncells = n;
 
-        for (i = 0 ; i < n ; i++) {
+        for (i = 0; i < n; i++) {
             char *cpus, *memory;
             int ret, ncpus = 0;
 
@@ -630,7 +630,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
     }
 
     if (formatModel) {
-        for (i = 0 ; i < def->nfeatures ; i++) {
+        for (i = 0; i < def->nfeatures; i++) {
             virCPUFeatureDefPtr feature = def->features + i;
 
             if (!feature->name) {
@@ -679,7 +679,7 @@ virCPUDefAddFeature(virCPUDefPtr def,
 {
     int i;
 
-    for (i = 0 ; i < def->nfeatures ; i++) {
+    for (i = 0; i < def->nfeatures; i++) {
         if (STREQ(name, def->features[i].name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("CPU feature `%s' specified more than once"), name);
@@ -796,7 +796,7 @@ virCPUDefIsEqual(virCPUDefPtr src,
         goto cleanup;
     }
 
-    for (i = 0 ; i < src->nfeatures ; i++) {
+    for (i = 0; i < src->nfeatures; i++) {
         if (STRNEQ(src->features[i].name, dst->features[i].name)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target CPU feature %s does not match source %s"),
