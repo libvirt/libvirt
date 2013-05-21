@@ -3213,7 +3213,7 @@ libxlDomainChangeEjectableMedia(libxlDomainObjPrivatePtr priv,
     int i;
     int ret = -1;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
+    for (i = 0; i < vm->def->ndisks; i++) {
         if (vm->def->disks[i]->bus == disk->bus &&
             STREQ(vm->def->disks[i]->dst, disk->dst)) {
             origdisk = vm->def->disks[i];

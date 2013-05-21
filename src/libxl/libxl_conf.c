@@ -244,7 +244,7 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
             }
 
             /* Search for existing matching (model,hvm) tuple */
-            for (i = 0 ; i < nr_guest_archs ; i++) {
+            for (i = 0; i < nr_guest_archs; i++) {
                 if ((guest_archs[i].arch == arch) &&
                     guest_archs[i].hvm == hvm) {
                     break;
@@ -377,7 +377,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
                 libxl_defbool_set(&b_info->u.hvm.hpet, 1);
             }
         }
-        for (i = 0 ; i < def->os.nBootDevs ; i++) {
+        for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_FLOPPY:
                     bootorder[i] = 'a';
