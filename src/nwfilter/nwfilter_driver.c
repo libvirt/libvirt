@@ -452,7 +452,7 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
     int got = 0, i;
 
     nwfilterDriverLock(driver);
-    for (i = 0 ; i < driver->nwfilters.count && got < nnames ; i++) {
+    for (i = 0; i < driver->nwfilters.count && got < nnames; i++) {
         virNWFilterObjLock(driver->nwfilters.objs[i]);
         if (VIR_STRDUP(names[got], driver->nwfilters.objs[i]->def->name) < 0) {
              virNWFilterObjUnlock(driver->nwfilters.objs[i]);
@@ -466,7 +466,7 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
 
  cleanup:
     nwfilterDriverUnlock(driver);
-    for (i = 0 ; i < got ; i++)
+    for (i = 0; i < got; i++)
         VIR_FREE(names[i]);
     memset(names, 0, nnames * sizeof(*names));
     return -1;
@@ -499,7 +499,7 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
         goto cleanup;
     }
 
-    for (i = 0 ; i < driver->nwfilters.count; i++) {
+    for (i = 0; i < driver->nwfilters.count; i++) {
         obj = driver->nwfilters.objs[i];
         virNWFilterObjLock(obj);
         if (!(filter = virGetNWFilter(conn, obj->def->name,

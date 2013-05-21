@@ -29,13 +29,13 @@
 /*
  * Note about testing:
  *   On the host run in a shell:
- *      while :; do kill -SIGHUP `pidof libvirtd` ; echo "HUP $RANDOM"; sleep 20; done
+ *      while :; do kill -SIGHUP `pidof libvirtd`; echo "HUP $RANDOM"; sleep 20; done
  *
  *   Inside a couple of VMs that for example use the 'clean-traffic' filter:
- *      while :; do kill -SIGTERM `pidof dhclient`; dhclient eth0 ; ifconfig eth0; done
+ *      while :; do kill -SIGTERM `pidof dhclient`; dhclient eth0; ifconfig eth0; done
  *
  *   On the host check the lease file and that it's periodically shortened:
- *      cat /var/run/libvirt/network/nwfilter.leases ; date +%s
+ *      cat /var/run/libvirt/network/nwfilter.leases; date +%s
  *
  *   On the host also check that the ebtables rules 'look' ok:
  *      ebtables -t nat -L
