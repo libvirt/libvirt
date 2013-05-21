@@ -524,7 +524,7 @@ doRemoteOpen(virConnectPtr conn,
     int i;
 
     if (conn->uri) {
-        for (i = 0; i < conn->uri->paramsCount ; i++) {
+        for (i = 0; i < conn->uri->paramsCount; i++) {
             virURIParamPtr var = &conn->uri->params[i];
             EXTRACT_URI_ARG_STR("name", name);
             EXTRACT_URI_ARG_STR("command", command);
@@ -1335,7 +1335,7 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
              (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *)&ret) == -1)
         goto done;
 
-    for (i = 0 ; i < ret.cells.cells_len ; i++)
+    for (i = 0; i < ret.cells.cells_len; i++)
         freeMems[i] = ret.cells.cells_val[i];
 
     xdr_free((xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *) &ret);
@@ -3540,7 +3540,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
                            _("unknown authentication type %s"), authtype);
             return -1;
         }
-        for (i = 0 ; i < ret.types.types_len ; i++) {
+        for (i = 0; i < ret.types.types_len; i++) {
             if (ret.types.types_val[i] == want)
                 type = want;
         }
@@ -3683,7 +3683,7 @@ static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
         return NULL;
     }
 
-    for (i = 0, n = 0 ; i < ncredtype ; i++) {
+    for (i = 0, n = 0; i < ncredtype; i++) {
         int id = remoteAuthCredVir2SASL(credtype[i]);
         if (id != 0)
             cbs[n++].id = id;
@@ -3712,7 +3712,7 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
     if (!cred)
         return -1;
 
-    for (ninteract = 0, *ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+    for (ninteract = 0, *ncred = 0; interact[ninteract].id != 0; ninteract++) {
         if (interact[ninteract].result)
             continue;
         (*ncred)++;
@@ -3721,7 +3721,7 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
     if (VIR_ALLOC_N(*cred, *ncred) < 0)
         return -1;
 
-    for (ninteract = 0, *ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+    for (ninteract = 0, *ncred = 0; interact[ninteract].id != 0; ninteract++) {
         if (interact[ninteract].result)
             continue;
 
@@ -3756,7 +3756,7 @@ static void remoteAuthFillInteract(virConnectCredentialPtr cred,
                                    sasl_interact_t *interact)
 {
     int ninteract, ncred;
-    for (ninteract = 0, ncred = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+    for (ninteract = 0, ncred = 0; interact[ninteract].id != 0; ninteract++) {
         if (interact[ninteract].result)
             continue;
         interact[ninteract].result = cred[ncred].result;
@@ -3796,7 +3796,7 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
             goto cleanup;
     }
 
-    for (ninteract = 0 ; state->interact[ninteract].id != 0 ; ninteract++) {
+    for (ninteract = 0; state->interact[ninteract].id != 0; ninteract++) {
         const char *value = NULL;
 
         switch (state->interact[ninteract].id) {
@@ -3846,7 +3846,7 @@ static void remoteAuthInteractStateClear(struct remoteAuthInteractState *state,
     if (!state)
         return;
 
-    for (i = 0 ; i < state->ncred ; i++)
+    for (i = 0; i < state->ncred; i++)
         VIR_FREE(state->cred[i].result);
     VIR_FREE(state->cred);
     state->ncred = 0;
@@ -4189,7 +4189,7 @@ remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
     /* Auth failed.  Ask client to obtain it and check again. */
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
-        for (i = 0 ; i < auth->ncredtype ; i++) {
+        for (i = 0; i < auth->ncredtype; i++) {
             if (auth->credtype[i] == VIR_CRED_EXTERNAL)
                 allowcb = 1;
         }
@@ -4488,7 +4488,7 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     if (VIR_ALLOC_N(subject->identities, msg->subject.subject_len) < 0)
         goto no_memory;
     subject->nidentity = msg->subject.subject_len;
-    for (i = 0 ; i < subject->nidentity ; i++) {
+    for (i = 0; i < subject->nidentity; i++) {
         if (!(subject->identities[i].type = strdup(msg->subject.subject_val[i].type)) ||
             !(subject->identities[i].name = strdup(msg->subject.subject_val[i].name)))
             goto no_memory;
@@ -4518,7 +4518,7 @@ no_memory:
         VIR_FREE(remoteAddr);
     }
     if (subject) {
-        for (i = 0 ; i < subject->nidentity ; i++) {
+        for (i = 0; i < subject->nidentity; i++) {
             VIR_FREE(subject->identities[i].type);
             VIR_FREE(subject->identities[i].name);
         }
