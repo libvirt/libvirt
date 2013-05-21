@@ -199,7 +199,7 @@ static int virLXCControllerCloseLoopDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
 
-    for (i = 0 ; i < ctrl->nloopDevs ; i++)
+    for (i = 0; i < ctrl->nloopDevs; i++)
         VIR_FORCE_CLOSE(ctrl->loopDevFds[i]);
 
     return 0;
@@ -251,11 +251,11 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     virObjectUnref(ctrl->securityManager);
 
-    for (i = 0 ; i < ctrl->nveths ; i++)
+    for (i = 0; i < ctrl->nveths; i++)
         VIR_FREE(ctrl->veths[i]);
     VIR_FREE(ctrl->veths);
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++)
+    for (i = 0; i < ctrl->nconsoles; i++)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
     VIR_FREE(ctrl->consoles);
 
@@ -450,7 +450,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
     size_t i;
     int ret = -1;
 
-    for (i = 0 ; i < ctrl->def->nfss ; i++) {
+    for (i = 0; i < ctrl->def->nfss; i++) {
         virDomainFSDefPtr fs = ctrl->def->fss[i];
         int fd;
 
@@ -487,7 +487,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         }
     }
 
-    for (i = 0 ; i < ctrl->def->ndisks ; i++) {
+    for (i = 0; i < ctrl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctrl->def->disks[i];
         int fd;
 
@@ -1067,7 +1067,7 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
 
     virResetLastError();
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++) {
+    for (i = 0; i < ctrl->nconsoles; i++) {
         if ((ctrl->consoles[i].epollFd = epoll_create1(EPOLL_CLOEXEC)) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to create epoll fd"));
@@ -1115,7 +1115,7 @@ cleanup:
     virMutexDestroy(&lock);
 cleanup2:
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++)
+    for (i = 0; i < ctrl->nconsoles; i++)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
 
     return rc;
@@ -1138,7 +1138,7 @@ static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl)
     size_t i;
     virDomainDefPtr def = ctrl->def;
 
-    for (i = 0 ; i < ctrl->nveths ; i++) {
+    for (i = 0; i < ctrl->nveths; i++) {
         if (virNetDevSetNamespace(ctrl->veths[i], ctrl->initpid) < 0)
             return -1;
     }
@@ -1175,7 +1175,7 @@ static int virLXCControllerDeleteInterfaces(virLXCControllerPtr ctrl)
     size_t i;
     int ret = 0;
 
-    for (i = 0 ; i < ctrl->nveths ; i++) {
+    for (i = 0; i < ctrl->nveths; i++) {
         if (virNetDevVethDelete(ctrl->veths[i]) < 0)
             ret = -1;
     }
@@ -1371,7 +1371,7 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
 {
     size_t i;
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++) {
+    for (i = 0; i < ctrl->nconsoles; i++) {
         VIR_DEBUG("Opening tty on private %s", ctrl->devptmx);
         if (lxcCreateTty(ctrl->devptmx,
                          &ctrl->consoles[i].contFd,
@@ -1568,7 +1568,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerDaemonHandshake(ctrl) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++)
+    for (i = 0; i < ctrl->nconsoles; i++)
         if (virLXCControllerConsoleSetNonblocking(&(ctrl->consoles[i])) < 0)
             goto cleanup;
 
@@ -1582,7 +1582,7 @@ cleanup:
     VIR_FORCE_CLOSE(containerhandshake[0]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
 
-    for (i = 0 ; i < ctrl->nconsoles ; i++)
+    for (i = 0; i < ctrl->nconsoles; i++)
         VIR_FREE(containerTTYPaths[i]);
     VIR_FREE(containerTTYPaths);
 
@@ -1739,7 +1739,7 @@ int main(int argc, char *argv[])
     ctrl->veths = veths;
     ctrl->nveths = nveths;
 
-    for (i = 0 ; i < nttyFDs ; i++) {
+    for (i = 0; i < nttyFDs; i++) {
         if (virLXCControllerAddConsole(ctrl, ttyFDs[i]) < 0)
             goto cleanup;
         ttyFDs[i] = -1;
@@ -1801,7 +1801,7 @@ cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
     if (ctrl)
         virLXCControllerDeleteInterfaces(ctrl);
-    for (i = 0 ; i < nttyFDs ; i++)
+    for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
 

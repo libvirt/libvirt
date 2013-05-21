@@ -2191,7 +2191,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     }
 
     /* Check the path is one of the domain's network interfaces. */
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i]->ifname &&
             STREQ(vm->def->nets[i]->ifname, path)) {
             ret = 0;
@@ -2544,7 +2544,7 @@ lxcDomainOpenConsole(virDomainPtr dom,
     }
 
     if (dev_name) {
-        for (i = 0 ; i < vm->def->nconsoles ; i++) {
+        for (i = 0; i < vm->def->nconsoles; i++) {
             if (vm->def->consoles[i]->info.alias &&
                 STREQ(vm->def->consoles[i]->info.alias, dev_name)) {
                 chr = vm->def->consoles[i];

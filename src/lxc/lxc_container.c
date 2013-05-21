@@ -353,7 +353,7 @@ static int lxcContainerRenameAndEnableInterfaces(bool privNet,
     size_t i;
     char *newname = NULL;
 
-    for (i = 0 ; i < nveths ; i++) {
+    for (i = 0; i < nveths; i++) {
         if (virAsprintf(&newname, "eth%zu", i) < 0) {
             virReportOOMError();
             rc = -1;
@@ -475,7 +475,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
 
     if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
         goto cleanup;
-    for (i = 0 ; i < nmounts ; i++) {
+    for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
             char ebuf[1024];
@@ -509,7 +509,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     ret = 0;
 
 cleanup:
-    for (i = 0 ; i < nmounts ; i++)
+    for (i = 0; i < nmounts; i++)
         VIR_FREE(mounts[i]);
     VIR_FREE(mounts);
 
@@ -689,7 +689,7 @@ static int lxcContainerMountBasicFS(char *sec_mount_options)
 
     VIR_DEBUG("Mounting basic filesystems sec_mount_options=%s", sec_mount_options);
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(mnts); i++) {
         const char *srcpath = NULL;
 
         VIR_DEBUG("Processing %s -> %s",
@@ -849,7 +849,7 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
     };
 
     /* Populate /dev/ with a few important bits */
-    for (i = 0 ; i < ARRAY_CARDINALITY(devs) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(devs); i++) {
         dev_t dev = makedev(devs[i].maj, devs[i].min);
         if (mknod(devs[i].path, S_IFCHR, dev) < 0 ||
             chmod(devs[i].path, devs[i].mode)) {
@@ -860,7 +860,7 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         }
     }
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(links) ; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(links); i++) {
         if (symlink(links[i].src, links[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to symlink device %s to %s"),
@@ -890,7 +890,7 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         }
     }
 
-    for (i = 0 ; i < nttyPaths ; i++) {
+    for (i = 0; i < nttyPaths; i++) {
         char *tty;
         if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0) {
             virReportOOMError();
@@ -1356,7 +1356,7 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
     VIR_DEBUG("Mounting all non-root filesystems");
 
     /* Pull in rest of container's mounts */
-    for (i = 0 ; i < vmDef->nfss ; i++) {
+    for (i = 0; i < vmDef->nfss; i++) {
         if (STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
@@ -1460,7 +1460,7 @@ static int lxcContainerSetupAllDisks(virDomainDefPtr vmDef,
     size_t i;
     VIR_DEBUG("Setting up disks");
 
-    for (i = 0 ; i < vmDef->ndisks ; i++) {
+    for (i = 0; i < vmDef->ndisks; i++) {
         if (lxcContainerSetupDisk(vmDef, vmDef->disks[i],
                                   securityDriver) < 0)
             return -1;
@@ -1702,7 +1702,7 @@ static int lxcContainerSetupAllHostdevs(virDomainDefPtr vmDef,
     size_t i;
     VIR_DEBUG("Setting up hostdevs");
 
-    for (i = 0 ; i < vmDef->nhostdevs ; i++) {
+    for (i = 0; i < vmDef->nhostdevs; i++) {
         virDomainHostdevDefPtr def = vmDef->hostdevs[i];
         switch (def->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
@@ -1840,7 +1840,7 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
     char *newroot;
     size_t i;
 
-    for (i = 0 ; i < vmDef->nfss ; i++) {
+    for (i = 0; i < vmDef->nfss; i++) {
         virDomainFSDefPtr fs = vmDef->fss[i];
         if (!fs->src)
             continue;
@@ -2070,7 +2070,7 @@ lxcNeedNetworkNamespace(virDomainDefPtr def)
         return true;
     if (def->features & (1 << VIR_DOMAIN_FEATURE_PRIVNET))
         return true;
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&
             def->hostdevs[i]->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
             return true;

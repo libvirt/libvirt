@@ -427,7 +427,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         }
     }
 
-    for (i = 0 ; i < def->ndisks ; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK)
             continue;
 
@@ -445,7 +445,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         }
     }
 
-    for (i = 0 ; i < def->nfss ; i++) {
+    for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
             continue;
 

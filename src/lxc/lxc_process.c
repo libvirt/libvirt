@@ -261,7 +261,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 
     virLXCDomainReAttachHostDevices(driver, vm->def);
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
+    for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr iface = vm->def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(iface);
         if (iface->ifname) {
@@ -433,7 +433,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
     int ret = -1;
     size_t i;
 
-    for (i = 0 ; i < def->nnets ; i++) {
+    for (i = 0; i < def->nnets; i++) {
         char *veth = NULL;
         /* If appropriate, grab a physical device from the configured
          * network's pool of devices, or resolve bridge device name
@@ -536,7 +536,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
 cleanup:
     if (ret < 0) {
-        for (i = 0 ; i < def->nnets ; i++) {
+        for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr iface = def->nets[i];
             virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(iface);
             if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
@@ -851,7 +851,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     }
 
     virCommandAddArgList(cmd, "--name", vm->def->name, NULL);
-    for (i = 0 ; i < nttyFDs ; i++) {
+    for (i = 0; i < nttyFDs; i++) {
         virCommandAddArg(cmd, "--console");
         virCommandAddArgFormat(cmd, "%d", ttyFDs[i]);
         virCommandPreserveFD(cmd, ttyFDs[i]);
@@ -864,7 +864,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     virCommandAddArgFormat(cmd, "%d", handshakefd);
     virCommandAddArg(cmd, "--background");
 
-    for (i = 0 ; i < nveths ; i++) {
+    for (i = 0; i < nveths; i++) {
         virCommandAddArgList(cmd, "--veth", veths[i], NULL);
     }
 
@@ -1131,7 +1131,7 @@ int virLXCProcessStart(virConnectPtr conn,
         virReportOOMError();
         goto cleanup;
     }
-    for (i = 0 ; i < vm->def->nconsoles ; i++)
+    for (i = 0; i < vm->def->nconsoles; i++)
         ttyFDs[i] = -1;
 
     /* If you are using a SecurityDriver with dynamic labelling,
@@ -1152,7 +1152,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                       vm->def, NULL) < 0)
         goto cleanup;
 
-    for (i = 0 ; i < vm->def->nconsoles ; i++) {
+    for (i = 0; i < vm->def->nconsoles; i++) {
         char *ttyPath;
         if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1334,7 +1334,7 @@ cleanup:
         virReportSystemError(errno, "%s", _("could not close logfile"));
         rc = -1;
     }
-    for (i = 0 ; i < nveths ; i++) {
+    for (i = 0; i < nveths; i++) {
         if (rc != 0)
             ignore_value(virNetDevVethDelete(veths[i]));
         VIR_FREE(veths[i]);
@@ -1361,7 +1361,7 @@ cleanup:
             VIR_FREE(vm->def->seclabels[0]->imagelabel);
         }
     }
-    for (i = 0 ; i < nttyFDs ; i++)
+    for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
     VIR_FORCE_CLOSE(handshakefds[0]);

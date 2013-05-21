@@ -232,7 +232,7 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
 
     /* Loop 1: build temporary list
      */
-    for (i = 0 ; i < nhostdevs ; i++) {
+    for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         bool required = true;
         virUSBDevicePtr usb;
@@ -287,7 +287,7 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
         return 0;
 
     /* Sanity check for supported configurations only */
-    for (i = 0 ; i < def->nhostdevs ; i++) {
+    for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr dev = def->hostdevs[i];
 
         switch (dev->mode) {
