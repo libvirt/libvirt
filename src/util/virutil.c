@@ -67,6 +67,7 @@
 #endif
 
 #include "c-ctype.h"
+#include "mgetgroups.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"
@@ -969,6 +970,35 @@ virGetGroupID(const char *group, gid_t *gid)
 
     return 0;
 }
+
+
+/* Compute the list of supplementary groups associated with @uid, and
+ * including @gid in the list (unless it is -1), storing a malloc'd
+ * result into @list.  Return the size of the list on success, or -1
+ * on failure with error reported and errno set. May not be called
+ * between fork and exec. */
+int
+virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
+{
+    int ret = -1;
+    char *user = NULL;
+
+    *list = NULL;
+    if (uid == (uid_t)-1)
+        return 0;
+
+    if (virGetUserEnt(uid, &user,
+                      gid == (gid_t)-1 ? &gid : NULL, NULL) < 0)
+        return -1;
+
+    ret = mgetgroups(user, gid, list);
+    if (ret < 0)
+        virReportSystemError(errno,
+                             _("cannot get group list for '%s'"), user);
+    VIR_FREE(user);
+    return ret;
+}
+
 
 /* Set the real and effective uid and gid to the given values, and call
  * initgroups so that the process has all the assumed group membership of
