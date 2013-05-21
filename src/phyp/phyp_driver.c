@@ -1008,7 +1008,7 @@ connected:
     libssh2_session_set_blocking(session, 0);
 
     while ((rc = libssh2_session_startup(session, sock)) ==
-           LIBSSH2_ERROR_EAGAIN) ;
+           LIBSSH2_ERROR_EAGAIN);
     if (rc) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failure establishing SSH session."));
@@ -1026,7 +1026,7 @@ connected:
                                                 pubkey,
                                                 pvtkey,
                                                 NULL)) ==
-           LIBSSH2_ERROR_EAGAIN) ;
+           LIBSSH2_ERROR_EAGAIN);
 
 keyboard_interactive:
     if (rc == LIBSSH2_ERROR_SOCKET_NONE
@@ -1049,7 +1049,7 @@ keyboard_interactive:
         while ((rc =
                 libssh2_userauth_password(session, username,
                                           password)) ==
-               LIBSSH2_ERROR_EAGAIN) ;
+               LIBSSH2_ERROR_EAGAIN);
 
         if (rc) {
             virReportError(VIR_ERR_AUTH_FAILED,
