@@ -214,7 +214,7 @@ vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObjPtr vm)
                                &vmxAbsolutePath) < 0)
         goto cleanup;
 
-    for (str = outbuf ; (parsedVmxPath = strtok_r(str, "\n", &saveptr)) != NULL;
+    for (str = outbuf; (parsedVmxPath = strtok_r(str, "\n", &saveptr)) != NULL;
          str = NULL) {
 
         if (parsedVmxPath[0] != '/')
