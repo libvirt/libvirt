@@ -369,7 +369,7 @@ virNWFilterSnoopListAdd(virNWFilterSnoopIPLeasePtr plnew,
 
     for (pl = *end; pl && plnew->timeout < pl->timeout;
          pl = pl->prev)
-        /* empty */ ;
+        ; /* empty */
 
     if (!pl) {
         plnew->next = *start;
@@ -526,7 +526,7 @@ virNWFilterSnoopIPLeaseGetByIP(virNWFilterSnoopIPLeasePtr start,
     for (pl = start;
          pl && !virSocketAddrEqual(&pl->ipAddress, ipaddr);
          pl = pl->next)
-        /* empty */ ;
+        ; /* empty */
     return pl;
 }
 
