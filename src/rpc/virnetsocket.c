@@ -321,7 +321,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     return 0;
 
 error:
-    for (i = 0 ; i < nsocks ; i++)
+    for (i = 0; i < nsocks; i++)
         virObjectUnref(socks[i]);
     VIR_FREE(socks);
     freeaddrinfo(ai);

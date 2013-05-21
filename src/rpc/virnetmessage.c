@@ -55,7 +55,7 @@ void virNetMessageClear(virNetMessagePtr msg)
 
     VIR_DEBUG("msg=%p nfds=%zu", msg, msg->nfds);
 
-    for (i = 0 ; i < msg->nfds ; i++)
+    for (i = 0; i < msg->nfds; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
     VIR_FREE(msg->fds);
     VIR_FREE(msg->buffer);
@@ -75,7 +75,7 @@ void virNetMessageFree(virNetMessagePtr msg)
     if (msg->cb)
         msg->cb(msg, msg->opaque);
 
-    for (i = 0 ; i < msg->nfds ; i++)
+    for (i = 0; i < msg->nfds; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
     VIR_FREE(msg->buffer);
     VIR_FREE(msg->fds);
@@ -325,7 +325,7 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
         virReportOOMError();
         goto cleanup;
     }
-    for (i = 0 ; i < msg->nfds ; i++)
+    for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
 
     VIR_DEBUG("Got %zu FDs from peer", msg->nfds);

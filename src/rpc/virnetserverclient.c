@@ -1166,7 +1166,7 @@ readmore:
         }
 
         /* Try getting the file descriptors (may fail if blocking) */
-        for (i = msg->donefds ; i < msg->nfds ; i++) {
+        for (i = msg->donefds; i < msg->nfds; i++) {
             int rv;
             if ((rv = virNetSocketRecvFD(client->sock, &(msg->fds[i]))) < 0) {
                 virNetMessageQueueServe(&client->rx);
@@ -1317,7 +1317,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
             virNetMessagePtr msg;
             size_t i;
 
-            for (i = client->tx->donefds ; i < client->tx->nfds ; i++) {
+            for (i = client->tx->donefds; i < client->tx->nfds; i++) {
                 int rv;
                 if ((rv = virNetSocketSendFD(client->sock, client->tx->fds[i])) < 0) {
                     client->wantClose = true;

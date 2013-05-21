@@ -197,7 +197,7 @@ static virNetClientProgramEventPtr virNetClientProgramGetEvent(virNetClientProgr
 {
     int i;
 
-    for (i = 0 ; i < prog->nevents ; i++) {
+    for (i = 0; i < prog->nevents; i++) {
         if (prog->events[i].proc == procedure)
             return &prog->events[i];
     }
@@ -301,9 +301,9 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
         virReportOOMError();
         goto error;
     }
-    for (i = 0 ; i < msg->nfds ; i++)
+    for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
-    for (i = 0 ; i < msg->nfds ; i++) {
+    for (i = 0; i < msg->nfds; i++) {
         if ((msg->fds[i] = dup(outfds[i])) < 0) {
             virReportSystemError(errno,
                                  _("Cannot duplicate FD %d"),
@@ -362,9 +362,9 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                 virReportOOMError();
                 goto error;
             }
-            for (i = 0 ; i < *ninfds ; i++)
+            for (i = 0; i < *ninfds; i++)
                 (*infds)[i] = -1;
-            for (i = 0 ; i < *ninfds ; i++) {
+            for (i = 0; i < *ninfds; i++) {
                 if (((*infds)[i] = dup(msg->fds[i])) < 0) {
                     virReportSystemError(errno,
                                          _("Cannot duplicate FD %d"),
@@ -401,7 +401,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
 error:
     virNetMessageFree(msg);
     if (infds && ninfds) {
-        for (i = 0 ; i < *ninfds ; i++)
+        for (i = 0; i < *ninfds; i++)
             VIR_FORCE_CLOSE((*infds)[i]);
     }
     return -1;

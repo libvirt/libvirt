@@ -210,7 +210,7 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
               srv, client, msg);
 
     virObjectLock(srv);
-    for (i = 0 ; i < srv->nprograms ; i++) {
+    for (i = 0; i < srv->nprograms; i++) {
         if (virNetServerProgramMatches(srv->programs[i], msg)) {
             prog = srv->programs[i];
             break;
@@ -517,7 +517,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virNetServerServicePtr service;
         virJSONValuePtr child = virJSONValueArrayGet(services, i);
         if (!child) {
@@ -550,7 +550,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    for (i = 0 ; i < n ; i++) {
+    for (i = 0; i < n; i++) {
         virNetServerClientPtr client;
         virJSONValuePtr child = virJSONValueArrayGet(clients, i);
         if (!child) {
@@ -645,7 +645,7 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         goto error;
     }
 
-    for (i = 0 ; i < srv->nservices ; i++) {
+    for (i = 0; i < srv->nservices; i++) {
         virJSONValuePtr child;
         if (!(child = virNetServerServicePreExecRestart(srv->services[i])))
             goto error;
@@ -662,7 +662,7 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         goto error;
     }
 
-    for (i = 0 ; i < srv->nclients ; i++) {
+    for (i = 0; i < srv->nclients; i++) {
         virJSONValuePtr child;
         if (!(child = virNetServerClientPreExecRestart(srv->clients[i])))
             goto error;
@@ -870,7 +870,7 @@ virNetServerSignalEvent(int watch,
         goto cleanup;
     }
 
-    for (i = 0 ; i < srv->nsignals ; i++) {
+    for (i = 0; i < srv->nsignals; i++) {
         if (siginfo.si_signo == srv->signals[i]->signum) {
             virNetServerSignalFunc func = srv->signals[i]->func;
             void *funcopaque = srv->signals[i]->opaque;
@@ -1051,7 +1051,7 @@ void virNetServerUpdateServices(virNetServerPtr srv,
     int i;
 
     virObjectLock(srv);
-    for (i = 0 ; i < srv->nservices ; i++)
+    for (i = 0; i < srv->nservices; i++)
         virNetServerServiceToggle(srv->services[i], enabled);
 
     virObjectUnlock(srv);
@@ -1113,7 +1113,7 @@ void virNetServerRun(virNetServerPtr srv)
         virObjectLock(srv);
 
     reprocess:
-        for (i = 0 ; i < srv->nclients ; i++) {
+        for (i = 0; i < srv->nclients; i++) {
             /* Coverity 5.3.0 couldn't see that srv->clients is non-NULL
              * if srv->nclients is non-zero.  */
             sa_assert(srv->clients);
@@ -1162,12 +1162,12 @@ void virNetServerDispose(void *obj)
 
     VIR_FORCE_CLOSE(srv->autoShutdownInhibitFd);
 
-    for (i = 0 ; i < srv->nservices ; i++)
+    for (i = 0; i < srv->nservices; i++)
         virNetServerServiceToggle(srv->services[i], false);
 
     virThreadPoolFree(srv->workers);
 
-    for (i = 0 ; i < srv->nsignals ; i++) {
+    for (i = 0; i < srv->nsignals; i++) {
         sigaction(srv->signals[i]->signum, &srv->signals[i]->oldaction, NULL);
         VIR_FREE(srv->signals[i]);
     }
@@ -1177,15 +1177,15 @@ void virNetServerDispose(void *obj)
     if (srv->sigwatch > 0)
         virEventRemoveHandle(srv->sigwatch);
 
-    for (i = 0 ; i < srv->nservices ; i++)
+    for (i = 0; i < srv->nservices; i++)
         virObjectUnref(srv->services[i]);
     VIR_FREE(srv->services);
 
-    for (i = 0 ; i < srv->nprograms ; i++)
+    for (i = 0; i < srv->nprograms; i++)
         virObjectUnref(srv->programs[i]);
     VIR_FREE(srv->programs);
 
-    for (i = 0 ; i < srv->nclients ; i++) {
+    for (i = 0; i < srv->nclients; i++) {
         virNetServerClientClose(srv->clients[i]);
         virObjectUnref(srv->clients[i]);
     }

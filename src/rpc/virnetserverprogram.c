@@ -451,7 +451,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
      *
      */
     if (rv != 1) {
-        for (i = 0 ; i < msg->nfds ; i++)
+        for (i = 0; i < msg->nfds; i++)
             VIR_FORCE_CLOSE(msg->fds[i]);
         VIR_FREE(msg->fds);
         msg->nfds = 0;

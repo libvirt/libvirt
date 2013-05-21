@@ -121,7 +121,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                  &svc->nsocks) < 0)
         goto error;
 
-    for (i = 0 ; i < svc->nsocks ; i++) {
+    for (i = 0; i < svc->nsocks; i++) {
         if (virNetSocketListen(svc->socks[i], 0) < 0)
             goto error;
 
@@ -184,7 +184,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                   &svc->socks[0]) < 0)
         goto error;
 
-    for (i = 0 ; i < svc->nsocks ; i++) {
+    for (i = 0; i < svc->nsocks; i++) {
         if (virNetSocketListen(svc->socks[i], 0) < 0)
             goto error;
 
@@ -243,7 +243,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                 &svc->socks[0]) < 0)
         goto error;
 
-    for (i = 0 ; i < svc->nsocks ; i++) {
+    for (i = 0; i < svc->nsocks; i++) {
         /* IO callback is initially disabled, until we're ready
          * to deal with incoming clients */
         if (virNetSocketAddIOCallback(svc->socks[i],
@@ -315,7 +315,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
         goto error;
     }
 
-    for (i = 0 ; i < svc->nsocks ; i++) {
+    for (i = 0; i < svc->nsocks; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(socks, i);
         virNetSocketPtr sock;
 
@@ -372,7 +372,7 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
         goto error;
     }
 
-    for (i = 0 ; i < svc->nsocks ; i++) {
+    for (i = 0; i < svc->nsocks; i++) {
         virJSONValuePtr child;
         if (!(child = virNetSocketPreExecRestart(svc->socks[i])))
             goto error;
@@ -437,7 +437,7 @@ void virNetServerServiceDispose(void *obj)
     virNetServerServicePtr svc = obj;
     int i;
 
-    for (i = 0 ; i < svc->nsocks ; i++)
+    for (i = 0; i < svc->nsocks; i++)
         virObjectUnref(svc->socks[i]);
     VIR_FREE(svc->socks);
 
@@ -451,7 +451,7 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
 {
     int i;
 
-    for (i = 0 ; i < svc->nsocks ; i++)
+    for (i = 0; i < svc->nsocks; i++)
         virNetSocketUpdateIOCallback(svc->socks[i],
                                      enabled ?
                                      VIR_EVENT_HANDLE_READABLE :
