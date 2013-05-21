@@ -211,4 +211,8 @@ char *virInterfaceDefFormat(const virInterfaceDefPtr def);
 void virInterfaceObjLock(virInterfaceObjPtr obj);
 void virInterfaceObjUnlock(virInterfaceObjPtr obj);
 
+#define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE   \
+                (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \
+                 VIR_CONNECT_LIST_INTERFACES_INACTIVE)
+
 #endif /* __INTERFACE_CONF_H__ */

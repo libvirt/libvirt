@@ -282,6 +282,7 @@ udevConnectListDefinedInterfaces(virConnectPtr conn,
                                       VIR_UDEV_IFACE_INACTIVE);
 }
 
+#define MATCH(FLAG) (flags & (FLAG))
 static int
 udevConnectListAllInterfaces(virConnectPtr conn,
                              virInterfacePtr **ifaces,
@@ -299,8 +300,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     int status = 0;
     int ret;
 
-    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
-                  VIR_CONNECT_LIST_INTERFACES_INACTIVE, -1);
+    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE, -1);
 
     /* Grab a udev reference */
     udev = udev_ref(driverState->udev);
@@ -354,7 +354,6 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         const char *path;
         const char *name;
         const char *macaddr;
-        int add_to_list = 0;
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
@@ -363,18 +362,17 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         status = STREQ(udev_device_get_sysattr_value(dev, "operstate"), "up");
 
         /* Filter the results */
-        if (status && (flags & VIR_CONNECT_LIST_INTERFACES_ACTIVE))
-            add_to_list = 1;
-        else if (!status && (flags & VIR_CONNECT_LIST_INTERFACES_INACTIVE))
-            add_to_list = 1;
+        if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
+            !((MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE) && status) ||
+              (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) && !status))) {
+            udev_device_unref(dev);
+            continue;
+        }
 
         /* If we matched a filter, then add it */
-        if (add_to_list) {
-            if (ifaces) {
-                iface_obj = virGetInterface(conn, name, macaddr);
-                ifaces_list[count] = iface_obj;
-            }
-            count++;
+        if (ifaces) {
+            iface_obj = virGetInterface(conn, name, macaddr);
+            ifaces_list[count++] = iface_obj;
         }
         udev_device_unref(dev);
     }
@@ -387,6 +385,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     if (ifaces) {
         ignore_value(VIR_REALLOC_N(ifaces_list, count + 1));
         *ifaces = ifaces_list;
+        ifaces_list = NULL;
     }
 
     return count;

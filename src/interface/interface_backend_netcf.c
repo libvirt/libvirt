@@ -260,6 +260,7 @@ static int netcfConnectListDefinedInterfaces(virConnectPtr conn, char **const na
 
 }
 
+#define MATCH(FLAG) (flags & (FLAG))
 static int
 netcfConnectListAllInterfaces(virConnectPtr conn,
                               virInterfacePtr **ifaces,
@@ -276,8 +277,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
     int ret = -1;
     char **names = NULL;
 
-    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
-                  VIR_CONNECT_LIST_INTERFACES_INACTIVE, -1);
+    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE, -1);
 
     interfaceDriverLock(driver);
 
@@ -293,7 +293,6 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
                        _("failed to get number of host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
                        details ? details : "");
-        ret = -1;
         goto cleanup;
     }
 
@@ -304,7 +303,6 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 
     if (VIR_ALLOC_N(names, count) < 0) {
         virReportOOMError();
-        ret = -1;
         goto cleanup;
     }
 
@@ -361,16 +359,19 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         /* XXX: Filter the result, need to be splitted once new filter flags
          * except active|inactive are supported.
          */
-        if (((status & NETCF_IFACE_ACTIVE) &&
-             (flags & VIR_CONNECT_LIST_INTERFACES_ACTIVE)) ||
-            ((status & NETCF_IFACE_INACTIVE) &&
-             (flags & VIR_CONNECT_LIST_INTERFACES_INACTIVE))) {
-            if (ifaces) {
-                iface_obj = virGetInterface(conn, ncf_if_name(iface),
-                                            ncf_if_mac_string(iface));
-                tmp_iface_objs[niface_objs] = iface_obj;
-            }
-            niface_objs++;
+        if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
+            !((MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE) &&
+               (status & NETCF_IFACE_ACTIVE)) ||
+              (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) &&
+               (status & NETCF_IFACE_INACTIVE)))) {
+            ncf_if_free(iface);
+            continue;
+        }
+
+        if (ifaces) {
+            iface_obj = virGetInterface(conn, ncf_if_name(iface),
+                                        ncf_if_mac_string(iface));
+            tmp_iface_objs[niface_objs++] = iface_obj;
         }
 
         ncf_if_free(iface);
