@@ -6099,6 +6099,19 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                 virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
             }
 
+        if (graphics->data.vnc.sharePolicy) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vnc display sharing policy is not "
+                                 "supported with this QEMU"));
+                goto error;
+            }
+
+            virBufferAsprintf(&opt, ",share=%s",
+                              virDomainGraphicsVNCSharePolicyTypeToString(
+                              graphics->data.vnc.sharePolicy));
+        }
+
         if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
             virBufferAddLit(&opt, ",password");
 
@@ -10029,6 +10042,29 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                                  * display value. */
                                 vnc->data.vnc.websocket =
                                     vnc->data.vnc.port + 5700;
+                            }
+                        } else if (STRPREFIX(opts, "share=")) {
+                            char *sharePolicy = opts + strlen("share=");
+                            if (sharePolicy && *sharePolicy) {
+                                int policy =
+                                    virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
+
+                                if (policy < 0) {
+                                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                   _("unknown vnc display sharing policy '%s'"),
+                                                     sharePolicy);
+                                    virDomainGraphicsDefFree(vnc);
+                                    VIR_FREE(orig_opts);
+                                    goto error;
+                                } else {
+                                    vnc->data.vnc.sharePolicy = policy;
+                                }
+                            } else {
+                                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                               _("missing vnc sharing policy"));
+                                virDomainGraphicsDefFree(vnc);
+                                VIR_FREE(orig_opts);
+                                goto error;
                             }
                         }
 
