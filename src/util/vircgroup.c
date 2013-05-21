@@ -1037,7 +1037,11 @@ static int virCgroupAddTaskStrController(virCgroupPtr group,
             goto cleanup;
 
         rc = virCgroupAddTaskController(group, p, controller);
-        if (rc != 0)
+        /* A thread that exits between when we first read the source
+         * tasks and now is not fatal.  */
+        if (rc == -ESRCH)
+            rc = 0;
+        else if (rc != 0)
             goto cleanup;
 
         next = strchr(cur, '\n');
@@ -1074,15 +1078,23 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
             !dest_group->controllers[i].mountPoint)
             continue;
 
-        rc = virCgroupGetValueStr(src_group, i, "tasks", &content);
-        if (rc != 0)
-            return rc;
+        /* New threads are created in the same group as their parent;
+         * but if a thread is created after we first read we aren't
+         * aware that it needs to move.  Therefore, we must iterate
+         * until content is empty.  */
+        while (1) {
+            rc = virCgroupGetValueStr(src_group, i, "tasks", &content);
+            if (rc != 0)
+                return rc;
+            if (!*content)
+                break;
 
-        rc = virCgroupAddTaskStrController(dest_group, content, i);
-        if (rc != 0)
-            goto cleanup;
+            rc = virCgroupAddTaskStrController(dest_group, content, i);
+            if (rc != 0)
+                goto cleanup;
 
-        VIR_FREE(content);
+            VIR_FREE(content);
+        }
     }
 
 cleanup:
