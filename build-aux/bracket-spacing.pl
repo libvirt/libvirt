@@ -109,6 +109,27 @@ foreach my $file (@ARGV) {
             $ret = 1;
             last;
         }
+
+        # Forbid whitespace before ";". Things like below are allowed:
+        #
+        # 1) The expression is empty for "for" loop. E.g.
+        #   for (i = 0; ; i++)
+        #
+        # 2) An empty statement. E.g.
+        #   while (write(statuswrite, &status, 1) == -1 &&
+        #          errno == EINTR)
+        #       ;
+        #
+        # 3) ";" is inside double-quote, I.e, as part of const string. E.g.
+        #   printf("%s", "a ; b\n");
+        while ($data =~ /[^;\s]\s+;/) {
+            # Inside the double-quote
+            if ($data !~ /"[^"]*\s;/) {
+                print "$file:$.: $line";
+                $ret = 1;
+            }
+            last;
+        }
     }
     close FILE;
 }

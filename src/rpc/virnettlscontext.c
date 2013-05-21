@@ -292,7 +292,7 @@ static int virNetTLSContextCheckCertKeyPurpose(gnutls_x509_crt_t cert,
     bool allowClient = false, allowServer = false;
 
     critical = 0;
-    for (i = 0 ; ; i++) {
+    for (i = 0; ; i++) {
         size = 0;
         status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
 
