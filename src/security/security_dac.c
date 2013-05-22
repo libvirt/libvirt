@@ -997,17 +997,25 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
     uid_t user;
     gid_t group;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    gid_t *groups;
+    int ngroups;
+    int ret = -1;
 
     if (virSecurityDACGetIds(def, priv, &user, &group))
+        return -1;
+    ngroups = virGetGroupList(user, group, &groups);
+    if (ngroups < 0)
         return -1;
 
     VIR_DEBUG("Dropping privileges of DEF to %u:%u",
               (unsigned int) user, (unsigned int) group);
 
-    if (virSetUIDGID(user, group) < 0)
-        return -1;
-
-    return 0;
+    if (virSetUIDGID(user, group, groups, ngroups) < 0)
+        goto cleanup;
+    ret = 0;
+cleanup:
+    VIR_FREE(groups);
+    return ret;
 }
 
 

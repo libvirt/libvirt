@@ -206,8 +206,8 @@ AC_CHECK_SIZEOF([long])
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw geteuid getgid getgrnam_r getmntent_r \
-  getpwuid_r getuid initgroups kill mmap newlocale posix_fallocate \
-  posix_memalign prlimit regexec sched_getaffinity setns setrlimit symlink])
+  getpwuid_r getuid kill mmap newlocale posix_fallocate posix_memalign \
+  prlimit regexec sched_getaffinity setgroups setns setrlimit symlink])
 
 dnl Availability of pthread functions (if missing, win32 threading is
 dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
