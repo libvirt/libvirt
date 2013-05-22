@@ -829,7 +829,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 
     type = virXPathString("string(./@type)", ctxt);
     if ((ret->type = virStoragePoolTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_XML_ERROR,
                        _("unknown storage pool type %s"), type);
         goto cleanup;
     }
