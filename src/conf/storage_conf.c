@@ -447,7 +447,7 @@ virStoragePoolDefParseAuthChap(xmlXPathContextPtr ctxt,
     auth->login = virXPathString("string(./auth/@login)", ctxt);
     if (auth->login == NULL) {
         virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("missing auth host attribute"));
+                       "%s", _("missing auth login attribute"));
         return -1;
     }
 
