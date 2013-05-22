@@ -1484,7 +1484,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     virBufferAddLit(&buf, "<volume>\n");
     virBufferAsprintf(&buf,"  <name>%s</name>\n", def->name);
-    virBufferAsprintf(&buf,"  <key>%s</key>\n", def->key ? def->key : "(null)");
+    virBufferAsprintf(&buf,"  <key>%s</key>\n", NULLSTR(def->key));
     virBufferAddLit(&buf, "  <source>\n");
 
     if (def->source.nextent) {
