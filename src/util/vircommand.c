@@ -401,6 +401,8 @@ virExec(virCommandPtr cmd)
     const char *binary = NULL;
     int forkRet, ret;
     struct sigaction waxon, waxoff;
+    gid_t *groups = NULL;
+    int ngroups;
 
     if (cmd->args[0][0] != '/') {
         if (!(binary = virFindFileInPath(cmd->args[0]))) {
@@ -471,6 +473,9 @@ virExec(virCommandPtr cmd)
         childerr = null;
     }
 
+    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
+        goto cleanup;
+
     forkRet = virFork(&pid);
 
     if (pid < 0) {
@@ -496,6 +501,7 @@ virExec(virCommandPtr cmd)
 
         if (binary != cmd->args[0])
             VIR_FREE(binary);
+        VIR_FREE(groups);
 
         return 0;
     }
@@ -650,7 +656,8 @@ virExec(virCommandPtr cmd)
         cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
         VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
                   (int)cmd->uid, (int)cmd->gid, cmd->capabilities);
-        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, cmd->capabilities,
+        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, groups, ngroups,
+                                 cmd->capabilities,
                                  !!(cmd->flags & VIR_EXEC_CLEAR_CAPS)) < 0) {
             goto fork_error;
         }
@@ -694,6 +701,7 @@ virExec(virCommandPtr cmd)
     /* This is cleanup of parent process only - child
        should never jump here on error */
 
+    VIR_FREE(groups);
     if (binary != cmd->args[0])
         VIR_FREE(binary);
 

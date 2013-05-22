@@ -732,18 +732,26 @@ virFileAccessibleAs(const char *path, int mode,
     pid_t pid = 0;
     int status, ret = 0;
     int forkRet = 0;
+    gid_t *groups;
+    int ngroups;
 
     if (uid == getuid() &&
         gid == getgid())
         return access(path, mode);
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -1;
+
     forkRet = virFork(&pid);
 
     if (pid < 0) {
+        VIR_FREE(groups);
         return -1;
     }
 
     if (pid) { /* parent */
+        VIR_FREE(groups);
         if (virProcessWait(pid, &status) < 0) {
             /* virProcessWait() already
              * reported error */
@@ -772,7 +780,7 @@ virFileAccessibleAs(const char *path, int mode,
         goto childerror;
     }
 
-    if (virSetUIDGID(uid, gid) < 0) {
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
         ret = errno;
         goto childerror;
     }
@@ -848,17 +856,24 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     int fd = -1;
     int pair[2] = { -1, -1 };
     int forkRet;
+    gid_t *groups;
+    int ngroups;
 
     /* parent is running as root, but caller requested that the
      * file be opened as some other user and/or group). The
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -errno;
+
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
         ret = -errno;
         virReportSystemError(errno,
                              _("failed to create socket needed for '%s'"),
                              path);
+        VIR_FREE(groups);
         return ret;
     }
 
@@ -879,7 +894,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 
         /* set desired uid/gid, then attempt to create the file */
 
-        if (virSetUIDGID(uid, gid) < 0) {
+        if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
             ret = -errno;
             goto childerror;
         }
@@ -927,6 +942,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 
     /* parent */
 
+    VIR_FREE(groups);
     VIR_FORCE_CLOSE(pair[1]);
 
     do {
@@ -1122,6 +1138,8 @@ int virDirCreate(const char *path, mode_t mode,
     pid_t pid;
     int waitret;
     int status, ret = 0;
+    gid_t *groups;
+    int ngroups;
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
@@ -1136,15 +1154,21 @@ int virDirCreate(const char *path, mode_t mode,
         return virDirCreateNoFork(path, mode, uid, gid, flags);
     }
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -errno;
+
     int forkRet = virFork(&pid);
 
     if (pid < 0) {
         ret = -errno;
+        VIR_FREE(groups);
         return ret;
     }
 
     if (pid) { /* parent */
         /* wait for child to complete, and retrieve its exit code */
+        VIR_FREE(groups);
         while ((waitret = waitpid(pid, &status, 0) == -1)  && (errno == EINTR));
         if (waitret == -1) {
             ret = -errno;
@@ -1171,7 +1195,7 @@ parenterror:
 
     /* set desired uid/gid, then attempt to create the directory */
 
-    if (virSetUIDGID(uid, gid) < 0) {
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
         ret = -errno;
         goto childerror;
     }
@@ -2737,87 +2761,38 @@ no_memory:
 }
 
 
-/* Set the real and effective uid and gid to the given values, and call
- * initgroups so that the process has all the assumed group membership of
- * that uid. return 0 on success, -1 on failure (the original system error
- * remains in errno).
+/* Set the real and effective uid and gid to the given values, as well
+ * as all the supplementary groups, so that the process has all the
+ * assumed group membership of that uid. Return 0 on success, -1 on
+ * failure (the original system error remains in errno).
  */
 int
-virSetUIDGID(uid_t uid, gid_t gid)
+virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups ATTRIBUTE_UNUSED,
+             int ngroups ATTRIBUTE_UNUSED)
 {
-    int err;
-    char *buf = NULL;
-
-    if (gid != (gid_t)-1) {
-        if (setregid(gid, gid) < 0) {
-            virReportSystemError(err = errno,
-                                 _("cannot change to '%u' group"),
-                                 (unsigned int) gid);
-            goto error;
-        }
+    if (gid != (gid_t)-1 && setregid(gid, gid) < 0) {
+        virReportSystemError(errno,
+                             _("cannot change to '%u' group"),
+                             (unsigned int) gid);
+        return -1;
     }
 
-    if (uid != (uid_t)-1) {
-# ifdef HAVE_INITGROUPS
-        struct passwd pwd, *pwd_result;
-        size_t bufsize;
-        int rc;
-
-        bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
-        if (bufsize == -1)
-            bufsize = 16384;
-
-        if (VIR_ALLOC_N(buf, bufsize) < 0) {
-            virReportOOMError();
-            err = ENOMEM;
-            goto error;
-        }
-        while ((rc = getpwuid_r(uid, &pwd, buf, bufsize,
-                                &pwd_result)) == ERANGE) {
-            if (VIR_RESIZE_N(buf, bufsize, bufsize, bufsize) < 0) {
-                virReportOOMError();
-                err = ENOMEM;
-                goto error;
-            }
-        }
-
-        if (rc) {
-            virReportSystemError(err = rc, _("cannot getpwuid_r(%u)"),
-                                 (unsigned int) uid);
-            goto error;
-        }
-
-        if (!pwd_result) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("getpwuid_r failed to retrieve data "
-                             "for uid '%u'"),
-                           (unsigned int) uid);
-            err = EINVAL;
-            goto error;
-        }
-
-        if (initgroups(pwd.pw_name, pwd.pw_gid) < 0) {
-            virReportSystemError(err = errno,
-                                 _("cannot initgroups(\"%s\", %d)"),
-                                 pwd.pw_name, (unsigned int) pwd.pw_gid);
-            goto error;
-        }
+# if HAVE_SETGROUPS
+    if (ngroups && setgroups(ngroups, groups) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot set supplemental groups"));
+        return -1;
+    }
 # endif
-        if (setreuid(uid, uid) < 0) {
-            virReportSystemError(err = errno,
-                                 _("cannot change to uid to '%u'"),
-                                 (unsigned int) uid);
-            goto error;
-        }
+
+    if (uid != (uid_t)-1 && setreuid(uid, uid) < 0) {
+        virReportSystemError(errno,
+                             _("cannot change to uid to '%u'"),
+                             (unsigned int) uid);
+        return -1;
     }
 
-    VIR_FREE(buf);
     return 0;
-
-error:
-    VIR_FREE(buf);
-    errno = err;
-    return -1;
 }
 
 #else /* ! HAVE_GETPWUID_R */
@@ -3034,7 +3009,9 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
 
 int
 virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
-             gid_t gid ATTRIBUTE_UNUSED)
+             gid_t gid ATTRIBUTE_UNUSED,
+             gid_t *groups ATTRIBUTE_UNUSED,
+             int ngroups ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virSetUIDGID is not available"));
@@ -3058,8 +3035,8 @@ virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
  * errno).
  */
 int
-virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
-                     bool clearExistingCaps)
+virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
+                     unsigned long long capBits, bool clearExistingCaps)
 {
     int ii, capng_ret, ret = -1;
     bool need_setgid = false, need_setuid = false;
@@ -3129,7 +3106,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
         }
     }
 
-    if (virSetUIDGID(uid, gid) < 0)
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0)
         goto cleanup;
 
     /* Tell it we are done keeping capabilities */
@@ -3173,11 +3150,11 @@ cleanup:
  */
 
 int
-virSetUIDGIDWithCaps(uid_t uid, gid_t gid,
+virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                      unsigned long long capBits ATTRIBUTE_UNUSED,
                      bool clearExistingCaps ATTRIBUTE_UNUSED)
 {
-    return virSetUIDGID(uid, gid);
+    return virSetUIDGID(uid, gid, groups, ngroups);
 }
 #endif
 
