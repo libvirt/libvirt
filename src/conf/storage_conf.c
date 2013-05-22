@@ -531,7 +531,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     source->name = virXPathString("string(./name)", ctxt);
     if (pool_type == VIR_STORAGE_POOL_RBD && source->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing mandatory 'name' field for RBD pool name"));
+                       _("element 'name' is mandatory for RBD pool"));
         goto cleanup;
     }
 
@@ -1697,7 +1697,8 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Storage pool config filename '%s' does not match pool name '%s'"),
+                       _("Storage pool config filename '%s' does "
+                         "not match pool name '%s'"),
                        path, def->name);
         virStoragePoolDefFree(def);
         return NULL;
