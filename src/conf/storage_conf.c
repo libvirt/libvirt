@@ -672,7 +672,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         } else {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown auth type '%s'"),
-                           (const char *)authType);
+                           authType);
             goto cleanup;
         }
     }
@@ -828,9 +828,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     type = virXPathString("string(./@type)", ctxt);
-    if ((ret->type = virStoragePoolTypeFromString((const char *)type)) < 0) {
+    if ((ret->type = virStoragePoolTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown storage pool type %s"), (const char*)type);
+                       _("unknown storage pool type %s"), type);
         goto cleanup;
     }
 
