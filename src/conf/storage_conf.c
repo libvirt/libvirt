@@ -972,9 +972,11 @@ virStoragePoolDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virStoragePoolDefPtr def = NULL;
 
-    if (STRNEQ((const char *)root->name, "pool")) {
+    if (!xmlStrEqual(root->name, BAD_CAST "pool")) {
         virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("unknown root element for storage pool"));
+                       _("unexpected root element <%s>, "
+                         "expecting <pool>"),
+                       root->name);
         goto cleanup;
     }
 
@@ -1350,9 +1352,11 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
     xmlXPathContextPtr ctxt = NULL;
     virStorageVolDefPtr def = NULL;
 
-    if (STRNEQ((const char *)root->name, "volume")) {
+    if (!xmlStrEqual(root->name, BAD_CAST "volume")) {
         virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("unknown root element for storage vol"));
+                       _("unexpected root element <%s>, "
+                         "expecting <volume>"),
+                       root->name);
         goto cleanup;
     }
 
