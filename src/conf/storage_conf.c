@@ -1252,7 +1252,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (ret->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing volume name element"));
-        goto cleanup;
+        goto error;
     }
 
     /* Auto-generated so deliberately ignore */
@@ -1263,20 +1263,17 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (capacity == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing capacity element"));
-        goto cleanup;
+        goto error;
     }
     if (virStorageSize(unit, capacity, &ret->capacity) < 0)
-        goto cleanup;
-    VIR_FREE(capacity);
+        goto error;
     VIR_FREE(unit);
 
     allocation = virXPathString("string(./allocation)", ctxt);
     if (allocation) {
         unit = virXPathString("string(./allocation/@unit)", ctxt);
         if (virStorageSize(unit, allocation, &ret->allocation) < 0)
-            goto cleanup;
-        VIR_FREE(allocation);
-        VIR_FREE(unit);
+            goto error;
     } else {
         ret->allocation = ret->capacity;
     }
@@ -1293,7 +1290,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown volume format type %s"), format);
             VIR_FREE(format);
-            goto cleanup;
+            goto error;
         }
         VIR_FREE(format);
     }
@@ -1301,14 +1298,14 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (virStorageDefParsePerms(ctxt, &ret->target.perms,
                                 "./target/permissions",
                                 DEFAULT_VOL_PERM_MODE) < 0)
-        goto cleanup;
+        goto error;
 
     node = virXPathNode("./target/encryption", ctxt);
     if (node != NULL) {
         ret->target.encryption = virStorageEncryptionParseNode(ctxt->doc,
                                                                node);
         if (ret->target.encryption == NULL)
-            goto cleanup;
+            goto error;
     }
 
     ret->backingStore.path = virXPathString("string(./backingStore/path)", ctxt);
@@ -1323,7 +1320,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown volume format type %s"), format);
             VIR_FREE(format);
-            goto cleanup;
+            goto error;
         }
         VIR_FREE(format);
     }
@@ -1331,16 +1328,18 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (virStorageDefParsePerms(ctxt, &ret->backingStore.perms,
                                 "./backingStore/permissions",
                                 DEFAULT_VOL_PERM_MODE) < 0)
-        goto cleanup;
-
-    return ret;
+        goto error;
 
 cleanup:
     VIR_FREE(allocation);
     VIR_FREE(capacity);
     VIR_FREE(unit);
+    return ret;
+
+error:
     virStorageVolDefFree(ret);
-    return NULL;
+    ret = NULL;
+    goto cleanup;
 }
 
 virStorageVolDefPtr
