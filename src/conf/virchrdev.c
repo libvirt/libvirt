@@ -341,6 +341,8 @@ int virChrdevOpen(virChrdevsPtr devs,
     virStreamPtr savedStream;
     char *path;
     int ret;
+    bool added = false;
+    virErrorPtr savedError;
 
     switch (source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -397,6 +399,7 @@ int virChrdevOpen(virChrdevsPtr devs,
 
     if (virHashAddEntry(devs->hash, path, st) < 0)
         goto error;
+    added = true;
 
     cbdata->devs = devs;
     if (VIR_STRDUP(cbdata->path, path) < 0)
@@ -429,8 +432,16 @@ int virChrdevOpen(virChrdevsPtr devs,
     return 0;
 
 error:
-    virStreamFree(st);
-    virHashRemoveEntry(devs->hash, path);
+    savedError = virSaveLastError();
+
+    if (added)
+        virHashRemoveEntry(devs->hash, path);
+    else
+        virStreamFree(st);
+
+    virSetError(savedError);
+    virFreeError(savedError);
+
     if (cbdata)
         VIR_FREE(cbdata->path);
     VIR_FREE(cbdata);
