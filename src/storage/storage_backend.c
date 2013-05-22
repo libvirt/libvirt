@@ -538,6 +538,8 @@ cleanup:
 struct hookdata {
     virStorageVolDefPtr vol;
     bool skip;
+    gid_t *groups;
+    int ngroups;
 };
 
 static int virStorageBuildSetUIDHook(void *data) {
@@ -547,9 +549,13 @@ static int virStorageBuildSetUIDHook(void *data) {
     if (tmp->skip)
         return 0;
 
-    if (virSetUIDGID(vol->target.perms.uid, vol->target.perms.gid) < 0)
+    if (virSetUIDGID(vol->target.perms.uid, vol->target.perms.gid,
+                     tmp->groups, tmp->ngroups) < 0) {
+        VIR_FREE(tmp->groups);
         return -1;
+    }
 
+    VIR_FREE(tmp->groups);
     return 0;
 }
 
@@ -560,7 +566,7 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     gid_t gid;
     uid_t uid;
     int filecreated = 0;
-    struct hookdata data = {vol, false};
+    struct hookdata data = {vol, false, NULL, 0};
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((getuid() == 0)
@@ -569,6 +575,11 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
             || ((vol->target.perms.gid != -1)
                 && (vol->target.perms.gid != getgid())))) {
 
+        if ((data.ngroups = virGetGroupList(vol->target.perms.uid,
+                                            vol->target.perms.gid,
+                                            &data.groups)) < 0)
+            return -1;
+
         virCommandSetPreExecHook(cmd, virStorageBuildSetUIDHook, &data);
 
         if (virCommandRun(cmd, NULL) == 0) {
@@ -576,6 +587,7 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
             if (stat(vol->target.path, &st) >=0)
                 filecreated = 1;
         }
+        VIR_FREE(data.groups);
     }
 
     data.skip = true;

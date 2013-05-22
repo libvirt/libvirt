@@ -53,7 +53,7 @@ int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
 
-int virSetUIDGID(uid_t uid, gid_t gid);
+int virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups, int ngroups);
 
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
