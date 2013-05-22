@@ -1268,7 +1268,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
             fprintf(stdout, "    %s\n", _(desc));
         }
 
-        if (def->opts) {
+        if (def->opts && def->opts->name) {
             const vshCmdOptDef *opt;
             fputs(_("\n  OPTIONS\n"), stdout);
             for (opt = def->opts; opt->name; opt++) {
