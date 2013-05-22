@@ -1459,18 +1459,26 @@ virFileAccessibleAs(const char *path, int mode,
     pid_t pid = 0;
     int status, ret = 0;
     int forkRet = 0;
+    gid_t *groups;
+    int ngroups;
 
     if (uid == getuid() &&
         gid == getgid())
         return access(path, mode);
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -1;
+
     forkRet = virFork(&pid);
 
     if (pid < 0) {
+        VIR_FREE(groups);
         return -1;
     }
 
     if (pid) { /* parent */
+        VIR_FREE(groups);
         if (virProcessWait(pid, &status) < 0) {
             /* virProcessWait() already
              * reported error */
@@ -1499,7 +1507,7 @@ virFileAccessibleAs(const char *path, int mode,
         goto childerror;
     }
 
-    if (virSetUIDGID(uid, gid) < 0) {
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
         ret = errno;
         goto childerror;
     }
@@ -1575,17 +1583,24 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     int fd = -1;
     int pair[2] = { -1, -1 };
     int forkRet;
+    gid_t *groups;
+    int ngroups;
 
     /* parent is running as root, but caller requested that the
      * file be opened as some other user and/or group). The
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -errno;
+
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
         ret = -errno;
         virReportSystemError(errno,
                              _("failed to create socket needed for '%s'"),
                              path);
+        VIR_FREE(groups);
         return ret;
     }
 
@@ -1606,7 +1621,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 
         /* set desired uid/gid, then attempt to create the file */
 
-        if (virSetUIDGID(uid, gid) < 0) {
+        if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
             ret = -errno;
             goto childerror;
         }
@@ -1654,6 +1669,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 
     /* parent */
 
+    VIR_FREE(groups);
     VIR_FORCE_CLOSE(pair[1]);
 
     do {
@@ -1855,6 +1871,8 @@ virDirCreate(const char *path,
     pid_t pid;
     int waitret;
     int status, ret = 0;
+    gid_t *groups;
+    int ngroups;
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
@@ -1869,15 +1887,21 @@ virDirCreate(const char *path,
         return virDirCreateNoFork(path, mode, uid, gid, flags);
     }
 
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -errno;
+
     int forkRet = virFork(&pid);
 
     if (pid < 0) {
         ret = -errno;
+        VIR_FREE(groups);
         return ret;
     }
 
     if (pid) { /* parent */
         /* wait for child to complete, and retrieve its exit code */
+        VIR_FREE(groups);
         while ((waitret = waitpid(pid, &status, 0) == -1)  && (errno == EINTR));
         if (waitret == -1) {
             ret = -errno;
@@ -1904,7 +1928,7 @@ parenterror:
 
     /* set desired uid/gid, then attempt to create the directory */
 
-    if (virSetUIDGID(uid, gid) < 0) {
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
         ret = -errno;
         goto childerror;
     }

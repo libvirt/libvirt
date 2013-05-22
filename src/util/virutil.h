@@ -46,8 +46,9 @@ int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
 int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
 
-int virSetUIDGID(uid_t uid, gid_t gid);
-int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
+int virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups, int ngroups);
+int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
+                         unsigned long long capBits,
                          bool clearExistingCaps);
 
 int virScaleInteger(unsigned long long *value, const char *suffix,
