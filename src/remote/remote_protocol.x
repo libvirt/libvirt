@@ -3875,7 +3875,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
 
     /**
-     * @generate: both
+     * @generate: server
      */
     REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
 
