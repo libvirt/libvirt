@@ -368,18 +368,18 @@ static int virCgroupDetect(virCgroupPtr group,
     }
 
     if (controllers >= 0) {
-        VIR_DEBUG("Validating controllers %d", controllers);
+        VIR_DEBUG("Filtering controllers %d", controllers);
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
                       virCgroupControllerTypeToString(i),
                       (1 << i) & controllers ? "yes" : "no",
                       NULLSTR(group->controllers[i].mountPoint));
             if (((1 << i) & controllers)) {
-                /* Ensure requested controller is present */
+                /* Remove non-existent controllers  */
                 if (!group->controllers[i].mountPoint) {
-                    VIR_DEBUG("Requested controlled '%s' not mounted",
+                    VIR_DEBUG("Requested controller '%s' not mounted, ignoring",
                               virCgroupControllerTypeToString(i));
-                    return -ENOENT;
+                    controllers &= ~(1 << i);
                 }
             } else {
                 /* Check whether a request to disable a controller

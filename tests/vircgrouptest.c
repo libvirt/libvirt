@@ -176,7 +176,7 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
     /* Asking for impossible combination since devices is not mounted */
     if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_DEVICES),
-                                 &cgroup)) != -ENOENT) {
+                                 &cgroup)) != -ENXIO) {
         fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
@@ -280,7 +280,7 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
     /* Asking for impossible combination since devices is not mounted */
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_DEVICES),
-                                    &cgroup)) != -ENOENT) {
+                                    &cgroup)) != -ENXIO) {
         fprintf(stderr, "Should not have created /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
