@@ -647,13 +647,13 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                         int copyName)
 {
     if (!virHashLookup(table->hashTable, name)) {
+        char *newName;
         if (copyName) {
-            char *newName;
             if (VIR_STRDUP(newName, name) < 0)
                 return -1;
 
             if (VIR_REALLOC_N(table->names, table->nNames + 1) < 0) {
-                VIR_FREE(name);
+                VIR_FREE(newName);
                 return -1;
             }
             table->names[table->nNames++] = newName;
@@ -661,7 +661,7 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
 
         if (virHashAddEntry(table->hashTable, name, val) < 0) {
             if (copyName) {
-                VIR_FREE(name);
+                VIR_FREE(newName);
                 table->nNames--;
             }
             return -1;
