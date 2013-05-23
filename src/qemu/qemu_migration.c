@@ -1114,6 +1114,12 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
     unsigned short port = 0;
     char *diskAlias = NULL;
     size_t i;
+    const char *host;
+
+    if (STREQ(listenAddr, "[::]"))
+        host = "::";
+    else
+        host = listenAddr;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -1135,7 +1141,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
 
         if (!port &&
             ((virPortAllocatorAcquire(driver->remotePorts, &port) < 0) ||
-             (qemuMonitorNBDServerStart(priv->mon, listenAddr, port) < 0))) {
+             (qemuMonitorNBDServerStart(priv->mon, host, port) < 0))) {
             qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
