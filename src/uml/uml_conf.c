@@ -109,7 +109,7 @@ umlConnectTapDevice(virConnectPtr conn,
                     const char *bridge)
 {
     bool template_ifname = false;
-    int tapfd;
+    int tapfd = -1;
 
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
