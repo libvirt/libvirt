@@ -521,13 +521,13 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
         rerr->level = verr->level;
         if (verr->str1 && VIR_ALLOC(rerr->str1) == 0 &&
             VIR_STRDUP_QUIET(*rerr->str1, verr->str1) < 0)
-            VIR_FREE(verr->str1);
+            VIR_FREE(rerr->str1);
         if (verr->str2 && VIR_ALLOC(rerr->str2) == 0 &&
             VIR_STRDUP_QUIET(*rerr->str2, verr->str2) < 0)
-            VIR_FREE(verr->str2);
+            VIR_FREE(rerr->str2);
         if (verr->str3 && VIR_ALLOC(rerr->str3) == 0 &&
             VIR_STRDUP_QUIET(*rerr->str3, verr->str3) < 0)
-            VIR_FREE(verr->str2);
+            VIR_FREE(rerr->str3);
         rerr->int1 = verr->int1;
         rerr->int2 = verr->int2;
     } else {
