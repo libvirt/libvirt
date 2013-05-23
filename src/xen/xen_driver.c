@@ -1656,13 +1656,14 @@ xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
         if (xenXMDomainDefineXML(conn, def) < 0)
             goto cleanup;
+        ret = virGetDomain(conn, def->name, def->uuid);
         def = NULL; /* XM driver owns it now */
     } else {
         if (xenDaemonDomainDefineXML(conn, def) < 0)
             goto cleanup;
+        ret = virGetDomain(conn, def->name, def->uuid);
     }
 
-    ret = virGetDomain(conn, def->name, def->uuid);
     if (ret)
         ret->id = -1;
 
