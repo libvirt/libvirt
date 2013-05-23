@@ -13918,26 +13918,17 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        goto endjob;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block I/O throttling not supported with this "
-                         "QEMU binary"));
-        goto cleanup;
-    }
-
-    device = qemuDiskPathToAlias(vm, disk, &idx);
-    if (!device) {
-        goto cleanup;
-    }
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+    if (!(device = qemuDiskPathToAlias(vm, disk, &idx)))
+        goto endjob;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
@@ -13987,6 +13978,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("block I/O throttling not supported with this "
+                         "QEMU binary"));
+            goto endjob;
+        }
+
         /* If the user didn't specify bytes limits, inherit previous
          * values; likewise if the user didn't specify iops
          * limits.  */
@@ -14011,9 +14009,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         sa_assert(persistentDef);
-        idx = virDomainDiskIndexByName(persistentDef, disk, true);
-        if (idx < 0)
-            goto endjob;
         oldinfo = &persistentDef->disks[idx]->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
@@ -14035,7 +14030,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
 endjob:
-    if (qemuDomainObjEndJob(driver, vm) == 0)
+    if (!qemuDomainObjEndJob(driver, vm))
         vm = NULL;
 
 cleanup:
