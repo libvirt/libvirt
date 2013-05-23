@@ -446,6 +446,13 @@
         &lt;parameters interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
       &lt;/virtualport&gt;
     &lt;/interface&gt;
+    &lt;interface type='bridge'&gt;
+      <b>&lt;vlan trunk='yes'&gt;</b>
+        <b>&lt;tag id='42'/&gt;</b>
+        <b>&lt;tag id='123' nativeMode='untagged'/&gt;</b>
+      <b>&lt;/vlan&gt;</b>
+      ...
+    &lt;/interface&gt;
   &lt;devices&gt;
   ...</pre>
 
@@ -467,6 +474,14 @@
       specified tags. In the case that vlan trunking with a single tag
       is desired, the optional attribute <code>trunk='yes'</code> can
       be added to the vlan element.
+    </p>
+    <p>
+      For network connections using openvswitch it is possible to
+      configure the 'native-tagged' and 'native-untagged' vlan modes
+      <span class="since">Since 1.0.7</span>. This uses the optional
+      <code>nativeMode</code> attribute on the <code>&lt;tag&gt;</code>
+      element: <code>nativeMode</code> may be set to 'tagged' or
+      'untagged'. The id atribute of the element sets the native vlan.
     </p>
     <p>
       <code>&lt;vlan&gt;</code> elements can also be specified in

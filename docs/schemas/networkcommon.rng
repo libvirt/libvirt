@@ -204,6 +204,14 @@
               <param name="maxInclusive">4095</param>
             </data>
           </attribute>
+          <optional>
+            <attribute name="nativeMode">
+              <choice>
+                <value>tagged</value>
+                <value>untagged</value>
+              </choice>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </oneOrMore>

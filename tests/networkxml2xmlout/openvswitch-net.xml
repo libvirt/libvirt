@@ -21,4 +21,13 @@
       <parameters profileid='alice-profile'/>
     </virtualport>
   </portgroup>
+  <portgroup name='native'>
+    <vlan trunk='yes'>
+      <tag id='123' nativeMode='tagged'/>
+      <tag id='444'/>
+    </vlan>
+    <virtualport>
+      <parameters profileid='native-profile'/>
+    </virtualport>
+  </portgroup>
 </network>

@@ -109,6 +109,20 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     virCommandAddArgList(cmd, "--timeout=5", "--", "--may-exist", "add-port",
                         brname, ifname, NULL);
 
+    switch (virtVlan->nativeMode) {
+    case VIR_NATIVE_VLAN_MODE_TAGGED:
+        virCommandAddArg(cmd, "vlan_mode=native-tagged");
+        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+        break;
+    case VIR_NATIVE_VLAN_MODE_UNTAGGED:
+        virCommandAddArg(cmd, "vlan_mode=native-untagged");
+        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+        break;
+    case VIR_NATIVE_VLAN_MODE_DEFAULT:
+    default:
+        break;
+    }
+
     if (virBufferUse(&buf) != 0)
         virCommandAddArgList(cmd, virBufferCurrentContent(&buf), NULL);
 
