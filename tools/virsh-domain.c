@@ -1130,7 +1130,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     return ret;
 
 save_error:
