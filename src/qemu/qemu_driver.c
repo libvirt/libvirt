@@ -9786,6 +9786,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
                     void *buffer,
                     unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int fd = -1, ret = -1;
     const char *actual;
@@ -9812,13 +9813,9 @@ qemuDomainBlockPeek(virDomainPtr dom,
     }
     path = actual;
 
-    /* The path is correct, now try to open it and get its size. */
-    fd = open(path, O_RDONLY);
-    if (fd == -1) {
-        virReportSystemError(errno,
-                             _("%s: failed to open"), path);
+    fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
+    if (fd == -1)
         goto cleanup;
-    }
 
     /* Seek and read. */
     /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
@@ -9979,12 +9976,9 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     path = disk->src;
 
     /* The path is correct, now try to open it and get its size. */
-    fd = open(path, O_RDONLY);
-    if (fd == -1) {
-        virReportSystemError(errno,
-                             _("failed to open path '%s'"), path);
+    fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
+    if (fd == -1)
         goto cleanup;
-    }
 
     /* Probe for magic formats */
     if (disk->format) {
