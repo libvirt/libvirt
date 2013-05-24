@@ -2118,6 +2118,16 @@ err_exit:
     return -1;
 }
 
+/**
+ * End a DHCP snoop thread on the given interface or end all
+ * DHCP snoop threads.
+ *
+ * @ifname: Name of an interface or NULL to stop all snoop threads
+ *
+ * It is not an error to call this function with an interface name
+ * for which no thread is snooping traffic. In this case the call will
+ * be a no-op.
+ */
 void
 virNWFilterDHCPSnoopEnd(const char *ifname)
 {
@@ -2131,11 +2141,8 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
     if (ifname) {
         ifkey = (char *)virHashLookup(virNWFilterSnoopState.ifnameToKey,
                                       ifname);
-        if (!ifkey) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("ifname \"%s\" not in key map"), ifname);
+        if (!ifkey)
             goto cleanup;
-        }
 
         ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
                                         ifname));
