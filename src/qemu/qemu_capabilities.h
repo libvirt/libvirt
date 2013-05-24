@@ -261,7 +261,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
                             const char *str,
                             virQEMUCapsPtr qemuCaps,
                             unsigned int *version,
-                            unsigned int *is_kvm,
+                            bool *is_kvm,
                             unsigned int *kvm_version,
                             bool check_yajl);
 /* Only for use by test suite */

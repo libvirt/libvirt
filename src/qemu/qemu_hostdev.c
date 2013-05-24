@@ -331,7 +331,7 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                           virNetDevVPortProfilePtr virtPort,
                                           const virMacAddrPtr macaddr,
                                           const unsigned char *uuid,
-                                          int associate)
+                                          bool associate)
 {
     int ret = -1;
 
@@ -376,7 +376,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     int ret = -1;
     int vf = -1;
     int vlanid = -1;
-    int port_profile_associate = 1;
+    bool port_profile_associate = true;
     int isvf;
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
@@ -441,7 +441,7 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     virNetDevVPortProfilePtr virtPort;
     int ret = -1;
     int vf = -1;
-    int port_profile_associate = 0;
+    bool port_profile_associate = false;
     int isvf;
 
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);

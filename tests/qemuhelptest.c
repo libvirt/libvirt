@@ -15,7 +15,7 @@ struct testInfo {
     const char *name;
     virQEMUCapsPtr flags;
     unsigned int version;
-    unsigned int is_kvm;
+    bool is_kvm;
     unsigned int kvm_version;
 };
 
@@ -39,7 +39,8 @@ static int testHelpStrParsing(const void *data)
     const struct testInfo *info = data;
     char *path = NULL;
     char *help = NULL;
-    unsigned int version, is_kvm, kvm_version;
+    unsigned int version, kvm_version;
+    bool is_kvm;
     virQEMUCapsPtr flags = NULL;
     int ret = -1;
     char *got = NULL;

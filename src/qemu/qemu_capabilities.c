@@ -917,7 +917,7 @@ error:
 static int
 virQEMUCapsComputeCmdFlags(const char *help,
                            unsigned int version,
-                           unsigned int is_kvm,
+                           bool is_kvm,
                            unsigned int kvm_version,
                            virQEMUCapsPtr qemuCaps,
                            bool check_yajl ATTRIBUTE_UNUSED)
@@ -1221,7 +1221,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
                             const char *help,
                             virQEMUCapsPtr qemuCaps,
                             unsigned int *version,
-                            unsigned int *is_kvm,
+                            bool *is_kvm,
                             unsigned int *kvm_version,
                             bool check_yajl)
 {
@@ -1229,7 +1229,8 @@ int virQEMUCapsParseHelpStr(const char *qemu,
     const char *p = help;
     char *strflags;
 
-    *version = *is_kvm = *kvm_version = 0;
+    *version = *kvm_version = 0;
+    *is_kvm = false;
 
     if (STRPREFIX(p, QEMU_VERSION_STR_1))
         p += strlen(QEMU_VERSION_STR_1);
@@ -1262,12 +1263,12 @@ int virQEMUCapsParseHelpStr(const char *qemu,
     SKIP_BLANKS(p);
 
     if (STRPREFIX(p, QEMU_KVM_VER_PREFIX)) {
-        *is_kvm = 1;
+        *is_kvm = true;
         p += strlen(QEMU_KVM_VER_PREFIX);
     } else if (STRPREFIX(p, KVM_VER_PREFIX)) {
         int ret;
 
-        *is_kvm = 1;
+        *is_kvm = true;
         p += strlen(KVM_VER_PREFIX);
 
         ret = virParseNumber(&p);
@@ -2282,7 +2283,7 @@ static int
 virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
 {
     virCommandPtr cmd = NULL;
-    unsigned int is_kvm;
+    bool is_kvm;
     char *help = NULL;
     int ret = -1;
     const char *tmp;
