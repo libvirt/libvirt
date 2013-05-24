@@ -1099,7 +1099,7 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "capacity", &capacityStr) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "capacity", &capacityStr) < 0)
         goto cleanup;
     virSkipSpaces(&capacityStr);
     if (*capacityStr == '-') {
