@@ -615,10 +615,12 @@ cleanup:
 
 static int
 qemuSetupCpusetCgroup(virDomainObjPtr vm,
-                      virBitmapPtr nodemask)
+                      virBitmapPtr nodemask,
+                      virCapsPtr caps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *mask = NULL;
+    char *mem_mask = NULL;
+    char *cpu_mask = NULL;
     int rc;
     int ret = -1;
 
@@ -632,17 +634,17 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
 
         if (vm->def->numatune.memory.placement_mode ==
             VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
-            mask = virBitmapFormat(nodemask);
+            mem_mask = virBitmapFormat(nodemask);
         else
-            mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
+            mem_mask = virBitmapFormat(vm->def->numatune.memory.nodemask);
 
-        if (!mask) {
+        if (!mem_mask) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to convert memory nodemask"));
             goto cleanup;
         }
 
-        rc = virCgroupSetCpusetMems(priv->cgroup, mask);
+        rc = virCgroupSetCpusetMems(priv->cgroup, mem_mask);
 
         if (rc != 0) {
             virReportSystemError(-rc,
@@ -652,9 +654,39 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
         }
     }
 
+    if (vm->def->cpumask ||
+        (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)) {
+
+        if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+            virBitmapPtr cpumap;
+            if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, nodemask)))
+                goto cleanup;
+            cpu_mask = virBitmapFormat(cpumap);
+            virBitmapFree(cpumap);
+        } else {
+            cpu_mask = virBitmapFormat(vm->def->cpumask);
+        }
+
+        if (!cpu_mask) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to convert cpu mask"));
+            goto cleanup;
+        }
+
+        rc = virCgroupSetCpusetCpus(priv->cgroup, cpu_mask);
+
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set cpuset.cpus for domain %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
+    }
+
     ret = 0;
 cleanup:
-    VIR_FREE(mask);
+    VIR_FREE(mem_mask);
+    VIR_FREE(cpu_mask);
     return ret;
 }
 
@@ -801,6 +833,7 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virBitmapPtr nodemask)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCapsPtr caps = NULL;
     int ret = -1;
 
     if (qemuInitCgroup(driver, vm, true) < 0)
@@ -808,6 +841,9 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
 
     if (!priv->cgroup)
         return 0;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     if (qemuSetupDevicesCgroup(driver, vm) < 0)
         goto cleanup;
@@ -821,11 +857,12 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
     if (qemuSetupCpuCgroup(vm) < 0)
         goto cleanup;
 
-    if (qemuSetupCpusetCgroup(vm, nodemask) < 0)
+    if (qemuSetupCpusetCgroup(vm, nodemask, caps) < 0)
         goto cleanup;
 
     ret = 0;
 cleanup:
+    virObjectUnref(caps);
     return ret;
 }
 
