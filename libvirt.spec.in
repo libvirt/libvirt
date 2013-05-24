@@ -130,6 +130,11 @@
     %define with_libxl 0
 %endif
 
+# vbox is available only on i386 x86_64
+%ifnarch %{ix86} x86_64
+    %define with_vbox 0
+%endif
+
 # Numactl is not available on s390[x] and ARM
 %ifarch s390 s390x %{arm}
     %define with_numactl 0
