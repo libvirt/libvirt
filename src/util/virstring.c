@@ -568,12 +568,15 @@ virStrdup(char **dest,
  * caller's body where virStrndup is called from. Consider
  * using VIR_STRNDUP which sets these automatically.
  *
+ * In case @n is smaller than zero, the whole @src string is
+ * copied.
+ *
  * Returns: 0 for NULL src, 1 on successful copy, -1 otherwise.
  */
 int
 virStrndup(char **dest,
            const char *src,
-           size_t n,
+           ssize_t n,
            bool report,
            int domcode,
            const char *filename,
@@ -582,6 +585,8 @@ virStrndup(char **dest,
 {
     if (!src)
         return 0;
+    if (n < 0)
+        n = strlen(src);
     if (!(*dest = strndup(src, n))) {
         if (report)
             virReportOOMErrorFull(domcode, filename, funcname, linenr);

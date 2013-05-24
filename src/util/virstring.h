@@ -93,7 +93,7 @@ int virStrdup(char **dest, const char *src, bool report, int domcode,
               const char *filename, const char *funcname, size_t linenr)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
 
-int virStrndup(char **dest, const char *src, size_t n, bool report, int domcode,
+int virStrndup(char **dest, const char *src, ssize_t n, bool report, int domcode,
                const char *filename, const char *funcname, size_t linenr)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
 
@@ -132,7 +132,9 @@ int virStrndup(char **dest, const char *src, size_t n, bool report, int domcode,
  * @n: the maximum number of bytes to copy
  *
  * Duplicate @src string and store it into @dst. If @src is longer than @n,
- * only @n bytes are copied and terminating null byte '\0' is added.
+ * only @n bytes are copied and terminating null byte '\0' is added. If @n
+ * is a negative number, then the whole @src string is copied. That is,
+ * VIR_STRDUP(dst, src) and VIR_STRNDUP(dst, src, -1) are equal.
  *
  * This macro is safe to use on arguments with side effects.
  *
@@ -150,7 +152,10 @@ int virStrndup(char **dest, const char *src, size_t n, bool report, int domcode,
  * @n: the maximum number of bytes to copy
  *
  * Duplicate @src string and store it into @dst. If @src is longer than @n,
- * only @n bytes are copied and terminating null byte '\0' is added.
+ * only @n bytes are copied and terminating null byte '\0' is added. If @n
+ * is a negative number, then the whole @src string is copied. That is,
+ * VIR_STRDUP_QUIET(dst, src) and VIR_STRNDUP_QUIET(dst, src, -1) are
+ * equal.
  *
  * This macro is safe to use on arguments with side effects.
  *

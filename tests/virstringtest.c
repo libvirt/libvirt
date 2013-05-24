@@ -196,6 +196,40 @@ cleanup:
     return ret;
 }
 
+static int
+testStrndupNegative(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    char *dst;
+    const char *src = "Hello world";
+    int value;
+
+    if ((value = VIR_STRNDUP(dst, src, 5)) != 1) {
+        fprintf(stderr, "unexpected virStrndup result %d, expected 1\n", value);
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(dst, "Hello")) {
+        fprintf(stderr, "unexpected content '%s'", dst);
+        goto cleanup;
+    }
+
+    VIR_FREE(dst);
+    if ((value = VIR_STRNDUP(dst, src, -1)) != 1) {
+        fprintf(stderr, "unexpected virStrndup result %d, expected 1\n", value);
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(dst, src)) {
+        fprintf(stderr, "unexpected content '%s'", dst);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(dst);
+    return ret;
+}
 
 static int
 mymain(void)
@@ -243,6 +277,9 @@ mymain(void)
     TEST_SPLIT("The quick brown fox ", " ", 0, tokens7);
 
     if (virtTestRun("strdup", 1, testStrdup, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("strdup", 1, testStrndupNegative, NULL) < 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
