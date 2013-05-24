@@ -91,7 +91,7 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     VIR_FREE(def->system_sku);
     VIR_FREE(def->system_family);
 
-    for (i = 0;i < def->nprocessor;i++) {
+    for (i = 0; i < def->nprocessor; i++) {
         VIR_FREE(def->processor[i].processor_socket_destination);
         VIR_FREE(def->processor[i].processor_type);
         VIR_FREE(def->processor[i].processor_family);
@@ -105,7 +105,7 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
         VIR_FREE(def->processor[i].processor_part_number);
     }
     VIR_FREE(def->processor);
-    for (i = 0;i < def->nmemory;i++) {
+    for (i = 0; i < def->nmemory; i++) {
         VIR_FREE(def->memory[i].memory_size);
         VIR_FREE(def->memory[i].memory_form_factor);
         VIR_FREE(def->memory[i].memory_locator);

@@ -1,7 +1,7 @@
 /*
  * virconf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ struct _virConfParserCtxt {
 #define SKIP_BLANKS_AND_EOL                                             \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
          if (CUR == '\n') ctxt->line++;	                                \
-         ctxt->cur++;}} while (0)
+         ctxt->cur++; } } while (0)
 #define SKIP_BLANKS                                                     \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \
           ctxt->cur++; } while (0)

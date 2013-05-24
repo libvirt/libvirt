@@ -2938,7 +2938,7 @@ sharedFoldersCleanup:
             }
 
             /* Now get the details about the network cards here */
-            for (i = 0;(netAdpIncCnt < def->nnets) && (i < netAdpCnt); i++) {
+            for (i = 0; netAdpIncCnt < def->nnets && i < netAdpCnt; i++) {
                 INetworkAdapter *adapter = NULL;
 
                 machine->vtbl->GetNetworkAdapter(machine, i, &adapter);
@@ -3216,7 +3216,9 @@ sharedFoldersCleanup:
             }
 
             /* Now get the details about the serial ports here */
-            for (i = 0;(serialPortIncCount < def->nserials) && (i < serialPortCount); i++) {
+            for (i = 0;
+                 serialPortIncCount < def->nserials && i < serialPortCount;
+                 i++) {
                 ISerialPort *serialPort = NULL;
 
                 machine->vtbl->GetSerialPort(machine, i, &serialPort);
@@ -3300,7 +3302,10 @@ sharedFoldersCleanup:
             }
 
             /* Now get the details about the parallel ports here */
-            for (i = 0;(parallelPortIncCount < def->nparallels) && (i < parallelPortCount); i++) {
+            for (i = 0;
+                 parallelPortIncCount < def->nparallels &&
+                     i < parallelPortCount;
+                 i++) {
                 IParallelPort *parallelPort = NULL;
 
                 machine->vtbl->GetParallelPort(machine, i, &parallelPort);

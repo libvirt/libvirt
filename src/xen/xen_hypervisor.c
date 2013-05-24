@@ -2873,7 +2873,8 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
     memset(&op_sys, 0, sizeof(op_sys));
     op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
 
-    for (i = startCell, j = 0;(i < priv->nbNodeCells) && (j < maxCells);i++,j++) {
+    for (i = startCell, j = 0;
+         i < priv->nbNodeCells && j < maxCells; i++, j++) {
         if (hv_versions.sys_interface >= 5)
             op_sys.u.availheap5.node = i;
         else

@@ -142,7 +142,7 @@ virHookInitialize(void) {
     int i, res, ret = 0;
 
     virHooksFound = 0;
-    for (i = 0;i < VIR_HOOK_DRIVER_LAST;i++) {
+    for (i = 0; i < VIR_HOOK_DRIVER_LAST; i++) {
         res = virHookCheck(i, virHookDriverTypeToString(i));
         if (res < 0)
             return -1;

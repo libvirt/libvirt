@@ -371,7 +371,7 @@ virLogDumpAllFD(const char *msg, int len)
     if (len <= 0)
         len = strlen(msg);
 
-    for (i = 0; i < virLogNbOutputs;i++) {
+    for (i = 0; i < virLogNbOutputs; i++) {
         if (virLogOutputs[i].f == virLogOutputToFd) {
             int fd = (intptr_t) virLogOutputs[i].data;
 
@@ -514,7 +514,7 @@ virLogResetFilters(void)
 {
     int i;
 
-    for (i = 0; i < virLogNbFilters;i++)
+    for (i = 0; i < virLogNbFilters; i++)
         VIR_FREE(virLogFilters[i].match);
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
@@ -550,7 +550,7 @@ virLogDefineFilter(const char *match,
         return -1;
 
     virLogLock();
-    for (i = 0;i < virLogNbFilters;i++) {
+    for (i = 0; i < virLogNbFilters; i++) {
         if (STREQ(virLogFilters[i].match, match)) {
             virLogFilters[i].priority = priority;
             goto cleanup;
@@ -597,7 +597,7 @@ virLogFiltersCheck(const char *input,
     int i;
 
     virLogLock();
-    for (i = 0;i < virLogNbFilters;i++) {
+    for (i = 0; i < virLogNbFilters; i++) {
         if (strstr(input, virLogFilters[i].match)) {
             ret = virLogFilters[i].priority;
             *flags = virLogFilters[i].flags;
@@ -621,7 +621,7 @@ virLogResetOutputs(void)
 {
     int i;
 
-    for (i = 0;i < virLogNbOutputs;i++) {
+    for (i = 0; i < virLogNbOutputs; i++) {
         if (virLogOutputs[i].c != NULL)
             virLogOutputs[i].c(virLogOutputs[i].data);
         VIR_FREE(virLogOutputs[i].name);

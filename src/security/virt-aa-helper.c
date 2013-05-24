@@ -71,7 +71,7 @@ typedef struct {
     char *files;                /* list of files */
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
-    virDomainXMLOptionPtr xmlopt;/* XML parser data */
+    virDomainXMLOptionPtr xmlopt; /* XML parser data */
     char *hvm;                  /* type of hypervisor (eg hvm, xen) */
     virArch arch;               /* machine architecture */
     char *newfile;              /* newly added file */

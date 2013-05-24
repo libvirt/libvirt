@@ -1,7 +1,7 @@
 /*
  * virsh-domain-monitor.c: Commands to monitor domain status
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -156,8 +156,8 @@ vshDomainStateToString(int state)
     case VIR_DOMAIN_PMSUSPENDED:
         return N_("pmsuspended");
     case VIR_DOMAIN_NOSTATE:
-    default:
-        ;/*FALLTHROUGH*/
+    case VIR_DOMAIN_LAST:
+        break;
     }
     return N_("no state");  /* = dom0 state */
 }

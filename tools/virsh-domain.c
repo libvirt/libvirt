@@ -114,15 +114,15 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
 static const char *
 vshDomainVcpuStateToString(int state)
 {
-    switch (state) {
+    switch ((virVcpuState) state) {
     case VIR_VCPU_OFFLINE:
         return N_("offline");
     case VIR_VCPU_BLOCKED:
         return N_("idle");
     case VIR_VCPU_RUNNING:
         return N_("running");
-    default:
-        ;/*FALLTHROUGH*/
+    case VIR_VCPU_LAST:
+        break;
     }
     return N_("no state");
 }

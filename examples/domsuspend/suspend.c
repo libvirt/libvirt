@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Failed to list the domains\n");
             goto error;
         }
-        for (j = 0;j < i;j++) {
+        for (j = 0; j < i; j++) {
             if (ids[j] != 0) {
                 id = ids[j];
                 break;
