@@ -676,6 +676,36 @@ cleanup:
 }
 
 
+static int
+qemuSetupCpuCgroup(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rc = -1;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+       if (vm->def->cputune.shares) {
+           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                          _("CPU tuning is not available on this host"));
+           return -1;
+       } else {
+           return 0;
+       }
+    }
+
+    if (vm->def->cputune.shares) {
+        rc = virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to set io cpu shares for domain %s"),
+                                 vm->def->name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int qemuInitCgroup(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    bool startup)
@@ -789,14 +819,14 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virBitmapPtr nodemask)
 {
-    int rc = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
 
     if (qemuInitCgroup(driver, vm, true) < 0)
         return -1;
 
     if (!priv->cgroup)
-        goto done;
+        return 0;
 
     if (qemuSetupDevicesCgroup(driver, vm) < 0)
         goto cleanup;
@@ -807,28 +837,15 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
     if (qemuSetupMemoryCgroup(vm) < 0)
         goto cleanup;
 
-    if (vm->def->cputune.shares != 0) {
-        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-            rc = virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set io cpu shares for domain %s"),
-                                     vm->def->name);
-                goto cleanup;
-            }
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CPU tuning is not available on this host"));
-        }
-    }
+    if (qemuSetupCpuCgroup(vm) < 0)
+        goto cleanup;
 
     if (qemuSetupCpusetCgroup(vm, nodemask) < 0)
         goto cleanup;
 
-done:
-    rc = 0;
+    ret = 0;
 cleanup:
-    return rc == 0 ? 0 : -1;
+    return ret;
 }
 
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup, unsigned long long period,
