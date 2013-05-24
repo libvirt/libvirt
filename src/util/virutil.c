@@ -2017,3 +2017,59 @@ virCompareLimitUlong(unsigned long long a, unsigned long b)
 
     return -1;
 }
+
+/**
+ * virParseOwnershipIds:
+ *
+ * Parse the usual "uid:gid" ownership specification into uid_t and
+ * gid_t passed as parameters.  NULL value for those parameters mean
+ * the information is not needed.  Also, none of those values are
+ * changed in case of any error.
+ *
+ * Returns -1 on error, 0 otherwise.
+ */
+int
+virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
+{
+    int rc = -1;
+    uid_t theuid;
+    gid_t thegid;
+    char *tmp_label = NULL;
+    char *sep = NULL;
+    char *owner = NULL;
+    char *group = NULL;
+
+    if (VIR_STRDUP(tmp_label, label) < 0)
+        goto cleanup;
+
+    /* Split label */
+    sep = strchr(tmp_label, ':');
+    if (sep == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Failed to parse uid and gid from '%s'"),
+                       label);
+        goto cleanup;
+    }
+    *sep = '\0';
+    owner = tmp_label;
+    group = sep + 1;
+
+    /* Parse owner and group, error message is defined by
+     * virGetUserID or virGetGroupID.
+     */
+    if (virGetUserID(owner, &theuid) < 0 ||
+        virGetGroupID(group, &thegid) < 0)
+        goto cleanup;
+
+    if (uidPtr)
+        *uidPtr = theuid;
+    if (gidPtr)
+        *gidPtr = thegid;
+
+    rc = 0;
+
+cleanup:
+    VIR_FREE(tmp_label);
+
+    return rc;
+}

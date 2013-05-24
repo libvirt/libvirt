@@ -33,6 +33,7 @@
 #include "virscsi.h"
 #include "virstoragefile.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_DAC_NAME "dac"
@@ -72,52 +73,6 @@ virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
     priv->dynamicOwnership = dynamicOwnership;
 }
 
-static int
-parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
-{
-    int rc = -1;
-    uid_t theuid;
-    gid_t thegid;
-    char *tmp_label = NULL;
-    char *sep = NULL;
-    char *owner = NULL;
-    char *group = NULL;
-
-    if (VIR_STRDUP(tmp_label, label) < 0)
-        goto cleanup;
-
-    /* Split label */
-    sep = strchr(tmp_label, ':');
-    if (sep == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Missing separator ':' in DAC label \"%s\""),
-                       label);
-        goto cleanup;
-    }
-    *sep = '\0';
-    owner = tmp_label;
-    group = sep + 1;
-
-    /* Parse owner and group, error message is defined by
-     * virGetUserID or virGetGroupID.
-     */
-    if (virGetUserID(owner, &theuid) < 0 ||
-        virGetGroupID(group, &thegid) < 0)
-        goto cleanup;
-
-    if (uidPtr)
-        *uidPtr = theuid;
-    if (gidPtr)
-        *gidPtr = thegid;
-
-    rc = 0;
-
-cleanup:
-    VIR_FREE(tmp_label);
-
-    return rc;
-}
-
 /* returns 1 if label isn't found, 0 on success, -1 on error */
 static int
 virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
@@ -135,7 +90,7 @@ virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
         return 1;
     }
 
-    if (parseIds(seclabel->label, &uid, &gid) < 0)
+    if (virParseOwnershipIds(seclabel->label, &uid, &gid) < 0)
         return -1;
 
     if (uidPtr)
@@ -206,7 +161,7 @@ virSecurityDACParseImageIds(virDomainDefPtr def,
         return 1;
     }
 
-    if (parseIds(seclabel->imagelabel, &uid, &gid) < 0)
+    if (virParseOwnershipIds(seclabel->imagelabel, &uid, &gid) < 0)
         return -1;
 
     if (uidPtr)
