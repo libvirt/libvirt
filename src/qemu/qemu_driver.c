@@ -3261,7 +3261,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    int resume = 0, paused = 0;
+    bool resume = false, paused = false;
     int ret = -1;
     virDomainEventPtr event = NULL;
 
@@ -3292,7 +3292,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
         if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_DUMP,
                                 QEMU_ASYNC_JOB_DUMP) < 0)
             goto endjob;
-        paused = 1;
+        paused = true;
 
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3305,7 +3305,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
     if (ret < 0)
         goto endjob;
 
-    paused = 1;
+    paused = true;
 
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {

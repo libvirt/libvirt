@@ -1411,12 +1411,11 @@ qemuProcessReadLogOutput(virDomainObjPtr vm,
 
     while (retries) {
         ssize_t func_ret;
-        int isdead = 0;
+        bool isdead;
 
         func_ret = func(vm, buf, fd);
 
-        if (kill(vm->pid, 0) == -1 && errno == ESRCH)
-            isdead = 1;
+        isdead = kill(vm->pid, 0) == -1 && errno == ESRCH;
 
         got = qemuProcessReadLog(fd, buf, buflen, got);
         if (got < 0) {
@@ -2078,23 +2077,22 @@ qemuProcessAssignNextPCIAddress(virDomainDeviceInfo *info,
                                 qemuMonitorPCIAddress *addrs,
                                 int naddrs)
 {
-    int found = 0;
+    bool found = false;
     int i;
 
     VIR_DEBUG("Look for %x:%x out of %d", vendor, product, naddrs);
 
-    for (i = 0; (i < naddrs) && !found; i++) {
+    for (i = 0; i < naddrs; i++) {
         VIR_DEBUG("Maybe %x:%x", addrs[i].vendor, addrs[i].product);
         if (addrs[i].vendor == vendor &&
             addrs[i].product == product) {
             VIR_DEBUG("Match %d", i);
-            found = 1;
+            found = true;
             break;
         }
     }
-    if (!found) {
+    if (!found)
         return -1;
-    }
 
     /* Blank it out so this device isn't matched again */
     addrs[i].vendor = 0;

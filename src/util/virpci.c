@@ -884,7 +884,7 @@ static int
 virPCIProbeStubDriver(const char *driver)
 {
     char *drvpath = NULL;
-    int probed = 0;
+    bool probed = false;
 
 recheck:
     if (virPCIDriverDir(&drvpath, driver) == 0 && virFileExists(drvpath)) {
@@ -897,7 +897,7 @@ recheck:
 
     if (!probed) {
         const char *const probecmd[] = { MODPROBE, driver, NULL };
-        probed = 1;
+        probed = true;
         if (virRun(probecmd, NULL) < 0) {
             char ebuf[1024];
             VIR_WARN("failed to load driver %s: %s", driver,
@@ -1276,7 +1276,7 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
     char *tmp;
     unsigned long long start, end;
     unsigned int domain, bus, slot, function;
-    int in_matching_device;
+    bool in_matching_device;
     int ret;
     size_t match_depth;
 
@@ -1291,7 +1291,7 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
     }
 
     ret = 0;
-    in_matching_device = 0;
+    in_matching_device = false;
     match_depth = 0;
     while (fgets(line, sizeof(line), fp) != 0) {
         /* the logic here is a bit confusing.  For each line, we look to
@@ -1317,7 +1317,7 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
             }
         }
         else {
-            in_matching_device = 0;
+            in_matching_device = false;
 
             /* expected format: <start>-<end> : <domain>:<bus>:<slot>.<function> */
             if (/* start */
@@ -1338,7 +1338,7 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
             if (domain != dev->domain || bus != dev->bus || slot != dev->slot ||
                 function != dev->function)
                 continue;
-            in_matching_device = 1;
+            in_matching_device = true;
             match_depth = strspn(line, " ");
         }
     }

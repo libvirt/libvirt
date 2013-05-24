@@ -1059,7 +1059,7 @@ void virNetServerUpdateServices(virNetServerPtr srv,
 void virNetServerRun(virNetServerPtr srv)
 {
     int timerid = -1;
-    int timerActive = 0;
+    bool timerActive = false;
     int i;
 
     virObjectLock(srv);
@@ -1090,14 +1090,14 @@ void virNetServerRun(virNetServerPtr srv)
                 if (srv->clients) {
                     VIR_DEBUG("Deactivating shutdown timer %d", timerid);
                     virEventUpdateTimeout(timerid, -1);
-                    timerActive = 0;
+                    timerActive = false;
                 }
             } else {
                 if (!srv->clients) {
                     VIR_DEBUG("Activating shutdown timer %d", timerid);
                     virEventUpdateTimeout(timerid,
                                           srv->autoShutdownTimeout * 1000);
-                    timerActive = 1;
+                    timerActive = true;
                 }
             }
         }

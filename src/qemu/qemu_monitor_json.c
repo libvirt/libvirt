@@ -1599,7 +1599,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 {
     int ret;
     int i;
-    int found = 0;
+    bool found = false;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1661,7 +1661,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
         if (STRNEQ(thisdev, dev_name))
             continue;
 
-        found = 1;
+        found = true;
         if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
             stats->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1823,7 +1823,7 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
 {
     int ret = -1;
     int i;
-    int found = 0;
+    bool found = false;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1876,7 +1876,7 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
         if (STRNEQ(thisdev, dev_name))
             continue;
 
-        found = 1;
+        found = true;
         if ((parent = virJSONValueObjectGet(dev, "parent")) == NULL ||
             parent->type != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

@@ -29,14 +29,14 @@
 int main(int argc, char **argv)
 {
     int i;
-    int failConnect = 0; /* Exit -1, with no data on stdout, msg on stderr */
-    int dieEarly = 0;    /* Exit -1, with partial data on stdout, msg on stderr */
+    bool failConnect = false; /* Exit -1, with no data on stdout, msg on stderr */
+    bool dieEarly = false;    /* Exit -1, with partial data on stdout, msg on stderr */
 
     for (i = 1; i < argc; i++) {
         if (STREQ(argv[i], "nosuchhost"))
-            failConnect = 1;
+            failConnect = true;
         else if (STREQ(argv[i], "crashinghost"))
-            dieEarly = 1;
+            dieEarly = true;
     }
 
     if (failConnect) {

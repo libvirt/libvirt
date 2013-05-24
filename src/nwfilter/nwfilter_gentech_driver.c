@@ -666,7 +666,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
     int nEntries = 0;
     virNWFilterRuleInstPtr *insts = NULL;
     void **ptrs = NULL;
-    int instantiate = 1;
+    bool instantiate = true;
     char *buf;
     virNWFilterVarValuePtr lv;
     const char *learning;
@@ -753,7 +753,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
         instantiate = *foundNewFilter;
     break;
     case INSTANTIATE_ALWAYS:
-        instantiate = 1;
+        instantiate = true;
     break;
     }
 

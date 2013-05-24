@@ -293,7 +293,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        int active, fail = 0;
+        int active;
+        bool fail = false;
         virErrorPtr errobj;
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                        net->data.network.name);
@@ -302,7 +303,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
         active = virNetworkIsActive(network);
         if (active != 1) {
-            fail = 1;
+            fail = true;
 
             if (active == 0)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -313,7 +314,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         if (!fail) {
             brname = virNetworkGetBridgeName(network);
             if (brname == NULL)
-                fail = 1;
+                fail = true;
         }
 
         /* Make sure any above failure is preserved */
@@ -5817,25 +5818,25 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
                           const virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps)
 {
-    int disableKQEMU = 0;
-    int enableKQEMU = 0;
-    int disableKVM = 0;
-    int enableKVM = 0;
+    bool disableKQEMU = false;
+    bool enableKQEMU = false;
+    bool disableKVM = false;
+    bool enableKVM = false;
 
     switch (def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = 1;
+            disableKQEMU = true;
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = 1;
+            disableKVM = true;
         break;
 
     case VIR_DOMAIN_VIRT_KQEMU:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = 1;
+            disableKVM = true;
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KQEMU)) {
-            enableKQEMU = 1;
+            enableKQEMU = true;
         } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("the QEMU binary does not support kqemu"));
@@ -5845,10 +5846,10 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
 
     case VIR_DOMAIN_VIRT_KVM:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = 1;
+            disableKQEMU = true;
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM)) {
-            enableKVM = 1;
+            enableKVM = true;
         } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("the QEMU binary does not support kvm"));
@@ -7346,7 +7347,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             char *optstr;
             int bootindex = 0;
             virDomainDiskDefPtr disk = def->disks[i];
-            int withDeviceArg = 0;
+            bool withDeviceArg = false;
             bool deviceFlagMasked = false;
 
             /* Unless we have -device, then USB disks need special
@@ -7390,7 +7391,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                care that we can't use -device */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN) {
-                    withDeviceArg = 1;
+                    withDeviceArg = true;
                 } else {
                     virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
                     deviceFlagMasked = true;
@@ -9236,7 +9237,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     const char *nic;
     int wantvlan = 0;
     const char *tmp;
-    int genmac = 1;
+    bool genmac = true;
     int i;
 
     tmp = strchr(val, ',');
@@ -9327,7 +9328,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
 
     for (i = 0; i < nkeywords; i++) {
         if (STREQ(keywords[i], "macaddr")) {
-            genmac = 0;
+            genmac = false;
             if (virMacAddrParse(values[i], &def->mac) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unable to parse mac address '%s'"),
@@ -9889,7 +9890,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
 {
     virDomainDefPtr def;
     int i;
-    int nographics = 0;
+    bool nographics = false;
     bool fullscreen = false;
     char *path;
     int nnics = 0;
@@ -10274,7 +10275,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
         } else if (STREQ(arg, "-enable-kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_KVM;
         } else if (STREQ(arg, "-nographic")) {
-            nographics = 1;
+            nographics = true;
         } else if (STREQ(arg, "-full-screen")) {
             fullscreen = true;
         } else if (STREQ(arg, "-localtime")) {

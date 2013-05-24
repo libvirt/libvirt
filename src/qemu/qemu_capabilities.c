@@ -662,8 +662,8 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 {
     virCapsGuestPtr guest;
     int i;
-    int haskvm = 0;
-    int haskqemu = 0;
+    bool haskvm = false;
+    bool haskqemu = false;
     char *kvmbin = NULL;
     char *binary = NULL;
     virCapsGuestMachinePtr *machines = NULL;
@@ -725,11 +725,11 @@ virQEMUCapsInitGuest(virCapsPtr caps,
         (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM) ||
          virQEMUCapsGet(qemubinCaps, QEMU_CAPS_ENABLE_KVM) ||
          kvmbin))
-        haskvm = 1;
+        haskvm = true;
 
     if (access("/dev/kqemu", F_OK) == 0 &&
         virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KQEMU))
-        haskqemu = 1;
+        haskqemu = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
         goto error;

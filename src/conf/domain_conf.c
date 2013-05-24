@@ -3471,7 +3471,7 @@ virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
 {
 
     int ret = -1;
-    int got_product, got_vendor;
+    bool got_product, got_vendor;
     xmlNodePtr cur;
     char *startupPolicy = NULL;
     char *autoAddress;
@@ -3497,8 +3497,8 @@ virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized*/
-    got_product = 0;
-    got_vendor = 0;
+    got_product = false;
+    got_vendor = false;
 
     cur = node->children;
     while (cur != NULL) {
@@ -3507,7 +3507,7 @@ virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
                 char *vendor = virXMLPropString(cur, "id");
 
                 if (vendor) {
-                    got_vendor = 1;
+                    got_vendor = true;
                     if (virStrToLong_ui(vendor, NULL, 0,
                                     &def->source.subsys.u.usb.vendor) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3525,7 +3525,7 @@ virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
                 char* product = virXMLPropString(cur, "id");
 
                 if (product) {
-                    got_product = 1;
+                    got_product = true;
                     if (virStrToLong_ui(product, NULL, 0,
                                         &def->source.subsys.u.usb.product) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15386,7 +15386,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainGraphicsTypeToString(def->type);
     const char *listenAddr = NULL;
-    int children = 0;
+    bool children = false;
     int i;
 
     if (!type) {
@@ -15522,7 +15522,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             continue;
         if (!children) {
             virBufferAddLit(buf, ">\n");
-            children = 1;
+            children = true;
         }
         virDomainGraphicsListenDefFormat(buf, &def->listens[i], flags);
     }
@@ -15535,7 +15535,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
             if (!children) {
                 virBufferAddLit(buf, ">\n");
-                children = 1;
+                children = true;
             }
 
             virBufferAsprintf(buf, "      <channel name='%s' mode='%s'/>\n",
@@ -15547,7 +15547,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                           def->data.spice.streaming || def->data.spice.copypaste ||
                           def->data.spice.mousemode)) {
             virBufferAddLit(buf, ">\n");
-            children = 1;
+            children = true;
         }
         if (def->data.spice.image)
             virBufferAsprintf(buf, "      <image compression='%s'/>\n",

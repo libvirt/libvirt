@@ -2315,7 +2315,7 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state)
 static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
 {
     int rc;
-    int killedAny = 0;
+    bool killedAny = false;
     char *keypath = NULL;
     bool done = false;
     FILE *fp = NULL;
@@ -2359,7 +2359,7 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
                     }
                     /* Leave RC == 0 since we didn't kill one */
                 } else {
-                    killedAny = 1;
+                    killedAny = true;
                     done = false;
                 }
 

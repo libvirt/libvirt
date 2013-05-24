@@ -366,7 +366,8 @@ virLogStr(const char *str)
 static void
 virLogDumpAllFD(const char *msg, int len)
 {
-    int i, found = 0;
+    int i;
+    bool found = false;
 
     if (len <= 0)
         len = strlen(msg);
@@ -377,7 +378,7 @@ virLogDumpAllFD(const char *msg, int len)
 
             if (fd >= 0) {
                 ignore_value(safewrite(fd, msg, len));
-                found = 1;
+                found = true;
             }
         }
     }
@@ -806,7 +807,7 @@ virLogVMessage(virLogSource source,
     char timestamp[VIR_TIME_STRING_BUFLEN];
     int fprio, i, ret;
     int saved_errno = errno;
-    int emit = 1;
+    bool emit = true;
     unsigned int filterflags = 0;
 
     if (virLogInitialize() < 0)
@@ -821,12 +822,12 @@ virLogVMessage(virLogSource source,
     fprio = virLogFiltersCheck(filename, &filterflags);
     if (fprio == 0) {
         if (priority < virLogDefaultPriority)
-            emit = 0;
+            emit = false;
     } else if (priority < fprio) {
-        emit = 0;
+        emit = false;
     }
 
-    if ((emit == 0) && ((virLogBuffer == NULL) || (virLogSize <= 0)))
+    if (!emit && ((virLogBuffer == NULL) || (virLogSize <= 0)))
         goto cleanup;
 
     /*
@@ -856,7 +857,7 @@ virLogVMessage(virLogSource source,
     virLogStr(": ");
     virLogStr(msg);
     virLogUnlock();
-    if (emit == 0)
+    if (!emit)
         goto cleanup;
 
     virLogLock();

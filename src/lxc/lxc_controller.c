@@ -1601,7 +1601,7 @@ int main(int argc, char *argv[])
     size_t nveths = 0;
     char **veths = NULL;
     int handshakeFd = -1;
-    int bg = 0;
+    bool bg = false;
     const struct option options[] = {
         { "background", 0, NULL, 'b' },
         { "name",   1, NULL, 'n' },
@@ -1639,7 +1639,7 @@ int main(int argc, char *argv[])
 
         switch (c) {
         case 'b':
-            bg = 1;
+            bg = true;
             break;
 
         case 'n':

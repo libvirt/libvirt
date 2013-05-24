@@ -550,7 +550,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     struct stat st;
     gid_t gid;
     uid_t uid;
-    int filecreated = 0;
+    bool filecreated = false;
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((getuid() == 0)
@@ -565,7 +565,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         if (virCommandRun(cmd, NULL) == 0) {
             /* command was successfully run, check if the file was created */
             if (stat(vol->target.path, &st) >=0)
-                filecreated = 1;
+                filecreated = true;
         }
     }
 

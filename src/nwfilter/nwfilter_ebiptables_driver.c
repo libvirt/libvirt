@@ -1928,7 +1928,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     int rc;
     int directionIn = 0;
     char chainPrefix[2];
-    int needState = 1;
+    bool needState = true;
     bool maySkipICMP, inout = false;
     const char *matchState;
 
@@ -1947,11 +1947,11 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
         directionIn = 1;
         inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
         if (inout)
-            needState = 0;
+            needState = false;
     }
 
     if ((rule->flags & RULE_FLAG_NO_STATEMATCH))
-        needState = 0;
+        needState = false;
 
     chainPrefix[0] = 'F';
 
@@ -2701,7 +2701,7 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
-        isIPv6 = 0;
+        isIPv6 = false;
         rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
                                         ifname,
@@ -2718,7 +2718,7 @@ ebiptablesCreateRuleInstance(enum virDomainNetType nettype ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
-        isIPv6 = 1;
+        isIPv6 = true;
         rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
                                         ifname,

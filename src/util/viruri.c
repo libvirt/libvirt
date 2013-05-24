@@ -280,14 +280,15 @@ cleanup:
 char *virURIFormatParams(virURIPtr uri)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int i, amp = 0;
+    int i;
+    bool amp = false;
 
     for (i = 0; i < uri->paramsCount; ++i) {
         if (!uri->params[i].ignore) {
             if (amp) virBufferAddChar(&buf, '&');
             virBufferStrcat(&buf, uri->params[i].name, "=", NULL);
             virBufferURIEncodeString(&buf, uri->params[i].value);
-            amp = 1;
+            amp = true;
         }
     }
 

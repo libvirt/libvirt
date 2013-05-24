@@ -3143,7 +3143,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
     char *dom_xml = NULL;
     int cookielen = 0, ret;
     virErrorPtr orig_err = NULL;
-    int cancelled;
+    bool cancelled;
     virStreamPtr st = NULL;
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, dconnuri=%s, "
               "flags=%lx, dname=%s, resource=%lu",
@@ -3200,7 +3200,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
         (uri_out == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare2 did not set uri"));
-        cancelled = 1;
+        cancelled = true;
         goto finish;
     }
 
@@ -3226,7 +3226,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
      */
-    cancelled = ret < 0 ? 1 : 0;
+    cancelled = ret < 0;
 
 finish:
     /* In version 2 of the migration protocol, we pass the
@@ -3286,7 +3286,7 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     int cookieoutlen = 0;
     int ret = -1;
     virErrorPtr orig_err = NULL;
-    int cancelled;
+    bool cancelled;
     virStreamPtr st = NULL;
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, xmlin=%s, "
               "dconnuri=%s, uri=%s, flags=%lx, dname=%s, resource=%lu",
@@ -3337,7 +3337,7 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         VIR_DEBUG("Offline migration, skipping Perform phase");
         VIR_FREE(cookieout);
         cookieoutlen = 0;
-        cancelled = 0;
+        cancelled = false;
         goto finish;
     }
 
@@ -3345,7 +3345,7 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         (uri_out == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
-        cancelled = 1;
+        cancelled = true;
         goto finish;
     }
 
@@ -3383,7 +3383,7 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     /* If Perform returns < 0, then we need to cancel the VM
      * startup on the destination
      */
-    cancelled = ret < 0 ? 1 : 0;
+    cancelled = ret < 0;
 
 finish:
     /*
@@ -3413,7 +3413,7 @@ finish:
      * The lock manager plugins should take care of
      * safety in this scenario.
      */
-    cancelled = ddomain == NULL ? 1 : 0;
+    cancelled = ddomain == NULL;
 
     /* If finish3 set an error, and we don't have an earlier
      * one we need to preserve it in case confirm3 overwrites
@@ -3892,7 +3892,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 {
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    int newVM = 1;
+    bool newVM = true;
     qemuMigrationCookiePtr mig = NULL;
     virErrorPtr orig_err = NULL;
     int cookie_flags = 0;
@@ -3955,7 +3955,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             virDomainDefPtr vmdef;
             if (vm->persistent)
-                newVM = 0;
+                newVM = false;
             vm->persistent = 1;
             if (mig->persistent)
                 vm->newDef = vmdef = mig->persistent;

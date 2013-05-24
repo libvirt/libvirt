@@ -1134,7 +1134,7 @@ done:
 static int remoteConnectIsEncrypted(virConnectPtr conn)
 {
     int rv = -1;
-    int encrypted = 0;
+    bool encrypted;
     struct private_data *priv = conn->privateData;
     remote_connect_is_secure_ret ret;
     remoteDriverLock(priv);
@@ -1145,8 +1145,7 @@ static int remoteConnectIsEncrypted(virConnectPtr conn)
              (xdrproc_t) xdr_remote_connect_is_secure_ret, (char *) &ret) == -1)
         goto done;
 
-    if (virNetClientIsEncrypted(priv->client))
-        encrypted = 1;
+    encrypted = virNetClientIsEncrypted(priv->client);
 
     /* We claim to be encrypted, if the remote driver
      * transport itself is encrypted, and the remote

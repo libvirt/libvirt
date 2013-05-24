@@ -1906,7 +1906,7 @@ int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
     char *cmd = NULL;
     char *reply = NULL;
     char *safe_path = NULL;
-    int tryOldSyntax = 0;
+    bool tryOldSyntax = false;
     int ret = -1;
 
     safe_path = qemuMonitorEscapeArg(path);
@@ -1929,7 +1929,7 @@ try_command:
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
             VIR_FREE(cmd);
-            tryOldSyntax = 1;
+            tryOldSyntax = true;
             goto try_command;
         }
 
@@ -1984,7 +1984,7 @@ int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
 {
     char *cmd = NULL;
     char *reply = NULL;
-    int tryOldSyntax = 0;
+    bool tryOldSyntax = false;
     int ret = -1;
 
 try_command:
@@ -2010,7 +2010,7 @@ try_command:
      * need to try the old syntax */
     if (!tryOldSyntax &&
         strstr(reply, "extraneous characters")) {
-        tryOldSyntax = 1;
+        tryOldSyntax = true;
         VIR_FREE(reply);
         VIR_FREE(cmd);
         goto try_command;
@@ -2306,7 +2306,7 @@ int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
 {
     char *cmd = NULL;
     char *reply = NULL;
-    int tryOldSyntax = 0;
+    bool tryOldSyntax = false;
     int ret = -1;
 
 try_command:
@@ -2323,7 +2323,7 @@ try_command:
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
             VIR_FREE(cmd);
-            tryOldSyntax = 1;
+            tryOldSyntax = true;
             goto try_command;
         }
 
@@ -2395,7 +2395,7 @@ int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
     char *reply = NULL;
     int ret = -1;
     char *safe_str;
-    int tryOldSyntax = 0;
+    bool tryOldSyntax = false;
 
     safe_str = qemuMonitorEscapeArg(drivestr);
     if (!safe_str) {
@@ -2425,7 +2425,7 @@ try_command:
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
             VIR_FREE(cmd);
-            tryOldSyntax = 1;
+            tryOldSyntax = true;
             goto try_command;
         }
         virReportError(VIR_ERR_OPERATION_FAILED,

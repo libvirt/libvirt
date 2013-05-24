@@ -892,12 +892,12 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
 
     while (retries) {
         ssize_t bytes;
-        int isdead = 0;
+        bool isdead = false;
         char *eol;
 
         if (vm->pid <= 0 ||
             (kill(vm->pid, 0) == -1 && errno == ESRCH))
-            isdead = 1;
+            isdead = true;
 
         /* Any failures should be detected before we read the log, so we
          * always have something useful to report on failure. */
