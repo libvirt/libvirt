@@ -157,6 +157,16 @@ static int qemuDomainGetMaxVcpus(virDomainPtr dom);
 static int qemuDomainManagedSaveLoad(virDomainObjPtr vm,
                                      void *opaque);
 
+static int qemuOpenFile(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        const char *path, int oflags,
+                        bool *needUnlink, bool *bypassSecurityDriver);
+
+static int qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
+                          bool dynamicOwnership,
+                          const char *path, int oflags,
+                          bool *needUnlink, bool *bypassSecurityDriver);
+
 
 virQEMUDriverPtr qemu_driver = NULL;
 
@@ -2722,10 +2732,40 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
 }
 
 /* Internal function to properly create or open existing files, with
- * ownership affected by qemu driver setup.  */
+ * ownership affected by qemu driver setup and domain DAC label.  */
 static int
-qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
+qemuOpenFile(virQEMUDriverPtr driver,
+             virDomainObjPtr vm,
+             const char *path, int oflags,
              bool *needUnlink, bool *bypassSecurityDriver)
+{
+    int ret = -1;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    uid_t user = cfg->user;
+    gid_t group = cfg->group;
+    bool dynamicOwnership = cfg->dynamicOwnership;
+    virSecurityLabelDefPtr seclabel;
+
+    virObjectUnref(cfg);
+
+    /* TODO: Take imagelabel into account? */
+    if (vm &&
+        (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
+        (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
+        goto cleanup;
+
+    ret = qemuOpenFileAs(user, group, dynamicOwnership,
+                         path, oflags, needUnlink, bypassSecurityDriver);
+
+ cleanup:
+    return ret;
+}
+
+static int
+qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
+               bool dynamicOwnership,
+               const char *path, int oflags,
+               bool *needUnlink, bool *bypassSecurityDriver)
 {
     struct stat sb;
     bool is_reg = true;
@@ -2736,7 +2776,6 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
     int path_shared = virStorageFileIsSharedFS(path);
     uid_t uid = getuid();
     gid_t gid = getgid();
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     /* path might be a pre-existing block dev, in which case
      * we need to skip the create step, and also avoid unlink
@@ -2746,7 +2785,7 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
 
         /* Don't force chown on network-shared FS
          * as it is likely to fail. */
-        if (path_shared <= 0 || cfg->dynamicOwnership)
+        if (path_shared <= 0 || dynamicOwnership)
             vfoflags |= VIR_FILE_OPEN_FORCE_OWNER;
 
         if (stat(path, &sb) == 0) {
@@ -2754,7 +2793,7 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
             /* If the path is regular file which exists
              * already and dynamic_ownership is off, we don't
              * want to change it's ownership, just open it as-is */
-            if (is_reg && !cfg->dynamicOwnership) {
+            if (is_reg && !dynamicOwnership) {
                 uid = sb.st_uid;
                 gid = sb.st_gid;
             }
@@ -2773,10 +2812,10 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
             /* If we failed as root, and the error was permission-denied
                (EACCES or EPERM), assume it's on a network-connected share
                where root access is restricted (eg, root-squashed NFS). If the
-               qemu user (cfg->user) is non-root, just set a flag to
+               qemu user is non-root, just set a flag to
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
-            if ((fd != -EACCES && fd != -EPERM) || cfg->user == getuid())
+            if ((fd != -EACCES && fd != -EPERM) || fallback_uid == getuid())
                 goto error;
 
             /* On Linux we can also verify the FS-type of the directory. */
@@ -2802,11 +2841,11 @@ qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
                     goto error;
             }
 
-            /* Retry creating the file as cfg->user */
+            /* Retry creating the file as qemu user */
 
             if ((fd = virFileOpenAs(path, oflags,
                                     S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
-                                    cfg->user, cfg->group,
+                                    fallback_uid, fallback_gid,
                                     vfoflags | VIR_FILE_OPEN_FORK)) < 0) {
                 virReportSystemError(-fd, oflags & O_CREAT
                                      ? _("Error from child process creating '%s'")
@@ -2827,7 +2866,6 @@ cleanup:
         *needUnlink = need_unlink;
     if (bypassSecurityDriver)
         *bypassSecurityDriver = bypass_security;
-    virObjectUnref(cfg);
     return fd;
 
 error:
@@ -2902,7 +2940,8 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
-    fd = qemuOpenFile(driver, path, O_WRONLY | O_TRUNC | O_CREAT | directFlag,
+    fd = qemuOpenFile(driver, vm, path,
+                      O_WRONLY | O_TRUNC | O_CREAT | directFlag,
                       &needUnlink, &bypassSecurityDriver);
     if (fd < 0)
         goto cleanup;
@@ -2935,7 +2974,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (virFileWrapperFdClose(wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL)) < 0)
+    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0)
         goto cleanup;
 
     memcpy(header.magic, QEMU_SAVE_MAGIC, sizeof(header.magic));
@@ -3359,7 +3398,7 @@ doCoreDump(virQEMUDriverPtr driver,
     /* Core dumps usually imply last-ditch analysis efforts are
      * desired, so we intentionally do not unlink even if a file was
      * created.  */
-    if ((fd = qemuOpenFile(driver, path,
+    if ((fd = qemuOpenFile(driver, vm, path,
                            O_CREAT | O_TRUNC | O_WRONLY | directFlag,
                            NULL, NULL)) < 0)
         goto cleanup;
@@ -5165,7 +5204,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto error;
 
-    if ((fd = qemuOpenFile(driver, path, oflags, NULL, NULL)) < 0)
+    if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL, NULL)) < 0)
         goto error;
     if (bypass_cache &&
         !(*wrapperFd = virFileWrapperFdNew(&fd, path,
@@ -12071,7 +12110,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     /* create the stub file and set selinux labels; manipulate disk in
      * place, in a way that can be reverted on failure. */
     if (!reuse) {
-        fd = qemuOpenFile(driver, source, O_WRONLY | O_TRUNC | O_CREAT,
+        fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
                           &need_unlink, NULL);
         if (fd < 0)
             goto cleanup;
@@ -14488,7 +14527,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     }
 
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
-        int fd = qemuOpenFile(driver, dest, O_WRONLY | O_TRUNC | O_CREAT,
+        int fd = qemuOpenFile(driver, vm, dest, O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
         if (fd < 0)
             goto endjob;
