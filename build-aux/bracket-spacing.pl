@@ -31,8 +31,8 @@ foreach my $file (@ARGV) {
     while (defined (my $line = <FILE>)) {
         my $data = $line;
 
-        # Kill any quoted strongs
-        $data =~ s,".*?","XXX",g;
+        # Kill any quoted strings
+        $data =~ s,"([^\\\"]|\\.)*","XXX",g;
 
         # Kill any C++ style comments
         $data =~ s,//.*$,//,;
@@ -120,14 +120,9 @@ foreach my $file (@ARGV) {
         #          errno == EINTR)
         #       ;
         #
-        # 3) ";" is inside double-quote, I.e, as part of const string. E.g.
-        #   printf("%s", "a ; b\n");
         while ($data =~ /[^;\s]\s+;/) {
-            # Inside the double-quote
-            if ($data !~ /"[^"]*\s;/) {
-                print "$file:$.: $line";
-                $ret = 1;
-            }
+            print "$file:$.: $line";
+            $ret = 1;
             last;
         }
     }
