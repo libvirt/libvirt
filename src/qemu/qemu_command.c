@@ -486,6 +486,10 @@ qemuOpenVhostNet(virDomainDefPtr def,
                                        "but is unavailable"));
                 goto error;
             }
+            VIR_WARN("Unable to open vhost-net. Opened so far %d, requested %d",
+                     i, *vhostfdSize);
+            *vhostfdSize = i;
+            break;
         }
     }
     virDomainAuditNetDevice(def, net, "/dev/vhost-net", *vhostfdSize);
@@ -6560,12 +6564,10 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     }
 
     for (i = 0; i < vhostfdSize; i++) {
-        if (vhostfd[i] >= 0) {
-            virCommandTransferFD(cmd, vhostfd[i]);
-            if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
+        virCommandTransferFD(cmd, vhostfd[i]);
+        if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0) {
+            virReportOOMError();
+            goto cleanup;
         }
     }
 
