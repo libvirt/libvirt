@@ -31,7 +31,7 @@
 typedef struct
 {
     char  *rule;
-    const char **argv;
+    char **argv;
     int    command_idx;
 } ebtRule;
 

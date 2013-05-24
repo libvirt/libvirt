@@ -33,6 +33,7 @@
 #include "virhash.h"
 #include "virkeyfile.h"
 #include "virerror.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
@@ -122,10 +123,8 @@ static int virKeyFileParseGroup(virKeyFileParserCtxtPtr ctxt)
         return -1;
     }
 
-    if (!(ctxt->groupname = strndup(name, ctxt->cur - name))) {
-        virReportOOMError();
+    if (VIR_STRNDUP(ctxt->groupname, name, ctxt->cur - name) < 0)
         return -1;
-    }
 
     NEXT;
 
@@ -168,10 +167,8 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
         return -1;
     }
 
-    if (!(key = strndup(keystart, ctxt->cur - keystart))) {
-        virReportOOMError();
+    if (VIR_STRNDUP(key, keystart, ctxt->cur - keystart) < 0)
         return -1;
-    }
 
     NEXT;
     valuestart = ctxt->cur;
@@ -184,10 +181,8 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
     len = ctxt->cur - valuestart;
     if (IS_EOF && !IS_EOL(CUR))
         len++;
-    if (!(value = strndup(valuestart, len))) {
-        virReportOOMError();
+    if (VIR_STRNDUP(value, valuestart, len) < 0)
         goto cleanup;
-    }
 
     if (virHashAddEntry(ctxt->group, key, value) < 0) {
         VIR_FREE(value);

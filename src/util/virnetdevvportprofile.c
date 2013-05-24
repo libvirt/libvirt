@@ -1034,9 +1034,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
             goto cleanup;
         }
     } else {
-        physfndev = strdup(ifname);
-        if (!physfndev) {
-            virReportOOMError();
+        if (VIR_STRDUP(physfndev, ifname) < 0) {
             rc = -1;
             goto cleanup;
         }

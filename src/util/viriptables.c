@@ -119,10 +119,10 @@ iptRulesNew(const char *table,
     if (VIR_ALLOC(rules) < 0)
         return NULL;
 
-    if (!(rules->table = strdup(table)))
+    if (VIR_STRDUP(rules->table, table) < 0)
         goto error;
 
-    if (!(rules->chain = strdup(chain)))
+    if (VIR_STRDUP(rules->chain, chain) < 0)
         goto error;
 
     return rules;

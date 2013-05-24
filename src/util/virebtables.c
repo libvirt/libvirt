@@ -52,6 +52,8 @@
 #include "virstring.h"
 #include "virutil.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #if HAVE_FIREWALLD
 static char *firewall_cmd_path = NULL;
 
@@ -114,7 +116,7 @@ ebtRuleFree(ebtRule *rule)
 static int
 ebtRulesAppend(ebtRules *rules,
                char *rule,
-               const char **argv,
+               char **argv,
                int command_idx)
 {
     if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
@@ -187,10 +189,10 @@ ebtRulesNew(const char *table,
     if (VIR_ALLOC(rules) < 0)
         return NULL;
 
-    if (!(rules->table = strdup(table)))
+    if (VIR_STRDUP(rules->table, table) < 0)
         goto error;
 
-    if (!(rules->chain = strdup(chain)))
+    if (VIR_STRDUP(rules->chain, chain) < 0)
         goto error;
 
     rules->rules = NULL;
@@ -208,7 +210,7 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 {
     va_list args;
     int retval = ENOMEM;
-    const char **argv;
+    char **argv;
     char *rule = NULL;
     const char *s;
     int n, command_idx;
@@ -237,36 +239,36 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 
 #if HAVE_FIREWALLD
     if (firewall_cmd_path) {
-        if (!(argv[n++] = strdup(firewall_cmd_path)))
+        if (VIR_STRDUP(argv[n++], firewall_cmd_path) < 0)
             goto error;
-        if (!(argv[n++] = strdup("--direct")))
+        if (VIR_STRDUP(argv[n++], "--direct") < 0)
             goto error;
-        if (!(argv[n++] = strdup("--passthrough")))
+        if (VIR_STRDUP(argv[n++], "--passthrough") < 0)
             goto error;
-        if (!(argv[n++] = strdup("eb")))
+        if (VIR_STRDUP(argv[n++], "eb") < 0)
             goto error;
     } else
 #endif
-    if (!(argv[n++] = strdup(EBTABLES_PATH)))
+    if (VIR_STRDUP(argv[n++], EBTABLES_PATH) < 0)
         goto error;
 
     command_idx = n;
 
     if (action == ADD || action == REMOVE) {
-        if (!(argv[n++] = strdup("--insert")))
+        if (VIR_STRDUP(argv[n++], "--insert") < 0)
             goto error;
 
-        if (!(argv[n++] = strdup(rules->chain)))
+        if (VIR_STRDUP(argv[n++], rules->chain) < 0)
             goto error;
     }
 
-    if (!(argv[n++] = strdup(arg)))
+    if (VIR_STRDUP(argv[n++], arg) < 0)
         goto error;
 
     va_start(args, arg);
 
     while ((s = va_arg(args, const char *))) {
-        if (!(argv[n++] = strdup(s))) {
+        if (VIR_STRDUP(argv[n++], s) < 0) {
             va_end(args);
             goto error;
         }
@@ -274,16 +276,16 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(rule = virArgvToString(&argv[command_idx])))
+    if (!(rule = virArgvToString((const char **) &argv[command_idx])))
         goto error;
 
     if (action == REMOVE) {
         VIR_FREE(argv[command_idx]);
-        if (!(argv[command_idx] = strdup("--delete")))
+        if (VIR_STRDUP(argv[command_idx], "--delete") < 0)
             goto error;
     }
 
-    if (virRun(argv, NULL) < 0) {
+    if (virRun((const char **)argv, NULL) < 0) {
         retval = errno;
         goto error;
     }

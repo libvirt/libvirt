@@ -37,13 +37,13 @@ virURIParamAppend(virURIPtr uri,
     char *pname = NULL;
     char *pvalue = NULL;
 
-    if (!(pname = strdup(name)))
-        goto no_memory;
-    if (!(pvalue = strdup(value)))
-        goto no_memory;
+    if (VIR_STRDUP(pname, name) < 0 || VIR_STRDUP(pvalue, value) < 0)
+        goto error;
 
-    if (VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1) < 0)
-        goto no_memory;
+    if (VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     uri->params[uri->paramsCount].name = pname;
     uri->params[uri->paramsCount].value = pvalue;
@@ -52,10 +52,9 @@ virURIParamAppend(virURIPtr uri,
 
     return 0;
 
-no_memory:
+error:
     VIR_FREE(pname);
     VIR_FREE(pvalue);
-    virReportOOMError();
     return -1;
 }
 
@@ -167,34 +166,29 @@ virURIParse(const char *uri)
         return NULL;
     }
 
-    if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
+    if (VIR_ALLOC(ret) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
-    if (xmluri->scheme &&
-        !(ret->scheme = strdup(xmluri->scheme)))
-        goto no_memory;
-    if (xmluri->server &&
-        !(ret->server = strdup(xmluri->server)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->scheme, xmluri->scheme) < 0)
+        goto error;
+    if (VIR_STRDUP(ret->server, xmluri->server) < 0)
+        goto error;
     ret->port = xmluri->port;
-    if (xmluri->path &&
-        !(ret->path = strdup(xmluri->path)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->path, xmluri->path) < 0)
+        goto error;
 #ifdef HAVE_XMLURI_QUERY_RAW
-    if (xmluri->query_raw &&
-        !(ret->query = strdup(xmluri->query_raw)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->query, xmluri->query_raw) < 0)
+        goto error;
 #else
-    if (xmluri->query &&
-        !(ret->query = strdup(xmluri->query)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->query, xmluri->query) < 0)
+        goto error;
 #endif
-    if (xmluri->fragment &&
-        !(ret->fragment = strdup(xmluri->fragment)))
-        goto no_memory;
-    if (xmluri->user &&
-        !(ret->user = strdup(xmluri->user)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->fragment, xmluri->fragment) < 0)
+        goto error;
+    if (VIR_STRDUP(ret->user, xmluri->user) < 0)
+        goto error;
 
     /* First check: does it even make sense to jump inside */
     if (ret->server != NULL &&
@@ -220,8 +214,6 @@ virURIParse(const char *uri)
 
     return ret;
 
-no_memory:
-    virReportOOMError();
 error:
     xmlFreeURI(xmluri);
     virURIFree(ret);

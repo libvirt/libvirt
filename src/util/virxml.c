@@ -87,11 +87,8 @@ virXPathString(const char *xpath,
         xmlXPathFreeObject(obj);
         return NULL;
     }
-    ret = strdup((char *) obj->stringval);
+    ignore_value(VIR_STRDUP(ret, (char *) obj->stringval));
     xmlXPathFreeObject(obj);
-    if (ret == NULL) {
-        virReportOOMError();
-    }
     return ret;
 }
 

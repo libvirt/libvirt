@@ -946,9 +946,8 @@ virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)
         return;
 
     VIR_FREE(cmd->pidfile);
-    if (!(cmd->pidfile = strdup(pidfile))) {
+    if (VIR_STRDUP_QUIET(cmd->pidfile, pidfile) < 0)
         cmd->has_error = ENOMEM;
-    }
 }
 
 
@@ -1049,7 +1048,7 @@ virCommandSetSELinuxLabel(virCommandPtr cmd,
 
 #if defined(WITH_SECDRIVER_SELINUX)
     VIR_FREE(cmd->seLinuxLabel);
-    if (label && !(cmd->seLinuxLabel = strdup(label)))
+    if (VIR_STRDUP_QUIET(cmd->seLinuxLabel, label) < 0)
         cmd->has_error = ENOMEM;
 #endif
     return;
@@ -1074,7 +1073,7 @@ virCommandSetAppArmorProfile(virCommandPtr cmd,
 
 #if defined(WITH_SECDRIVER_APPARMOR)
     VIR_FREE(cmd->appArmorProfile);
-    if (profile && !(cmd->appArmorProfile = strdup(profile)))
+    if (VIR_STRDUP_QUIET(cmd->appArmorProfile, profile) < 0)
         cmd->has_error = ENOMEM;
 #endif
     return;
@@ -1205,7 +1204,7 @@ virCommandAddEnvString(virCommandPtr cmd, const char *str)
     if (!cmd || cmd->has_error)
         return;
 
-    if (!(env = strdup(str))) {
+    if (VIR_STRDUP_QUIET(env, str) < 0) {
         cmd->has_error = ENOMEM;
         return;
     }
@@ -1309,7 +1308,7 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
     if (!cmd || cmd->has_error)
         return;
 
-    if (!(arg = strdup(val))) {
+    if (VIR_STRDUP_QUIET(arg, val) < 0) {
         cmd->has_error = ENOMEM;
         return;
     }
@@ -1350,11 +1349,11 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
     }
 
     cmd->args[cmd->nargs] = virBufferContentAndReset(buf);
-    if (!cmd->args[cmd->nargs])
-        cmd->args[cmd->nargs] = strdup("");
     if (!cmd->args[cmd->nargs]) {
-        cmd->has_error = ENOMEM;
-        return;
+        if (VIR_STRDUP_QUIET(cmd->args[cmd->nargs], "") < 0) {
+            cmd->has_error = ENOMEM;
+            return;
+        }
     }
     cmd->nargs++;
 }
@@ -1440,8 +1439,9 @@ virCommandAddArgSet(virCommandPtr cmd, const char *const*vals)
 
     narg = 0;
     while (vals[narg] != NULL) {
-        char *arg = strdup(vals[narg++]);
-        if (!arg) {
+        char *arg;
+
+        if (VIR_STRDUP_QUIET(arg, vals[narg++]) < 0) {
             cmd->has_error = ENOMEM;
             return;
         }
@@ -1481,8 +1481,7 @@ virCommandAddArgList(virCommandPtr cmd, ...)
         char *arg = va_arg(list, char *);
         if (!arg)
             break;
-        arg = strdup(arg);
-        if (!arg) {
+        if (VIR_STRDUP_QUIET(arg, arg) < 0) {
             cmd->has_error = ENOMEM;
             va_end(list);
             return;
@@ -1511,8 +1510,7 @@ virCommandSetWorkingDirectory(virCommandPtr cmd, const char *pwd)
         cmd->has_error = -1;
         VIR_DEBUG("cannot set directory twice");
     } else {
-        cmd->pwd = strdup(pwd);
-        if (!cmd->pwd)
+        if (VIR_STRDUP_QUIET(cmd->pwd, pwd) < 0)
             cmd->has_error = ENOMEM;
     }
 }
@@ -1539,8 +1537,7 @@ virCommandSetInputBuffer(virCommandPtr cmd, const char *inbuf)
         return;
     }
 
-    cmd->inbuf = strdup(inbuf);
-    if (!cmd->inbuf)
+    if (VIR_STRDUP_QUIET(cmd->inbuf, inbuf) < 0)
         cmd->has_error = ENOMEM;
 }
 

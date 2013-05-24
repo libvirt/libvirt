@@ -30,6 +30,7 @@
 #include "virlog.h"
 #include "virhashcode.h"
 #include "virrandom.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -85,7 +86,9 @@ static bool virHashStrEqual(const void *namea, const void *nameb)
 
 static void *virHashStrCopy(const void *name)
 {
-    return strdup(name);
+    char *ret;
+    ignore_value(VIR_STRDUP(ret, name));
+    return ret;
 }
 
 static void virHashStrFree(void *name)

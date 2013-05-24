@@ -70,10 +70,8 @@ static char *virLockSpaceGetResourcePath(virLockSpacePtr lockspace,
             return NULL;
         }
     } else {
-        if (!(ret = strdup(resname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(ret, resname) < 0)
             return NULL;
-        }
     }
 
     return ret;
@@ -132,8 +130,8 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
     res->fd = -1;
     res->flags = flags;
 
-    if (!(res->name = strdup(resname)))
-        goto no_memory;
+    if (VIR_STRDUP(res->name, resname) < 0)
+        goto error;
 
     if (!(res->path = virLockSpaceGetResourcePath(lockspace, resname)))
         goto no_memory;
@@ -262,9 +260,8 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
         return NULL;
     }
 
-    if (directory &&
-        !(lockspace->dir = strdup(directory)))
-        goto no_memory;
+    if (VIR_STRDUP(lockspace->dir, directory) < 0)
+        goto error;
 
     if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
                                                virLockSpaceResourceDataFree)))
@@ -290,8 +287,6 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
 
     return lockspace;
 
-no_memory:
-    virReportOOMError();
 error:
     virLockSpaceFree(lockspace);
     return NULL;
@@ -324,10 +319,8 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
     if (virJSONValueObjectHasKey(object, "directory")) {
         const char *dir = virJSONValueObjectGetString(object, "directory");
-        if (!(lockspace->dir = strdup(dir))) {
-            virReportOOMError();
+        if (VIR_STRDUP(lockspace->dir, dir) < 0)
             goto error;
-        }
     }
 
     if (!(resources = virJSONValueObjectGet(object, "resources"))) {
@@ -362,8 +355,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             virLockSpaceResourceFree(res);
             goto error;
         }
-        if (!(res->name = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(res->name, tmp) < 0) {
             virLockSpaceResourceFree(res);
             goto error;
         }
@@ -374,8 +366,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             virLockSpaceResourceFree(res);
             goto error;
         }
-        if (!(res->path = strdup(tmp))) {
-            virReportOOMError();
+        if (VIR_STRDUP(res->path, tmp) < 0) {
             virLockSpaceResourceFree(res);
             goto error;
         }

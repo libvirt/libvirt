@@ -28,6 +28,7 @@
 #include "viratomic.h"
 #include "virerror.h"
 #include "virlog.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -37,7 +38,7 @@ struct _virClass {
     virClassPtr parent;
 
     unsigned int magic;
-    const char *name;
+    char *name;
     size_t objectSize;
 
     virObjectDisposeCallback dispose;
@@ -131,21 +132,22 @@ virClassPtr virClassNew(virClassPtr parent,
         return NULL;
     }
 
-    if (VIR_ALLOC(klass) < 0)
-        goto no_memory;
+    if (VIR_ALLOC(klass) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     klass->parent = parent;
-    if (!(klass->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(klass->name, name) < 0)
+        goto error;
     klass->magic = virAtomicIntInc(&magicCounter);
     klass->objectSize = objectSize;
     klass->dispose = dispose;
 
     return klass;
 
-no_memory:
+error:
     VIR_FREE(klass);
-    virReportOOMError();
     return NULL;
 }
 

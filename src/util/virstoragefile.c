@@ -228,11 +228,8 @@ cowGetBackingStore(char **res,
         return BACKING_STORE_OK;
     }
 
-    *res = strndup((const char*)buf + 4+4, COW_FILENAME_MAXLEN);
-    if (*res == NULL) {
-        virReportOOMError();
+    if (VIR_STRNDUP(*res, (const char*)buf + 4 + 4, COW_FILENAME_MAXLEN) < 0)
         return BACKING_STORE_ERROR;
-    }
     return BACKING_STORE_OK;
 }
 
@@ -440,11 +437,8 @@ vmdk4GetBackingStore(char **res,
         goto cleanup;
     }
     *end = '\0';
-    *res = strdup(start);
-    if (*res == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(*res, start) < 0)
         goto cleanup;
-    }
 
     ret = BACKING_STORE_OK;
 
@@ -775,9 +769,7 @@ virStorageFileGetMetadataInternal(const char *path,
 
         meta->backingStoreIsFile = false;
         if (backing != NULL) {
-            meta->backingStore = strdup(backing);
-            if (meta->backingStore == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(meta->backingStore, backing) < 0) {
                 VIR_FREE(backing);
                 goto cleanup;
             }
@@ -1096,10 +1088,8 @@ int virStorageFileIsSharedFSType(const char *path,
     struct statfs sb;
     int statfs_ret;
 
-    if ((dirpath = strdup(path)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(dirpath, path) < 0)
         return -1;
-    }
 
     do {
 

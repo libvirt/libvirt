@@ -107,7 +107,7 @@ virJSONValuePtr virJSONValueNewString(const char *data)
         return NULL;
 
     val->type = VIR_JSON_TYPE_STRING;
-    if (!(val->data.string = strdup(data))) {
+    if (VIR_STRDUP(val->data.string, data) < 0) {
         VIR_FREE(val);
         return NULL;
     }
@@ -126,7 +126,7 @@ virJSONValuePtr virJSONValueNewStringLen(const char *data, size_t length)
         return NULL;
 
     val->type = VIR_JSON_TYPE_STRING;
-    if (!(val->data.string = strndup(data, length))) {
+    if (VIR_STRNDUP(val->data.string, data, length) < 0) {
         VIR_FREE(val);
         return NULL;
     }
@@ -142,7 +142,7 @@ static virJSONValuePtr virJSONValueNewNumber(const char *data)
         return NULL;
 
     val->type = VIR_JSON_TYPE_NUMBER;
-    if (!(val->data.number = strdup(data))) {
+    if (VIR_STRDUP(val->data.number, data) < 0) {
         VIR_FREE(val);
         return NULL;
     }
@@ -269,7 +269,7 @@ int virJSONValueObjectAppend(virJSONValuePtr object, const char *key, virJSONVal
     if (virJSONValueObjectHasKey(object, key))
         return -1;
 
-    if (!(newkey = strdup(key)))
+    if (VIR_STRDUP(newkey, key) < 0)
         return -1;
 
     if (VIR_REALLOC_N(object->data.object.pairs,
@@ -783,10 +783,10 @@ static int virJSONParserHandleNumber(void *ctx,
                                      yajl_size_t l)
 {
     virJSONParserPtr parser = ctx;
-    char *str = strndup(s, l);
+    char *str;
     virJSONValuePtr value;
 
-    if (!str)
+    if (VIR_STRNDUP(str, s, l) < 0)
         return -1;
     value = virJSONValueNewNumber(str);
     VIR_FREE(str);
@@ -840,8 +840,7 @@ static int virJSONParserHandleMapKey(void *ctx,
     state = &parser->state[parser->nstate-1];
     if (state->key)
         return 0;
-    state->key = strndup((const char *)stringVal, stringLen);
-    if (!state->key)
+    if (VIR_STRNDUP(state->key, (const char *)stringVal, stringLen) < 0)
         return 0;
     return 1;
 }
@@ -1126,8 +1125,7 @@ char *virJSONValueToString(virJSONValuePtr object,
         goto cleanup;
     }
 
-    if (!(ret = strdup((const char *)str)))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, (const char *)str));
 
 cleanup:
     yajl_gen_free(g);

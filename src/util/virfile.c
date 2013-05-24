@@ -1059,7 +1059,7 @@ virFileFindMountPoint(const char *type)
 
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
         if (STREQ(mb.mnt_type, type)) {
-            ret = strdup(mb.mnt_dir);
+            ignore_value(VIR_STRDUP_QUIET(ret, mb.mnt_dir));
             goto cleanup;
         }
     }
@@ -1299,11 +1299,8 @@ virFileResolveLinkHelper(const char *linkpath,
         if (lstat(linkpath, &st) < 0)
             return -1;
 
-        if (!S_ISLNK(st.st_mode)) {
-            if (!(*resultpath = strdup(linkpath)))
-                return -1;
-            return 0;
-        }
+        if (!S_ISLNK(st.st_mode))
+            return VIR_STRDUP_QUIET(*resultpath, linkpath) < 0 ? -1 : 0;
     }
 
     *resultpath = canonicalize_file_name(linkpath);
@@ -1377,10 +1374,10 @@ virFindFileInPath(const char *file)
      * copy of that path, after validating that it is executable
      */
     if (IS_ABSOLUTE_FILE_NAME(file)) {
+        char *ret = NULL;
         if (virFileIsExecutable(file))
-            return strdup(file);
-        else
-            return NULL;
+            ignore_value(VIR_STRDUP_QUIET(ret, file));
+        return ret;
     }
 
     /* If we are passed an anchored path (containing a /), then there
@@ -1395,7 +1392,7 @@ virFindFileInPath(const char *file)
     /* copy PATH env so we can tweak it */
     path = getenv("PATH");
 
-    if (path == NULL || (path = strdup(path)) == NULL)
+    if (VIR_STRDUP_QUIET(path, path) <= 0)
         return NULL;
 
     /* for each path segment, append the file to search for and test for
@@ -2047,8 +2044,10 @@ virFileMakePathWithMode(const char *path,
     int ret = -1;
     char *tmp;
 
-    if ((tmp = strdup(path)) == NULL)
+    if (VIR_STRDUP(tmp, path) < 0) {
+        errno = ENOMEM;
         goto cleanup;
+    }
 
     ret = virFileMakePathHelper(tmp, mode);
 
@@ -2257,7 +2256,7 @@ virFileAbsPath(const char *path, char **abspath)
     char *buf;
 
     if (path[0] == '/') {
-        if (!(*abspath = strdup(path)))
+        if (VIR_STRDUP(*abspath, path) < 0)
             return -1;
     } else {
         buf = getcwd(NULL, 0);
@@ -2282,11 +2281,8 @@ virFileSanitizePath(const char *path)
     char *cleanpath;
     int idx = 0;
 
-    cleanpath = strdup(path);
-    if (!cleanpath) {
-        virReportOOMError();
+    if (VIR_STRDUP(cleanpath, path) < 0)
         return NULL;
-    }
 
     /* Need to sanitize:
      * //           -> //

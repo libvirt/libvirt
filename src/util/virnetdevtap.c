@@ -64,12 +64,7 @@ virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
         return -1;
     }
 
-    *ifname = strdup(ifr.ifr_name);
-    if (*ifname == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-    return 0;
+    return VIR_STRDUP(*ifname, ifr.ifr_name) < 0 ? -1 : 0;
 #else
     return -1;
 #endif
@@ -213,7 +208,7 @@ int virNetDevTapCreate(char **ifname,
             /* In case we are looping more than once, set other
              * TAPs to have the same name */
             VIR_FREE(*ifname);
-            if (ifr.ifr_name && VIR_STRDUP(*ifname, ifr.ifr_name) < 0)
+            if (VIR_STRDUP(*ifname, ifr.ifr_name) < 0)
                 goto cleanup;
         }
 

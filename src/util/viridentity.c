@@ -34,6 +34,7 @@
 #include "virobject.h"
 #include "virthread.h"
 #include "virutil.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
@@ -150,12 +151,11 @@ virIdentityPtr virIdentityGetSystem(void)
                              _("Unable to lookup SELinux process context"));
         goto cleanup;
     }
-    seccontext = strdup(con);
-    freecon(con);
-    if (!seccontext) {
-        virReportOOMError();
+    if (VIR_STRDUP(seccontext, con) < 0) {
+        freecon(con);
         goto cleanup;
     }
+    freecon(con);
 #endif
 
     if (!(ret = virIdentityNew()))
@@ -246,10 +246,8 @@ int virIdentitySetAttr(virIdentityPtr ident,
         goto cleanup;
     }
 
-    if (!(ident->attrs[attr] = strdup(value))) {
-        virReportOOMError();
+    if (VIR_STRDUP(ident->attrs[attr], value) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 

@@ -145,32 +145,26 @@ virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
     cur = strchr(cur, ':') + 1;
     eol = strchr(cur, '\n');
     virSkipSpaces(&cur);
-    if (eol &&
-       ((ret->system_family = strndup(cur, eol - cur)) == NULL))
-         goto no_memory;
+    if (eol && VIR_STRNDUP(ret->system_family, cur, eol - cur) < 0)
+        return -1;
 
     if ((cur = strstr(base, "model")) != NULL) {
         cur = strchr(cur, ':') + 1;
         eol = strchr(cur, '\n');
         virSkipSpaces(&cur);
-        if (eol && ((ret->system_serial = strndup(cur, eol - cur))
-                                                           == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_serial, cur, eol - cur) < 0)
+            return -1;
     }
 
     if ((cur = strstr(base, "machine")) != NULL) {
         cur = strchr(cur, ':') + 1;
         eol = strchr(cur, '\n');
         virSkipSpaces(&cur);
-        if (eol && ((ret->system_version = strndup(cur, eol - cur))
-                                                            == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_version, cur, eol - cur) < 0)
+            return -1;
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 static int
@@ -186,43 +180,37 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
         cur = strchr(base, ':') + 1;
 
         if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            goto no_memory;
+            return -1;
         }
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);
-        if (eol &&
-            ((processor->processor_socket_destination = strndup
-                                     (cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(processor->processor_socket_destination,
+                               cur, eol - cur) < 0)
+            return -1;
 
         if ((cur = strstr(base, "cpu")) != NULL) {
             cur = strchr(cur, ':') + 1;
             eol = strchr(cur, '\n');
             virSkipSpaces(&cur);
-            if (eol &&
-               ((processor->processor_type = strndup(cur, eol - cur))
-                                                             == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_type,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
 
         if ((cur = strstr(base, "revision")) != NULL) {
             cur = strchr(cur, ':') + 1;
             eol = strchr(cur, '\n');
             virSkipSpaces(&cur);
-            if (eol &&
-               ((processor->processor_version = strndup(cur, eol - cur))
-                                                                == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_version,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
 
         base = cur;
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 /* virSysinfoRead for PowerPC
@@ -271,32 +259,26 @@ virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
     cur = strchr(cur, ':') + 1;
     eol = strchr(cur, '\n');
     virSkipSpaces(&cur);
-    if (eol &&
-       ((ret->system_family = strndup(cur, eol - cur)) == NULL))
-         goto no_memory;
+    if (eol && VIR_STRNDUP(ret->system_family, cur, eol - cur) < 0)
+        return -1;
 
     if ((cur = strstr(base, "model")) != NULL) {
         cur = strchr(cur, ':') + 1;
         eol = strchr(cur, '\n');
         virSkipSpaces(&cur);
-        if (eol && ((ret->system_serial = strndup(cur, eol - cur))
-                                                           == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_serial, cur, eol - cur) < 0)
+            return -1;
     }
 
     if ((cur = strstr(base, "machine")) != NULL) {
         cur = strchr(cur, ':') + 1;
         eol = strchr(cur, '\n');
         virSkipSpaces(&cur);
-        if (eol && ((ret->system_version = strndup(cur, eol - cur))
-                                                            == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_version, cur, eol - cur) < 0)
+            return -1;
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 static int
@@ -314,10 +296,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     eol = strchr(base, '\n');
     cur = strchr(base, ':') + 1;
     virSkipSpaces(&cur);
-    if (eol &&
-        ((processor_type = strndup(cur, eol - cur))
-         == NULL))
-        goto no_memory;
+    if (eol && VIR_STRNDUP(processor_type, cur, eol - cur) < 0)
+        goto error;
     base = cur;
 
     while ((tmp_base = strstr(base, "processor")) != NULL) {
@@ -326,19 +306,20 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
         cur = strchr(base, ':') + 1;
 
         if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            goto no_memory;
+            virReportOOMError();
+            goto error;
         }
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);
         if (eol &&
-            ((processor->processor_socket_destination = strndup
-                                     (cur, eol - cur)) == NULL))
-            goto no_memory;
+            VIR_STRNDUP(processor->processor_socket_destination,
+                        cur, eol - cur) < 0)
+            goto error;
 
         if (processor_type &&
-            !(processor->processor_type = strdup(processor_type)))
-            goto no_memory;
+            VIR_STRDUP(processor->processor_type, processor_type) < 0)
+            goto error;
 
         base = cur;
     }
@@ -346,7 +327,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     VIR_FREE(processor_type);
     return 0;
 
-no_memory:
+error:
     VIR_FREE(processor_type);
     return -1;
 }
@@ -409,15 +390,11 @@ virSysinfoParseDelimited(const char *base, const char *name, char **value,
         start += 1;
         end = strchrnul(start, delim2);
         virSkipSpaces(&start);
-        if (!((*value) = strndup(start, end - start))) {
-            virReportOOMError();
-            goto error;
-        }
+        if (VIR_STRNDUP(*value, start, end - start) < 0)
+            return NULL;
         virTrimSpaces(*value, NULL);
         return end;
     }
-
-error:
     return NULL;
 }
 
@@ -463,7 +440,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
             goto cleanup;
         }
         processor = &ret->processor[ret->nprocessor - 1];
-        processor->processor_manufacturer = strdup(manufacturer);
+        if (VIR_STRDUP(processor->processor_manufacturer, manufacturer) < 0)
+            goto cleanup;
         if (!virSysinfoParseDelimited(procline, "version",
                                       &processor->processor_version,
                                       '=', ',') ||
@@ -557,32 +535,29 @@ virSysinfoParseBIOS(const char *base, virSysinfoDefPtr ret)
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->bios_vendor = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->bios_vendor, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->bios_version = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->bios_version, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Release Date: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->bios_date = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->bios_date, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "BIOS Revision: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->bios_release = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->bios_release, cur, eol - cur) < 0)
+            return -1;
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 static int
@@ -597,51 +572,47 @@ virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
-        if ((eol) &&
-            ((ret->system_manufacturer = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_manufacturer, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Product Name: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_product = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_product, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_version = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_version, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Serial Number: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_serial = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_serial, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "UUID: ")) != NULL) {
         cur += 6;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_uuid = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_uuid, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "SKU Number: ")) != NULL) {
         cur += 12;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_sku = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_sku, cur, eol - cur) < 0)
+            return -1;
     }
     if ((cur = strstr(base, "Family: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
-        if ((eol) && ((ret->system_family = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
+        if (eol && VIR_STRNDUP(ret->system_family, cur, eol - cur) < 0)
+            return -1;
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 static int
@@ -655,117 +626,100 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
         base = tmp_base;
         eol = NULL;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            goto no_memory;
-        }
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
+            return -1;
         processor = &ret->processor[ret->nprocessor - 1];
 
         if ((cur = strstr(base, "Socket Designation: ")) != NULL) {
             cur += 20;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_socket_destination
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_socket_destination,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Type: ")) != NULL) {
             cur += 6;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_type = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_type, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Family: ")) != NULL) {
             cur += 8;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_family = strndup(cur,
-                                                        eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_family, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
             cur += 14;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_manufacturer
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_manufacturer,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Signature: ")) != NULL) {
             cur += 11;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_signature
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_signature,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Version: ")) != NULL) {
             cur += 9;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_version = strndup(cur,
-                                                         eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_version,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "External Clock: ")) != NULL) {
             cur += 16;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_external_clock
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_external_clock,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Max Speed: ")) != NULL) {
             cur += 11;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_max_speed
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_max_speed,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Status: ")) != NULL) {
             cur += 8;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_status = strndup(cur,
-                                                        eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_status, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Serial Number: ")) != NULL) {
             cur += 15;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_serial_number
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_serial_number,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Part Number: ")) != NULL) {
             cur += 13;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((processor->processor_part_number
-                  = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(processor->processor_part_number,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
 
         base += strlen("Processor Information");
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 static int
@@ -779,9 +733,8 @@ virSysinfoParseMemory(const char *base, virSysinfoDefPtr ret)
         base = tmp_base;
         eol = NULL;
 
-        if (VIR_EXPAND_N(ret->memory, ret->nmemory, 1) < 0) {
-            goto no_memory;
-        }
+        if (VIR_EXPAND_N(ret->memory, ret->nmemory, 1) < 0)
+            return -1;
         memory = &ret->memory[ret->nmemory - 1];
 
         if ((cur = strstr(base, "Size: ")) != NULL) {
@@ -791,87 +744,74 @@ virSysinfoParseMemory(const char *base, virSysinfoDefPtr ret)
                 goto next;
 
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_size = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_size, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Form Factor: ")) != NULL) {
             cur += 13;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_form_factor = strndup(cur,
-                                                       eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_form_factor,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Locator: ")) != NULL) {
             cur += 9;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_locator = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_locator,cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Bank Locator: ")) != NULL) {
             cur += 14;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_bank_locator = strndup(cur,
-                                                        eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_bank_locator,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Type: ")) != NULL) {
             cur += 6;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_type = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_type, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Type Detail: ")) != NULL) {
             cur += 13;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_type_detail = strndup(cur,
-                                                       eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_type_detail, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Speed: ")) != NULL) {
             cur += 7;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_speed = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_speed, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
             cur += 14;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_manufacturer = strndup(cur,
-                                                        eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_manufacturer, cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Serial Number: ")) != NULL) {
             cur += 15;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_serial_number = strndup(cur,
-                                                         eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_serial_number,
+                                   cur, eol - cur) < 0)
+                return -1;
         }
         if ((cur = strstr(base, "Part Number: ")) != NULL) {
             cur += 13;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if ((eol) &&
-                ((memory->memory_part_number = strndup(cur,
-                                                       eol - cur)) == NULL))
-                goto no_memory;
+            if (eol && VIR_STRNDUP(memory->memory_part_number, cur, eol - cur) < 0)
+                return -1;
         }
 
     next:
@@ -879,9 +819,6 @@ virSysinfoParseMemory(const char *base, virSysinfoDefPtr ret)
     }
 
     return 0;
-
-no_memory:
-    return -1;
 }
 
 virSysinfoDefPtr

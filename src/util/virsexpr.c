@@ -119,16 +119,9 @@ sexpr_string(const char *str, ssize_t len)
     if (ret == NULL)
         return ret;
     ret->kind = SEXPR_VALUE;
-    if (len > 0) {
-        ret->u.value = strndup(str, len);
-    } else {
-        ret->u.value = strdup(str);
-    }
 
-    if (ret->u.value == NULL) {
+    if (VIR_STRNDUP(ret->u.value, str, len > 0 ? len : strlen(str)) < 0)
         VIR_FREE(ret);
-        return NULL;
-    }
 
     return ret;
 }
@@ -325,11 +318,8 @@ _string2sexpr(const char *buffer, size_t * end)
                 ptr++;
             }
 
-            ret->u.value = strndup(start, ptr - start);
-            if (ret->u.value == NULL) {
-                virReportOOMError();
+            if (VIR_STRNDUP(ret->u.value, start, ptr - start) < 0)
                 goto error;
-            }
 
             if (*ptr == '\'')
                 ptr++;
@@ -341,11 +331,8 @@ _string2sexpr(const char *buffer, size_t * end)
                 ptr++;
             }
 
-            ret->u.value = strndup(start, ptr - start);
-            if (ret->u.value == NULL) {
-                virReportOOMError();
+            if (VIR_STRNDUP(ret->u.value, start, ptr - start) < 0)
                 goto error;
-            }
         }
 
         ret->kind = SEXPR_VALUE;
@@ -403,12 +390,8 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
     if ((node == NULL) || (sexpr == NULL))
         return NULL;
 
-    buffer = strdup(node);
-
-    if (buffer == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(buffer, node) < 0)
         return NULL;
-    }
 
     ptr = buffer;
     token = strsep(&ptr, "/");
@@ -527,13 +510,10 @@ int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst)
 {
     const char *val = sexpr_node(sexpr, node);
 
-    if (val && *val) {
-        *dst = strdup(val);
-        if (!(*dst))
-            return -1;
-    } else {
-        *dst = NULL;
-    }
+    if (val && *val)
+        return VIR_STRDUP(*dst, val) < 0 ? -1 : 0;
+
+    *dst = NULL;
     return 0;
 }
 

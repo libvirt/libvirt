@@ -85,8 +85,8 @@ char **virStringSplit(const char *string,
             if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
                 goto no_memory;
 
-            if (!(tokens[ntokens] = strndup(remainder, len)))
-                goto no_memory;
+            if (VIR_STRNDUP(tokens[ntokens], remainder, len) < 0)
+                goto error;
             ntokens++;
             remainder = tmp + delimlen;
             tmp = strstr(remainder, delim);
@@ -96,8 +96,8 @@ char **virStringSplit(const char *string,
         if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
             goto no_memory;
 
-        if (!(tokens[ntokens] = strdup(remainder)))
-            goto no_memory;
+        if (VIR_STRDUP(tokens[ntokens], remainder) < 0)
+            goto error;
         ntokens++;
     }
 
@@ -109,6 +109,7 @@ char **virStringSplit(const char *string,
 
 no_memory:
     virReportOOMError();
+error:
     for (i = 0; i < ntokens; i++)
         VIR_FREE(tokens[i]);
     VIR_FREE(tokens);
@@ -144,12 +145,8 @@ char *virStringJoin(const char **strings,
         return NULL;
     }
     ret = virBufferContentAndReset(&buf);
-    if (!ret) {
-        if (!(ret = strdup(""))) {
-            virReportOOMError();
-            return NULL;
-        }
-    }
+    if (!ret)
+        ignore_value(VIR_STRDUP(ret, ""));
     return ret;
 }
 

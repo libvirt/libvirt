@@ -137,10 +137,8 @@ int virInitctlSetRunLevel(virInitctlRunLevel level,
             return -1;
         }
     } else {
-        if (!(path = strdup(VIR_INITCTL_FIFO))) {
-            virReportOOMError();
+        if (VIR_STRDUP(path, VIR_INITCTL_FIFO) < 0)
             return -1;
-        }
     }
 
     if ((fd = open(path, O_WRONLY|O_NONBLOCK|O_CLOEXEC|O_NOCTTY)) < 0) {

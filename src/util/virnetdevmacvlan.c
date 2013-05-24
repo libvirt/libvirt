@@ -31,6 +31,7 @@
 #include "virmacaddr.h"
 #include "virerror.h"
 #include "virthread.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
@@ -764,14 +765,14 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
     if (virtPortProfile && virNetlinkEventServiceIsRunning(NETLINK_ROUTE)) {
         if (VIR_ALLOC(calld) < 0)
             goto memory_error;
-        if ((calld->cr_ifname = strdup(ifname)) == NULL)
-            goto memory_error;
+        if (VIR_STRDUP(calld->cr_ifname, ifname) < 0)
+            goto error;
         if (VIR_ALLOC(calld->virtPortProfile) < 0)
             goto memory_error;
         memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
         virMacAddrSet(&calld->macaddress, macaddress);
-        if ((calld->linkdev = strdup(linkdev)) == NULL)
-            goto  memory_error;
+        if (VIR_STRDUP(calld->linkdev, linkdev) < 0)
+            goto error;
         memcpy(calld->vmuuid, vmuuid, sizeof(calld->vmuuid));
 
         calld->vmOp = vmOp;
@@ -924,16 +925,13 @@ create_name:
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
-        if (!(*res_ifname = strdup(cr_ifname))) {
+        if (VIR_STRDUP(*res_ifname, cr_ifname) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
-            virReportOOMError();
             goto disassociate_exit;
         }
     } else {
-        if (!(*res_ifname = strdup(cr_ifname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(*res_ifname, cr_ifname) < 0)
             goto disassociate_exit;
-        }
         rc = 0;
     }
 

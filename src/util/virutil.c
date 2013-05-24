@@ -609,8 +609,8 @@ char *virGetHostname(void)
          * string as-is; it's up to callers to check whether "localhost"
          * is allowed.
          */
-        result = strdup(hostname);
-        goto check_and_return;
+        ignore_value(VIR_STRDUP(result, hostname));
+        goto cleanup;
     }
 
     /* otherwise, it's a shortened, non-localhost, hostname.  Attempt to
@@ -624,8 +624,8 @@ char *virGetHostname(void)
     if (r != 0) {
         VIR_WARN("getaddrinfo failed for '%s': %s",
                  hostname, gai_strerror(r));
-        result = strdup(hostname);
-        goto check_and_return;
+        ignore_value(VIR_STRDUP(result, hostname));
+        goto cleanup;
     }
 
     /* Tell static analyzers about getaddrinfo semantics.  */
@@ -637,14 +637,14 @@ char *virGetHostname(void)
          * localhost.  Ignore the canonicalized name and just return the
          * original hostname
          */
-        result = strdup(hostname);
+        ignore_value(VIR_STRDUP(result, hostname));
     else
         /* Caller frees this string. */
-        result = strdup(info->ai_canonname);
+        ignore_value(VIR_STRDUP(result, info->ai_canonname));
 
     freeaddrinfo(info);
 
-check_and_return:
+cleanup:
     if (result == NULL)
         virReportOOMError();
     return result;
@@ -698,15 +698,9 @@ static char *virGetUserEnt(uid_t uid,
         return NULL;
     }
 
-    if (field == VIR_USER_ENT_DIRECTORY)
-        ret = strdup(pw->pw_dir);
-    else
-        ret = strdup(pw->pw_name);
-
+    ignore_value(VIR_STRDUP(ret, field == VIR_USER_ENT_DIRECTORY ?
+                            pw->pw_dir : pw->pw_name));
     VIR_FREE(strbuf);
-    if (!ret)
-        virReportOOMError();
-
     return ret;
 }
 
@@ -751,12 +745,8 @@ static char *virGetGroupEnt(gid_t gid)
         return NULL;
     }
 
-    ret = strdup(gr->gr_name);
-
+    ignore_value(VIR_STRDUP(ret, gr->gr_name));
     VIR_FREE(strbuf);
-    if (!ret)
-        virReportOOMError();
-
     return ret;
 }
 
@@ -1090,12 +1080,8 @@ virGetWin32SpecialFolder(int csidl, char **path)
     *path = NULL;
 
     if (SHGetSpecialFolderLocation(NULL, csidl, &pidl) == S_OK) {
-        if (SHGetPathFromIDList(pidl, buf)) {
-            if (!(*path = strdup(buf))) {
-                virReportOOMError();
-                ret = -1;
-            }
-        }
+        if (SHGetPathFromIDList(pidl, buf) && VIR_STRDUP(*path, buf) < 0)
+            ret = -1;
         CoTaskMemFree(pidl);
     }
     return ret;
@@ -1125,12 +1111,7 @@ virGetWin32DirectoryRoot(char **path)
         strcpy(windowsdir, "C:\\");
     }
 
-    if (!(*path = strdup(windowsdir))) {
-        virReportOOMError();
-        ret = -1;
-    }
-
-    return ret;
+    return VIR_STRDUP(*path, windowsdir) < 0 ? -1 : 0;
 }
 
 
@@ -1163,12 +1144,8 @@ virGetUserDirectory(void)
         /* USERPROFILE is probably the closest equivalent to $HOME? */
         dir = getenv("USERPROFILE");
 
-    if (dir) {
-        if (!(ret = strdup(dir))) {
-            virReportOOMError();
-            return NULL;
-        }
-    }
+    if (VIR_STRDUP(ret, dir) < 0)
+        return NULL;
 
     if (!ret &&
         virGetWin32SpecialFolder(CSIDL_PROFILE, &ret) < 0)
@@ -1920,7 +1897,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
             continue;
         }
 
-        ret = strdup(entry->d_name);
+        ignore_value(VIR_STRDUP(ret, entry->d_name));
         break;
     }
 
@@ -2006,7 +1983,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         if ((strlen(max_vports) >= strlen(vports)) ||
             ((strlen(max_vports) == strlen(vports)) &&
              strcmp(max_vports, vports) > 0)) {
-            ret = strdup(entry->d_name);
+            ignore_value(VIR_STRDUP(ret, entry->d_name));
             goto cleanup;
         }
 

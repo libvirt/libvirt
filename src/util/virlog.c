@@ -557,8 +557,7 @@ virLogDefineFilter(const char *match,
         }
     }
 
-    mdup = strdup(match);
-    if (mdup == NULL) {
+    if (VIR_STRDUP_QUIET(mdup, match) < 0) {
         i = -1;
         goto cleanup;
     }
@@ -574,6 +573,8 @@ virLogDefineFilter(const char *match,
     virLogNbFilters++;
 cleanup:
     virLogUnlock();
+    if (i < 0)
+        virReportOOMError();
     return i;
 }
 
@@ -665,10 +666,11 @@ virLogDefineOutput(virLogOutputFunc f,
         return -1;
 
     if (dest == VIR_LOG_TO_SYSLOG || dest == VIR_LOG_TO_FILE) {
-        if (name == NULL)
+        if (!name) {
+            virReportOOMError();
             return -1;
-        ndup = strdup(name);
-        if (ndup == NULL)
+        }
+        if (VIR_STRDUP(ndup, name) < 0)
             return -1;
     }
 
@@ -1047,8 +1049,7 @@ virLogAddOutputToSyslog(virLogPriority priority,
      * ident needs to be kept around on Solaris
      */
     VIR_FREE(current_ident);
-    current_ident = strdup(ident);
-    if (current_ident == NULL)
+    if (VIR_STRDUP(current_ident, ident) < 0)
         return -1;
 
     openlog(current_ident, 0, 0);
@@ -1329,8 +1330,7 @@ virLogParseOutputs(const char *outputs)
             if (str == cur)
                 goto cleanup;
 #if HAVE_SYSLOG_H
-            name = strndup(str, cur - str);
-            if (name == NULL)
+            if (VIR_STRNDUP(name, str, cur - str) < 0)
                 goto cleanup;
             if (virLogAddOutputToSyslog(prio, name) == 0)
                 count++;
@@ -1346,8 +1346,7 @@ virLogParseOutputs(const char *outputs)
                 cur++;
             if (str == cur)
                 goto cleanup;
-            name = strndup(str, cur - str);
-            if (name == NULL)
+            if (VIR_STRNDUP(name, str, cur - str) < 0)
                 goto cleanup;
             if (virFileAbsPath(name, &abspath) < 0) {
                 VIR_FREE(name);
@@ -1424,8 +1423,7 @@ virLogParseFilters(const char *filters)
             cur++;
         if (str == cur)
             goto cleanup;
-        name = strndup(str, cur - str);
-        if (name == NULL)
+        if (VIR_STRNDUP(name, str, cur - str) < 0)
             goto cleanup;
         if (virLogDefineFilter(name, prio, flags) >= 0)
             count++;

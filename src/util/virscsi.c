@@ -177,10 +177,8 @@ virSCSIDeviceGetDevName(const char *adapter,
         if (entry->d_name[0] == '.')
             continue;
 
-        if (!(name = strdup(entry->d_name))) {
-            virReportOOMError();
-            goto cleanup;
-        }
+        ignore_value(VIR_STRDUP(name, entry->d_name));
+        break;
     }
 
 cleanup:

@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <string.h>
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -38,6 +37,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
@@ -397,11 +397,8 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        ret = strndup(base, ctxt->cur - base);
-        if (ret == NULL) {
-            virReportOOMError();
+        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
             return NULL;
-        }
         NEXT;
     } else if ((ctxt->cur + 6 < ctxt->end) &&
                (STRPREFIX(ctxt->cur, "\"\"\""))) {
@@ -421,11 +418,8 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        ret = strndup(base, ctxt->cur - base);
-        if (ret == NULL) {
-            virReportOOMError();
+        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
             return NULL;
-        }
         ctxt->cur += 3;
     } else if (CUR == '"') {
         NEXT;
@@ -436,11 +430,8 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        ret = strndup(base, ctxt->cur - base);
-        if (ret == NULL) {
-            virReportOOMError();
+        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
             return NULL;
-        }
         NEXT;
     }
     return ret;
@@ -577,11 +568,8 @@ virConfParseName(virConfParserCtxtPtr ctxt)
             ((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) &&
              ((CUR == ':') || (CUR == '.') || (CUR == '-')))))
         NEXT;
-    ret = strndup(base, ctxt->cur - base);
-    if (ret == NULL) {
-        virReportOOMError();
+    if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
         return NULL;
-    }
     return ret;
 }
 
@@ -604,11 +592,8 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     NEXT;
     base = ctxt->cur;
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
-    comm = strndup(base, ctxt->cur - base);
-    if (comm == NULL) {
-        virReportOOMError();
+    if (VIR_STRNDUP(comm, base, ctxt->cur - base) < 0)
         return -1;
-    }
     virConfAddEntry(ctxt->conf, NULL, NULL, comm);
     return 0;
 }
@@ -680,9 +665,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         NEXT;
         base = ctxt->cur;
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
-        comm = strndup(base, ctxt->cur - base);
-        if (comm == NULL) {
-            virReportOOMError();
+        if (VIR_STRNDUP(comm, base, ctxt->cur - base) < 0) {
             VIR_FREE(name);
             virConfFreeValue(value);
             return -1;
@@ -905,8 +888,7 @@ virConfSetValue(virConfPtr conf,
             return -1;
         }
         cur->comment = NULL;
-        if (!(cur->name = strdup(setting))) {
-            virReportOOMError();
+        if (VIR_STRDUP(cur->name, setting) < 0) {
             virConfFreeValue(value);
             VIR_FREE(cur);
             return -1;
