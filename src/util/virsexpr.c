@@ -120,7 +120,7 @@ sexpr_string(const char *str, ssize_t len)
         return ret;
     ret->kind = SEXPR_VALUE;
 
-    if (VIR_STRNDUP(ret->u.value, str, len > 0 ? len : strlen(str)) < 0)
+    if (VIR_STRNDUP(ret->u.value, str, len) < 0)
         VIR_FREE(ret);
 
     return ret;

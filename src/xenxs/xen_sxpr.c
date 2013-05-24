@@ -242,7 +242,7 @@ xenParseSxprChar(const char *value,
         offset2 = strchr(offset, ',');
         offset++;
         if (VIR_STRNDUP(def->source.data.tcp.service, offset,
-                        offset2 ? offset2 - offset : strlen(offset)) < 0)
+                        offset2 ? offset2 - offset : -1) < 0)
             goto error;
 
         if (offset2 && strstr(offset2, ",server"))
@@ -296,7 +296,7 @@ xenParseSxprChar(const char *value,
     {
         const char *offset = strchr(value, ',');
         if (VIR_STRNDUP(def->source.data.nix.path, value,
-                        offset ? offset - value : strlen(value)) < 0)
+                        offset ? offset - value : -1) < 0)
             goto error;
 
         if (offset != NULL &&

@@ -17370,8 +17370,7 @@ virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
         return 0;
     }
 
-    if (VIR_STRNDUP(listenInfo->address, address,
-                    len == -1 ? strlen(address) : len) < 0)
+    if (VIR_STRNDUP(listenInfo->address, address, len) < 0)
         return -1;
     return 0;
 }
@@ -17409,8 +17408,7 @@ virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
         return 0;
     }
 
-    if (VIR_STRNDUP(listenInfo->network, network,
-                    len == -1 ? strlen(network) : len) < 0)
+    if (VIR_STRNDUP(listenInfo->network, network, len) < 0)
         return -1;
     return 0;
 }

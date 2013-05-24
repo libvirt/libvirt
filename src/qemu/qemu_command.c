@@ -8674,7 +8674,7 @@ static int qemuStringToArgvEnv(const char *args,
         if (!next)
             next = strchr(curr, '\n');
 
-        if (VIR_STRNDUP(arg, curr, next ? next - curr : strlen(curr)) < 0)
+        if (VIR_STRNDUP(arg, curr, next ? next - curr : -1) < 0)
             goto error;
 
         if (next && (*next == '\'' || *next == '"'))
@@ -9566,16 +9566,14 @@ qemuParseCommandLineChr(virDomainChrSourceDefPtr source,
         if (VIR_STRNDUP(source->data.tcp.host, val, svc - val) < 0)
             goto error;
         svc++;
-        if (VIR_STRNDUP(source->data.tcp.service, svc,
-                        opt ? opt - svc : strlen(svc)) < 0)
+        if (VIR_STRNDUP(source->data.tcp.service, svc, opt ? opt - svc : -1) < 0)
             goto error;
     } else if (STRPREFIX(val, "unix:")) {
         const char *opt;
         val += strlen("unix:");
         opt = strchr(val, ',');
         source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        if (VIR_STRNDUP(source->data.nix.path, val,
-                        opt ? opt - val : strlen(val)) < 0)
+        if (VIR_STRNDUP(source->data.nix.path, val, opt ? opt - val : -1) < 0)
             goto error;
 
     } else if (STRPREFIX(val, "/dev")) {
@@ -9634,7 +9632,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             next++;
 
         if (p == val) {
-            if (VIR_STRNDUP(model, p, next ? next - p - 1 : strlen(p)) < 0)
+            if (VIR_STRNDUP(model, p, next ? next - p - 1 : -1) < 0)
                 goto error;
 
             if (!STREQ(model, "qemu32") && !STREQ(model, "qemu64")) {
@@ -9658,7 +9656,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*p == '\0' || *p == ',')
                 goto syntax;
 
-            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : strlen(p)) < 0)
+            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : -1) < 0)
                 goto error;
 
             if (STREQ(feature, "kvmclock")) {
@@ -9717,7 +9715,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*p == '\0' || *p == ',')
                 goto syntax;
 
-            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : strlen(p)) < 0)
+            if (VIR_STRNDUP(feature, p, next ? next - p - 1 : -1) < 0)
                 goto error;
 
             dom->features |= (1 << VIR_DOMAIN_FEATURE_HYPERV);
