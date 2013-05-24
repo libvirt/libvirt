@@ -46,29 +46,32 @@ struct _virSecurityDACData {
     bool dynamicOwnership;
 };
 
-void virSecurityDACSetUser(virSecurityManagerPtr mgr,
-                           uid_t user)
+void
+virSecurityDACSetUser(virSecurityManagerPtr mgr,
+                      uid_t user)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     priv->user = user;
 }
 
-void virSecurityDACSetGroup(virSecurityManagerPtr mgr,
-                            gid_t group)
+void
+virSecurityDACSetGroup(virSecurityManagerPtr mgr,
+                       gid_t group)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     priv->group = group;
 }
 
-void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
-                                       bool dynamicOwnership)
+void
+virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
+                                  bool dynamicOwnership)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     priv->dynamicOwnership = dynamicOwnership;
 }
 
-static
-int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
+static int
+parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
 {
     int rc = -1;
     uid_t theuid;
@@ -114,8 +117,8 @@ cleanup:
 }
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */
-static
-int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
+static int
+virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
 {
     uid_t uid;
     gid_t gid;
@@ -141,9 +144,9 @@ int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
     return 0;
 }
 
-static
-int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
-                         uid_t *uidPtr, gid_t *gidPtr)
+static int
+virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
+                     uid_t *uidPtr, gid_t *gidPtr)
 {
     int ret;
 
@@ -174,9 +177,9 @@ int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
 
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */
-static
-int virSecurityDACParseImageIds(virDomainDefPtr def,
-                                uid_t *uidPtr, gid_t *gidPtr)
+static int
+virSecurityDACParseImageIds(virDomainDefPtr def,
+                            uid_t *uidPtr, gid_t *gidPtr)
 {
     uid_t uid;
     gid_t gid;
@@ -202,9 +205,9 @@ int virSecurityDACParseImageIds(virDomainDefPtr def,
     return 0;
 }
 
-static
-int virSecurityDACGetImageIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
-                         uid_t *uidPtr, gid_t *gidPtr)
+static int
+virSecurityDACGetImageIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
+                          uid_t *uidPtr, gid_t *gidPtr)
 {
     int ret;
 
@@ -253,12 +256,14 @@ virSecurityDACClose(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 
-static const char * virSecurityDACGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+static const char *
+virSecurityDACGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
     return SECURITY_DAC_NAME;
 }
 
-static const char * virSecurityDACGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+static const char *
+virSecurityDACGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
     return "0";
 }
@@ -809,9 +814,8 @@ virSecurityDACSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestoreSecurityTPMFileLabel(
-                                   virSecurityManagerPtr mgr,
-                                   virDomainTPMDefPtr tpm)
+virSecurityDACRestoreSecurityTPMFileLabel(virSecurityManagerPtr mgr,
+                                          virDomainTPMDefPtr tpm)
 {
     int ret = 0;
 
@@ -1183,8 +1187,10 @@ virSecurityDACSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static char *virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                           virDomainDefPtr vm ATTRIBUTE_UNUSED) {
+static char *
+virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                              virDomainDefPtr vm ATTRIBUTE_UNUSED)
+{
     return NULL;
 }
 
