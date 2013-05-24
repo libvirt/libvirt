@@ -116,19 +116,13 @@ static int virCgroupCopyMounts(virCgroupPtr group,
         if (!parent->controllers[i].mountPoint)
             continue;
 
-        group->controllers[i].mountPoint =
-            strdup(parent->controllers[i].mountPoint);
-
-        if (!group->controllers[i].mountPoint)
+        if (VIR_STRDUP_QUIET(group->controllers[i].mountPoint,
+                             parent->controllers[i].mountPoint) < 0)
             return -ENOMEM;
 
-        if (parent->controllers[i].linkPoint) {
-            group->controllers[i].linkPoint =
-                strdup(parent->controllers[i].linkPoint);
-
-            if (!group->controllers[i].linkPoint)
-                return -ENOMEM;
-        }
+        if (VIR_STRDUP_QUIET(group->controllers[i].linkPoint,
+                             parent->controllers[i].linkPoint) < 0)
+            return -ENOMEM;
     }
     return 0;
 }
@@ -177,8 +171,9 @@ static int virCgroupDetectMounts(virCgroupPtr group)
                     struct stat sb;
                     char *tmp2;
 
-                    if (!(group->controllers[i].mountPoint = strdup(entry.mnt_dir)))
-                        goto no_memory;
+                    if (VIR_STRDUP_QUIET(group->controllers[i].mountPoint,
+                                         entry.mnt_dir) < 0)
+                        goto error;
 
                     tmp2 = strrchr(entry.mnt_dir, '/');
                     if (!tmp2) {
@@ -191,7 +186,7 @@ static int virCgroupDetectMounts(virCgroupPtr group)
                     if (strchr(tmp2 + 1, ',')) {
                         if (virAsprintf(&linksrc, "%s/%s",
                                         entry.mnt_dir, typestr) < 0)
-                            goto no_memory;
+                            goto error;
                         *tmp2 = '/';
 
                         if (lstat(linksrc, &sb) < 0) {
@@ -221,8 +216,6 @@ static int virCgroupDetectMounts(virCgroupPtr group)
 
     return 0;
 
-no_memory:
-    errno = ENOMEM;
 error:
     VIR_FORCE_FCLOSE(mounts);
     return -errno;
@@ -239,7 +232,7 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
             continue;
 
         if (path[0] == '/') {
-            if (!(group->controllers[i].placement = strdup(path)))
+            if (VIR_STRDUP_QUIET(group->controllers[i].placement, path) < 0)
                 return -ENOMEM;
         } else {
             /*
@@ -821,7 +814,7 @@ static int virCgroupNew(const char *path,
     }
 
     if (path[0] == '/' || !parent) {
-        if (!((*group)->path = strdup(path))) {
+        if (VIR_STRDUP_QUIET((*group)->path, path) < 0) {
             rc = -ENOMEM;
             goto err;
         }
@@ -1027,7 +1020,7 @@ static int virCgroupAddTaskStrController(virCgroupPtr group,
     int rc = 0;
     char *endp;
 
-    if (!(str = strdup(pidstr)))
+    if (VIR_STRDUP_QUIET(str, pidstr) < 0)
         return -ENOMEM;
 
     cur = str;
@@ -1278,7 +1271,7 @@ int virCgroupNewPartition(const char *path,
 
     if (STRNEQ(newpath, "/")) {
         char *tmp;
-        if (!(parentPath = strdup(newpath))) {
+        if (VIR_STRDUP_QUIET(parentPath, newpath) < 0) {
             rc = -ENOMEM;
             goto cleanup;
         }
@@ -2567,13 +2560,8 @@ static char *virCgroupIdentifyRoot(virCgroupPtr group)
             return NULL;
         }
 
-        tmp[0] = '\0';
-        ret = strdup(group->controllers[i].mountPoint);
-        tmp[0] = '/';
-        if (!ret) {
-            virReportOOMError();
-            return NULL;
-        }
+        ignore_value(VIR_STRNDUP_QUIET(ret, group->controllers[i].mountPoint,
+                                       tmp - group->controllers[i].mountPoint));
         return ret;
     }
 
