@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 #
 # bracket-spacing.pl: Report any usage of 'function (..args..)'
+# Also check for other syntax issues, such as correct use of ';'
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -30,6 +31,9 @@ foreach my $file (@ARGV) {
 
     while (defined (my $line = <FILE>)) {
         my $data = $line;
+
+        # Kill any quoted ; or "
+        $data =~ s,'[";]','X',g;
 
         # Kill any quoted strings
         $data =~ s,"([^\\\"]|\\.)*","XXX",g;
@@ -121,6 +125,14 @@ foreach my $file (@ARGV) {
         #       ;
         #
         while ($data =~ /[^;\s]\s+;/) {
+            print "$file:$.: $line";
+            $ret = 1;
+            last;
+        }
+
+        # Require EOL, macro line continuation, or whitespace after ";".
+        # Allow "for (;;)" as an exception.
+        while ($data =~ /;[^	 \\\n;)]/) {
             print "$file:$.: $line";
             $ret = 1;
             last;

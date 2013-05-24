@@ -377,6 +377,35 @@
       int foo(int wizz);    // Good
 </pre>
 
+    <h2><a name="semicolon">Semicolons</a></h2>
+
+    <p>
+      Semicolons should never have a space beforehand.  Inside the
+      condition of a <code>for</code> loop, there should always be a
+      space or line break after each semicolon, except for the special
+      case of an infinite loop (although more infinite loops
+      use <code>while</code>).  While not enforced, loop counters
+      generally use post-increment.
+    </p>
+    <pre>
+      for (i = 0 ;i &lt; limit ; ++i) { // Bad
+      for (i = 0; i &lt; limit; i++) { // Good
+      for (;;) { // ok
+      while (1) { // Better
+</pre>
+    <p>
+      Empty loop bodies are better represented with curly braces and a
+      comment, although use of a semicolon is not currently rejected.
+    </p>
+    <pre>
+      while ((rc = waitpid(pid, &amp;st, 0) == -1) &amp;&amp;
+             errno == EINTR); // ok
+      while ((rc = waitpid(pid, &amp;st, 0) == -1) &amp;&amp;
+             errno == EINTR) { // Better
+          /* nothing */
+      }
+</pre>
+
     <h2><a name="curly_braces">Curly braces</a></h2>
 
     <p>

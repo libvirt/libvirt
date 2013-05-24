@@ -318,6 +318,29 @@ immediately prior to any closing bracket. E.g.
       int foo(int wizz);    // Good
 
 
+Semicolons
+==========
+Semicolons should never have a space beforehand. Inside the condition of a
+"for" loop, there should always be a space or line break after each semicolon,
+except for the special case of an infinite loop (although more infinite loops
+use "while"). While not enforced, loop counters generally use post-increment.
+
+      for (i = 0 ;i < limit ; ++i) { // Bad
+      for (i = 0; i < limit; i++) { // Good
+      for (;;) { // ok
+      while (1) { // Better
+
+Empty loop bodies are better represented with curly braces and a comment,
+although use of a semicolon is not currently rejected.
+
+      while ((rc = waitpid(pid, &st, 0) == -1) &&
+             errno == EINTR); // ok
+      while ((rc = waitpid(pid, &st, 0) == -1) &&
+             errno == EINTR) { // Better
+          /* nothing */
+      }
+
+
 Curly braces
 ============
 Omit the curly braces around an "if", "while", "for" etc. body only when that
