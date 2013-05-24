@@ -1922,7 +1922,6 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                              unsigned int check_active)
 {
     int ret = -1;
-    int dupPool = 0;
     virStoragePoolObjPtr pool = NULL;
 
     /* See if a Pool with matching UUID already exists */
@@ -1948,7 +1947,7 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
             }
         }
 
-        dupPool = 1;
+        ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
         pool = virStoragePoolObjFindByName(pools, def->name);
@@ -1960,9 +1959,9 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                            def->name, uuidstr);
             goto cleanup;
         }
+        ret = 0;
     }
 
-    ret = dupPool;
 cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);

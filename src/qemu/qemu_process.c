@@ -2622,7 +2622,6 @@ static int
 qemuProcessFiltersInstantiate(virConnectPtr conn,
                               virDomainDefPtr def)
 {
-    int err = 0;
     int i;
 
     if (!conn)
@@ -2631,14 +2630,12 @@ qemuProcessFiltersInstantiate(virConnectPtr conn,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-           if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0) {
-                err = 1;
-                break;
-            }
+            if (virDomainConfNWFilterInstantiate(conn, def->uuid, net) < 0)
+                return 1;
         }
     }
 
-    return err;
+    return 0;
 }
 
 static int

@@ -1564,7 +1564,6 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
     struct ifla_vf_vlan *vf_vlan;
     struct nlattr *tb_vf_info = {NULL, };
     struct nlattr *tb_vf[IFLA_VF_MAX+1];
-    int found = 0;
     int rem;
 
     if (!tb[IFLA_VFINFO_LIST]) {
@@ -1588,7 +1587,7 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
             vf_mac = RTA_DATA(tb_vf[IFLA_VF_MAC]);
             if (vf_mac && vf_mac->vf == vf)  {
                 virMacAddrSetRaw(mac, vf_mac->mac);
-                found = 1;
+                rc = 0;
             }
         }
 
@@ -1596,17 +1595,17 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
             vf_vlan = RTA_DATA(tb_vf[IFLA_VF_VLAN]);
             if (vf_vlan && vf_vlan->vf == vf)  {
                 *vlanid = vf_vlan->vlan;
-                found = 1;
+                rc = 0;
             }
         }
-        if (found) {
-            rc = 0;
-            goto cleanup;
-        }
+
+        if (rc == 0)
+            break;
     }
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("couldn't find IFLA_VF_INFO for VF %d "
-                     "in netlink response"), vf);
+    if (rc < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("couldn't find IFLA_VF_INFO for VF %d "
+                         "in netlink response"), vf);
 cleanup:
     return rc;
 }

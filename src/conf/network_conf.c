@@ -4198,7 +4198,6 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                          bool check_active)
 {
     int ret = -1;
-    int dupVM = 0;
     virNetworkObjPtr vm = NULL;
 
     /* See if a VM with matching UUID already exists */
@@ -4224,7 +4223,7 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
             }
         }
 
-        dupVM = 1;
+        ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
         vm = virNetworkFindByName(doms, def->name);
@@ -4236,9 +4235,9 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                            def->name, uuidstr);
             goto cleanup;
         }
+        ret = 0;
     }
 
-    ret = dupVM;
 cleanup:
     if (vm)
         virNetworkObjUnlock(vm);

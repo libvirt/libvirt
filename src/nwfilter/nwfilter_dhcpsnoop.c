@@ -913,7 +913,6 @@ virNWFilterSnoopDHCPGetOpt(virNWFilterSnoopDHCPHdrPtr pd, int len,
                            uint8_t *pmtype, uint32_t *pleasetime)
 {
     int oind, olen;
-    int oend;
     uint32_t nwint;
 
     olen = len - sizeof(*pd);
@@ -926,8 +925,6 @@ virNWFilterSnoopDHCPGetOpt(virNWFilterSnoopDHCPHdrPtr pd, int len,
         return -1;              /* bad magic */
 
     oind += sizeof(dhcp_magic);
-
-    oend = 0;
 
     *pmtype = 0;
     *pleasetime = 0;
@@ -953,14 +950,11 @@ virNWFilterSnoopDHCPGetOpt(virNWFilterSnoopDHCPHdrPtr pd, int len,
             oind++;
             continue;
         case DHCPO_END:
-            oend = 1;
-            break;
+            return 0;
         default:
             if (olen - oind < 2)
                 goto malformed;
         }
-        if (oend)
-            break;
         oind += pd->d_opts[oind + 1] + 2;
     }
     return 0;
