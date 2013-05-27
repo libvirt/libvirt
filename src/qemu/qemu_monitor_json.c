@@ -2086,9 +2086,42 @@ cleanup:
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
                           int cpu, int online)
 {
-    /* XXX Update to use QMP, if QMP ever adds support for cpu hotplug */
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+
+    if (online) {
+        cmd = qemuMonitorJSONMakeCommand("cpu-add",
+                                         "i:id", cpu,
+                                         NULL);
+    } else {
+        /* offlining is not yet implemented in qmp */
+        goto fallback;
+    }
+    if (!cmd)
+        goto cleanup;
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+        goto fallback;
+    else
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    /* this function has non-standard return values, so adapt it */
+    if (ret == 0)
+        ret = 1;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+
+fallback:
     VIR_DEBUG("no QMP support for cpu_set, trying HMP");
-    return qemuMonitorTextSetCPU(mon, cpu, online);
+    ret = qemuMonitorTextSetCPU(mon, cpu, online);
+    goto cleanup;
 }
 
 
