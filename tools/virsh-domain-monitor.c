@@ -1689,7 +1689,7 @@ static const vshCmdOptDef opts_list[] = {
     if (vshCommandOptBool(cmd, NAME))   \
         flags |= (FLAG)
 static bool
-cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdList(vshControl *ctl, const vshCmd *cmd)
 {
     bool managed = vshCommandOptBool(cmd, "managed-save");
     bool optTitle = vshCommandOptBool(cmd, "title");
