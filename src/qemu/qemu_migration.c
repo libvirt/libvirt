@@ -324,9 +324,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
 
 no_memory:
     virReportOOMError();
-#ifdef WITH_GNUTLS
 error:
-#endif
     qemuMigrationCookieGraphicsFree(mig);
     virObjectUnref(cfg);
     return NULL;
