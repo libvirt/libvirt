@@ -2076,7 +2076,7 @@ cleanup:
  * or -1 on failure
  */
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
-                          int cpu, int online)
+                          int cpu, bool online)
 {
     /* XXX Update to use QMP, if QMP ever adds support for cpu hotplug */
     VIR_DEBUG("no QMP support for cpu_set, trying HMP");

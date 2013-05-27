@@ -299,7 +299,7 @@ int qemuMonitorExpirePassword(qemuMonitorPtr mon,
                               const char *expire_time);
 int qemuMonitorSetBalloon(qemuMonitorPtr mon,
                           unsigned long newmem);
-int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online);
+int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online);
 
 
 /* XXX should we pass the virDomainDiskDefPtr instead

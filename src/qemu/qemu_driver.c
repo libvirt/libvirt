@@ -3538,7 +3538,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     if (nvcpus > vcpus) {
         for (i = vcpus; i < nvcpus; i++) {
             /* Online new CPU */
-            rc = qemuMonitorSetCPU(priv->mon, i, 1);
+            rc = qemuMonitorSetCPU(priv->mon, i, true);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
@@ -3549,7 +3549,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     } else {
         for (i = vcpus - 1; i >= nvcpus; i--) {
             /* Offline old CPU */
-            rc = qemuMonitorSetCPU(priv->mon, i, 0);
+            rc = qemuMonitorSetCPU(priv->mon, i, false);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)

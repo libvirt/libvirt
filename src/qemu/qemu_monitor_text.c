@@ -1231,7 +1231,7 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
  * Returns: 0 if CPU hotplug not supported, +1 if CPU hotplug worked
  * or -1 on failure
  */
-int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
+int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 {
     char *cmd;
     char *reply = NULL;

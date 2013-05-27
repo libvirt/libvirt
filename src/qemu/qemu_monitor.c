@@ -1670,7 +1670,7 @@ int qemuMonitorSetBalloon(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online)
+int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 {
     int ret;
     VIR_DEBUG("mon=%p cpu=%d online=%d", mon, cpu, online);

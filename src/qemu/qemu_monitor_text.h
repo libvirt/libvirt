@@ -90,7 +90,7 @@ int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
                                   const char *expire_time);
 int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
                               unsigned long newmem);
-int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online);
+int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online);
 
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
                               const char *dev_name,
