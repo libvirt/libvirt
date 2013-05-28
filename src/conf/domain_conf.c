@@ -10578,7 +10578,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (def->cputune.quota > 0 &&
         (def->cputune.quota < 1000 ||
-         def->cputune.quota > 18446744073709551)) {
+         def->cputune.quota > 18446744073709551LL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Value of cputune quota must be in range "
                          "[1000, 18446744073709551]"));
@@ -10610,7 +10610,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (def->cputune.emulator_quota > 0 &&
         (def->cputune.emulator_quota < 1000 ||
-         def->cputune.emulator_quota > 18446744073709551)) {
+         def->cputune.emulator_quota > 18446744073709551LL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Value of cputune emulator_quota must be in range "
                          "[1000, 18446744073709551]"));
