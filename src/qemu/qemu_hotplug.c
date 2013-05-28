@@ -109,10 +109,11 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
 
     virObjectRef(vm);
     /* we don't want to report errors from media tray_open polling */
-    while (retries--) {
+    while (retries) {
         if (origdisk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)
             break;
 
+        retries--;
         virDomainObjUnlock(vm);
         VIR_DEBUG("Waiting 500ms for tray to open. Retries left %d", retries);
         usleep(500 * 1000); /* sleep 500ms */
@@ -120,19 +121,20 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
     }
     virObjectUnref(vm);
 
-    if (disk->src) {
-        /* deliberately don't depend on 'ret' as 'eject' may have failed for the
-         * fist time and we are gonna check the drive state anyway */
-        const char *format = NULL;
-
-        /* We haven't succeeded yet */
-        ret = -1;
-
-        if (retries <= 0) {
+    if (retries <= 0) {
+        if (ret == 0) {
+            /* If ret == -1, EjectMedia already set an error message */
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Unable to eject media before changing it"));
-            goto audit;
+                           _("Unable to eject media"));
         }
+        goto audit;
+    }
+    ret = 0;
+
+    if (disk->src) {
+        /* deliberately don't depend on 'ret' as 'eject' may have failed the
+         * first time and we are going to check the drive state anyway */
+        const char *format = NULL;
 
         if (disk->type != VIR_DOMAIN_DISK_TYPE_DIR) {
             if (disk->driverType)
