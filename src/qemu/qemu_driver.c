@@ -6734,6 +6734,24 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     char *ret = NULL;
     int rc;
+    virDomainObjPtr vm = NULL;
+
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+    if (vm == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    /* Domain not running, thus no cgroups - return defaults */
+    if (!virDomainObjIsActive(vm)) {
+        if (nparams)
+            *nparams = 5;
+        ret = strdup("posix");
+        if (!ret)
+            virReportOOMError();
+        goto cleanup;
+    }
 
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -8227,11 +8245,12 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         shares = persistentDef->cputune.shares;
-        if (*nparams > 1 && cpu_bw_status) {
+        if (*nparams > 1) {
             period = persistentDef->cputune.period;
             quota = persistentDef->cputune.quota;
             emulator_period = persistentDef->cputune.emulator_period;
             emulator_quota = persistentDef->cputune.emulator_quota;
+            cpu_bw_status = true; /* Allow copy of data to params[] */
         }
         goto out;
     }
