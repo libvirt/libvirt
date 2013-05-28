@@ -1900,12 +1900,13 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
         /* TODO support NBD for TUNNELLED migration */
-        if (flags & VIR_MIGRATE_TUNNELLED)
-            VIR_DEBUG("NBD in tunnelled migration is currently not supported");
-        else {
-            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-            priv->nbdPort = 0;
+        if (flags & VIR_MIGRATE_TUNNELLED) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                _("NBD in tunnelled migration is currently not supported"));
+            goto cleanup;
         }
+        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+        priv->nbdPort = 0;
     }
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
@@ -2200,16 +2201,11 @@ done:
     if (mig->nbd &&
         flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
-        /* TODO support NBD for TUNNELLED migration */
-        if (flags & VIR_MIGRATE_TUNNELLED)
-            VIR_DEBUG("NBD in tunnelled migration is currently not supported");
-        else {
-            if (qemuMigrationStartNBDServer(driver, vm, listenAddr) < 0) {
-                /* error already reported */
-                goto endjob;
-            }
-            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+        if (qemuMigrationStartNBDServer(driver, vm, listenAddr) < 0) {
+            /* error already reported */
+            goto endjob;
         }
+        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
 
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout,
