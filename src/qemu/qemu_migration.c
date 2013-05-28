@@ -3472,7 +3472,8 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
     qemuDomainObjExitRemote(vm);
     if (dconn == NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to connect to remote libvirt URI %s"), dconnuri);
+                       _("Failed to connect to remote libvirt URI %s: %s"),
+                       dconnuri, virGetLastErrorMessage());
         virObjectUnref(cfg);
         return -1;
     }
