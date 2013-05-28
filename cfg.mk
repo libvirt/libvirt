@@ -779,7 +779,7 @@ sc_prohibit_duplicate_header:
 	  }' $$i || fail=1;						\
 	done;								\
 	if test $$fail -eq 1; then					\
-	  { echo "$(ME)": avoid duplicate headers >&2; exit 1; }	\
+	  { echo '$(ME): avoid duplicate headers' 1>&2; exit 1; }	\
 	fi;
 
 # Don't include "libvirt/*.h" in "" form.
@@ -845,7 +845,7 @@ syntax-check: $(top_srcdir)/HACKING bracket-spacing-check
 bracket-spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
-	  { echo "$(ME): incorrect whitespace, see HACKING for rules" 2>&; \
+	  { echo '$(ME): incorrect whitespace, see HACKING for rules' 1>&2; \
 	    exit 1; }
 
 # sc_po_check can fail if generated files are not built first
