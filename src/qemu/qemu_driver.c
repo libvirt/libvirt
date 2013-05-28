@@ -6903,6 +6903,14 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    /* Domain not running, thus no cgroups - return defaults */
+    if (!virDomainObjIsActive(vm)) {
+        if (nparams)
+            *nparams = 5;
+        ignore_value(VIR_STRDUP(ret, "posix"));
+        goto cleanup;
+    }
+
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cgroup CPU controller is not mounted"));
@@ -8315,11 +8323,12 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         shares = persistentDef->cputune.shares;
-        if (*nparams > 1 && cpu_bw_status) {
+        if (*nparams > 1) {
             period = persistentDef->cputune.period;
             quota = persistentDef->cputune.quota;
             emulator_period = persistentDef->cputune.emulator_period;
             emulator_quota = persistentDef->cputune.emulator_quota;
+            cpu_bw_status = true; /* Allow copy of data to params[] */
         }
         goto out;
     }
