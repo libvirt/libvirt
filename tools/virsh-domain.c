@@ -724,14 +724,6 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_DATA,
      .help = N_("model type")
     },
-    {.name = "persistent",
-     .type = VSH_OT_ALIAS,
-     .help = "config"
-    },
-    {.name = "config",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect next boot")
-    },
     {.name = "inbound",
      .type = VSH_OT_DATA,
      .help = N_("control domain's incoming traffics")
@@ -739,6 +731,22 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {.name = "outbound",
      .type = VSH_OT_DATA,
      .help = N_("control domain's outgoing traffics")
+    },
+    {.name = "persistent",
+     .type = VSH_OT_BOOL,
+     .help = N_("make live change persistent")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
     },
     {.name = NULL}
 };
@@ -789,12 +797,30 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     int typ;
     int ret;
     bool functionReturn = false;
-    unsigned int flags;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xml;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool persistent = vshCommandOptBool(cmd, "persistent");
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config || persistent)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
+
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "source", &source) < 0 ||
@@ -887,14 +913,10 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
-    if (vshCommandOptBool(cmd, "config")) {
-        flags = VIR_DOMAIN_AFFECT_CONFIG;
-        if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (flags)
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
-    } else {
+    else
         ret = virDomainAttachDevice(dom, xml);
-    }
 
     VIR_FREE(xml);
 
@@ -905,9 +927,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         functionReturn = true;
     }
 
- cleanup:
-    if (dom)
-        virDomainFree(dom);
+cleanup:
+    virDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
