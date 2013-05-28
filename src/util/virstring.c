@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -540,6 +540,7 @@ virStrdup(char **dest,
           const char *funcname,
           size_t linenr)
 {
+    *dest = NULL;
     if (!src)
         return 0;
     if (!(*dest = strdup(src))) {
@@ -583,6 +584,7 @@ virStrndup(char **dest,
            const char *funcname,
            size_t linenr)
 {
+    *dest = NULL;
     if (!src)
         return 0;
     if (n < 0)
