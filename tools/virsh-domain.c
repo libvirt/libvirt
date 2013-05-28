@@ -8306,15 +8306,15 @@ doMigrate(void *opaque)
 
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool(cmd, "direct")) {
-        /* For peer2peer migration or direct migration we only expect one URI
-         * a libvirt URI, or a hypervisor specific URI. */
 
-        if (migrateuri != NULL) {
+        /* migrateuri doesn't make sense for tunnelled migration */
+        if (flags & VIR_MIGRATE_TUNNELLED && migrateuri != NULL) {
             vshError(ctl, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
             goto out;
         }
 
-        if (virDomainMigrateToURI2(dom, desturi, NULL, xml, flags, dname, 0) == 0)
+        if (virDomainMigrateToURI2(dom, desturi, migrateuri,
+                                   xml, flags, dname, 0) == 0)
             ret = '0';
     } else {
         /* For traditional live migration, connect to the destination host directly. */
