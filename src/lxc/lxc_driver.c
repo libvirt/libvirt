@@ -1662,8 +1662,26 @@ static char *lxcGetSchedulerType(virDomainPtr domain,
     virLXCDriverPtr driver = domain->conn->privateData;
     char *ret = NULL;
     int rc;
+    virDomainObjPtr vm;
 
     lxcDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    if (vm == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No such domain %s"), domain->uuid);
+        goto cleanup;
+    }
+
+    /* Domain not running, thus no cgroups - return defaults */
+    if (!virDomainObjIsActive(vm)) {
+        if (nparams)
+            *nparams = 3;
+        ret = strdup("posix");
+        if (!ret)
+            virReportOOMError();
+        goto cleanup;
+    }
+
     if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cgroup CPU controller is not mounted"));
@@ -1947,9 +1965,10 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         shares = persistentDef->cputune.shares;
-        if (*nparams > 1 && cpu_bw_status) {
+        if (*nparams > 1) {
             period = persistentDef->cputune.period;
             quota = persistentDef->cputune.quota;
+            cpu_bw_status = true; /* Allow copy of data to params[] */
         }
         goto out;
     }
