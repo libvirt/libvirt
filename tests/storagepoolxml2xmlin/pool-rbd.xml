@@ -5,7 +5,7 @@
     <host name='localhost' port='6789'/>
     <host name='localhost' port='6790'/>
     <auth username='admin' type='ceph'>
-	<secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/>
+      <secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/>
     </auth>
   </source>
 </pool>
