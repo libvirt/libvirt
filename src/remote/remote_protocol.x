@@ -82,13 +82,13 @@ const REMOTE_DOMAIN_ID_LIST_MAX = 16384;
 const REMOTE_DOMAIN_NAME_LIST_MAX = 16384;
 
 /* Upper limit on cpumap (bytes) passed to virDomainPinVcpu. */
-const REMOTE_CPUMAP_MAX = 256;
+const REMOTE_CPUMAP_MAX = 2048;
 
 /* Upper limit on number of info fields returned by virDomainGetVcpus. */
-const REMOTE_VCPUINFO_MAX = 2048;
+const REMOTE_VCPUINFO_MAX = 16384;
 
 /* Upper limit on cpumaps (bytes) passed to virDomainGetVcpus. */
-const REMOTE_CPUMAPS_MAX = 16384;
+const REMOTE_CPUMAPS_MAX = 8388608;
 
 /* Upper limit on migrate cookie. */
 const REMOTE_MIGRATE_COOKIE_MAX = 16384;
