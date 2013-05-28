@@ -1091,7 +1091,6 @@ static int
 virGetWin32DirectoryRoot(char **path)
 {
     char windowsdir[MAX_PATH];
-    int ret = 0;
 
     *path = NULL;
 
