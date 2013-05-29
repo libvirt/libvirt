@@ -1,7 +1,7 @@
 /*
  * virnetserverclient.c: generic network RPC server client
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "internal.h"
 #if WITH_SASL
 # include <sasl/sasl.h>
 #endif
