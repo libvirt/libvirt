@@ -6042,6 +6042,398 @@ done:
 }
 
 
+static char *
+remoteDomainMigrateBegin3Params(virDomainPtr domain,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                char **cookieout,
+                                int *cookieoutlen,
+                                unsigned int flags)
+{
+    char *rv = NULL;
+    remote_domain_migrate_begin3_params_args args;
+    remote_domain_migrate_begin3_params_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+    memset(&ret, 0, sizeof(ret));
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_begin3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_begin3_params_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_migrate_begin3_params_ret,
+             (char *) &ret) == -1)
+        goto cleanup;
+
+    if (ret.cookie_out.cookie_out_len > 0) {
+        if (!cookieout || !cookieoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores cookieout or cookieoutlen"));
+            goto error;
+        }
+        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieoutlen = ret.cookie_out.cookie_out_len;
+    }
+
+    rv = ret.xml; /* caller frees */
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    remoteDriverUnlock(priv);
+    return rv;
+
+error:
+    VIR_FREE(ret.cookie_out.cookie_out_val);
+    goto cleanup;
+}
+
+
+static int
+remoteDomainMigratePrepare3Params(virConnectPtr dconn,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein,
+                                  int cookieinlen,
+                                  char **cookieout,
+                                  int *cookieoutlen,
+                                  char **uri_out,
+                                  unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_migrate_prepare3_params_args args;
+    remote_domain_migrate_prepare3_params_ret ret;
+    struct private_data *priv = dconn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+    memset(&ret, 0, sizeof(ret));
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    args.cookie_in.cookie_in_val = (char *)cookiein;
+    args.cookie_in.cookie_in_len = cookieinlen;
+    args.flags = flags;
+
+    if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_prepare3_params_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_migrate_prepare3_params_ret,
+             (char *) &ret) == -1)
+        goto cleanup;
+
+    if (ret.cookie_out.cookie_out_len > 0) {
+        if (!cookieout || !cookieoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores cookieout or cookieoutlen"));
+            goto error;
+        }
+        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieoutlen = ret.cookie_out.cookie_out_len;
+    }
+    if (ret.uri_out) {
+        if (!uri_out) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores uri_out"));
+            goto error;
+        }
+        *uri_out = *ret.uri_out; /* Caller frees. */
+    }
+
+    rv = 0;
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    VIR_FREE(ret.uri_out);
+    remoteDriverUnlock(priv);
+    return rv;
+
+error:
+    VIR_FREE(ret.cookie_out.cookie_out_val);
+    if (ret.uri_out)
+        VIR_FREE(*ret.uri_out);
+    goto cleanup;
+}
+
+
+static int
+remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
+                                        virStreamPtr st,
+                                        virTypedParameterPtr params,
+                                        int nparams,
+                                        const char *cookiein,
+                                        int cookieinlen,
+                                        char **cookieout,
+                                        int *cookieoutlen,
+                                        unsigned int flags)
+{
+    struct private_data *priv = dconn->privateData;
+    int rv = -1;
+    remote_domain_migrate_prepare_tunnel3_params_args args;
+    remote_domain_migrate_prepare_tunnel3_params_ret ret;
+    virNetClientStreamPtr netst;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+    memset(&ret, 0, sizeof(ret));
+
+    args.cookie_in.cookie_in_val = (char *)cookiein;
+    args.cookie_in.cookie_in_len = cookieinlen;
+    args.flags = flags;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    if (!(netst = virNetClientStreamNew(priv->remoteProgram,
+                                        REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS,
+                                        priv->counter)))
+        goto cleanup;
+
+    if (virNetClientAddStream(priv->client, netst) < 0) {
+        virObjectUnref(netst);
+        goto cleanup;
+    }
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = netst;
+
+    if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_ret,
+             (char *) &ret) == -1) {
+        virNetClientRemoveStream(priv->client, netst);
+        virObjectUnref(netst);
+        goto cleanup;
+    }
+
+    if (ret.cookie_out.cookie_out_len > 0) {
+        if (!cookieout || !cookieoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores cookieout or cookieoutlen"));
+            goto error;
+        }
+        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieoutlen = ret.cookie_out.cookie_out_len;
+    }
+
+    rv = 0;
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    remoteDriverUnlock(priv);
+    return rv;
+
+error:
+    VIR_FREE(ret.cookie_out.cookie_out_val);
+    goto cleanup;
+}
+
+
+static int
+remoteDomainMigratePerform3Params(virDomainPtr dom,
+                                  const char *dconnuri,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein,
+                                  int cookieinlen,
+                                  char **cookieout,
+                                  int *cookieoutlen,
+                                  unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_migrate_perform3_params_args args;
+    remote_domain_migrate_perform3_params_ret ret;
+    struct private_data *priv = dom->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+    memset(&ret, 0, sizeof(ret));
+
+    make_nonnull_domain(&args.dom, dom);
+    args.dconnuri = dconnuri == NULL ? NULL : (char **) &dconnuri;
+    args.cookie_in.cookie_in_val = (char *)cookiein;
+    args.cookie_in.cookie_in_len = cookieinlen;
+    args.flags = flags;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_perform3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_perform3_params_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_migrate_perform3_params_ret,
+             (char *) &ret) == -1)
+        goto cleanup;
+
+    if (ret.cookie_out.cookie_out_len > 0) {
+        if (!cookieout || !cookieoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores cookieout or cookieoutlen"));
+            goto error;
+        }
+        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieoutlen = ret.cookie_out.cookie_out_len;
+    }
+
+    rv = 0;
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    remoteDriverUnlock(priv);
+    return rv;
+
+error:
+    VIR_FREE(ret.cookie_out.cookie_out_val);
+    goto cleanup;
+}
+
+
+static virDomainPtr
+remoteDomainMigrateFinish3Params(virConnectPtr dconn,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 const char *cookiein,
+                                 int cookieinlen,
+                                 char **cookieout,
+                                 int *cookieoutlen,
+                                 unsigned int flags,
+                                 int cancelled)
+{
+    remote_domain_migrate_finish3_params_args args;
+    remote_domain_migrate_finish3_params_ret ret;
+    struct private_data *priv = dconn->privateData;
+    virDomainPtr rv = NULL;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+    memset(&ret, 0, sizeof(ret));
+
+    args.cookie_in.cookie_in_val = (char *)cookiein;
+    args.cookie_in.cookie_in_len = cookieinlen;
+    args.flags = flags;
+    args.cancelled = cancelled;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_finish3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_FINISH3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_finish3_params_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_domain_migrate_finish3_params_ret,
+             (char *) &ret) == -1)
+        goto cleanup;
+
+    rv = get_nonnull_domain(dconn, ret.dom);
+
+    if (ret.cookie_out.cookie_out_len > 0) {
+        if (!cookieout || !cookieoutlen) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("caller ignores cookieout or cookieoutlen"));
+            goto error;
+        }
+        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieoutlen = ret.cookie_out.cookie_out_len;
+        ret.cookie_out.cookie_out_val = NULL;
+        ret.cookie_out.cookie_out_len = 0;
+    }
+
+    xdr_free((xdrproc_t) &xdr_remote_domain_migrate_finish3_params_ret,
+             (char *) &ret);
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    remoteDriverUnlock(priv);
+    return rv;
+
+error:
+    VIR_FREE(ret.cookie_out.cookie_out_val);
+    goto cleanup;
+}
+
+
+static int
+remoteDomainMigrateConfirm3Params(virDomainPtr domain,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  const char *cookiein,
+                                  int cookieinlen,
+                                  unsigned int flags,
+                                  int cancelled)
+{
+    int rv = -1;
+    remote_domain_migrate_confirm3_params_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset(&args, 0, sizeof(args));
+
+    make_nonnull_domain(&args.dom, domain);
+    args.cookie_in.cookie_in_len = cookieinlen;
+    args.cookie_in.cookie_in_val = (char *) cookiein;
+    args.flags = flags;
+    args.cancelled = cancelled;
+
+    if (remoteSerializeTypedParameters(params, nparams,
+                                       &args.params.params_val,
+                                       &args.params.params_len) < 0) {
+        xdr_free((xdrproc_t) xdr_remote_domain_migrate_confirm3_params_args,
+                 (char *) &args);
+        goto cleanup;
+    }
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3_PARAMS,
+             (xdrproc_t) xdr_remote_domain_migrate_confirm3_params_args,
+             (char *) &args, (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -6367,6 +6759,12 @@ static virDriver remote_driver = {
     .nodeGetCPUMap = remoteNodeGetCPUMap, /* 1.0.0 */
     .domainFSTrim = remoteDomainFSTrim, /* 1.0.1 */
     .domainLxcOpenNamespace = remoteDomainLxcOpenNamespace, /* 1.0.2 */
+    .domainMigrateBegin3Params = remoteDomainMigrateBegin3Params, /* 1.1.0 */
+    .domainMigratePrepare3Params = remoteDomainMigratePrepare3Params, /* 1.1.0 */
+    .domainMigratePrepareTunnel3Params = remoteDomainMigratePrepareTunnel3Params, /* 1.1.0 */
+    .domainMigratePerform3Params = remoteDomainMigratePerform3Params, /* 1.1.0 */
+    .domainMigrateFinish3Params = remoteDomainMigrateFinish3Params, /* 1.1.0 */
+    .domainMigrateConfirm3Params = remoteDomainMigrateConfirm3Params, /* 1.1.0 */
 };
 
 static virNetworkDriver network_driver = {
