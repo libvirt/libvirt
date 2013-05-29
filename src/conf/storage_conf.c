@@ -820,7 +820,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr source_node;
     char *type = NULL;
     char *uuid = NULL;
-    char *tmppath;
+    char *target_path = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError();
@@ -831,21 +831,18 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     if ((ret->type = virStoragePoolTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown storage pool type %s"), type);
-        goto cleanup;
+        goto error;
     }
 
-    xmlFree(type);
-    type = NULL;
-
     if ((options = virStoragePoolOptionsForPoolType(ret->type)) == NULL) {
-        goto cleanup;
+        goto error;
     }
 
     source_node = virXPathNode("./source", ctxt);
     if (source_node) {
         if (virStoragePoolDefParseSource(ctxt, &ret->source, ret->type,
                                          source_node) < 0)
-            goto cleanup;
+            goto error;
     }
 
     ret->name = virXPathString("string(./name)", ctxt);
@@ -855,7 +852,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     if (ret->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing pool source name element"));
-        goto cleanup;
+        goto error;
     }
 
     uuid = virXPathString("string(./uuid)", ctxt);
@@ -863,22 +860,21 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         if (virUUIDGenerate(ret->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unable to generate uuid"));
-            goto cleanup;
+            goto error;
         }
     } else {
         if (virUUIDParse(uuid, ret->uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("malformed uuid element"));
-            goto cleanup;
+            goto error;
         }
-        VIR_FREE(uuid);
     }
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_HOST) {
         if (!ret->source.nhost) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool source host name"));
-            goto cleanup;
+            goto error;
         }
     }
 
@@ -886,14 +882,14 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         if (!ret->source.dir) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool source path"));
-            goto cleanup;
+            goto error;
         }
     }
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME) {
         if (ret->source.name == NULL) {
             /* source name defaults to pool name */
             if (VIR_STRDUP(ret->source.name, ret->name) < 0)
-                goto cleanup;
+                goto error;
         }
     }
 
@@ -901,7 +897,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         if (!ret->source.adapter.type) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool source adapter"));
-            goto cleanup;
+            goto error;
         }
 
         if (ret->source.adapter.type ==
@@ -911,18 +907,18 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("'wwnn' and 'wwpn' must be specified for adapter "
                                  "type 'fchost'"));
-                goto cleanup;
+                goto error;
             }
 
             if (!virValidateWWN(ret->source.adapter.data.fchost.wwnn) ||
                 !virValidateWWN(ret->source.adapter.data.fchost.wwpn))
-                goto cleanup;
+                goto error;
         } else if (ret->source.adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
             if (!ret->source.adapter.data.name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing storage pool source adapter name"));
-                goto cleanup;
+                goto error;
             }
         }
     }
@@ -932,36 +928,40 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         if (!ret->source.ndevice) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool source device name"));
-            goto cleanup;
+            goto error;
         }
     }
 
     /* When we are working with a virtual disk we can skip the target
      * path and permissions */
     if (!(options->flags & VIR_STORAGE_POOL_SOURCE_NETWORK)) {
-        if ((tmppath = virXPathString("string(./target/path)", ctxt)) == NULL) {
+        if (!(target_path = virXPathString("string(./target/path)", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool target path"));
-            goto cleanup;
+            goto error;
         }
-        ret->target.path = virFileSanitizePath(tmppath);
-        VIR_FREE(tmppath);
+        ret->target.path = virFileSanitizePath(target_path);
         if (!ret->target.path)
-            goto cleanup;
+            goto error;
 
         if (virStorageDefParsePerms(ctxt, &ret->target.perms,
                                     "./target/permissions",
                                     DEFAULT_POOL_PERM_MODE) < 0)
-            goto cleanup;
+            goto error;
     }
 
     return ret;
 
 cleanup:
     VIR_FREE(uuid);
-    xmlFree(type);
+    VIR_FREE(type);
+    VIR_FREE(target_path);
+    return ret;
+
+error:
     virStoragePoolDefFree(ret);
-    return NULL;
+    ret = NULL;
+    goto cleanup;
 }
 
 virStoragePoolDefPtr
