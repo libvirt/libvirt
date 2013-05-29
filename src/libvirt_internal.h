@@ -1,7 +1,7 @@
 /*
- * libvirt.h: publically exported APIs, not for public use
+ * libvirt_internal.h: internally exported APIs, not for public use
  *
- * Copyright (C) 2006-2008, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,10 +27,10 @@
 
 # include "internal.h"
 
-# ifdef WITH_LIBVIRTD
 typedef void (*virStateInhibitCallback)(bool inhibit,
                                         void *opaque);
 
+# ifdef WITH_LIBVIRTD
 int virStateInitialize(bool privileged,
                        virStateInhibitCallback inhibit,
                        void *opaque);
