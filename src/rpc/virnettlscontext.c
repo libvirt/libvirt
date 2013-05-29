@@ -25,6 +25,9 @@
 #include <stdlib.h>
 
 #include <gnutls/gnutls.h>
+#if HAVE_GNULTLS_CRYPTO_H
+# include <gnutls/crypto.h>
+#endif
 #include <gnutls/x509.h>
 #include "gnutls_1_0_compat.h"
 

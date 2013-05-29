@@ -1103,9 +1103,14 @@ if test "x$with_gnutls" != "xno"; then
     dnl it explicitly for the calls to gcry_control/check_version
     GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
 
-    dnl We're not using gcrypt deprecated features so define GCRYPT_NO_DEPRECATED
-    dnl to avoid deprecated warnings
+    dnl We're not using gcrypt deprecated features so define
+    dnl GCRYPT_NO_DEPRECATED to avoid deprecated warnings
     GNUTLS_CFLAGS="$GNUTLS_CFLAGS -DGCRYPT_NO_DEPRECATED"
+
+    dnl gnutls 3.x moved some declarations to a new header
+    AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
+      #include <gnutls/gnutls.h>
+    ]])
 
     with_gnutls=yes
   fi
