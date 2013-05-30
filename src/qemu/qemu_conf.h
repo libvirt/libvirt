@@ -45,7 +45,13 @@
 # include "locking/lock_manager.h"
 # include "qemu_capabilities.h"
 
-# define QEMUD_CPUMASK_LEN CPU_SETSIZE
+# ifdef CPU_SETSIZE /* Linux */
+#  define QEMUD_CPUMASK_LEN CPU_SETSIZE
+# elif defined(_SC_NPROCESSORS_CONF) /* Cygwin */
+#  define QEMUD_CPUMASK_LEN (sysconf(_SC_NPROCESSORS_CONF))
+# else
+#  error "Port me"
+# endif
 
 typedef struct _virQEMUCloseCallbacks virQEMUCloseCallbacks;
 typedef virQEMUCloseCallbacks *virQEMUCloseCallbacksPtr;
