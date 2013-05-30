@@ -2440,7 +2440,7 @@ xenUnifiedNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto out;
     }
 
-    if (virPCIDeviceDetach(pci, NULL, NULL, NULL) < 0)
+    if (virPCIDeviceDetach(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;

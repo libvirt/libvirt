@@ -1238,15 +1238,12 @@ cleanup:
 int
 virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *activeDevs,
-                   virPCIDeviceList *inactiveDevs,
-                   const char *driver)
+                   virPCIDeviceList *inactiveDevs)
 {
-    if (!driver && dev->stubDriver)
-        driver = dev->stubDriver;
-
-    if (virPCIProbeStubDriver(driver) < 0) {
+    if (virPCIProbeStubDriver(dev->stubDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI stub module %s"), driver);
+                       _("Failed to load PCI stub module %s"),
+                       dev->stubDriver);
         return -1;
     }
 
@@ -1256,7 +1253,7 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
         return -1;
     }
 
-    if (virPCIDeviceBindToStub(dev, driver) < 0)
+    if (virPCIDeviceBindToStub(dev, dev->stubDriver) < 0)
         return -1;
 
     /* Add *a copy of* the dev into list inactiveDevs, if

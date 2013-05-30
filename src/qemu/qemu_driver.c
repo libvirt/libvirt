@@ -10711,7 +10711,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     virObjectLock(driver->inactivePciHostdevs);
 
     if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs, NULL) < 0) {
+                           driver->inactivePciHostdevs) < 0) {
         goto out;
     }
 

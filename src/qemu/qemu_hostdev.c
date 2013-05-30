@@ -540,7 +540,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         if (virPCIDeviceGetManaged(dev) &&
-            virPCIDeviceDetach(dev, driver->activePciHostdevs, NULL, NULL) < 0)
+            virPCIDeviceDetach(dev, driver->activePciHostdevs, NULL) < 0)
             goto reattachdevs;
     }
 
