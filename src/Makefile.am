@@ -1759,6 +1759,7 @@ virtlockd_SOURCES = \
 virtlockd_CFLAGS = \
 		$(AM_CFLAGS) \
 		$(PIE_CFLAGS) \
+		$(XDR_CFLAGS) \
 		$(NULL)
 virtlockd_LDFLAGS = \
 		$(AM_LDFLAGS) \
