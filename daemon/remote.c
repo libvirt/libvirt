@@ -1,7 +1,7 @@
 /*
  * remote.c: handlers for RPC method calls
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2354,7 +2354,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
         } else if (callerUid == 0) {
             char *ident;
             if (virAsprintf(&ident, "pid:%lld,uid:%d",
-                            (long long) callerPid, callerUid) < 0) {
+                            (long long) callerPid, (int) callerUid) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }

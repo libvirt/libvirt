@@ -690,25 +690,29 @@ qemuStateInitialize(bool privileged,
         if (chown(cfg->libDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to user %d:%d"),
-                                 cfg->libDir, cfg->user, cfg->group);
+                                 cfg->libDir, (int) cfg->user,
+                                 (int) cfg->group);
             goto error;
         }
         if (chown(cfg->cacheDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->cacheDir, cfg->user, cfg->group);
+                                 cfg->cacheDir, (int) cfg->user,
+                                 (int) cfg->group);
             goto error;
         }
         if (chown(cfg->saveDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->saveDir, cfg->user, cfg->group);
+                                 cfg->saveDir, (int) cfg->user,
+                                 (int) cfg->group);
             goto error;
         }
         if (chown(cfg->snapshotDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->snapshotDir, cfg->user, cfg->group);
+                                 cfg->snapshotDir, (int) cfg->user,
+                                 (int) cfg->group);
             goto error;
         }
         run_uid = cfg->user;
@@ -752,8 +756,8 @@ qemuStateInitialize(bool privileged,
             if (chown(mempath, cfg->user, cfg->group) < 0) {
                 virReportSystemError(errno,
                                      _("unable to set ownership on %s to %d:%d"),
-                                     mempath, cfg->user,
-                                     cfg->group);
+                                     mempath, (int) cfg->user,
+                                     (int) cfg->group);
                 goto error;
             }
         }
