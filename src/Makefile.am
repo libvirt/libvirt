@@ -1727,7 +1727,9 @@ lockd_la_SOURCES = \
 		$(LOCK_DRIVER_LOCKD_SOURCES) \
 		$(LOCK_PROTOCOL_GENERATED) \
 		$(NULL)
-lockd_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
+lockd_la_CFLAGS = -I$(top_srcdir)/src/conf \
+		$(XDR_CFLAGS) \
+		$(AM_CFLAGS)
 lockd_la_LDFLAGS = -module -avoid-version
 lockd_la_LIBADD = ../gnulib/lib/libgnu.la libvirt-net-rpc.la libvirt-net-rpc-client.la
 augeas_DATA += locking/libvirt_lockd.aug
