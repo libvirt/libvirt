@@ -1762,7 +1762,8 @@ storageVolResize(virStorageVolPtr obj,
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
-                  VIR_STORAGE_VOL_RESIZE_DELTA, -1);
+                  VIR_STORAGE_VOL_RESIZE_DELTA |
+                  VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
@@ -1811,6 +1812,14 @@ storageVolResize(virStorageVolPtr obj,
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("can't shrink capacity below "
                          "existing allocation"));
+        goto out;
+    }
+
+    if (abs_capacity < vol->capacity &&
+        !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Can't shrink capacity below current "
+                         "capacity with shrink flag explicitly specified"));
         goto out;
     }
 
