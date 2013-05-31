@@ -880,6 +880,54 @@ virPCIFile(char **buffer, const char *device, const char *file)
     return 0;
 }
 
+
+/* virPCIDeviceGetDriverPathAndName - put the path to the driver
+ * directory of the driver in use for this device in @path and the
+ * name of the driver in @name. Both could be NULL if it's not bound
+ * to any driver.
+ *
+ * Return 0 for success, -1 for error.
+ */
+static int
+virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
+{
+    int ret = -1;
+    char *drvlink = NULL;
+
+    *path = *name = NULL;
+    /* drvlink = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
+    if (virPCIFile(&drvlink, dev->name, "driver") < 0)
+        goto cleanup;
+
+    if (virFileIsLink(drvlink) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid device %s driver file %s is not a symlink"),
+                       dev->name, drvlink);
+        goto cleanup;
+    }
+    if (virFileResolveLink(drvlink, path) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device %s driver symlink %s"),
+                       dev->name, drvlink);
+        goto cleanup;
+    }
+    /* path = "/sys/bus/pci/drivers/${drivername}" */
+
+    if (VIR_STRDUP(*name, last_component(*path)) < 0)
+        goto cleanup;
+    /* name = "${drivername}" */
+
+    ret = 0;
+cleanup:
+    VIR_FREE(drvlink);
+    if (ret < 0) {
+        VIR_FREE(*path);
+        VIR_FREE(*name);
+    }
+    return ret;
+}
+
+
 static int
 virPCIProbeStubDriver(const char *driver)
 {
@@ -931,23 +979,7 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     /* If the device is currently bound to one of the "well known"
      * stub drivers, then unbind it, otherwise ignore it.
      */
-    if (virPCIFile(&path, dev->name, "driver") < 0)
-        goto cleanup;
-    /* path = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
-    if (virFileIsLink(path) != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid device %s driver file %s is not a symlink"),
-                       dev->name, path);
-        goto cleanup;
-    }
-    if (virFileResolveLink(path, &drvdir) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to resolve device %s driver symlink %s"),
-                       dev->name, path);
-        goto cleanup;
-    }
-    /* drvdir = "/sys/bus/pci/drivers/${drivername}" */
-    if (VIR_STRDUP(driver, last_component(drvdir)) < 0)
+    if (virPCIDeviceGetDriverPathAndName(dev, &drvdir, &driver) < 0)
         goto cleanup;
 
     if (!dev->unbind_from_stub)
@@ -1473,6 +1505,32 @@ error:
     goto cleanup;
 }
 
+
+virPCIDevicePtr
+virPCIDeviceCopy(virPCIDevicePtr dev)
+{
+    virPCIDevicePtr copy;
+
+    if (VIR_ALLOC(copy) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /* shallow copy to take care of most attributes */
+    *copy = *dev;
+    copy->path = copy->stubDriver = NULL;
+    if (VIR_STRDUP(copy->path, dev->path) < 0 ||
+        VIR_STRDUP(copy->stubDriver, dev->stubDriver) < 0) {
+        goto error;
+    }
+    return copy;
+
+error:
+    virPCIDeviceFree(copy);
+    return NULL;
+}
+
+
 void
 virPCIDeviceFree(virPCIDevicePtr dev)
 {
@@ -1689,6 +1747,27 @@ virPCIDeviceListFindIndex(virPCIDeviceListPtr list, virPCIDevicePtr dev)
             return i;
     return -1;
 }
+
+
+virPCIDevicePtr
+virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
+                          unsigned int domain,
+                          unsigned int bus,
+                          unsigned int slot,
+                          unsigned int function)
+{
+    int i;
+
+    for (i = 0; i < list->count; i++) {
+        if (list->devs[i]->domain == domain &&
+            list->devs[i]->bus == bus &&
+            list->devs[i]->slot == slot &&
+            list->devs[i]->function == function)
+            return list->devs[i];
+    }
+    return NULL;
+}
+
 
 virPCIDevicePtr
 virPCIDeviceListFind(virPCIDeviceListPtr list, virPCIDevicePtr dev)

@@ -45,6 +45,7 @@ virPCIDevicePtr virPCIDeviceNew(unsigned int domain,
                                 unsigned int bus,
                                 unsigned int slot,
                                 unsigned int function);
+virPCIDevicePtr virPCIDeviceCopy(virPCIDevicePtr dev);
 void virPCIDeviceFree(virPCIDevicePtr dev);
 const char *virPCIDeviceGetName(virPCIDevicePtr dev);
 
@@ -94,6 +95,12 @@ void virPCIDeviceListDel(virPCIDeviceListPtr list,
                          virPCIDevicePtr dev);
 virPCIDevicePtr virPCIDeviceListFind(virPCIDeviceListPtr list,
                                      virPCIDevicePtr dev);
+virPCIDevicePtr
+virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
+                          unsigned int domain,
+                          unsigned int bus,
+                          unsigned int slot,
+                          unsigned int function);
 int virPCIDeviceListFindIndex(virPCIDeviceListPtr list,
                               virPCIDevicePtr dev);
 
