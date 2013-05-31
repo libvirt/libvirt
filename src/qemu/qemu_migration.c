@@ -1197,6 +1197,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     size_t i, lastGood = 0;
     char *diskAlias = NULL;
     char *nbd_dest = NULL;
+    char *hoststr = NULL;
     unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     virErrorPtr err = NULL;
 
@@ -1216,6 +1217,16 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     port = mig->nbd->port;
     mig->nbd->port = 0;
 
+    /* escape literal IPv6 address */
+    if (strchr(host, ':')) {
+        if (virAsprintf(&hoststr, "[%s]", host) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+    } else if (VIR_STRDUP(hoststr, host) < 0) {
+        goto error;
+    }
+
     if (*migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
         mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
@@ -1232,7 +1243,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         if ((virAsprintf(&diskAlias, "%s%s",
                          QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) ||
             (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
-                         host, port, diskAlias) < 0)) {
+                         hoststr, port, diskAlias) < 0)) {
             virReportOOMError();
             goto error;
         }
@@ -1301,6 +1312,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
 cleanup:
     VIR_FREE(diskAlias);
     VIR_FREE(nbd_dest);
+    VIR_FREE(hoststr);
     return ret;
 
 error:
