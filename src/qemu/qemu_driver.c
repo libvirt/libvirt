@@ -11309,7 +11309,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
 
-    qemuDomainPrepareDiskChainElement(driver, vm, disk, origdisk->src,
+    qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
     if (need_unlink && stat(disk->src, &st) == 0 &&
         S_ISREG(st.st_mode) && unlink(disk->src) < 0)
