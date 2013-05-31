@@ -1089,7 +1089,8 @@ static int
 virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                     virStoragePoolObjPtr pool,
                                     virStorageVolDefPtr vol,
-                                    unsigned int flags) {
+                                    unsigned int flags)
+{
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
 
     return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL, flags);
