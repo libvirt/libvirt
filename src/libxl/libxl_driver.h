@@ -23,8 +23,6 @@
 #ifndef LIBXL_DRIVER_H
 # define LIBXL_DRIVER_H
 
-# include <config.h>
-
 int libxlRegister(void);
 
 #endif /* LIBXL_DRIVER_H */

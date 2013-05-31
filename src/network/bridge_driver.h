@@ -1,7 +1,7 @@
 /*
  * network_driver.h: core driver methods for managing networks
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@
 
 #ifndef __VIR_NETWORK__DRIVER_H
 # define __VIR_NETWORK__DRIVER_H
-
-# include <config.h>
 
 # include "internal.h"
 # include "network_conf.h"

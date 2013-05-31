@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010, 2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_conf.h: header file for linux container config functions
@@ -24,8 +24,6 @@
 
 #ifndef LXC_CONF_H
 # define LXC_CONF_H
-
-# include <config.h>
 
 # include "internal.h"
 # include "domain_conf.h"

@@ -25,8 +25,6 @@
 #ifndef LIBXL_CONF_H
 # define LIBXL_CONF_H
 
-# include <config.h>
-
 # include <libxl.h>
 
 # include "internal.h"

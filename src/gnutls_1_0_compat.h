@@ -1,7 +1,7 @@
 /*
  * gnutls_1_0_compat.h: GnuTLS 1.0 compatibility
  *
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,6 @@
 
 #ifndef LIBVIRT_GNUTLS_1_0_COMPAT_H__
 # define LIBVIRT_GNUTLS_1_0_COMPAT_H__
-
-# include <config.h>
 
 # include <gnutls/gnutls.h>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2010, 2013 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -27,7 +27,6 @@
 
 # include "conf/capabilities.h"
 # include "conf/domain_conf.h"
-# include <config.h>
 # include <libssh2.h>
 
 # define LPAR_EXEC_ERR -1

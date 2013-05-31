@@ -1,7 +1,7 @@
 /*
  * libvirtd.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -26,8 +26,6 @@
 # define LIBVIRTD_H__
 
 # define VIR_ENUM_SENTINELS
-
-# include <config.h>
 
 # include <rpc/types.h>
 # include <rpc/xdr.h>

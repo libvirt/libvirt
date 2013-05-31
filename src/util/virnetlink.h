@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
 #ifndef __VIR_NETLINK_H__
 # define __VIR_NETLINK_H__
 
-# include "config.h"
 # include "internal.h"
 # include "virmacaddr.h"
 

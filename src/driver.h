@@ -22,8 +22,6 @@
 #ifndef __VIR_DRIVER_H__
 # define __VIR_DRIVER_H__
 
-# include "config.h"
-
 # include <unistd.h>
 
 # include "internal.h"
