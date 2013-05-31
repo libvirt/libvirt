@@ -1246,13 +1246,24 @@ virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      unsigned long long capacity,
                                      unsigned int flags)
 {
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE, -1);
 
-    if (vol->target.format == VIR_STORAGE_FILE_RAW)
-        return virStorageFileResize(vol->target.path, capacity);
-    else
+    bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
+
+    if (vol->target.format == VIR_STORAGE_FILE_RAW) {
+        return virStorageFileResize(vol->target.path, capacity,
+                                    vol->capacity, pre_allocate);
+    } else {
+        if (pre_allocate) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("preallocate is only supported for raw "
+                             "type volume"));
+            return -1;
+        }
+
         return virStorageBackendFilesystemResizeQemuImg(vol->target.path,
                                                         capacity);
+    }
 }
 
 virStorageBackend virStorageBackendDirectory = {

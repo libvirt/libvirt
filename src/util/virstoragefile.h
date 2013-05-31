@@ -89,7 +89,10 @@ const char *virStorageFileChainLookup(virStorageFileMetadataPtr chain,
 
 void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 
-int virStorageFileResize(const char *path, unsigned long long capacity);
+int virStorageFileResize(const char *path,
+                         unsigned long long capacity,
+                         unsigned long long orig_capacity,
+                         bool pre_allocate);
 
 enum {
     VIR_STORAGE_FILE_SHFS_NFS = (1 << 0),

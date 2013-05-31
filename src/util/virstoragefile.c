@@ -45,6 +45,9 @@
 #include "virendian.h"
 #include "virstring.h"
 #include "virutil.h"
+#if HAVE_SYS_SYSCALL_H
+# include <sys/syscall.h>
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1038,19 +1041,48 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
  * Change the capacity of the raw storage file at 'path'.
  */
 int
-virStorageFileResize(const char *path, unsigned long long capacity)
+virStorageFileResize(const char *path,
+                     unsigned long long capacity,
+                     unsigned long long orig_capacity,
+                     bool pre_allocate)
 {
     int fd = -1;
     int ret = -1;
+    int rc;
+    off_t offset = orig_capacity;
+    off_t len = capacity - orig_capacity;
 
     if ((fd = open(path, O_RDWR)) < 0) {
         virReportSystemError(errno, _("Unable to open '%s'"), path);
         goto cleanup;
     }
 
-    if (ftruncate(fd, capacity) < 0) {
-        virReportSystemError(errno, _("Failed to truncate file '%s'"), path);
+    if (pre_allocate) {
+#if HAVE_POSIX_FALLOCATE
+        if ((rc = posix_fallocate(fd, offset, len)) != 0) {
+            virReportSystemError(rc,
+                                 _("Failed to pre-allocate space for "
+                                   "file '%s'"), path);
+            goto cleanup;
+        }
+#elif HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
+        if (syscall(SYS_fallocate, fd, 0, offset, len) != 0) {
+            virReportSystemError(errno,
+                                 _("Failed to preallocate space for "
+                                   "file '%s'"), path);
+            goto cleanup;
+        }
+#else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("preallocate is not supported on this platform"))
         goto cleanup;
+#endif
+    } else {
+        if (ftruncate(fd, capacity) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to truncate file '%s'"), path);
+            goto cleanup;
+        }
     }
 
     if (VIR_CLOSE(fd) < 0) {

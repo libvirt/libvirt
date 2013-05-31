@@ -1761,7 +1761,8 @@ storageVolResize(virStorageVolPtr obj,
     unsigned long long abs_capacity;
     int ret = -1;
 
-    virCheckFlags(VIR_STORAGE_VOL_RESIZE_DELTA, -1);
+    virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
+                  VIR_STORAGE_VOL_RESIZE_DELTA, -1);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
