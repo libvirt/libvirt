@@ -2472,6 +2472,13 @@ error:
  * Dependent on hypervisor used, this may require a
  * guest agent to be available, e.g. QEMU.
  *
+ * Beware that at least for QEMU, the domain's process will be terminated
+ * when VIR_NODE_SUSPEND_TARGET_DISK is used and a new process will be
+ * launched when libvirt is asked to wake up the domain. As a result of
+ * this, any runtime changes, such as device hotplug or memory settings,
+ * are lost unless such changes were made with VIR_DOMAIN_AFFECT_CONFIG
+ * flag.
+ *
  * Returns: 0 on success,
  *          -1 on failure.
  */

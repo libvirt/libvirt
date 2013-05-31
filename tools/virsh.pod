@@ -1680,6 +1680,13 @@ hypervisor driver and 0 should be used.).
 Note that this command requires a guest agent configured and running in the
 domain's guest OS.
 
+Beware that at least for QEMU, the domain's process will be terminated when
+target disk is used and a new process will be launched when libvirt is asked
+to wake up the domain. As a result of this, any runtime changes, such as
+device hotplug or memory settings, are lost unless such changes were made
+with I<--config> flag.
+
+
 =item B<dompmwakeup> I<domain>
 
 Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
