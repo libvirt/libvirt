@@ -11460,8 +11460,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
 
-    if (qemuDomainObjBeginAsyncJob(driver, vm,
-                                             QEMU_ASYNC_JOB_SNAPSHOT) < 0)
+    if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SNAPSHOT) < 0)
         goto cleanup;
 
     /* If quiesce was requested, then issue a freeze command, and a
