@@ -834,6 +834,12 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     type = virXPathString("string(./@type)", ctxt);
+    if (type == NULL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("storage pool missing type attribute"));
+        goto error;
+    }
+
     if ((ret->type = virStoragePoolTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown storage pool type %s"), type);
@@ -955,8 +961,6 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                                     DEFAULT_POOL_PERM_MODE) < 0)
             goto error;
     }
-
-    return ret;
 
 cleanup:
     VIR_FREE(uuid);
