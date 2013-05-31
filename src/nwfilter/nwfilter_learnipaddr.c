@@ -250,6 +250,14 @@ virNWFilterTerminateLearnReq(const char *ifname) {
     int ifindex;
     virNWFilterIPAddrLearnReqPtr req;
 
+    /* It's possible that it's already been removed as a result of
+     * virNWFilterDeregisterLearnReq during learnIPAddressThread() exit
+     */
+    if (virNetDevExists(ifname) != 1) {
+        virResetLastError();
+        return 0;
+    }
+
     if (virNetDevGetIndex(ifname, &ifindex) < 0) {
         virResetLastError();
         return rc;
