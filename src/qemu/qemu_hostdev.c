@@ -176,6 +176,7 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
         }
     }
 
+    ret = 0;
 cleanup:
     virObjectUnlock(driver->activePciHostdevs);
     virObjectUnlock(driver->inactivePciHostdevs);
