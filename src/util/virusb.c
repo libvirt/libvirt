@@ -342,10 +342,10 @@ virUSBDeviceNew(unsigned int bus,
     dev->bus     = bus;
     dev->dev     = devno;
 
-    if (snprintf(dev->name, sizeof(dev->name), "%.3o:%.3o",
+    if (snprintf(dev->name, sizeof(dev->name), "%.3d:%.3d",
                  dev->bus, dev->dev) >= sizeof(dev->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("dev->name buffer overflow: %.3o:%.3o"),
+                       _("dev->name buffer overflow: %.3d:%.3d"),
                        dev->bus, dev->dev);
         virUSBDeviceFree(dev);
         return NULL;
