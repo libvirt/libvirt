@@ -298,6 +298,8 @@ mymain(void)
     DO_TEST("hostdev-scsi-shareable");
     DO_TEST("hostdev-scsi-sgio");
 
+    DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
