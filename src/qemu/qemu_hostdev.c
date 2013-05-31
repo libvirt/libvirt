@@ -70,9 +70,15 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         virPCIDeviceSetManaged(dev, hostdev->managed);
         if (hostdev->source.subsys.u.pci.backend
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            virPCIDeviceSetStubDriver(dev, "vfio-pci");
+            if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0) {
+                virObjectUnref(list);
+                return NULL;
+            }
         } else {
-            virPCIDeviceSetStubDriver(dev, "pci-stub");
+            if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0) {
+                virObjectUnref(list);
+                return NULL;
+            }
         }
     }
 
@@ -130,6 +136,7 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
+    virPCIDevicePtr dev = NULL;
     int i;
     int ret = -1;
 
@@ -140,7 +147,6 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
     virObjectLock(driver->inactivePciHostdevs);
 
     for (i = 0; i < def->nhostdevs; i++) {
-        virPCIDevicePtr dev = NULL;
         hostdev = def->hostdevs[i];
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -159,9 +165,12 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
         virPCIDeviceSetManaged(dev, hostdev->managed);
         if (hostdev->source.subsys.u.pci.backend
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            virPCIDeviceSetStubDriver(dev, "vfio-pci");
+            if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0)
+                goto cleanup;
         } else {
-            virPCIDeviceSetStubDriver(dev, "pci-stub");
+            if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
+                goto cleanup;
+
         }
         virPCIDeviceSetUsedBy(dev, def->name);
 
@@ -170,14 +179,14 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
         virPCIDeviceSetRemoveSlot(dev, hostdev->origstates.states.pci.remove_slot);
         virPCIDeviceSetReprobe(dev, hostdev->origstates.states.pci.reprobe);
 
-        if (virPCIDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
-            virPCIDeviceFree(dev);
+        if (virPCIDeviceListAdd(driver->activePciHostdevs, dev) < 0)
             goto cleanup;
-        }
+        dev = NULL;
     }
 
     ret = 0;
 cleanup:
+    virPCIDeviceFree(dev);
     virObjectUnlock(driver->activePciHostdevs);
     virObjectUnlock(driver->inactivePciHostdevs);
     return ret;

@@ -62,8 +62,8 @@ int virPCIDeviceReset(virPCIDevicePtr dev,
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);
 unsigned int virPCIDeviceGetManaged(virPCIDevice *dev);
-void virPCIDeviceSetStubDriver(virPCIDevicePtr dev,
-                               const char *driver);
+int virPCIDeviceSetStubDriver(virPCIDevicePtr dev,
+                              const char *driver);
 const char *virPCIDeviceGetStubDriver(virPCIDevicePtr dev);
 void virPCIDeviceSetUsedBy(virPCIDevice *dev,
                            const char *used_by);

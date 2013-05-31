@@ -10575,10 +10575,10 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                           unsigned int flags)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    virPCIDevicePtr pci;
+    virPCIDevicePtr pci = NULL;
     unsigned domain, bus, slot, function;
     int ret = -1;
-    bool in_inactive_list = false;
+    bool in_inactive_list = true;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
 
@@ -10603,13 +10603,15 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
 
     if (!driverName || STREQ(driverName, "kvm")) {
-        virPCIDeviceSetStubDriver(pci, "pci-stub");
+        if (virPCIDeviceSetStubDriver(pci, "pci-stub") < 0)
+            goto cleanup;
     } else if (STREQ(driverName, "vfio")) {
-        virPCIDeviceSetStubDriver(pci, "vfio-pci");
+        if (virPCIDeviceSetStubDriver(pci, "vfio-pci") < 0)
+            goto cleanup;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown driver name '%s'"), driverName);
-        goto out;
+        goto cleanup;
     }
 
     virObjectLock(driver->activePciHostdevs);
@@ -10624,9 +10626,9 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 out:
     virObjectUnlock(driver->inactivePciHostdevs);
     virObjectUnlock(driver->activePciHostdevs);
+cleanup:
     if (in_inactive_list)
         virPCIDeviceFree(pci);
-cleanup:
     virNodeDeviceDefFree(def);
     VIR_FREE(xml);
     return ret;

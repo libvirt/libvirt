@@ -69,7 +69,7 @@ struct _virPCIDevice {
     bool          has_flr;
     bool          has_pm_reset;
     bool          managed;
-    const char   *stubDriver;
+    char          *stubDriver;
 
     /* used by reattach function */
     bool          unbind_from_stub;
@@ -1480,6 +1480,7 @@ virPCIDeviceFree(virPCIDevicePtr dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev->path);
+    VIR_FREE(dev->stubDriver);
     VIR_FREE(dev);
 }
 
@@ -1500,10 +1501,11 @@ virPCIDeviceGetManaged(virPCIDevicePtr dev)
     return dev->managed;
 }
 
-void
+int
 virPCIDeviceSetStubDriver(virPCIDevicePtr dev, const char *driver)
 {
-    dev->stubDriver = driver;
+    VIR_FREE(dev->stubDriver);
+    return driver ? VIR_STRDUP(dev->stubDriver, driver) : 0;
 }
 
 const char *
