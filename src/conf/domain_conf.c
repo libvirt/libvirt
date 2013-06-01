@@ -13542,7 +13542,7 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
 
     for (n = 0; n < def->cputune.nvcpupin; n++) {
         if (vcpupin_list[n]->vcpuid == vcpu) {
-            VIR_FREE(vcpupin_list[n]->cpumask);
+            virBitmapFree(vcpupin_list[n]->cpumask);
             VIR_FREE(vcpupin_list[n]);
             memmove(&vcpupin_list[n],
                     &vcpupin_list[n+1],
