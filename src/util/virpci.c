@@ -1068,22 +1068,30 @@ cleanup:
 
 
 static int
-virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
+virPCIDeviceBindToStub(virPCIDevicePtr dev,
+                       const char *stubDriverName)
 {
     int result = -1;
-    char *drvdir = NULL;
-    char *path = NULL;
     int reprobe = false;
 
-    /* check whether the device is already bound to a driver */
-    if (virPCIDriverDir(&drvdir, driver) < 0 ||
-        virPCIFile(&path, dev->name, "driver") < 0) {
+    char *stubDriverPath = NULL;
+    char *driverLink = NULL;
+    char *oldDriverPath = NULL;
+    char *oldDriverName = NULL;
+    char *path = NULL; /* reused for different purposes */
+
+    if (virPCIDriverDir(&stubDriverPath, stubDriverName) < 0 ||
+        virPCIFile(&driverLink, dev->name, "driver") < 0 ||
+        virPCIDeviceGetDriverPathAndName(dev, &oldDriverPath,
+                                         &oldDriverName) < 0) {
         goto cleanup;
     }
 
-    if (virFileExists(path)) {
-        if (virFileLinkPointsTo(path, drvdir)) {
-            /* The device is already bound to pci-stub */
+    if (virFileExists(driverLink)) {
+        if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
+            /* The device is already bound to the correct driver */
+            VIR_DEBUG("Device %s is already bound to %s",
+                      dev->name, stubDriverName);
             result = 0;
             goto cleanup;
         }
@@ -1098,26 +1106,21 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
      * is triggered for such a device, it will also be immediately
      * bound by the stub.
      */
-    if (virPCIDriverFile(&path, driver, "new_id") < 0) {
+    if (virPCIDriverFile(&path, stubDriverName, "new_id") < 0) {
         goto cleanup;
     }
 
     if (virFileWriteStr(path, dev->id, 0) < 0) {
         virReportSystemError(errno,
                              _("Failed to add PCI device ID '%s' to %s"),
-                             dev->id, driver);
+                             dev->id, stubDriverName);
         goto cleanup;
     }
 
     /* check whether the device is bound to pci-stub when we write dev->id to
-     * new_id.
+     * ${stubDriver}/new_id.
      */
-    if (virPCIDriverDir(&drvdir, driver) < 0 ||
-        virPCIFile(&path, dev->name, "driver") < 0) {
-        goto remove_id;
-    }
-
-    if (virFileLinkPointsTo(path, drvdir)) {
+    if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
         dev->unbind_from_stub = true;
         dev->remove_slot = true;
         goto remove_id;
@@ -1144,33 +1147,29 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
 
     /* If the device isn't already bound to pci-stub, try binding it now.
      */
-    if (virPCIDriverDir(&drvdir, driver) < 0 ||
-        virPCIFile(&path, dev->name, "driver") < 0) {
-        goto remove_id;
-    }
-
-    if (!virFileLinkPointsTo(path, drvdir)) {
+    if (!virFileLinkPointsTo(driverLink, stubDriverPath)) {
         /* Xen's pciback.ko wants you to use new_slot first */
-        if (virPCIDriverFile(&path, driver, "new_slot") < 0) {
+        if (virPCIDriverFile(&path, stubDriverName, "new_slot") < 0) {
             goto remove_id;
         }
 
         if (virFileExists(path) && virFileWriteStr(path, dev->name, 0) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to add slot for PCI device '%s' to %s"),
-                                 dev->name, driver);
+                                 _("Failed to add slot for "
+                                   "PCI device '%s' to %s"),
+                                 dev->name, stubDriverName);
             goto remove_id;
         }
         dev->remove_slot = true;
 
-        if (virPCIDriverFile(&path, driver, "bind") < 0) {
+        if (virPCIDriverFile(&path, stubDriverName, "bind") < 0) {
             goto remove_id;
         }
 
         if (virFileWriteStr(path, dev->name, 0) < 0) {
             virReportSystemError(errno,
                                  _("Failed to bind PCI device '%s' to %s"),
-                                 dev->name, driver);
+                                 dev->name, stubDriverName);
             goto remove_id;
         }
         dev->unbind_from_stub = true;
@@ -1180,11 +1179,11 @@ remove_id:
     /* If 'remove_id' exists, remove the device id from pci-stub's dynamic
      * ID table so that 'drivers_probe' works below.
      */
-    if (virPCIDriverFile(&path, driver, "remove_id") < 0) {
+    if (virPCIDriverFile(&path, stubDriverName, "remove_id") < 0) {
         /* We do not remove PCI ID from pci-stub, and we cannot reprobe it */
         if (dev->reprobe) {
             VIR_WARN("Could not remove PCI ID '%s' from %s, and the device "
-                     "cannot be probed again.", dev->id, driver);
+                     "cannot be probed again.", dev->id, stubDriverName);
         }
         dev->reprobe = false;
         goto cleanup;
@@ -1193,12 +1192,12 @@ remove_id:
     if (virFileExists(path) && virFileWriteStr(path, dev->id, 0) < 0) {
         virReportSystemError(errno,
                              _("Failed to remove PCI ID '%s' from %s"),
-                             dev->id, driver);
+                             dev->id, stubDriverName);
 
         /* remove PCI ID from pci-stub failed, and we cannot reprobe it */
         if (dev->reprobe) {
             VIR_WARN("Failed to remove PCI ID '%s' from %s, and the device "
-                     "cannot be probed again.", dev->id, driver);
+                     "cannot be probed again.", dev->id, stubDriverName);
         }
         dev->reprobe = false;
         goto cleanup;
@@ -1207,12 +1206,14 @@ remove_id:
     result = 0;
 
 cleanup:
-    VIR_FREE(drvdir);
+    VIR_FREE(stubDriverPath);
+    VIR_FREE(driverLink);
+    VIR_FREE(oldDriverPath);
+    VIR_FREE(oldDriverName);
     VIR_FREE(path);
 
-    if (result < 0) {
+    if (result < 0)
         virPCIDeviceUnbindFromStub(dev);
-    }
 
     return result;
 }
