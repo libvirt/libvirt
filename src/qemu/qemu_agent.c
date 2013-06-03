@@ -1408,25 +1408,32 @@ qemuAgentArbitraryCommand(qemuAgentPtr mon,
                           int timeout)
 {
     int ret = -1;
-    virJSONValuePtr cmd;
+    virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
     *result = NULL;
-    if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN)
-        return ret;
-
-    cmd = virJSONValueFromString(cmd_str);
-    if (!cmd)
-        return ret;
-
-    ret = qemuAgentCommand(mon, cmd, &reply, timeout);
-
-    if (ret == 0) {
-        ret = qemuAgentCheckError(cmd, reply);
-        if (!(*result = virJSONValueToString(reply, false)))
-            ret = -1;
+    if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("guest agent timeout '%d' is "
+                         "less than the minimum '%d'"),
+                       timeout, VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN);
+        goto cleanup;
     }
 
+    if (!(cmd = virJSONValueFromString(cmd_str)))
+        goto cleanup;
+
+    if ((ret = qemuAgentCommand(mon, cmd, &reply, timeout)) < 0)
+        goto cleanup;
+
+    if ((ret = qemuAgentCheckError(cmd, reply)) < 0)
+        goto cleanup;
+
+    if (!(*result = virJSONValueToString(reply, false)))
+        ret = -1;
+
+
+cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
