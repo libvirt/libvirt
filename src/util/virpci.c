@@ -1079,6 +1079,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
     char *oldDriverPath = NULL;
     char *oldDriverName = NULL;
     char *path = NULL; /* reused for different purposes */
+    const char *newDriverName = NULL;
 
     if (virPCIDriverDir(&stubDriverPath, stubDriverName) < 0 ||
         virPCIFile(&driverLink, dev->name, "driver") < 0 ||
@@ -1092,6 +1093,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
             /* The device is already bound to the correct driver */
             VIR_DEBUG("Device %s is already bound to %s",
                       dev->name, stubDriverName);
+            newDriverName = stubDriverName;
             result = 0;
             goto cleanup;
         }
@@ -1203,6 +1205,7 @@ remove_id:
         goto cleanup;
     }
 
+    newDriverName = stubDriverName;
     result = 0;
 
 cleanup:
@@ -1212,6 +1215,11 @@ cleanup:
     VIR_FREE(oldDriverName);
     VIR_FREE(path);
 
+    if (newDriverName &&
+        STRNEQ_NULLABLE(dev->stubDriver, newDriverName)) {
+        VIR_FREE(dev->stubDriver);
+        result = VIR_STRDUP(dev->stubDriver, newDriverName);
+    }
     if (result < 0)
         virPCIDeviceUnbindFromStub(dev);
 
