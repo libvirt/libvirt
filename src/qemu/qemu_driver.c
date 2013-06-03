@@ -14877,16 +14877,12 @@ qemuDomainAgentCommand(virDomainPtr domain,
     qemuDomainObjEnterAgent(vm);
     ret = qemuAgentArbitraryCommand(priv->agent, cmd, &result, timeout);
     qemuDomainObjExitAgent(vm);
-    if (ret < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to execute agent command"));
-        goto endjob;
-    }
+    if (ret < 0)
+        VIR_FREE(result);
 
 endjob:
-    if (qemuDomainObjEndJob(driver, vm) == 0) {
+    if (qemuDomainObjEndJob(driver, vm) == 0)
         vm = NULL;
-    }
 
 cleanup:
     if (vm)
