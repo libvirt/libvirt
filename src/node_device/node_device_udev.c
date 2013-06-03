@@ -106,7 +106,6 @@ static int udevStrToLong_i(char const *s,
     return ret;
 }
 
-
 /* This function allocates memory from the heap for the property
  * value.  That memory must be later freed by some other code. */
 static int udevGetDeviceProperty(struct udev_device *udev_device,
@@ -1122,78 +1121,64 @@ out:
     return ret;
 }
 
+static bool
+udevDeviceHasProperty(struct udev_device *dev,
+                      const char *key)
+{
+    const char *value = NULL;
+    bool ret = false;
 
-static int udevGetDeviceType(struct udev_device *device,
-                             enum virNodeDevCapType *type)
+    if ((value = udev_device_get_property_value(dev, key)))
+        ret = true;
+
+    return ret;
+}
+
+static int
+udevGetDeviceType(struct udev_device *device,
+                  enum virNodeDevCapType *type)
 {
     const char *devtype = NULL;
-    char *tmp_string = NULL;
-    unsigned int tmp = 0;
-    int ret = 0;
+    int ret = -1;
 
     devtype = udev_device_get_devtype(device);
-    VIR_DEBUG("Found device type '%s' for device '%s'",
-              NULLSTR(devtype), udev_device_get_sysname(device));
+    *type = 0;
 
-    if (devtype != NULL && STREQ(devtype, "usb_device")) {
-        *type = VIR_NODE_DEV_CAP_USB_DEV;
-        goto out;
+    if (devtype) {
+        if (STREQ(devtype, "usb_device"))
+            *type = VIR_NODE_DEV_CAP_USB_DEV;
+        else if (STREQ(devtype, "usb_interface"))
+            *type = VIR_NODE_DEV_CAP_USB_INTERFACE;
+        else if (STREQ(devtype, "scsi_host"))
+            *type = VIR_NODE_DEV_CAP_SCSI_HOST;
+        else if (STREQ(devtype, "scsi_target"))
+            *type = VIR_NODE_DEV_CAP_SCSI_TARGET;
+        else if (STREQ(devtype, "scsi_device"))
+            *type = VIR_NODE_DEV_CAP_SCSI;
+        else if (STREQ(devtype, "disk"))
+            *type = VIR_NODE_DEV_CAP_STORAGE;
+        else if (STREQ(devtype, "wlan"))
+            *type = VIR_NODE_DEV_CAP_NET;
+    } else {
+        /* PCI devices don't set the DEVTYPE property. */
+        if (udevDeviceHasProperty(device, "PCI_CLASS"))
+            *type = VIR_NODE_DEV_CAP_PCI_DEV;
+
+        /* Wired network interfaces don't set the DEVTYPE property,
+         * USB devices also have an INTERFACE property, but they do
+         * set DEVTYPE, so if devtype is NULL and the INTERFACE
+         * property exists, we have a network device. */
+        if (udevDeviceHasProperty(device, "INTERFACE"))
+            *type = VIR_NODE_DEV_CAP_NET;
     }
 
-    if (devtype != NULL && STREQ(devtype, "usb_interface")) {
-        *type = VIR_NODE_DEV_CAP_USB_INTERFACE;
-        goto out;
-    }
+    if (!*type)
+        VIR_DEBUG("Could not determine device type for device "
+                  "with sysfs name '%s'",
+                  udev_device_get_sysname(device));
+    else
+        ret = 0;
 
-    if (devtype != NULL && STREQ(devtype, "scsi_host")) {
-        *type = VIR_NODE_DEV_CAP_SCSI_HOST;
-        goto out;
-    }
-
-    if (devtype != NULL && STREQ(devtype, "scsi_target")) {
-        *type = VIR_NODE_DEV_CAP_SCSI_TARGET;
-        goto out;
-    }
-
-    if (devtype != NULL && STREQ(devtype, "scsi_device")) {
-        *type = VIR_NODE_DEV_CAP_SCSI;
-        goto out;
-    }
-
-    if (devtype != NULL && STREQ(devtype, "disk")) {
-        *type = VIR_NODE_DEV_CAP_STORAGE;
-        goto out;
-    }
-
-    if (devtype != NULL && STREQ(devtype, "wlan")) {
-        *type = VIR_NODE_DEV_CAP_NET;
-        goto out;
-    }
-
-    if (udevGetUintProperty(device, "PCI_CLASS", &tmp, 16) == PROPERTY_FOUND) {
-        *type = VIR_NODE_DEV_CAP_PCI_DEV;
-        goto out;
-    }
-
-    /* It does not appear that wired network interfaces set the
-     * DEVTYPE property.  USB devices also have an INTERFACE property,
-     * but they do set DEVTYPE, so if devtype is NULL and the
-     * INTERFACE property exists, we have a network device. */
-    if (devtype == NULL &&
-        udevGetStringProperty(device,
-                              "INTERFACE",
-                              &tmp_string) == PROPERTY_FOUND) {
-        VIR_FREE(tmp_string);
-        *type = VIR_NODE_DEV_CAP_NET;
-        goto out;
-    }
-
-    VIR_DEBUG("Could not determine device type for device "
-              "with sysfs path '%s'",
-              udev_device_get_sysname(device));
-    ret = -1;
-
-out:
     return ret;
 }
 
