@@ -236,6 +236,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
+    virBufferEscapeString(&buf, "  <path>%s</path>\n", def->sysfs_path);
     if (def->parent) {
         virBufferEscapeString(&buf, "  <parent>%s</parent>\n", def->parent);
     }
