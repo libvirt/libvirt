@@ -303,6 +303,14 @@ gather_storage_cap(LibHalContext *ctx, const char *udi,
     return 0;
 }
 
+static int
+gather_scsi_generic_cap(LibHalContext *ctx, const char *udi,
+                        union _virNodeDevCapData *d)
+{
+    (void)get_str_prop(ctx, udi, "scsi_generic.device", &d->sg.path);
+    return 0;
+}
+
 
 static int
 gather_system_cap(LibHalContext *ctx, const char *udi,
@@ -350,6 +358,7 @@ static caps_tbl_entry caps_tbl[] = {
     { "scsi_host",  VIR_NODE_DEV_CAP_SCSI_HOST,     gather_scsi_host_cap },
     { "scsi",       VIR_NODE_DEV_CAP_SCSI,          gather_scsi_cap },
     { "storage",    VIR_NODE_DEV_CAP_STORAGE,       gather_storage_cap },
+    { "scsi_generic", VIR_NODE_DEV_CAP_SCSI_GENERIC, gather_scsi_generic_cap },
 };
 
 
