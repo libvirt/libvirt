@@ -2060,6 +2060,14 @@ fi
 %endif
 
 %changelog
+* Mon Jun  3 2013 Daniel Veillard <veillard@redhat.com> - 1.0.6-1
+- Move VirtualBox driver into libvirtd
+- Support for static routes on a virtual bridge
+- Various improvement for hostdev SCSI support
+- Switch to VIR_STRDUP and VIR_STRNDUP
+- Various cleanups and improvement in Xen and LXC drivers
+- various bug fixes and improvements including localizations
+
 * Thu May  2 2013 Daniel Veillard <veillard@redhat.com> - 1.0.5-1
 - add support for NVRAM device
 - Add XML config for resource partitions
