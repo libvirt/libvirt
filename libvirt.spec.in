@@ -410,6 +410,7 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
+BuildRequires: libgcrypt-devel
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
 %if %{with_libvirtd}
