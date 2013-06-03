@@ -48,6 +48,8 @@ enum virNodeDevCapType {
     VIR_NODE_DEV_CAP_STORAGE,		/* Storage device */
     VIR_NODE_DEV_CAP_FC_HOST,		/* FC Host Bus Adapter */
     VIR_NODE_DEV_CAP_VPORTS,		/* HBA which is capable of vports */
+    VIR_NODE_DEV_CAP_SCSI_GENERIC,      /* SCSI generic device */
+
     VIR_NODE_DEV_CAP_LAST
 };
 
@@ -165,6 +167,9 @@ struct _virNodeDevCapsDef {
             char *media_label;
             unsigned int flags;	/* virNodeDevStorageCapFlags bits */
         } storage;
+        struct {
+            char *path;
+        } sg; /* SCSI generic device */
     } data;
     virNodeDevCapsDefPtr next;          /* next capability */
 };

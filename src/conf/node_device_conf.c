@@ -49,7 +49,8 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "scsi",
               "storage",
               "fc_host",
-              "vports")
+              "vports",
+              "scsi_generic")
 
 VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
@@ -471,6 +472,10 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE)
                 virBufferAddLit(&buf,
                                 "    <capability type='hotpluggable' />\n");
+            break;
+        case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+            virBufferEscapeString(&buf, "    <char>%s</char>\n",
+                                  data->sg.path);
             break;
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
@@ -1411,6 +1416,9 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->storage.vendor);
         VIR_FREE(data->storage.serial);
         VIR_FREE(data->storage.media_label);
+        break;
+    case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        VIR_FREE(data->sg.path);
         break;
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:

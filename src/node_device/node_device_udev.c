@@ -1121,6 +1121,21 @@ out:
     return ret;
 }
 
+static int
+udevProcessScsiGeneric(struct udev_device *dev,
+                       virNodeDeviceDefPtr def)
+{
+    if (udevGetStringProperty(dev,
+                              "DEVNAME",
+                              &def->caps->data.sg.path) != PROPERTY_FOUND)
+        return -1;
+
+    if (udevGenerateDeviceName(dev, def, NULL) != 0)
+        return -1;
+
+    return 0;
+}
+
 static bool
 udevHasDeviceProperty(struct udev_device *dev,
                       const char *key)
@@ -1136,6 +1151,7 @@ udevGetDeviceType(struct udev_device *device,
                   enum virNodeDevCapType *type)
 {
     const char *devtype = NULL;
+    char *subsystem = NULL;
     int ret = -1;
 
     devtype = udev_device_get_devtype(device);
@@ -1167,6 +1183,13 @@ udevGetDeviceType(struct udev_device *device,
          * property exists, we have a network device. */
         if (udevHasDeviceProperty(device, "INTERFACE"))
             *type = VIR_NODE_DEV_CAP_NET;
+
+        /* SCSI generic device doesn't set DEVTYPE property */
+        if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) ==
+            PROPERTY_FOUND &&
+            STREQ(subsystem, "scsi_generic"))
+            *type = VIR_NODE_DEV_CAP_SCSI_GENERIC;
+        VIR_FREE(subsystem);
     }
 
     if (!*type)
@@ -1212,6 +1235,9 @@ static int udevGetDeviceDetails(struct udev_device *device,
         break;
     case VIR_NODE_DEV_CAP_STORAGE:
         ret = udevProcessStorage(device, def);
+        break;
+    case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        ret = udevProcessScsiGeneric(device, def);
         break;
     default:
         VIR_ERROR(_("Unknown device type %d"), def->caps->type);
