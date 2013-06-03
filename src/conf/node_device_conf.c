@@ -1496,7 +1496,9 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
               (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST) &&
                virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_FC_HOST))       ||
               (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_VPORTS))))
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_VPORTS))        ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_GENERIC))))
             return false;
     }
 

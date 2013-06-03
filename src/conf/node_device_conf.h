@@ -274,7 +274,8 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC)
 
 int virNodeDeviceList(virConnectPtr conn,
                       virNodeDeviceObjList devobjs,
