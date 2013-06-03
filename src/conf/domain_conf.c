@@ -3883,36 +3883,36 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
                               virDomainDefPtr def,
                               virDomainHostdevDefPtr hostdev)
 {
-    int next_unit;
-    unsigned nscsi_controllers = 0;
-    bool found = false;
+    int next_unit = 0;
+    unsigned controller = 0;
     int i;
+    int ret;
 
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
         return -1;
 
-    for (i = 0; i < def->ncontrollers && !found; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             continue;
 
-        nscsi_controllers++;
-        next_unit = virDomainControllerSCSINextUnit(def,
-                                                    xmlopt->config.hasWideScsiBus ?
-                                                    SCSI_WIDE_BUS_MAX_CONT_UNIT :
-                                                    SCSI_NARROW_BUS_MAX_CONT_UNIT,
-                                                    def->controllers[i]->idx);
-        if (next_unit >= 0)
-            found = true;
+        controller++;
+        ret = virDomainControllerSCSINextUnit(def,
+                                              xmlopt->config.hasWideScsiBus ?
+                                              SCSI_WIDE_BUS_MAX_CONT_UNIT :
+                                              SCSI_NARROW_BUS_MAX_CONT_UNIT,
+                                              def->controllers[i]->idx);
+        if (ret >= 0) {
+            next_unit = ret;
+            controller = def->controllers[i]->idx;
+            break;
+        }
     }
 
     hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-
-    hostdev->info->addr.drive.controller = found ?
-                                           def->controllers[i - 1]->idx :
-                                           nscsi_controllers;
+    hostdev->info->addr.drive.controller = controller;
     hostdev->info->addr.drive.bus = 0;
     hostdev->info->addr.drive.target = 0;
-    hostdev->info->addr.drive.unit = found ? next_unit : 0;
+    hostdev->info->addr.drive.unit = next_unit;
 
     return 0;
 }
