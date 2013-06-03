@@ -211,6 +211,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
                           unsigned int flags)
 {
     virConnectPtr conn;
+    char *ret;
 
     VIR_DEBUG("domain=%p, cmd=%s, timeout=%d, flags=%x",
               domain, cmd, timeout, flags);
@@ -220,21 +221,26 @@ virDomainQemuAgentCommand(virDomainPtr domain,
         virDispatchError(NULL);
         return NULL;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        return NULL;
-    }
 
     conn = domain->conn;
 
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
     if (conn->driver->domainQemuAgentCommand) {
-        return conn->driver->domainQemuAgentCommand(domain, cmd,
-                                                    timeout, flags);
+        ret = conn->driver->domainQemuAgentCommand(domain, cmd,
+                                                   timeout, flags);
+        if (!ret)
+            goto error;
+        return ret;
     }
 
     virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
     /* Copy to connection error object for back compatibility */
+error:
     virDispatchError(conn);
     return NULL;
 }
