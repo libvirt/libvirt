@@ -7739,7 +7739,10 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("timeout, async and block options are exclusive"));
         goto cleanup;
     }
+
     result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
+    if (!result)
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "pretty")) {
         char *tmp;
