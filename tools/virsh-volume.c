@@ -177,8 +177,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-                                     VSH_BYNAME)))
+    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
@@ -345,8 +344,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-                                           VSH_BYNAME)))
+    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
