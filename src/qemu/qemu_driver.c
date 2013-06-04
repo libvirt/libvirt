@@ -11730,14 +11730,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                          "with external checkpoints"));
         goto cleanup;
     }
-    if ((def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
-         def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL) &&
-        flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("disk-only snapshot creation is not compatible with "
-                         "memory snapshot"));
-        goto cleanup;
-    }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         /* Prevent circular chains */
