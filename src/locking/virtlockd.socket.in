@@ -2,7 +2,7 @@
 Description=Virtual machine lock manager socket
 
 [Socket]
-ListenStream=@localstatedir@/run/libvirt/virtlockd/virtlockd.sock
+ListenStream=@localstatedir@/run/libvirt/virtlockd-sock
 
 [Install]
 WantedBy=multi-user.target
