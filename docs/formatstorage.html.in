@@ -17,9 +17,9 @@
     <p>
       The top level tag for a storage pool document is 'pool'. It has
       a single attribute <code>type</code>, which is one of <code>dir</code>,
-      <code>fs</code>,<code>netfs</code>,<code>disk</code>,<code>iscsi</code>,
-      <code>logical</code>. This corresponds to the storage backend drivers
-      listed further along in this document.
+      <code>fs</code>, <code>netfs</code>, <code>disk</code>,
+      <code>iscsi</code>, <code>logical</code>. This corresponds to the
+      storage backend drivers listed further along in this document.
       The storage pool XML format is available <span class="since">since 0.4.1</span>
     </p>
     <h3><a name="StoragePoolFirst">General metadata</a></h3>
