@@ -165,6 +165,7 @@ useless_free_options =				\
   --name=virNodeDeviceObjFree			\
   --name=virObjectUnref                         \
   --name=virObjectFreeCallback                  \
+  --name=virPCIDeviceFree                       \
   --name=virSecretDefFree			\
   --name=virStorageEncryptionFree		\
   --name=virStorageEncryptionSecretFree		\

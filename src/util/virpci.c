@@ -1671,8 +1671,7 @@ virPCIDeviceListDel(virPCIDeviceListPtr list,
                     virPCIDevicePtr dev)
 {
     virPCIDevicePtr ret = virPCIDeviceListSteal(list, dev);
-    if (ret)
-        virPCIDeviceFree(ret);
+    virPCIDeviceFree(ret);
 }
 
 int
