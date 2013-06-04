@@ -349,6 +349,10 @@
         <span>How and where to report bugs and request features</span>
         <ul>
           <li>
+            <a href="securityprocess.html">Security Process</a>
+            <span>Security bug reporting and resolution process</span>
+          </li>
+          <li>
             <a href="todo.html">Todo list</a>
             <span>Main feature request list</span>
           </li>

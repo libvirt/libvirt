@@ -6,6 +6,18 @@
 
     <ul id="toc"></ul>
 
+    <h2><a name="security">Security Issues</a></h2>
+
+    <p>
+      If you think that an issue with libvirt may have security
+      implications, <strong>please do not</strong> publically
+      report it in the bug tracker, mailing lists, or irc. Libvirt
+      has <a href="securityprocess.html">a dedicated process for handling (potential) security issues</a>
+      that should be used instead. So if your issue has security
+      implications, ignore the rest of this page and follow the
+      <a href="securityprocess.html">security process</a> instead.
+    </p>
+
     <h2><a name="email">Mailing lists</a></h2>
 
     <p>
