@@ -307,6 +307,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("serial of disk device")
     },
+    {.name = "wwn",
+     .type = VSH_OT_STRING,
+     .help = N_("wwn of disk device")
+    },
     {.name = "shareable",
      .type = VSH_OT_BOOL,
      .help = N_("shareable between domains")
@@ -499,7 +503,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *source = NULL, *target = NULL, *driver = NULL,
                 *subdriver = NULL, *type = NULL, *mode = NULL,
-                *cache = NULL, *serial = NULL, *straddr = NULL;
+                *cache = NULL, *serial = NULL, *straddr = NULL,
+                *wwn = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
@@ -538,6 +543,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "cache", &cache) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "serial", &serial) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "wwn", &wwn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "address", &straddr) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "sourcetype", &stype) < 0)
         goto cleanup;
@@ -563,6 +569,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
     }
+
+    if (wwn && !virValidateWWN(wwn))
+        goto cleanup;
 
     /* Make XML of disk */
     virBufferAsprintf(&buf, "<disk type='%s'",
@@ -596,6 +605,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (serial)
         virBufferAsprintf(&buf, "  <serial>%s</serial>\n", serial);
+
+    if (wwn)
+        virBufferAsprintf(&buf, "  <wwn>%s</wwn>\n", wwn);
 
     if (vshCommandOptBool(cmd, "shareable"))
         virBufferAddLit(&buf, "  <shareable/>\n");
