@@ -231,7 +231,7 @@ testSELinuxGenLabel(const void *opaque)
 
     if (virSecurityManagerGenLabel(data->mgr, def) < 0) {
         virErrorPtr err = virGetLastError();
-        fprintf(stderr, "Cannot generated label %s\n", err->message);
+        fprintf(stderr, "Cannot generate label: %s\n", err->message);
         goto cleanup;
     }
 
