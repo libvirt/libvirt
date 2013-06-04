@@ -188,6 +188,8 @@ nwfilterDriverStartup(int privileged)
     if (!privileged)
         return 0;
 
+    nwfilterDriverLock(driverState);
+
     if (virNWFilterIPAddrMapInit() < 0)
         goto err_free_driverstate;
     if (virNWFilterLearnInit() < 0)
@@ -199,8 +201,6 @@ nwfilterDriverStartup(int privileged)
 
     if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
         goto err_techdrivers_shutdown;
-
-    nwfilterDriverLock(driverState);
 
     /*
      * startup the DBus late so we don't get a reload signal while
@@ -334,16 +334,10 @@ nwfilterDriverActive(void) {
 bool
 virNWFilterDriverIsWatchingFirewallD(void)
 {
-    bool ret;
-
     if (!driverState)
         return false;
 
-    nwfilterDriverLock(driverState);
-    ret = driverState->watchingFirewallD;
-    nwfilterDriverUnlock(driverState);
-
-    return ret;
+    return driverState->watchingFirewallD;
 }
 
 /**
