@@ -10578,7 +10578,6 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     virPCIDevicePtr pci = NULL;
     unsigned domain, bus, slot, function;
     int ret = -1;
-    bool in_inactive_list = true;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
 
@@ -10616,19 +10615,18 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virObjectLock(driver->activePciHostdevs);
     virObjectLock(driver->inactivePciHostdevs);
-    in_inactive_list = virPCIDeviceListFind(driver->inactivePciHostdevs, pci);
 
     if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs, NULL) < 0)
+                           driver->inactivePciHostdevs, NULL) < 0) {
         goto out;
+    }
 
     ret = 0;
 out:
     virObjectUnlock(driver->inactivePciHostdevs);
     virObjectUnlock(driver->activePciHostdevs);
 cleanup:
-    if (in_inactive_list)
-        virPCIDeviceFree(pci);
+    virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
     VIR_FREE(xml);
     return ret;

@@ -1217,6 +1217,24 @@ cleanup:
     return result;
 }
 
+/* virPCIDeviceDetach:
+ *
+ * Detach this device from the host driver, attach it to the stub
+ * driver (previously set with virPCIDeviceSetStubDriver(), and add *a
+ * copy* of the object to the inactiveDevs list (if provided). This
+ * function will *never* consume dev, so the caller should free it.
+ *
+ * Returns 0 on success, -1 on failure (will fail if the device is
+ * already in the activeDevs list, but will be a NOP if the device is
+ * already bound to the stub).
+ *
+ * GENERAL NOTE: activeDevs should be a list of all PCI devices
+ * currently in use by a domain. inactiveDevs is a list of all PCI
+ * devices that libvirt has detached from the host driver + attached
+ * to the stub driver, but hasn't yet assigned to a domain. Any device
+ * that is still attached to its host driver should not be on either
+ * list.
+ */
 int
 virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *activeDevs,
@@ -1241,9 +1259,13 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
     if (virPCIDeviceBindToStub(dev, driver) < 0)
         return -1;
 
-    /* Add the dev into list inactiveDevs */
+    /* Add *a copy of* the dev into list inactiveDevs, if
+     * it's not already there.
+     */
     if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev)) {
-        if (virPCIDeviceListAdd(inactiveDevs, dev) < 0)
+        virPCIDevicePtr copy = virPCIDeviceCopy(dev);
+
+        if ((!copy) || virPCIDeviceListAdd(inactiveDevs, copy) < 0)
             return -1;
     }
 
