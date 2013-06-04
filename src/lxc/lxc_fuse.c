@@ -307,6 +307,7 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
     /* process name is libvirt_lxc */
     if (fuse_opt_add_arg(&args, "libvirt_lxc") == -1 ||
         fuse_opt_add_arg(&args, "-odirect_io") == -1 ||
+        fuse_opt_add_arg(&args, "-oallow_other") == -1 ||
         fuse_opt_add_arg(&args, "-ofsname=libvirt") == -1)
         goto cleanup1;
 
