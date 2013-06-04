@@ -1266,7 +1266,7 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
 
     /* Steal the dev from list inactiveDevs */
     if (inactiveDevs)
-        virPCIDeviceListSteal(inactiveDevs, dev);
+        virPCIDeviceListDel(inactiveDevs, dev);
 
     return 0;
 }
