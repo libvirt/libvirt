@@ -1739,6 +1739,8 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
     char *listenAddress;
+    virSocketAddr addr;
+    bool reformatted = false;
 
     if (!cookie)
         return 0;
@@ -1753,10 +1755,24 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
         return 0;
 
     listenAddress = cookie->graphics->listen;
+
+    /* Okay, here's the magic: some mgmt applications set bare '0' as listen
+     * address. On the other hand, it's a valid IPv4 address. This means, we
+     * need to reformat the address so the if statement below can check just
+     * for two ANYCAST addresses and not all their variants. */
+    if (listenAddress &&
+        virSocketAddrParse(&addr, listenAddress, AF_UNSPEC) > 0) {
+        listenAddress = virSocketAddrFormat(&addr);
+        reformatted = true;
+    }
+
     if (!listenAddress ||
         STREQ(listenAddress, "0.0.0.0") ||
-        STREQ(listenAddress, "::"))
+        STREQ(listenAddress, "::")) {
+        if (reformatted)
+            VIR_FREE(listenAddress);
         listenAddress = cookie->remoteHostname;
+    }
 
     ret = qemuDomainObjEnterMonitorAsync(driver, vm,
                                          QEMU_ASYNC_JOB_MIGRATION_OUT);

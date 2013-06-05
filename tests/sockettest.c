@@ -193,6 +193,20 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+#define DO_TEST_PARSE_AND_CHECK_FORMAT(addrstr, addrformated, family, pass) \
+    do {                                                                \
+        virSocketAddr addr;                                             \
+        struct testParseData data = { &addr, addrstr, family, true};    \
+        memset(&addr, 0, sizeof(addr));                                 \
+        if (virtTestRun("Test parse " addrstr " family " #family,       \
+                        1, testParseHelper, &data) < 0)                 \
+            ret = -1;                                                   \
+        struct testFormatData data2 = { &addr, addrformated, pass };    \
+        if (virtTestRun("Test format " addrstr " family " #family,      \
+                        1, testFormatHelper, &data2) < 0)               \
+            ret = -1;                                                   \
+    } while (0)
+
 #define DO_TEST_RANGE(saddr, eaddr, size, pass)                         \
     do {                                                                \
         struct testRangeData data = { saddr, eaddr, size, pass };       \
@@ -215,6 +229,16 @@ mymain(void)
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_INET6, false);
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_UNIX, false);
     DO_TEST_PARSE_AND_FORMAT("127.0.0.256", AF_UNSPEC, false);
+
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127.0.0.2", "127.0.0.2", AF_INET, true);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127.0.0.2", "127.0.0.3", AF_INET, false);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("0", "0.0.0.0", AF_INET, true);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127", "0.0.0.127", AF_INET, true);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127", "127.0.0.0", AF_INET, false);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127.2", "127.0.0.2", AF_INET, true);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("127.2", "127.2.0.0", AF_INET, false);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("1.2.3", "1.2.0.3", AF_INET, true);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("1.2.3", "1.2.3.0", AF_INET, false);
 
     DO_TEST_PARSE_AND_FORMAT("::1", AF_UNSPEC, true);
     DO_TEST_PARSE_AND_FORMAT("::1", AF_INET, false);
