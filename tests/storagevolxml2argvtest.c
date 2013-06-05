@@ -60,15 +60,16 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     cmd = virStorageBackendCreateQemuImgCmd(conn, &poolobj, vol, inputvol,
                                             flags, create_tool, imgformat);
-
-    actualCmdline = virCommandToString(cmd);
-    if (!actualCmdline) {
+    if (!cmd) {
         if (shouldFail) {
             virResetLastError();
             ret = 0;
         }
         goto cleanup;
     }
+
+    if (!(actualCmdline = virCommandToString(cmd)))
+        goto cleanup;
 
     len = virtTestLoadFile(cmdline, &expectedCmdline);
     if (len < 0)
