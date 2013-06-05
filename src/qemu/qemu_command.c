@@ -5519,6 +5519,9 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         now += def->data.variable.adjustment;
         gmtime_r(&now, &nowbits);
 
+        /* Store the guest's basedate */
+        def->data.variable.basedate = now;
+
         virBufferAsprintf(&buf, "base=%d-%02d-%02dT%02d:%02d:%02d",
                           nowbits.tm_year + 1900,
                           nowbits.tm_mon + 1,

@@ -96,6 +96,7 @@ typedef enum {
    VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES = (1<<18),
    VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM = (1<<19),
    VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT = (1<<20),
+   VIR_DOMAIN_XML_INTERNAL_BASEDATE = (1 << 21),
 } virDomainXMLInternalFlags;
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -11193,6 +11194,16 @@ virDomainDefParseXML(xmlDocPtr xml,
         break;
     }
 
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE &&
+        flags & VIR_DOMAIN_XML_INTERNAL_BASEDATE) {
+        if (virXPathULongLong("number(./clock/@basedate)", ctxt,
+                              &def->clock.data.variable.basedate) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid basedate"));
+            goto error;
+        }
+    }
+
     if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
         goto error;
 
@@ -15788,7 +15799,8 @@ virDomainResourceDefFormat(virBufferPtr buf,
 
 verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
          VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)
+         VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+         VIR_DOMAIN_XML_INTERNAL_BASEDATE)
         & DUMPXML_FLAGS) == 0);
 
 /* This internal version can accept VIR_DOMAIN_XML_INTERNAL_*,
@@ -15810,7 +15822,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virCheckFlags(DUMPXML_FLAGS |
                   VIR_DOMAIN_XML_INTERNAL_STATUS |
                   VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES,
+                  VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                  VIR_DOMAIN_XML_INTERNAL_BASEDATE,
                   -1);
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
@@ -16208,6 +16221,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " adjustment='%lld' basis='%s'",
                           def->clock.data.variable.adjustment,
                           virDomainClockBasisTypeToString(def->clock.data.variable.basis));
+
+        if (flags & VIR_DOMAIN_XML_INTERNAL_BASEDATE)
+            virBufferAsprintf(buf, " basedate='%llu'",
+                              def->clock.data.variable.basedate);
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferEscapeString(buf, " timezone='%s'", def->clock.data.timezone);
@@ -16586,7 +16603,8 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
     unsigned int flags = (VIR_DOMAIN_XML_SECURE |
                           VIR_DOMAIN_XML_INTERNAL_STATUS |
                           VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES);
+                          VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                          VIR_DOMAIN_XML_INTERNAL_BASEDATE);
 
     int ret = -1;
     char *xml;
@@ -16674,7 +16692,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt, expectedVirtTypes,
                                       VIR_DOMAIN_XML_INTERNAL_STATUS |
                                       VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
-                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)))
+                                      VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_XML_INTERNAL_BASEDATE)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
