@@ -663,52 +663,57 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     bool do_encryption = (vol->target.encryption != NULL);
     unsigned long long int size_arg;
-    bool preallocate = false;
-
-    /* Treat output block devices as 'raw' format */
-    const char *type =
-        virStorageFileFormatTypeToString(vol->type == VIR_STORAGE_VOL_BLOCK ?
-                                         VIR_STORAGE_FILE_RAW :
-                                         vol->target.format);
-
-    const char *backingType = vol->backingStore.path ?
-        virStorageFileFormatTypeToString(vol->backingStore.format) : NULL;
-
-    const char *inputBackingPath = (inputvol ? inputvol->backingStore.path
-                                             : NULL);
-    const char *inputPath = inputvol ? inputvol->target.path : NULL;
-    /* Treat input block devices as 'raw' format */
-    const char *inputType = inputPath ?
-        virStorageFileFormatTypeToString(inputvol->type == VIR_STORAGE_VOL_BLOCK ?
-                                         VIR_STORAGE_FILE_RAW :
-                                         inputvol->target.format) :
-        NULL;
+    bool preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
+    const char *type;
+    const char *backingType = NULL;
+    const char *inputPath = NULL;
+    const char *inputType = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
-    preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
+    /* Treat output block devices as 'raw' format */
+    type = virStorageFileFormatTypeToString(vol->type == VIR_STORAGE_VOL_BLOCK ?
+                                            VIR_STORAGE_FILE_RAW :
+                                            vol->target.format);
 
-    if (type == NULL) {
+    if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage vol type %d"),
                        vol->target.format);
         return NULL;
     }
-    if (inputvol && inputType == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown storage vol type %d"),
-                       inputvol->target.format);
-        return NULL;
-    }
+
     if (preallocate && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation only available with qcow2"));
         return NULL;
     }
 
+    if (inputvol) {
+        if (!(inputPath = inputvol->target.path)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("missing input volume target path"));
+            return NULL;
+        }
+
+        inputType = virStorageFileFormatTypeToString(inputvol->type == VIR_STORAGE_VOL_BLOCK ?
+                                                     VIR_STORAGE_FILE_RAW :
+                                                     inputvol->target.format);
+
+        if (!inputType) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown storage vol type %d"),
+                           inputvol->target.format);
+            return NULL;
+        }
+
+    }
+
     if (vol->backingStore.path) {
         int accessRetCode = -1;
         char *absolutePath = NULL;
+
+        backingType = virStorageFileFormatTypeToString(vol->backingStore.format);
 
         if (preallocate) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -722,11 +727,9 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
          * may cause issues with lvm. Untested essentially.
          */
         if (inputvol &&
-            (!inputBackingPath ||
-             STRNEQ(inputBackingPath, vol->backingStore.path))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("a different backing store cannot "
-                                   "be specified."));
+            STRNEQ_NULLABLE(inputvol->backingStore.path, vol->backingStore.path)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("a different backing store cannot be specified."));
             return NULL;
         }
 
