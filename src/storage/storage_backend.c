@@ -254,7 +254,14 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     gid_t gid;
     uid_t uid;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation is not supported for block "
+                         "volumes"));
+        goto cleanup;
+    }
 
     if ((fd = open(vol->target.path, O_RDWR)) < 0) {
         virReportSystemError(errno,
@@ -385,7 +392,14 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     int fd = -1;
     int operation_flags;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation is not supported for raw "
+                         "volumes"));
+        goto cleanup;
+    }
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -898,7 +912,14 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *size;
     virCommandPtr cmd;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    if (flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation is not supported with "
+                         "qcow-create"));
+        return -1;
+    }
 
     if (inputvol) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
