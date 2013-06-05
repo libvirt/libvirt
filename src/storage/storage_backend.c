@@ -388,9 +388,8 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(0, -1);
 
     if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool does not support encrypted volumes"));
         goto cleanup;
     }
 
@@ -529,9 +528,11 @@ cleanup:
     return ret;
 }
 
-static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
-                                              virStorageVolDefPtr vol,
-                                              virCommandPtr cmd) {
+static int
+virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
+                                   virStorageVolDefPtr vol,
+                                   virCommandPtr cmd)
+{
     struct stat st;
     gid_t gid;
     uid_t uid;
@@ -594,7 +595,8 @@ enum {
     QEMU_IMG_BACKING_FORMAT_OPTIONS,
 };
 
-static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
+static int
+virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
 {
     char *help = NULL;
     char *start;
@@ -996,9 +998,9 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
          inputvol->target.format != VIR_STORAGE_FILE_RAW)) {
 
         if ((tool_type = virStorageBackendFindFSImageTool(NULL)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("creation of non-raw file images is "
-                                   "not supported without qemu-img."));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("creation of non-raw file images is "
+                             "not supported without qemu-img."));
             return NULL;
         }
 
@@ -1013,7 +1015,8 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
 
 
 virStorageBackendPtr
-virStorageBackendForType(int type) {
+virStorageBackendForType(int type)
+{
     unsigned int i;
     for (i = 0; backends[i]; i++)
         if (backends[i]->type == type)
