@@ -1048,9 +1048,12 @@ virStorageFileResize(const char *path,
 {
     int fd = -1;
     int ret = -1;
-    int rc;
-    off_t offset = orig_capacity;
-    off_t len = capacity - orig_capacity;
+    int rc ATTRIBUTE_UNUSED;
+    off_t offset ATTRIBUTE_UNUSED;
+    off_t len ATTRIBUTE_UNUSED;
+
+    offset = orig_capacity;
+    len = capacity - orig_capacity;
 
     if ((fd = open(path, O_RDWR)) < 0) {
         virReportSystemError(errno, _("Unable to open '%s'"), path);
@@ -1068,13 +1071,13 @@ virStorageFileResize(const char *path,
 #elif HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
         if (syscall(SYS_fallocate, fd, 0, offset, len) != 0) {
             virReportSystemError(errno,
-                                 _("Failed to preallocate space for "
+                                 _("Failed to pre-allocate space for "
                                    "file '%s'"), path);
             goto cleanup;
         }
 #else
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("preallocate is not supported on this platform"))
+                       _("preallocate is not supported on this platform"));
         goto cleanup;
 #endif
     } else {
