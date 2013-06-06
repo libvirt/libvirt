@@ -31,7 +31,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-VIR_ENUM_DECL(virTypedParameter)
 VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
               "unknown",
               "int",
@@ -133,6 +132,52 @@ virTypedParamsCheck(virTypedParameterPtr params,
     }
 
     return true;
+}
+
+char *
+virTypedParameterToString(virTypedParameterPtr param)
+{
+    char *value;
+    int ret = -1;
+
+    switch (param->type) {
+    case VIR_TYPED_PARAM_INT:
+        if ((ret = virAsprintf(&value, "%d", param->value.i)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_UINT:
+        if ((ret = virAsprintf(&value, "%u", param->value.ui)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_LLONG:
+        if ((ret = virAsprintf(&value, "%lld", param->value.l)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_ULLONG:
+        if ((ret = virAsprintf(&value, "%llu", param->value.ul)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_DOUBLE:
+        if ((ret = virAsprintf(&value, "%g", param->value.d)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_BOOLEAN:
+        if ((ret = virAsprintf(&value, "%d", param->value.b)) < 0)
+            virReportOOMError();
+        break;
+    case VIR_TYPED_PARAM_STRING:
+        ret = VIR_STRDUP(value, param->value.s);
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected type %d for field %s"),
+                       param->type, param->field);
+    }
+
+    if (ret < 0)
+        return NULL;
+    else
+        return value;
 }
 
 /* Assign name, type, and the appropriately typed arg to param; in the

@@ -1943,6 +1943,9 @@ virTPMCreateCancelPath;
 # util/virtypedparam.h
 virTypedParameterAssign;
 virTypedParameterAssignFromStr;
+virTypedParameterToString;
+virTypedParameterTypeFromString;
+virTypedParameterTypeToString;
 virTypedParamsCheck;
 virTypedParamsReplaceString;
 virTypedParamsValidate;
