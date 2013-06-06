@@ -24,9 +24,6 @@
 #include <config.h>
 
 #include <dirent.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <stdio.h>
@@ -47,55 +44,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-static int
-virStorageBackendISCSITargetIP(const char *hostname,
-                               char *ipaddr,
-                               size_t ipaddrlen)
-{
-    struct addrinfo hints;
-    struct addrinfo *result = NULL;
-    int ret;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_flags = AI_ADDRCONFIG;
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = 0;
-
-    ret = getaddrinfo(hostname, NULL, &hints, &result);
-    if (ret != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("host lookup failed %s"),
-                       gai_strerror(ret));
-        return -1;
-    }
-
-    if (result == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no IP address for target %s"),
-                       hostname);
-        return -1;
-    }
-
-    if (getnameinfo(result->ai_addr, result->ai_addrlen,
-                    ipaddr, ipaddrlen, NULL, 0,
-                    NI_NUMERICHOST) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot format ip addr for %s"),
-                       hostname);
-        freeaddrinfo(result);
-        return -1;
-    }
-
-    freeaddrinfo(result);
-    return 0;
-}
-
 static char *
 virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
 {
-    char ipaddr[NI_MAXHOST];
-    char *portal;
+    char *portal = NULL;
+    const char *host;
+    int port = 3260;
 
     if (source->nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -103,15 +57,16 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
         return NULL;
     }
 
-    if (virStorageBackendISCSITargetIP(source->hosts[0].name,
-                                       ipaddr, sizeof(ipaddr)) < 0)
-        return NULL;
+    host = source->hosts[0].name;
+    if (source->hosts[0].port != 0)
+        port = source->hosts[0].port;
 
-    if (virAsprintf(&portal, "%s:%d,1", ipaddr,
-                    source->hosts[0].port ?
-                    source->hosts[0].port : 3260) < 0) {
-        virReportOOMError();
-        return NULL;
+    if (strchr(host, ':')) {
+        if (virAsprintf(&portal, "[%s]:%d,1", host, port) < 0)
+            virReportOOMError();
+    } else {
+        if (virAsprintf(&portal, "%s:%d,1", host, port) < 0)
+            virReportOOMError();
     }
 
     return portal;
