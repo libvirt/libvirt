@@ -1782,6 +1782,7 @@ virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;
 virSocketAddrIsPrivate;
+virSocketAddrIsWildcard;
 virSocketAddrMask;
 virSocketAddrMaskByPrefix;
 virSocketAddrParse;

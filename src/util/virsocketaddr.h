@@ -123,4 +123,5 @@ bool virSocketAddrEqual(const virSocketAddrPtr s1,
                         const virSocketAddrPtr s2);
 bool virSocketAddrIsPrivate(const virSocketAddrPtr addr);
 
+bool virSocketAddrIsWildcard(const virSocketAddrPtr addr);
 #endif /* __VIR_SOCKETADDR_H__ */
