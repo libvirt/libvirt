@@ -859,7 +859,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         /* if user doesn't specified host interface name,
          * than we need to generate it */
         if (net->ifname == NULL) {
-            net->ifname = openvzGenerateVethName(veid, net->data.ethernet.dev);
+            net->ifname = openvzGenerateVethName(veid, guest_ifname);
             if (net->ifname == NULL) {
                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Could not generate veth name"));
