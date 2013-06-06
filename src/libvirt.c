@@ -65,6 +65,7 @@
 #include "virthread.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virtypedparam.h"
 
 #ifdef WITH_TEST
 # include "test/test_driver.h"
@@ -3844,6 +3845,7 @@ virDomainSetMemoryParameters(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
                      params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -3986,6 +3988,7 @@ virDomainSetNumaParameters(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
                      params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -4113,6 +4116,7 @@ virDomainSetBlkioParameters(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
                      params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -6993,6 +6997,7 @@ virNodeSetMemoryParameters(virConnectPtr conn,
 {
     VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=%x",
               conn, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -7233,6 +7238,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d", params, nparams);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -7297,6 +7303,7 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=%x",
                      params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -7579,6 +7586,7 @@ virDomainSetInterfaceParameters(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "device=%s, params=%p, nparams=%d, flags=%x",
                      device, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
@@ -20420,6 +20428,7 @@ int virDomainSetBlockIoTune(virDomainPtr dom,
 
     VIR_DOMAIN_DEBUG(dom, "disk=%s, params=%p, nparams=%d, flags=%x",
                      disk, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
 
