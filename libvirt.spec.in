@@ -1050,7 +1050,6 @@ Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
         %endif
-Requires: vbox
 
 %description daemon-vbox
 Server side daemon and driver required to manage the virtualization
