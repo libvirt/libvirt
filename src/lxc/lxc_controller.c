@@ -1257,6 +1257,9 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
         goto cleanup;
     }
 
+    if (virLXCControllerChown(ctrl, dev) < 0)
+        goto cleanup;
+
     ret = 0;
 cleanup:
     VIR_FREE(opts);
