@@ -1439,12 +1439,14 @@ virLogMessage;
 virLogParseDefaultPriority;
 virLogParseFilters;
 virLogParseOutputs;
+virLogPriorityFromSyslog;
 virLogProbablyLogMessage;
 virLogReset;
 virLogSetBufferSize;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
 virLogUnlock;
+virLogVMessage;
 
 
 # util/virmacaddr.h
