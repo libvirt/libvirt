@@ -548,6 +548,7 @@ qemuProcessFakeReboot(void *opaque)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1;
     VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
@@ -573,8 +574,11 @@ qemuProcessFakeReboot(void *opaque)
         goto endjob;
     }
 
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_CRASHED)
+        reason = VIR_DOMAIN_RUNNING_CRASHED;
+
     if (qemuProcessStartCPUs(driver, vm, NULL,
-                             VIR_DOMAIN_RUNNING_BOOTED,
+                             reason,
                              QEMU_ASYNC_JOB_NONE) < 0) {
         if (virGetLastError() == NULL)
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1284,6 +1288,40 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                            virDomainObjPtr vm)
+{
+    virQEMUDriverPtr driver = qemu_driver;
+    struct qemuProcessEvent *processEvent;
+
+    virObjectLock(vm);
+    if (VIR_ALLOC(processEvent) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    processEvent->eventType = QEMU_PROCESS_EVENT_GUESTPANIC;
+    processEvent->action = vm->def->onCrash;
+    processEvent->vm = vm;
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted before handling guest panic event is finished.
+     */
+    virObjectRef(vm);
+    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
+        if (!virObjectUnref(vm))
+            vm = NULL;
+        VIR_FREE(processEvent);
+    }
+
+cleanup:
+    if (vm)
+       virObjectUnlock(vm);
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
@@ -1303,6 +1341,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainPMSuspend = qemuProcessHandlePMSuspend,
     .domainBalloonChange = qemuProcessHandleBalloonChange,
     .domainPMSuspendDisk = qemuProcessHandlePMSuspendDisk,
+    .domainGuestPanic = qemuProcessHandleGuestPanic,
 };
 
 static int
@@ -2682,6 +2721,10 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
             newState = VIR_DOMAIN_SHUTDOWN;
             newReason = VIR_DOMAIN_SHUTDOWN_UNKNOWN;
             ignore_value(VIR_STRDUP_QUIET(msg, "shutdown"));
+        } else if (reason == VIR_DOMAIN_PAUSED_GUEST_PANICKED) {
+            newState = VIR_DOMAIN_CRASHED;
+            newReason = VIR_DOMAIN_CRASHED_PANICKED;
+            ignore_value(VIR_STRDUP_QUIET(msg, "crashed"));
         } else {
             newState = VIR_DOMAIN_PAUSED;
             newReason = reason;

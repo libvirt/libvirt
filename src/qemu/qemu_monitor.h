@@ -140,6 +140,8 @@ struct _qemuMonitorCallbacks {
                                unsigned long long actual);
     int (*domainPMSuspendDisk)(qemuMonitorPtr mon,
                                virDomainObjPtr vm);
+    int (*domainGuestPanic)(qemuMonitorPtr mon,
+                            virDomainObjPtr vm);
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -220,6 +222,7 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
 int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);
+int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
@@ -239,6 +242,7 @@ typedef enum {
     QEMU_MONITOR_VM_STATUS_SAVE_VM,
     QEMU_MONITOR_VM_STATUS_SHUTDOWN,
     QEMU_MONITOR_VM_STATUS_WATCHDOG,
+    QEMU_MONITOR_VM_STATUS_GUEST_PANICKED,
 
     QEMU_MONITOR_VM_STATUS_LAST
 } qemuMonitorVMStatus;

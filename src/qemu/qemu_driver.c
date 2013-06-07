@@ -139,6 +139,10 @@ static void processWatchdogEvent(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  int action);
 
+static void processGuestPanicEvent(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   int action);
+
 static void qemuProcessEventHandler(void *data, void *opaque);
 
 static int qemuStateCleanup(void);
@@ -3629,17 +3633,105 @@ cleanup:
     virObjectUnref(cfg);
 }
 
+static void
+processGuestPanicEvent(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       int action)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainEventPtr event = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Ignoring GUEST_PANICKED event from inactive domain %s",
+                  vm->def->name);
+        goto cleanup;
+    }
+
+    virDomainObjSetState(vm,
+                         VIR_DOMAIN_CRASHED,
+                         VIR_DOMAIN_CRASHED_PANICKED);
+
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_CRASHED,
+                                     VIR_DOMAIN_EVENT_CRASHED_PANICKED);
+
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
+    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        VIR_WARN("Unable to release lease on %s", vm->def->name);
+    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
+     }
+
+    switch (action) {
+    case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
+        priv->beingDestroyed = true;
+
+        if (qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0) {
+            priv->beingDestroyed = false;
+            goto cleanup;
+        }
+
+        priv->beingDestroyed = false;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("domain is not running"));
+            goto cleanup;
+        }
+
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+
+        if (event)
+            qemuDomainEventQueue(driver, event);
+
+        virDomainAuditStop(vm, "destroyed");
+
+        if (!vm->persistent) {
+            qemuDomainRemoveInactive(driver, vm);
+        }
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
+        qemuDomainSetFakeReboot(driver, vm, true);
+        qemuProcessShutdownOrReboot(driver, vm);
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
+        break;
+
+    default:
+        break;
+    }
+
+cleanup:
+    virObjectUnref(cfg);
+}
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
     virDomainObjPtr vm = processEvent->vm;
     virQEMUDriverPtr driver = opaque;
 
+    VIR_DEBUG("vm=%p", vm);
+
     virObjectLock(vm);
 
     switch (processEvent->eventType) {
     case QEMU_PROCESS_EVENT_WATCHDOG:
         processWatchdogEvent(driver, vm, processEvent->action);
+        break;
+    case QEMU_PROCESS_EVENT_GUESTPANIC:
+        processGuestPanicEvent(driver, vm, processEvent->action);
         break;
     default:
        break;
