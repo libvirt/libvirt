@@ -285,6 +285,29 @@
     </pre>
 
 
+    <p>
+      If you want to enable user namespace,set the <code>idmap</code> element.
+      the <code>uid</code> and <code>gid</code> elements have three attributes:
+    </p>
+
+    <dl>
+      <dt><code>start</code></dt>
+      <dd>First user id in container.</dd>
+      <dt><code>target</code></dt>
+      <dd>The first user id in container will be mapped to this target user
+          id in host.</dd>
+      <dt><code>count</code></dt>
+      <dd>How many users in container being allowed to map to host's user.</dd>
+    </dl>
+
+    <pre>
+  &lt;idmap&gt;
+    &lt;uid start='0' target='1000' count='10'/&gt;
+    &lt;gid start='0' target='1000' count='10'/&gt;
+  &lt;/idmap&gt;
+    </pre>
+
+
     <h3><a name="elementsSysinfo">SMBIOS System Information</a></h3>
 
     <p>

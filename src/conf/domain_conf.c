@@ -1942,6 +1942,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainTPMDefFree(def->tpm);
 
+    VIR_FREE(def->idmap.uidmap);
+    VIR_FREE(def->idmap.gidmap);
+
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
@@ -10221,6 +10224,44 @@ cleanup:
     return ret;
 }
 
+
+/* Parse the XML definition for user namespace id map.
+ *
+ * idmap has the form of
+ *
+ *   <uid start='0' target='1000' count='10'/>
+ *   <gid start='0' target='1000' count='10'/>
+ */
+static virDomainIdMapEntryPtr
+virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
+                          const xmlNodePtr *node,
+                          size_t num)
+{
+    size_t i;
+    virDomainIdMapEntryPtr idmap = NULL;
+    xmlNodePtr save_ctxt = ctxt->node;
+
+    if (VIR_ALLOC_N(idmap, num) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < num; i++) {
+        ctxt->node = node[i];
+        if (virXPathUInt("string(./@start)", ctxt, &idmap[i].start) < 0 ||
+            virXPathUInt("string(./@target)", ctxt, &idmap[i].target) < 0 ||
+            virXPathUInt("string(./@count)", ctxt, &idmap[i].count) < 0) {
+            VIR_FREE(idmap);
+            goto cleanup;
+        }
+    }
+
+cleanup:
+    ctxt->node = save_ctxt;
+    return idmap;
+}
+
+
 /* Parse the XML definition for a vcpupin or emulatorpin.
  *
  * vcpupin has the form of
@@ -12048,6 +12089,38 @@ virDomainDefParseXML(xmlDocPtr xml,
         def->redirfilter = redirfilter;
     }
     VIR_FREE(nodes);
+
+    /* analysis of the user namespace mapping */
+    if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n) {
+        def->idmap.uidmap = virDomainIdmapDefParseXML(ctxt, nodes, n);
+        if (!def->idmap.uidmap)
+            goto error;
+
+        def->idmap.nuidmap = n;
+    }
+    VIR_FREE(nodes);
+
+    if  ((n = virXPathNodeSet("./idmap/gid", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n) {
+        def->idmap.gidmap =  virDomainIdmapDefParseXML(ctxt, nodes, n);
+        if (!def->idmap.gidmap)
+            goto error;
+
+        def->idmap.ngidmap = n;
+    }
+    VIR_FREE(nodes);
+
+    if ((def->idmap.uidmap && !def->idmap.gidmap) ||
+        (!def->idmap.uidmap && def->idmap.gidmap)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("uid and gid should be mapped both"));
+            goto error;
+    }
 
     /* analysis of cpu handling */
     if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
@@ -16243,6 +16316,27 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     virBufferAddLit(buf, "  </os>\n");
+
+
+    if (def->idmap.uidmap) {
+        virBufferAddLit(buf, "  <idmap>\n");
+        for (i = 0; i < def->idmap.nuidmap; i++) {
+            virBufferAsprintf(buf,
+                              "    <uid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.uidmap[i].start,
+                              def->idmap.uidmap[i].target,
+                              def->idmap.uidmap[i].count);
+        }
+        for (i = 0; i < def->idmap.ngidmap; i++) {
+            virBufferAsprintf(buf,
+                              "    <gid start='%u' target='%u' count='%u'/>\n",
+                              def->idmap.gidmap[i].start,
+                              def->idmap.gidmap[i].target,
+                              def->idmap.gidmap[i].count);
+        }
+        virBufferAddLit(buf, "  </idmap>\n");
+    }
+
 
     if (def->features) {
         virBufferAddLit(buf, "  <features>\n");

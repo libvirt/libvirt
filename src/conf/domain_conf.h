@@ -120,6 +120,12 @@ typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
 typedef struct _virDomainRNGDef virDomainRNGDef;
 typedef virDomainRNGDef *virDomainRNGDefPtr;
 
+typedef struct _virDomainIdMapEntry virDomainIdMapEntry;
+typedef virDomainIdMapEntry *virDomainIdMapEntryPtr;
+
+typedef struct _virDomainIdMapDef virDomainIdMapDef;
+typedef virDomainIdMapDef *virDomainIdMapDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -1845,6 +1851,21 @@ struct _virDomainRNGDef {
     virDomainDeviceInfo info;
 };
 
+struct _virDomainIdMapEntry {
+    unsigned int start;
+    unsigned int target;
+    unsigned int count;
+};
+
+struct _virDomainIdMapDef {
+    size_t nuidmap;
+    virDomainIdMapEntryPtr uidmap;
+
+    size_t ngidmap;
+    virDomainIdMapEntryPtr gidmap;
+};
+
+
 void virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                     int ndevices);
 
@@ -1907,6 +1928,7 @@ struct _virDomainDef {
 
     virNumaTuneDef numatune;
     virDomainResourceDefPtr resource;
+    virDomainIdMapDef idmap;
 
     /* These 3 are based on virDomainLifeCycleAction enum flags */
     int onReboot;
