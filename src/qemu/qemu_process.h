@@ -86,6 +86,9 @@ typedef enum {
 
 int qemuProcessKill(virDomainObjPtr vm, unsigned int flags);
 
+void qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm);
+
 int qemuProcessAutoDestroyInit(virQEMUDriverPtr driver);
 void qemuProcessAutoDestroyShutdown(virQEMUDriverPtr driver);
 int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,

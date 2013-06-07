@@ -611,7 +611,7 @@ cleanup:
 }
 
 
-static void
+void
 qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
                             virDomainObjPtr vm)
 {
