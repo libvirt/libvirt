@@ -2002,7 +2002,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         int cookieinlen,
                         char **cookieout,
                         int *cookieoutlen,
-                        virDomainDefPtr def,
+                        virDomainDefPtr *def,
                         virStreamPtr st,
                         unsigned int port,
                         unsigned long flags)
@@ -2050,7 +2050,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, NULL, def, true))
+    if (!qemuMigrationIsAllowed(driver, NULL, *def, true))
         goto cleanup;
 
     /* Let migration hook filter domain XML */
@@ -2058,12 +2058,12 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         char *xml;
         int hookret;
 
-        if (!(xml = qemuDomainDefFormatXML(driver, def,
+        if (!(xml = qemuDomainDefFormatXML(driver, *def,
                                            VIR_DOMAIN_XML_SECURE |
                                            VIR_DOMAIN_XML_MIGRATABLE)))
             goto cleanup;
 
-        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
+        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, (*def)->name,
                               VIR_HOOK_QEMU_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
                               NULL, xml, &xmlout);
         VIR_FREE(xml);
@@ -2084,13 +2084,13 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 if (!newdef)
                     goto cleanup;
 
-                if (!virDomainDefCheckABIStability(def, newdef)) {
+                if (!virDomainDefCheckABIStability(*def, newdef)) {
                     virDomainDefFree(newdef);
                     goto cleanup;
                 }
 
-                virDomainDefFree(def);
-                def = newdef;
+                virDomainDefFree(*def);
+                *def = newdef;
             }
         }
     }
@@ -2108,7 +2108,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                   .ai_socktype = SOCK_STREAM };
 
         if (!(qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                    def->emulator)))
+                                                    (*def)->emulator)))
             goto cleanup;
 
         /* Listen on :: instead of 0.0.0.0 if QEMU understands it
@@ -2132,14 +2132,14 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
 
-    def = NULL;
+    *def = NULL;
     priv = vm->privateData;
     priv->origname = origname;
     origname = NULL;
@@ -2258,7 +2258,6 @@ cleanup:
     VIR_FREE(migrateFrom);
     VIR_FREE(origname);
     VIR_FREE(xmlout);
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
     if (vm) {
@@ -2301,7 +2300,7 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
                            char **cookieout,
                            int *cookieoutlen,
                            virStreamPtr st,
-                           virDomainDefPtr def,
+                           virDomainDefPtr *def,
                            unsigned long flags)
 {
     int ret;
@@ -2310,7 +2309,7 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
               "cookieout=%p, cookieoutlen=%p, st=%p, def=%p, "
               "flags=%lx",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, st, def, flags);
+              cookieout, cookieoutlen, st, *def, flags);
 
     ret = qemuMigrationPrepareAny(driver, dconn, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, def,
@@ -2328,7 +2327,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                            int *cookieoutlen,
                            const char *uri_in,
                            char **uri_out,
-                           virDomainDefPtr def,
+                           virDomainDefPtr *def,
                            unsigned long flags)
 {
     static int port = 0;
@@ -2344,7 +2343,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
               "def=%p, flags=%lx",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
-              def, flags);
+              *def, flags);
 
     /* The URI passed in may be NULL or a string "tcp://somehostname:port".
      *

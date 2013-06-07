@@ -9707,8 +9707,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                     st, def, flags);
-    def = NULL;
+                                     st, &def, flags);
 
 cleanup:
     virDomainDefFree(def);
@@ -9783,8 +9782,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     def, flags);
-    def = NULL;
+                                     &def, flags);
 
 cleanup:
     virDomainDefFree(def);
@@ -10019,8 +10017,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     def, flags);
-    def = NULL;
+                                     &def, flags);
 
 cleanup:
     virDomainDefFree(def);
@@ -10081,8 +10078,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
-                                     st, def, flags);
-    def = NULL;
+                                     st, &def, flags);
 
 cleanup:
     virDomainDefFree(def);
