@@ -137,6 +137,7 @@ extern int virLogReset(void);
 extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
+extern int virLogPriorityFromSyslog(int priority);
 extern void virLogMessage(const char *category, int priority,
                           const char *funcname, long long linenr,
                           unsigned int flags,

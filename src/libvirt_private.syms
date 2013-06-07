@@ -809,11 +809,13 @@ virLogMessage;
 virLogParseDefaultPriority;
 virLogParseFilters;
 virLogParseOutputs;
+virLogPriorityFromSyslog;
 virLogReset;
 virLogSetBufferSize;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
 virLogUnlock;
+virLogVMessage;
 
 
 # memory.h

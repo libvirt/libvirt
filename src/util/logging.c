@@ -919,6 +919,31 @@ static int virLogAddOutputToSyslog(int priority, const char *ident) {
     }
     return 0;
 }
+
+int virLogPriorityFromSyslog(int priority)
+{
+    switch (priority) {
+    case LOG_EMERG:
+    case LOG_ALERT:
+    case LOG_CRIT:
+    case LOG_ERR:
+        return VIR_LOG_ERROR;
+    case LOG_WARNING:
+    case LOG_NOTICE:
+        return VIR_LOG_WARN;
+    case LOG_INFO:
+        return VIR_LOG_INFO;
+    case LOG_DEBUG:
+        return VIR_LOG_DEBUG;
+    }
+    return VIR_LOG_ERROR;
+}
+
+#else /* HAVE_SYSLOG_H */
+int virLogPriorityFromSyslog(int priority ATTRIBUTE_UNUSED)
+{
+    return VIR_LOG_ERROR;
+}
 #endif /* HAVE_SYSLOG_H */
 
 #define IS_SPACE(cur)                                                   \

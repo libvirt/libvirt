@@ -350,15 +350,36 @@ static int udevGenerateDeviceName(struct udev_device *device,
 }
 
 
-static void udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
-                            int priority ATTRIBUTE_UNUSED,
-                            const char *file,
-                            int line,
-                            const char *fn,
-                            const char *fmt,
-                            va_list args)
+typedef void (*udevLogFunctionPtr)(struct udev *udev,
+                                   int priority,
+                                   const char *file,
+                                   int line,
+                                   const char *fn,
+                                   const char *format,
+                                   va_list args);
+
+static void
+ATTRIBUTE_FMT_PRINTF(6,0)
+udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
+                int priority,
+                const char *file,
+                int line,
+                const char *fn,
+                const char *fmt,
+                va_list args)
 {
-    VIR_ERROR_INT(file, fn, line, fmt, args);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *format = NULL;
+
+    virBufferAdd(&buf, fmt, -1);
+    virBufferTrim(&buf, "\n", -1);
+
+    format = virBufferContentAndReset(&buf);
+
+    virLogVMessage(file, virLogPriorityFromSyslog(priority),
+                   fn, line, 0, format ? format : fmt, args);
+
+    VIR_FREE(format);
 }
 
 
@@ -1662,7 +1683,8 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
      * its return value.
      */
     udev = udev_new();
-    udev_set_log_fn(udev, udevLogFunction);
+    /* cast to get rid of missing-format-attribute warning */
+    udev_set_log_fn(udev, (udevLogFunctionPtr) udevLogFunction);
 
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (priv->udev_monitor == NULL) {
