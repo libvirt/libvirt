@@ -1305,6 +1305,10 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
                                  path);
             goto cleanup;
         }
+
+        if (virLXCControllerChown(ctrl, path) < 0)
+            goto cleanup;
+
         VIR_FREE(path);
     }
 
