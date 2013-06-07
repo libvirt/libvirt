@@ -3411,10 +3411,10 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(ipdef->hosts,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : ipdef->nhosts,
-                               ipdef->nhosts, host) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(ipdef->hosts,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : ipdef->nhosts,
+                                     ipdef->nhosts, host) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3517,10 +3517,10 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(ipdef->ranges,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : ipdef->nranges,
-                               ipdef->nranges, range) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(ipdef->ranges,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : ipdef->nranges,
+                                     ipdef->nranges, range) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3612,10 +3612,10 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(def->forward.ifs,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : def->forward.nifs,
-                               def->forward.nifs, iface) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(def->forward.ifs,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : def->forward.nifs,
+                                     def->forward.nifs, iface) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3739,10 +3739,10 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
         (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(def->portGroups,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : def->nPortGroups,
-                               def->nPortGroups, portgroup) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(def->portGroups,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : def->nPortGroups,
+                                     def->nPortGroups, portgroup) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3823,9 +3823,9 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(dns->hosts,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : dns->nhosts, dns->nhosts, host) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(dns->hosts,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : dns->nhosts, dns->nhosts, host) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3911,9 +3911,9 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(dns->srvs,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : dns->nsrvs, dns->nsrvs, srv) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(dns->srvs,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : dns->nsrvs, dns->nsrvs, srv) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -3993,9 +3993,9 @@ virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT(dns->txts,
-                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                               ? 0 : dns->ntxts, dns->ntxts, txt) < 0) {
+        if (VIR_INSERT_ELEMENT_QUIET(dns->txts,
+                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                                     ? 0 : dns->ntxts, dns->ntxts, txt) < 0) {
             virReportOOMError();
             goto cleanup;
         }

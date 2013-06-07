@@ -35,6 +35,7 @@
 
 #ifndef WIN32
 
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 static int envsort(const void *a, const void *b) {
     const char *const*astrptr = a;

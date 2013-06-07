@@ -2749,8 +2749,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 
         /* create the serial port definition from the console definition */
         if (def->nserials == 0) {
-            if (VIR_APPEND_ELEMENT(def->serials, def->nserials,
-                                   def->consoles[0]) < 0)
+            if (VIR_APPEND_ELEMENT_QUIET(def->serials,
+                                         def->nserials,
+                                         def->consoles[0]) < 0)
                 goto no_memory;
 
             /* modify it to be a serial port */
@@ -10435,7 +10436,7 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
         cont->opts.vioserial.vectors = -1;
     }
 
-    if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
+    if (VIR_APPEND_ELEMENT_QUIET(def->controllers, def->ncontrollers, cont) < 0) {
         VIR_FREE(cont);
         virReportOOMError();
         return -1;
@@ -11898,10 +11899,10 @@ virDomainDefParseXML(xmlDocPtr xml,
             ii = 0;
             primaryVideo = true;
         }
-        if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
-                                       ii,
-                                       def->nvideos,
-                                       video) < 0) {
+        if (VIR_INSERT_ELEMENT_INPLACE_QUIET(def->videos,
+                                             ii,
+                                             def->nvideos,
+                                             video) < 0) {
             virDomainVideoDefFree(video);
             goto error;
         }

@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(buffer, len) < 0) {
+    if (VIR_ALLOC_N_QUIET(buffer, len) < 0) {
         fprintf(stderr, "out of memory\n");
         goto cleanup;
     }

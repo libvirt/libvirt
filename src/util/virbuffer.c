@@ -126,7 +126,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 
     size = buf->use + len + 1000;
 
-    if (VIR_REALLOC_N(buf->content, size) < 0) {
+    if (VIR_REALLOC_N_QUIET(buf->content, size) < 0) {
         virBufferSetError(buf, errno);
         return -1;
     }
@@ -382,7 +382,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     }
 
     if (xalloc_oversized(6, len) ||
-        VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
+        VIR_ALLOC_N_QUIET(escaped, 6 * len + 1) < 0) {
         virBufferSetError(buf, errno);
         return;
     }
@@ -499,7 +499,7 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
     }
 
     if (xalloc_oversized(2, len) ||
-        VIR_ALLOC_N(escaped, 2 * len + 1) < 0) {
+        VIR_ALLOC_N_QUIET(escaped, 2 * len + 1) < 0) {
         virBufferSetError(buf, errno);
         return;
     }
@@ -597,7 +597,7 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
     if (*str) {
         len = strlen(str);
         if (xalloc_oversized(4, len) ||
-            VIR_ALLOC_N(escaped, 4 * len + 3) < 0) {
+            VIR_ALLOC_N_QUIET(escaped, 4 * len + 3) < 0) {
             virBufferSetError(buf, errno);
             return;
         }

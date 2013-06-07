@@ -204,14 +204,14 @@ virLogOnceInit(void)
         return -1;
 
     virLogLock();
-    if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
+    if (VIR_ALLOC_N_QUIET(virLogBuffer, virLogSize + 1) < 0) {
         /*
          * The debug buffer is not a critical component, allow startup
          * even in case of failure to allocate it in case of a
          * configuration mistake.
          */
         virLogSize = 64 * 1024;
-        if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
+        if (VIR_ALLOC_N_QUIET(virLogBuffer, virLogSize + 1) < 0) {
             pbm = "Failed to allocate debug buffer: deactivating debug log\n";
             virLogSize = 0;
         } else {
@@ -223,7 +223,7 @@ virLogOnceInit(void)
     virLogEnd = 0;
     virLogDefaultPriority = VIR_LOG_DEFAULT;
 
-    if (VIR_ALLOC(virLogRegex) >= 0) {
+    if (VIR_ALLOC_QUIET(virLogRegex) >= 0) {
         if (regcomp(virLogRegex, VIR_LOG_REGEX, REG_EXTENDED) != 0)
             VIR_FREE(virLogRegex);
     }
@@ -276,7 +276,7 @@ virLogSetBufferSize(int size)
     }
 
     virLogSize = size * 1024;
-    if (VIR_ALLOC_N(virLogBuffer, virLogSize + 1) < 0) {
+    if (VIR_ALLOC_N_QUIET(virLogBuffer, virLogSize + 1) < 0) {
         pbm = "Failed to allocate debug buffer of %d kB\n";
         virLogBuffer = oldLogBuffer;
         virLogSize = oldsize;
@@ -563,7 +563,7 @@ virLogDefineFilter(const char *match,
         goto cleanup;
     }
     i = virLogNbFilters;
-    if (VIR_REALLOC_N(virLogFilters, virLogNbFilters + 1)) {
+    if (VIR_REALLOC_N_QUIET(virLogFilters, virLogNbFilters + 1)) {
         i = -1;
         VIR_FREE(mdup);
         goto cleanup;
@@ -676,7 +676,7 @@ virLogDefineOutput(virLogOutputFunc f,
     }
 
     virLogLock();
-    if (VIR_REALLOC_N(virLogOutputs, virLogNbOutputs + 1)) {
+    if (VIR_REALLOC_N_QUIET(virLogOutputs, virLogNbOutputs + 1)) {
         VIR_FREE(ndup);
         goto cleanup;
     }

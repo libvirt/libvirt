@@ -2008,8 +2008,8 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaq
 
     *copyAddr = *newDevAddr;
 
-    if (VIR_APPEND_ELEMENT(*addrList->iommuGroupDevices,
-                           *addrList->nIommuGroupDevices, copyAddr) < 0) {
+    if (VIR_APPEND_ELEMENT_QUIET(*addrList->iommuGroupDevices,
+                                 *addrList->nIommuGroupDevices, copyAddr) < 0) {
         virReportOOMError();
         goto cleanup;
     }

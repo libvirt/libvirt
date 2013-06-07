@@ -1000,10 +1000,10 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
         VIR_STRDUP(root->dst, "/") < 0)
         goto error;
 
-    if (VIR_INSERT_ELEMENT(vm->def->fss,
-                           0,
-                           vm->def->nfss,
-                           root) < 0)
+    if (VIR_INSERT_ELEMENT_QUIET(vm->def->fss,
+                                 0,
+                                 vm->def->nfss,
+                                 root) < 0)
         goto no_memory;
 
     return 0;

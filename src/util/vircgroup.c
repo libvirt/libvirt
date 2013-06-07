@@ -1171,7 +1171,7 @@ static int virCgroupPartitionEscape(char **path)
     if ((rc = virCgroupPartitionNeedsEscaping(*path)) <= 0)
         return rc;
 
-    if (VIR_INSERT_ELEMENT(*path, 0, len, escape) < 0)
+    if (VIR_INSERT_ELEMENT_QUIET(*path, 0, len, escape) < 0)
         return -ENOMEM;
 
     return 0;

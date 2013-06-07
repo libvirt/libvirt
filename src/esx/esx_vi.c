@@ -1750,7 +1750,7 @@ esxVI_Alloc(void **ptrptr, size_t size)
         return -1;
     }
 
-    if (virAllocN(ptrptr, size, 1) < 0) {
+    if (virAllocN(ptrptr, size, 1, false, 0, NULL, NULL, 0) < 0) {
         virReportOOMError();
         return -1;
     }

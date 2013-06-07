@@ -1224,7 +1224,8 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
         if (!disk_seclabel)
             return -1;
         disk_seclabel->norelabel = true;
-        if (VIR_APPEND_ELEMENT(disk->seclabels, disk->nseclabels, disk_seclabel) < 0) {
+        if (VIR_APPEND_ELEMENT_QUIET(disk->seclabels, disk->nseclabels,
+                                     disk_seclabel) < 0) {
             virReportOOMError();
             virSecurityDeviceLabelDefFree(disk_seclabel);
             return -1;

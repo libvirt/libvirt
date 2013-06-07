@@ -487,7 +487,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
             if (generated &&
-                VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel) < 0) {
+                VIR_APPEND_ELEMENT_QUIET(vm->seclabels, vm->nseclabels, seclabel) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
