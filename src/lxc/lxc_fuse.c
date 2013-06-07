@@ -48,6 +48,8 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
     int res;
     char *mempath = NULL;
     struct stat sb;
+    struct fuse_context *context = fuse_get_context();
+    virDomainDefPtr def = (virDomainDefPtr)context->private_data;
 
     memset(stbuf, 0, sizeof(struct stat));
     if (virAsprintf(&mempath, "/proc/%s", path) < 0) {
@@ -66,6 +68,8 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
             goto cleanup;
         }
 
+        stbuf->st_uid = def->idmap.uidmap ? def->idmap.uidmap[0].target : 0;
+        stbuf->st_gid = def->idmap.gidmap ? def->idmap.gidmap[0].target : 0;
         stbuf->st_mode = sb.st_mode;
         stbuf->st_nlink = 1;
         stbuf->st_blksize = sb.st_blksize;
