@@ -1548,6 +1548,10 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
         goto cleanup;
     }
 
+    if ((virLXCControllerChown(ctrl, ctrl->devptmx) < 0) ||
+        (virLXCControllerChown(ctrl, devpts) < 0))
+         goto cleanup;
+
     ret = 0;
 
 cleanup:
