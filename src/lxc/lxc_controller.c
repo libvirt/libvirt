@@ -1121,6 +1121,27 @@ cleanup2:
     return rc;
 }
 
+static int
+virLXCControllerChown(virLXCControllerPtr ctrl, char *path)
+{
+    uid_t uid;
+    gid_t gid;
+
+    if (!ctrl->def->idmap.uidmap)
+        return 0;
+
+    uid = ctrl->def->idmap.uidmap[0].target;
+    gid = ctrl->def->idmap.gidmap[0].target;
+
+    if (chown(path, uid, gid) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to change owner of %s to %u:%u"),
+                             path, uid, gid);
+        return -1;
+    }
+
+    return 0;
+}
 
 static int
 virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
@@ -1383,13 +1404,14 @@ static int lxcSetPersonality(virDomainDefPtr def)
  * *TTYNAME.  Heavily borrowed from glibc, but doesn't require that
  * devpts == "/dev/pts" */
 static int
-lxcCreateTty(char *ptmx, int *ttymaster, char **ttyName)
+lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
+             char **ttyName, char **ttyHostPath)
 {
     int ret = -1;
     int ptyno;
     int unlock = 0;
 
-    if ((*ttymaster = open(ptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+    if ((*ttymaster = open(ctrl->devptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
         goto cleanup;
 
     if (ioctl(*ttymaster, TIOCSPTLCK, &unlock) < 0)
@@ -1404,7 +1426,9 @@ lxcCreateTty(char *ptmx, int *ttymaster, char **ttyName)
      * while glibc has to fstat(), fchmod(), and fchown() for older
      * kernels, we can skip those steps.  ptyno shouldn't currently be
      * anything other than 0, but let's play it safe.  */
-    if (virAsprintf(ttyName, "/dev/pts/%d", ptyno) < 0) {
+    if ((virAsprintf(ttyName, "/dev/pts/%d", ptyno) < 0) ||
+        (virAsprintf(ttyHostPath, "/%s/%s.devpts/%d", LXC_STATE_DIR,
+                    ctrl->def->name, ptyno) < 0)) {
         virReportOOMError();
         errno = ENOMEM;
         goto cleanup;
@@ -1538,18 +1562,30 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
                               char **containerTTYPaths)
 {
     size_t i;
+    int ret = -1;
+    char *ttyHostPath = NULL;
 
     for (i = 0; i < ctrl->nconsoles; i++) {
         VIR_DEBUG("Opening tty on private %s", ctrl->devptmx);
-        if (lxcCreateTty(ctrl->devptmx,
+        if (lxcCreateTty(ctrl,
                          &ctrl->consoles[i].contFd,
-                         &containerTTYPaths[i]) < 0) {
+                         &containerTTYPaths[i], &ttyHostPath) < 0) {
             virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
-            return -1;
+            goto cleanup;
         }
+
+        /* Change the owner of tty device to the root user of container */
+        if (virLXCControllerChown(ctrl, ttyHostPath) < 0)
+            goto cleanup;
+
+        VIR_FREE(ttyHostPath);
     }
-    return 0;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(ttyHostPath);
+    return ret;
 }
 
 
