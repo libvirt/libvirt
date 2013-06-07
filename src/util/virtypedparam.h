@@ -50,6 +50,10 @@ int virTypedParamsReplaceString(virTypedParameterPtr *params,
                                 const char *name,
                                 const char *value);
 
+int virTypedParamsCopy(virTypedParameterPtr *dst,
+                       virTypedParameterPtr src,
+                       int nparams);
+
 char *virTypedParameterToString(virTypedParameterPtr param);
 
 VIR_ENUM_DECL(virTypedParameter)

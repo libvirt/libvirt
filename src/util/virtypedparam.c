@@ -395,6 +395,40 @@ error:
 }
 
 
+int
+virTypedParamsCopy(virTypedParameterPtr *dst,
+                   virTypedParameterPtr src,
+                   int nparams)
+{
+    int i;
+
+    *dst = NULL;
+    if (!src || nparams <= 0)
+        return 0;
+
+    if (VIR_ALLOC_N(*dst, nparams) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    for (i = 0; i < nparams; i++) {
+        ignore_value(virStrcpyStatic((*dst)[i].field, src[i].field));
+        (*dst)[i].type = src[i].type;
+        if (src[i].type == VIR_TYPED_PARAM_STRING) {
+            if (VIR_STRDUP((*dst)[i].value.s, src[i].value.s) < 0) {
+                virTypedParamsFree(*dst, i - 1);
+                *dst = NULL;
+                return -1;
+            }
+        } else {
+            (*dst)[i].value = src[i].value;
+        }
+    }
+
+    return 0;
+}
+
+
 /* The following APIs are public and their signature may never change. */
 
 /**
