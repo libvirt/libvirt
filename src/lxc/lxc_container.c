@@ -683,7 +683,7 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(char *sec_mount_options)
+static int lxcContainerMountBasicFS(void)
 {
     const struct {
         const char *src;
@@ -709,9 +709,8 @@ static int lxcContainerMountBasicFS(char *sec_mount_options)
 #endif
     };
     int i, rc = -1;
-    char *opts = NULL;
 
-    VIR_DEBUG("Mounting basic filesystems sec_mount_options=%s", sec_mount_options);
+    VIR_DEBUG("Mounting basic filesystems");
 
     for (i = 0; i < ARRAY_CARDINALITY(mnts); i++) {
         const char *srcpath = NULL;
@@ -750,31 +749,10 @@ static int lxcContainerMountBasicFS(char *sec_mount_options)
         }
     }
 
-    /*
-     * tmpfs is limited to 64kb, since we only have device nodes in there
-     * and don't want to DOS the entire OS RAM usage
-     */
-
-    if (virAsprintf(&opts,
-                    "mode=755,size=65536%s", sec_mount_options) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Mount devfs on /dev type=tmpfs flags=%x, opts=%s",
-              MS_NOSUID, opts);
-    if (mount("devfs", "/dev", "tmpfs", MS_NOSUID, opts) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to mount %s on %s type %s (%s)"),
-                             "devfs", "/dev", "tmpfs", opts);
-        goto cleanup;
-    }
-
     rc = 0;
 
 cleanup:
     VIR_DEBUG("rc=%d", rc);
-    VIR_FREE(opts);
     return rc;
 }
 
@@ -810,6 +788,30 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return 0;
 }
 #endif
+
+static int lxcContainerMountFSDev(virDomainDefPtr def,
+                                  const char *stateDir)
+{
+    int ret;
+    char *path = NULL;
+
+    VIR_DEBUG("Mount /dev/ stateDir=%s", stateDir);
+
+    if ((ret = virAsprintf(&path, "/.oldroot/%s/%s.dev",
+                           stateDir, def->name)) < 0)
+        return ret;
+
+    VIR_DEBUG("Tring to move %s to /dev", path);
+
+    if ((ret = mount(path, "/dev", NULL, MS_MOVE, NULL)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on /dev"),
+                             path);
+    }
+
+    VIR_FREE(path);
+    return ret;
+}
 
 static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
                                      const char *stateDir)
@@ -847,21 +849,9 @@ cleanup:
     return ret;
 }
 
-static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
+static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
 {
     size_t i;
-    const struct {
-        int maj;
-        int min;
-        mode_t mode;
-        const char *path;
-    } devs[] = {
-        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL, 0666, "/dev/null" },
-        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO, 0666, "/dev/zero" },
-        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/dev/full" },
-        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/dev/random" },
-        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/dev/urandom" },
-    };
     const struct {
         const char *src;
         const char *dst;
@@ -871,18 +861,6 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         { "/proc/self/fd/2", "/dev/stderr" },
         { "/proc/self/fd", "/dev/fd" },
     };
-
-    /* Populate /dev/ with a few important bits */
-    for (i = 0; i < ARRAY_CARDINALITY(devs); i++) {
-        dev_t dev = makedev(devs[i].maj, devs[i].min);
-        if (mknod(devs[i].path, S_IFCHR, dev) < 0 ||
-            chmod(devs[i].path, devs[i].mode)) {
-            virReportSystemError(errno,
-                                 _("Failed to make device %s"),
-                                 devs[i].path);
-            return -1;
-        }
-    }
 
     for (i = 0; i < ARRAY_CARDINALITY(links); i++) {
         if (symlink(links[i].src, links[i].dst) < 0) {
@@ -1802,7 +1780,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(sec_mount_options) < 0)
+    if (lxcContainerMountBasicFS() < 0)
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
@@ -1814,12 +1792,16 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (virCgroupIsolateMount(cgroup, "/.oldroot/", sec_mount_options) < 0)
         goto cleanup;
 
+    /* Mounts /dev */
+    if (lxcContainerMountFSDev(vmDef, stateDir) < 0)
+        goto cleanup;
+
     /* Mounts /dev/pts */
     if (lxcContainerMountFSDevPTS(vmDef, stateDir) < 0)
         goto cleanup;
 
-    /* Populates device nodes in /dev/ */
-    if (lxcContainerPopulateDevices(ttyPaths, nttyPaths) < 0)
+    /* Setup device nodes in /dev/ */
+    if (lxcContainerSetupDevices(ttyPaths, nttyPaths) < 0)
         goto cleanup;
 
     /* Sets up any non-root mounts from guest config */

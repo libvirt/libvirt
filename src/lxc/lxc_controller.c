@@ -1192,6 +1192,103 @@ cleanup:
     return ret;
 }
 
+static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
+{
+    char *mount_options = NULL;
+    char *opts = NULL;
+    char *dev = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Setting up /dev/ for container");
+
+    mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
+                                                      ctrl->def);
+
+    if (virAsprintf(&dev, "/%s/%s.dev",
+                    LXC_STATE_DIR, ctrl->def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileMakePath(dev) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to make path %s"), dev);
+        goto cleanup;
+    }
+
+    /*
+     * tmpfs is limited to 64kb, since we only have device nodes in there
+     * and don't want to DOS the entire OS RAM usage
+     */
+
+    if (virAsprintf(&opts,
+                    "mode=755,size=65536%s", mount_options) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Mount devfs on %s type=tmpfs flags=%x, opts=%s",
+              dev, MS_NOSUID, opts);
+    if (mount("devfs", dev, "tmpfs", MS_NOSUID, opts) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount devfs on %s type %s (%s)"),
+                             dev, "tmpfs", opts);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(opts);
+    VIR_FREE(mount_options);
+    VIR_FREE(dev);
+    return ret;
+}
+
+static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
+{
+    size_t i;
+    int ret = -1;
+    char *path = NULL;
+    const struct {
+        int maj;
+        int min;
+        mode_t mode;
+        const char *path;
+    } devs[] = {
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL, 0666, "/null" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO, 0666, "/zero" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/full" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/random" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/urandom" },
+    };
+
+    if (virLXCControllerSetupDev(ctrl) < 0)
+        goto cleanup;
+
+    /* Populate /dev/ with a few important bits */
+    for (i = 0; i < ARRAY_CARDINALITY(devs); i++) {
+        if (virAsprintf(&path, "/%s/%s.dev/%s",
+                        LXC_STATE_DIR, ctrl->def->name, devs[i].path) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        dev_t dev = makedev(devs[i].maj, devs[i].min);
+        if (mknod(path, S_IFCHR, dev) < 0 ||
+            chmod(path, devs[i].mode)) {
+            virReportSystemError(errno,
+                                 _("Failed to make device %s"),
+                                 path);
+            goto cleanup;
+        }
+        VIR_FREE(path);
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
 
 
 /**
@@ -1592,6 +1689,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
         goto cleanup;
 
     if (virLXCControllerSetupDevPTS(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerPopulateDevices(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupFuse(ctrl) < 0)
