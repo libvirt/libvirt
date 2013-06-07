@@ -283,7 +283,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
          * running in disconnected operation, and report a less
          * useful Avahi string
          */
-        ret = virAsprintf(&data->mdns_name, "Virtualization Host");
+        ret = VIR_STRDUP(data->mdns_name, "Virtualization Host");
     } else {
         char *tmp;
         /* Extract the host part of the potentially FQDN */

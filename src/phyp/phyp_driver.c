@@ -255,17 +255,11 @@ phypGetSystemType(virConnectPtr conn)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    char *cmd = NULL;
     char *ret = NULL;
     int exit_status = 0;
 
-    if (virAsprintf(&cmd, "lshmc -V") < 0) {
-        virReportOOMError();
-        return -1;
-    }
-    ret = phypExec(session, cmd, &exit_status, conn);
+    ret = phypExec(session, "lshmc -V", &exit_status, conn);
 
-    VIR_FREE(cmd);
     VIR_FREE(ret);
     return exit_status;
 }

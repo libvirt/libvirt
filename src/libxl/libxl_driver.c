@@ -1191,29 +1191,23 @@ libxlStateInitialize(bool privileged,
     if (!(libxl_driver->domains = virDomainObjListNew()))
         goto error;
 
-    if (virAsprintf(&libxl_driver->configDir,
-                    "%s", LIBXL_CONFIG_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->configDir, LIBXL_CONFIG_DIR) < 0)
+        goto error;
 
-    if (virAsprintf(&libxl_driver->autostartDir,
-                    "%s", LIBXL_AUTOSTART_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->autostartDir, LIBXL_AUTOSTART_DIR) < 0)
+        goto error;
 
-    if (virAsprintf(&libxl_driver->logDir,
-                    "%s", LIBXL_LOG_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->logDir, LIBXL_LOG_DIR) < 0)
+        goto error;
 
-    if (virAsprintf(&libxl_driver->stateDir,
-                    "%s", LIBXL_STATE_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->stateDir, LIBXL_STATE_DIR) < 0)
+        goto error;
 
-    if (virAsprintf(&libxl_driver->libDir,
-                    "%s", LIBXL_LIB_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->libDir, LIBXL_LIB_DIR) < 0)
+        goto error;
 
-    if (virAsprintf(&libxl_driver->saveDir,
-                    "%s", LIBXL_SAVE_DIR) == -1)
-        goto out_of_memory;
+    if (VIR_STRDUP(libxl_driver->saveDir, LIBXL_SAVE_DIR) < 0)
+        goto error;
 
     if (virFileMakePath(libxl_driver->logDir) < 0) {
         VIR_ERROR(_("Failed to create log dir '%s': %s"),

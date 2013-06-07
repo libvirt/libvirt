@@ -505,7 +505,7 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
 
     switch (redirdev->bus) {
     case VIR_DOMAIN_REDIRDEV_BUS_USB:
-        if (virAsprintf(&address, "USB redirdev") < 0) {
+        if (VIR_STRDUP_QUIET(address, "USB redirdev") < 0) {
             VIR_WARN("OOM while encoding audit message");
             goto cleanup;
         }
