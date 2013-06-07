@@ -155,6 +155,7 @@ typedef enum {
     VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process */
     VIR_DOMAIN_RUNNING_WAKEUP = 8,          /* returned from pmsuspended due to
                                                wakeup event */
+    VIR_DOMAIN_RUNNING_CRASHED = 9,         /* resumed from crashed */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_RUNNING_LAST
@@ -180,6 +181,7 @@ typedef enum {
     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot */
     VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process */
     VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot */
+    VIR_DOMAIN_PAUSED_GUEST_PANICKED = 10, /* paused due to a guest panicked event */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_PAUSED_LAST
@@ -189,6 +191,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown */
     VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request */
+    VIR_DOMAIN_SHUTDOWN_CRASHED = 2,    /* domain crashed */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_SHUTDOWN_LAST
@@ -212,6 +215,7 @@ typedef enum {
 
 typedef enum {
     VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason */
+    VIR_DOMAIN_CRASHED_PANICKED = 1,    /* domain panicked */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_CRASHED_LAST
@@ -3409,6 +3413,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED = 5,
     VIR_DOMAIN_EVENT_SHUTDOWN = 6,
     VIR_DOMAIN_EVENT_PMSUSPENDED = 7,
+    VIR_DOMAIN_EVENT_CRASHED = 8,
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_LAST
@@ -3539,6 +3544,17 @@ typedef enum {
     VIR_DOMAIN_EVENT_PMSUSPENDED_LAST
 #endif
 } virDomainEventPMSuspendedDetailType;
+
+/*
+ * Details about the 'crashed' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0, /* Guest was panicked */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_CRASHED_LAST
+#endif
+} virDomainEventCrashedDetailType;
 
 /**
  * virConnectDomainEventCallback:

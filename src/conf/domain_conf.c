@@ -645,7 +645,8 @@ VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "unpaused",
               "migration canceled",
               "save canceled",
-              "wakeup")
+              "wakeup",
+              "crashed")
 
 VIR_ENUM_IMPL(virDomainBlockedReason, VIR_DOMAIN_BLOCKED_LAST,
               "unknown")
@@ -660,11 +661,13 @@ VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "watchdog",
               "from snapshot",
               "shutdown",
-              "snapshot")
+              "snapshot",
+              "panicked")
 
 VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
               "unknown",
-              "user")
+              "user",
+              "crashed")
 
 VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "unknown",
@@ -677,7 +680,8 @@ VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "from snapshot")
 
 VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
-              "unknown")
+              "unknown",
+              "panicked")
 
 VIR_ENUM_IMPL(virDomainPMSuspendedReason, VIR_DOMAIN_PMSUSPENDED_LAST,
               "unknown")
