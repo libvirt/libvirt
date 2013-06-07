@@ -10225,6 +10225,19 @@ cleanup:
 }
 
 
+static int virDomainIdMapEntrySort(const void *a, const void *b)
+{
+    const virDomainIdMapEntryPtr entrya = (const virDomainIdMapEntryPtr) a;
+    const virDomainIdMapEntryPtr entryb = (const virDomainIdMapEntryPtr) b;
+
+    if (entrya->start > entryb->start)
+        return 1;
+    else if (entrya->start < entryb->start)
+        return -1;
+    else
+        return 0;
+}
+
 /* Parse the XML definition for user namespace id map.
  *
  * idmap has the form of
@@ -10254,6 +10267,17 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
             VIR_FREE(idmap);
             goto cleanup;
         }
+    }
+
+    qsort(idmap, num, sizeof(idmap[0]), virDomainIdMapEntrySort);
+
+    if (idmap[0].start != 0) {
+        /* Root user of container hasn't been mapped to any user of host,
+         * return error. */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("You must map the root user of container"));
+        VIR_FREE(idmap);
+        goto cleanup;
     }
 
 cleanup:
