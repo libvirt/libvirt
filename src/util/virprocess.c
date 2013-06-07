@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <dirent.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
@@ -513,51 +512,32 @@ int virProcessGetNamespaces(pid_t pid,
                             int **fdlist)
 {
     int ret = -1;
-    DIR *dh = NULL;
-    struct dirent *de;
-    char *nsdir = NULL;
     char *nsfile = NULL;
-    size_t i;
+    size_t i = 0;
+    const char *ns[] = { "user", "ipc", "uts", "net", "pid", "mnt" };
 
     *nfdlist = 0;
     *fdlist = NULL;
 
-    if (virAsprintf(&nsdir, "/proc/%llu/ns",
-                    (unsigned long long)pid) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (!(dh = opendir(nsdir))) {
-        virReportSystemError(errno,
-                             _("Cannot read directory %s"),
-                             nsdir);
-        goto cleanup;
-    }
-
-    while ((de = readdir(dh))) {
+    for (i = 0; i < ARRAY_CARDINALITY(ns); i++) {
         int fd;
-        if (de->d_name[0] == '.')
-            continue;
 
-        if (VIR_EXPAND_N(*fdlist, *nfdlist, 1) < 0) {
+        if (virAsprintf(&nsfile, "/proc/%llu/ns/%s",
+                        (unsigned long long)pid,
+                        ns[i]) < 0) {
             virReportOOMError();
             goto cleanup;
         }
 
-        if (virAsprintf(&nsfile, "%s/%s", nsdir, de->d_name) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
+        if ((fd = open(nsfile, O_RDWR)) >= 0) {
+            if (VIR_EXPAND_N(*fdlist, *nfdlist, 1) < 0) {
+                VIR_FORCE_CLOSE(fd);
+                virReportOOMError();
+                goto cleanup;
+            }
 
-        if ((fd = open(nsfile, O_RDWR)) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to open %s"),
-                                 nsfile);
-            goto cleanup;
+            (*fdlist)[(*nfdlist)-1] = fd;
         }
-
-        (*fdlist)[(*nfdlist)-1] = fd;
 
         VIR_FREE(nsfile);
     }
@@ -565,14 +545,10 @@ int virProcessGetNamespaces(pid_t pid,
     ret = 0;
 
 cleanup:
-    if (dh)
-        closedir(dh);
-    VIR_FREE(nsdir);
     VIR_FREE(nsfile);
     if (ret < 0) {
-        for (i = 0; i < *nfdlist; i++) {
+        for (i = 0; i < *nfdlist; i++)
             VIR_FORCE_CLOSE((*fdlist)[i]);
-        }
         VIR_FREE(*fdlist);
     }
     return ret;
@@ -590,7 +566,13 @@ int virProcessSetNamespaces(size_t nfdlist,
         return -1;
     }
     for (i = 0; i < nfdlist; i++) {
-        if (setns(fdlist[i], 0) < 0) {
+        /* We get EINVAL if new NS is same as the current
+         * NS, or if the fd namespace doesn't match the
+         * type passed to setns()'s second param. Since we
+         * pass 0, we know the EINVAL is harmless
+         */
+        if (setns(fdlist[i], 0) < 0 &&
+            errno != EINVAL) {
             virReportSystemError(errno, "%s",
                                  _("Unable to join domain namespace"));
             return -1;
