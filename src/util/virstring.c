@@ -321,35 +321,41 @@ virStrToDouble(char const *s,
     return 0;
 }
 
-/**
- * virVasprintf
- *
- * like glibc's vasprintf but makes sure *strp == NULL on failure
- */
 int
-virVasprintf(char **strp, const char *fmt, va_list list)
+virVasprintfInternal(bool report,
+                     int domcode,
+                     const char *filename,
+                     const char *funcname,
+                     size_t linenr,
+                     char **strp,
+                     const char *fmt,
+                     va_list list)
 {
     int ret;
 
-    if ((ret = vasprintf(strp, fmt, list)) == -1)
+    if ((ret = vasprintf(strp, fmt, list)) == -1) {
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
         *strp = NULL;
-
+    }
     return ret;
 }
 
-/**
- * virAsprintf
- *
- * like glibc's_asprintf but makes sure *strp == NULL on failure
- */
 int
-virAsprintf(char **strp, const char *fmt, ...)
+virAsprintfInternal(bool report,
+                    int domcode,
+                    const char *filename,
+                    const char *funcname,
+                    size_t linenr,
+                    char **strp,
+                    const char *fmt, ...)
 {
     va_list ap;
     int ret;
 
     va_start(ap, fmt);
-    ret = virVasprintf(strp, fmt, ap);
+    ret = virVasprintfInternal(report, domcode, filename,
+                               funcname, linenr, strp, fmt, ap);
     va_end(ap);
     return ret;
 }

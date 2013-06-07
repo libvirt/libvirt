@@ -12,6 +12,8 @@
 #include "virfile.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 static int
 testCompareFiles(virArch hostmachine, const char *xml_rel,
                  const char *cpuinfo_rel, const char *capabilities_rel)

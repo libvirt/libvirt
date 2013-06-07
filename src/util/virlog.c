@@ -711,13 +711,13 @@ virLogFormatString(char **msg,
      * to just grep for it to find the right place.
      */
     if ((funcname != NULL)) {
-        ret = virAsprintf(msg, "%llu: %s : %s:%d : %s\n",
-                          virThreadSelfID(), virLogPriorityString(priority),
-                          funcname, linenr, str);
+        ret = virAsprintfQuiet(msg, "%llu: %s : %s:%d : %s\n",
+                               virThreadSelfID(), virLogPriorityString(priority),
+                               funcname, linenr, str);
     } else {
-        ret = virAsprintf(msg, "%llu: %s : %s\n",
-                          virThreadSelfID(), virLogPriorityString(priority),
-                          str);
+        ret = virAsprintfQuiet(msg, "%llu: %s : %s\n",
+                               virThreadSelfID(), virLogPriorityString(priority),
+                               str);
     }
     return ret;
 }
@@ -833,7 +833,7 @@ virLogVMessage(virLogSource source,
     /*
      * serialize the error message, add level and timestamp
      */
-    if (virVasprintf(&str, fmt, vargs) < 0) {
+    if (virVasprintfQuiet(&str, fmt, vargs) < 0) {
         goto cleanup;
     }
 
@@ -945,7 +945,7 @@ virLogOutputToFd(virLogSource source ATTRIBUTE_UNUSED,
     if (fd < 0)
         return;
 
-    if (virAsprintf(&msg, "%s: %s", timestamp, str) < 0)
+    if (virAsprintfQuiet(&msg, "%s: %s", timestamp, str) < 0)
         return;
 
     ignore_value(safewrite(fd, msg, strlen(msg)));

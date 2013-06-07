@@ -11,6 +11,8 @@
 #include "virfile.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #if ! (defined __linux__  &&  (defined(__x86_64__) || \
                                defined(__amd64__)  || \
                                defined(__i386__)  || \

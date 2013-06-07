@@ -7,6 +7,8 @@
 #include "testutilsqemu.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 const char create_tool[] = "qemu-img";
 
 static int

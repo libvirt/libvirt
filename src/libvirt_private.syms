@@ -1871,7 +1871,7 @@ virStorageFileResize;
 
 # util/virstring.h
 virArgvToString;
-virAsprintf;
+virAsprintfInternal;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
@@ -1892,7 +1892,7 @@ virStrToLong_ui;
 virStrToLong_ul;
 virStrToLong_ull;
 virTrimSpaces;
-virVasprintf;
+virVasprintfInternal;
 
 
 # util/virsysinfo.h

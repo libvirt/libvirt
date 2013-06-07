@@ -65,7 +65,7 @@ virDriverLoadModule(const char *name)
 
     VIR_DEBUG("Module load %s", name);
 
-    if (virAsprintf(&modfile, "%s/libvirt_driver_%s.so", moddir, name) < 0)
+    if (virAsprintfQuiet(&modfile, "%s/libvirt_driver_%s.so", moddir, name) < 0)
         return NULL;
 
     if (access(modfile, R_OK) < 0) {
@@ -79,7 +79,7 @@ virDriverLoadModule(const char *name)
         goto cleanup;
     }
 
-    if (virAsprintf(&regfunc, "%sRegister", name) < 0) {
+    if (virAsprintfQuiet(&regfunc, "%sRegister", name) < 0) {
         goto cleanup;
     }
 

@@ -17,6 +17,8 @@
 # include "testutilslxc.h"
 # include "virstring.h"
 
+# define VIR_FROM_THIS VIR_FROM_NONE
+
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;
 

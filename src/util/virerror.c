@@ -674,7 +674,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     } else {
         va_list ap;
         va_start(ap, fmt);
-        ignore_value(virVasprintf(&str, fmt, ap));
+        ignore_value(virVasprintfQuiet(&str, fmt, ap));
         va_end(ap);
     }
 

@@ -9,6 +9,8 @@
 #include "testutils.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #ifdef WIN32
 
 int

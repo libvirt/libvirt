@@ -23,6 +23,8 @@
 #include "virutil.h"
 #include "testutils.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 static char *fchost_prefix;
 
 #define TEST_FC_HOST_PREFIX fchost_prefix

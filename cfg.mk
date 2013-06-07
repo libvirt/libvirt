@@ -900,7 +900,7 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   ^python/(libvirt-(lxc-|qemu-)?override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/virstring\.c$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
+  ^(bootstrap.conf$$|src/util/virstring\.[ch]$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|python/|src/util/virstring\.c$$)

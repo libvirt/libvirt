@@ -46,7 +46,7 @@ virDomainAuditGetRdev(const char *path)
         (S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode))) {
         int maj = major(sb.st_rdev);
         int min = minor(sb.st_rdev);
-        ignore_value(virAsprintf(&ret, "%02X:%02X", maj, min));
+        ignore_value(virAsprintfQuiet(&ret, "%02X:%02X", maj, min));
     }
     return ret;
 }
@@ -382,29 +382,29 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch (hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (virAsprintf(&address, "%.4x:%.2x:%.2x.%.1x",
-                            hostdev->source.subsys.u.pci.addr.domain,
-                            hostdev->source.subsys.u.pci.addr.bus,
-                            hostdev->source.subsys.u.pci.addr.slot,
-                            hostdev->source.subsys.u.pci.addr.function) < 0) {
+            if (virAsprintfQuiet(&address, "%.4x:%.2x:%.2x.%.1x",
+                                 hostdev->source.subsys.u.pci.addr.domain,
+                                 hostdev->source.subsys.u.pci.addr.bus,
+                                 hostdev->source.subsys.u.pci.addr.slot,
+                                 hostdev->source.subsys.u.pci.addr.function) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            if (virAsprintf(&address, "%.3d.%.3d",
-                            hostdev->source.subsys.u.usb.bus,
-                            hostdev->source.subsys.u.usb.device) < 0) {
+            if (virAsprintfQuiet(&address, "%.3d.%.3d",
+                                 hostdev->source.subsys.u.usb.bus,
+                                 hostdev->source.subsys.u.usb.device) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (virAsprintf(&address, "%s:%d:%d:%d",
-                            hostdev->source.subsys.u.scsi.adapter,
-                            hostdev->source.subsys.u.scsi.bus,
-                            hostdev->source.subsys.u.scsi.target,
-                            hostdev->source.subsys.u.scsi.unit) < 0) {
+            if (virAsprintfQuiet(&address, "%s:%d:%d:%d",
+                                 hostdev->source.subsys.u.scsi.adapter,
+                                 hostdev->source.subsys.u.scsi.bus,
+                                 hostdev->source.subsys.u.scsi.target,
+                                 hostdev->source.subsys.u.scsi.unit) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }
@@ -654,8 +654,8 @@ virDomainAuditCgroupMajor(virDomainObjPtr vm, virCgroupPtr cgroup,
 {
     char *extra;
 
-    if (virAsprintf(&extra, "major category=%s maj=%02X acl=%s",
-                    name, maj, perms) < 0) {
+    if (virAsprintfQuiet(&extra, "major category=%s maj=%02X acl=%s",
+                         name, maj, perms) < 0) {
         VIR_WARN("OOM while encoding audit message");
         return;
     }
@@ -693,8 +693,8 @@ virDomainAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
     rdev = virDomainAuditGetRdev(path);
 
     if (!(detail = virAuditEncode("path", path)) ||
-        virAsprintf(&extra, "path %s rdev=%s acl=%s",
-                    detail, VIR_AUDIT_STR(rdev), perms) < 0) {
+        virAsprintfQuiet(&extra, "path %s rdev=%s acl=%s",
+                         detail, VIR_AUDIT_STR(rdev), perms) < 0) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }

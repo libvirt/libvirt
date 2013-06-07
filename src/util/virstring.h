@@ -76,12 +76,6 @@ void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesBackwards(const char *str, char **endp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virAsprintf(char **strp, const char *fmt, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3)
-    ATTRIBUTE_RETURN_CHECK;
-int virVasprintf(char **strp, const char *fmt, va_list list)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 0)
-    ATTRIBUTE_RETURN_CHECK;
 char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 char *virStrcpy(char *dest, const char *src, size_t destbytes)
@@ -96,6 +90,16 @@ int virStrdup(char **dest, const char *src, bool report, int domcode,
 int virStrndup(char **dest, const char *src, ssize_t n, bool report, int domcode,
                const char *filename, const char *funcname, size_t linenr)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
+int virAsprintfInternal(bool report, int domcode, const char *filename,
+                        const char *funcname, size_t linenr, char **strp,
+                        const char *fmt, ...)
+    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7) ATTRIBUTE_FMT_PRINTF(7, 8)
+    ATTRIBUTE_RETURN_CHECK;
+int virVasprintfInternal(bool report, int domcode, const char *filename,
+                         const char *funcname, size_t linenr, char **strp,
+                         const char *fmt, va_list list)
+    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7) ATTRIBUTE_FMT_PRINTF(7, 0)
+    ATTRIBUTE_RETURN_CHECK;
 
 /**
  * VIR_STRDUP:
@@ -165,5 +169,56 @@ int virStrndup(char **dest, const char *src, ssize_t n, bool report, int domcode
                                                    0, NULL, NULL, 0)
 
 size_t virStringListLength(char **strings);
+
+/**
+ * virVasprintf
+ *
+ * Like glibc's vasprintf but makes sure *strp == NULL on failure, in which
+ * case the OOM error is reported too.
+ *
+ * Returns -1 on failure (with OOM error reported), 0 on success.
+ */
+# define virVasprintf(strp, fmt, list) \
+    virVasprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
+                         __LINE__, strp, fmt, list)
+
+/**
+ * virVasprintfQuiet
+ *
+ * Like glibc's vasprintf but makes sure *strp == NULL on failure.
+ *
+ * Returns -1 on failure, 0 on success.
+ */
+# define virVasprintfQuiet(strp, fmt, list) \
+    virVasprintfInternal(false, 0, NULL, NULL, 0, strp, fmt, list)
+
+/**
+ * virAsprintf:
+ * @strp: variable to hold result (char **)
+ * @fmt: printf format
+ *
+ * Like glibc's_asprintf but makes sure *strp == NULL on failure, in which case
+ * the OOM error is reported too.
+ *
+ * Returns -1 on failure (with OOM error reported), 0 on success.
+ */
+
+# define virAsprintf(strp, ...) \
+    virAsprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__, \
+                        strp, __VA_ARGS__)
+
+/**
+ * virAsprintfQuiet:
+ * @strp: variable to hold result (char **)
+ * @fmt: printf format
+ *
+ * Like glibc's_asprintf but makes sure *strp == NULL on failure.
+ *
+ * Returns -1 on failure, 0 on success.
+ */
+
+# define virAsprintfQuiet(strp, ...) \
+    virAsprintfInternal(false, 0, NULL, NULL, 0, \
+                        strp, __VA_ARGS__)
 
 #endif /* __VIR_STRING_H__ */

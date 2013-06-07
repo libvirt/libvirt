@@ -33,6 +33,8 @@
 #include "virt-host-validate-common.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 static bool quiet;
 
 void virHostMsgSetQuiet(bool quietFlag)

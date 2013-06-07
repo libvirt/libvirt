@@ -17,6 +17,8 @@
 #include "testutilsqemu.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
                          bool expect_error)

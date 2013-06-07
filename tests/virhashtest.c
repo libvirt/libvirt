@@ -13,6 +13,8 @@
 #include "virlog.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #define testError(...)                                          \
     do {                                                        \
         char *str;                                              \

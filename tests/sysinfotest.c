@@ -36,6 +36,8 @@
 #include "virfile.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #if defined (__linux__)
 
 # if defined(__s390__) || defined(__s390x__) || \
