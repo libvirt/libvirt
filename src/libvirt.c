@@ -8907,10 +8907,10 @@ error:
  * current virtual CPU limit, which must be less than or equal to the
  * maximum limit.
  *
- * If @flags includes VIR_DOMAIN_VCPU_AGENT, then a guest agent is used to
- * modify the number of processors used by a domain. This flag can only be used
- * with live guests and is incompatible with VIR_DOMAIN_VCPU_MAXIMUM as the
- * maximum limit can't be changed using the guest agent.
+ * If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of processors is
+ * modified inside the guest instead of the hypervisor. This flag can only
+ * be used with live guests and is incompatible with VIR_DOMAIN_VCPU_MAXIMUM.
+ * The usage of this flag may require a guest agent configured.
  *
  * Not all hypervisors can support all flag combinations.
  *
@@ -8937,11 +8937,11 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
         goto error;
     }
 
-    if (flags & VIR_DOMAIN_VCPU_AGENT &&
+    if (flags & VIR_DOMAIN_VCPU_GUEST &&
         flags & VIR_DOMAIN_VCPU_MAXIMUM) {
         virReportInvalidArg(flags,
                             _("flags 'VIR_DOMAIN_VCPU_MAXIMUM' and "
-                              "'VIR_DOMAIN_VCPU_AGENT' in '%s' are mutually "
+                              "'VIR_DOMAIN_VCPU_GUEST' in '%s' are mutually "
                               "exclusive"), __FUNCTION__);
         goto error;
     }
@@ -8991,9 +8991,9 @@ error:
  * virtual CPU limit is queried.  Otherwise, this call queries the
  * current virtual CPU count.
  *
- * If @flags includes VIR_DOMAIN_VCPU_AGENT, then a guest agent is used to
- * modify the number of processors used by a domain. This flag is only usable on
- * live domains.
+ * If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of the processors
+ * is modified in the guest instead of the hypervisor. This flag is only usable
+ * on live domains. Guest agent may be needed for this flag to be available.
  *
  * Returns the number of vCPUs in case of success, -1 in case of failure.
  */

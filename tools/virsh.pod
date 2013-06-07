@@ -1585,7 +1585,7 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 =item B<setvcpus> I<domain> I<count> [I<--maximum>] [[I<--config>]
-[I<--live>] | [I<--current>]] [I<--agent>]
+[I<--live>] | [I<--current>]] [I<--guest>]
 
 Change the number of virtual CPUs active in a guest domain.  By default,
 this command works on active guest domains.  To change the settings for an
@@ -1611,9 +1611,9 @@ is up to the hypervisor whether the I<--config> flag is also assumed, and
 therefore whether the XML configuration is adjusted to make the change
 persistent.
 
-If I<--agent> is specified, then guest agent commands are used to retrieve the
-count of available vCPUs from the perspective of the guest. This flag is usable
-only for live domains.
+If I<--guest> is specified, then the count of cpus is modified in the guest
+instead of the hypervisor. This flag is usable only for live domains
+and may require guest agent to be configured in the guest.
 
 The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be
@@ -1741,7 +1741,7 @@ NOTE: For an inactive domain, the domain name or UUID must be used as the
 I<domain>.
 
 =item B<vcpucount> I<domain>  [{I<--maximum> | I<--active>}
-{I<--config> | I<--live> | I<--current>}] [I<--agent>]
+{I<--config> | I<--live> | I<--current>}] [I<--guest>]
 
 Print information about the virtual cpu counts of the given
 I<domain>.  If no flags are specified, all possible counts are
@@ -1759,9 +1759,9 @@ lists current values, and I<--current> queries according to the current
 state of the domain (corresponding to I<--live> if running, or
 I<--config> if inactive); these three flags are mutually exclusive.
 
-If I<--agent> is specified, then guest agent commands are used to retrieve the
-count of available vCPUs from the perspective of the guest. This flag is usable
-only for live domains.
+If I<--guest> is specified, then the count of cpus is reported from
+the perspective of the guest. This flag is usable only for live domains
+and may require guest agent to be configured in the guest.
 
 =item B<vcpuinfo> I<domain>
 

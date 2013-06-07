@@ -3792,7 +3792,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM |
-                  VIR_DOMAIN_VCPU_AGENT, -1);
+                  VIR_DOMAIN_VCPU_GUEST, -1);
 
     if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -3834,7 +3834,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_VCPU_AGENT) {
+    if (flags & VIR_DOMAIN_VCPU_GUEST) {
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("chainging of maximum vCPU count isn't supported "
@@ -4518,7 +4518,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM |
-                  VIR_DOMAIN_VCPU_AGENT, -1);
+                  VIR_DOMAIN_VCPU_GUEST, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -4535,7 +4535,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     if (flags & VIR_DOMAIN_AFFECT_LIVE)
         def = vm->def;
 
-    if (flags & VIR_DOMAIN_VCPU_AGENT) {
+    if (flags & VIR_DOMAIN_VCPU_GUEST) {
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("vCPU count provided by the guest agent can only be "
