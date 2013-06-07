@@ -2018,14 +2018,12 @@ cleanup:
 
 static int userns_supported(void)
 {
-#if 1
-    /*
-     * put off using userns until uid mapping is implemented
-     */
-    return 0;
-#else
     return lxcContainerAvailable(LXC_CONTAINER_FEATURE_USER) == 0;
-#endif
+}
+
+static int userns_required(virDomainDefPtr def)
+{
+    return def->idmap.uidmap && def->idmap.gidmap;
 }
 
 virArch lxcContainerGetAlt32bitArch(virArch arch)
@@ -2105,9 +2103,15 @@ int lxcContainerStart(virDomainDefPtr def,
 
     cflags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
 
-    if (userns_supported()) {
-        VIR_DEBUG("Enable user namespaces");
-        cflags |= CLONE_NEWUSER;
+    if (userns_required(def)) {
+        if (userns_supported()) {
+            VIR_DEBUG("Enable user namespace");
+            cflags |= CLONE_NEWUSER;
+        } else {
+            virReportSystemError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                 _("Kernel doesn't support user namespace"));
+            return -1;
+        }
     }
 
     if (lxcNeedNetworkNamespace(def)) {
