@@ -4512,7 +4512,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     virCapsPtr caps = NULL;
     qemuAgentCPUInfoPtr cpuinfo = NULL;
-    int ncpuinfo;
+    int ncpuinfo = -1;
     int i;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
