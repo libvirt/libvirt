@@ -335,6 +335,30 @@ int lxcContainerWaitForContinue(int control)
 
 
 /**
+ * lxcContainerSetID:
+ *
+ * This function calls setuid and setgid to create proper
+ * cred for tasks running in container.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcContainerSetID(virDomainDefPtr def)
+{
+    /* Only call virSetUIDGID when user namespace is enabled
+     * for this container. And user namespace is only enabled
+     * when nuidmap&ngidmap is not zero */
+
+    if (def->idmap.nuidmap && virSetUIDGID(0, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("setuid or setgid failed"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * lxcContainerRenameAndEnableInterfaces:
  * @nveths: number of interfaces
  * @veths: interface names
@@ -1920,11 +1944,24 @@ static int lxcContainerChild(void *data)
         goto cleanup;
     }
 
+    /* Wait for controller to finish setup tasks, including
+     * things like move of network interfaces, uid/gid mapping
+     */
+    if (lxcContainerWaitForContinue(argv->monitor) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to read the container continue message"));
+        goto cleanup;
+    }
+    VIR_DEBUG("Received container continue message");
+
     if ((hasReboot = lxcContainerHasReboot()) < 0)
         goto cleanup;
 
     cmd = lxcContainerBuildInitCmd(vmDef);
     virCommandWriteArgLog(cmd, 1);
+
+    if (lxcContainerSetID(vmDef) < 0)
+        goto cleanup;
 
     root = virDomainGetRootFilesystem(vmDef);
 
@@ -1965,14 +2002,6 @@ static int lxcContainerChild(void *data)
                     vmDef->os.init);
         goto cleanup;
     }
-
-    /* Wait for interface devices to show up */
-    if (lxcContainerWaitForContinue(argv->monitor) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to read the container continue message"));
-        goto cleanup;
-    }
-    VIR_DEBUG("Received container continue message");
 
     /* rename and enable interfaces */
     if (lxcContainerRenameAndEnableInterfaces(!!(vmDef->features &

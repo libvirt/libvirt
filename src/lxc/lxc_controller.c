@@ -1122,6 +1122,77 @@ cleanup2:
 }
 
 
+static int
+virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
+                               int num,
+                               char *path)
+{
+    virBuffer map_value = VIR_BUFFER_INITIALIZER;
+    int i, ret = -1;
+
+    for (i = 0; i < num; i++)
+        virBufferAsprintf(&map_value, "%u %u %u\n",
+                          map[i].start, map[i].target, map[i].count);
+
+    if (virBufferError(&map_value))
+        goto no_memory;
+
+    if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {
+        virReportSystemError(errno, _("unable write to %s"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virBufferFreeAndReset(&map_value);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+/**
+ * virLXCControllerSetupUserns
+ *
+ * Set proc files for user namespace
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int virLXCControllerSetupUserns(virLXCControllerPtr ctrl)
+{
+    char *uid_map = NULL;
+    char *gid_map = NULL;
+    int ret = -1;
+
+    /* User namespace is disabled for container */
+    if (ctrl->def->idmap.nuidmap == 0)
+        return 0;
+
+    if (virAsprintf(&uid_map, "/proc/%d/uid_map", ctrl->initpid) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupUsernsMap(ctrl->def->idmap.uidmap,
+                                       ctrl->def->idmap.nuidmap,
+                                       uid_map) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&gid_map, "/proc/%d/gid_map", ctrl->initpid) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupUsernsMap(ctrl->def->idmap.gidmap,
+                                       ctrl->def->idmap.ngidmap,
+                                       gid_map) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(uid_map);
+    VIR_FREE(gid_map);
+    return ret;
+}
+
+
 
 /**
  * virLXCControllerMoveInterfaces
@@ -1543,6 +1614,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
+
+    if (virLXCControllerSetupUserns(ctrl) < 0)
+        goto cleanup;
 
     if (virLXCControllerMoveInterfaces(ctrl) < 0)
         goto cleanup;
