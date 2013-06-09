@@ -1223,7 +1223,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             virReportOOMError();
             goto error;
         }
-    } else if (VIR_STRDUP(hoststr, host) < 0) {
+    } else if ((hoststr = strdup(host)) == NULL) {
         goto error;
     }
 
