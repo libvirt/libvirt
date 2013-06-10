@@ -79,7 +79,8 @@ struct FileTypeInfo {
     enum lv_endian endian; /* Endianness of file format */
     int versionOffset;    /* Byte offset from start of file
                            * where we find version number,
-                           * -1 to skip version test */
+                           * -1 to always fail the version test,
+                           * -2 to always pass the version test */
     int versionNumber;    /* Version number to validate */
     int sizeOffset;       /* Byte offset from start of file
                            * where we find capacity info,
