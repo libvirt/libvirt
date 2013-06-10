@@ -1423,6 +1423,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
                        virDomainDefPtr def, bool remote)
 {
     int nsnapshots;
+    int pauseReason;
     bool forbid;
     int i;
 
@@ -1445,6 +1446,15 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                nsnapshots);
                 return false;
             }
+
+            /* cancel migration if disk I/O error is emitted while migrating */
+            if (virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
+                pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("cannot migrate domain with I/O error"));
+                return false;
+            }
+
         }
 
         if (virDomainHasDiskMirror(vm)) {
