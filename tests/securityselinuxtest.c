@@ -333,6 +333,12 @@ mymain(void)
                       "system_u", "system_r", "object_r",
                       "svirt_t", "svirt_image_t",
                       2, 3, 0, 1023);
+    DO_TEST_GEN_LABEL("dynamic virtd, missing range",
+                      "system_u:system_r:virtd_t",
+                      true, NULL, NULL,
+                      "system_u", "system_r", "object_r",
+                      "svirt_t", "svirt_image_t",
+                      0, 0, 0, 1023);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

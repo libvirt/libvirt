@@ -170,11 +170,13 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr,
 /*
  * This needs to cope with several styles of range
  *
+ * system_u:system_r:virtd_t
  * system_u:system_r:virtd_t:s0
  * system_u:system_r:virtd_t:s0-s0
  * system_u:system_r:virtd_t:s0-s0:c0.c1023
  *
- * In the first two cases, we'll assume c0.c1023 for
+ * In the first case we'll assume s0:c0.c1023 and
+ * in the next two cases, we'll assume c0.c1023 for
  * the category part, since that's what we're really
  * interested in. This won't work in Enforcing mode,
  * but will prevent libvirtd breaking in Permissive
@@ -189,6 +191,7 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
     context_t ourContext = NULL;
     char *cat = NULL;
     char *tmp;
+    const char *contextRange;
     int ret = -1;
 
     if (getcon_raw(&ourSecContext) < 0) {
@@ -202,8 +205,10 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
                              ourSecContext);
         goto cleanup;
     }
+    if (!(contextRange = context_range_get(ourContext)))
+        contextRange = "s0";
 
-    if (VIR_STRDUP(*sens, context_range_get(ourContext)) < 0)
+    if (VIR_STRDUP(*sens, contextRange) < 0)
         goto cleanup;
 
     /* Find and blank out the category part (if any) */
