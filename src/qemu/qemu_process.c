@@ -3486,6 +3486,7 @@ int qemuProcessStart(virConnectPtr conn,
                     VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
                     goto cleanup;
                 }
+                graphics->listens[0].fromConfig = true;
             }
         }
     }
