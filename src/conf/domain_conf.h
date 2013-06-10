@@ -1389,6 +1389,7 @@ struct _virDomainGraphicsListenDef {
     int type;   /* enum virDomainGraphicsListenType */
     char *address;
     char *network;
+    bool fromConfig;    /* true if the @address is config file originated */
 };
 
 struct _virDomainGraphicsDef {
