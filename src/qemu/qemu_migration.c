@@ -1592,6 +1592,40 @@ cleanup:
     return ret;
 }
 
+static int
+qemuMigrationWaitForSpice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool wait_for_spice = false;
+    bool spice_migrated = false;
+
+    if (vm->def->ngraphics == 1 &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION))
+        wait_for_spice = true;
+
+    if (!wait_for_spice)
+        return 0;
+
+    while (!spice_migrated) {
+        /* Poll every 50ms for progress & to allow cancellation */
+        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        if (qemuMonitorGetSpiceMigrationStatus(priv->mon,
+                                               &spice_migrated) < 0) {
+            qemuDomainObjExitMonitor(driver, vm);
+            return -1;
+        }
+        qemuDomainObjExitMonitor(driver, vm);
+        virObjectUnlock(vm);
+        nanosleep(&ts, NULL);
+        virObjectLock(vm);
+    }
+
+    return 0;
+}
 
 static int
 qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
@@ -1601,18 +1635,9 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
-    bool wait_for_spice = false;
-    bool spice_migrated = false;
     qemuMonitorMigrationStatus status;
 
     memset(&status, 0, sizeof(status));
-
-    /* If guest uses SPICE and supports seamles_migration we have to hold up
-     * migration finish until SPICE server transfers its data */
-    if (vm->def->ngraphics == 1 &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION))
-        wait_for_spice = true;
 
     ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
     if (ret < 0) {
@@ -1620,13 +1645,6 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         return -1;
     }
     ret = qemuMonitorGetMigrationStatus(priv->mon, &status);
-
-    /* If qemu says migrated, check spice */
-    if (wait_for_spice &&
-        ret == 0 &&
-        status.status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED)
-        ret = qemuMonitorGetSpiceMigrationStatus(priv->mon,
-                                                 &spice_migrated);
 
     qemuDomainObjExitMonitor(driver, vm);
 
@@ -1667,8 +1685,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
-        if ((wait_for_spice && spice_migrated) || (!wait_for_spice))
-            priv->job.info.type = VIR_DOMAIN_JOB_COMPLETED;
+        priv->job.info.type = VIR_DOMAIN_JOB_COMPLETED;
         ret = 0;
         break;
 
@@ -4151,6 +4168,10 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
      * domain object, but if no, resume CPUs
      */
     if (retcode == 0) {
+        /* If guest uses SPICE and supports seamless migration we have to hold
+         * up domain shutdown until SPICE server transfers its data */
+        qemuMigrationWaitForSpice(driver, vm);
+
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "migrated");
