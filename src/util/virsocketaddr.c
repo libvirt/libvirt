@@ -241,7 +241,7 @@ virSocketAddrIsWildcard(const virSocketAddrPtr addr)
         return memcmp(&addr->data.inet4.sin_addr.s_addr, &tmp,
                       sizeof(addr->data.inet4.sin_addr.s_addr)) == 0;
     case AF_INET6:
-        return IN6_IS_ADDR_UNSPECIFIED(&addr->data.inet6.sin6_addr.s6_addr);
+        return IN6_IS_ADDR_UNSPECIFIED(&addr->data.inet6.sin6_addr);
     }
     return false;
 }
