@@ -115,8 +115,6 @@ static virStorageBackendPtr backends[] = {
     NULL
 };
 
-static int track_allocation_progress = 0;
-
 enum {
     TOOL_QEMU_IMG,
     TOOL_KVM_IMG,
@@ -342,31 +340,11 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 
     if (remain) {
-        if (track_allocation_progress) {
-            while (remain) {
-                /* Allocate in chunks of 512MiB: big-enough chunk
-                 * size and takes approx. 9s on ext3. A progress
-                 * update every 9s is a fair-enough trade-off
-                 */
-                unsigned long long bytes = 512 * 1024 * 1024;
-
-                if (bytes > remain)
-                    bytes = remain;
-                if (safezero(fd, vol->allocation - remain, bytes) < 0) {
-                    ret = -errno;
-                    virReportSystemError(errno, _("cannot fill file '%s'"),
-                                         vol->target.path);
-                    goto cleanup;
-                }
-                remain -= bytes;
-            }
-        } else { /* No progress bars to be shown */
-            if (safezero(fd, 0, remain) < 0) {
-                ret = -errno;
-                virReportSystemError(errno, _("cannot fill file '%s'"),
-                                     vol->target.path);
-                goto cleanup;
-            }
+        if (safezero(fd, 0, remain) < 0) {
+            ret = -errno;
+            virReportSystemError(errno, _("cannot fill file '%s'"),
+                                 vol->target.path);
+            goto cleanup;
         }
     }
 
