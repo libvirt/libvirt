@@ -15022,22 +15022,21 @@ static int
 qemuDomainSetMetadata(virDomainPtr dom,
                       int type,
                       const char *metadata,
-                      const char *key ATTRIBUTE_UNUSED,
-                      const char *uri ATTRIBUTE_UNUSED,
+                      const char *key,
+                      const char *uri,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainDefPtr persistentDef;
-    int ret = -1;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        goto cleanup;
+        return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -15047,69 +15046,11 @@ qemuDomainSetMetadata(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        switch ((virDomainMetadataType) type) {
-        case VIR_DOMAIN_METADATA_DESCRIPTION:
-            VIR_FREE(vm->def->description);
-            if (VIR_STRDUP(vm->def->description, metadata) < 0)
-                goto cleanup;
-            break;
-        case VIR_DOMAIN_METADATA_TITLE:
-            VIR_FREE(vm->def->title);
-            if (VIR_STRDUP(vm->def->title, metadata) < 0)
-                goto cleanup;
-            break;
-        case VIR_DOMAIN_METADATA_ELEMENT:
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEmu driver does not support modifying "
-                             "<metadata> element"));
-            goto cleanup;
-            break;
-        default:
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("unknown metadata type"));
-            goto cleanup;
-            break;
-        }
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        switch ((virDomainMetadataType) type) {
-        case VIR_DOMAIN_METADATA_DESCRIPTION:
-            VIR_FREE(persistentDef->description);
-            if (VIR_STRDUP(persistentDef->description, metadata) < 0)
-                goto cleanup;
-            break;
-        case VIR_DOMAIN_METADATA_TITLE:
-            VIR_FREE(persistentDef->title);
-            if (VIR_STRDUP(persistentDef->title, metadata) < 0)
-                goto cleanup;
-            break;
-        case VIR_DOMAIN_METADATA_ELEMENT:
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU driver does not support "
-                             "<metadata> element"));
-            goto cleanup;
-         default:
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("unknown metadata type"));
-            goto cleanup;
-            break;
-        }
-
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
+                                  driver->xmlopt, cfg->configDir, flags);
 
 cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;

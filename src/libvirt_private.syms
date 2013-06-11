@@ -327,6 +327,7 @@ virDomainObjListRemove;
 virDomainObjListRemoveLocked;
 virDomainObjNew;
 virDomainObjSetDefTransient;
+virDomainObjSetMetadata;
 virDomainObjSetState;
 virDomainObjTaint;
 virDomainPausedReasonTypeFromString;

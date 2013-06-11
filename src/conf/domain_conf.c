@@ -18586,3 +18586,88 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
 cleanup:
     return ret;
 }
+
+int
+virDomainObjSetMetadata(virDomainObjPtr vm,
+                        int type,
+                        const char *metadata,
+                        const char *key ATTRIBUTE_UNUSED,
+                        const char *uri ATTRIBUTE_UNUSED,
+                        virCapsPtr caps,
+                        virDomainXMLOptionPtr xmlopt,
+                        const char *configDir,
+                        unsigned int flags)
+{
+    virDomainDefPtr persistentDef;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        switch ((virDomainMetadataType) type) {
+        case VIR_DOMAIN_METADATA_DESCRIPTION:
+            VIR_FREE(vm->def->description);
+            if (VIR_STRDUP(vm->def->description, metadata) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_METADATA_TITLE:
+            VIR_FREE(vm->def->title);
+            if (VIR_STRDUP(vm->def->title, metadata) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_METADATA_ELEMENT:
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("<metadata> element is not supported"));
+            goto cleanup;
+            break;
+
+        default:
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("unknown metadata type"));
+            goto cleanup;
+            break;
+        }
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        switch ((virDomainMetadataType) type) {
+        case VIR_DOMAIN_METADATA_DESCRIPTION:
+            VIR_FREE(persistentDef->description);
+            if (VIR_STRDUP(persistentDef->description, metadata) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_METADATA_TITLE:
+            VIR_FREE(persistentDef->title);
+            if (VIR_STRDUP(persistentDef->title, metadata) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_METADATA_ELEMENT:
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("<metadata> element is not supported"));
+            goto cleanup;
+
+         default:
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("unknown metadata type"));
+            goto cleanup;
+            break;
+        }
+
+        if (virDomainSaveConfig(configDir, persistentDef) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}

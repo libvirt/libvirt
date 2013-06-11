@@ -2745,4 +2745,14 @@ char *virDomainObjGetMetadata(virDomainObjPtr vm,
                               virDomainXMLOptionPtr xmlopt,
                               unsigned int flags);
 
+int virDomainObjSetMetadata(virDomainObjPtr vm,
+                            int type,
+                            const char *metadata,
+                            const char *key,
+                            const char *uri,
+                            virCapsPtr caps,
+                            virDomainXMLOptionPtr xmlopt,
+                            const char *configDir,
+                            unsigned int flags);
+
 #endif /* __DOMAIN_CONF_H */
