@@ -1275,6 +1275,35 @@ void qemuDomainObjExitRemote(virDomainObjPtr obj)
 }
 
 
+virDomainDefPtr
+qemuDomainDefCopy(virQEMUDriverPtr driver,
+                  virDomainDefPtr src,
+                  unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainDefPtr ret = NULL;
+    virCapsPtr caps = NULL;
+    const char *xml = NULL;
+
+    if (qemuDomainDefFormatBuf(driver, src, flags, &buf) < 0)
+        goto cleanup;
+
+    xml = virBufferContentAndReset(&buf);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(ret = virDomainDefParseString(xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+cleanup:
+    VIR_FREE(xml);
+    virObjectUnref(caps);
+    return ret;
+}
+
 int
 qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                        virDomainDefPtr def,

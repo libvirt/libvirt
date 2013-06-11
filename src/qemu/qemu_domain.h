@@ -241,6 +241,10 @@ void qemuDomainObjEnterRemote(virDomainObjPtr obj)
 void qemuDomainObjExitRemote(virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1);
 
+virDomainDefPtr qemuDomainDefCopy(virQEMUDriverPtr driver,
+                                  virDomainDefPtr src,
+                                  unsigned int flags);
+
 int qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                            virDomainDefPtr vm,
                            unsigned int flags,

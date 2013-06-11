@@ -4877,17 +4877,24 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     if (xmlin) {
         virDomainDefPtr def2 = NULL;
+        virDomainDefPtr newdef = NULL;
 
         if (!(def2 = virDomainDefParseString(xmlin, caps, driver->xmlopt,
                                              QEMU_EXPECTED_VIRT_TYPES,
                                              VIR_DOMAIN_XML_INACTIVE)))
             goto error;
-        if (!virDomainDefCheckABIStability(def, def2)) {
-            virDomainDefFree(def2);
+
+        newdef = qemuDomainDefCopy(driver, def2, VIR_DOMAIN_XML_MIGRATABLE);
+        virDomainDefFree(def2);
+        if (!newdef)
+            goto error;
+
+        if (!virDomainDefCheckABIStability(def, newdef)) {
+            virDomainDefFree(newdef);
             goto error;
         }
         virDomainDefFree(def);
-        def = def2;
+        def = newdef;
     }
 
     VIR_FREE(xml);
