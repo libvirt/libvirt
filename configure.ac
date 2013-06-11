@@ -318,8 +318,6 @@ AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([RADVD], [radvd], [radvd],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
-AC_PATH_PROG([BRCTL], [brctl], [brctl],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([TC], [tc], [tc],
     [/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([UDEVADM], [udevadm], [],
