@@ -15118,21 +15118,16 @@ cleanup:
 static char *
 qemuDomainGetMetadata(virDomainPtr dom,
                       int type,
-                      const char *uri ATTRIBUTE_UNUSED,
+                      const char *uri,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
-    virDomainDefPtr def;
-    char *ret = NULL;
-    char *field = NULL;
     virCapsPtr caps = NULL;
-
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, NULL);
+    virDomainObjPtr vm;
+    char *ret = NULL;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        goto cleanup;
+        return NULL;
 
     if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -15140,44 +15135,10 @@ qemuDomainGetMetadata(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags, &def) < 0)
-        goto cleanup;
-
-    /* use correct domain definition according to flags */
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        def = vm->def;
-
-    switch ((virDomainMetadataType) type) {
-    case VIR_DOMAIN_METADATA_DESCRIPTION:
-        field = def->description;
-        break;
-    case VIR_DOMAIN_METADATA_TITLE:
-        field = def->title;
-        break;
-    case VIR_DOMAIN_METADATA_ELEMENT:
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU driver does not support "
-                         "<metadata> element"));
-        goto cleanup;
-        break;
-    default:
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("unknown metadata type"));
-        goto cleanup;
-        break;
-    }
-
-    if (!field) {
-        virReportError(VIR_ERR_NO_DOMAIN_METADATA, "%s",
-                       _("Requested metadata element is not present"));
-        goto cleanup;
-    }
-
-    ignore_value(VIR_STRDUP(ret, field));
+    ret = virDomainObjGetMetadata(vm, type, uri, caps, driver->xmlopt, flags);
 
 cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectUnref(caps);
     return ret;
 }

@@ -18531,3 +18531,58 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
     }
     return false;
 }
+
+
+char *
+virDomainObjGetMetadata(virDomainObjPtr vm,
+                        int type,
+                        const char *uri ATTRIBUTE_UNUSED,
+                        virCapsPtr caps,
+                        virDomainXMLOptionPtr xmlopt,
+                        unsigned int flags)
+{
+    virDomainDefPtr def;
+    char *field = NULL;
+    char *ret = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, NULL);
+
+    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags, &def) < 0)
+        goto cleanup;
+
+    /* use correct domain definition according to flags */
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+        def = vm->def;
+
+    switch ((virDomainMetadataType) type) {
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        field = def->description;
+        break;
+
+    case VIR_DOMAIN_METADATA_TITLE:
+        field = def->title;
+        break;
+
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("<metadata> element is not yet supported"));
+        goto cleanup;
+        break;
+
+    default:
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("unknown metadata type"));
+        goto cleanup;
+        break;
+    }
+
+    if (!field)
+        virReportError(VIR_ERR_NO_DOMAIN_METADATA, "%s",
+                       _("Requested metadata element is not present"));
+
+    ignore_value(VIR_STRDUP(ret, field));
+
+cleanup:
+    return ret;
+}
