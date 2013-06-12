@@ -80,7 +80,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
         d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
         if (virReadFCHost(NULL,
-                          d->scsi_host.max_vports,
+                          d->scsi_host.host,
                           "max_npiv_vports",
                           &max_vports) < 0) {
             VIR_ERROR(_("Failed to read max_npiv_vports for host%d"),
@@ -89,7 +89,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
         }
 
          if (virReadFCHost(NULL,
-                          d->scsi_host.max_vports,
+                          d->scsi_host.host,
                           "npiv_vports_inuse",
                           &vports) < 0) {
             VIR_ERROR(_("Failed to read npiv_vports_inuse for host%d"),
