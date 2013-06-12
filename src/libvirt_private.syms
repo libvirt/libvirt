@@ -1711,6 +1711,7 @@ virPortAllocatorRelease;
 virProcessAbort;
 virProcessGetAffinity;
 virProcessGetNamespaces;
+virProcessGetStartTime;
 virProcessKill;
 virProcessKillPainfully;
 virProcessSetAffinity;
