@@ -2005,6 +2005,9 @@ fi
 %endif
 
 %changelog
+* Wed Jun 12 2013 Cole Robinson <crobinso@redhat.com> - 1.0.5.2-1
+- Maintenance release 1.0.5.2
+
 * Sun May 19 2013 Cole Robinson <crobinso@redhat.com> - 1.0.5.1-1
 - Maintenance release 1.0.5.1
 

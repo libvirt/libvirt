@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-05-19 17:59-0400\n"
+"POT-Creation-Date: 2013-06-12 16:48-0400\n"
 "PO-Revision-Date: 2013-04-26 08:02+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
@@ -492,7 +492,7 @@ msgstr "തെറ്റായ SASL init ആവശ്യം ക്ലയന്റ
 #: daemon/remote.c:2496 daemon/remote.c:2645 daemon/remote.c:2743
 #: daemon/remote.c:2759 daemon/remote.c:2773 daemon/remote.c:2787
 #: daemon/remote.c:2885 daemon/remote.c:3031 daemon/remote.c:3060
-#: src/util/virerror.c:962
+#: src/util/virerror.c:983
 msgid "authentication failed"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു"
 
@@ -1074,7 +1074,7 @@ msgstr "ഡൊമെയിന്‍ '%s' നിലവില്‍ uuid %s നല
 #: src/qemu/qemu_driver.c:14387 src/qemu/qemu_driver.c:14435
 #: src/qemu/qemu_driver.c:14472 src/qemu/qemu_driver.c:14535
 #: src/qemu/qemu_driver.c:14557 src/qemu/qemu_driver.c:14608
-#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3599
+#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3615
 #: src/uml/uml_driver.c:2449 src/xen/xen_driver.c:2304
 #: src/xen/xen_hypervisor.c:1175 src/xen/xen_hypervisor.c:1250
 #: src/xen/xen_hypervisor.c:1363 src/xen/xm_internal.c:697
@@ -3282,7 +3282,7 @@ msgstr "പിസിഐ വിലാസം ഫോര്‍മാറ്റ് ച
 
 #: src/conf/domain_conf.c:13925 src/conf/domain_conf.c:13958
 #: src/conf/domain_conf.c:15157 src/conf/domain_conf.c:15166
-#: src/qemu/qemu_hotplug.c:2546
+#: src/qemu/qemu_hotplug.c:2553
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "അപ്രതീക്ഷിതമായ hostdev രീതി %d"
@@ -7641,7 +7641,7 @@ msgid "libvirt was built without the '%s' driver"
 msgstr "'%s' ഡ്രൈവറില്ലാതെ libvirt തയ്യാക്കിയിരിയ്ക്കുന്നു"
 
 #: src/libvirt.c:2137 src/libvirt.c:10515 src/libvirt.c:12432
-#: src/libvirt.c:15329 src/libvirt.c:16989
+#: src/libvirt.c:15330 src/libvirt.c:16990
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr "%s-ലുള്ള uuidstr-ല്‍ ശരിയായൊരു UUID ആയിരിയ്ക്കണം"
@@ -7699,7 +7699,7 @@ msgid "string parameter '%s' unsupported"
 msgstr "സ്ട്രിങ് പരാമീറ്റര്‍ '%s' പിന്തുണയ്ക്കുന്നില്ല"
 
 #: src/libvirt.c:3938 src/libvirt.c:4198 src/libvirt.c:7178 src/libvirt.c:8993
-#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20488
+#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20489
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr "%sലെ 'affect live', 'affect config' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിദുദ്ധമാണ്"
@@ -7712,11 +7712,11 @@ msgstr "സെക്യുര്‍ ഫ്ലാഗിനൊപ്പം virDoma
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
 
-#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3199
+#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3214
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 uri ക്രമീകരിക്കുന്നില്ല"
 
-#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3344
+#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3359
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 യുആര്‍ഐ സജ്ജമാക്കിയിട്ടില്ല"
 
@@ -7744,7 +7744,7 @@ msgstr ""
 msgid "offline migration is not supported by the source host"
 msgstr "സോഴ്സ് ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3527
+#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3543
 msgid "offline migration is not supported by the destination host"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -7802,84 +7802,84 @@ msgstr "ഇന്‍പുട്ട് വളരെ വലുതു്: %d * %d"
 msgid "metadata title in %s can't contain newlines"
 msgstr "%s-ലുള്ള മെറ്റാഡേറ്റാ തലക്കെട്ടില്‍ പുതിയവരികള്‍ പാടില്ല"
 
-#: src/libvirt.c:14177
+#: src/libvirt.c:14178
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr "%sലെ ശേഷി 'delta' അല്ലെങ്കില്‍ 'shrink' അടയാളങ്ങളില്ലാതെ പൂജ്യമാകാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:16132
+#: src/libvirt.c:16133
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് സ്ട്രീമുകള്‍ക്കു് ഡേറ്റാ ശ്രോതസ്സുകള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:16231
+#: src/libvirt.c:16232
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് സ്ട്രീമുകള്‍ക്കു് ഡേറ്റാ സിങ്കുള്‍ ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:17938
+#: src/libvirt.c:17939
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr "%s-ലുള്ള eventID %d-നേക്കാള്‍ കുറഞ്ഞതായിരിയ്ക്കണം"
 
-#: src/libvirt.c:18047 src/libvirt.c:19281
+#: src/libvirt.c:18048 src/libvirt.c:19282
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr ""
 "%s ലെ 'പ്രവര്‍ത്തിപ്പിച്ചു കൊണ്ടിരിക്കുക', 'താല്‍ക്കാലികമായി നിര്‍ത്തിവെക്കുക' എന്നീ അടയാളങ്ങള്‍ "
 "പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:18366
+#: src/libvirt.c:18367
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr "%sലെ 'current' അടയാളമുപയോഗിക്കാന്‍ 'redefine' അടയാളമാവശ്യമാണ്"
 
-#: src/libvirt.c:18373
+#: src/libvirt.c:18374
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr "%sലെ 'redefine, 'no metadata' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:18380
+#: src/libvirt.c:18381
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr "%sലെ 'redefine', 'halt' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:18434
+#: src/libvirt.c:18435
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc, സുരക്ഷിത ഫ്ലാഗിനൊപ്പം"
 
-#: src/libvirt.c:19349
+#: src/libvirt.c:19350
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr "%sലെ 'children', 'children_only' എന്നീ അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/libvirt.c:19926
+#: src/libvirt.c:19927
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr "%sല്‍ അടയാളങ്ങളുപയോഗിക്കാന്‍ ഒരു പകര്‍പ്പ് പ്രവൃത്തി ആവശ്യമാണ്"
 
-#: src/libvirt.c:20100
+#: src/libvirt.c:20101
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "%d ഫയല്‍ വിവരണം ലഭ്യമാക്കുവന്‍ സാധ്യമല്ല"
 
-#: src/libvirt.c:20106
+#: src/libvirt.c:20107
 #, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "fd %d, %s-ലുള്ളതു്, ഒരു സോക്കറ്റായിരിയ്ക്കണം"
 
-#: src/libvirt.c:20277
+#: src/libvirt.c:20278
 msgid "A close callback is already registered"
 msgstr "അടയ്ക്കുവാനുള്ള ഒരു പിന്‍വിളി മുന്‍പേ തന്നെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്"
 
-#: src/libvirt.c:20331
+#: src/libvirt.c:20332
 msgid "A different callback was requested"
 msgstr "മറ്റൊരു കോള്‍ബാക്ക് ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു"
 
-#: src/libvirt.c:20614
+#: src/libvirt.c:20615
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr "start_cpu -1 ആകുമ്പോള്‍, %s-ലുള്ള ncpus 1 ആയിരിയ്ക്കണം"
 
-#: src/libvirt.c:20629
+#: src/libvirt.c:20630
 #, c-format
 msgid "input too large: %u * %u"
 msgstr "ഇന്‍പുട്ട് വളരെ വലുതു്: %u * %u"
@@ -8595,24 +8595,24 @@ msgstr "fuse_loop പരാജയപ്പെട്ടു"
 msgid "Cannot create %s"
 msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:642
+#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:643
 #, c-format
 msgid "USB device %s is in use by domain %s"
 msgstr "യുഎസ്ബി ഡിവൈസ് %s-നെ ഡൊമെയിന്‍ %s ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:646
+#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:647
 #, c-format
 msgid "USB device %s is already in use"
 msgstr "യുഎസ്ബി ഡിവൈസ് %s ഉപയോഗത്തിലുണ്ടു്"
 
-#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:727
+#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:728
 #, c-format
 msgid ""
 "Multiple USB devices for %x:%x were found, but none of them is at bus:%u "
 "device:%u"
 msgstr "%x:%x-നുള്ള അനവധി യുഎസ്ബി ഡിവൈസുകള്‍,  ബസ്:%u ഡിവൈസ്:%u-ല്‍ ഒന്നും ലഭ്യമല്ല"
 
-#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:732
+#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:733
 #, c-format
 msgid "Multiple USB devices for %x:%x, use <address> to specify one"
 msgstr ""
@@ -9428,7 +9428,7 @@ msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേ�
 
 #: src/lxc/lxc_driver.c:2931 src/lxc/lxc_driver.c:2987
 #: src/lxc/lxc_driver.c:3780 src/qemu/qemu_driver.c:6149
-#: src/qemu/qemu_hotplug.c:2578
+#: src/qemu/qemu_hotplug.c:2585
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr "മാക് വിലാസം %s-മായി പൊരുത്തപ്പെടുന്ന അനവധി ഡിവൈസുകള്‍ ലഭ്യമായി"
@@ -9466,8 +9466,8 @@ msgid "Cannot attach disk until init PID is known"
 msgstr "init PID പരിചിതമാകുന്നതു് വരെ ഡിസ്ക് ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/lxc/lxc_driver.c:3057 src/libxl/libxl_driver.c:3257
-#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:235
-#: src/qemu/qemu_hotplug.c:478 src/qemu/qemu_hotplug.c:601
+#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:242
+#: src/qemu/qemu_hotplug.c:485 src/qemu/qemu_hotplug.c:608
 #: src/uml/uml_driver.c:2038
 #, c-format
 msgid "target %s already exists"
@@ -9491,7 +9491,7 @@ msgid "No bridge name specified"
 msgstr "ബ്രിഡ്ജ് നാമം നല്‍കിയിട്ടില്ല"
 
 #: src/lxc/lxc_driver.c:3207 src/lxc/lxc_process.c:466
-#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1306
+#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1313
 #, c-format
 msgid "Network '%s' is not active."
 msgstr "നെറ്റ്‌വര്‍ക്ക് '%s' സജീവമല്ല."
@@ -9534,7 +9534,7 @@ msgid "device type '%s' cannot be attached"
 msgstr "ഡിവൈസ് രീതി '%s' ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/lxc/lxc_driver.c:3726 src/libxl/libxl_driver.c:3319
-#: src/qemu/qemu_hotplug.c:2038 src/qemu/qemu_hotplug.c:2147
+#: src/qemu/qemu_hotplug.c:2045 src/qemu/qemu_hotplug.c:2154
 #: src/uml/uml_driver.c:2169
 #, c-format
 msgid "disk %s not found"
@@ -9546,7 +9546,7 @@ msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
 msgid "Unable to remove device %s"
 msgstr "%s ഡിവൈസ് നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2584
+#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2591
 #, c-format
 msgid "network device %s not found"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് %s ലഭ്യമല്ല"
@@ -9708,10 +9708,10 @@ msgid "Failed libxl context initialization"
 msgstr "libxl കോണ്‍ടെക്സ്റ്റ് ഇനീഷ്യലൈസേഷന്‍ പരാജയപ്പെട്ടു"
 
 #: src/libxl/libxl_driver.c:482 src/qemu/qemu_driver.c:265
-#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:875
-#: src/qemu/qemu_hostdev.c:899 src/qemu/qemu_hostdev.c:948
+#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:876
+#: src/qemu/qemu_hostdev.c:900 src/qemu/qemu_hostdev.c:949
 #: src/secret/secret_driver.c:510 src/uml/uml_driver.c:195
-#: src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
+#: src/util/virerror.c:252 src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
 #: tools/virsh-domain-monitor.c:56
 msgid "unknown error"
 msgstr "അപരിചിതമായ പിശക്"
@@ -10074,7 +10074,7 @@ msgstr "മാറ്റിവയ്ക്കാവുന്ന മാദ്ധ�
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ഡിസ്ക് '%s'നു വേണ്ടി മാദ്ധ്യമം മാറ്റുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:620
+#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:627
 #: src/uml/uml_driver.c:2045
 msgid "disk source path is missing"
 msgstr "ഡിസ്ക് ഉറവിട വഴി കാണ്മാനില്ല"
@@ -10724,9 +10724,9 @@ msgstr "HAL പിന്‍വിളികള്‍ സജ്ജമാക്ക�
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices പരാജയപ്പെട്ടു"
 
-#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1261
-#: src/qemu/qemu_migration.c:1622 src/qemu/qemu_migration.c:1654
-#: src/qemu/qemu_migration.c:1660 src/qemu/qemu_migration.c:2825
+#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1278
+#: src/qemu/qemu_migration.c:1640 src/qemu/qemu_migration.c:1672
+#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2840
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -11203,17 +11203,17 @@ msgstr "libpcap യും  \" യും  ഉപയോഗിച്ചല്ലാ
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr "DBus matches ഇന്‍സ്റ്റാള്‍ ചെയ്യാന്‍ പറ്റിയില്ല. nwfilter ഡ്രൈവര്‍ പ്രവര്‍ത്തരഹിതമാക്കുക"
 
-#: src/nwfilter/nwfilter_driver.c:378 src/nwfilter/nwfilter_driver.c:583
-#: src/nwfilter/nwfilter_driver.c:631
+#: src/nwfilter/nwfilter_driver.c:372 src/nwfilter/nwfilter_driver.c:577
+#: src/nwfilter/nwfilter_driver.c:625
 msgid "no nwfilter with matching uuid"
 msgstr "uuid യുമായി ചേരുന്നു nwfilter ഒന്നും  തന്നെയില്ല"
 
-#: src/nwfilter/nwfilter_driver.c:404
+#: src/nwfilter/nwfilter_driver.c:398
 #, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "'%s' എന്ന പേരുമായി ചേരുന്നൊരു nwfilter ലഭ്യമല്ല"
 
-#: src/nwfilter/nwfilter_driver.c:590
+#: src/nwfilter/nwfilter_driver.c:584
 msgid "nwfilter is in use"
 msgstr "nwfilter ഉപയോഗത്തിലുണ്ടു്"
 
@@ -12562,7 +12562,7 @@ msgstr "ഡിസ്ക് പാഥ് %s-ലേക്കുള്ള പ്ര
 msgid "Unable to deny access for disk path %s"
 msgstr "ഡിസ്ക് പാഥ് %s-ലേക്കുള്ള പ്രവേശം നിഷേധിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4231
+#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4247
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "ഡിവൈസ് %s, %s-നുള്ളതു്, അനുവദിക്കുവാന്‍ സാധ്യമല്ല"
@@ -13589,7 +13589,7 @@ msgid ""
 msgstr ""
 "qemu-ന്റെ ഈ പതിപ്പില്‍ ലഭ്യമാക്കിയ യഎസ്ബി ഡിവൈസുകളില്‍ നിന്നും ബൂട്ട് ചെയ്യുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1000
+#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1007
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr ""
 
@@ -14233,8 +14233,8 @@ msgstr "ചേരുന്ന id %d ഉള്ള ഡൊമെയിന്‍ ല
 msgid "domain is pmsuspended"
 msgstr "ഡൊമെയിന്‍ pmsuspend ചെയ്തിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4010
-#: src/qemu/qemu_migration.c:4155 src/qemu/qemu_process.c:580
+#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4026
+#: src/qemu/qemu_migration.c:4171 src/qemu/qemu_process.c:580
 #: src/qemu/qemu_process.c:3872
 msgid "resume operation failed"
 msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
@@ -14345,10 +14345,10 @@ msgstr "%s സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യ�
 #: src/qemu/qemu_driver.c:2806 src/qemu/qemu_driver.c:3265
 #: src/qemu/qemu_driver.c:10653 src/qemu/qemu_driver.c:11159
 #: src/qemu/qemu_driver.c:12154 src/qemu/qemu_driver.c:12206
-#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:452
-#: src/qemu/qemu_hotplug.c:836 src/qemu/qemu_migration.c:2883
-#: src/qemu/qemu_migration.c:3192 src/qemu/qemu_migration.c:3535
-#: src/qemu/qemu_migration.c:3930 src/qemu/qemu_process.c:558
+#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:459
+#: src/qemu/qemu_hotplug.c:843 src/qemu/qemu_migration.c:2898
+#: src/qemu/qemu_migration.c:3207 src/qemu/qemu_migration.c:3551
+#: src/qemu/qemu_migration.c:3946 src/qemu/qemu_process.c:558
 #: src/qemu/qemu_process.c:571
 msgid "guest unexpectedly quit"
 msgstr "ഗസ്റ്റ് അപ്രതീക്ഷിതമായി നിന്നിരിക്കുന്നു"
@@ -14616,7 +14616,7 @@ msgstr "ലീസ് %s ലോക്ക്സ്പെയിസ് %s-ല്‍,
 msgid "Target already exists"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഫയല്‍ നിലവിലുണ്ട്"
 
-#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2818
+#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2825
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ലീസ് %s, ലോക്ക്സ്പെയിസ് %s-ല്‍ നിലവിവില്ല"
@@ -14827,7 +14827,7 @@ msgstr ""
 "Tunnelled മൈഗ്രേഷന്‍ ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു,  പക്ഷേ തെറ്റായ ആര്‍പിസി മാര്‍ഗ്ഗം "
 "വിളിച്ചിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2261
+#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2276
 msgid "domain disappeared"
 msgstr "ഡൊമെയിന്‍ അദൃശ്യം"
 
@@ -14951,7 +14951,7 @@ msgstr "ഈ ക്യുഇഎംയു ബൈനറിയില്‍ ലൈവ
 msgid "quiesce requires disk-only"
 msgstr "quiesce-നു് ഡിസ്ക്-ഒണ്‍ലി ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1418
+#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1436
 msgid "domain is marked for auto destroy"
 msgstr "ഡൊമെയിന്‍ സ്വയം ഇല്ലാതാകുന്നതിനായി അടയാളപ്പെടുത്തിയിരിയ്ക്കുന്നു"
 
@@ -15277,13 +15277,13 @@ msgstr "agent കമാന്‍ഡ് നടപ്പിലാക്കുന�
 msgid "Specifying mount point is not supported for now"
 msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്നതു് ഇപ്പോള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hostdev.c:304
+#: src/qemu/qemu_hostdev.c:305
 #, c-format
 msgid ""
 "virtualport type %s is currently not supported on interfaces of type hostdev"
 msgstr "virtualport തരം %s നിലവില്‍ hostdev തരത്തിലുള്ള ഇന്റര്‍ഫെയിസുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hostdev.c:342 src/qemu/qemu_hostdev.c:407
+#: src/qemu/qemu_hostdev.c:343 src/qemu/qemu_hostdev.c:408
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
@@ -15291,7 +15291,7 @@ msgstr ""
 "ഇന്റര്‍ഫെയിസ് തരത്തിലുള്ള hostdev നിലവില്‍ SR-IOV വിര്‍ച്ച്വല്‍ ഫംഗ്ഷനുകള്‍ക്കു് മാത്രം പിന്തുണ "
 "ലഭ്യമാക്കുന്നു"
 
-#: src/qemu/qemu_hostdev.c:356
+#: src/qemu/qemu_hostdev.c:357
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -15300,132 +15300,133 @@ msgstr ""
 "%s മോഡ് ഉപയോഗിച്ചു് hostdev ഡിവൈസുകള്‍ക്കു് നേരിട്ടു് vlan റ്റാഗ് സജ്ജീകരിയ്ക്കുന്നതു് "
 "അനുവദിയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hostdev.c:369
+#: src/qemu/qemu_hostdev.c:370
 msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr "SR-IOV നെറ്റ്‌വര്‍ക്ക് ഡിവൈസുകള്‍ vlan trunking പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hostdev.c:375
+#: src/qemu/qemu_hostdev.c:376
 #, c-format
 msgid "vlan can only be set for SR-IOV VFs, but %s is not a VF"
 msgstr "vlan-നു് SR-IOV VF-കള്‍ക്കായി മാത്രമേ സജ്ജമാക്കുവാന്‍ പാടുള്ളൂ, പക്ഷേ %s ഒരു VF അല്ല"
 
-#: src/qemu/qemu_hostdev.c:465
+#: src/qemu/qemu_hostdev.c:466
 #, c-format
 msgid "PCI device %s is not assignable"
 msgstr "പിസിഐ ഡിവൈസ് %s അനുവദിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hostdev.c:477
+#: src/qemu/qemu_hostdev.c:478
 #, c-format
 msgid "PCI device %s is in use by domain %s"
 msgstr "പിസിഐ ഡിവൈസ് %s, ഡൊമെയിന്‍ %s ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_hostdev.c:481
+#: src/qemu/qemu_hostdev.c:482
 #, c-format
 msgid "PCI device %s is already in use"
 msgstr "പിഡിഐ ഡിവൈസ് %s നിലവിലുണ്ടു്"
 
-#: src/qemu/qemu_hostdev.c:874
+#: src/qemu/qemu_hostdev.c:875
 #, c-format
 msgid "Failed to re-attach PCI device: %s"
 msgstr "പിസിഐ ഡിവൈസ് വീണ്ടും ഘടിപ്പിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/qemu/qemu_hostdev.c:898
+#: src/qemu/qemu_hostdev.c:899
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "പിസിഐ ഡിവൈസ് പട്ടിക അനുവദിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/qemu/qemu_hostdev.c:947
+#: src/qemu/qemu_hostdev.c:948
 #, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "പിസിഐ ഡിവൈസ് വീണ്ടും സജ്ജമാക്കുന്നതില്‍ പരാജയം: %s"
 
 #: src/qemu/qemu_hotplug.c:116
-msgid "Unable to eject media before changing it"
-msgstr "മീഡിയാ മാറ്റുന്നതിനു് മുമ്പു് പുറത്തെടുക്കുവാന്‍ സാധ്യമല്ല"
+#, fuzzy
+msgid "Unable to eject media"
+msgstr "സിപിയു മാപ്പ് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:357
+#: src/qemu/qemu_hotplug.c:364
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "ലക്ഷ്യം %s:%d നിലവിലുണ്ടു്"
 
-#: src/qemu/qemu_hotplug.c:373
+#: src/qemu/qemu_hotplug.c:380
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr "ഈ QEMU ലൈബ്രറിയില്‍ യുഎസ്ബി കണ്ട്രോളര്‍ ഹോട്ട്പ്ലഗ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:497
+#: src/qemu/qemu_hotplug.c:504
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "അപ്രതീക്ഷിതമായ തരത്തിലുള്ള ഡിസ്ക് വിലാസം %s"
 
-#: src/qemu/qemu_hotplug.c:525
+#: src/qemu/qemu_hotplug.c:532
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "എസ്‌സിഎസ്ഐ കണ്ട്രോളര്‍ %d-നു് പിസിഐ വിലാസം ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:730
+#: src/qemu/qemu_hotplug.c:737
 msgid "installed qemu version does not support host_net_add"
 msgstr "ഇന്‍സ്റ്റോള്‍ ചെയ്തിട്ടുള്ള qemu പതിപ്പു് host_net_add പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:769
+#: src/qemu/qemu_hotplug.c:776
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "virtio-s390 നെറ്റ് ഡിവൈസ് ഹോട്ട് പ്ലഗ്ഗ് ചെയ്യുാന്‍ സാധ്യമല്ല."
 
-#: src/qemu/qemu_hotplug.c:784
+#: src/qemu/qemu_hotplug.c:791
 msgid "Unable to attach network devices without vlan"
 msgstr "vlan ഇല്ലാതെ നെറ്റ്‌വര്‍ക്ക് ഡിവൈസുകള്‍ ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:872
+#: src/qemu/qemu_hotplug.c:879
 msgid "device alias not found: cannot set link state to down"
 msgstr "ഡിവൈസിന്റെ മറ്റൊരുപേരു ലഭ്യമല്ല: കണ്ണിയുടെ അവസ്ഥ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:884
+#: src/qemu/qemu_hotplug.c:891
 msgid "setting of link state not supported: Link is up"
 msgstr "കണ്ണിയുടെ അവസ്ഥ സജ്ജമാക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല: കണ്ണി സജീവം"
 
-#: src/qemu/qemu_hotplug.c:1036
+#: src/qemu/qemu_hotplug.c:1043
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ഹോട്ട്പ്ലഗ് സമയത്തു് ഗസ്റ്റ് അപ്രതീക്ഷിതമായ പുറത്തു് കടന്നു"
 
-#: src/qemu/qemu_hotplug.c:1186 src/qemu/qemu_hotplug.c:2518
+#: src/qemu/qemu_hotplug.c:1193 src/qemu/qemu_hotplug.c:2525
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev മോഡ് '%s' പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:1234 src/qemu/qemu_hotplug.c:2487
+#: src/qemu/qemu_hotplug.c:1241 src/qemu/qemu_hotplug.c:2494
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys രീതി '%s' പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:1281
+#: src/qemu/qemu_hotplug.c:1288
 msgid "interface is missing bridge name"
 msgstr "ഇന്റര്‍ഫെയിസില്‍ ബ്രിഡ്ജ് നാമം ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1296
+#: src/qemu/qemu_hotplug.c:1303
 #, c-format
 msgid "Couldn't find network '%s'"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്ക് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1318
+#: src/qemu/qemu_hotplug.c:1325
 #, c-format
 msgid "Interface type %d has no bridge name"
 msgstr "ഇന്റിജര്‍ തരം %d-ല്‍ ബ്രിഡ്ജ് നാമം ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1346
+#: src/qemu/qemu_hotplug.c:1353
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ബ്രിഡ്ജ് %s നിലവിലില്ല"
 
-#: src/qemu/qemu_hotplug.c:1370
+#: src/qemu/qemu_hotplug.c:1377
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "ബ്രിഡ്ജ് %s-ലേക്കു് പോര്‍ട്ട് ചേര്‍ത്തു് മുമ്പുള്ള അവസ്ഥ വീണ്ടെടുക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1397
+#: src/qemu/qemu_hotplug.c:1404
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "%s തരത്തിലുള്ള ഇന്റര്‍ഫെയിസുകളില്‍ ഫില്‍റ്ററുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:1408
+#: src/qemu/qemu_hotplug.c:1415
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
@@ -15433,208 +15434,208 @@ msgstr ""
 "'%s'-ലേക്കു് പുതിയ ഫില്‍റ്റര്‍ നിയമങ്ങള്‍ ചേര്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു - പഴയ നിയമങ്ങള്‍ "
 "വീണ്ടെടുക്കുന്നതിനു് ശ്രമിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_hotplug.c:1432
+#: src/qemu/qemu_hotplug.c:1439
 msgid "can't change link state: device alias not found"
 msgstr "കണ്ണിയുടെ അവസ്ഥ മാറ്റുവാന്‍ സാധ്യമല്ല: ഡിവൈസിന്റെ വിളിപ്പേരു് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1470
+#: src/qemu/qemu_hotplug.c:1477
 msgid "cannot find existing network device to modify"
 msgstr "മാറ്റം വരുത്തുന്നതിനായി നിലവിലുള്ളൊരു നെറ്റ്‌വര്‍ത്ത് ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1478
+#: src/qemu/qemu_hotplug.c:1485
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്ക് തരത്തിന്റെ ക്രമീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1501
+#: src/qemu/qemu_hotplug.c:1508
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr ""
 "%s-ല്‍ നിന്നും %s-ലേക്കുള്ള നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസ് മാക് വിലാസത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1510
+#: src/qemu/qemu_hotplug.c:1517
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "%s-ല്‍ നിന്നും %s-ലേക്കുള്ള നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് മോഡലില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1522
+#: src/qemu/qemu_hotplug.c:1529
 msgid "cannot modify virtio network device driver attributes"
 msgstr "virtio നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഡ്രൈവര്‍ വിശേഷതകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1536
+#: src/qemu/qemu_hotplug.c:1543
 msgid "cannot modify network device script attribute"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് സ്ക്രിപ്റ്റ് വിശേഷതയില്‍ മാറ്റും വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1548
+#: src/qemu/qemu_hotplug.c:1555
 msgid "cannot modify network device tap name"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് റ്റാപ്പ് നാമത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1566
+#: src/qemu/qemu_hotplug.c:1573
 msgid "cannot modify network device guest PCI address"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ഗസ്റ്റ് പിസിഐ വിലാസത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1577
+#: src/qemu/qemu_hotplug.c:1584
 msgid "cannot modify network device alias"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസിന്റെ വിളിപ്പേരു് മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1582
+#: src/qemu/qemu_hotplug.c:1589
 msgid "cannot modify network device rom bar setting"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് rom ബാര്‍ സജ്ജീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1587
+#: src/qemu/qemu_hotplug.c:1594
 msgid "cannot modify network rom file"
 msgstr "നെറ്റ്‌വര്‍ക്ക് rom ഫയലില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1592
+#: src/qemu/qemu_hotplug.c:1599
 msgid "cannot modify network device boot index setting"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ബൂട്ട് സൂചിക സജ്ജീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1619
+#: src/qemu/qemu_hotplug.c:1626
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസ് തരം '%s'-ലേക്കു് മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1677 src/qemu/qemu_hotplug.c:1748
+#: src/qemu/qemu_hotplug.c:1684 src/qemu/qemu_hotplug.c:1755
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്ക് തരത്തില്‍ ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1846
+#: src/qemu/qemu_hotplug.c:1853
 msgid "cannot find existing graphics device to modify"
 msgstr "മാറ്റം വരുത്തുന്നതിനായി നിലവിലുള്ളൊരു ഗ്രാഫിക്സ് ഡിവൈസും ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1861
+#: src/qemu/qemu_hotplug.c:1868
 msgid "cannot change port settings on vnc graphics"
 msgstr "വിഎന്‍സി ഗ്രാഫിക്സില്‍ പോര്‍ട്ട് സജ്ജീകരണങ്ങള്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1866
+#: src/qemu/qemu_hotplug.c:1873
 msgid "cannot change listen address setting on vnc graphics"
 msgstr "വിഎന്‍സി ഗ്രാഫിക്സില്‍ ലഭ്യമാകുന്ന വിലാസ സജ്ജീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1871
+#: src/qemu/qemu_hotplug.c:1878
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "വിഎന്‍സി ഗ്രാഫിക്സില്‍ ലഭ്യമാകുന്ന നെറ്റ്‌വര്‍ക്ക് സജ്ജീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1876
+#: src/qemu/qemu_hotplug.c:1883
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "വിഎന്‍സി ഗ്രാഫിക്സില്‍ കീമാപ്പ് സജ്ജീകരണങ്ങള്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1916
+#: src/qemu/qemu_hotplug.c:1923
 msgid "cannot change port settings on spice graphics"
 msgstr "സ്പയിസ് ഗ്രാഫിക്സില്‍ പോര്‍ട്ട് സജ്ജീകരണങ്ങള്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1921
+#: src/qemu/qemu_hotplug.c:1928
 msgid "cannot change listen address setting on spice graphics"
 msgstr "സ്പയിസ് ഗ്രാഫിക്സില്‍ ലഭ്യമാകുന്ന വിലാസ സജ്ജീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1926
+#: src/qemu/qemu_hotplug.c:1933
 msgid "cannot change listen network setting on spice graphics"
 msgstr "സ്പയിസ് ഗ്രാഫിക്സില്‍ ലഭ്യമാകുന്ന നെറ്റ്‌വര്‍ക്ക് സജ്ജീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1932
+#: src/qemu/qemu_hotplug.c:1939
 msgid "cannot change keymap setting on spice graphics"
 msgstr "സ്പയിസ് ഗ്രാഫിക്സില്‍ കീമാപ്പ് സജ്ജീകരണങ്ങള്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:1973
+#: src/qemu/qemu_hotplug.c:1980
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "'%s' ഗ്രാഫിക്സ് തരത്തില്‍ ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2046 src/qemu/qemu_hotplug.c:2292
+#: src/qemu/qemu_hotplug.c:2053 src/qemu/qemu_hotplug.c:2299
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "അനവധി പ്രവര്‍ത്തനങ്ങള്‍ക്കുള്ള പിസിഐ ഡിവൈസ് ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/qemu/qemu_hotplug.c:2056
+#: src/qemu/qemu_hotplug.c:2063
 msgid "device cannot be detached without a valid CCW address"
 msgstr "ശരിയായൊരു സിസിഡബ്യു വിലാസമില്ലാതെ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2063
+#: src/qemu/qemu_hotplug.c:2070
 msgid "device cannot be detached without a valid PCI address"
 msgstr "ശരിയായൊരു പിസിഐ വിലാസമില്ലാതെ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2153
+#: src/qemu/qemu_hotplug.c:2160
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "ഇതിലുള്ള qemu %s ഡിസ്ക് നീക്കം ചെയ്യല്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_hotplug.c:2162
+#: src/qemu/qemu_hotplug.c:2169
 #, c-format
 msgid "disk '%s' is in an active block copy job"
 msgstr "ഡിസ്ക് '%s'  സജീവമായൊരു ബ്ലോക്ക് പകര്‍പ്പ് ജോലിയിലാണു്"
 
-#: src/qemu/qemu_hotplug.c:2275
+#: src/qemu/qemu_hotplug.c:2282
 #, fuzzy, c-format
 msgid "controller %s:%d not found"
 msgstr "ഡിസ്ക് കണ്ട്രോളര്‍ %s:%d ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2286 src/qemu/qemu_hotplug.c:2360
-#: src/qemu/qemu_hotplug.c:2609
+#: src/qemu/qemu_hotplug.c:2293 src/qemu/qemu_hotplug.c:2367
+#: src/qemu/qemu_hotplug.c:2616
 msgid "device cannot be detached without a PCI address"
 msgstr "ഒരു പിസിഐ വിലാസമില്ലാതെ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2299
+#: src/qemu/qemu_hotplug.c:2306
 msgid "device cannot be detached: device is busy"
 msgstr "ഡിസ്ക് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല: ഡിവൈസ് തിരക്കിലാണു്"
 
-#: src/qemu/qemu_hotplug.c:2351
+#: src/qemu/qemu_hotplug.c:2358
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 "അനവധി പ്രവര്‍ത്തനങ്ങളിലുള്ള പിസിഐ ഡിവൈസ് ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല: %.4x:%.2x:%.2x."
 "%.1x"
 
-#: src/qemu/qemu_hotplug.c:2424
+#: src/qemu/qemu_hotplug.c:2431
 msgid "device cannot be detached without a device alias"
 msgstr "ഒരു ഡിവൈസ് നാമമില്ലാതെ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2430
+#: src/qemu/qemu_hotplug.c:2437
 msgid "device cannot be detached with this QEMU version"
 msgstr "QEMU പതിപ്പില്ലാതെ ഡിവൈസിനെ വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2472
+#: src/qemu/qemu_hotplug.c:2479
 #, c-format
 msgid "device not found in hostdevs list (%zu entries)"
 msgstr " hostdevs പട്ടികയില്‍ (%zu എന്‍ട്രികള്‍) ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2529
+#: src/qemu/qemu_hotplug.c:2536
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "ഹോസ്റ്റ് pci ഡിവൈസ് %.4x:%.2x:%.2x.%.1x ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2536
+#: src/qemu/qemu_hotplug.c:2543
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "ഹോസ്റ്റ് യുഎസ്ബി %03d.%03d ലഭ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2540
+#: src/qemu/qemu_hotplug.c:2547
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "ഹോസ്റ്റ് യുഎസ്ബി ഡിവൈസ് കച്ചവടക്കാരന്‍=0x%.4x പ്രൊഡക്ട്=0x%.4x ലഭ്യമായില്ല"
 
-#: src/qemu/qemu_hotplug.c:2602
+#: src/qemu/qemu_hotplug.c:2609
 msgid "device cannot be detached without a CCW address"
 msgstr "ഒരു സിസിവി വിലാസമില്ലാതെ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2615
+#: src/qemu/qemu_hotplug.c:2622
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "അനവധി പ്രവര്‍ത്തനങ്ങളിലുള്ള പിസിഐ ഡിവൈസ് ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല:%s"
 
-#: src/qemu/qemu_hotplug.c:2623
+#: src/qemu/qemu_hotplug.c:2630
 msgid "unable to determine original VLAN"
 msgstr "യഥാര്‍ത്ഥ VLAN കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_hotplug.c:2692
+#: src/qemu/qemu_hotplug.c:2699
 #, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr "'%s'-ലുള്ള ebtables നിയമം നീക്കം ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_hotplug.c:2745
+#: src/qemu/qemu_hotplug.c:2752
 msgid "Graphics password only supported for VNC"
 msgstr "ഗ്രാഫിക്സ് രഹസ്യവാക്ക് വിഎന്‍സി മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-#: src/qemu/qemu_hotplug.c:2771
+#: src/qemu/qemu_hotplug.c:2778
 msgid "Expiry of passwords is not supported"
 msgstr "രഹസ്യവാക്കുകളുടെ കാലാവധി പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -15790,204 +15791,209 @@ msgstr "മൈഗ്രേഷന്‍ കുക്കിയ്ക്കുള�
 msgid "Source host lock driver %s different from target %s"
 msgstr "സോഴ്സ് ഹോസ്റ്റ് ലോക്ക് ഡ്രൈവര്‍ %s, ലക്ഷ്യം %s-ല്‍ നിന്നും വ്യത്യസ്തം"
 
-#: src/qemu/qemu_migration.c:1263 src/qemu/qemu_migration.c:1660
-#: src/qemu/qemu_migration.c:2827
+#: src/qemu/qemu_migration.c:1280 src/qemu/qemu_migration.c:1678
+#: src/qemu/qemu_migration.c:2842
 msgid "canceled by client"
 msgstr "ക്ലയന്റ് റദ്ദാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_migration.c:1430
+#: src/qemu/qemu_migration.c:1448
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുമായി ഡൊമെയിന്‍ നീക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:1438
+#: src/qemu/qemu_migration.c:1456
 msgid "domain has an active block job"
 msgstr "ഡൊമെയിനില്‍ സജീവമായ ബ്ലോക്ക് ജോലി"
 
-#: src/qemu/qemu_migration.c:1459
+#: src/qemu/qemu_migration.c:1477
 msgid "domain has assigned non-USB host devices"
 msgstr "ഡൊമെയിനു് നോണ്‍-യുഎസ്ബി ഹോസ്റ്റ് ഡിവൈസുകള്‍ ലഭ്യമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_migration.c:1497
+#: src/qemu/qemu_migration.c:1515
 msgid "Migration may lead to data corruption if disks use cache != none"
 msgstr "ഡിസ്കുകള്‍ cache != none ഉപയോഗിച്ചാല്‍ നീക്കുന്നതു് ഡേറ്റായ്ക്കു് തകരാറിനു് കാരണമാകുന്നു"
 
-#: src/qemu/qemu_migration.c:1551
+#: src/qemu/qemu_migration.c:1569
 msgid "Compressed migration is not supported by target QEMU binary"
 msgstr "ടാര്‍ഗറ്റ് ക്യുഇഎംയു ബൈനറി കംപ്രസ്സ് ചെയ്ത മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:1555
+#: src/qemu/qemu_migration.c:1573
 msgid "Compressed migration is not supported by source QEMU binary"
 msgstr "സോഴ്സ് ക്യുഇഎംയു ബൈനറി കംപ്രസ്സ് ചെയ്ത മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:1622
+#: src/qemu/qemu_migration.c:1640
 msgid "is not active"
 msgstr "സജീവമല്ല"
 
-#: src/qemu/qemu_migration.c:1654
+#: src/qemu/qemu_migration.c:1672
 msgid "unexpectedly failed"
 msgstr "അപ്രതീക്ഷിതമായി പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2895
+#: src/qemu/qemu_migration.c:1696 src/qemu/qemu_migration.c:2910
 msgid "migration job"
 msgstr "നീക്കുന്ന ജോലി"
 
-#: src/qemu/qemu_migration.c:1681
+#: src/qemu/qemu_migration.c:1699
 msgid "domain save job"
 msgstr "ഡൊമെയിന്‍ ജോലി സൂക്ഷിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_migration.c:1684
+#: src/qemu/qemu_migration.c:1702
 msgid "domain core dump job"
 msgstr "ഡൊമെയിന്‍ കോര്‍ ഡമ്പ് ജോലി"
 
-#: src/qemu/qemu_migration.c:1687
+#: src/qemu/qemu_migration.c:1705
 msgid "job"
 msgstr "ജോലി"
 
-#: src/qemu/qemu_migration.c:1701
+#: src/qemu/qemu_migration.c:1719
 msgid "Lost connection to destination host"
 msgstr "ലക്ഷ്യ ഹോസ്റ്റിലേക്കുള്ള കണക്ഷന്‍ നഷ്ടമായി"
 
-#: src/qemu/qemu_migration.c:1783 src/util/virnetdevopenvswitch.c:239
+#: src/qemu/qemu_migration.c:1802 src/util/virnetdevopenvswitch.c:239
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
 "ഇന്റര്‍ഫെയിസ്  %s-നുള്ള ഒവിഎസ് പോര്‍ട്ട് ഡേറ്റാ സജ്ജമാക്കുവാനുള്ള കമാന്‍ഡ് പ്രവര്‍ത്തിപ്പിയ്ക്കുവാന്‍ "
 "സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:1920 src/qemu/qemu_migration.c:2022
+#: src/qemu/qemu_migration.c:1921
+#, fuzzy
+msgid "NBD in tunnelled migration is currently not supported"
+msgstr "നിലവില്‍ ഒരു വീഡിയോ കാര്‍ഡ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+#: src/qemu/qemu_migration.c:1940 src/qemu/qemu_migration.c:2042
 msgid "offline migration cannot handle non-shared storage"
 msgstr "പങ്കിടാത്ത സംഭരണം കൈകാര്യം ചെയ്യുവാന്‍ ഓഫ്‌ലൈന്‍ മൈഗ്രേഷനു് സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:1926 src/qemu/qemu_migration.c:2028
+#: src/qemu/qemu_migration.c:1946 src/qemu/qemu_migration.c:2048
 msgid "offline migration must be specified with the persistent flag set"
 msgstr "സ്ഥിരമായ ഫ്ലാഗ് സെറ്റുമായി ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ നല്‍കണം"
 
-#: src/qemu/qemu_migration.c:1932 src/qemu/qemu_migration.c:2034
+#: src/qemu/qemu_migration.c:1952 src/qemu/qemu_migration.c:2054
 msgid "tunnelled offline migration does not make sense"
 msgstr "ടണല്‍ ചെയ്ത ഓഫ്‌ലൈന്‍ മൈഗ്രേഷനില്‍ അര്‍ത്ഥമില്ല"
 
-#: src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:1966
 msgid "target domain name doesn't match source name"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം ശ്രോതസ്സുമായി പൊരുത്തപ്പെടുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:2170 src/qemu/qemu_migration.c:3083
+#: src/qemu/qemu_migration.c:2190 src/qemu/qemu_migration.c:3098
 msgid "cannot create pipe for tunnelled migration"
 msgstr "ടണല്‍ മൈഗ്രേഷനു് പൈപ്പ് തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:2194
+#: src/qemu/qemu_migration.c:2214
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "ടണല്‍ മൈഗ്രേഷനു് പൈപ്പ് നല്‍കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:2381
+#: src/qemu/qemu_migration.c:2396
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
 "ലക്ഷ്യത്തിലുള്ള ഹോസ്റ്റ്നാമം ലോക്കല്‍ഹോസ്റ്റിലേക്കു് റിസോള്‍വ് ചെയ്തു, പക്ഷേ നീക്കുന്നതിനായി FQDN "
 "ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_migration.c:2403
+#: src/qemu/qemu_migration.c:2418
 msgid "only tcp URIs are supported for KVM/QEMU migrations"
 msgstr "KVM/QEMU മൈഗ്രേഷനുകള്‍ക്ക് tcp URI മാത്രം പിന്തുണയ്ക്കുന്നു"
 
-#: src/qemu/qemu_migration.c:2420
+#: src/qemu/qemu_migration.c:2435
 #, c-format
 msgid "unable to parse URI: %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2426
+#: src/qemu/qemu_migration.c:2441
 #, c-format
 msgid "missing host in migration URI: %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2547
+#: src/qemu/qemu_migration.c:2562
 msgid "poll failed in migration tunnel"
 msgstr "മൈഗ്രേഷന്‍ ടണലില്‍ പൂള്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:2565
+#: src/qemu/qemu_migration.c:2580
 msgid "failed to read from wakeup fd"
 msgstr "wakeup fd-യില്‍ നിന്നും ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_migration.c:2587
+#: src/qemu/qemu_migration.c:2602
 msgid "tunnelled migration failed to read from qemu"
 msgstr "qemu-ല്‍ നിന്നും ലഭ്യമാക്കുന്നതില്‍ ടണല്‍ഡ് മൈഗ്രേഷന്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:2631
+#: src/qemu/qemu_migration.c:2646
 msgid "Unable to make pipe"
 msgstr "പൈപ്പ് ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:2647
+#: src/qemu/qemu_migration.c:2662
 msgid "Unable to create migration thread"
 msgstr "മൈഗ്രേഷന്‍ ത്രെഡ് തയ്യാറാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu/qemu_migration.c:2671
+#: src/qemu/qemu_migration.c:2686
 msgid "failed to wakeup migration tunnel"
 msgstr "മൈഗ്രേഷന്‍ ടണല്‍ wakeup ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_migration.c:2727
+#: src/qemu/qemu_migration.c:2742
 #, c-format
 msgid "Unable to set FD %d blocking"
 msgstr "FD %d ബ്ലോക്കിങ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:2783
+#: src/qemu/qemu_migration.c:2798
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr "ലോക്ക് ഡ്രൈവര്‍ %s-നൊപ്പം നീക്കുന്നതിനു് കുക്കി പിന്തുണ ആശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_migration.c:2903
+#: src/qemu/qemu_migration.c:2918
 msgid "failed to accept connection from qemu"
 msgstr "qemu-യില്‍ നിന്നും കണക്ഷന്‍ സ്വീകരിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_migration.c:3060
+#: src/qemu/qemu_migration.c:3075
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "ടണല്‍ഡ് മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നതിനു് സോഴ്സ് qemu ഉചിതമല്ല"
 
-#: src/qemu/qemu_migration.c:3496
-#, c-format
-msgid "Failed to connect to remote libvirt URI %s"
+#: src/qemu/qemu_migration.c:3511
+#, fuzzy, c-format
+msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "വീദൂര libvirt യുആര്‍ഐ %s-ലേക്കു് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_migration.c:3521
+#: src/qemu/qemu_migration.c:3537
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള libvirt പിയര്‍-ടു-പിയല്‍ മൈഗ്രേഷന്‍ പ്രോട്ടോക്കോള്‍ പിന്തുണയ്ത്തുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:3651 src/qemu/qemu_migration.c:3732
+#: src/qemu/qemu_migration.c:3667 src/qemu/qemu_migration.c:3748
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "പരാജയത്തിനു് ശേഷം ഗസ്റ്റ് %s വീണ്ടും ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:3797
+#: src/qemu/qemu_migration.c:3813
 msgid "received unexpected cookie with P2P migration"
 msgstr "P2P മൈഗ്രേഷനൊപ്പം അപ്രതീക്ഷിതമായ കുക്കി ലഭിച്ചിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_migration.c:3808
+#: src/qemu/qemu_migration.c:3824
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "non-peer2peer മൈഗ്രേഷനൊപ്പം അപ്രതീക്ഷിതമായ dconnuri പരാമീറ്റര്‍"
 
-#: src/qemu/qemu_migration.c:3844
+#: src/qemu/qemu_migration.c:3860
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr "%s-നുള്ള പോര്‍ട്ട് പ്രൊഫൈല്‍ അസോസിയേറ്റ് പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:3986
+#: src/qemu/qemu_migration.c:4002
 msgid "can't get vmdef"
 msgstr "vmdef ലഭ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:4274
+#: src/qemu/qemu_migration.c:4290
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ഫ്ലാഗ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:4372
+#: src/qemu/qemu_migration.c:4388
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr "മൈഗ്രേഷന്‍ പ്രോട്ടോക്കോള്‍ പുറകോട്ട് %s => %s"
 
-#: src/qemu/qemu_migration.c:4407
+#: src/qemu/qemu_migration.c:4423
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ഡൊമെയിന്‍ '%s' അകത്തേക്കു് നീക്കുന്നതു് നടപ്പിലാക്കുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:4409
+#: src/qemu/qemu_migration.c:4425
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ഡൊമെയിന്‍ '%s' നീക്കുവാന്‍ സാധ്യമല്ല"
@@ -20751,31 +20757,31 @@ msgstr "%s (%d)-നുള്ള readdir പരാജയപ്പെട്ടു"
 msgid "Unable to remove %s (%d)"
 msgstr "%s (%d) നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/vircgroup.c:2540
+#: src/util/vircgroup.c:2552
 #, c-format
 msgid "Could not find directory separator in %s"
 msgstr ""
 
-#: src/util/vircgroup.c:2556
+#: src/util/vircgroup.c:2568
 msgid "Could not find any mounted controllers"
 msgstr ""
 
-#: src/util/vircgroup.c:2576 src/util/vircgroup.c:2611
+#: src/util/vircgroup.c:2588 src/util/vircgroup.c:2623
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "%s ഡയറക്ടറി തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/vircgroup.c:2589
+#: src/util/vircgroup.c:2601
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "%s, %s-ല്‍ (തരം %s) മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/util/vircgroup.c:2619
+#: src/util/vircgroup.c:2631
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2635
+#: src/util/vircgroup.c:2647
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "%s-ല്‍ നിന്നും %s-ലേക്കു് ഡയറക്ടറി സിംലിങ്ക് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -22530,755 +22536,759 @@ msgstr "ലക്ഷ്യത്തിലെ സിസിന്‍ഫോ %s  %s 
 msgid "An error occurred, but the cause is unknown"
 msgstr "ഒരു പിശകു് പറ്റി, പക്ഷേ കാരണമറിയില്ല"
 
-#: src/util/virerror.c:513
+#: src/util/virerror.c:250 tools/virsh-domain-monitor.c:47
+msgid "no error"
+msgstr "പിശകില്ല"
+
+#: src/util/virerror.c:534
 msgid "warning"
 msgstr "മുന്നറിയിപ്പ്"
 
-#: src/util/virerror.c:516 tools/virsh-domain-monitor.c:129
+#: src/util/virerror.c:537 tools/virsh-domain-monitor.c:129
 msgid "error"
 msgstr "പിശക്"
 
-#: src/util/virerror.c:648
+#: src/util/virerror.c:669
 msgid "No error message provided"
 msgstr "പിശക് കാണിക്കുന്ന സന്ദേശം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:710
+#: src/util/virerror.c:731
 #, c-format
 msgid "internal error %s"
 msgstr "ആന്തരിക പിശക് %s"
 
-#: src/util/virerror.c:712
+#: src/util/virerror.c:733
 msgid "internal error"
 msgstr "ആന്തരിക പിശക് "
 
-#: src/util/virerror.c:715 tools/virsh.c:681
+#: src/util/virerror.c:736 tools/virsh.c:681
 msgid "out of memory"
 msgstr "മെമ്മറി ലഭ്യമല്ല"
 
-#: src/util/virerror.c:719
+#: src/util/virerror.c:740
 msgid "this function is not supported by the connection driver"
 msgstr "ഈ ബന്ധത്തിന്റെ പ്രവര്‍ത്തകം ഈ ഫങ്ഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/util/virerror.c:721
+#: src/util/virerror.c:742
 #, c-format
 msgid "this function is not supported by the connection driver: %s"
 msgstr "ഈ ബന്ധത്തിന്റെ പ്രവര്‍ത്തകം ഈ ഫങ്ഷന്‍ പിന്തുണയ്ക്കുന്നില്ല: %s"
 
-#: src/util/virerror.c:725
+#: src/util/virerror.c:746
 msgid "no connection driver available"
 msgstr "കണക്ഷന്‍ പ്രവര്‍ത്തകം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:727
+#: src/util/virerror.c:748
 #, c-format
 msgid "no connection driver available for %s"
 msgstr "%s നു് കണക്ഷന്‍ പ്രവര്‍ത്തകമൊന്നും ലഭ്യമല്ല"
 
-#: src/util/virerror.c:731
+#: src/util/virerror.c:752
 msgid "invalid connection pointer in"
 msgstr "തെറ്റായ കണക്ഷന്‍ പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:733
+#: src/util/virerror.c:754
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ കണക്ഷന്‍ പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:737
+#: src/util/virerror.c:758
 msgid "invalid domain pointer in"
 msgstr "തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:739
+#: src/util/virerror.c:760
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:743 src/xen/xen_hypervisor.c:3271
+#: src/util/virerror.c:764 src/xen/xen_hypervisor.c:3271
 msgid "invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്"
 
-#: src/util/virerror.c:745
+#: src/util/virerror.c:766
 #, c-format
 msgid "invalid argument: %s"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്: %s"
 
-#: src/util/virerror.c:749
+#: src/util/virerror.c:770
 #, c-format
 msgid "operation failed: %s"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:751
+#: src/util/virerror.c:772
 msgid "operation failed"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:755
+#: src/util/virerror.c:776
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:757
+#: src/util/virerror.c:778
 msgid "GET operation failed"
 msgstr "GET പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:761
+#: src/util/virerror.c:782
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:763
+#: src/util/virerror.c:784
 msgid "POST operation failed"
 msgstr "POST പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:766
+#: src/util/virerror.c:787
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "അപരിചിതമായ HTTP പിശക് കോഡ് %d ലഭിച്ചു"
 
-#: src/util/virerror.c:770
+#: src/util/virerror.c:791
 #, c-format
 msgid "unknown host %s"
 msgstr "അപരിചിതമായ ഹോസ്റ്റ് %s"
 
-#: src/util/virerror.c:772
+#: src/util/virerror.c:793
 msgid "unknown host"
 msgstr "അപരിചിതമായ ഹോസ്റ്റ്"
 
-#: src/util/virerror.c:776
+#: src/util/virerror.c:797
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr സീരിയലൈസ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:778
+#: src/util/virerror.c:799
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr സീരിയലൈസ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:782
+#: src/util/virerror.c:803
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/util/virerror.c:784
+#: src/util/virerror.c:805
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി %s ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/util/virerror.c:788
+#: src/util/virerror.c:809
 msgid "could not connect to Xen Store"
 msgstr "Xen സ്റ്റോറിലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/util/virerror.c:790
+#: src/util/virerror.c:811
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "Xen സ്റ്റോര്‍ %s-ലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല "
 
-#: src/util/virerror.c:793
+#: src/util/virerror.c:814
 #, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:797
+#: src/util/virerror.c:818
 msgid "unknown OS type"
 msgstr "അപരിചിതമായ ഒഎസ് രീതി"
 
-#: src/util/virerror.c:799
+#: src/util/virerror.c:820
 #, c-format
 msgid "unknown OS type %s"
 msgstr "അപരിചിതമായ ഒഎസ് രീതി %s"
 
-#: src/util/virerror.c:802
+#: src/util/virerror.c:823
 msgid "missing kernel information"
 msgstr "കേര്‍ണല്‍ വിവരം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:806
+#: src/util/virerror.c:827
 msgid "missing root device information"
 msgstr "റൂട്ട് ഡിവൈസ് വിവരം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:808
+#: src/util/virerror.c:829
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s-ല്‍ റൂട്ട് ഡിവൈസ് വിവരം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:812
+#: src/util/virerror.c:833
 msgid "missing source information for device"
 msgstr "ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:814
+#: src/util/virerror.c:835
 #, c-format
 msgid "missing source information for device %s"
 msgstr "ഡിവൈസ് %s-നുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:818
+#: src/util/virerror.c:839
 msgid "missing target information for device"
 msgstr "ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ലക്ഷ്യസ്ഥാനത്തിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:820
+#: src/util/virerror.c:841
 #, c-format
 msgid "missing target information for device %s"
 msgstr "ഡിവൈസ് %s-നുള്ള ലഭ്യമല്ലാത്ത ലക്ഷ്യസ്ഥാനത്തിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:824
+#: src/util/virerror.c:845
 msgid "missing name information"
 msgstr "പേരു് വിവരം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:826
+#: src/util/virerror.c:847
 #, c-format
 msgid "missing name information in %s"
 msgstr "%s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:830
+#: src/util/virerror.c:851
 msgid "missing operating system information"
 msgstr "ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ് സിസ്റ്റമിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:832
+#: src/util/virerror.c:853
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s-നുളള ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ് സിസ്റ്റമിന്‍റെ വിവരം"
 
-#: src/util/virerror.c:836
+#: src/util/virerror.c:857
 msgid "missing devices information"
 msgstr "ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
-#: src/util/virerror.c:838
+#: src/util/virerror.c:859
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s-നുളള ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
-#: src/util/virerror.c:842
+#: src/util/virerror.c:863
 msgid "too many drivers registered"
 msgstr "അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: src/util/virerror.c:844
+#: src/util/virerror.c:865
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s-ല്‍ അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: src/util/virerror.c:848
+#: src/util/virerror.c:869
 msgid "library call failed, possibly not supported"
 msgstr "ലൈബ്രറി കോള്‍ പരാജയപ്പെട്ടിരിക്കുന്നു, പിന്തുണ ലഭ്യമല്ല"
 
-#: src/util/virerror.c:850
+#: src/util/virerror.c:871
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "ലൈബ്രറി കോള്‍ %s പരാജയപ്പെട്ടിരിക്കുന്നു, പിന്തുണ ലഭ്യമല്ല"
 
-#: src/util/virerror.c:854
+#: src/util/virerror.c:875
 msgid "XML description is invalid or not well formed"
 msgstr "എക്സ്എംഎല്‍ വിവരണം അസാധുവോ നന്നായി ഫോം ചെയ്യാത്തതോ ആണു്"
 
-#: src/util/virerror.c:856
+#: src/util/virerror.c:877
 #, c-format
 msgid "XML error: %s"
 msgstr "എക്സ്എംഎല്‍ പിഴവ്: %s"
 
-#: src/util/virerror.c:860
+#: src/util/virerror.c:881
 msgid "this domain exists already"
 msgstr "ഈ ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/util/virerror.c:862
+#: src/util/virerror.c:883
 #, c-format
 msgid "domain %s exists already"
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/util/virerror.c:866
+#: src/util/virerror.c:887
 msgid "operation forbidden for read only access"
 msgstr "റീഡ് ഒണ്‍ലിയ്ക്ക് മാത്രം പ്രക്രിയ അനുവദനീയമല്ല"
 
-#: src/util/virerror.c:868
+#: src/util/virerror.c:889
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "റീഡ് ഒണ്‍ലിയ്ക്ക് മാത്രം പ്രക്രിയ %s അനുവദനീയമല്ല"
 
-#: src/util/virerror.c:872
+#: src/util/virerror.c:893
 msgid "failed to open configuration file for reading"
 msgstr "വായിക്കുന്നതിനായി കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:874
+#: src/util/virerror.c:895
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "വായിക്കുന്നതിനായി %s തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:878
+#: src/util/virerror.c:899
 msgid "failed to read configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:880
+#: src/util/virerror.c:901
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ %s വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:884
+#: src/util/virerror.c:905
 msgid "failed to parse configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:886
+#: src/util/virerror.c:907
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ %s പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:890
+#: src/util/virerror.c:911
 msgid "configuration file syntax error"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സിന്‍റ്റാക്സ് പിശക്"
 
-#: src/util/virerror.c:892
+#: src/util/virerror.c:913
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സിന്‍റ്റാക്സ് പിശക്: %s"
 
-#: src/util/virerror.c:896
+#: src/util/virerror.c:917
 msgid "failed to write configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/util/virerror.c:898
+#: src/util/virerror.c:919
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/util/virerror.c:902
+#: src/util/virerror.c:923
 msgid "parser error"
 msgstr "പാഴ്സറിലുളള പിശക് "
 
-#: src/util/virerror.c:908
+#: src/util/virerror.c:929
 msgid "invalid network pointer in"
 msgstr "തെറ്റായ നെറ്റ്‌വറ്‍ക്ക് പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:910
+#: src/util/virerror.c:931
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ നെറ്റ്‌വറ്‍ക്ക് പോയിന്‍റര്‍"
 
-#: src/util/virerror.c:914
+#: src/util/virerror.c:935
 msgid "this network exists already"
 msgstr "ഈ നെറ്റ്‌വറ്‍ക്ക് നിലവിലുണ്ട്"
 
-#: src/util/virerror.c:916
+#: src/util/virerror.c:937
 #, c-format
 msgid "network %s exists already"
 msgstr "%s നെറ്റ്‌വറ്‍ക്ക് നിലവിലുണ്ട്"
 
-#: src/util/virerror.c:920
+#: src/util/virerror.c:941
 msgid "system call error"
 msgstr "സിസ്റ്റം കോളില്‍ പിശക് "
 
-#: src/util/virerror.c:926
+#: src/util/virerror.c:947
 msgid "RPC error"
 msgstr "RPC പിശക്"
 
-#: src/util/virerror.c:932
+#: src/util/virerror.c:953
 msgid "GNUTLS call error"
 msgstr "GNUTLS കോളില്‍ പിശക് "
 
-#: src/util/virerror.c:938
+#: src/util/virerror.c:959
 msgid "Failed to find the network"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:940
+#: src/util/virerror.c:961
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:944
+#: src/util/virerror.c:965
 msgid "Domain not found"
 msgstr "ഡൊമെയിന്‍ ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:946
+#: src/util/virerror.c:967
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ഡൊമെയിന്‍ ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:950
+#: src/util/virerror.c:971
 msgid "Network not found"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:952
+#: src/util/virerror.c:973
 #, c-format
 msgid "Network not found: %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:956
+#: src/util/virerror.c:977
 msgid "invalid MAC address"
 msgstr "തെറ്റായ മാക് വിലാസം"
 
-#: src/util/virerror.c:958
+#: src/util/virerror.c:979
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "തെറ്റായ മാക് വിലാസം: %s"
 
-#: src/util/virerror.c:964
+#: src/util/virerror.c:985
 #, c-format
 msgid "authentication failed: %s"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:968
+#: src/util/virerror.c:989
 msgid "authentication cancelled"
 msgstr "തിരിച്ചറിയല്‍ റദ്ദാക്കി"
 
-#: src/util/virerror.c:970
+#: src/util/virerror.c:991
 #, c-format
 msgid "authentication cancelled: %s"
 msgstr "തിരിച്ചറിയല്‍ റദ്ദാക്കി: %s"
 
-#: src/util/virerror.c:974
+#: src/util/virerror.c:995
 msgid "Storage pool not found"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:976
+#: src/util/virerror.c:997
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:980
+#: src/util/virerror.c:1001
 msgid "Storage volume not found"
 msgstr "സ്റ്റോറേജ് വോള്യം ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:982
+#: src/util/virerror.c:1003
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "സ്റ്റോറേജ് വോള്യം ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:986
+#: src/util/virerror.c:1007
 msgid "Storage pool probe failed"
 msgstr "സ്റ്റോറേജ് പൂള്‍ തിരയുന്നതു് പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:988
+#: src/util/virerror.c:1009
 #, c-format
 msgid "Storage pool probe failed: %s"
 msgstr "സ്റ്റോറേജ് പൂള്‍ തിരയല്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:992
+#: src/util/virerror.c:1013
 msgid "Storage pool already built"
 msgstr "സ്റ്റോറേജ് പൂള്‍ നേരത്തെ തന്നെ ഉണ്ടു്"
 
-#: src/util/virerror.c:994
+#: src/util/virerror.c:1015
 #, c-format
 msgid "Storage pool already built: %s"
 msgstr "സ്റ്റോറേജ് പൂള്‍ നേരത്തെ തന്നെ ഉണ്ടു്: %s"
 
-#: src/util/virerror.c:998
+#: src/util/virerror.c:1019
 msgid "invalid storage pool pointer in"
 msgstr "തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
-#: src/util/virerror.c:1000
+#: src/util/virerror.c:1021
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
-#: src/util/virerror.c:1004
+#: src/util/virerror.c:1025
 msgid "invalid storage volume pointer in"
 msgstr "തെറ്റായ സ്റ്റോറേജ് വോള്യം പോയിന്റര്‍"
 
-#: src/util/virerror.c:1006
+#: src/util/virerror.c:1027
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് വോള്യം പോയിന്റര്‍"
 
-#: src/util/virerror.c:1010
+#: src/util/virerror.c:1031
 msgid "Failed to find a storage driver"
 msgstr "സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1012
+#: src/util/virerror.c:1033
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1016
+#: src/util/virerror.c:1037
 msgid "Failed to find a node driver"
 msgstr "ഒരു നോഡ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1018
+#: src/util/virerror.c:1039
 #, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "ഒരു നോഡ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1022
+#: src/util/virerror.c:1043
 msgid "invalid node device pointer"
 msgstr "തെറ്റായ നോഡ് ഡിവൈസ് പോയിന്റര്‍"
 
-#: src/util/virerror.c:1024
+#: src/util/virerror.c:1045
 #, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ നോഡ് ഡിവൈസ് പോയിന്റര്‍"
 
-#: src/util/virerror.c:1028
+#: src/util/virerror.c:1049
 msgid "Node device not found"
 msgstr "നോഡ് ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/util/virerror.c:1030
+#: src/util/virerror.c:1051
 #, c-format
 msgid "Node device not found: %s"
 msgstr "നോഡ് ഡിവൈസ് ലഭ്യമല്ല: %s "
 
-#: src/util/virerror.c:1034
+#: src/util/virerror.c:1055
 msgid "Security model not found"
 msgstr "സെക്യൂരിറ്റി മാതൃക ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:1036
+#: src/util/virerror.c:1057
 #, c-format
 msgid "Security model not found: %s"
 msgstr "സെക്യൂരിറ്റി മാതൃക ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:1040
+#: src/util/virerror.c:1061
 msgid "Requested operation is not valid"
 msgstr "ആവശ്യപ്പെട്ട പ്രക്രിയ തെറ്റാണു്"
 
-#: src/util/virerror.c:1042
+#: src/util/virerror.c:1063
 #, c-format
 msgid "Requested operation is not valid: %s"
 msgstr "ആവശ്യപ്പെട്ട പ്രക്രിയ തെറ്റാണു്: %s"
 
-#: src/util/virerror.c:1046
+#: src/util/virerror.c:1067
 msgid "Failed to find the interface"
 msgstr "ഇന്റര്‍ഫെയിസ് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1048
+#: src/util/virerror.c:1069
 #, c-format
 msgid "Failed to find the interface: %s"
 msgstr "ഇന്റര്‍ഫെയിസ് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1052
+#: src/util/virerror.c:1073
 msgid "Interface not found"
 msgstr "ഇന്റര്‍ഫെയിസ് ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:1054
+#: src/util/virerror.c:1075
 #, c-format
 msgid "Interface not found: %s"
 msgstr "ഇന്റര്‍ഫെയിസ് ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:1058
+#: src/util/virerror.c:1079
 msgid "invalid interface pointer in"
 msgstr "തെറ്റായ ഇന്റര്‍ഫെയിസ് പോയിന്റര്‍"
 
-#: src/util/virerror.c:1060
+#: src/util/virerror.c:1081
 #, c-format
 msgid "invalid interface pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഇന്റര്‍ഫെയിസ് പോയിന്റര്‍"
 
-#: src/util/virerror.c:1064
+#: src/util/virerror.c:1085
 msgid "multiple matching interfaces found"
 msgstr "ചേരുന്ന അനവധി ഇന്റര്‍ഫെയിസുകള്‍ ലഭ്യമായി"
 
-#: src/util/virerror.c:1066
+#: src/util/virerror.c:1087
 #, c-format
 msgid "multiple matching interfaces found: %s"
 msgstr "പോരുത്തമുള്ള അനവധി ഇന്റര്‍ഫെയിസുകള്‍ ലഭ്യമായിരിക്കുന്നു: %s"
 
-#: src/util/virerror.c:1070
+#: src/util/virerror.c:1091
 msgid "Failed to find a secret storage driver"
 msgstr "രഹസ്യമായ ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1072
+#: src/util/virerror.c:1093
 #, c-format
 msgid "Failed to find a secret storage driver: %s"
 msgstr "രഹസ്യമായ ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1076
+#: src/util/virerror.c:1097
 msgid "Invalid secret"
 msgstr "തെറ്റായ രഹസ്യം"
 
-#: src/util/virerror.c:1078
+#: src/util/virerror.c:1099
 #, c-format
 msgid "Invalid secret: %s"
 msgstr "തെറ്റായ രഹസ്യം: %s"
 
-#: src/util/virerror.c:1082
+#: src/util/virerror.c:1103
 msgid "Secret not found"
 msgstr "രഹസ്യം ലഭ്യമല്ല"
 
-#: src/util/virerror.c:1084
+#: src/util/virerror.c:1105
 #, c-format
 msgid "Secret not found: %s"
 msgstr "രഹസ്യം ലഭ്യമല്ല: %s"
 
-#: src/util/virerror.c:1088
+#: src/util/virerror.c:1109
 msgid "Failed to start the nwfilter driver"
 msgstr "nwfilter പ്രവര്‍ത്തകം തുടങ്ങുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1090
+#: src/util/virerror.c:1111
 #, c-format
 msgid "Failed to start the nwfilter driver: %s"
 msgstr "nwfilter പ്രവര്‍ത്തകം തുടങ്ങുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1094
+#: src/util/virerror.c:1115
 msgid "Invalid network filter"
 msgstr "തെറ്റായ ശൃംഖലാ അരിപ്പ"
 
-#: src/util/virerror.c:1096
+#: src/util/virerror.c:1117
 #, c-format
 msgid "Invalid network filter: %s"
 msgstr "തെറ്റായ ശൃംഖലാ അരിപ്പ: %s"
 
-#: src/util/virerror.c:1100
+#: src/util/virerror.c:1121
 msgid "Network filter not found"
 msgstr "ശൃംഖലാ അരിപ്പ കണ്ടില്ല"
 
-#: src/util/virerror.c:1102
+#: src/util/virerror.c:1123
 #, c-format
 msgid "Network filter not found: %s"
 msgstr "ശൃംഖലാ അരിപ്പ കണ്ടില്ല: %s"
 
-#: src/util/virerror.c:1106
+#: src/util/virerror.c:1127
 msgid "Error while building firewall"
 msgstr "ഫയര്‍വാള്‍ തയ്യാറാക്കുന്നതില്‍ പിശക്"
 
-#: src/util/virerror.c:1108
+#: src/util/virerror.c:1129
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "ഫയര്‍വാള്‍ തയ്യാറാക്കുന്നതില്‍ പിശക്: %s"
 
-#: src/util/virerror.c:1112
+#: src/util/virerror.c:1133
 msgid "unsupported configuration"
 msgstr "പിന്തുണയില്ലാത്ത ക്രമീകരണം"
 
-#: src/util/virerror.c:1114
+#: src/util/virerror.c:1135
 #, c-format
 msgid "unsupported configuration: %s"
 msgstr "പിന്തുണയില്ലാത്ത ക്രമീകരണം: %s"
 
-#: src/util/virerror.c:1118
+#: src/util/virerror.c:1139
 msgid "Timed out during operation"
 msgstr "പ്രവര്‍ത്തനത്തിനിടയില്‍ സമയം കഴിഞ്ഞിരിക്കുന്നു"
 
-#: src/util/virerror.c:1120
+#: src/util/virerror.c:1141
 #, c-format
 msgid "Timed out during operation: %s"
 msgstr "പ്രക്രിയയുടെ സമയം കഴിഞ്ഞിരിക്കുന്നു: %s"
 
-#: src/util/virerror.c:1124
+#: src/util/virerror.c:1145
 msgid "Failed to make domain persistent after migration"
 msgstr "മൈഗ്രേഷനു് ശേഷം ഡൊമെയില്‍ പെര്‍സിസ്റ്റന്റ് ആക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virerror.c:1126
+#: src/util/virerror.c:1147
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr "മൈഗ്രേഷനു് ശേഷം ഡൊമെയില്‍ പെര്‍സിസ്റ്റന്റ് ആക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/util/virerror.c:1130
+#: src/util/virerror.c:1151
 msgid "Hook script execution failed"
 msgstr "ഹുക്ക് സ്ക്രിപ്റ്റിന്റെ പ്രവര്‍ത്തനം പരാജയപെട്ടു"
 
-#: src/util/virerror.c:1132
+#: src/util/virerror.c:1153
 #, c-format
 msgid "Hook script execution failed: %s"
 msgstr "ഹുക്ക് സ്ക്രിപ്റ്റിന്റെ പ്രവര്‍ത്തനം പരാജയപെട്ടു: %s"
 
-#: src/util/virerror.c:1136
+#: src/util/virerror.c:1157
 msgid "Invalid snapshot"
 msgstr "അസാധുവായ സ്നാപ്പ്ഷോട്ട്"
 
-#: src/util/virerror.c:1138
+#: src/util/virerror.c:1159
 #, c-format
 msgid "Invalid snapshot: %s"
 msgstr "അസാധുവായ സ്നാപ്പ്ഷോട്ട്: %s"
 
-#: src/util/virerror.c:1142
+#: src/util/virerror.c:1163
 msgid "Domain snapshot not found"
 msgstr "ഡൊമൈന്‍ സ്നാപ്ഷോട്ട് കണ്ടില്ല"
 
-#: src/util/virerror.c:1144
+#: src/util/virerror.c:1165
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "ഡൊമൈന്‍ സ്നാപ്ഷോട്ട് കണ്ടില്ല: %s"
 
-#: src/util/virerror.c:1148
+#: src/util/virerror.c:1169
 msgid "invalid stream pointer"
 msgstr "അസാധുവായ സ്ട്രീം പോയിന്റര്‍"
 
-#: src/util/virerror.c:1150
+#: src/util/virerror.c:1171
 #, c-format
 msgid "invalid stream pointer in %s"
 msgstr "%s ല്‍ അസാധുവായ സ്ട്രീം പോയിന്റര്‍"
 
-#: src/util/virerror.c:1154
+#: src/util/virerror.c:1175
 msgid "argument unsupported"
 msgstr "ആര്‍ഗ്യുമെന്റിനു് പിന്തുണയില്ല"
 
-#: src/util/virerror.c:1156
+#: src/util/virerror.c:1177
 #, c-format
 msgid "argument unsupported: %s"
 msgstr "ആര്‍ഗ്യുമെന്റിനു് പിന്തുണയില്ല: %s"
 
-#: src/util/virerror.c:1160
+#: src/util/virerror.c:1181
 msgid "revert requires force"
 msgstr "തിരിച്ചുപോകണമെങ്കില്‍ നിര്‍ബന്ധിയ്ക്കണം"
 
-#: src/util/virerror.c:1162
+#: src/util/virerror.c:1183
 #, c-format
 msgid "revert requires force: %s"
 msgstr "തിരിച്ചുപോകണമെങ്കില്‍ നിര്‍ബന്ധിയ്ക്കണം: %s"
 
-#: src/util/virerror.c:1166
+#: src/util/virerror.c:1187
 msgid "operation aborted"
 msgstr "ഓപ്പറേഷനില്‍ നിന്നും പിന്‍വാങ്ങിയിരിയ്ക്കുന്നു"
 
-#: src/util/virerror.c:1168
+#: src/util/virerror.c:1189
 #, c-format
 msgid "operation aborted: %s"
 msgstr "ഓപ്പറേഷനില്‍ നിന്നും പിന്‍വാങ്ങിയിരിയ്ക്കുന്നു: %s"
 
-#: src/util/virerror.c:1172
+#: src/util/virerror.c:1193
 msgid "metadata not found"
 msgstr "മെറ്റാഡേറ്റ ലഭ്യമായില്ല"
 
-#: src/util/virerror.c:1174
+#: src/util/virerror.c:1195
 #, c-format
 msgid "metadata not found: %s"
 msgstr "മെറ്റാഡേറ്റ ലഭ്യമായില്ല: %s"
 
-#: src/util/virerror.c:1178
+#: src/util/virerror.c:1199
 msgid "Unsafe migration"
 msgstr "സുരക്ഷിതമല്ലാത്ത കുടിയേറ്റം"
 
-#: src/util/virerror.c:1180
+#: src/util/virerror.c:1201
 #, c-format
 msgid "Unsafe migration: %s"
 msgstr "സുരക്ഷിതമല്ലാത്ത കുടിയേറ്റം: %s"
 
-#: src/util/virerror.c:1184
+#: src/util/virerror.c:1205
 msgid "numerical overflow"
 msgstr "ന്യൂമറിയ്ക്കല്‍ ഓവര്‍ഫ്ലോ"
 
-#: src/util/virerror.c:1186
+#: src/util/virerror.c:1207
 #, c-format
 msgid "numerical overflow: %s"
 msgstr "ന്യൂമറിയ്ക്കല്‍ ഓവര്‍ഫ്ലോ: %s"
 
-#: src/util/virerror.c:1190
+#: src/util/virerror.c:1211
 msgid "block copy still active"
 msgstr "ബ്ലോക്ക് പകര്‍പ്പ് ഇപ്പോഴും സജീവമാണു്"
 
-#: src/util/virerror.c:1192
+#: src/util/virerror.c:1213
 #, c-format
 msgid "block copy still active: %s"
 msgstr "ബ്ലോക്ക് പകര്‍പ്പ് ഇപ്പോഴും സജീവമാണു്: %s"
 
-#: src/util/virerror.c:1196
+#: src/util/virerror.c:1217
 msgid "Operation not supported"
 msgstr "ഓപ്പറേഷനു് പിന്തുണയില്ല"
 
-#: src/util/virerror.c:1198
+#: src/util/virerror.c:1219
 #, c-format
 msgid "Operation not supported: %s"
 msgstr "ഓപ്പറേഷനു് പിന്തുണയില്ല: %s"
 
-#: src/util/virerror.c:1202
+#: src/util/virerror.c:1223
 msgid "SSH transport error"
 msgstr "എസ്എസ്എച്ച് ഗതാഗതത്തില്‍ പിശക്"
 
-#: src/util/virerror.c:1204
+#: src/util/virerror.c:1225
 #, c-format
 msgid "SSH transport error: %s"
 msgstr "എസ്എസ്എച്ച് ഗതാഗതത്തില്‍ പിശക്: %s"
 
-#: src/util/virerror.c:1208
+#: src/util/virerror.c:1229
 msgid "Guest agent is not responding"
 msgstr "ഗസ്റ്റ് ഏജന്റ് പ്രതികരിയ്ക്കുന്നില്ല"
 
-#: src/util/virerror.c:1210
+#: src/util/virerror.c:1231
 #, c-format
 msgid "Guest agent is not responding: %s"
 msgstr "ഗസ്റ്റ് ഏജന്റ് പ്രതികരിയ്ക്കുന്നില്ല: %s"
 
-#: src/util/virerror.c:1214
+#: src/util/virerror.c:1235
 msgid "resource busy"
 msgstr "റിസോഴ്സ്  തിരക്കില്‍"
 
-#: src/util/virerror.c:1216
+#: src/util/virerror.c:1237
 #, c-format
 msgid "resource busy %s"
 msgstr "റിസോഴ്സ് തിരക്കില്‍ %s"
@@ -26597,10 +26607,6 @@ msgstr ""
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
 
-#: tools/virsh-domain-monitor.c:47
-msgid "no error"
-msgstr "പിശകില്ല"
-
 #: tools/virsh-domain-monitor.c:49
 msgid "unspecified error"
 msgstr "വ്യക്തമാക്കാത്ത പിശക്"
@@ -29710,7 +29716,7 @@ msgstr "ലൈവ് മൈഗ്രേഷന്‍ സമയപരിധിയ�
 msgid "file '%s' doesn't exist"
 msgstr "'%s' എന്ന ഫയല്‍ നിലവിലില്ല"
 
-#: tools/virsh-domain.c:8297
+#: tools/virsh-domain.c:8296
 msgid "migrate: Unexpected migrateuri for peer2peer/direct migration"
 msgstr "migrate: peer2peer/നേരിട്ടുള്ള മൈഗ്രേഷനു് അപ്രതീക്ഷിതമായ migrateuri"
 
@@ -33052,6 +33058,9 @@ msgstr "%s: വളരെയധികം കമാന്റ് ലൈന്‍ �
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: പിന്‍തുണയില്ലാത്ത ഹൈപ്പര്‍വൈസര്‍ നാമം %s\n"
+
+#~ msgid "Unable to eject media before changing it"
+#~ msgstr "മീഡിയാ മാറ്റുന്നതിനു് മുമ്പു് പുറത്തെടുക്കുവാന്‍ സാധ്യമല്ല"
 
 #~ msgid "cannot read domain image"
 #~ msgstr "ഡൊമെയിന്‍ ഇമേജ് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-05-19 17:59-0400\n"
+"POT-Creation-Date: 2013-06-12 16:48-0400\n"
 "PO-Revision-Date: 2013-01-28 14:11+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -469,7 +469,7 @@ msgstr "ਕਲਾਂਈਟ ਨੇ ਗਲਤ SASL init ਬੇਨਤੀ ਦੀ ਕ
 #: daemon/remote.c:2496 daemon/remote.c:2645 daemon/remote.c:2743
 #: daemon/remote.c:2759 daemon/remote.c:2773 daemon/remote.c:2787
 #: daemon/remote.c:2885 daemon/remote.c:3031 daemon/remote.c:3060
-#: src/util/virerror.c:962
+#: src/util/virerror.c:983
 msgid "authentication failed"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ"
 
@@ -1051,7 +1051,7 @@ msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌ�
 #: src/qemu/qemu_driver.c:14387 src/qemu/qemu_driver.c:14435
 #: src/qemu/qemu_driver.c:14472 src/qemu/qemu_driver.c:14535
 #: src/qemu/qemu_driver.c:14557 src/qemu/qemu_driver.c:14608
-#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3599
+#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3615
 #: src/uml/uml_driver.c:2449 src/xen/xen_driver.c:2304
 #: src/xen/xen_hypervisor.c:1175 src/xen/xen_hypervisor.c:1250
 #: src/xen/xen_hypervisor.c:1363 src/xen/xm_internal.c:697
@@ -3276,7 +3276,7 @@ msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
 #: src/conf/domain_conf.c:13925 src/conf/domain_conf.c:13958
 #: src/conf/domain_conf.c:15157 src/conf/domain_conf.c:15166
-#: src/qemu/qemu_hotplug.c:2546
+#: src/qemu/qemu_hotplug.c:2553
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "ਅਚਾਨਕ hostdev ਕਿਸਮ %d"
@@ -7529,7 +7529,7 @@ msgid "libvirt was built without the '%s' driver"
 msgstr ""
 
 #: src/libvirt.c:2137 src/libvirt.c:10515 src/libvirt.c:12432
-#: src/libvirt.c:15329 src/libvirt.c:16989
+#: src/libvirt.c:15330 src/libvirt.c:16990
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr ""
@@ -7587,7 +7587,7 @@ msgid "string parameter '%s' unsupported"
 msgstr "ਸਤਰ ਪੈਰਾਮੀਟਰ '%s' ਨਾ-ਸਹਿਯੋਗੀ ਹੈ"
 
 #: src/libvirt.c:3938 src/libvirt.c:4198 src/libvirt.c:7178 src/libvirt.c:8993
-#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20488
+#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20489
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr ""
@@ -7600,11 +7600,11 @@ msgstr "ਸੁਰੱਖਿਅਤ ਫਲੈਗ ਨਾਲ virDomainGetXMLDesc"
 msgid "domainMigratePrepare did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3199
+#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3214
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare2 ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3344
+#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3359
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare3 ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
@@ -7631,7 +7631,7 @@ msgstr ""
 msgid "offline migration is not supported by the source host"
 msgstr ""
 
-#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3527
+#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3543
 msgid "offline migration is not supported by the destination host"
 msgstr ""
 
@@ -7687,82 +7687,82 @@ msgstr ""
 msgid "metadata title in %s can't contain newlines"
 msgstr ""
 
-#: src/libvirt.c:14177
+#: src/libvirt.c:14178
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
 
-#: src/libvirt.c:16132
+#: src/libvirt.c:16133
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "ਨਾਨ-ਬਲਾਕਿੰਗ ਸਟਰੀਮ ਲਈ ਡਾਟਾ ਸਰੋਤ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ"
 
-#: src/libvirt.c:16231
+#: src/libvirt.c:16232
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "ਡਾਟਾ ਸਿੰਕ ਨੂੰ ਨਾਨ-ਬਲਾਕਿੰਗ ਸਟਰੀਮਾਂ ਲਈ ਨਹੀਨ ਵਰਤਿਆ ਜਾ ਸਕਦਾ।"
 
-#: src/libvirt.c:17938
+#: src/libvirt.c:17939
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr ""
 
-#: src/libvirt.c:18047 src/libvirt.c:19281
+#: src/libvirt.c:18048 src/libvirt.c:19282
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18366
+#: src/libvirt.c:18367
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr ""
 
-#: src/libvirt.c:18373
+#: src/libvirt.c:18374
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18380
+#: src/libvirt.c:18381
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18434
+#: src/libvirt.c:18435
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc with secure flag"
 
-#: src/libvirt.c:19349
+#: src/libvirt.c:19350
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:19926
+#: src/libvirt.c:19927
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr ""
 
-#: src/libvirt.c:20100
+#: src/libvirt.c:20101
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ਫਾਇਲ ਡਿਸਕਰਿਪਟਰ %d ਵਰਤਣ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/libvirt.c:20106
+#: src/libvirt.c:20107
 #, c-format
 msgid "fd %d in %s must be a socket"
 msgstr ""
 
-#: src/libvirt.c:20277
+#: src/libvirt.c:20278
 msgid "A close callback is already registered"
 msgstr "ਈਵੈਂਟ ਕਾਲਬੈਕ ਪਹਿਲਾਂ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/libvirt.c:20331
+#: src/libvirt.c:20332
 msgid "A different callback was requested"
 msgstr "ਈਵੈਂਟ ਕਾਲਬੈਕ ਪਹਿਲਾਂ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/libvirt.c:20614
+#: src/libvirt.c:20615
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr ""
 
-#: src/libvirt.c:20629
+#: src/libvirt.c:20630
 #, c-format
 msgid "input too large: %u * %u"
 msgstr ""
@@ -8441,24 +8441,24 @@ msgstr ""
 msgid "Cannot create %s"
 msgstr ""
 
-#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:642
+#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:643
 #, c-format
 msgid "USB device %s is in use by domain %s"
 msgstr "USB ਜੰਤਰ %s ਡੋਮੇਨ %s ਦੁਆਰਾ ਵਰਤੋਂ ਅਧੀਨ ਹੈ"
 
-#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:646
+#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:647
 #, c-format
 msgid "USB device %s is already in use"
 msgstr "ਜੰਤਰ %s ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
 
-#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:727
+#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:728
 #, c-format
 msgid ""
 "Multiple USB devices for %x:%x were found, but none of them is at bus:%u "
 "device:%u"
 msgstr ""
 
-#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:732
+#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:733
 #, c-format
 msgid "Multiple USB devices for %x:%x, use <address> to specify one"
 msgstr ""
@@ -9273,7 +9273,7 @@ msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗ�
 
 #: src/lxc/lxc_driver.c:2931 src/lxc/lxc_driver.c:2987
 #: src/lxc/lxc_driver.c:3780 src/qemu/qemu_driver.c:6149
-#: src/qemu/qemu_hotplug.c:2578
+#: src/qemu/qemu_hotplug.c:2585
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr ""
@@ -9311,8 +9311,8 @@ msgid "Cannot attach disk until init PID is known"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:3057 src/libxl/libxl_driver.c:3257
-#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:235
-#: src/qemu/qemu_hotplug.c:478 src/qemu/qemu_hotplug.c:601
+#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:242
+#: src/qemu/qemu_hotplug.c:485 src/qemu/qemu_hotplug.c:608
 #: src/uml/uml_driver.c:2038
 #, c-format
 msgid "target %s already exists"
@@ -9336,7 +9336,7 @@ msgid "No bridge name specified"
 msgstr "ਕੋਈ ਕਰਨਲ ਨਹੀਂ ਦਿੱਤਾ"
 
 #: src/lxc/lxc_driver.c:3207 src/lxc/lxc_process.c:466
-#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1306
+#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1313
 #, c-format
 msgid "Network '%s' is not active."
 msgstr "ਨੈੱਟਵਰਕ '%s' ਸਰਗਰਮ ਨਹੀਂ ਹੈ।"
@@ -9379,7 +9379,7 @@ msgid "device type '%s' cannot be attached"
 msgstr "ਜੰਤਰ ਕਿਸਮ '%s' ਜੋੜੀ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
 #: src/lxc/lxc_driver.c:3726 src/libxl/libxl_driver.c:3319
-#: src/qemu/qemu_hotplug.c:2038 src/qemu/qemu_hotplug.c:2147
+#: src/qemu/qemu_hotplug.c:2045 src/qemu/qemu_hotplug.c:2154
 #: src/uml/uml_driver.c:2169
 #, c-format
 msgid "disk %s not found"
@@ -9391,7 +9391,7 @@ msgstr "ਡਿਸਕ %s ਨਹੀਂ ਲੱਭੀ"
 msgid "Unable to remove device %s"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2584
+#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2591
 #, c-format
 msgid "network device %s not found"
 msgstr ""
@@ -9554,10 +9554,10 @@ msgid "Failed libxl context initialization"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:482 src/qemu/qemu_driver.c:265
-#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:875
-#: src/qemu/qemu_hostdev.c:899 src/qemu/qemu_hostdev.c:948
+#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:876
+#: src/qemu/qemu_hostdev.c:900 src/qemu/qemu_hostdev.c:949
 #: src/secret/secret_driver.c:510 src/uml/uml_driver.c:195
-#: src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
+#: src/util/virerror.c:252 src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
 #: tools/virsh-domain-monitor.c:56
 msgid "unknown error"
 msgstr "ਅਣਜਾਣ ਗਲਤੀ"
@@ -9905,7 +9905,7 @@ msgstr "'%s' ਜੰਤਰ ਲਈ ਹਟਾਉਣਯੋਗ ਮੀਡੀਆ ਨੂ
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ਡਾਇਰੈਕਟਰੀ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਚਾਈਲਡ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:620
+#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:627
 #: src/uml/uml_driver.c:2045
 msgid "disk source path is missing"
 msgstr "ਡਿਸਕ ਸਰੋਤ ਟਿਕਾਣਾ ਗੈਰ-ਮੌਜੂਦ ਹੈ"
@@ -10505,9 +10505,9 @@ msgstr "HAL ਕੈਲਬੈਕ ਸੈੱਟਅੱਪ ਫੇਲ ਹੋਇਆ"
 msgid "libhal_get_all_devices failed"
 msgstr "libhal_get_all_devices ਫੇਲ ਹੋਇਆ"
 
-#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1261
-#: src/qemu/qemu_migration.c:1622 src/qemu/qemu_migration.c:1654
-#: src/qemu/qemu_migration.c:1660 src/qemu/qemu_migration.c:2825
+#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1278
+#: src/qemu/qemu_migration.c:1640 src/qemu/qemu_migration.c:1672
+#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2840
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -10975,17 +10975,17 @@ msgstr ""
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr ""
 
-#: src/nwfilter/nwfilter_driver.c:378 src/nwfilter/nwfilter_driver.c:583
-#: src/nwfilter/nwfilter_driver.c:631
+#: src/nwfilter/nwfilter_driver.c:372 src/nwfilter/nwfilter_driver.c:577
+#: src/nwfilter/nwfilter_driver.c:625
 msgid "no nwfilter with matching uuid"
 msgstr "ਕੋਈ ਨੈੱਟਵਰਕ uuid ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
 
-#: src/nwfilter/nwfilter_driver.c:404
+#: src/nwfilter/nwfilter_driver.c:398
 #, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "ਨਾਂ '%s' ਵਾਲਾ ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ"
 
-#: src/nwfilter/nwfilter_driver.c:590
+#: src/nwfilter/nwfilter_driver.c:584
 msgid "nwfilter is in use"
 msgstr "nwfilter ਵਰਤੋਂ ਅਧੀਨ ਹੈ"
 
@@ -12319,7 +12319,7 @@ msgstr "ਡਿਸਕ ਮਾਰਗ %s ਵਰਤਣ ਦੀ ਮਨਜੂਰੀ ਤ�
 msgid "Unable to deny access for disk path %s"
 msgstr "ਡੋਮੇਨ %s ਤੋਂ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4231
+#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4247
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਲਈ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇਲ"
@@ -13349,7 +13349,7 @@ msgid ""
 "booting from assigned USB devices is not supported with this version of qemu"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1000
+#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1007
 #, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "qemu ਦੇ ਇਸ ਵਰਜਨ ਨਾਲ PCI ਜੰਤਰ ਨਿਰਧਾਰਨ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
@@ -13995,8 +13995,8 @@ msgstr "ਕੋਈ ਡੋਮੇਨ id %d ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾ�
 msgid "domain is pmsuspended"
 msgstr "ਡੋਮੇਨ ਮੁਅੱਤਲ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4010
-#: src/qemu/qemu_migration.c:4155 src/qemu/qemu_process.c:580
+#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4026
+#: src/qemu/qemu_migration.c:4171 src/qemu/qemu_process.c:580
 #: src/qemu/qemu_process.c:3872
 msgid "resume operation failed"
 msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
@@ -14105,10 +14105,10 @@ msgstr "%s ਵਿੱਚ ਲਿਖਣ ਤੋਂ ਅਸਮਰਥ"
 #: src/qemu/qemu_driver.c:2806 src/qemu/qemu_driver.c:3265
 #: src/qemu/qemu_driver.c:10653 src/qemu/qemu_driver.c:11159
 #: src/qemu/qemu_driver.c:12154 src/qemu/qemu_driver.c:12206
-#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:452
-#: src/qemu/qemu_hotplug.c:836 src/qemu/qemu_migration.c:2883
-#: src/qemu/qemu_migration.c:3192 src/qemu/qemu_migration.c:3535
-#: src/qemu/qemu_migration.c:3930 src/qemu/qemu_process.c:558
+#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:459
+#: src/qemu/qemu_hotplug.c:843 src/qemu/qemu_migration.c:2898
+#: src/qemu/qemu_migration.c:3207 src/qemu/qemu_migration.c:3551
+#: src/qemu/qemu_migration.c:3946 src/qemu/qemu_process.c:558
 #: src/qemu/qemu_process.c:571
 msgid "guest unexpectedly quit"
 msgstr "ਗਿਸਟ ਅਚਾਨਕ ਬੰਦ ਹੋ ਗਿਆ"
@@ -14369,7 +14369,7 @@ msgstr "ਲੀਸ %s ਲਾਕਸਪੇਸ %s ਪਹਿਲਾਂ ਹੀ ਮੌ�
 msgid "Target already exists"
 msgstr "ਨਿਯਤ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2818
+#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2825
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ਲੀਸ %s ਲਾਕਸਪੇਸ %s ਵਿੱਚ ਪਹਿਲਾਂ ਮੌਜੂਦ ਨਹੀਂ"
@@ -14577,7 +14577,7 @@ msgstr ""
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "Tunnelled ਮਾਈਗਰੇਸ਼ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਪਰ ਗਲਤ RPC ਢੰਗ ਕਾਲ ਕੀਤਾ ਗਿਆ"
 
-#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2261
+#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2276
 msgid "domain disappeared"
 msgstr "ਡੋਮੇਨ ਨੂੰ ਰੋਕਿਆ ਨਹੀਂ"
 
@@ -14695,7 +14695,7 @@ msgstr ""
 msgid "quiesce requires disk-only"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1418
+#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1436
 msgid "domain is marked for auto destroy"
 msgstr "ਡੋਮੇਨ ਆਟੋਸਟਾਰਟ ਕਰਨ ਲਈ ਮਾਰਕ ਕੀਤੀ ਗਈ ਹੈ"
 
@@ -15015,359 +15015,360 @@ msgstr "ਡਿਸਕ ਹਟਾਉਣ ਕਮਾਂਡ ਚਲਾਉਣ ਤੋਂ �
 msgid "Specifying mount point is not supported for now"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:304
+#: src/qemu/qemu_hostdev.c:305
 #, c-format
 msgid ""
 "virtualport type %s is currently not supported on interfaces of type hostdev"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:342 src/qemu/qemu_hostdev.c:407
+#: src/qemu/qemu_hostdev.c:343 src/qemu/qemu_hostdev.c:408
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:356
+#: src/qemu/qemu_hostdev.c:357
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
 "mode"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:369
+#: src/qemu/qemu_hostdev.c:370
 msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਲਈ ਸਹਾਇਕ ਨਹੀਂ"
 
-#: src/qemu/qemu_hostdev.c:375
+#: src/qemu/qemu_hostdev.c:376
 #, c-format
 msgid "vlan can only be set for SR-IOV VFs, but %s is not a VF"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:465
+#: src/qemu/qemu_hostdev.c:466
 #, c-format
 msgid "PCI device %s is not assignable"
 msgstr "ਜੰਤਰ %s ਇੱਕ PCI ਜੰਤਰ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_hostdev.c:477
+#: src/qemu/qemu_hostdev.c:478
 #, c-format
 msgid "PCI device %s is in use by domain %s"
 msgstr "PCI ਜੰਤਰ %s ਡੋਮੇਨ %s ਦੁਆਰਾ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
 
-#: src/qemu/qemu_hostdev.c:481
+#: src/qemu/qemu_hostdev.c:482
 #, c-format
 msgid "PCI device %s is already in use"
 msgstr "ਜੰਤਰ %s ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
 
-#: src/qemu/qemu_hostdev.c:874
+#: src/qemu/qemu_hostdev.c:875
 #, c-format
 msgid "Failed to re-attach PCI device: %s"
 msgstr "PCI ਜੰਤਰ ਨੂੰ ਮੁੜ-ਜੋੜਨ ਲਈ ਫੇਲ: %s"
 
-#: src/qemu/qemu_hostdev.c:898
+#: src/qemu/qemu_hostdev.c:899
 #, fuzzy, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "pciDeviceList ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਫੇਲ: %s"
 
-#: src/qemu/qemu_hostdev.c:947
+#: src/qemu/qemu_hostdev.c:948
 #, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI ਜੰਤਰ ਰੀਸੈੱਟ ਕਰਨ ਲਈ ਫੇਲ: %s"
 
 #: src/qemu/qemu_hotplug.c:116
-msgid "Unable to eject media before changing it"
-msgstr ""
+#, fuzzy
+msgid "Unable to eject media"
+msgstr "VIOS ਨਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_hotplug.c:357
+#: src/qemu/qemu_hotplug.c:364
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "ਟਾਰਗਿਟ %s:%d ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:373
+#: src/qemu/qemu_hotplug.c:380
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:497
+#: src/qemu/qemu_hotplug.c:504
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਐਡਰੈੱਸ ਕਿਸਮ %s"
 
-#: src/qemu/qemu_hotplug.c:525
+#: src/qemu/qemu_hotplug.c:532
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "SCSI ਕੰਟਰੋਲਰ %d ਦਾ PCI ਐਡਰੈੱਸ ਗੁੰਮ ਸੀ"
 
-#: src/qemu/qemu_hotplug.c:730
+#: src/qemu/qemu_hotplug.c:737
 msgid "installed qemu version does not support host_net_add"
 msgstr "ਇੰਸਟਾਲ ਕੀਤਾ qemu ਵਰਜਨ host_net_add ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/qemu/qemu_hotplug.c:769
+#: src/qemu/qemu_hotplug.c:776
 #, fuzzy
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "ਜੰਤਰ ਦੀ ਇਹ ਕਿਸਮ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
-#: src/qemu/qemu_hotplug.c:784
+#: src/qemu/qemu_hotplug.c:791
 msgid "Unable to attach network devices without vlan"
 msgstr "vlan ਤੋਂ ਬਿਨਾਂ ਨੈੱਟਵਰਕ ਜੰਤਰ ਨੂੰ ਜੋੜਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_hotplug.c:872
+#: src/qemu/qemu_hotplug.c:879
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:884
+#: src/qemu/qemu_hotplug.c:891
 msgid "setting of link state not supported: Link is up"
 msgstr "ਲਿੰਕ ਹਾਲਤ ਦੀ ਸੈਟਿੰਗ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ: ਲਿੰਕ ਚਾਲੂ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:1036
+#: src/qemu/qemu_hotplug.c:1043
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ਹਾਟਪਲੱਗ ਦੌਰਾਨ ਗਿਸਟ ਅਚਾਨਕ ਬੰਦ ਹੋ ਗਿਆ"
 
-#: src/qemu/qemu_hotplug.c:1186 src/qemu/qemu_hotplug.c:2518
+#: src/qemu/qemu_hotplug.c:1193 src/qemu/qemu_hotplug.c:2525
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev ਮੋਡ '%s' ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:1234 src/qemu/qemu_hotplug.c:2487
+#: src/qemu/qemu_hotplug.c:1241 src/qemu/qemu_hotplug.c:2494
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys ਕਿਸਮ '%s' ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:1281
+#: src/qemu/qemu_hotplug.c:1288
 msgid "interface is missing bridge name"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1296
+#: src/qemu/qemu_hotplug.c:1303
 #, c-format
 msgid "Couldn't find network '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1318
+#: src/qemu/qemu_hotplug.c:1325
 #, c-format
 msgid "Interface type %d has no bridge name"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1346
+#: src/qemu/qemu_hotplug.c:1353
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ਬਰਿੱਜ %s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:1370
+#: src/qemu/qemu_hotplug.c:1377
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1397
+#: src/qemu/qemu_hotplug.c:1404
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1408
+#: src/qemu/qemu_hotplug.c:1415
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1432
+#: src/qemu/qemu_hotplug.c:1439
 msgid "can't change link state: device alias not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1470
+#: src/qemu/qemu_hotplug.c:1477
 msgid "cannot find existing network device to modify"
 msgstr "ਨੈੱਟਵਰਕ ਜੰਤਰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:1478
+#: src/qemu/qemu_hotplug.c:1485
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1501
+#: src/qemu/qemu_hotplug.c:1508
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1510
+#: src/qemu/qemu_hotplug.c:1517
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1522
+#: src/qemu/qemu_hotplug.c:1529
 msgid "cannot modify virtio network device driver attributes"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1536
+#: src/qemu/qemu_hotplug.c:1543
 msgid "cannot modify network device script attribute"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1548
+#: src/qemu/qemu_hotplug.c:1555
 msgid "cannot modify network device tap name"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1566
+#: src/qemu/qemu_hotplug.c:1573
 msgid "cannot modify network device guest PCI address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1577
+#: src/qemu/qemu_hotplug.c:1584
 msgid "cannot modify network device alias"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1582
+#: src/qemu/qemu_hotplug.c:1589
 msgid "cannot modify network device rom bar setting"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1587
+#: src/qemu/qemu_hotplug.c:1594
 msgid "cannot modify network rom file"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1592
+#: src/qemu/qemu_hotplug.c:1599
 msgid "cannot modify network device boot index setting"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1619
+#: src/qemu/qemu_hotplug.c:1626
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1677 src/qemu/qemu_hotplug.c:1748
+#: src/qemu/qemu_hotplug.c:1684 src/qemu/qemu_hotplug.c:1755
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "'%s' ਨੈੱਟਵਰਕ ਕਿਸਮ ਤੇ ਸੰਰਚਨਾ ਤਬਦੀਲ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:1846
+#: src/qemu/qemu_hotplug.c:1853
 msgid "cannot find existing graphics device to modify"
 msgstr "ਗਰਾਫਿਕਸ ਜੰਤਰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:1861
+#: src/qemu/qemu_hotplug.c:1868
 msgid "cannot change port settings on vnc graphics"
 msgstr "vnc ਗਰਾਫਿਕਸ ਉੱਪਰ ਪੋਰਟ ਸੈਟਿੰਗ ਤਬਦੀਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:1866
+#: src/qemu/qemu_hotplug.c:1873
 msgid "cannot change listen address setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1871
+#: src/qemu/qemu_hotplug.c:1878
 msgid "cannot change listen network setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1876
+#: src/qemu/qemu_hotplug.c:1883
 msgid "cannot change keymap setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1916
+#: src/qemu/qemu_hotplug.c:1923
 msgid "cannot change port settings on spice graphics"
 msgstr "ਮੌਜੂਦਾ ਸੀਕਰੇਟ ਤੇ ਪਰਾਈਵੇਟ ਫਲੈਗ ਤਬਦੀਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:1921
+#: src/qemu/qemu_hotplug.c:1928
 msgid "cannot change listen address setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1926
+#: src/qemu/qemu_hotplug.c:1933
 msgid "cannot change listen network setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1932
+#: src/qemu/qemu_hotplug.c:1939
 msgid "cannot change keymap setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1973
+#: src/qemu/qemu_hotplug.c:1980
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "'%s' ਗਰਾਫਿਕਸ ਕਿਸਮ ਤੇ ਸੰਰਚਨਾ ਤਬਦੀਲ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:2046 src/qemu/qemu_hotplug.c:2292
+#: src/qemu/qemu_hotplug.c:2053 src/qemu/qemu_hotplug.c:2299
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "ਮਲਟੀਫੰਕਸ਼ਨ PCI ਜੰਤਰ ਨੂੰ ਹਾਟ ਅਨਪਲੱਗ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
 
-#: src/qemu/qemu_hotplug.c:2056
+#: src/qemu/qemu_hotplug.c:2063
 #, fuzzy
 msgid "device cannot be detached without a valid CCW address"
 msgstr "ਬਿਨਾਂ PCI ਐਡਰੈੱਸ ਤੋਂ ਜੰਤਰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2063
+#: src/qemu/qemu_hotplug.c:2070
 #, fuzzy
 msgid "device cannot be detached without a valid PCI address"
 msgstr "ਬਿਨਾਂ PCI ਐਡਰੈੱਸ ਤੋਂ ਜੰਤਰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2153
+#: src/qemu/qemu_hotplug.c:2160
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "xen ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2162
+#: src/qemu/qemu_hotplug.c:2169
 #, c-format
 msgid "disk '%s' is in an active block copy job"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2275
+#: src/qemu/qemu_hotplug.c:2282
 #, fuzzy, c-format
 msgid "controller %s:%d not found"
 msgstr "ਡਿਸਕ ਕੰਟਰੋਲਰ %s:%d ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/qemu/qemu_hotplug.c:2286 src/qemu/qemu_hotplug.c:2360
-#: src/qemu/qemu_hotplug.c:2609
+#: src/qemu/qemu_hotplug.c:2293 src/qemu/qemu_hotplug.c:2367
+#: src/qemu/qemu_hotplug.c:2616
 msgid "device cannot be detached without a PCI address"
 msgstr "ਬਿਨਾਂ PCI ਐਡਰੈੱਸ ਤੋਂ ਜੰਤਰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2299
+#: src/qemu/qemu_hotplug.c:2306
 msgid "device cannot be detached: device is busy"
 msgstr "ਜੰਤਰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ: ਜੰਤਰ ਬਿਜ਼ੀ ਹੈ"
 
-#: src/qemu/qemu_hotplug.c:2351
+#: src/qemu/qemu_hotplug.c:2358
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 
-#: src/qemu/qemu_hotplug.c:2424
+#: src/qemu/qemu_hotplug.c:2431
 msgid "device cannot be detached without a device alias"
 msgstr "device cannot be detached without a device alias"
 
-#: src/qemu/qemu_hotplug.c:2430
+#: src/qemu/qemu_hotplug.c:2437
 msgid "device cannot be detached with this QEMU version"
 msgstr "ਇਸ QEMU ਵਰਜਨ ਨਾਲੋਂ ਜੰਤਰ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2472
+#: src/qemu/qemu_hotplug.c:2479
 #, c-format
 msgid "device not found in hostdevs list (%zu entries)"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2529
+#: src/qemu/qemu_hotplug.c:2536
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "host pci device %.4x:%.2x:%.2x.%.1x not found"
 
-#: src/qemu/qemu_hotplug.c:2536
+#: src/qemu/qemu_hotplug.c:2543
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "host usb device %03d.%03d not found"
 
-#: src/qemu/qemu_hotplug.c:2540
+#: src/qemu/qemu_hotplug.c:2547
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "ਹੋਸਟ usb ਜੰਤਰ vendor=0x%.4x product=0x%.4x ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/qemu/qemu_hotplug.c:2602
+#: src/qemu/qemu_hotplug.c:2609
 #, fuzzy
 msgid "device cannot be detached without a CCW address"
 msgstr "ਬਿਨਾਂ PCI ਐਡਰੈੱਸ ਤੋਂ ਜੰਤਰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_hotplug.c:2615
+#: src/qemu/qemu_hotplug.c:2622
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "ਮਲਟੀਫੰਕਸ਼ਨ PCI ਜੰਤਰ ਨੂੰ ਹਾਟ ਅਨਪਲੱਗ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
 
-#: src/qemu/qemu_hotplug.c:2623
+#: src/qemu/qemu_hotplug.c:2630
 msgid "unable to determine original VLAN"
 msgstr "ਅਸਲੀ VLAN ਪਤਾ ਕਰਨ ਲਈ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_hotplug.c:2692
+#: src/qemu/qemu_hotplug.c:2699
 #, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr "ebtables ਰੂਲ ਨੂੰ '%s' ਤੋਂ ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#: src/qemu/qemu_hotplug.c:2745
+#: src/qemu/qemu_hotplug.c:2752
 msgid "Graphics password only supported for VNC"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2771
+#: src/qemu/qemu_hotplug.c:2778
 msgid "Expiry of passwords is not supported"
 msgstr "ਡਿਸਕ ਤੇ ਪਾਸਵਰਡ ਲਾਉਣਾ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
@@ -15521,202 +15522,207 @@ msgstr "ਮਾਈਗਰੇਸ਼ਨ ਕੂਕੀ ਲਈ %s ਲਾਕ ਸਟੇਟ"
 msgid "Source host lock driver %s different from target %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1263 src/qemu/qemu_migration.c:1660
-#: src/qemu/qemu_migration.c:2827
+#: src/qemu/qemu_migration.c:1280 src/qemu/qemu_migration.c:1678
+#: src/qemu/qemu_migration.c:2842
 msgid "canceled by client"
 msgstr "ਕਲਾਂਈਟ ਦੁਆਰਾ ਰੱਦ ਕੀਤੀ ਸੀ"
 
-#: src/qemu/qemu_migration.c:1430
+#: src/qemu/qemu_migration.c:1448
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "%d ਸਨੈਪਸ਼ਾਟ ਵਾਲੇ ਡੋਮੇਨ ਨੂੰ ਮਾਈਗਰੇਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_migration.c:1438
+#: src/qemu/qemu_migration.c:1456
 msgid "domain has an active block job"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1459
+#: src/qemu/qemu_migration.c:1477
 msgid "domain has assigned non-USB host devices"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1497
+#: src/qemu/qemu_migration.c:1515
 msgid "Migration may lead to data corruption if disks use cache != none"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1551
+#: src/qemu/qemu_migration.c:1569
 #, fuzzy
 msgid "Compressed migration is not supported by target QEMU binary"
 msgstr "TCP ਮਾਈਗਰੇਸ਼ਨ ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_migration.c:1555
+#: src/qemu/qemu_migration.c:1573
 #, fuzzy
 msgid "Compressed migration is not supported by source QEMU binary"
 msgstr "TCP ਮਾਈਗਰੇਸ਼ਨ ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_migration.c:1622
+#: src/qemu/qemu_migration.c:1640
 msgid "is not active"
 msgstr "ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_migration.c:1654
+#: src/qemu/qemu_migration.c:1672
 msgid "unexpectedly failed"
 msgstr "ਅਚਾਨਕ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2895
+#: src/qemu/qemu_migration.c:1696 src/qemu/qemu_migration.c:2910
 msgid "migration job"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਜੌਬ"
 
-#: src/qemu/qemu_migration.c:1681
+#: src/qemu/qemu_migration.c:1699
 msgid "domain save job"
 msgstr "ਡੋਮੇਨ ਸੰਭਾਲ ਜੌਬ"
 
-#: src/qemu/qemu_migration.c:1684
+#: src/qemu/qemu_migration.c:1702
 msgid "domain core dump job"
 msgstr "ਡੋਮੇਨ ਕੋਰ ਡੰਪ ਜੌਬ"
 
-#: src/qemu/qemu_migration.c:1687
+#: src/qemu/qemu_migration.c:1705
 msgid "job"
 msgstr "ਕੰਮ"
 
-#: src/qemu/qemu_migration.c:1701
+#: src/qemu/qemu_migration.c:1719
 msgid "Lost connection to destination host"
 msgstr "ਨੀਯਤ ਹੋਸਟ ਦਾ ਕੁਨੈਕਸ਼ਨ URI"
 
-#: src/qemu/qemu_migration.c:1783 src/util/virnetdevopenvswitch.c:239
+#: src/qemu/qemu_migration.c:1802 src/util/virnetdevopenvswitch.c:239
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1920 src/qemu/qemu_migration.c:2022
+#: src/qemu/qemu_migration.c:1921
+#, fuzzy
+msgid "NBD in tunnelled migration is currently not supported"
+msgstr "ਸਿਰਫ ਇੱਕ ਵੀਡੀਓ ਕਾਰਡ ਨੂੰ ਸਹਿਯੋਗ ਹੈ"
+
+#: src/qemu/qemu_migration.c:1940 src/qemu/qemu_migration.c:2042
 msgid "offline migration cannot handle non-shared storage"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1926 src/qemu/qemu_migration.c:2028
+#: src/qemu/qemu_migration.c:1946 src/qemu/qemu_migration.c:2048
 msgid "offline migration must be specified with the persistent flag set"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1932 src/qemu/qemu_migration.c:2034
+#: src/qemu/qemu_migration.c:1952 src/qemu/qemu_migration.c:2054
 msgid "tunnelled offline migration does not make sense"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:1966
 msgid "target domain name doesn't match source name"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2170 src/qemu/qemu_migration.c:3083
+#: src/qemu/qemu_migration.c:2190 src/qemu/qemu_migration.c:3098
 msgid "cannot create pipe for tunnelled migration"
 msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
 
-#: src/qemu/qemu_migration.c:2194
+#: src/qemu/qemu_migration.c:2214
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਪਾਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_migration.c:2381
+#: src/qemu/qemu_migration.c:2396
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2403
+#: src/qemu/qemu_migration.c:2418
 msgid "only tcp URIs are supported for KVM/QEMU migrations"
 msgstr "ਸਿਰਫ tcp URIs ਨੂੰ KVM/QEMU ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਸਹਿਯੋਗ ਹੈ"
 
-#: src/qemu/qemu_migration.c:2420
+#: src/qemu/qemu_migration.c:2435
 #, fuzzy, c-format
 msgid "unable to parse URI: %s"
 msgstr "URI %s ਪਾਰਸ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:2426
+#: src/qemu/qemu_migration.c:2441
 #, fuzzy, c-format
 msgid "missing host in migration URI: %s"
 msgstr "ਡੋਮੇਨ ਨਾਂ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/qemu/qemu_migration.c:2547
+#: src/qemu/qemu_migration.c:2562
 msgid "poll failed in migration tunnel"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2565
+#: src/qemu/qemu_migration.c:2580
 msgid "failed to read from wakeup fd"
 msgstr "wakeup fd ਤੋਂ ਪੜ੍ਹਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ ਹੈ"
 
-#: src/qemu/qemu_migration.c:2587
+#: src/qemu/qemu_migration.c:2602
 msgid "tunnelled migration failed to read from qemu"
 msgstr "tunnelled ਮਾਈਗਰੇਸ਼ਨ qemu ਤੋਂ ਪੜਨ ਵਿੱਚ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_migration.c:2631
+#: src/qemu/qemu_migration.c:2646
 msgid "Unable to make pipe"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/qemu/qemu_migration.c:2647
+#: src/qemu/qemu_migration.c:2662
 msgid "Unable to create migration thread"
 msgstr "ਮਾਈਗਰੇਸ਼ ਥਰਿੱਡ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:2671
+#: src/qemu/qemu_migration.c:2686
 msgid "failed to wakeup migration tunnel"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਟੰਨਲ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_migration.c:2727
+#: src/qemu/qemu_migration.c:2742
 #, fuzzy, c-format
 msgid "Unable to set FD %d blocking"
 msgstr "cloexec ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:2783
+#: src/qemu/qemu_migration.c:2798
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2903
+#: src/qemu/qemu_migration.c:2918
 msgid "failed to accept connection from qemu"
 msgstr "ਡਰਾਈਵਰ ਤੋਂ ਕੁਨੈਕਸ਼ਨ ਸਵੀਕਾਰ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_migration.c:3060
+#: src/qemu/qemu_migration.c:3075
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "tunnelled ਮਾਈਗਰੇਸ਼ ਦੇ ਸਹਿਯੋਗ ਲਈ ਸਰੋਤ qemu ਬਹੁਤ ਪੁਰਾਣਾ ਹੈ"
 
-#: src/qemu/qemu_migration.c:3496
-#, c-format
-msgid "Failed to connect to remote libvirt URI %s"
+#: src/qemu/qemu_migration.c:3511
+#, fuzzy, c-format
+msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "ਰਿਮੋਟ libvirt URI %s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_migration.c:3521
+#: src/qemu/qemu_migration.c:3537
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "ਨੀਯਤ libvirt ਪੀਅਰ-ਤੋਂ-ਪੀਅਰ ਮਾਈਗਰੇਸ਼ਨ ਪਰੋਟੋਕਾਲ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/qemu/qemu_migration.c:3651 src/qemu/qemu_migration.c:3732
+#: src/qemu/qemu_migration.c:3667 src/qemu/qemu_migration.c:3748
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "ਫੇਲ ਹੋਣ ਤੋਂ ਬਾਅਦ ਗਿਸਟ %s ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_migration.c:3797
+#: src/qemu/qemu_migration.c:3813
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3808
+#: src/qemu/qemu_migration.c:3824
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr " ਮਾਈਗਰੇਟ: ਪੀਅਰਟੂਪੀਅਰ/ਸਿੱਧੀ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਅਚਾਨਕ migrateuri"
 
-#: src/qemu/qemu_migration.c:3844
+#: src/qemu/qemu_migration.c:3860
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr "%s ਲਈ ਪੋਰਟ ਪਰੋਫਾਈਲ ਸੰਜੋਗ ਫੇਲ ਹੋਇਆ ਹੈ"
 
-#: src/qemu/qemu_migration.c:3986
+#: src/qemu/qemu_migration.c:4002
 msgid "can't get vmdef"
 msgstr "vmdef ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_migration.c:4274
+#: src/qemu/qemu_migration.c:4290
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:4372
+#: src/qemu/qemu_migration.c:4388
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:4407
+#: src/qemu/qemu_migration.c:4423
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ਡੋਮੇਨ '%s' ਆਉਣ ਵਾਲੀ ਮਾਈਗਰੇਸ਼ਨ ਨੂੰ ਵਰਤ ਨਹੀਂ ਰਿਹਾ ਹੈ"
 
-#: src/qemu/qemu_migration.c:4409
+#: src/qemu/qemu_migration.c:4425
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ਡੋਮੇਨ '%s' ਮਾਈਗਰੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਰਿਹਾ"
@@ -20443,32 +20449,32 @@ msgstr "%s (%d) ਲਈ readdir ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 msgid "Unable to remove %s (%d)"
 msgstr "%s (%d) ਹਟਾਉਣ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/util/vircgroup.c:2540
+#: src/util/vircgroup.c:2552
 #, fuzzy, c-format
 msgid "Could not find directory separator in %s"
 msgstr "%s ਡਾਇਰੈਕਟਰੀ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/util/vircgroup.c:2556
+#: src/util/vircgroup.c:2568
 #, fuzzy
 msgid "Could not find any mounted controllers"
 msgstr "ਕੰਟਰੋਲਰ ਨਹੀਂ ਜੋੜ ਸਕਿਆ"
 
-#: src/util/vircgroup.c:2576 src/util/vircgroup.c:2611
+#: src/util/vircgroup.c:2588 src/util/vircgroup.c:2623
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "ਡਾਇਰੈਕਟਰੀ %s ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/util/vircgroup.c:2589
+#: src/util/vircgroup.c:2601
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "%s ਨੂੰ %s ਉੱਪਰ ਕਿਸਮ %s ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/util/vircgroup.c:2619
+#: src/util/vircgroup.c:2631
 #, fuzzy, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr "PCI ਜੰਤਰ '%s' ਨੂੰ %s ਵਿੱਚ ਬਾਈਂਡ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/util/vircgroup.c:2635
+#: src/util/vircgroup.c:2647
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਲਈ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇਲ"
@@ -22221,755 +22227,759 @@ msgstr ""
 msgid "An error occurred, but the cause is unknown"
 msgstr ""
 
-#: src/util/virerror.c:513
+#: src/util/virerror.c:250 tools/virsh-domain-monitor.c:47
+msgid "no error"
+msgstr "ਕੋਈ ਗਲਤੀ ਨਹੀਂ"
+
+#: src/util/virerror.c:534
 msgid "warning"
 msgstr "ਚੇਤਾਵਨੀ"
 
-#: src/util/virerror.c:516 tools/virsh-domain-monitor.c:129
+#: src/util/virerror.c:537 tools/virsh-domain-monitor.c:129
 msgid "error"
 msgstr "ਗਲਤੀ"
 
-#: src/util/virerror.c:648
+#: src/util/virerror.c:669
 msgid "No error message provided"
 msgstr "ਕੋਈ ਗਲਤੀ ਸੁਨੇਹਾ ਨਹੀਂ ਦਿੱਤਾ ਗਿਆ"
 
-#: src/util/virerror.c:710
+#: src/util/virerror.c:731
 #, c-format
 msgid "internal error %s"
 msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ %s"
 
-#: src/util/virerror.c:712
+#: src/util/virerror.c:733
 msgid "internal error"
 msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ"
 
-#: src/util/virerror.c:715 tools/virsh.c:681
+#: src/util/virerror.c:736 tools/virsh.c:681
 msgid "out of memory"
 msgstr "ਮੈਮੋਰੀ ਖਤਮ ਹੋ ਗਈ"
 
-#: src/util/virerror.c:719
+#: src/util/virerror.c:740
 msgid "this function is not supported by the connection driver"
 msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/util/virerror.c:721
+#: src/util/virerror.c:742
 #, c-format
 msgid "this function is not supported by the connection driver: %s"
 msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ: %s"
 
-#: src/util/virerror.c:725
+#: src/util/virerror.c:746
 msgid "no connection driver available"
 msgstr "ਕੋਈ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਉਪਲੱਬਧ ਨਹੀਂ"
 
-#: src/util/virerror.c:727
+#: src/util/virerror.c:748
 #, c-format
 msgid "no connection driver available for %s"
 msgstr "%s ਲਈ ਕੋਈ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਉਪਲੱਬਧ ਨਹੀਂ"
 
-#: src/util/virerror.c:731
+#: src/util/virerror.c:752
 msgid "invalid connection pointer in"
 msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
 
-#: src/util/virerror.c:733
+#: src/util/virerror.c:754
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
 
-#: src/util/virerror.c:737
+#: src/util/virerror.c:758
 msgid "invalid domain pointer in"
 msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਡੋਮੇਨ ਇਸ਼ਾਰਾ"
 
-#: src/util/virerror.c:739
+#: src/util/virerror.c:760
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਡੋਮੇਨ ਬਿੰਦੂ"
 
-#: src/util/virerror.c:743 src/xen/xen_hypervisor.c:3271
+#: src/util/virerror.c:764 src/xen/xen_hypervisor.c:3271
 msgid "invalid argument"
 msgstr "ਗਲਤ ਆਰਗੂਮੈਂਟ"
 
-#: src/util/virerror.c:745
+#: src/util/virerror.c:766
 #, c-format
 msgid "invalid argument: %s"
 msgstr "ਗਲਤ ਆਰਗੂਮੈਂਟ: %s"
 
-#: src/util/virerror.c:749
+#: src/util/virerror.c:770
 #, c-format
 msgid "operation failed: %s"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ: %s"
 
-#: src/util/virerror.c:751
+#: src/util/virerror.c:772
 msgid "operation failed"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:755
+#: src/util/virerror.c:776
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET ਕਾਰਵਾਈ ਫੇਲ: %s"
 
-#: src/util/virerror.c:757
+#: src/util/virerror.c:778
 msgid "GET operation failed"
 msgstr "GET ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:761
+#: src/util/virerror.c:782
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ: %s"
 
-#: src/util/virerror.c:763
+#: src/util/virerror.c:784
 msgid "POST operation failed"
 msgstr "POST ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:766
+#: src/util/virerror.c:787
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "ਅਚਾਨਕ HTTP ਗਲਤੀ ਕੋਡ %d ਮਿਲਿਆ"
 
-#: src/util/virerror.c:770
+#: src/util/virerror.c:791
 #, c-format
 msgid "unknown host %s"
 msgstr "ਅਚਾਨਕ ਮੇਜ਼ਬਾਨ %s"
 
-#: src/util/virerror.c:772
+#: src/util/virerror.c:793
 msgid "unknown host"
 msgstr "ਅਚਾਨਕ ਮੇਜ਼ਬਾਨ"
 
-#: src/util/virerror.c:776
+#: src/util/virerror.c:797
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr ਨੂੰ ਲੜੀਬੱਧ ਕਰਨ ਲਈ ਫੇਲ: %s"
 
-#: src/util/virerror.c:778
+#: src/util/virerror.c:799
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr ਨੂੰ ਲੜੀਬੱਧ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/util/virerror.c:782
+#: src/util/virerror.c:803
 msgid "could not use Xen hypervisor entry"
 msgstr "ਜ਼ੈੱਨ (Xen) ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
 
-#: src/util/virerror.c:784
+#: src/util/virerror.c:805
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "ਜ਼ੈੱਨ ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ %s ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
 
-#: src/util/virerror.c:788
+#: src/util/virerror.c:809
 msgid "could not connect to Xen Store"
 msgstr "ਜ਼ੈੱਨ ਸਟੋਰ ਨਾਲ ਜੁੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: src/util/virerror.c:790
+#: src/util/virerror.c:811
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "ਜ਼ੈੱਨ ਸਟੋਰ %s ਨਾਲ ਜੁੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: src/util/virerror.c:793
+#: src/util/virerror.c:814
 #, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:797
+#: src/util/virerror.c:818
 msgid "unknown OS type"
 msgstr "ਅਚਾਨਕ OS ਕਿਸਮ"
 
-#: src/util/virerror.c:799
+#: src/util/virerror.c:820
 #, c-format
 msgid "unknown OS type %s"
 msgstr "ਅਚਾਨਕ OS ਕਿਸਮ %s"
 
-#: src/util/virerror.c:802
+#: src/util/virerror.c:823
 msgid "missing kernel information"
 msgstr "ਕਰਨਲ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:806
+#: src/util/virerror.c:827
 msgid "missing root device information"
 msgstr "ਰੂਟ (root) ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:808
+#: src/util/virerror.c:829
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s ਵਿੱਚ ਰੂਟ (root) ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:812
+#: src/util/virerror.c:833
 msgid "missing source information for device"
 msgstr "ਜੰਤਰ ਲਈ ਸਰੋਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:814
+#: src/util/virerror.c:835
 #, c-format
 msgid "missing source information for device %s"
 msgstr "%s ਜੰਤਰ ਲਈ ਸਰੋਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:818
+#: src/util/virerror.c:839
 msgid "missing target information for device"
 msgstr "ਜੰਤਰ ਲਈ ਨਿਯਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:820
+#: src/util/virerror.c:841
 #, c-format
 msgid "missing target information for device %s"
 msgstr "%s ਜੰਤਰ ਲਈ ਨਿਯਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:824
+#: src/util/virerror.c:845
 msgid "missing name information"
 msgstr "ਨਾਂ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:826
+#: src/util/virerror.c:847
 #, c-format
 msgid "missing name information in %s"
 msgstr "%s ਵਿੱਚ ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:830
+#: src/util/virerror.c:851
 msgid "missing operating system information"
 msgstr "ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:832
+#: src/util/virerror.c:853
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s ਵਿੱਚ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:836
+#: src/util/virerror.c:857
 msgid "missing devices information"
 msgstr "ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:838
+#: src/util/virerror.c:859
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s ਲਈ ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/util/virerror.c:842
+#: src/util/virerror.c:863
 msgid "too many drivers registered"
 msgstr "ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-#: src/util/virerror.c:844
+#: src/util/virerror.c:865
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-#: src/util/virerror.c:848
+#: src/util/virerror.c:869
 msgid "library call failed, possibly not supported"
 msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
-#: src/util/virerror.c:850
+#: src/util/virerror.c:871
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ %s ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
-#: src/util/virerror.c:854
+#: src/util/virerror.c:875
 msgid "XML description is invalid or not well formed"
 msgstr "XML ਵੇਰਵਾ ਠੀਕ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਜਾਂ ਗਲਤ ਹੈ"
 
-#: src/util/virerror.c:856
+#: src/util/virerror.c:877
 #, c-format
 msgid "XML error: %s"
 msgstr "XML ਗਲਤੀ: %s"
 
-#: src/util/virerror.c:860
+#: src/util/virerror.c:881
 msgid "this domain exists already"
 msgstr "ਇਹ ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/util/virerror.c:862
+#: src/util/virerror.c:883
 #, c-format
 msgid "domain %s exists already"
 msgstr "ਡੋਮੇਨ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/util/virerror.c:866
+#: src/util/virerror.c:887
 msgid "operation forbidden for read only access"
 msgstr "ਕਾਰਵਾਈ ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਹੀ ਲੁਕਵੀਂ ਹੈ"
 
-#: src/util/virerror.c:868
+#: src/util/virerror.c:889
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "%s ਕਾਰਵਾਈ ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਹੀ ਲੁਕਵੀਂ ਹੈ"
 
-#: src/util/virerror.c:872
+#: src/util/virerror.c:893
 msgid "failed to open configuration file for reading"
 msgstr "ਪੜ੍ਹਨ ਵਾਸਤੇ ਸੰਰਚਨਾ ਫਾਇਲ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
 
-#: src/util/virerror.c:874
+#: src/util/virerror.c:895
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "%s ਨੂੰ ਪੜ੍ਹਨ ਵਾਸਤੇ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/util/virerror.c:878
+#: src/util/virerror.c:899
 msgid "failed to read configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/util/virerror.c:880
+#: src/util/virerror.c:901
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ %s ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/util/virerror.c:884
+#: src/util/virerror.c:905
 msgid "failed to parse configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਪਾਰਸ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/util/virerror.c:886
+#: src/util/virerror.c:907
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ %s ਪਾਰਸ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/util/virerror.c:890
+#: src/util/virerror.c:911
 msgid "configuration file syntax error"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਸੰਟੈਕਸ ਗਲਤੀ"
 
-#: src/util/virerror.c:892
+#: src/util/virerror.c:913
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਸੰਟੈਕਸ ਗਲਤੀ: %s"
 
-#: src/util/virerror.c:896
+#: src/util/virerror.c:917
 msgid "failed to write configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਲਿਖਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: src/util/virerror.c:898
+#: src/util/virerror.c:919
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਲਿਖਣ ਲਈ ਅਸਫ਼ਲ: %s"
 
-#: src/util/virerror.c:902
+#: src/util/virerror.c:923
 msgid "parser error"
 msgstr "ਪਾਰਸਰ ਗਲਤੀ"
 
-#: src/util/virerror.c:908
+#: src/util/virerror.c:929
 msgid "invalid network pointer in"
 msgstr "ਗਲਤ ਨੈਟਵਰਕ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:910
+#: src/util/virerror.c:931
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਨੈੱਟਵਰਕ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:914
+#: src/util/virerror.c:935
 msgid "this network exists already"
 msgstr "ਇਹ ਨੈੱਟਵਰਕ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/util/virerror.c:916
+#: src/util/virerror.c:937
 #, c-format
 msgid "network %s exists already"
 msgstr "ਨੈੱਟਵਰਕ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/util/virerror.c:920
+#: src/util/virerror.c:941
 msgid "system call error"
 msgstr "ਸਿਸਟਮ ਕਾਲ ਗਲਤੀ"
 
-#: src/util/virerror.c:926
+#: src/util/virerror.c:947
 msgid "RPC error"
 msgstr "RPC ਗਲਤੀ"
 
-#: src/util/virerror.c:932
+#: src/util/virerror.c:953
 msgid "GNUTLS call error"
 msgstr "GNUTLS ਕਾਲ ਗਲਤੀ"
 
-#: src/util/virerror.c:938
+#: src/util/virerror.c:959
 msgid "Failed to find the network"
 msgstr "ਨੈੱਟਵਰਕ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/util/virerror.c:940
+#: src/util/virerror.c:961
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "ਨੈੱਟਵਰਕ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/util/virerror.c:944
+#: src/util/virerror.c:965
 msgid "Domain not found"
 msgstr "ਡੋਮੇਨ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:946
+#: src/util/virerror.c:967
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ਡੋਮੇਨ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:950
+#: src/util/virerror.c:971
 msgid "Network not found"
 msgstr "ਨੈੱਟਵਰਕ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:952
+#: src/util/virerror.c:973
 #, c-format
 msgid "Network not found: %s"
 msgstr "ਨੈੱਟਵਰਕ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:956
+#: src/util/virerror.c:977
 msgid "invalid MAC address"
 msgstr "ਗਲਤ MAC ਐਡਰੈੱਸ"
 
-#: src/util/virerror.c:958
+#: src/util/virerror.c:979
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "ਗਲਤ MAC ਐਡਰੈੱਸ: %s"
 
-#: src/util/virerror.c:964
+#: src/util/virerror.c:985
 #, c-format
 msgid "authentication failed: %s"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: %s"
 
-#: src/util/virerror.c:968
+#: src/util/virerror.c:989
 msgid "authentication cancelled"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਰੱਦ ਕੀਤੀ ਹੈ"
 
-#: src/util/virerror.c:970
+#: src/util/virerror.c:991
 #, c-format
 msgid "authentication cancelled: %s"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਰੱਦ ਕੀਤੀ ਹੈ: %s"
 
-#: src/util/virerror.c:974
+#: src/util/virerror.c:995
 msgid "Storage pool not found"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:976
+#: src/util/virerror.c:997
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:980
+#: src/util/virerror.c:1001
 msgid "Storage volume not found"
 msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:982
+#: src/util/virerror.c:1003
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:986
+#: src/util/virerror.c:1007
 msgid "Storage pool probe failed"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:988
+#: src/util/virerror.c:1009
 #, c-format
 msgid "Storage pool probe failed: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:992
+#: src/util/virerror.c:1013
 msgid "Storage pool already built"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/util/virerror.c:994
+#: src/util/virerror.c:1015
 #, c-format
 msgid "Storage pool already built: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ: %s"
 
-#: src/util/virerror.c:998
+#: src/util/virerror.c:1019
 msgid "invalid storage pool pointer in"
 msgstr "ਗਲਤ ਸਟੋਰੇਜ਼ ਪੂਲ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1000
+#: src/util/virerror.c:1021
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਸਟੋਰੇਜ਼ ਪੂਲ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1004
+#: src/util/virerror.c:1025
 msgid "invalid storage volume pointer in"
 msgstr "ਗਲਤ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1006
+#: src/util/virerror.c:1027
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1010
+#: src/util/virerror.c:1031
 msgid "Failed to find a storage driver"
 msgstr "ਸਟੋਰੇਜ਼ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/util/virerror.c:1012
+#: src/util/virerror.c:1033
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/util/virerror.c:1016
+#: src/util/virerror.c:1037
 msgid "Failed to find a node driver"
 msgstr "ਨੋਡ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/util/virerror.c:1018
+#: src/util/virerror.c:1039
 #, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "ਨੋਡ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/util/virerror.c:1022
+#: src/util/virerror.c:1043
 msgid "invalid node device pointer"
 msgstr "ਗਲਤ ਨੋਡ ਜੰਤਰ ਪੁਆਂਇਟਰ"
 
-#: src/util/virerror.c:1024
+#: src/util/virerror.c:1045
 #, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਨੋਡ ਜੰਤਰ ਪੁਆਂਇਟਰ"
 
-#: src/util/virerror.c:1028
+#: src/util/virerror.c:1049
 msgid "Node device not found"
 msgstr "ਕੋਈ ਜੰਤਰ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1030
+#: src/util/virerror.c:1051
 #, c-format
 msgid "Node device not found: %s"
 msgstr "ਨੋਡ ਜੰਤਰ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1034
+#: src/util/virerror.c:1055
 msgid "Security model not found"
 msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1036
+#: src/util/virerror.c:1057
 #, c-format
 msgid "Security model not found: %s"
 msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1040
+#: src/util/virerror.c:1061
 msgid "Requested operation is not valid"
 msgstr "ਲੋੜੀਂਦੀ ਕਾਰਵਾਈ ਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/util/virerror.c:1042
+#: src/util/virerror.c:1063
 #, c-format
 msgid "Requested operation is not valid: %s"
 msgstr "ਲੋੜੀਂਦੀ ਕਾਰਵਾਈ ਯੋਗ ਨਹੀਂ ਹੈ: %s"
 
-#: src/util/virerror.c:1046
+#: src/util/virerror.c:1067
 msgid "Failed to find the interface"
 msgstr "ਇੰਟਰਫੇਸ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/util/virerror.c:1048
+#: src/util/virerror.c:1069
 #, c-format
 msgid "Failed to find the interface: %s"
 msgstr "ਇੰਟਰਫੇਸ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/util/virerror.c:1052
+#: src/util/virerror.c:1073
 msgid "Interface not found"
 msgstr "ਇੰਟਰਫੇਸ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1054
+#: src/util/virerror.c:1075
 #, c-format
 msgid "Interface not found: %s"
 msgstr "ਇੰਟਰਫੇਸ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1058
+#: src/util/virerror.c:1079
 msgid "invalid interface pointer in"
 msgstr "ਗਲਤ ਇੰਟਰਫੇਸ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1060
+#: src/util/virerror.c:1081
 #, c-format
 msgid "invalid interface pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਇੰਟਰਫੇਸ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1064
+#: src/util/virerror.c:1085
 msgid "multiple matching interfaces found"
 msgstr "ਮਲਟੀਪਲ ਮੇਲ ਖਾਂਦੇ ਇੰਟਰਫੇਸ ਲੱਭੇ ਹਨ"
 
-#: src/util/virerror.c:1066
+#: src/util/virerror.c:1087
 #, c-format
 msgid "multiple matching interfaces found: %s"
 msgstr "ਮਲਟੀਪਲ ਮੇਲ ਖਾਂਦੇ ਇੰਟਰਫੇਸ ਲੱਭੇ ਹਨ: %s"
 
-#: src/util/virerror.c:1070
+#: src/util/virerror.c:1091
 msgid "Failed to find a secret storage driver"
 msgstr "ਇੱਕ ਸੀਕਰੇਟ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/util/virerror.c:1072
+#: src/util/virerror.c:1093
 #, c-format
 msgid "Failed to find a secret storage driver: %s"
 msgstr "ਇੱਕ ਸੀਕਰੇਟ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/util/virerror.c:1076
+#: src/util/virerror.c:1097
 msgid "Invalid secret"
 msgstr "ਗਲਤ ਸੀਕਰੇਟ"
 
-#: src/util/virerror.c:1078
+#: src/util/virerror.c:1099
 #, c-format
 msgid "Invalid secret: %s"
 msgstr "ਗਲਤ ਸੀਕਰੇਟ: %s"
 
-#: src/util/virerror.c:1082
+#: src/util/virerror.c:1103
 msgid "Secret not found"
 msgstr "ਸੀਕਰੇਟ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1084
+#: src/util/virerror.c:1105
 #, c-format
 msgid "Secret not found: %s"
 msgstr "ਸੀਕਰੇਟ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1088
+#: src/util/virerror.c:1109
 msgid "Failed to start the nwfilter driver"
 msgstr "nwfilter ਡਰਾਈਵਰ ਚਾਲੂ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/util/virerror.c:1090
+#: src/util/virerror.c:1111
 #, c-format
 msgid "Failed to start the nwfilter driver: %s"
 msgstr "nwfilter ਡਰਾਈਵਰ ਚਾਲੂ ਕਰਨ ਤੋਂ ਫੇਲ: %s"
 
-#: src/util/virerror.c:1094
+#: src/util/virerror.c:1115
 msgid "Invalid network filter"
 msgstr "ਗਲਤ ਨੈਟਵਰਕ ਫਿਲਟਰ ਹੈ"
 
-#: src/util/virerror.c:1096
+#: src/util/virerror.c:1117
 #, c-format
 msgid "Invalid network filter: %s"
 msgstr "ਗਲਤ ਨੈੱਟਵਰਕ ਫਿਲਟਰ: %s"
 
-#: src/util/virerror.c:1100
+#: src/util/virerror.c:1121
 msgid "Network filter not found"
 msgstr "ਨੈੱਟਵਰਕ ਫਿਲਟਰ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1102
+#: src/util/virerror.c:1123
 #, c-format
 msgid "Network filter not found: %s"
 msgstr "ਨੈੱਟਵਰਕ ਫਿਲਟਰ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1106
+#: src/util/virerror.c:1127
 msgid "Error while building firewall"
 msgstr "ਫਾਇਰਵਾਲ ਬਣਾਉਣ ਵੇਲੇ ਗਲਤੀ"
 
-#: src/util/virerror.c:1108
+#: src/util/virerror.c:1129
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "ਫਾਇਰਵਾਲ ਬਣਾਉਣ ਵੇਲੇ ਗਲਤੀ: %s"
 
-#: src/util/virerror.c:1112
+#: src/util/virerror.c:1133
 msgid "unsupported configuration"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਸੰਰਚਨਾ"
 
-#: src/util/virerror.c:1114
+#: src/util/virerror.c:1135
 #, c-format
 msgid "unsupported configuration: %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਸੰਰਚਨਾ: %s"
 
-#: src/util/virerror.c:1118
+#: src/util/virerror.c:1139
 msgid "Timed out during operation"
 msgstr "ਕਾਰਵਾਈ ਦੌਰਾਨ ਸਮਾਂ ਲੱਗ ਗਿਆ"
 
-#: src/util/virerror.c:1120
+#: src/util/virerror.c:1141
 #, c-format
 msgid "Timed out during operation: %s"
 msgstr "ਕਾਰਵਾਈ ਦੌਰਾਨ ਸਮਾਂ ਲੱਗ ਗਿਆ: %s"
 
-#: src/util/virerror.c:1124
+#: src/util/virerror.c:1145
 msgid "Failed to make domain persistent after migration"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਤੋਂ ਬਾਅਦ ਡੋਮੇਨ ਨੂੰ ਨਿਰੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/util/virerror.c:1126
+#: src/util/virerror.c:1147
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਤੋਂ ਬਾਅਦ ਡੋਮੇਨ ਨੂੰ ਨਿਰੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
 
-#: src/util/virerror.c:1130
+#: src/util/virerror.c:1151
 msgid "Hook script execution failed"
 msgstr "ਹੂਰ ਸਕਰਿਪਟ ਆਗਜ਼ੀਕਿਊਸ਼ਨ ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:1132
+#: src/util/virerror.c:1153
 #, c-format
 msgid "Hook script execution failed: %s"
 msgstr "ਹੂਰ ਸਕਰਿਪਟ ਆਗਜ਼ੀਕਿਊਸ਼ਨ ਫੇਲ ਹੋਈ: %s"
 
-#: src/util/virerror.c:1136
+#: src/util/virerror.c:1157
 msgid "Invalid snapshot"
 msgstr "ਗਲਤ ਸਨੈਪਸ਼ਾਟ"
 
-#: src/util/virerror.c:1138
+#: src/util/virerror.c:1159
 #, c-format
 msgid "Invalid snapshot: %s"
 msgstr "ਗਲਤ ਸਨੈਪਸ਼ਾਟ: %s"
 
-#: src/util/virerror.c:1142
+#: src/util/virerror.c:1163
 msgid "Domain snapshot not found"
 msgstr "ਡੋਮੇਨ ਸਨੈਪਸ਼ਾਟ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1144
+#: src/util/virerror.c:1165
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "ਡੋਮੇਨ ਸਨੈਪਸ਼ਾਟ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1148
+#: src/util/virerror.c:1169
 msgid "invalid stream pointer"
 msgstr "ਗਲਤ ਸਟਰੀਮ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1150
+#: src/util/virerror.c:1171
 #, c-format
 msgid "invalid stream pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਸਟਰੀਮ ਪੁਆਇੰਟਰ ਹੈ"
 
-#: src/util/virerror.c:1154
+#: src/util/virerror.c:1175
 msgid "argument unsupported"
 msgstr "ਆਰਗੂਮੈਂਟ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/util/virerror.c:1156
+#: src/util/virerror.c:1177
 #, c-format
 msgid "argument unsupported: %s"
 msgstr ""
 
-#: src/util/virerror.c:1160
+#: src/util/virerror.c:1181
 msgid "revert requires force"
 msgstr ""
 
-#: src/util/virerror.c:1162
+#: src/util/virerror.c:1183
 #, c-format
 msgid "revert requires force: %s"
 msgstr ""
 
-#: src/util/virerror.c:1166
+#: src/util/virerror.c:1187
 msgid "operation aborted"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
-#: src/util/virerror.c:1168
+#: src/util/virerror.c:1189
 #, c-format
 msgid "operation aborted: %s"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ: %s"
 
-#: src/util/virerror.c:1172
+#: src/util/virerror.c:1193
 msgid "metadata not found"
 msgstr "ਮੈਟਾਡਾਟਾ ਨਹੀਂ ਲੱਭਿਆ"
 
-#: src/util/virerror.c:1174
+#: src/util/virerror.c:1195
 #, c-format
 msgid "metadata not found: %s"
 msgstr "ਮੈਟਾਡਾਟਾ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-#: src/util/virerror.c:1178
+#: src/util/virerror.c:1199
 msgid "Unsafe migration"
 msgstr "ਅਸੁਰੱਖਿਅਤ ਮਾਈਗਰੇਸ਼ਨ"
 
-#: src/util/virerror.c:1180
+#: src/util/virerror.c:1201
 #, c-format
 msgid "Unsafe migration: %s"
 msgstr "ਅਸੁਰੱਖਿਅਤ ਮਾਈਗਰੇਸ਼ਨ: %s"
 
-#: src/util/virerror.c:1184
+#: src/util/virerror.c:1205
 msgid "numerical overflow"
 msgstr ""
 
-#: src/util/virerror.c:1186
+#: src/util/virerror.c:1207
 #, c-format
 msgid "numerical overflow: %s"
 msgstr ""
 
-#: src/util/virerror.c:1190
+#: src/util/virerror.c:1211
 msgid "block copy still active"
 msgstr "ਬਲਾਕ ਕਾਪੀ ਹਾਲੇ ਵੀ ਸਰਗਰਮ ਹੈ"
 
-#: src/util/virerror.c:1192
+#: src/util/virerror.c:1213
 #, c-format
 msgid "block copy still active: %s"
 msgstr "ਬਲਾਕ ਕਾਪੀ ਹਾਲੇ ਵੀ ਸਰਗਰਮ ਹੈ: %s"
 
-#: src/util/virerror.c:1196
+#: src/util/virerror.c:1217
 msgid "Operation not supported"
 msgstr "ਓਪਰੇਸ਼ਨ ਸਹਾਇਕ ਨਹੀਂ"
 
-#: src/util/virerror.c:1198
+#: src/util/virerror.c:1219
 #, c-format
 msgid "Operation not supported: %s"
 msgstr "ਕਾਰਵਾਈ ਨੂੰ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ: %s"
 
-#: src/util/virerror.c:1202
+#: src/util/virerror.c:1223
 msgid "SSH transport error"
 msgstr ""
 
-#: src/util/virerror.c:1204
+#: src/util/virerror.c:1225
 #, c-format
 msgid "SSH transport error: %s"
 msgstr "SSH ਟਰਾਂਸਪੋਰਟ ਗਲਤੀ: %s"
 
-#: src/util/virerror.c:1208
+#: src/util/virerror.c:1229
 msgid "Guest agent is not responding"
 msgstr "ਗਿਸਟ ਏਜੰਟ ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ"
 
-#: src/util/virerror.c:1210
+#: src/util/virerror.c:1231
 #, c-format
 msgid "Guest agent is not responding: %s"
 msgstr ""
 
-#: src/util/virerror.c:1214
+#: src/util/virerror.c:1235
 msgid "resource busy"
 msgstr ""
 
-#: src/util/virerror.c:1216
+#: src/util/virerror.c:1237
 #, c-format
 msgid "resource busy %s"
 msgstr ""
@@ -26227,10 +26237,6 @@ msgstr ""
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
 
-#: tools/virsh-domain-monitor.c:47
-msgid "no error"
-msgstr "ਕੋਈ ਗਲਤੀ ਨਹੀਂ"
-
 #: tools/virsh-domain-monitor.c:49
 msgid "unspecified error"
 msgstr "ਨਾ-ਦੱਸੀ ਗਲਤੀ"
@@ -29318,7 +29324,7 @@ msgstr ""
 msgid "file '%s' doesn't exist"
 msgstr "ਫਾਇਲ'%s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
-#: tools/virsh-domain.c:8297
+#: tools/virsh-domain.c:8296
 msgid "migrate: Unexpected migrateuri for peer2peer/direct migration"
 msgstr "ਮਾਈਗਰੇਟ: ਪੀਅਰਟੂਪੀਅਰ/ਸਿੱਧੀ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਅਚਾਨਕ migrateuri"
 

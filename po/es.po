@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-05-19 17:59-0400\n"
+"POT-Creation-Date: 2013-06-12 16:48-0400\n"
 "PO-Revision-Date: 2013-04-26 08:02+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -483,7 +483,7 @@ msgstr "El cliente ha intentado una petición de inicialización SASL inválida"
 #: daemon/remote.c:2496 daemon/remote.c:2645 daemon/remote.c:2743
 #: daemon/remote.c:2759 daemon/remote.c:2773 daemon/remote.c:2787
 #: daemon/remote.c:2885 daemon/remote.c:3031 daemon/remote.c:3060
-#: src/util/virerror.c:962
+#: src/util/virerror.c:983
 msgid "authentication failed"
 msgstr "Falló la autenticación"
 
@@ -1074,7 +1074,7 @@ msgstr "ya existe un dominio '%s' con uuid %s"
 #: src/qemu/qemu_driver.c:14387 src/qemu/qemu_driver.c:14435
 #: src/qemu/qemu_driver.c:14472 src/qemu/qemu_driver.c:14535
 #: src/qemu/qemu_driver.c:14557 src/qemu/qemu_driver.c:14608
-#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3599
+#: src/qemu/qemu_driver.c:14630 src/qemu/qemu_migration.c:3615
 #: src/uml/uml_driver.c:2449 src/xen/xen_driver.c:2304
 #: src/xen/xen_hypervisor.c:1175 src/xen/xen_hypervisor.c:1250
 #: src/xen/xen_hypervisor.c:1363 src/xen/xm_internal.c:697
@@ -3382,7 +3382,7 @@ msgstr "Falló el formateo de dirección PCI"
 
 #: src/conf/domain_conf.c:13925 src/conf/domain_conf.c:13958
 #: src/conf/domain_conf.c:15157 src/conf/domain_conf.c:15166
-#: src/qemu/qemu_hotplug.c:2546
+#: src/qemu/qemu_hotplug.c:2553
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "tipo de dispositivo de host %d no esperado"
@@ -7804,7 +7804,7 @@ msgid "libvirt was built without the '%s' driver"
 msgstr "libvirt ha sido compilado sin el controlador '%s'"
 
 #: src/libvirt.c:2137 src/libvirt.c:10515 src/libvirt.c:12432
-#: src/libvirt.c:15329 src/libvirt.c:16989
+#: src/libvirt.c:15330 src/libvirt.c:16990
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr "uuidstr en %s debe ser un UUID válido"
@@ -7862,7 +7862,7 @@ msgid "string parameter '%s' unsupported"
 msgstr "Parámetro de cadena '%s' no tiene soporte"
 
 #: src/libvirt.c:3938 src/libvirt.c:4198 src/libvirt.c:7178 src/libvirt.c:8993
-#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20488
+#: src/libvirt.c:9217 src/libvirt.c:9728 src/libvirt.c:20489
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr ""
@@ -7876,11 +7876,11 @@ msgstr "virDomainGetXMLDesc con indicador seguro"
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare no ha definido uri"
 
-#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3199
+#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3214
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 no ha definido uri"
 
-#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3344
+#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3359
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 no definió URI"
 
@@ -7907,7 +7907,7 @@ msgstr ""
 msgid "offline migration is not supported by the source host"
 msgstr ""
 
-#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3527
+#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3543
 msgid "offline migration is not supported by the destination host"
 msgstr ""
 
@@ -7966,88 +7966,88 @@ msgstr "entrada  demasiado grande: %d * %d "
 msgid "metadata title in %s can't contain newlines"
 msgstr "Título de metadatos en %s no puede contener salto de línea"
 
-#: src/libvirt.c:14177
+#: src/libvirt.c:14178
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
 "La capacidad en %s no  puede ser cero sin indicadores de  'delta' o 'shrink' "
 "definidos"
 
-#: src/libvirt.c:16132
+#: src/libvirt.c:16133
 msgid "data sources cannot be used for non-blocking streams"
 msgstr ""
 "las fuentes de datos no pueden ser utilizadas para  secuencias no bloqueantes"
 
-#: src/libvirt.c:16231
+#: src/libvirt.c:16232
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr ""
 "los sumideros de datos no pueden ser utilizados por secuencias no bloqueantes"
 
-#: src/libvirt.c:17938
+#: src/libvirt.c:17939
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr "eventID en %s debe ser menor que %d"
 
-#: src/libvirt.c:18047 src/libvirt.c:19281
+#: src/libvirt.c:18048 src/libvirt.c:19282
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr "Indicadores en ejecución y en pausa en %s  son mutuamente excluyentes"
 
-#: src/libvirt.c:18366
+#: src/libvirt.c:18367
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr "El uso del indicador  'current' en %s requiere el indicador 'redefine'"
 
-#: src/libvirt.c:18373
+#: src/libvirt.c:18374
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr ""
 "Indicadores 'redefine' y 'no metadata'  en %s  son mutuamente excluyentes"
 
-#: src/libvirt.c:18380
+#: src/libvirt.c:18381
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr "Indicadores 'redefine' y 'halt' en %s son mutuamente excluyentes"
 
-#: src/libvirt.c:18434
+#: src/libvirt.c:18435
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc con indicador seguro"
 
-#: src/libvirt.c:19349
+#: src/libvirt.c:19350
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr ""
 "Indicadores 'children' y 'children_only' en %s son mutuamente excluyentes"
 
-#: src/libvirt.c:19926
+#: src/libvirt.c:19927
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr "El uso de indicadores en %s requiere una tarea de copia"
 
-#: src/libvirt.c:20100
+#: src/libvirt.c:20101
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "No es posible acceder a descriptor de archivos %d"
 
-#: src/libvirt.c:20106
+#: src/libvirt.c:20107
 #, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "fd %d en %s debe ser una conexión"
 
-#: src/libvirt.c:20277
+#: src/libvirt.c:20278
 msgid "A close callback is already registered"
 msgstr "Un close callback ya está registrado"
 
-#: src/libvirt.c:20331
+#: src/libvirt.c:20332
 msgid "A different callback was requested"
 msgstr "Ha sido solicitada una retrollamada "
 
-#: src/libvirt.c:20614
+#: src/libvirt.c:20615
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr "ncpus en %s debe ser 1 cuando inicia start_cpu  es -1"
 
-#: src/libvirt.c:20629
+#: src/libvirt.c:20630
 #, c-format
 msgid "input too large: %u * %u"
 msgstr "entrada demasiado grande: %u * %u"
@@ -8730,17 +8730,17 @@ msgstr ""
 msgid "Cannot create %s"
 msgstr ""
 
-#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:642
+#: src/lxc/lxc_hostdev.c:93 src/qemu/qemu_hostdev.c:643
 #, c-format
 msgid "USB device %s is in use by domain %s"
 msgstr "El dominio %s está utilizando el dispositivo USB %s "
 
-#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:646
+#: src/lxc/lxc_hostdev.c:97 src/qemu/qemu_hostdev.c:647
 #, c-format
 msgid "USB device %s is already in use"
 msgstr "El dispositivo  de USB %s  ya está en uso"
 
-#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:727
+#: src/lxc/lxc_hostdev.c:177 src/qemu/qemu_hostdev.c:728
 #, c-format
 msgid ""
 "Multiple USB devices for %x:%x were found, but none of them is at bus:%u "
@@ -8749,7 +8749,7 @@ msgstr ""
 "Se encontraron dispositivos USB múltiples para %x:%x, pero ninguno de ellos "
 "está en bus:%u dispositivo:%u"
 
-#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:732
+#: src/lxc/lxc_hostdev.c:182 src/qemu/qemu_hostdev.c:733
 #, c-format
 msgid "Multiple USB devices for %x:%x, use <address> to specify one"
 msgstr ""
@@ -9571,7 +9571,7 @@ msgstr "Conexión persistente al dispositivo no está soportada"
 
 #: src/lxc/lxc_driver.c:2931 src/lxc/lxc_driver.c:2987
 #: src/lxc/lxc_driver.c:3780 src/qemu/qemu_driver.c:6149
-#: src/qemu/qemu_hotplug.c:2578
+#: src/qemu/qemu_hotplug.c:2585
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr "Se encontraron múltiples dispositivos coincidentes con dirección %s "
@@ -9609,8 +9609,8 @@ msgid "Cannot attach disk until init PID is known"
 msgstr "No se  puede adjuntar disco hasta que se conozca init PID "
 
 #: src/lxc/lxc_driver.c:3057 src/libxl/libxl_driver.c:3257
-#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:235
-#: src/qemu/qemu_hotplug.c:478 src/qemu/qemu_hotplug.c:601
+#: src/qemu/qemu_driver.c:6037 src/qemu/qemu_hotplug.c:242
+#: src/qemu/qemu_hotplug.c:485 src/qemu/qemu_hotplug.c:608
 #: src/uml/uml_driver.c:2038
 #, c-format
 msgid "target %s already exists"
@@ -9634,7 +9634,7 @@ msgid "No bridge name specified"
 msgstr "No se especificó el nombre de puente"
 
 #: src/lxc/lxc_driver.c:3207 src/lxc/lxc_process.c:466
-#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1306
+#: src/qemu/qemu_command.c:306 src/qemu/qemu_hotplug.c:1313
 #, c-format
 msgid "Network '%s' is not active."
 msgstr "La red '%s' no se encuentra activa."
@@ -9677,7 +9677,7 @@ msgid "device type '%s' cannot be attached"
 msgstr "el tipo de dispositivo '%s' no puede ser asociado."
 
 #: src/lxc/lxc_driver.c:3726 src/libxl/libxl_driver.c:3319
-#: src/qemu/qemu_hotplug.c:2038 src/qemu/qemu_hotplug.c:2147
+#: src/qemu/qemu_hotplug.c:2045 src/qemu/qemu_hotplug.c:2154
 #: src/uml/uml_driver.c:2169
 #, c-format
 msgid "disk %s not found"
@@ -9689,7 +9689,7 @@ msgstr "no se encuentra el disco %s"
 msgid "Unable to remove device %s"
 msgstr "No se puede retirar dispositivo %s"
 
-#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2584
+#: src/lxc/lxc_driver.c:3785 src/qemu/qemu_hotplug.c:2591
 #, c-format
 msgid "network device %s not found"
 msgstr "No se encontró dispositivo de red %s"
@@ -9851,10 +9851,10 @@ msgid "Failed libxl context initialization"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:482 src/qemu/qemu_driver.c:265
-#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:875
-#: src/qemu/qemu_hostdev.c:899 src/qemu/qemu_hostdev.c:948
+#: src/qemu/qemu_driver.c:273 src/qemu/qemu_hostdev.c:876
+#: src/qemu/qemu_hostdev.c:900 src/qemu/qemu_hostdev.c:949
 #: src/secret/secret_driver.c:510 src/uml/uml_driver.c:195
-#: src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
+#: src/util/virerror.c:252 src/xenapi/xenapi_utils.c:265 tools/virsh.c:283
 #: tools/virsh-domain-monitor.c:56
 msgid "unknown error"
 msgstr "error desconocido"
@@ -10215,7 +10215,7 @@ msgstr "No existe soporte de medio removible para el dispositivo %s"
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "libxenlight falló al cambiar soporte para disco '%s'"
 
-#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:620
+#: src/libxl/libxl_driver.c:3263 src/qemu/qemu_hotplug.c:627
 #: src/uml/uml_driver.c:2045
 msgid "disk source path is missing"
 msgstr "no se encuentra la ruta a la fuente del disco"
@@ -10861,9 +10861,9 @@ msgstr "falló al definir rellamadas de HAL"
 msgid "libhal_get_all_devices failed"
 msgstr "falló libhal_get_all_devices"
 
-#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1261
-#: src/qemu/qemu_migration.c:1622 src/qemu/qemu_migration.c:1654
-#: src/qemu/qemu_migration.c:1660 src/qemu/qemu_migration.c:2825
+#: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1278
+#: src/qemu/qemu_migration.c:1640 src/qemu/qemu_migration.c:1672
+#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2840
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -11346,17 +11346,17 @@ msgstr ""
 "No se pudieron instalar las coincidencias de DBus. Inhabilitando el "
 "controlador nwfilter"
 
-#: src/nwfilter/nwfilter_driver.c:378 src/nwfilter/nwfilter_driver.c:583
-#: src/nwfilter/nwfilter_driver.c:631
+#: src/nwfilter/nwfilter_driver.c:372 src/nwfilter/nwfilter_driver.c:577
+#: src/nwfilter/nwfilter_driver.c:625
 msgid "no nwfilter with matching uuid"
 msgstr "wfilter no coincide con uuid"
 
-#: src/nwfilter/nwfilter_driver.c:404
+#: src/nwfilter/nwfilter_driver.c:398
 #, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "wfilter no coincide con nombre '%s'"
 
-#: src/nwfilter/nwfilter_driver.c:590
+#: src/nwfilter/nwfilter_driver.c:584
 msgid "nwfilter is in use"
 msgstr "está siendo utilizado el filtro de red (nwfilter)"
 
@@ -12752,7 +12752,7 @@ msgstr "No es posible permitir el acceso a la ruta de disco %s"
 msgid "Unable to deny access for disk path %s"
 msgstr "No se puede negar acceso a ruta de disco %s"
 
-#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4231
+#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4247
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "No es posible permitirle al %s el dispositivo %s"
@@ -13787,7 +13787,7 @@ msgid ""
 "booting from assigned USB devices is not supported with this version of qemu"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1000
+#: src/qemu/qemu_command.c:8006 src/qemu/qemu_hotplug.c:1007
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr ""
 
@@ -14447,8 +14447,8 @@ msgstr "No existe un dominio que coincida con el id %d"
 msgid "domain is pmsuspended"
 msgstr "Dominio es pmsuspended"
 
-#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4010
-#: src/qemu/qemu_migration.c:4155 src/qemu/qemu_process.c:580
+#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4026
+#: src/qemu/qemu_migration.c:4171 src/qemu/qemu_process.c:580
 #: src/qemu/qemu_process.c:3872
 msgid "resume operation failed"
 msgstr "Falló al reanudarse la operación"
@@ -14569,10 +14569,10 @@ msgstr "No es posible escribir %s"
 #: src/qemu/qemu_driver.c:2806 src/qemu/qemu_driver.c:3265
 #: src/qemu/qemu_driver.c:10653 src/qemu/qemu_driver.c:11159
 #: src/qemu/qemu_driver.c:12154 src/qemu/qemu_driver.c:12206
-#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:452
-#: src/qemu/qemu_hotplug.c:836 src/qemu/qemu_migration.c:2883
-#: src/qemu/qemu_migration.c:3192 src/qemu/qemu_migration.c:3535
-#: src/qemu/qemu_migration.c:3930 src/qemu/qemu_process.c:558
+#: src/qemu/qemu_driver.c:12862 src/qemu/qemu_hotplug.c:459
+#: src/qemu/qemu_hotplug.c:843 src/qemu/qemu_migration.c:2898
+#: src/qemu/qemu_migration.c:3207 src/qemu/qemu_migration.c:3551
+#: src/qemu/qemu_migration.c:3946 src/qemu/qemu_process.c:558
 #: src/qemu/qemu_process.c:571
 msgid "guest unexpectedly quit"
 msgstr "el huésped ha finalizado inesperadamente"
@@ -14845,7 +14845,7 @@ msgstr "Arriendo %s en lockspace %s ya existe"
 msgid "Target already exists"
 msgstr "Destino ya existe"
 
-#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2818
+#: src/qemu/qemu_driver.c:6177 src/qemu/qemu_hotplug.c:2825
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "Arriendo %s en lockspace %s no existe"
@@ -15060,7 +15060,7 @@ msgstr ""
 "Se ha solicitado una migración en túnel, pero se ha invocado un método RPC "
 "inválido"
 
-#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2261
+#: src/qemu/qemu_driver.c:9472 src/qemu/qemu_migration.c:2276
 msgid "domain disappeared"
 msgstr "Dominio desapareció"
 
@@ -15185,7 +15185,7 @@ msgstr ""
 msgid "quiesce requires disk-only"
 msgstr "quiesce requiere solo disco"
 
-#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1418
+#: src/qemu/qemu_driver.c:11333 src/qemu/qemu_migration.c:1436
 msgid "domain is marked for auto destroy"
 msgstr "El dominio está marcado para auto destruirse"
 
@@ -15524,7 +15524,7 @@ msgstr "Falló  al ejecutar el comando agent"
 msgid "Specifying mount point is not supported for now"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:304
+#: src/qemu/qemu_hostdev.c:305
 #, c-format
 msgid ""
 "virtualport type %s is currently not supported on interfaces of type hostdev"
@@ -15532,7 +15532,7 @@ msgstr ""
 "Tipo virtualport %s no tiene soporte actualmente en interfaces de tipo  "
 "hostdev"
 
-#: src/qemu/qemu_hostdev.c:342 src/qemu/qemu_hostdev.c:407
+#: src/qemu/qemu_hostdev.c:343 src/qemu/qemu_hostdev.c:408
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
@@ -15540,7 +15540,7 @@ msgstr ""
 "Tipo de interfaz hostdev tiene soporte actualmente en funciones SR-IOV "
 "Virtual únicamente"
 
-#: src/qemu/qemu_hostdev.c:356
+#: src/qemu/qemu_hostdev.c:357
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %s "
@@ -15549,350 +15549,351 @@ msgstr ""
 "Parámetro directo de etiqueta de vlan no está permitido para dispositivos de "
 "hostdev mediante modo %s"
 
-#: src/qemu/qemu_hostdev.c:369
+#: src/qemu/qemu_hostdev.c:370
 msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr "Dispositivos de red SR-IOV no soportan troncal vlan "
 
-#: src/qemu/qemu_hostdev.c:375
+#: src/qemu/qemu_hostdev.c:376
 #, c-format
 msgid "vlan can only be set for SR-IOV VFs, but %s is not a VF"
 msgstr "vlan solo puede establecerse para SR-IOV VFs, pero %s no es VF"
 
-#: src/qemu/qemu_hostdev.c:465
+#: src/qemu/qemu_hostdev.c:466
 #, c-format
 msgid "PCI device %s is not assignable"
 msgstr "PCI device %s is not assignable"
 
-#: src/qemu/qemu_hostdev.c:477
+#: src/qemu/qemu_hostdev.c:478
 #, c-format
 msgid "PCI device %s is in use by domain %s"
 msgstr "El  dominio  %s está utilizando el dispositivo PCI %s"
 
-#: src/qemu/qemu_hostdev.c:481
+#: src/qemu/qemu_hostdev.c:482
 #, c-format
 msgid "PCI device %s is already in use"
 msgstr "PCI device %s is already in use"
 
-#: src/qemu/qemu_hostdev.c:874
+#: src/qemu/qemu_hostdev.c:875
 #, c-format
 msgid "Failed to re-attach PCI device: %s"
 msgstr "Falló la reconexión del dispositivo PCI: %s"
 
-#: src/qemu/qemu_hostdev.c:898
+#: src/qemu/qemu_hostdev.c:899
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr ""
 
-#: src/qemu/qemu_hostdev.c:947
+#: src/qemu/qemu_hostdev.c:948
 #, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "Falló al reiniciar el dispositivo PCI: %s"
 
 #: src/qemu/qemu_hotplug.c:116
-msgid "Unable to eject media before changing it"
-msgstr "No se puede expulsar medio antes de cambiarlo"
+#, fuzzy
+msgid "Unable to eject media"
+msgstr "No se puede obtener mapa de CPU"
 
-#: src/qemu/qemu_hotplug.c:357
+#: src/qemu/qemu_hotplug.c:364
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "el destino %s:%d ya existe"
 
-#: src/qemu/qemu_hotplug.c:373
+#: src/qemu/qemu_hotplug.c:380
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr ""
 "Controlador USB de conexión en caliente no tiene soporte en este binario QEMU"
 
-#: src/qemu/qemu_hotplug.c:497
+#: src/qemu/qemu_hotplug.c:504
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "tipo %s de dirección de disco no esperado"
 
-#: src/qemu/qemu_hotplug.c:525
+#: src/qemu/qemu_hotplug.c:532
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "El controlador SCSI %d no poseía su dirección PCI"
 
-#: src/qemu/qemu_hotplug.c:730
+#: src/qemu/qemu_hotplug.c:737
 msgid "installed qemu version does not support host_net_add"
 msgstr "la versión instalada de qemu no tiene soporte para host_net_add"
 
-#: src/qemu/qemu_hotplug.c:769
+#: src/qemu/qemu_hotplug.c:776
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:784
+#: src/qemu/qemu_hotplug.c:791
 msgid "Unable to attach network devices without vlan"
 msgstr "No es posible asociar dispositivos de red sin vlan"
 
-#: src/qemu/qemu_hotplug.c:872
+#: src/qemu/qemu_hotplug.c:879
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
 "No se encontró  alias de dispositivo: no se puede establecer estado de "
 "enlace a caído"
 
-#: src/qemu/qemu_hotplug.c:884
+#: src/qemu/qemu_hotplug.c:891
 msgid "setting of link state not supported: Link is up"
 msgstr ""
 "La configuración de estado de enlace no tiene soporte: El enlace está activo"
 
-#: src/qemu/qemu_hotplug.c:1036
+#: src/qemu/qemu_hotplug.c:1043
 msgid "guest unexpectedly quit during hotplug"
 msgstr "el intiado ha salido inesperadamente durante la conexión"
 
-#: src/qemu/qemu_hotplug.c:1186 src/qemu/qemu_hotplug.c:2518
+#: src/qemu/qemu_hotplug.c:1193 src/qemu/qemu_hotplug.c:2525
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "el modo '%s' de dispositivo de host no está soportado"
 
-#: src/qemu/qemu_hotplug.c:1234 src/qemu/qemu_hotplug.c:2487
+#: src/qemu/qemu_hotplug.c:1241 src/qemu/qemu_hotplug.c:2494
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "el tipo '%s' de subsistema de dispositivo de host no está soportado"
 
-#: src/qemu/qemu_hotplug.c:1281
+#: src/qemu/qemu_hotplug.c:1288
 msgid "interface is missing bridge name"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1296
+#: src/qemu/qemu_hotplug.c:1303
 #, c-format
 msgid "Couldn't find network '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1318
+#: src/qemu/qemu_hotplug.c:1325
 #, c-format
 msgid "Interface type %d has no bridge name"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1346
+#: src/qemu/qemu_hotplug.c:1353
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "puente %s no existe"
 
-#: src/qemu/qemu_hotplug.c:1370
+#: src/qemu/qemu_hotplug.c:1377
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "No se  puede recuperar estado anterior al añadir puerto al puente %s"
 
-#: src/qemu/qemu_hotplug.c:1397
+#: src/qemu/qemu_hotplug.c:1404
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1408
+#: src/qemu/qemu_hotplug.c:1415
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1432
+#: src/qemu/qemu_hotplug.c:1439
 msgid "can't change link state: device alias not found"
 msgstr ""
 "No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
 
-#: src/qemu/qemu_hotplug.c:1470
+#: src/qemu/qemu_hotplug.c:1477
 msgid "cannot find existing network device to modify"
 msgstr "No se  encuentra el dispositivo de red existente a modificar"
 
-#: src/qemu/qemu_hotplug.c:1478
+#: src/qemu/qemu_hotplug.c:1485
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "No se puede cambiar config de '%s' tipo de red"
 
-#: src/qemu/qemu_hotplug.c:1501
+#: src/qemu/qemu_hotplug.c:1508
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "No se puede cambiar dirección MAC de interfaz 'network' de '%s' a %s"
 
-#: src/qemu/qemu_hotplug.c:1510
+#: src/qemu/qemu_hotplug.c:1517
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "No se puede modificar modelo de dispositivo de red  %s a %s"
 
-#: src/qemu/qemu_hotplug.c:1522
+#: src/qemu/qemu_hotplug.c:1529
 msgid "cannot modify virtio network device driver attributes"
 msgstr "No se pueden modificar atributos de controlador de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1536
+#: src/qemu/qemu_hotplug.c:1543
 msgid "cannot modify network device script attribute"
 msgstr "No se puede modificar atributo de script de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1548
+#: src/qemu/qemu_hotplug.c:1555
 msgid "cannot modify network device tap name"
 msgstr "No se puede modificar nombre de grifo de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1566
+#: src/qemu/qemu_hotplug.c:1573
 msgid "cannot modify network device guest PCI address"
 msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1577
+#: src/qemu/qemu_hotplug.c:1584
 msgid "cannot modify network device alias"
 msgstr "No se puede modificar alias de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1582
+#: src/qemu/qemu_hotplug.c:1589
 msgid "cannot modify network device rom bar setting"
 msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1587
+#: src/qemu/qemu_hotplug.c:1594
 msgid "cannot modify network rom file"
 msgstr "No se puede modificar archivo ROM de red"
 
-#: src/qemu/qemu_hotplug.c:1592
+#: src/qemu/qemu_hotplug.c:1599
 msgid "cannot modify network device boot index setting"
 msgstr ""
 "No se puede modificar parámetro de índice de arranque de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:1619
+#: src/qemu/qemu_hotplug.c:1626
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "No se puede cambiar tipo de interfaz de red a '%s'"
 
-#: src/qemu/qemu_hotplug.c:1677 src/qemu/qemu_hotplug.c:1748
+#: src/qemu/qemu_hotplug.c:1684 src/qemu/qemu_hotplug.c:1755
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "No es posible cambiar configuración en tipo de red '%s'"
 
-#: src/qemu/qemu_hotplug.c:1846
+#: src/qemu/qemu_hotplug.c:1853
 msgid "cannot find existing graphics device to modify"
 msgstr "no es posible encontrar dispositivos gráficos existentes que modificar"
 
-#: src/qemu/qemu_hotplug.c:1861
+#: src/qemu/qemu_hotplug.c:1868
 msgid "cannot change port settings on vnc graphics"
 msgstr ""
 "no es posible modificar la configuración de los puertos sobre los gráficos "
 "vnc"
 
-#: src/qemu/qemu_hotplug.c:1866
+#: src/qemu/qemu_hotplug.c:1873
 msgid "cannot change listen address setting on vnc graphics"
 msgstr ""
 "no es posible modificar la configuración relacionada con las direcciones a "
 "ser escuchadas sobre gráficos vnc"
 
-#: src/qemu/qemu_hotplug.c:1871
+#: src/qemu/qemu_hotplug.c:1878
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "No se puede cambiar parámetro de red en gráficas de VNC"
 
-#: src/qemu/qemu_hotplug.c:1876
+#: src/qemu/qemu_hotplug.c:1883
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "no es posible modificar la configuración de keymap sobre gráficos vnc"
 
-#: src/qemu/qemu_hotplug.c:1916
+#: src/qemu/qemu_hotplug.c:1923
 msgid "cannot change port settings on spice graphics"
 msgstr "No se puede cambiar configuración de puerto en gráficas SPICE"
 
-#: src/qemu/qemu_hotplug.c:1921
+#: src/qemu/qemu_hotplug.c:1928
 msgid "cannot change listen address setting on spice graphics"
 msgstr "No se puede cambiar la dirección de escucha en gráficas SPICE"
 
-#: src/qemu/qemu_hotplug.c:1926
+#: src/qemu/qemu_hotplug.c:1933
 msgid "cannot change listen network setting on spice graphics"
 msgstr ""
 "No  se puede cambiar la configuración de la red de escucha en gráficas Spice"
 
-#: src/qemu/qemu_hotplug.c:1932
+#: src/qemu/qemu_hotplug.c:1939
 msgid "cannot change keymap setting on spice graphics"
 msgstr "No se puede cambiar configuración de keymap en gráficas SPICE"
 
-#: src/qemu/qemu_hotplug.c:1973
+#: src/qemu/qemu_hotplug.c:1980
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "no es posible modificar la configuración del tipo de gráficos '%s'"
 
-#: src/qemu/qemu_hotplug.c:2046 src/qemu/qemu_hotplug.c:2292
+#: src/qemu/qemu_hotplug.c:2053 src/qemu/qemu_hotplug.c:2299
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "No se  puede desconectar dispositivo PCI de multifunciones: %s"
 
-#: src/qemu/qemu_hotplug.c:2056
+#: src/qemu/qemu_hotplug.c:2063
 msgid "device cannot be detached without a valid CCW address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2063
+#: src/qemu/qemu_hotplug.c:2070
 msgid "device cannot be detached without a valid PCI address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2153
+#: src/qemu/qemu_hotplug.c:2160
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "Qemu subyacente no  soporta %s remoción de disco"
 
-#: src/qemu/qemu_hotplug.c:2162
+#: src/qemu/qemu_hotplug.c:2169
 #, c-format
 msgid "disk '%s' is in an active block copy job"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2275
+#: src/qemu/qemu_hotplug.c:2282
 #, fuzzy, c-format
 msgid "controller %s:%d not found"
 msgstr "no se encuentra el controlador de disco %s:%d"
 
-#: src/qemu/qemu_hotplug.c:2286 src/qemu/qemu_hotplug.c:2360
-#: src/qemu/qemu_hotplug.c:2609
+#: src/qemu/qemu_hotplug.c:2293 src/qemu/qemu_hotplug.c:2367
+#: src/qemu/qemu_hotplug.c:2616
 msgid "device cannot be detached without a PCI address"
 msgstr "el dispositivo no puede ser desasociado sin una dirección PCI"
 
-#: src/qemu/qemu_hotplug.c:2299
+#: src/qemu/qemu_hotplug.c:2306
 msgid "device cannot be detached: device is busy"
 msgstr "Dispositivo  no puede ser desconectado: el dispositivo está ocupado"
 
-#: src/qemu/qemu_hotplug.c:2351
+#: src/qemu/qemu_hotplug.c:2358
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 "No se puede desconectar en caliente dispositivo multifunción PCI:  %.4x:%.2x:"
 "%.2x.%.1x"
 
-#: src/qemu/qemu_hotplug.c:2424
+#: src/qemu/qemu_hotplug.c:2431
 msgid "device cannot be detached without a device alias"
 msgstr "el dispositivo no puede ser desasociado sin un alias"
 
-#: src/qemu/qemu_hotplug.c:2430
+#: src/qemu/qemu_hotplug.c:2437
 msgid "device cannot be detached with this QEMU version"
 msgstr "el dispositivo no puede ser desasociado con esta versión QEMU"
 
-#: src/qemu/qemu_hotplug.c:2472
+#: src/qemu/qemu_hotplug.c:2479
 #, c-format
 msgid "device not found in hostdevs list (%zu entries)"
 msgstr "No se encontró dispositivo en hostdevs list (%zu entries)"
 
-#: src/qemu/qemu_hotplug.c:2529
+#: src/qemu/qemu_hotplug.c:2536
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "dispositivo de host pci %.4x:%.2x:%.2x.%.1x no se encontró"
 
-#: src/qemu/qemu_hotplug.c:2536
+#: src/qemu/qemu_hotplug.c:2543
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "no se ha encoentrado el dispositivo de host usb %03d.%03d"
 
-#: src/qemu/qemu_hotplug.c:2540
+#: src/qemu/qemu_hotplug.c:2547
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr ""
 "No se encontró proveedor de dispositivo usb host=0x%.4x producto=0x%.4x "
 
-#: src/qemu/qemu_hotplug.c:2602
+#: src/qemu/qemu_hotplug.c:2609
 msgid "device cannot be detached without a CCW address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2615
+#: src/qemu/qemu_hotplug.c:2622
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "No se  puede desconectar dispositivo PCI de multifunciones: %s"
 
-#: src/qemu/qemu_hotplug.c:2623
+#: src/qemu/qemu_hotplug.c:2630
 msgid "unable to determine original VLAN"
 msgstr "no es posible determinar VLAN original"
 
-#: src/qemu/qemu_hotplug.c:2692
+#: src/qemu/qemu_hotplug.c:2699
 #, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr "Falló remoción de regla ebtables en'%s'"
 
-#: src/qemu/qemu_hotplug.c:2745
+#: src/qemu/qemu_hotplug.c:2752
 msgid "Graphics password only supported for VNC"
 msgstr "La contraseña de gráficas solo está soportada para VNC"
 
-#: src/qemu/qemu_hotplug.c:2771
+#: src/qemu/qemu_hotplug.c:2778
 msgid "Expiry of passwords is not supported"
 msgstr "Expiración de contraseñas no tiene soporte"
 
@@ -16048,209 +16049,214 @@ msgstr "Falta estado de cerrojo %s para migración de cookie"
 msgid "Source host lock driver %s different from target %s"
 msgstr "Obtenga un controlador de cerrojo de host %s diferente del destino %s"
 
-#: src/qemu/qemu_migration.c:1263 src/qemu/qemu_migration.c:1660
-#: src/qemu/qemu_migration.c:2827
+#: src/qemu/qemu_migration.c:1280 src/qemu/qemu_migration.c:1678
+#: src/qemu/qemu_migration.c:2842
 msgid "canceled by client"
 msgstr "Cancelado por cliente"
 
-#: src/qemu/qemu_migration.c:1430
+#: src/qemu/qemu_migration.c:1448
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "No se pudo migrar con instantáneas %d"
 
-#: src/qemu/qemu_migration.c:1438
+#: src/qemu/qemu_migration.c:1456
 msgid "domain has an active block job"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1459
+#: src/qemu/qemu_migration.c:1477
 msgid "domain has assigned non-USB host devices"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1497
+#: src/qemu/qemu_migration.c:1515
 msgid "Migration may lead to data corruption if disks use cache != none"
 msgstr ""
 "La migración puede llegar a corromper datos si discos usan cache != none"
 
-#: src/qemu/qemu_migration.c:1551
+#: src/qemu/qemu_migration.c:1569
 msgid "Compressed migration is not supported by target QEMU binary"
 msgstr "Binario de QEMU de destino no soporta migración comprimida"
 
-#: src/qemu/qemu_migration.c:1555
+#: src/qemu/qemu_migration.c:1573
 msgid "Compressed migration is not supported by source QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1622
+#: src/qemu/qemu_migration.c:1640
 msgid "is not active"
 msgstr "no está activo "
 
-#: src/qemu/qemu_migration.c:1654
+#: src/qemu/qemu_migration.c:1672
 msgid "unexpectedly failed"
 msgstr "Falló inesperadamente"
 
-#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2895
+#: src/qemu/qemu_migration.c:1696 src/qemu/qemu_migration.c:2910
 msgid "migration job"
 msgstr "tarea de migración "
 
-#: src/qemu/qemu_migration.c:1681
+#: src/qemu/qemu_migration.c:1699
 msgid "domain save job"
 msgstr "tarea de guardado de dominio "
 
-#: src/qemu/qemu_migration.c:1684
+#: src/qemu/qemu_migration.c:1702
 msgid "domain core dump job"
 msgstr "tarea de vaciado de núcleo de dominio"
 
-#: src/qemu/qemu_migration.c:1687
+#: src/qemu/qemu_migration.c:1705
 msgid "job"
 msgstr "tarea"
 
-#: src/qemu/qemu_migration.c:1701
+#: src/qemu/qemu_migration.c:1719
 msgid "Lost connection to destination host"
 msgstr "Se perdió la conexión al host de destino"
 
-#: src/qemu/qemu_migration.c:1783 src/util/virnetdevopenvswitch.c:239
+#: src/qemu/qemu_migration.c:1802 src/util/virnetdevopenvswitch.c:239
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
 "No se puede ejecutar comando para establecer datos del puerto OVS para "
 "interfaz %s"
 
-#: src/qemu/qemu_migration.c:1920 src/qemu/qemu_migration.c:2022
+#: src/qemu/qemu_migration.c:1921
+#, fuzzy
+msgid "NBD in tunnelled migration is currently not supported"
+msgstr "Actualmente sólo hay soporte para una tarjeta de vídeo"
+
+#: src/qemu/qemu_migration.c:1940 src/qemu/qemu_migration.c:2042
 msgid "offline migration cannot handle non-shared storage"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1926 src/qemu/qemu_migration.c:2028
+#: src/qemu/qemu_migration.c:1946 src/qemu/qemu_migration.c:2048
 msgid "offline migration must be specified with the persistent flag set"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1932 src/qemu/qemu_migration.c:2034
+#: src/qemu/qemu_migration.c:1952 src/qemu/qemu_migration.c:2054
 msgid "tunnelled offline migration does not make sense"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:1966
 msgid "target domain name doesn't match source name"
 msgstr "nombre target domain no es igual al nombre de origen"
 
-#: src/qemu/qemu_migration.c:2170 src/qemu/qemu_migration.c:3083
+#: src/qemu/qemu_migration.c:2190 src/qemu/qemu_migration.c:3098
 msgid "cannot create pipe for tunnelled migration"
 msgstr "No se puede crear tubo para  migración en túnel"
 
-#: src/qemu/qemu_migration.c:2194
+#: src/qemu/qemu_migration.c:2214
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "No se puede pasar tubo  para migración  en túnel"
 
-#: src/qemu/qemu_migration.c:2381
+#: src/qemu/qemu_migration.c:2396
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
 "el nombre del equipo de destino ha sido resuelto a localhost, pero la "
 "migración necesita FQDN"
 
-#: src/qemu/qemu_migration.c:2403
+#: src/qemu/qemu_migration.c:2418
 msgid "only tcp URIs are supported for KVM/QEMU migrations"
 msgstr "para migraciones KVM/QEMU, solo hay soporte para tcp URIs"
 
-#: src/qemu/qemu_migration.c:2420
+#: src/qemu/qemu_migration.c:2435
 #, c-format
 msgid "unable to parse URI: %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2426
+#: src/qemu/qemu_migration.c:2441
 #, c-format
 msgid "missing host in migration URI: %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2547
+#: src/qemu/qemu_migration.c:2562
 msgid "poll failed in migration tunnel"
 msgstr "Falló al sondear túnel de migración"
 
-#: src/qemu/qemu_migration.c:2565
+#: src/qemu/qemu_migration.c:2580
 msgid "failed to read from wakeup fd"
 msgstr "Falló al leer desde FD de despertador"
 
-#: src/qemu/qemu_migration.c:2587
+#: src/qemu/qemu_migration.c:2602
 msgid "tunnelled migration failed to read from qemu"
 msgstr "la migración en túnel falló al intentar leer desde el qemu"
 
-#: src/qemu/qemu_migration.c:2631
+#: src/qemu/qemu_migration.c:2646
 msgid "Unable to make pipe"
 msgstr "No se puede enmascarar tubería"
 
-#: src/qemu/qemu_migration.c:2647
+#: src/qemu/qemu_migration.c:2662
 msgid "Unable to create migration thread"
 msgstr "No se  pudo  crear migración de hilos"
 
-#: src/qemu/qemu_migration.c:2671
+#: src/qemu/qemu_migration.c:2686
 msgid "failed to wakeup migration tunnel"
 msgstr "No se pudo despertar túnel de migración"
 
-#: src/qemu/qemu_migration.c:2727
+#: src/qemu/qemu_migration.c:2742
 #, c-format
 msgid "Unable to set FD %d blocking"
 msgstr "No se puede establecer bloqueo de FD %d"
 
-#: src/qemu/qemu_migration.c:2783
+#: src/qemu/qemu_migration.c:2798
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr "La migración con controlador de cerrojo %s requiere soporte de cookies"
 
-#: src/qemu/qemu_migration.c:2903
+#: src/qemu/qemu_migration.c:2918
 msgid "failed to accept connection from qemu"
 msgstr "Falló al aceptar conexión desde qemu"
 
-#: src/qemu/qemu_migration.c:3060
+#: src/qemu/qemu_migration.c:3075
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 "La fuente qemu es demasiado antigua para poder aceptar una migración en "
 "túnel "
 
-#: src/qemu/qemu_migration.c:3496
-#, c-format
-msgid "Failed to connect to remote libvirt URI %s"
+#: src/qemu/qemu_migration.c:3511
+#, fuzzy, c-format
+msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "Falló la conexión con el URI de libvirt remoto %s"
 
-#: src/qemu/qemu_migration.c:3521
+#: src/qemu/qemu_migration.c:3537
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 "El libvirt de destino no tiene soporte para un protocolo de migración de par "
 "a par (peer-to-peer)"
 
-#: src/qemu/qemu_migration.c:3651 src/qemu/qemu_migration.c:3732
+#: src/qemu/qemu_migration.c:3667 src/qemu/qemu_migration.c:3748
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Falló al reanudar el huésped %s luego del error"
 
-#: src/qemu/qemu_migration.c:3797
+#: src/qemu/qemu_migration.c:3813
 msgid "received unexpected cookie with P2P migration"
 msgstr "Se recibió  una cookie inesperada con migración  P2P"
 
-#: src/qemu/qemu_migration.c:3808
+#: src/qemu/qemu_migration.c:3824
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "Parámetro dconnuri inesperado con migración non-peer2peer"
 
-#: src/qemu/qemu_migration.c:3844
+#: src/qemu/qemu_migration.c:3860
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr "Falló la asociación de perfil de puerto para %s"
 
-#: src/qemu/qemu_migration.c:3986
+#: src/qemu/qemu_migration.c:4002
 msgid "can't get vmdef"
 msgstr "can't get vmdef"
 
-#: src/qemu/qemu_migration.c:4274
+#: src/qemu/qemu_migration.c:4290
 msgid "Unable to set cloexec flag"
 msgstr "No  se pudo establecer indicador cloexec"
 
-#: src/qemu/qemu_migration.c:4372
+#: src/qemu/qemu_migration.c:4388
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr "Protocolo migración va hacia atrás %s => %s"
 
-#: src/qemu/qemu_migration.c:4407
+#: src/qemu/qemu_migration.c:4423
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "el dominio '%s' no está procesando migraciones entrantes"
 
-#: src/qemu/qemu_migration.c:4409
+#: src/qemu/qemu_migration.c:4425
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "Dominio '%s' no se está  migrando"
@@ -21137,31 +21143,31 @@ msgstr "Falló al leer leer el directorio para %s (%d)"
 msgid "Unable to remove %s (%d)"
 msgstr "No es posible eliminar %s (%d)"
 
-#: src/util/vircgroup.c:2540
+#: src/util/vircgroup.c:2552
 #, c-format
 msgid "Could not find directory separator in %s"
 msgstr ""
 
-#: src/util/vircgroup.c:2556
+#: src/util/vircgroup.c:2568
 msgid "Could not find any mounted controllers"
 msgstr ""
 
-#: src/util/vircgroup.c:2576 src/util/vircgroup.c:2611
+#: src/util/vircgroup.c:2588 src/util/vircgroup.c:2623
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "No se  puede crear directorio %s"
 
-#: src/util/vircgroup.c:2589
+#: src/util/vircgroup.c:2601
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "No se pudo montar %s en %s tipo %s"
 
-#: src/util/vircgroup.c:2619
+#: src/util/vircgroup.c:2631
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2635
+#: src/util/vircgroup.c:2647
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "No se  puede 'symlink' el directorio %s a %s"
@@ -22925,759 +22931,763 @@ msgstr "Destino sysinfo %s%s no coincide con fuente %s"
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ha ocurrido un error, pero la causa es desconocida"
 
-#: src/util/virerror.c:513
+#: src/util/virerror.c:250 tools/virsh-domain-monitor.c:47
+msgid "no error"
+msgstr "No hubo error"
+
+#: src/util/virerror.c:534
 msgid "warning"
 msgstr "aviso"
 
-#: src/util/virerror.c:516 tools/virsh-domain-monitor.c:129
+#: src/util/virerror.c:537 tools/virsh-domain-monitor.c:129
 msgid "error"
 msgstr "Error"
 
-#: src/util/virerror.c:648
+#: src/util/virerror.c:669
 msgid "No error message provided"
 msgstr "No se ha provisto un mensaje de error"
 
-#: src/util/virerror.c:710
+#: src/util/virerror.c:731
 #, c-format
 msgid "internal error %s"
 msgstr "error interno %s"
 
-#: src/util/virerror.c:712
+#: src/util/virerror.c:733
 msgid "internal error"
 msgstr "error interno"
 
-#: src/util/virerror.c:715 tools/virsh.c:681
+#: src/util/virerror.c:736 tools/virsh.c:681
 msgid "out of memory"
 msgstr "memoria agotada"
 
-#: src/util/virerror.c:719
+#: src/util/virerror.c:740
 msgid "this function is not supported by the connection driver"
 msgstr "esta función no está soportada por el controlador de conexión"
 
-#: src/util/virerror.c:721
+#: src/util/virerror.c:742
 #, c-format
 msgid "this function is not supported by the connection driver: %s"
 msgstr "esta función no está soportada por el controlador de conexión: %s"
 
-#: src/util/virerror.c:725
+#: src/util/virerror.c:746
 msgid "no connection driver available"
 msgstr "no existe disponible un controlador de conexión"
 
-#: src/util/virerror.c:727
+#: src/util/virerror.c:748
 #, c-format
 msgid "no connection driver available for %s"
 msgstr "no existe disponible un controlador de conexión para %s"
 
-#: src/util/virerror.c:731
+#: src/util/virerror.c:752
 msgid "invalid connection pointer in"
 msgstr "indicador de conexión inválido en"
 
-#: src/util/virerror.c:733
+#: src/util/virerror.c:754
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "indicador de conexión inválido en %s"
 
-#: src/util/virerror.c:737
+#: src/util/virerror.c:758
 msgid "invalid domain pointer in"
 msgstr "indicador de dominio inválido en"
 
-#: src/util/virerror.c:739
+#: src/util/virerror.c:760
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "indicador de dominio inválido en %s"
 
-#: src/util/virerror.c:743 src/xen/xen_hypervisor.c:3271
+#: src/util/virerror.c:764 src/xen/xen_hypervisor.c:3271
 msgid "invalid argument"
 msgstr "Argumento inválido"
 
-#: src/util/virerror.c:745
+#: src/util/virerror.c:766
 #, c-format
 msgid "invalid argument: %s"
 msgstr "Argumento inválido: %s"
 
-#: src/util/virerror.c:749
+#: src/util/virerror.c:770
 #, c-format
 msgid "operation failed: %s"
 msgstr "Falló la operación: %s"
 
-#: src/util/virerror.c:751
+#: src/util/virerror.c:772
 msgid "operation failed"
 msgstr "Falló la operación"
 
-#: src/util/virerror.c:755
+#: src/util/virerror.c:776
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "Falló la operación GET: %s"
 
-#: src/util/virerror.c:757
+#: src/util/virerror.c:778
 msgid "GET operation failed"
 msgstr "Falló la operación GET"
 
-#: src/util/virerror.c:761
+#: src/util/virerror.c:782
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "Falló la creación del POST: %s"
 
-#: src/util/virerror.c:763
+#: src/util/virerror.c:784
 msgid "POST operation failed"
 msgstr "Falló la creación POST"
 
-#: src/util/virerror.c:766
+#: src/util/virerror.c:787
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "se ha obtenido un código de error HTTP %d desconocido"
 
-#: src/util/virerror.c:770
+#: src/util/virerror.c:791
 #, c-format
 msgid "unknown host %s"
 msgstr "host %s desconocido"
 
-#: src/util/virerror.c:772
+#: src/util/virerror.c:793
 msgid "unknown host"
 msgstr "host desconocido"
 
-#: src/util/virerror.c:776
+#: src/util/virerror.c:797
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "Falló al serializar S-Expr: %s"
 
-#: src/util/virerror.c:778
+#: src/util/virerror.c:799
 msgid "failed to serialize S-Expr"
 msgstr "Falló al serializar S-Expr"
 
-#: src/util/virerror.c:782
+#: src/util/virerror.c:803
 msgid "could not use Xen hypervisor entry"
 msgstr "no se pudo utilizar la entrada del hypervisor Xen"
 
-#: src/util/virerror.c:784
+#: src/util/virerror.c:805
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "no se pudo utilizar la entrada %s del hypervisor Xen "
 
-#: src/util/virerror.c:788
+#: src/util/virerror.c:809
 msgid "could not connect to Xen Store"
 msgstr "no se ha podido conectar con el Depósito Xen"
 
-#: src/util/virerror.c:790
+#: src/util/virerror.c:811
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "no se ha podido conectar con el Depósito Xen %s"
 
-#: src/util/virerror.c:793
+#: src/util/virerror.c:814
 #, c-format
 msgid "failed Xen syscall %s"
 msgstr "Falló syscall Xen %s"
 
-#: src/util/virerror.c:797
+#: src/util/virerror.c:818
 msgid "unknown OS type"
 msgstr "tipo de sistema operativo desconocido"
 
-#: src/util/virerror.c:799
+#: src/util/virerror.c:820
 #, c-format
 msgid "unknown OS type %s"
 msgstr "tipo de sistema operativo %s desconocido"
 
-#: src/util/virerror.c:802
+#: src/util/virerror.c:823
 msgid "missing kernel information"
 msgstr "falta información del kernel "
 
-#: src/util/virerror.c:806
+#: src/util/virerror.c:827
 msgid "missing root device information"
 msgstr "falta información del dispositivo raíz"
 
-#: src/util/virerror.c:808
+#: src/util/virerror.c:829
 #, c-format
 msgid "missing root device information in %s"
 msgstr "no se encuentra información en %s acerca del dispositivo raíz"
 
-#: src/util/virerror.c:812
+#: src/util/virerror.c:833
 msgid "missing source information for device"
 msgstr "no se encuentra información de origen para el dispositivo"
 
-#: src/util/virerror.c:814
+#: src/util/virerror.c:835
 #, c-format
 msgid "missing source information for device %s"
 msgstr "no se encuentra información de origen para el dispositivo %s"
 
-#: src/util/virerror.c:818
+#: src/util/virerror.c:839
 msgid "missing target information for device"
 msgstr "no se encuentra información de destino para el dispositivo"
 
-#: src/util/virerror.c:820
+#: src/util/virerror.c:841
 #, c-format
 msgid "missing target information for device %s"
 msgstr "no se encuentra información de destino para el dispositivo %s"
 
-#: src/util/virerror.c:824
+#: src/util/virerror.c:845
 msgid "missing name information"
 msgstr "Falta información de nombre"
 
-#: src/util/virerror.c:826
+#: src/util/virerror.c:847
 #, c-format
 msgid "missing name information in %s"
 msgstr "Falta información de nombre en %s"
 
-#: src/util/virerror.c:830
+#: src/util/virerror.c:851
 msgid "missing operating system information"
 msgstr "falta información del sistema operativo"
 
-#: src/util/virerror.c:832
+#: src/util/virerror.c:853
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "no se encuentra información de sistema operativo para %s"
 
-#: src/util/virerror.c:836
+#: src/util/virerror.c:857
 msgid "missing devices information"
 msgstr "falta información de dispositivos"
 
-#: src/util/virerror.c:838
+#: src/util/virerror.c:859
 #, c-format
 msgid "missing devices information for %s"
 msgstr "no se encuentra información de dispositivos para %s"
 
-#: src/util/virerror.c:842
+#: src/util/virerror.c:863
 msgid "too many drivers registered"
 msgstr "demasiados dispositivos registrados"
 
-#: src/util/virerror.c:844
+#: src/util/virerror.c:865
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "demasiados dispositivos registrados en %s"
 
-#: src/util/virerror.c:848
+#: src/util/virerror.c:869
 msgid "library call failed, possibly not supported"
 msgstr "Falló el llamado a la biblioteca, posiblemente no tenga soporte"
 
-#: src/util/virerror.c:850
+#: src/util/virerror.c:871
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "Falló el llamado a la biblioteca %s, posiblemente no tenga soporte"
 
-#: src/util/virerror.c:854
+#: src/util/virerror.c:875
 msgid "XML description is invalid or not well formed"
 msgstr "Descripción XML inválida o no bien formada"
 
-#: src/util/virerror.c:856
+#: src/util/virerror.c:877
 #, c-format
 msgid "XML error: %s"
 msgstr "Error XML: %s"
 
-#: src/util/virerror.c:860
+#: src/util/virerror.c:881
 msgid "this domain exists already"
 msgstr "este dominio ya existe"
 
-#: src/util/virerror.c:862
+#: src/util/virerror.c:883
 #, c-format
 msgid "domain %s exists already"
 msgstr "el dominio %s ya existe"
 
-#: src/util/virerror.c:866
+#: src/util/virerror.c:887
 msgid "operation forbidden for read only access"
 msgstr "operación no permitida para acceso de solo lectura"
 
-#: src/util/virerror.c:868
+#: src/util/virerror.c:889
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "operación %s prohibida para acceso de solo lectura"
 
-#: src/util/virerror.c:872
+#: src/util/virerror.c:893
 msgid "failed to open configuration file for reading"
 msgstr "Falló al abrir el archivo de configuración para lectura"
 
-#: src/util/virerror.c:874
+#: src/util/virerror.c:895
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "Falló al abrir %s para lectura"
 
-#: src/util/virerror.c:878
+#: src/util/virerror.c:899
 msgid "failed to read configuration file"
 msgstr "Falló al leer archivo de configuración"
 
-#: src/util/virerror.c:880
+#: src/util/virerror.c:901
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "Falló al leer archivo de configuración %s"
 
-#: src/util/virerror.c:884
+#: src/util/virerror.c:905
 msgid "failed to parse configuration file"
 msgstr "Falló al analizar archivo de configuración"
 
-#: src/util/virerror.c:886
+#: src/util/virerror.c:907
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "Falló al analizar el archivo de configuración %s"
 
-#: src/util/virerror.c:890
+#: src/util/virerror.c:911
 msgid "configuration file syntax error"
 msgstr "error de sintaxis en el archivo de configuración"
 
-#: src/util/virerror.c:892
+#: src/util/virerror.c:913
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "error de sintaxis en el archivo de configuración: %s"
 
-#: src/util/virerror.c:896
+#: src/util/virerror.c:917
 msgid "failed to write configuration file"
 msgstr "Falló al escribir archivo de configuración"
 
-#: src/util/virerror.c:898
+#: src/util/virerror.c:919
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "Falló al escribir el archivo de configuración: %s"
 
-#: src/util/virerror.c:902
+#: src/util/virerror.c:923
 msgid "parser error"
 msgstr "error de examinador"
 
-#: src/util/virerror.c:908
+#: src/util/virerror.c:929
 msgid "invalid network pointer in"
 msgstr "indicador de red inválido en "
 
-#: src/util/virerror.c:910
+#: src/util/virerror.c:931
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "indicador de red inválido en %s"
 
-#: src/util/virerror.c:914
+#: src/util/virerror.c:935
 msgid "this network exists already"
 msgstr "esta red ya existe"
 
-#: src/util/virerror.c:916
+#: src/util/virerror.c:937
 #, c-format
 msgid "network %s exists already"
 msgstr "la red %s ya existe"
 
-#: src/util/virerror.c:920
+#: src/util/virerror.c:941
 msgid "system call error"
 msgstr "error de llamada de sistema"
 
-#: src/util/virerror.c:926
+#: src/util/virerror.c:947
 msgid "RPC error"
 msgstr "error RPC"
 
-#: src/util/virerror.c:932
+#: src/util/virerror.c:953
 msgid "GNUTLS call error"
 msgstr "error de llamada de GNUTLS"
 
-#: src/util/virerror.c:938
+#: src/util/virerror.c:959
 msgid "Failed to find the network"
 msgstr "Falló al encontrar la red"
 
-#: src/util/virerror.c:940
+#: src/util/virerror.c:961
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "Falló al encontrar la red: %s"
 
-#: src/util/virerror.c:944
+#: src/util/virerror.c:965
 msgid "Domain not found"
 msgstr "No se encontró el dominio"
 
-#: src/util/virerror.c:946
+#: src/util/virerror.c:967
 #, c-format
 msgid "Domain not found: %s"
 msgstr "No se encontró dominio: %s"
 
-#: src/util/virerror.c:950
+#: src/util/virerror.c:971
 msgid "Network not found"
 msgstr "No se encontró red"
 
-#: src/util/virerror.c:952
+#: src/util/virerror.c:973
 #, c-format
 msgid "Network not found: %s"
 msgstr "No se ha encontrado la red: %s"
 
-#: src/util/virerror.c:956
+#: src/util/virerror.c:977
 msgid "invalid MAC address"
 msgstr "dirección MAC no válida"
 
-#: src/util/virerror.c:958
+#: src/util/virerror.c:979
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "dirección MAC no válida: %s"
 
-#: src/util/virerror.c:964
+#: src/util/virerror.c:985
 #, c-format
 msgid "authentication failed: %s"
 msgstr "Falló la autenticación: %s"
 
-#: src/util/virerror.c:968
+#: src/util/virerror.c:989
 msgid "authentication cancelled"
 msgstr "Se canceló la autenticación"
 
-#: src/util/virerror.c:970
+#: src/util/virerror.c:991
 #, c-format
 msgid "authentication cancelled: %s"
 msgstr "Se canceló la autenticación: %s"
 
-#: src/util/virerror.c:974
+#: src/util/virerror.c:995
 msgid "Storage pool not found"
 msgstr "No se encontró grupo de almacenamiento"
 
-#: src/util/virerror.c:976
+#: src/util/virerror.c:997
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "No se encontró grupo de almacenamiento: %s"
 
-#: src/util/virerror.c:980
+#: src/util/virerror.c:1001
 msgid "Storage volume not found"
 msgstr "Volumen de almacenamiento no encontrado"
 
-#: src/util/virerror.c:982
+#: src/util/virerror.c:1003
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "No se encontró volumen de almacenamiento: %s"
 
-#: src/util/virerror.c:986
+#: src/util/virerror.c:1007
 msgid "Storage pool probe failed"
 msgstr "Falló el sondeo de grupo"
 
-#: src/util/virerror.c:988
+#: src/util/virerror.c:1009
 #, c-format
 msgid "Storage pool probe failed: %s"
 msgstr "Falló el sondeo de grupo: %s"
 
-#: src/util/virerror.c:992
+#: src/util/virerror.c:1013
 msgid "Storage pool already built"
 msgstr "El grupo de almacenamiento ya está construido"
 
-#: src/util/virerror.c:994
+#: src/util/virerror.c:1015
 #, c-format
 msgid "Storage pool already built: %s"
 msgstr "Grupo de almacenamiento ya está construido:  %s "
 
-#: src/util/virerror.c:998
+#: src/util/virerror.c:1019
 msgid "invalid storage pool pointer in"
 msgstr "indicador de grupo de almacenamiento inválido en "
 
-#: src/util/virerror.c:1000
+#: src/util/virerror.c:1021
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "indicador de grupo de almacenamiento inválido en  %s"
 
-#: src/util/virerror.c:1004
+#: src/util/virerror.c:1025
 msgid "invalid storage volume pointer in"
 msgstr "indicador de volumen de almacenamiento inválido en "
 
-#: src/util/virerror.c:1006
+#: src/util/virerror.c:1027
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "indicador de volumen de almacenamiento inválido en %s"
 
-#: src/util/virerror.c:1010
+#: src/util/virerror.c:1031
 msgid "Failed to find a storage driver"
 msgstr "Falló al encontrar un controlador de almacenamiento"
 
-#: src/util/virerror.c:1012
+#: src/util/virerror.c:1033
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Falló al encontrar un dispositivo de almacenamiento: %s"
 
-#: src/util/virerror.c:1016
+#: src/util/virerror.c:1037
 msgid "Failed to find a node driver"
 msgstr "Falló al encontrar un controlador de nodo"
 
-#: src/util/virerror.c:1018
+#: src/util/virerror.c:1039
 #, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "Falló al encontrar un controlador de nodo: %s"
 
-#: src/util/virerror.c:1022
+#: src/util/virerror.c:1043
 msgid "invalid node device pointer"
 msgstr "indicador de dispositivo de nodo inválido"
 
-#: src/util/virerror.c:1024
+#: src/util/virerror.c:1045
 #, c-format
 msgid "invalid node device pointer in %s"
 msgstr "indicador de dispositivo de nodo inválido en %s"
 
-#: src/util/virerror.c:1028
+#: src/util/virerror.c:1049
 msgid "Node device not found"
 msgstr "Dispositivo de nodo no encontrado"
 
-#: src/util/virerror.c:1030
+#: src/util/virerror.c:1051
 #, c-format
 msgid "Node device not found: %s"
 msgstr "Dispositivo de nodo no encontrado: %s"
 
-#: src/util/virerror.c:1034
+#: src/util/virerror.c:1055
 msgid "Security model not found"
 msgstr "Modelo de seguridad no encontrado"
 
-#: src/util/virerror.c:1036
+#: src/util/virerror.c:1057
 #, c-format
 msgid "Security model not found: %s"
 msgstr "No se encontró modelo de seguridad: %s"
 
-#: src/util/virerror.c:1040
+#: src/util/virerror.c:1061
 msgid "Requested operation is not valid"
 msgstr "La operación solicitada no es válida"
 
-#: src/util/virerror.c:1042
+#: src/util/virerror.c:1063
 #, c-format
 msgid "Requested operation is not valid: %s"
 msgstr "La información solicitada no es válida: %s"
 
-#: src/util/virerror.c:1046
+#: src/util/virerror.c:1067
 msgid "Failed to find the interface"
 msgstr "Falló al encontrar la interfaz"
 
-#: src/util/virerror.c:1048
+#: src/util/virerror.c:1069
 #, c-format
 msgid "Failed to find the interface: %s"
 msgstr "Falló al encontrar la interfaz: %s"
 
-#: src/util/virerror.c:1052
+#: src/util/virerror.c:1073
 msgid "Interface not found"
 msgstr "No se encontró interfaz"
 
-#: src/util/virerror.c:1054
+#: src/util/virerror.c:1075
 #, c-format
 msgid "Interface not found: %s"
 msgstr "No se encontró interfaz: %s"
 
-#: src/util/virerror.c:1058
+#: src/util/virerror.c:1079
 msgid "invalid interface pointer in"
 msgstr "indicador de interfaz inválido en "
 
-#: src/util/virerror.c:1060
+#: src/util/virerror.c:1081
 #, c-format
 msgid "invalid interface pointer in %s"
 msgstr "indicador de interfaz inválido en %s"
 
-#: src/util/virerror.c:1064
+#: src/util/virerror.c:1085
 msgid "multiple matching interfaces found"
 msgstr "se han encontrado múltiples interfaces coincidentes"
 
-#: src/util/virerror.c:1066
+#: src/util/virerror.c:1087
 #, c-format
 msgid "multiple matching interfaces found: %s"
 msgstr "se han encontrado múltiples interfaces coincidentes: %s"
 
-#: src/util/virerror.c:1070
+#: src/util/virerror.c:1091
 msgid "Failed to find a secret storage driver"
 msgstr "Falló al intentar encontrar un controlador de almacenamiento secreto"
 
-#: src/util/virerror.c:1072
+#: src/util/virerror.c:1093
 #, c-format
 msgid "Failed to find a secret storage driver: %s"
 msgstr ""
 "Falló al intentar encontrar un dispositivo de almacenamiento secreto: %s"
 
-#: src/util/virerror.c:1076
+#: src/util/virerror.c:1097
 msgid "Invalid secret"
 msgstr "Secreto inválido"
 
-#: src/util/virerror.c:1078
+#: src/util/virerror.c:1099
 #, c-format
 msgid "Invalid secret: %s"
 msgstr "Secreto inválido: %s"
 
-#: src/util/virerror.c:1082
+#: src/util/virerror.c:1103
 msgid "Secret not found"
 msgstr "Secreto no encontrado"
 
-#: src/util/virerror.c:1084
+#: src/util/virerror.c:1105
 #, c-format
 msgid "Secret not found: %s"
 msgstr "Secreto no encontrado: %s"
 
-#: src/util/virerror.c:1088
+#: src/util/virerror.c:1109
 msgid "Failed to start the nwfilter driver"
 msgstr "Falló al iniciar el controlador de filtro de red"
 
-#: src/util/virerror.c:1090
+#: src/util/virerror.c:1111
 #, c-format
 msgid "Failed to start the nwfilter driver: %s"
 msgstr "Falló al iniciar el controlador de filtro de red: %s"
 
-#: src/util/virerror.c:1094
+#: src/util/virerror.c:1115
 msgid "Invalid network filter"
 msgstr "Filtro de red no válido "
 
-#: src/util/virerror.c:1096
+#: src/util/virerror.c:1117
 #, c-format
 msgid "Invalid network filter: %s"
 msgstr "Filtro de red no válido: %s "
 
-#: src/util/virerror.c:1100
+#: src/util/virerror.c:1121
 msgid "Network filter not found"
 msgstr "No se encontró un filtro de red"
 
-#: src/util/virerror.c:1102
+#: src/util/virerror.c:1123
 #, c-format
 msgid "Network filter not found: %s"
 msgstr "No se encontró un filtro de red: %s"
 
-#: src/util/virerror.c:1106
+#: src/util/virerror.c:1127
 msgid "Error while building firewall"
 msgstr "Error al construir el cortafuegos"
 
-#: src/util/virerror.c:1108
+#: src/util/virerror.c:1129
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "Error al construir el cortafuegos: %s"
 
-#: src/util/virerror.c:1112
+#: src/util/virerror.c:1133
 msgid "unsupported configuration"
 msgstr "configuración no soportada"
 
-#: src/util/virerror.c:1114
+#: src/util/virerror.c:1135
 #, c-format
 msgid "unsupported configuration: %s"
 msgstr "configuración no soportada: %s "
 
-#: src/util/virerror.c:1118
+#: src/util/virerror.c:1139
 msgid "Timed out during operation"
 msgstr "Tiempo de espera agotado durante la operación"
 
-#: src/util/virerror.c:1120
+#: src/util/virerror.c:1141
 #, c-format
 msgid "Timed out during operation: %s"
 msgstr "Finalizó el tiempo establecido durante la operación: %s"
 
-#: src/util/virerror.c:1124
+#: src/util/virerror.c:1145
 msgid "Failed to make domain persistent after migration"
 msgstr ""
 "Falló al intentar hacer que el dominio sea persistente luego de la migración"
 
-#: src/util/virerror.c:1126
+#: src/util/virerror.c:1147
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr ""
 "Falló al intentar hacer que el dominio sea persistente luego de la "
 "migración: %s"
 
-#: src/util/virerror.c:1130
+#: src/util/virerror.c:1151
 msgid "Hook script execution failed"
 msgstr "Falló la ejecución del script de enganche"
 
-#: src/util/virerror.c:1132
+#: src/util/virerror.c:1153
 #, c-format
 msgid "Hook script execution failed: %s"
 msgstr "Falló la ejecución del script de enganche: %s"
 
-#: src/util/virerror.c:1136
+#: src/util/virerror.c:1157
 msgid "Invalid snapshot"
 msgstr "Captura instantánea no válida"
 
-#: src/util/virerror.c:1138
+#: src/util/virerror.c:1159
 #, c-format
 msgid "Invalid snapshot: %s"
 msgstr "Captura instantánea no válida: %s"
 
-#: src/util/virerror.c:1142
+#: src/util/virerror.c:1163
 msgid "Domain snapshot not found"
 msgstr "No se ha encontrado la captura instantánea del dominio"
 
-#: src/util/virerror.c:1144
+#: src/util/virerror.c:1165
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "No se ha encontrado la captura instantánea del dominio: %s"
 
-#: src/util/virerror.c:1148
+#: src/util/virerror.c:1169
 msgid "invalid stream pointer"
 msgstr "Indicador de flujo inválido"
 
-#: src/util/virerror.c:1150
+#: src/util/virerror.c:1171
 #, c-format
 msgid "invalid stream pointer in %s"
 msgstr "Indicador de flujo inválido en %s "
 
-#: src/util/virerror.c:1154
+#: src/util/virerror.c:1175
 msgid "argument unsupported"
 msgstr "Argumento sin soporte"
 
-#: src/util/virerror.c:1156
+#: src/util/virerror.c:1177
 #, c-format
 msgid "argument unsupported: %s"
 msgstr "Argumento sin soporte: %s"
 
-#: src/util/virerror.c:1160
+#: src/util/virerror.c:1181
 msgid "revert requires force"
 msgstr "revert requires force"
 
-#: src/util/virerror.c:1162
+#: src/util/virerror.c:1183
 #, c-format
 msgid "revert requires force: %s"
 msgstr "revert requires force: %s"
 
-#: src/util/virerror.c:1166
+#: src/util/virerror.c:1187
 msgid "operation aborted"
 msgstr "La operación se abortó"
 
-#: src/util/virerror.c:1168
+#: src/util/virerror.c:1189
 #, c-format
 msgid "operation aborted: %s"
 msgstr "La operación se abortó:  %s"
 
-#: src/util/virerror.c:1172
+#: src/util/virerror.c:1193
 msgid "metadata not found"
 msgstr "No se encontraron los metadatos"
 
-#: src/util/virerror.c:1174
+#: src/util/virerror.c:1195
 #, c-format
 msgid "metadata not found: %s"
 msgstr "No se encontraron los metadatos: %s"
 
-#: src/util/virerror.c:1178
+#: src/util/virerror.c:1199
 msgid "Unsafe migration"
 msgstr "Migración no segura"
 
-#: src/util/virerror.c:1180
+#: src/util/virerror.c:1201
 #, c-format
 msgid "Unsafe migration: %s"
 msgstr "Migración no segura: %s"
 
-#: src/util/virerror.c:1184
+#: src/util/virerror.c:1205
 msgid "numerical overflow"
 msgstr "numerical overflow"
 
-#: src/util/virerror.c:1186
+#: src/util/virerror.c:1207
 #, c-format
 msgid "numerical overflow: %s"
 msgstr "desbordamiento numérico: %s"
 
-#: src/util/virerror.c:1190
+#: src/util/virerror.c:1211
 msgid "block copy still active"
 msgstr "copia de bloque aún activa"
 
-#: src/util/virerror.c:1192
+#: src/util/virerror.c:1213
 #, c-format
 msgid "block copy still active: %s"
 msgstr "copia de bloque aún activa: %s"
 
-#: src/util/virerror.c:1196
+#: src/util/virerror.c:1217
 msgid "Operation not supported"
 msgstr "Operación no tiene soporte"
 
-#: src/util/virerror.c:1198
+#: src/util/virerror.c:1219
 #, c-format
 msgid "Operation not supported: %s"
 msgstr "Operación no tiene soporte: %s"
 
-#: src/util/virerror.c:1202
+#: src/util/virerror.c:1223
 msgid "SSH transport error"
 msgstr "Error de transporte SSH"
 
-#: src/util/virerror.c:1204
+#: src/util/virerror.c:1225
 #, c-format
 msgid "SSH transport error: %s"
 msgstr "Error de transporte SSH: %s"
 
-#: src/util/virerror.c:1208
+#: src/util/virerror.c:1229
 msgid "Guest agent is not responding"
 msgstr "Agente de huésped no responde"
 
-#: src/util/virerror.c:1210
+#: src/util/virerror.c:1231
 #, c-format
 msgid "Guest agent is not responding: %s"
 msgstr "Agente de huésped no responde: %s"
 
-#: src/util/virerror.c:1214
+#: src/util/virerror.c:1235
 msgid "resource busy"
 msgstr ""
 
-#: src/util/virerror.c:1216
+#: src/util/virerror.c:1237
 #, c-format
 msgid "resource busy %s"
 msgstr ""
@@ -27062,10 +27072,6 @@ msgstr ""
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
 
-#: tools/virsh-domain-monitor.c:47
-msgid "no error"
-msgstr "No hubo error"
-
 #: tools/virsh-domain-monitor.c:49
 msgid "unspecified error"
 msgstr "Error no especificado"
@@ -30250,7 +30256,7 @@ msgstr ""
 msgid "file '%s' doesn't exist"
 msgstr "el archivo «%s» no existe"
 
-#: tools/virsh-domain.c:8297
+#: tools/virsh-domain.c:8296
 msgid "migrate: Unexpected migrateuri for peer2peer/direct migration"
 msgstr "migrate: migrateuri no esperada para la migración peer2peer/direct"
 
@@ -33668,6 +33674,9 @@ msgstr "%s: demasiados argumentos de línea de comandos\n"
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: nombre de hipervisor sin soporte %s\n"
+
+#~ msgid "Unable to eject media before changing it"
+#~ msgstr "No se puede expulsar medio antes de cambiarlo"
 
 #~ msgid "cannot read domain image"
 #~ msgstr "no es posible leer la imagen del dominio"
