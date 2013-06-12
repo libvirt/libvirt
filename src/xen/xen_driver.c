@@ -81,6 +81,7 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
 
 
 static bool is_privileged = false;
+static virSysinfoDefPtr hostsysinfo = NULL;
 
 static virDomainDefPtr xenGetDomainDefForID(virConnectPtr conn, int id)
 {
@@ -254,14 +255,25 @@ xenUnifiedStateInitialize(bool privileged,
                           void *opaque ATTRIBUTE_UNUSED)
 {
     /* Don't allow driver to work in non-root libvirtd */
-    if (privileged)
+    if (privileged) {
         is_privileged = true;
+        hostsysinfo = virSysinfoRead();
+    }
+
+    return 0;
+}
+
+static int
+xenUnifiedStateCleanup(void)
+{
+    virSysinfoDefFree(hostsysinfo);
     return 0;
 }
 
 static virStateDriver state_driver = {
     .name = "Xen",
     .stateInitialize = xenUnifiedStateInitialize,
+    .stateCleanup = xenUnifiedStateCleanup,
 };
 
 /*----- Dispatch functions. -----*/
@@ -572,6 +584,28 @@ static char *xenUnifiedConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     return virGetHostname();
 }
 
+static char *
+xenUnifiedConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, NULL);
+
+    if (!hostsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    if (virSysinfoFormat(&buf, hostsysinfo) < 0)
+        return NULL;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&buf);
+}
 
 static int
 xenUnifiedConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
@@ -2437,6 +2471,7 @@ static virDriver xenUnifiedDriver = {
     .connectGetType = xenUnifiedConnectGetType, /* 0.0.3 */
     .connectGetVersion = xenUnifiedConnectGetVersion, /* 0.0.3 */
     .connectGetHostname = xenUnifiedConnectGetHostname, /* 0.7.3 */
+    .connectGetSysinfo = xenUnifiedConnectGetSysinfo, /* 1.0.7 */
     .connectGetMaxVcpus = xenUnifiedConnectGetMaxVcpus, /* 0.2.1 */
     .nodeGetInfo = xenUnifiedNodeGetInfo, /* 0.1.0 */
     .connectGetCapabilities = xenUnifiedConnectGetCapabilities, /* 0.2.1 */
