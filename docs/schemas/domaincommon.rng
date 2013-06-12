@@ -243,11 +243,9 @@
         <optional>
           <ref name="osbootkernel"/>
         </optional>
-        <optional>
-          <zeroOrMore>
-            <ref name="osbootdev"/>
-          </zeroOrMore>
-        </optional>
+        <zeroOrMore>
+          <ref name="osbootdev"/>
+        </zeroOrMore>
         <optional>
           <element name="bootmenu">
             <attribute name="enable">
