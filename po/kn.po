@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.kn\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-05-19 18:17-0400\n"
+"POT-Creation-Date: 2013-06-12 16:53-0400\n"
 "PO-Revision-Date: 2010-04-22 18:26+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kn@li.org>\n"
@@ -590,19 +590,19 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 
-#: daemon/stream.c:225
+#: daemon/stream.c:233
 msgid "stream had unexpected termination"
 msgstr "ಸ್ಟ್ರೀಮ್ ಅನಿರೀಕ್ಷಿತ ಅಂತ್ಯವನ್ನು ಕಂಡಿದೆ"
 
-#: daemon/stream.c:228
+#: daemon/stream.c:236
 msgid "stream had I/O failure"
 msgstr "ಸ್ಟ್ರೀಮ್ I/O ವಿಫಲತೆಯನ್ನು ಕಂಡಿದೆ"
 
-#: daemon/stream.c:609
+#: daemon/stream.c:617
 msgid "stream aborted at client request"
 msgstr "ಸ್ಟ್ರೀಮ್ ಕ್ಲೈಂಟ್ ಮನವಿಯಿಂದಾಗಿ ಸ್ಥಗಿತಗೊಳಿಸಲಾಗಿದೆ"
 
-#: daemon/stream.c:613
+#: daemon/stream.c:621
 #, c-format
 msgid "stream aborted with unexpected status %d"
 msgstr "ಸ್ಟ್ರೀಮ್‌ ಅನ್ನು ಅನಿರೀಕ್ಷಿತವಾದ ಸ್ಥಿತಿ %d ಇಂದ ಸ್ಥಗಿತಗೊಳಿಸಲಾಗಿದೆ"
@@ -2995,7 +2995,7 @@ msgid "PCI address Formatting failed"
 msgstr "ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಮರಳಿ ನಡೆಸುವುದು ವಿಫಲಗೊಂಡಿದೆ"
 
 #: src/conf/domain_conf.c:12090 src/conf/domain_conf.c:13163
-#: src/qemu/qemu_hotplug.c:2164
+#: src/qemu/qemu_hotplug.c:2196
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "ಅನಿರೀಕ್ಷಿತ hostdev ನ ಬಗೆ %d"
@@ -6738,7 +6738,7 @@ msgid "No connection for URI %s"
 msgstr "URI ಗೆ ಹೈಪರ್ವೈಸರ್ ಸಂಪರ್ಕ"
 
 #: src/libvirt.c:2100 src/libvirt.c:10273 src/libvirt.c:12190
-#: src/libvirt.c:14959 src/libvirt.c:16619
+#: src/libvirt.c:14960 src/libvirt.c:16620
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr ""
@@ -6804,7 +6804,7 @@ msgid "string parameter '%s' unsupported"
 msgstr "cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #: src/libvirt.c:3913 src/libvirt.c:4173 src/libvirt.c:7013 src/libvirt.c:8750
-#: src/libvirt.c:8974 src/libvirt.c:9485 src/libvirt.c:19820
+#: src/libvirt.c:8974 src/libvirt.c:9485 src/libvirt.c:19821
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr ""
@@ -6896,85 +6896,85 @@ msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 msgid "metadata title in %s can't contain newlines"
 msgstr ""
 
-#: src/libvirt.c:13924
+#: src/libvirt.c:13925
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
 
-#: src/libvirt.c:15762
+#: src/libvirt.c:15763
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "ದತ್ತಾಂಶ ಆಕರಗಳನ್ನು ಸ್ಟ್ರೀಮ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸದೆ ಇರಲು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/libvirt.c:15861
+#: src/libvirt.c:15862
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "ದತ್ತಾಂಶ ಸಿಂಕ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸದೆ ಇರಲು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/libvirt.c:17414
+#: src/libvirt.c:17415
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr ""
 
-#: src/libvirt.c:17523 src/libvirt.c:18681
+#: src/libvirt.c:17524 src/libvirt.c:18682
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17826
+#: src/libvirt.c:17827
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr ""
 
-#: src/libvirt.c:17833
+#: src/libvirt.c:17834
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17840
+#: src/libvirt.c:17841
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17894
+#: src/libvirt.c:17895
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "ಸುರಕ್ಷಿತ ಫ್ಲ್ಯಾಗ್‌ನೊಂದಿಗಿನ virDomainGetXMLDesc"
 
-#: src/libvirt.c:18749
+#: src/libvirt.c:18750
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:19264
+#: src/libvirt.c:19265
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr ""
 
-#: src/libvirt.c:19440
+#: src/libvirt.c:19441
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ಸಂರಚನಾ ಕಡತದ ಹ್ಯಾಂಡಲ್‌ ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/libvirt.c:19446
+#: src/libvirt.c:19447
 #, fuzzy, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "ಒಂದು ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/libvirt.c:19614
+#: src/libvirt.c:19615
 #, fuzzy
 msgid "A close callback is already registered"
 msgstr "'%s' ಡೊಮೈನ್‌ ಅನ್ನು ಈಗಾಗಲೆ uuid %s ನೊಂದಿಗೆ ಸೂಚಿಸಲಾಗಿದೆ"
 
-#: src/libvirt.c:19664
+#: src/libvirt.c:19665
 #, fuzzy
 msgid "A different callback was requested"
 msgstr "ಘಟನೆಯ ಕಾಲ್‌ಬ್ಯಾಕ್ ಜಾಡನ್ನು ಈಗಾಗಲೆ ಇರಿಸಲಾಗಿದೆ"
 
-#: src/libvirt.c:19946
+#: src/libvirt.c:19947
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr ""
 
-#: src/libvirt.c:19961
+#: src/libvirt.c:19962
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
@@ -7206,7 +7206,7 @@ msgstr ""
 msgid "this platform is missing dlopen"
 msgstr ""
 
-#: src/lxc/lxc_cgroup.c:41 src/qemu/qemu_cgroup.c:400
+#: src/lxc/lxc_cgroup.c:41 src/qemu/qemu_cgroup.c:406
 #, fuzzy, c-format
 msgid "Unable to set io cpu shares for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -7231,17 +7231,17 @@ msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ
 msgid "Unable to set memory limit for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_cgroup.c:109 src/qemu/qemu_cgroup.c:363
+#: src/lxc/lxc_cgroup.c:109 src/qemu/qemu_cgroup.c:369
 #, fuzzy, c-format
 msgid "Unable to set memory hard limit for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_cgroup.c:119 src/qemu/qemu_cgroup.c:371
+#: src/lxc/lxc_cgroup.c:119 src/qemu/qemu_cgroup.c:377
 #, fuzzy, c-format
 msgid "Unable to set memory soft limit for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_cgroup.c:129 src/qemu/qemu_cgroup.c:381
+#: src/lxc/lxc_cgroup.c:129 src/qemu/qemu_cgroup.c:387
 #, fuzzy, c-format
 msgid "Unable to set swap hard limit for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -7998,22 +7998,22 @@ msgstr "cpu ಹಂಚಿಕೆಗಳನ್ನು ಹೊಂದಿಕೊಳ್ಳ�
 msgid "unable to get cpu bandwidth tunable"
 msgstr "cpu ಹಂಚಿಕೆಗಳನ್ನು ಹೊಂದಿಕೊಳ್ಳುವಂತೆ ಪಡೆಯಲಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_driver.c:1725 src/qemu/qemu_cgroup.c:462
+#: src/lxc/lxc_driver.c:1725 src/qemu/qemu_cgroup.c:468
 #, fuzzy
 msgid "Unable to get cpu bandwidth period"
 msgstr "ಪ್ರಸಕ್ತ ಸಮಯವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/lxc/lxc_driver.c:1732 src/qemu/qemu_cgroup.c:469
+#: src/lxc/lxc_driver.c:1732 src/qemu/qemu_cgroup.c:475
 #, fuzzy
 msgid "Unable to set cpu bandwidth period"
 msgstr "ಪ್ರಸಕ್ತ ಸಮಯವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/lxc/lxc_driver.c:1741 src/qemu/qemu_cgroup.c:478
+#: src/lxc/lxc_driver.c:1741 src/qemu/qemu_cgroup.c:484
 #, fuzzy
 msgid "Unable to set cpu bandwidth quota"
 msgstr "cpu ಹಂಚಿಕೆಗಳನ್ನು ಹೊಂದಿಕೊಳ್ಳುವಂತೆ ಮಾಡಲಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_driver.c:1753 src/qemu/qemu_cgroup.c:490
+#: src/lxc/lxc_driver.c:1753 src/qemu/qemu_cgroup.c:496
 #, fuzzy
 msgid "Unable to rollback cpu bandwidth period"
 msgstr "ಪ್ರಸಕ್ತ ಸಮಯವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -8587,12 +8587,12 @@ msgstr "'%s' ದಿಂದ ಡೊಮೈನ್‌ ಅನ್ನು ಉಳಿಸು�
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "'%s' ದಿಂದ ಡೊಮೈನ್‌ ಅನ್ನು ಉಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/libxl/libxl_driver.c:2991 src/qemu/qemu_hotplug.c:71
+#: src/libxl/libxl_driver.c:2991 src/qemu/qemu_hotplug.c:73
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "ಬಸ್ '%s' ಹಾಗು ಗುರಿ '%s' ಅನ್ನು ಹೊಂದಿರುವ ಯಾವುದೆ ಆವೃತ್ತಿ ಇಲ್ಲ"
 
-#: src/libxl/libxl_driver.c:2998 src/qemu/qemu_hotplug.c:86
+#: src/libxl/libxl_driver.c:2998 src/qemu/qemu_hotplug.c:88
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "%s ಸಾಧನಕ್ಕಾಗಿ ಯಾವುದೆ ತೆಗೆದು ಹಾಕಬಹುದಾದ ಮಾಧ್ಯಮಕ್ಕೆ ಬೆಂಬಲವಿರುವುದಿಲ್ಲ"
@@ -8602,14 +8602,14 @@ msgstr "%s ಸಾಧನಕ್ಕಾಗಿ ಯಾವುದೆ ತೆಗೆದು 
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ನಿಷ್ಕ್ರಿಯ ಡೊಮೈನ್‌ %s ಅನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:215
-#: src/qemu/qemu_hotplug.c:447 src/qemu/qemu_hotplug.c:570
+#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:247
+#: src/qemu/qemu_hotplug.c:479 src/qemu/qemu_hotplug.c:602
 #: src/uml/uml_driver.c:2019
 #, c-format
 msgid "target %s already exists"
 msgstr "ಗುರಿ %s ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ"
 
-#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:588
+#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:620
 #: src/uml/uml_driver.c:2026
 msgid "disk source path is missing"
 msgstr "ಡಿಸ್ಕ್ ಆಕರ ಮಾರ್ಗವು ಕಾಣೆಯಾಗಿದೆ"
@@ -8630,8 +8630,8 @@ msgstr "ಡಿಸ್ಕ್‌  ಬಸ್ %s ಅನ್ನು ಹಾಟ್‌ಪ�
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ಡಿಸ್ಕ್‌  ಸಾಧನದ ಬಗೆ %s ಅನ್ನು ಹಾಟ್‌ಪ್ಲಗ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1668
-#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2150
+#: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1700
+#: src/qemu/qemu_hotplug.c:1804 src/uml/uml_driver.c:2150
 #, c-format
 msgid "disk %s not found"
 msgstr "ಡಿಸ್ಕ್‌ %s ಕಂಡು ಬಂದಿಲ್ಲ"
@@ -9654,18 +9654,18 @@ msgstr ""
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr ""
 
-#: src/nwfilter/nwfilter_driver.c:397 src/nwfilter/nwfilter_driver.c:602
-#: src/nwfilter/nwfilter_driver.c:650
+#: src/nwfilter/nwfilter_driver.c:391 src/nwfilter/nwfilter_driver.c:596
+#: src/nwfilter/nwfilter_driver.c:644
 #, fuzzy
 msgid "no nwfilter with matching uuid"
 msgstr "ಈ uuid ತಾಳೆಯಾಗುವ ಯಾವುದೆ ಪೂಲ್ ಇಲ್ಲ"
 
-#: src/nwfilter/nwfilter_driver.c:423
+#: src/nwfilter/nwfilter_driver.c:417
 #, fuzzy, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "'%s' ಹೆಸರಿಗೆ ತಾಳೆಯಾಗುವ ಯಾವುದೆ ಜಾಲಬಂಧ ಇಲ್ಲ"
 
-#: src/nwfilter/nwfilter_driver.c:609
+#: src/nwfilter/nwfilter_driver.c:603
 msgid "nwfilter is in use"
 msgstr ""
 
@@ -10971,96 +10971,96 @@ msgstr "/dev/pts/ ಸಾಧನಗಳನ್ನು ಅನುಮತಿಸಲಾಗ�
 msgid "unable to allow /dev/snd/ devices"
 msgstr "/dev/snd/ ಸಾಧನಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:272
+#: src/qemu/qemu_cgroup.c:278
 #, c-format
 msgid "unable to allow device %s"
 msgstr "ಸಾಧನ %s ಅನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:308
+#: src/qemu/qemu_cgroup.c:314
 #, fuzzy, c-format
 msgid "Unable to set io weight for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:314 src/qemu/qemu_cgroup.c:337
+#: src/qemu/qemu_cgroup.c:320 src/qemu/qemu_cgroup.c:343
 msgid "Block I/O tuning is not available on this host"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:329
+#: src/qemu/qemu_cgroup.c:335
 #, fuzzy, c-format
 msgid "Unable to set io device weight for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:390
+#: src/qemu/qemu_cgroup.c:396
 #, fuzzy
 msgid "Memory cgroup is not available on this host"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ NUMA ಮಾಹಿತಿಯು ಲಭ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:406
+#: src/qemu/qemu_cgroup.c:412
 #, fuzzy
 msgid "CPU tuning is not available on this host"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ NUMA ಮಾಹಿತಿಯು ಲಭ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:423
+#: src/qemu/qemu_cgroup.c:429
 #, fuzzy
 msgid "failed to convert memory nodemask"
 msgstr "ಡೊಮೈನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:431
+#: src/qemu/qemu_cgroup.c:437
 #, fuzzy, c-format
 msgid "Unable to set cpuset.mems for domain %s"
 msgstr "ಡೊಮೈನ್ %s ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:521
+#: src/qemu/qemu_cgroup.c:527
 #, fuzzy
 msgid "failed to convert cpu mask"
 msgstr "ಡೊಮೈನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:530
+#: src/qemu/qemu_cgroup.c:536
 #, fuzzy
 msgid "Unable to set cpuset.cpus"
 msgstr "ಸಾಮರ್ಥ್ಯಗಳನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_cgroup.c:554 src/qemu/qemu_cgroup.c:658
+#: src/qemu/qemu_cgroup.c:560 src/qemu/qemu_cgroup.c:664
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:568 src/qemu/qemu_cgroup.c:668
-#: src/qemu/qemu_cgroup.c:742 src/qemu/qemu_driver.c:5739
+#: src/qemu/qemu_cgroup.c:574 src/qemu/qemu_cgroup.c:674
+#: src/qemu/qemu_cgroup.c:753 src/qemu/qemu_driver.c:5739
 #: src/qemu/qemu_driver.c:5968 src/qemu/qemu_driver.c:10881
-#: src/qemu/qemu_hotplug.c:1096 src/qemu/qemu_hotplug.c:1684
-#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3223
+#: src/qemu/qemu_hotplug.c:1128 src/qemu/qemu_hotplug.c:1716
+#: src/qemu/qemu_hotplug.c:1820 src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s ಗಾಗಿನ cgroup ಅನ್ನು ಪತ್ತೆ ಮಾಡಲಾಗಿಲ್ಲ\n"
 
-#: src/qemu/qemu_cgroup.c:586
+#: src/qemu/qemu_cgroup.c:592
 #, fuzzy, c-format
 msgid "Unable to create vcpu cgroup for %s(vcpu: %d)"
 msgstr "%s ಗಾಗಿ cgroup ಅನ್ನು ನಿರ್ಮಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:596
+#: src/qemu/qemu_cgroup.c:602
 #, fuzzy, c-format
 msgid "unable to add vcpu %d task %d to cgroup"
 msgstr "ಡೊಮೈನ್‌ %s ಕಾರ್ಯ %d ಅನ್ನು cgroup ಗೆ ಸೇರಿಸುವಲ್ಲಿ ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:676
+#: src/qemu/qemu_cgroup.c:682
 #, fuzzy, c-format
 msgid "Unable to create emulator cgroup for %s"
 msgstr "%s ಗಾಗಿ cgroup ಅನ್ನು ನಿರ್ಮಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:687
+#: src/qemu/qemu_cgroup.c:698
 #, c-format
 msgid ""
 "Unable to move tasks from domain cgroup to emulator cgroup in controller %d "
 "for %s"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:765
+#: src/qemu/qemu_cgroup.c:776
 #, c-format
 msgid "unable to find cgroup for domain %s"
 msgstr "ಡೊಮೈನ್‌ %s ಗಾಗಿ cgroup ಅನ್ನು ಪತ್ತೆ ಮಾಡಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:773
+#: src/qemu/qemu_cgroup.c:784
 #, c-format
 msgid "unable to add domain %s task %d to cgroup"
 msgstr "ಡೊಮೈನ್‌ %s ಕಾರ್ಯ %d ಅನ್ನು cgroup ಗೆ ಸೇರಿಸುವಲ್ಲಿ ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -12524,7 +12524,7 @@ msgstr "ಡೊಮೈನ್‌ %s ವು ಸ್ವಯಂಚಾಲಿತವಾಗ�
 #: src/qemu/qemu_driver.c:2733 src/qemu/qemu_driver.c:3291
 #: src/qemu/qemu_driver.c:10504 src/qemu/qemu_driver.c:10916
 #: src/qemu/qemu_driver.c:11976 src/qemu/qemu_driver.c:12028
-#: src/qemu/qemu_hotplug.c:422 src/qemu/qemu_hotplug.c:802
+#: src/qemu/qemu_hotplug.c:454 src/qemu/qemu_hotplug.c:834
 #: src/qemu/qemu_migration.c:1943 src/qemu/qemu_migration.c:2244
 #: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:555 src/qemu/qemu_process.c:568
@@ -12826,7 +12826,7 @@ msgstr ""
 msgid "device not present in domain configuration"
 msgstr "Xend ಡೊಮೈನ್‌ನ ಮಾಹಿತಿಯನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_driver.c:6188 src/qemu/qemu_hotplug.c:2410
+#: src/qemu/qemu_driver.c:6188 src/qemu/qemu_hotplug.c:2442
 #, fuzzy, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ಸಂಪರ್ಕಸಾಧನ %s ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
@@ -12939,7 +12939,7 @@ msgid "invalid path: %s"
 msgstr "ಅಮಾನ್ಯವಾಗ ಮಾರ್ಗ: %s"
 
 #: src/qemu/qemu_driver.c:8358 src/qemu/qemu_driver.c:8444
-#: src/qemu/qemu_hotplug.c:79
+#: src/qemu/qemu_hotplug.c:81
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s ಗಾಗಿ ಸಾಧನದ ಆಲಿಯಾಸ್ ಹೆಸರು ಕಾಣೆಯಾಗಿದೆ"
@@ -13430,7 +13430,7 @@ msgstr "ಸಾಧನ %s ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
 msgid "USB device %s is already in use"
 msgstr "ಸಾಧನ %s ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ"
 
-#: src/qemu/qemu_hostdev.c:686 src/qemu/qemu_hotplug.c:1167
+#: src/qemu/qemu_hostdev.c:686 src/qemu/qemu_hotplug.c:1199
 #, c-format
 msgid "multiple USB devices for %x:%x, use <address> to specify one"
 msgstr ""
@@ -13450,248 +13450,253 @@ msgstr "pciDeviceList ಅನ್ನು ನಿಯೋಜಿಸುವಲ್ಲಿ �
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI ಸಾಧನವನ್ನು ಮರಳಿ ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
 
-#: src/qemu/qemu_hotplug.c:326
+#: src/qemu/qemu_hotplug.c:128
+#, fuzzy
+msgid "Unable to eject media"
+msgstr "ಅತಿಥೇಯದ ಹೆಸರನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#: src/qemu/qemu_hotplug.c:358
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "ಗುರಿ %s:%d ಈಗಾಗಲೆ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ"
 
-#: src/qemu/qemu_hotplug.c:342
+#: src/qemu/qemu_hotplug.c:374
 #, fuzzy
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ SATAಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:465
+#: src/qemu/qemu_hotplug.c:497
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಡಿಸ್ಕಿನ ವಿಳಾಸದ ಬಗೆ %s"
 
-#: src/qemu/qemu_hotplug.c:493
+#: src/qemu/qemu_hotplug.c:525
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "%d ಎಂಬ SCSI ನಿಯಂತ್ರಕವು ಅದರ PCI ವಿಳಾಸವನ್ನು ಹೊಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:699
+#: src/qemu/qemu_hotplug.c:731
 msgid "installed qemu version does not support host_net_add"
 msgstr "ಅನುಸ್ಥಾಪಿಸಲಾದ qemu ಆವೃತ್ತಿಯು host_net_add ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:750
+#: src/qemu/qemu_hotplug.c:782
 msgid "Unable to attach network devices without vlan"
 msgstr "vlan ಇಲ್ಲದೆ ಸಾಧನಗಳನ್ನು ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:838
+#: src/qemu/qemu_hotplug.c:870
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:850
+#: src/qemu/qemu_hotplug.c:882
 #, fuzzy
 msgid "setting of link state not supported: Link is up"
 msgstr "ಈ qemu ಇಂದ 'info blockstats' ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:971
+#: src/qemu/qemu_hotplug.c:1003
 #, fuzzy
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ಆರಂಭಗೊಳ್ಳುವಾದ ಕಂಟೈನರ್ '%s' ಅನಿರೀಕ್ಷಿತವಾಗಿ ಸ್ಥಗಿತಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_hotplug.c:1143 src/qemu/qemu_hotplug.c:2136
+#: src/qemu/qemu_hotplug.c:1175 src/qemu/qemu_hotplug.c:2168
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev mode '%s' ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1219 src/qemu/qemu_hotplug.c:2108
+#: src/qemu/qemu_hotplug.c:1251 src/qemu/qemu_hotplug.c:2140
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys ಬಗೆ '%s' ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1266
+#: src/qemu/qemu_hotplug.c:1298
 #, fuzzy, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ಆಜ್ಞೆ '%s' ಯು ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1288
+#: src/qemu/qemu_hotplug.c:1320
 #, fuzzy, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "ಪೈಪ್ ಅನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_hotplug.c:1311
+#: src/qemu/qemu_hotplug.c:1343
 msgid "can't change link state: device alias not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1341
+#: src/qemu/qemu_hotplug.c:1373
 #, fuzzy
 msgid "cannot find existing network device to modify"
 msgstr "ಗ್ರಾಫಿಕ್ಸ್‌ ಸಾಧನಗಳನ್ನು ಹೊರತೆಗೆಯಲಾಗಲಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1347
+#: src/qemu/qemu_hotplug.c:1379
 #, fuzzy
 msgid "cannot change network interface type"
 msgstr "ಜಾಲಬಂಧ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ"
 
-#: src/qemu/qemu_hotplug.c:1353
+#: src/qemu/qemu_hotplug.c:1385
 #, fuzzy
 msgid "cannot change <virtualport> settings"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1365
+#: src/qemu/qemu_hotplug.c:1397
 #, fuzzy
 msgid "cannot modify ethernet network device configuration"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ನ ಸ್ಥಿತ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
-#: src/qemu/qemu_hotplug.c:1376
+#: src/qemu/qemu_hotplug.c:1408
 #, fuzzy
 msgid "cannot modify network socket device configuration"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ನ ಸ್ಥಿತ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
-#: src/qemu/qemu_hotplug.c:1385 src/qemu/qemu_hotplug.c:1424
-#: src/qemu/qemu_hotplug.c:1432
+#: src/qemu/qemu_hotplug.c:1417 src/qemu/qemu_hotplug.c:1456
+#: src/qemu/qemu_hotplug.c:1464
 #, fuzzy
 msgid "cannot modify network device configuration"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ನ ಸ್ಥಿತ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
-#: src/qemu/qemu_hotplug.c:1398
+#: src/qemu/qemu_hotplug.c:1430
 #, fuzzy
 msgid "cannot modify internal network device configuration"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ನ ಸ್ಥಿತ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
-#: src/qemu/qemu_hotplug.c:1407
+#: src/qemu/qemu_hotplug.c:1439
 #, fuzzy
 msgid "cannot modify direct network device configuration"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ನ ಸ್ಥಿತ ಸಂರಚನೆಯನ್ನು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ."
 
-#: src/qemu/qemu_hotplug.c:1414
+#: src/qemu/qemu_hotplug.c:1446
 #, fuzzy, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "ಮಾನಿಟರ್ ಬಗೆಯನ್ನು ನಿಭಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
 
-#: src/qemu/qemu_hotplug.c:1479
+#: src/qemu/qemu_hotplug.c:1511
 #, fuzzy
 msgid "cannot find existing graphics device to modify"
 msgstr "ಗ್ರಾಫಿಕ್ಸ್‌ ಸಾಧನಗಳನ್ನು ಹೊರತೆಗೆಯಲಾಗಲಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1494
+#: src/qemu/qemu_hotplug.c:1526
 #, fuzzy
 msgid "cannot change port settings on vnc graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1499
+#: src/qemu/qemu_hotplug.c:1531
 msgid "cannot change listen address setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1504
+#: src/qemu/qemu_hotplug.c:1536
 #, fuzzy
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1509
+#: src/qemu/qemu_hotplug.c:1541
 msgid "cannot change keymap setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1549
+#: src/qemu/qemu_hotplug.c:1581
 #, fuzzy
 msgid "cannot change port settings on spice graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1554
+#: src/qemu/qemu_hotplug.c:1586
 #, fuzzy
 msgid "cannot change listen address setting on spice graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1559
+#: src/qemu/qemu_hotplug.c:1591
 #, fuzzy
 msgid "cannot change listen network setting on spice graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1565
+#: src/qemu/qemu_hotplug.c:1597
 #, fuzzy
 msgid "cannot change keymap setting on spice graphics"
 msgstr "ಈ ಡೊಮೈನ್‌ನ vcpu ಎಣಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1606
+#: src/qemu/qemu_hotplug.c:1638
 #, fuzzy, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "ಮಾನಿಟರ್ ಬಗೆಯನ್ನು ನಿಭಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
 
-#: src/qemu/qemu_hotplug.c:1676 src/qemu/qemu_hotplug.c:1920
+#: src/qemu/qemu_hotplug.c:1708 src/qemu/qemu_hotplug.c:1952
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "macvtap ಟ್ಯಾಪ್ ಸಾಧನ %s ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1693 src/qemu/qemu_hotplug.c:1914
-#: src/qemu/qemu_hotplug.c:1987 src/qemu/qemu_hotplug.c:2219
+#: src/qemu/qemu_hotplug.c:1725 src/qemu/qemu_hotplug.c:1946
+#: src/qemu/qemu_hotplug.c:2019 src/qemu/qemu_hotplug.c:2251
 msgid "device cannot be detached without a PCI address"
 msgstr "ಒಂದು PCI ವಿಳಾಸವಿಲ್ಲದೆ ಡಿಸ್ಕನ್ನು ಕಳಚಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1778
+#: src/qemu/qemu_hotplug.c:1810
 #, fuzzy, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "xen ಬಸ್ %s ಆದಾನ ಸಾಧನವನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1903
+#: src/qemu/qemu_hotplug.c:1935
 #, c-format
 msgid "disk controller %s:%d not found"
 msgstr "ಡಿಸ್ಕ್‌ ನಿಯಂತ್ರಕ %s:%d ಕಂಡು ಬಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1927
+#: src/qemu/qemu_hotplug.c:1959
 #, fuzzy
 msgid "device cannot be detached: device is busy"
 msgstr "ಒಂದು ಸಾಧನ ಆಲಿಯಾಸ್ ಇಲ್ಲದೆ ಅದನ್ನು ಕಳಚಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:1978
+#: src/qemu/qemu_hotplug.c:2010
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "macvtap ಟ್ಯಾಪ್ ಸಾಧನ %s ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2047
+#: src/qemu/qemu_hotplug.c:2079
 msgid "device cannot be detached without a device alias"
 msgstr "ಒಂದು ಸಾಧನ ಆಲಿಯಾಸ್ ಇಲ್ಲದೆ ಅದನ್ನು ಕಳಚಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2053
+#: src/qemu/qemu_hotplug.c:2085
 msgid "device cannot be detached with this QEMU version"
 msgstr "ಈ QEMU ಆವೃತ್ತಿಯೊಂದಿಗೆ ಸಾಧನವನ್ನು ಕಳಚಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2093
+#: src/qemu/qemu_hotplug.c:2125
 #, c-format
 msgid "device not found in hostdevs list (%d entries)"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2147
+#: src/qemu/qemu_hotplug.c:2179
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "ಅತಿಥೇಯ pci ಸಾಧನ %.4x:%.2x:%.2x.%.1x ಕಂಡು ಬಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2154
+#: src/qemu/qemu_hotplug.c:2186
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "usb ಆತಿಥೇಯ ಸಾಧನ %03d.%03d ಕಂಡು ಬಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2158
+#: src/qemu/qemu_hotplug.c:2190
 #, fuzzy, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "usb ಆತಿಥೇಯ ಸಾಧನ %03d.%03d ಕಂಡು ಬಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2202
+#: src/qemu/qemu_hotplug.c:2234
 #, c-format
 msgid "network device %02x:%02x:%02x:%02x:%02x:%02x not found"
 msgstr "ಜಾಲಬಂಧ ಸಾಧನ %02x:%02x:%02x:%02x:%02x:%02x ಕಂಡು ಬಂದಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2225
+#: src/qemu/qemu_hotplug.c:2257
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "macvtap ಟ್ಯಾಪ್ ಸಾಧನ %s ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_hotplug.c:2232
+#: src/qemu/qemu_hotplug.c:2264
 msgid "unable to determine original VLAN"
 msgstr "ಮೂಲ VLAN ಅನ್ನು ನಿರ್ಧರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_hotplug.c:2297
+#: src/qemu/qemu_hotplug.c:2329
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr "'%s' ನಲ್ಲಿ  ebtables ನಿಯಮಗಳನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_hotplug.c:2346
+#: src/qemu/qemu_hotplug.c:2378
 msgid "Graphics password only supported for VNC"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2372
+#: src/qemu/qemu_hotplug.c:2404
 #, fuzzy
 msgid "Expiry of passwords is not supported"
 msgstr "ಡಿಸ್ಕ್ ಗುಪ್ತಪದವನ್ನು ಹೊಂದಿಸುವುದು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
@@ -18492,11 +18497,6 @@ msgstr "'%s' ಇಂದ ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದ�
 #, fuzzy, c-format
 msgid "Unable to remove %s (%d)"
 msgstr "%s ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
-
-#: src/util/cgroup.c:908
-#, fuzzy, c-format
-msgid "Cannot recover cgroup %s from %s"
-msgstr "%s ಗಾಗಿ ಸಂರಚನಾ ಕಡತವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿಲ್ಲ"
 
 #: src/util/command.c:174
 #, fuzzy, c-format
@@ -30827,6 +30827,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಡಿಸ್ಕ್‍ ಬಗೆ '%s'"
+
+#, fuzzy
+#~ msgid "Cannot recover cgroup %s from %s"
+#~ msgstr "%s ಗಾಗಿ ಸಂರಚನಾ ಕಡತವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿಲ್ಲ"
 
 #, fuzzy
 #~ msgid "Couldn't retrieve snapshot list for domain '%s'"

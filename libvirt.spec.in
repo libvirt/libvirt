@@ -1950,6 +1950,9 @@ fi
 %endif
 
 %changelog
+* Wed Jun 12 2013 Cole Robinson <crobinso@redhat.com> - 0.10.2.6-1
+- Maintenance release 0.10.2.6
+
 * Sun May 19 2013 Cole Robinson <crobinso@redhat.com> - 0.10.2.5-1
 - Maintenance release 0.10.2.5
 

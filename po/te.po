@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-05-19 18:17-0400\n"
+"POT-Creation-Date: 2013-06-12 16:53-0400\n"
 "PO-Revision-Date: 2010-04-06 19:23+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <te@li.org>\n"
@@ -589,19 +589,19 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 
-#: daemon/stream.c:225
+#: daemon/stream.c:233
 msgid "stream had unexpected termination"
 msgstr "స్ట్రీమ్ అనుకోని ముగింపును కలిగివుంది"
 
-#: daemon/stream.c:228
+#: daemon/stream.c:236
 msgid "stream had I/O failure"
 msgstr "స్ట్రీమ్ I/O వైఫల్యాన్ని కలిగివుంది"
 
-#: daemon/stream.c:609
+#: daemon/stream.c:617
 msgid "stream aborted at client request"
 msgstr "కక్షిదారి అభ్యర్ధనవద్ద స్ట్రీమ్ విరమించబడింది"
 
-#: daemon/stream.c:613
+#: daemon/stream.c:621
 #, c-format
 msgid "stream aborted with unexpected status %d"
 msgstr "స్ట్రీమ్ అనుకోని స్థితి %dతో విరమించబడింది"
@@ -2981,7 +2981,7 @@ msgid "PCI address Formatting failed"
 msgstr "ఆపరేషన్ తిరిగికొనసాగింపు విఫలమైంది"
 
 #: src/conf/domain_conf.c:12090 src/conf/domain_conf.c:13163
-#: src/qemu/qemu_hotplug.c:2164
+#: src/qemu/qemu_hotplug.c:2196
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "అనుకోని hostdev రకము %d"
@@ -6716,7 +6716,7 @@ msgid "No connection for URI %s"
 msgstr "అధిప్రతి అనుసంధానం URI"
 
 #: src/libvirt.c:2100 src/libvirt.c:10273 src/libvirt.c:12190
-#: src/libvirt.c:14959 src/libvirt.c:16619
+#: src/libvirt.c:14960 src/libvirt.c:16620
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
 msgstr ""
@@ -6782,7 +6782,7 @@ msgid "string parameter '%s' unsupported"
 msgstr "cpu ఎఫినిటి మద్దతీయుటలేదు"
 
 #: src/libvirt.c:3913 src/libvirt.c:4173 src/libvirt.c:7013 src/libvirt.c:8750
-#: src/libvirt.c:8974 src/libvirt.c:9485 src/libvirt.c:19820
+#: src/libvirt.c:8974 src/libvirt.c:9485 src/libvirt.c:19821
 #, c-format
 msgid "flags 'affect live' and 'affect config' in %s are mutually exclusive"
 msgstr ""
@@ -6873,85 +6873,85 @@ msgstr "nparams మరీ పెద్దవి"
 msgid "metadata title in %s can't contain newlines"
 msgstr ""
 
-#: src/libvirt.c:13924
+#: src/libvirt.c:13925
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
 
-#: src/libvirt.c:15762
+#: src/libvirt.c:15763
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా మూలములు వుపయోగించబడలేవు"
 
-#: src/libvirt.c:15861
+#: src/libvirt.c:15862
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా సింక్స్ వుపయోగించబడలేవు"
 
-#: src/libvirt.c:17414
+#: src/libvirt.c:17415
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr ""
 
-#: src/libvirt.c:17523 src/libvirt.c:18681
+#: src/libvirt.c:17524 src/libvirt.c:18682
 #, c-format
 msgid "running and paused flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17826
+#: src/libvirt.c:17827
 #, c-format
 msgid "use of 'current' flag in %s requires 'redefine' flag"
 msgstr ""
 
-#: src/libvirt.c:17833
+#: src/libvirt.c:17834
 #, c-format
 msgid "'redefine' and 'no metadata' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17840
+#: src/libvirt.c:17841
 #, c-format
 msgid "'redefine' and 'halt' flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17894
+#: src/libvirt.c:17895
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో"
 
-#: src/libvirt.c:18749
+#: src/libvirt.c:18750
 #, c-format
 msgid "children and children_only flags in %s are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:19264
+#: src/libvirt.c:19265
 #, c-format
 msgid "use of flags in %s requires a copy job"
 msgstr ""
 
-#: src/libvirt.c:19440
+#: src/libvirt.c:19441
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ఆకృతీకరణ ఫైలు సంభాలికను నిల్వచేయలేక పోయింది"
 
-#: src/libvirt.c:19446
+#: src/libvirt.c:19447
 #, fuzzy, c-format
 msgid "fd %d in %s must be a socket"
 msgstr "సాకెట్ సృష్టించుటలో విఫలమైంది"
 
-#: src/libvirt.c:19614
+#: src/libvirt.c:19615
 #, fuzzy
 msgid "A close callback is already registered"
 msgstr "‍డొమైన్ '%s' యిప్పటికే uuid %sతో నిర్వచించబడింది"
 
-#: src/libvirt.c:19664
+#: src/libvirt.c:19665
 #, fuzzy
 msgid "A different callback was requested"
 msgstr "ఘటనా కాల్‌బ్యాక్ యిప్పటికే ట్రాక్ చేయబడింది"
 
-#: src/libvirt.c:19946
+#: src/libvirt.c:19947
 #, c-format
 msgid "ncpus in %s must be 1 when start_cpu is -1"
 msgstr ""
 
-#: src/libvirt.c:19961
+#: src/libvirt.c:19962
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams మరీ పెద్దవి"
@@ -7183,7 +7183,7 @@ msgstr ""
 msgid "this platform is missing dlopen"
 msgstr ""
 
-#: src/lxc/lxc_cgroup.c:41 src/qemu/qemu_cgroup.c:400
+#: src/lxc/lxc_cgroup.c:41 src/qemu/qemu_cgroup.c:406
 #, fuzzy, c-format
 msgid "Unable to set io cpu shares for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
@@ -7208,17 +7208,17 @@ msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమి
 msgid "Unable to set memory limit for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/lxc/lxc_cgroup.c:109 src/qemu/qemu_cgroup.c:363
+#: src/lxc/lxc_cgroup.c:109 src/qemu/qemu_cgroup.c:369
 #, fuzzy, c-format
 msgid "Unable to set memory hard limit for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/lxc/lxc_cgroup.c:119 src/qemu/qemu_cgroup.c:371
+#: src/lxc/lxc_cgroup.c:119 src/qemu/qemu_cgroup.c:377
 #, fuzzy, c-format
 msgid "Unable to set memory soft limit for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/lxc/lxc_cgroup.c:129 src/qemu/qemu_cgroup.c:381
+#: src/lxc/lxc_cgroup.c:129 src/qemu/qemu_cgroup.c:387
 #, fuzzy, c-format
 msgid "Unable to set swap hard limit for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
@@ -7975,22 +7975,22 @@ msgstr "cpu షేర్లను ట్యూనుచేయదగునట్�
 msgid "unable to get cpu bandwidth tunable"
 msgstr "cpu షేర్లను ట్యూనుచేయదగునట్లు పొందలేక పోయింది"
 
-#: src/lxc/lxc_driver.c:1725 src/qemu/qemu_cgroup.c:462
+#: src/lxc/lxc_driver.c:1725 src/qemu/qemu_cgroup.c:468
 #, fuzzy
 msgid "Unable to get cpu bandwidth period"
 msgstr "ప్రస్తుత సమయంను పొందలేక పోయింది"
 
-#: src/lxc/lxc_driver.c:1732 src/qemu/qemu_cgroup.c:469
+#: src/lxc/lxc_driver.c:1732 src/qemu/qemu_cgroup.c:475
 #, fuzzy
 msgid "Unable to set cpu bandwidth period"
 msgstr "ప్రస్తుత సమయంను పొందలేక పోయింది"
 
-#: src/lxc/lxc_driver.c:1741 src/qemu/qemu_cgroup.c:478
+#: src/lxc/lxc_driver.c:1741 src/qemu/qemu_cgroup.c:484
 #, fuzzy
 msgid "Unable to set cpu bandwidth quota"
 msgstr "cpu షేర్లను ట్యూన్ చేయదగునట్లు అమర్చలేక పోయింది"
 
-#: src/lxc/lxc_driver.c:1753 src/qemu/qemu_cgroup.c:490
+#: src/lxc/lxc_driver.c:1753 src/qemu/qemu_cgroup.c:496
 #, fuzzy
 msgid "Unable to rollback cpu bandwidth period"
 msgstr "ప్రస్తుత సమయంను పొందలేక పోయింది"
@@ -8562,12 +8562,12 @@ msgstr "డొమైన్ దాయు ఫైలు '%s'ను సృష్ట�
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "డొమైన్ దాయు ఫైలు '%s'ను సృష్టించుటకు విఫలమైంది"
 
-#: src/libxl/libxl_driver.c:2991 src/qemu/qemu_hotplug.c:71
+#: src/libxl/libxl_driver.c:2991 src/qemu/qemu_hotplug.c:73
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "బస్ '%s' మరియు లక్ష్యము '%s' తో యెటువంటి పరికరము లేదు"
 
-#: src/libxl/libxl_driver.c:2998 src/qemu/qemu_hotplug.c:86
+#: src/libxl/libxl_driver.c:2998 src/qemu/qemu_hotplug.c:88
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "%s పరికరము కొరకు తీసివేయదగు మాధ్యమం మద్దతించబడదు"
@@ -8577,14 +8577,14 @@ msgstr "%s పరికరము కొరకు తీసివేయదగు 
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "చతనం గాని డొమైన్ %s ని సృష్టించుటలో విఫలం\n"
 
-#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:215
-#: src/qemu/qemu_hotplug.c:447 src/qemu/qemu_hotplug.c:570
+#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:247
+#: src/qemu/qemu_hotplug.c:479 src/qemu/qemu_hotplug.c:602
 #: src/uml/uml_driver.c:2019
 #, c-format
 msgid "target %s already exists"
 msgstr "లక్ష్యము %s యిప్పటికే వుంది"
 
-#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:588
+#: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:620
 #: src/uml/uml_driver.c:2026
 msgid "disk source path is missing"
 msgstr "డిస్కు మూలము పాత్ తప్పిపోయింది"
@@ -8605,8 +8605,8 @@ msgstr "డిస్కు బస్ '%s' హాట్‌ప్లగ్ కా�
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "డిస్కు పరికరము '%s' హాట్‌ప్లగ్ కాలేదు"
 
-#: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1668
-#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2150
+#: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1700
+#: src/qemu/qemu_hotplug.c:1804 src/uml/uml_driver.c:2150
 #, c-format
 msgid "disk %s not found"
 msgstr "డిస్కు %s కనబడలేదు"
@@ -9606,18 +9606,18 @@ msgstr ""
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr ""
 
-#: src/nwfilter/nwfilter_driver.c:397 src/nwfilter/nwfilter_driver.c:602
-#: src/nwfilter/nwfilter_driver.c:650
+#: src/nwfilter/nwfilter_driver.c:391 src/nwfilter/nwfilter_driver.c:596
+#: src/nwfilter/nwfilter_driver.c:644
 #, fuzzy
 msgid "no nwfilter with matching uuid"
 msgstr "సరిపోలు uuidతో యెటువంటి పూల్ లేదు"
 
-#: src/nwfilter/nwfilter_driver.c:423
+#: src/nwfilter/nwfilter_driver.c:417
 #, fuzzy, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "సరిపోలు నామము '%s'తో యెటువంటి నెట్వర్కు లేదు"
 
-#: src/nwfilter/nwfilter_driver.c:609
+#: src/nwfilter/nwfilter_driver.c:603
 msgid "nwfilter is in use"
 msgstr ""
 
@@ -10922,96 +10922,96 @@ msgstr "/dev/pts/ పరికరాలను అనుమతించలేక 
 msgid "unable to allow /dev/snd/ devices"
 msgstr "/dev/snd/ పరికరాలను అనుమతించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:272
+#: src/qemu/qemu_cgroup.c:278
 #, c-format
 msgid "unable to allow device %s"
 msgstr "పరికరము %sను అనుమతించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:308
+#: src/qemu/qemu_cgroup.c:314
 #, fuzzy, c-format
 msgid "Unable to set io weight for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:314 src/qemu/qemu_cgroup.c:337
+#: src/qemu/qemu_cgroup.c:320 src/qemu/qemu_cgroup.c:343
 msgid "Block I/O tuning is not available on this host"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:329
+#: src/qemu/qemu_cgroup.c:335
 #, fuzzy, c-format
 msgid "Unable to set io device weight for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:390
+#: src/qemu/qemu_cgroup.c:396
 #, fuzzy
 msgid "Memory cgroup is not available on this host"
 msgstr "ఈ ప్లాట్‌ఫాంపై NUMA మెమొరీ సమాచారము అందుబాటులో లేదు"
 
-#: src/qemu/qemu_cgroup.c:406
+#: src/qemu/qemu_cgroup.c:412
 #, fuzzy
 msgid "CPU tuning is not available on this host"
 msgstr "ఈ ప్లాట్‌ఫాంపై NUMA మెమొరీ సమాచారము అందుబాటులో లేదు"
 
-#: src/qemu/qemu_cgroup.c:423
+#: src/qemu/qemu_cgroup.c:429
 #, fuzzy
 msgid "failed to convert memory nodemask"
 msgstr "డొమైన్ కొరకు మెమొరీను అమర్చటలో విఫలమైంది"
 
-#: src/qemu/qemu_cgroup.c:431
+#: src/qemu/qemu_cgroup.c:437
 #, fuzzy, c-format
 msgid "Unable to set cpuset.mems for domain %s"
 msgstr "డొమైన్ %s కొరకు మెమొరీ పరిమితిని అమర్చలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:521
+#: src/qemu/qemu_cgroup.c:527
 #, fuzzy
 msgid "failed to convert cpu mask"
 msgstr "డొమైన్ కొరకు మెమొరీను అమర్చటలో విఫలమైంది"
 
-#: src/qemu/qemu_cgroup.c:530
+#: src/qemu/qemu_cgroup.c:536
 #, fuzzy
 msgid "Unable to set cpuset.cpus"
 msgstr "సామర్ధ్యములను పొందుటలో విఫలం"
 
-#: src/qemu/qemu_cgroup.c:554 src/qemu/qemu_cgroup.c:658
+#: src/qemu/qemu_cgroup.c:560 src/qemu/qemu_cgroup.c:664
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:568 src/qemu/qemu_cgroup.c:668
-#: src/qemu/qemu_cgroup.c:742 src/qemu/qemu_driver.c:5739
+#: src/qemu/qemu_cgroup.c:574 src/qemu/qemu_cgroup.c:674
+#: src/qemu/qemu_cgroup.c:753 src/qemu/qemu_driver.c:5739
 #: src/qemu/qemu_driver.c:5968 src/qemu/qemu_driver.c:10881
-#: src/qemu/qemu_hotplug.c:1096 src/qemu/qemu_hotplug.c:1684
-#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3223
+#: src/qemu/qemu_hotplug.c:1128 src/qemu/qemu_hotplug.c:1716
+#: src/qemu/qemu_hotplug.c:1820 src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s కొరకు cgroup కనుగొనలేక పోయింది \n"
 
-#: src/qemu/qemu_cgroup.c:586
+#: src/qemu/qemu_cgroup.c:592
 #, fuzzy, c-format
 msgid "Unable to create vcpu cgroup for %s(vcpu: %d)"
 msgstr "%s కొరకు cgroupను సృష్టించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:596
+#: src/qemu/qemu_cgroup.c:602
 #, fuzzy, c-format
 msgid "unable to add vcpu %d task %d to cgroup"
 msgstr "డొమైన్ %s కర్తవ్యం %d ను cgroupకు జతచేయలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:676
+#: src/qemu/qemu_cgroup.c:682
 #, fuzzy, c-format
 msgid "Unable to create emulator cgroup for %s"
 msgstr "%s కొరకు cgroupను సృష్టించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:687
+#: src/qemu/qemu_cgroup.c:698
 #, c-format
 msgid ""
 "Unable to move tasks from domain cgroup to emulator cgroup in controller %d "
 "for %s"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:765
+#: src/qemu/qemu_cgroup.c:776
 #, c-format
 msgid "unable to find cgroup for domain %s"
 msgstr "డొమైన్ %s కొరకు cgroupను అనుమతించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:773
+#: src/qemu/qemu_cgroup.c:784
 #, c-format
 msgid "unable to add domain %s task %d to cgroup"
 msgstr "డొమైన్ %s కర్తవ్యం %d ను cgroupకు జతచేయలేక పోయింది"
@@ -12474,7 +12474,7 @@ msgstr "డొమైన్ %s స్వయంచాలకప్రారంభ�
 #: src/qemu/qemu_driver.c:2733 src/qemu/qemu_driver.c:3291
 #: src/qemu/qemu_driver.c:10504 src/qemu/qemu_driver.c:10916
 #: src/qemu/qemu_driver.c:11976 src/qemu/qemu_driver.c:12028
-#: src/qemu/qemu_hotplug.c:422 src/qemu/qemu_hotplug.c:802
+#: src/qemu/qemu_hotplug.c:454 src/qemu/qemu_hotplug.c:834
 #: src/qemu/qemu_migration.c:1943 src/qemu/qemu_migration.c:2244
 #: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:555 src/qemu/qemu_process.c:568
@@ -12774,7 +12774,7 @@ msgstr ""
 msgid "device not present in domain configuration"
 msgstr "Xend క్షేత్ర సమాచరాన్ని విశ్లేషించటంలో విఫలమైంది"
 
-#: src/qemu/qemu_driver.c:6188 src/qemu/qemu_hotplug.c:2410
+#: src/qemu/qemu_driver.c:6188 src/qemu/qemu_hotplug.c:2442
 #, fuzzy, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ఇంటర్ఫేస్ %s లేదు"
@@ -12887,7 +12887,7 @@ msgid "invalid path: %s"
 msgstr "సరికాని పాత్: %s"
 
 #: src/qemu/qemu_driver.c:8358 src/qemu/qemu_driver.c:8444
-#: src/qemu/qemu_hotplug.c:79
+#: src/qemu/qemu_hotplug.c:81
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s కోసం తప్పిపోయిన డిస్కు పరికరము మారుపేరు"
@@ -13376,7 +13376,7 @@ msgstr "పరికరము %s యిప్పటికే వుపయోగ�
 msgid "USB device %s is already in use"
 msgstr "పరికరము %s యిప్పటికే వుపయోగంలో వుంది"
 
-#: src/qemu/qemu_hostdev.c:686 src/qemu/qemu_hotplug.c:1167
+#: src/qemu/qemu_hostdev.c:686 src/qemu/qemu_hotplug.c:1199
 #, c-format
 msgid "multiple USB devices for %x:%x, use <address> to specify one"
 msgstr ""
@@ -13396,248 +13396,253 @@ msgstr "pciDeviceList కేటాయించుటలో విఫలమైం
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI పరికరము తిరిగివుంచుటకు విఫలమైంది: %s"
 
-#: src/qemu/qemu_hotplug.c:326
+#: src/qemu/qemu_hotplug.c:128
+#, fuzzy
+msgid "Unable to eject media"
+msgstr "అతిధేయ నామమును పొందుటలో విఫలం"
+
+#: src/qemu/qemu_hotplug.c:358
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "టార్గెట్ %s:%d యిప్పటికే వుంది"
 
-#: src/qemu/qemu_hotplug.c:342
+#: src/qemu/qemu_hotplug.c:374
 #, fuzzy
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు"
 
-#: src/qemu/qemu_hotplug.c:465
+#: src/qemu/qemu_hotplug.c:497
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "అనుకోని డిస్కు చిరునామా రకము %s"
 
-#: src/qemu/qemu_hotplug.c:493
+#: src/qemu/qemu_hotplug.c:525
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "SCSI నియంత్రణి %d అనునది దాని PCI చిరునామాను తప్పిపోయింది"
 
-#: src/qemu/qemu_hotplug.c:699
+#: src/qemu/qemu_hotplug.c:731
 msgid "installed qemu version does not support host_net_add"
 msgstr "సంస్థాపించిన qemu వర్షన్ host_net_addను మద్దతించదు"
 
-#: src/qemu/qemu_hotplug.c:750
+#: src/qemu/qemu_hotplug.c:782
 msgid "Unable to attach network devices without vlan"
 msgstr "vlan లేకుండా నెట్వర్కు పరికరములను అనుభందించలేదు"
 
-#: src/qemu/qemu_hotplug.c:838
+#: src/qemu/qemu_hotplug.c:870
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:850
+#: src/qemu/qemu_hotplug.c:882
 #, fuzzy
 msgid "setting of link state not supported: Link is up"
 msgstr "'info blockstats' అనునది ఈ qemuచేత మద్దతివ్వబడుటలేదు"
 
-#: src/qemu/qemu_hotplug.c:971
+#: src/qemu/qemu_hotplug.c:1003
 #, fuzzy
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ప్రారంభమునందు కంటైనర్ '%s' అనుకోకుండా మూసివేయబడింది"
 
-#: src/qemu/qemu_hotplug.c:1143 src/qemu/qemu_hotplug.c:2136
+#: src/qemu/qemu_hotplug.c:1175 src/qemu/qemu_hotplug.c:2168
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev రీతి '%s' మద్దతిచ్చునది కాదు"
 
-#: src/qemu/qemu_hotplug.c:1219 src/qemu/qemu_hotplug.c:2108
+#: src/qemu/qemu_hotplug.c:1251 src/qemu/qemu_hotplug.c:2140
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev వుపవ్యవస్థ రకము '%s' మద్దతిచ్చునది కాదు"
 
-#: src/qemu/qemu_hotplug.c:1266
+#: src/qemu/qemu_hotplug.c:1298
 #, fuzzy, c-format
 msgid "bridge %s doesn't exist"
 msgstr "'%s' ఆదేశం లేదు"
 
-#: src/qemu/qemu_hotplug.c:1288
+#: src/qemu/qemu_hotplug.c:1320
 #, fuzzy, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "pipe ను సృష్టించ లేక పోతోంది"
 
-#: src/qemu/qemu_hotplug.c:1311
+#: src/qemu/qemu_hotplug.c:1343
 msgid "can't change link state: device alias not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1341
+#: src/qemu/qemu_hotplug.c:1373
 #, fuzzy
 msgid "cannot find existing network device to modify"
 msgstr "గ్రాఫిక్స్ పరికరాలను బయల్పరచలేదు"
 
-#: src/qemu/qemu_hotplug.c:1347
+#: src/qemu/qemu_hotplug.c:1379
 #, fuzzy
 msgid "cannot change network interface type"
 msgstr "నెట్వర్కు ఇంటర్‌ఫేస్ రకం"
 
-#: src/qemu/qemu_hotplug.c:1353
+#: src/qemu/qemu_hotplug.c:1385
 #, fuzzy
 msgid "cannot change <virtualport> settings"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1365
+#: src/qemu/qemu_hotplug.c:1397
 #, fuzzy
 msgid "cannot modify ethernet network device configuration"
 msgstr "డొమైన్ యొక్క స్థిరమైన ఆకృతీకరణను సవరించలేము"
 
-#: src/qemu/qemu_hotplug.c:1376
+#: src/qemu/qemu_hotplug.c:1408
 #, fuzzy
 msgid "cannot modify network socket device configuration"
 msgstr "డొమైన్ యొక్క స్థిరమైన ఆకృతీకరణను సవరించలేము"
 
-#: src/qemu/qemu_hotplug.c:1385 src/qemu/qemu_hotplug.c:1424
-#: src/qemu/qemu_hotplug.c:1432
+#: src/qemu/qemu_hotplug.c:1417 src/qemu/qemu_hotplug.c:1456
+#: src/qemu/qemu_hotplug.c:1464
 #, fuzzy
 msgid "cannot modify network device configuration"
 msgstr "డొమైన్ యొక్క స్థిరమైన ఆకృతీకరణను సవరించలేము"
 
-#: src/qemu/qemu_hotplug.c:1398
+#: src/qemu/qemu_hotplug.c:1430
 #, fuzzy
 msgid "cannot modify internal network device configuration"
 msgstr "డొమైన్ యొక్క స్థిరమైన ఆకృతీకరణను సవరించలేము"
 
-#: src/qemu/qemu_hotplug.c:1407
+#: src/qemu/qemu_hotplug.c:1439
 #, fuzzy
 msgid "cannot modify direct network device configuration"
 msgstr "డొమైన్ యొక్క స్థిరమైన ఆకృతీకరణను సవరించలేము"
 
-#: src/qemu/qemu_hotplug.c:1414
+#: src/qemu/qemu_hotplug.c:1446
 #, fuzzy, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "మానిటర్ రకమును సంభాలించలేక పోయింది: %s"
 
-#: src/qemu/qemu_hotplug.c:1479
+#: src/qemu/qemu_hotplug.c:1511
 #, fuzzy
 msgid "cannot find existing graphics device to modify"
 msgstr "గ్రాఫిక్స్ పరికరాలను బయల్పరచలేదు"
 
-#: src/qemu/qemu_hotplug.c:1494
+#: src/qemu/qemu_hotplug.c:1526
 #, fuzzy
 msgid "cannot change port settings on vnc graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1499
+#: src/qemu/qemu_hotplug.c:1531
 msgid "cannot change listen address setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1504
+#: src/qemu/qemu_hotplug.c:1536
 #, fuzzy
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1509
+#: src/qemu/qemu_hotplug.c:1541
 msgid "cannot change keymap setting on vnc graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1549
+#: src/qemu/qemu_hotplug.c:1581
 #, fuzzy
 msgid "cannot change port settings on spice graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1554
+#: src/qemu/qemu_hotplug.c:1586
 #, fuzzy
 msgid "cannot change listen address setting on spice graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1559
+#: src/qemu/qemu_hotplug.c:1591
 #, fuzzy
 msgid "cannot change listen network setting on spice graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1565
+#: src/qemu/qemu_hotplug.c:1597
 #, fuzzy
 msgid "cannot change keymap setting on spice graphics"
 msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
-#: src/qemu/qemu_hotplug.c:1606
+#: src/qemu/qemu_hotplug.c:1638
 #, fuzzy, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "మానిటర్ రకమును సంభాలించలేక పోయింది: %s"
 
-#: src/qemu/qemu_hotplug.c:1676 src/qemu/qemu_hotplug.c:1920
+#: src/qemu/qemu_hotplug.c:1708 src/qemu/qemu_hotplug.c:1952
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "macvtap టాప్ పరికరము %sను తెరువలేదు"
 
-#: src/qemu/qemu_hotplug.c:1693 src/qemu/qemu_hotplug.c:1914
-#: src/qemu/qemu_hotplug.c:1987 src/qemu/qemu_hotplug.c:2219
+#: src/qemu/qemu_hotplug.c:1725 src/qemu/qemu_hotplug.c:1946
+#: src/qemu/qemu_hotplug.c:2019 src/qemu/qemu_hotplug.c:2251
 msgid "device cannot be detached without a PCI address"
 msgstr "PCI చిరునామా లేకుండా పరికరము వేరుచేయబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:1778
+#: src/qemu/qemu_hotplug.c:1810
 #, fuzzy, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "xen బస్ అనునది %s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
 
-#: src/qemu/qemu_hotplug.c:1903
+#: src/qemu/qemu_hotplug.c:1935
 #, c-format
 msgid "disk controller %s:%d not found"
 msgstr "డిస్కు నియంత్రణి %s:%d కనుగొనబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:1927
+#: src/qemu/qemu_hotplug.c:1959
 #, fuzzy
 msgid "device cannot be detached: device is busy"
 msgstr "పరికరపు యెలియాస్ లేకుండా పరికరము వేరుబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:1978
+#: src/qemu/qemu_hotplug.c:2010
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "macvtap టాప్ పరికరము %sను తెరువలేదు"
 
-#: src/qemu/qemu_hotplug.c:2047
+#: src/qemu/qemu_hotplug.c:2079
 msgid "device cannot be detached without a device alias"
 msgstr "పరికరపు యెలియాస్ లేకుండా పరికరము వేరుబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2053
+#: src/qemu/qemu_hotplug.c:2085
 msgid "device cannot be detached with this QEMU version"
 msgstr "ఈ QEMU వర్షన్‌తో పరికరము వేరుచేయబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2093
+#: src/qemu/qemu_hotplug.c:2125
 #, c-format
 msgid "device not found in hostdevs list (%d entries)"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2147
+#: src/qemu/qemu_hotplug.c:2179
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "హోస్టు pci పరికరము %.4x:%.2x:%.2x.%.1x కనుగొనబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2154
+#: src/qemu/qemu_hotplug.c:2186
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "హోస్ట్ usb పరికరము %03d.%03d కనబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2158
+#: src/qemu/qemu_hotplug.c:2190
 #, fuzzy, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "హోస్ట్ usb పరికరము %03d.%03d కనబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2202
+#: src/qemu/qemu_hotplug.c:2234
 #, c-format
 msgid "network device %02x:%02x:%02x:%02x:%02x:%02x not found"
 msgstr "నెట్వర్కు పరికరము %02x:%02x:%02x:%02x:%02x:%02x కనబడలేదు"
 
-#: src/qemu/qemu_hotplug.c:2225
+#: src/qemu/qemu_hotplug.c:2257
 #, fuzzy, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "macvtap టాప్ పరికరము %sను తెరువలేదు"
 
-#: src/qemu/qemu_hotplug.c:2232
+#: src/qemu/qemu_hotplug.c:2264
 msgid "unable to determine original VLAN"
 msgstr "వాస్తవ VLANను నిర్ధారించలేదు"
 
-#: src/qemu/qemu_hotplug.c:2297
+#: src/qemu/qemu_hotplug.c:2329
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr "'%s' పైన ebtables నియమాన్ని తీసివేయుటకు విఫలమైంది"
 
-#: src/qemu/qemu_hotplug.c:2346
+#: src/qemu/qemu_hotplug.c:2378
 msgid "Graphics password only supported for VNC"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2372
+#: src/qemu/qemu_hotplug.c:2404
 #, fuzzy
 msgid "Expiry of passwords is not supported"
 msgstr "డిస్కు సంకేతపదమును అమర్చుట మద్దతించబడలేదు"
@@ -18403,11 +18408,6 @@ msgstr "'%s' నుండి చదువుటకు విఫలమైంద�
 #, fuzzy, c-format
 msgid "Unable to remove %s (%d)"
 msgstr "%sను తెరువలేక పోయింది"
-
-#: src/util/cgroup.c:908
-#, fuzzy, c-format
-msgid "Cannot recover cgroup %s from %s"
-msgstr "%s కొరకు ఆకృతీకరణ ఫైలును తీసివేయలేదు"
 
 #: src/util/command.c:174
 #, fuzzy, c-format
@@ -30686,6 +30686,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "మద్దతీయని డిస్కురకము '%s'"
+
+#, fuzzy
+#~ msgid "Cannot recover cgroup %s from %s"
+#~ msgstr "%s కొరకు ఆకృతీకరణ ఫైలును తీసివేయలేదు"
 
 #, fuzzy
 #~ msgid "Couldn't retrieve snapshot list for domain '%s'"
