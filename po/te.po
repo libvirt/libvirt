@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-06-12 17:34-0400\n"
 "PO-Revision-Date: 2010-04-06 19:23+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <te@li.org>\n"
@@ -947,7 +947,7 @@ msgstr "మ్యూటెక్సును సిద్దము చేయల�
 #: src/qemu/qemu_driver.c:11717 src/qemu/qemu_driver.c:11817
 #: src/qemu/qemu_driver.c:12203 src/qemu/qemu_driver.c:12575
 #: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12678
-#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2629
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -5057,8 +5057,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 
 #: src/esx/esx_util.c:150
@@ -6124,7 +6124,7 @@ msgid "could not build absolute output file path"
 msgstr "pidfile పాత్‌ను నిర్మించుటలో విఫలమైంది."
 
 #: src/libvirt.c:2729 src/libvirt.c:2873 src/libvirt.c:3027
-#: src/libvirt.c:16864 src/libvirt.c:17722
+#: src/libvirt.c:16865 src/libvirt.c:17723
 msgid "running and paused flags are mutually exclusive"
 msgstr ""
 
@@ -6183,11 +6183,11 @@ msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare అనునది uriకు అమర్చలేదు"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2242
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2249
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 అనునది uri అమర్చలేదు"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2380
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2387
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare అనునది uriకు అమర్చలేదు"
@@ -6216,9 +6216,9 @@ msgstr "peer2peer ఫ్లాగ్ వుపయోగించకుండా 
 msgid "direct migration is not supported by the connection driver"
 msgstr "ఈ ఫంక్షన్ హైపర్‌విజర్ చేత మద్దతీయబడదు"
 
-#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17945
-#: src/libvirt.c:18001 src/libvirt.c:18069 src/libvirt.c:18142
-#: src/libvirt.c:18223
+#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17946
+#: src/libvirt.c:18002 src/libvirt.c:18070 src/libvirt.c:18143
+#: src/libvirt.c:18224
 #, fuzzy
 msgid "disk is NULL"
 msgstr "బఫర్ అనునది NULL"
@@ -6246,51 +6246,51 @@ msgstr "nparams మరీ పెద్దవి"
 msgid "input too large: %d * %d"
 msgstr "nparams మరీ పెద్దవి"
 
-#: src/libvirt.c:15116
+#: src/libvirt.c:15117
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా మూలములు వుపయోగించబడలేవు"
 
-#: src/libvirt.c:15218
+#: src/libvirt.c:15219
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "నాన్-బ్లాకింగ్ స్ట్రీమ్స్ కొరకు డాటా సింక్స్ వుపయోగించబడలేవు"
 
-#: src/libvirt.c:17165
+#: src/libvirt.c:17166
 msgid "use of current flag requires redefine flag"
 msgstr ""
 
-#: src/libvirt.c:17171
+#: src/libvirt.c:17172
 msgid "redefine and no metadata flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17177
+#: src/libvirt.c:17178
 msgid "redefine and halt flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17230
+#: src/libvirt.c:17231
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో"
 
-#: src/libvirt.c:17789
+#: src/libvirt.c:17790
 msgid "children and children_only flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18007
+#: src/libvirt.c:18008
 #, fuzzy
 msgid "info is NULL"
 msgstr "బఫర్ అనునది NULL"
 
-#: src/libvirt.c:18292
+#: src/libvirt.c:18293
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ఆకృతీకరణ ఫైలు సంభాలికను నిల్వచేయలేక పోయింది"
 
-#: src/libvirt.c:18298
+#: src/libvirt.c:18299
 #, fuzzy, c-format
 msgid "File descriptor %d must be a socket"
 msgstr "సాకెట్ సృష్టించుటలో విఫలమైంది"
 
-#: src/libvirt.c:18685
+#: src/libvirt.c:18686
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams మరీ పెద్దవి"
@@ -9578,7 +9578,7 @@ msgstr "పరికరము %sను %s కొరకు అనుమతిం�
 msgid "Unable to deny access for disk path %s"
 msgstr "పరికరము %sను %s కొరకు అనుమతించలేక పోయింది"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "పరికరము %sను %s కొరకు అనుమతించలేక పోయింది"
@@ -9654,7 +9654,7 @@ msgstr "ప్రస్తుత సమయంను పొందలేక పో
 #: src/qemu/qemu_driver.c:5145 src/qemu/qemu_driver.c:5374
 #: src/qemu/qemu_driver.c:10125 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
-#: src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s కొరకు cgroup కనుగొనలేక పోయింది \n"
@@ -10898,8 +10898,8 @@ msgstr "సరిపోలు id %dతో యెటువంటి డొమై�
 msgid "no domain with matching name '%s'"
 msgstr "సరిపోలు నామము '%s'తో ఏ డొమైన్ లేదు"
 
-#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:574
 #: src/qemu/qemu_process.c:3731
 msgid "resume operation failed"
 msgstr "ఆపరేషన్ తిరిగికొనసాగింపు విఫలమైంది"
@@ -10990,8 +10990,8 @@ msgstr "డొమైన్ %s స్వయంచాలకప్రారంభ�
 #: src/qemu/qemu_driver.c:9748 src/qemu/qemu_driver.c:10160
 #: src/qemu/qemu_driver.c:11084 src/qemu/qemu_driver.c:11135
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1941 src/qemu/qemu_migration.c:2242
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12210,7 +12210,7 @@ msgstr "మైగ్రేషన్ అనుకోకుండా విఫల�
 msgid "canceled by client"
 msgstr "మైగ్రేషన్ క్లైంట్ చేత రద్దుచేయబడినది"
 
-#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1953
 #, fuzzy
 msgid "migration job"
 msgstr "లైవ్ ప్రవాసం"
@@ -12239,7 +12239,7 @@ msgstr "చేరవలిసిన అతిధేయ యొక్క అను
 msgid "target domain name doesn't match source name"
 msgstr "నెట్వర్కు ఆకృతీకరణ ఫైలు నామము '%s' నెట్వర్కు నామము '%s'తో సరిపోలటం లేదు"
 
-#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2126
+#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2133
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "టన్నెల్డ్ మైగ్రేషన్ కొరకు unix సాకెట్‌ '%s'ను తెరువలేదు"
@@ -12290,70 +12290,75 @@ msgstr "%sకు మైగ్రేషన్ ప్రారంభించల�
 msgid "failed to wakeup migration tunnel"
 msgstr "ఆకృతీకరణ ఫైలును రాయటంలో విఫలమైంది"
 
-#: src/qemu/qemu_migration.c:1852
+#: src/qemu/qemu_migration.c:1814
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "మానిటర్‌ను నాన్-బ్లాకింగ్ రీతినందు వుంచలేదు"
+
+#: src/qemu/qemu_migration.c:1859
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1954
+#: src/qemu/qemu_migration.c:1961
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "డ్రైవర్ నుండి అనుసంధానము ఆమోదించుటకు విఫలమైంది"
 
-#: src/qemu/qemu_migration.c:2104
+#: src/qemu/qemu_migration.c:2111
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "టన్నెల్డ్ మైగ్రేషన్‌ను మద్దతించుటకు మూలపు qemu మరీ పాతది"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "దూరస్థ libvirt URI %sకు అనుసంధానమగుటకు విఫలమైంది"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "గమ్యపు libvirt అనునది peer-to-peer మైగ్రేషన్ ప్రొటోకాల్‌ను మద్దతించదు"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "వైఫల్యం తరువాత గెస్టు  %s తిరిగికొనసాగించుట విఫలమైంది"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 #, fuzzy
 msgid "received unexpected cookie with P2P migration"
 msgstr "స్ట్రీమ్ అనుకోని ముగింపును కలిగివుంది"
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 #, fuzzy
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "మైగ్రేట్: peer2peer/direct మైగ్రేషన్‌కు అనుకోని migrateuri"
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "రోజు యొక్క సమయాన్ని పొందలేదు"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "మానిటర్‌కు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3397
+#: src/qemu/qemu_migration.c:3404
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "డొమైన్ వలసపంప బడలేదు"
 
-#: src/qemu/qemu_migration.c:3399
+#: src/qemu/qemu_migration.c:3406
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "డొమైన్ వలసపంప బడలేదు"
@@ -17233,7 +17238,7 @@ msgstr "PCI పరికరము '%s' బందనం తీయుటకు వ
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 
-#: src/util/pci.c:2173 src/util/virnetlink.c:607
+#: src/util/pci.c:2173 src/util/virnetlink.c:617
 #, fuzzy
 msgid "not supported on non-linux platforms"
 msgstr "CPU ఎఫినిటి ప్రోసెస్ ఈ ప్లాట్‌ఫాంపై మద్దతించబడదు"
@@ -17637,18 +17642,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr "cd: %s: %s"
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:63 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "ఆకృతీకరణ ఫైలునామము '%s/%s' మరీ పొడవైనది"
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:71
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "నెట్వర్కు ఇంటర్‌ఫేస్ రకం"
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:77
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "మానిటర్‌కు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
@@ -17859,59 +17864,59 @@ msgstr "మానిటర్ రకమును సంభాలించలే�
 msgid "Unable to restore net config on this platform"
 msgstr "మానిటర్ రకమును సంభాలించలేక పోయింది: %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:120 src/util/virnetdevbridge.c:131
+#: src/util/virnetdevbridge.c:138
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "PCI పరికరము %sను తిరిగివుంచలేక పోయింది: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:172 src/util/virnetdevbridge.c:184
+#: src/util/virnetdevbridge.c:194
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%sను తెరువలేక పోయింది"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:226 src/util/virnetdevbridge.c:240
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "pipe ను సృష్టించ లేక పోతోంది"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:264 src/util/virnetdevbridge.c:278
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "రహస్యము %s తొలగించుటకు విఫలమైంది"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:305 src/util/virnetdevbridge.c:352
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "ఇంటర్‌ఫేస్ సమాచారాన్ని పొందటంలో విఫలమైంది"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:311 src/util/virnetdevbridge.c:325
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "పరికరము %sను %s కొరకు అనుమతించలేక పోయింది"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:359 src/util/virnetdevbridge.c:373
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%sను తెరువలేక పోయింది"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:504
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "CPU ఎఫినిటి ప్రోసెస్ ఈ ప్లాట్‌ఫాంపై మద్దతించబడదు"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:512
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "డొమైన్ స్థితిని పొందలేక పోయింది"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:522
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "CPU ఎఫినిటి ప్రోసెస్ ఈ ప్లాట్‌ఫాంపై మద్దతించబడదు"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:530
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "డొమైన్ స్థితిని పొందలేక పోయింది"
@@ -18092,73 +18097,73 @@ msgstr "నెట్వర్కు రకము %d మద్దతీయుట�
 msgid "Virtual port profile association not supported on this platform"
 msgstr "CPU ఎఫినిటి ప్రోసెస్ ఈ ప్లాట్‌ఫాంపై మద్దతించబడదు"
 
-#: src/util/virnetlink.c:126
+#: src/util/virnetlink.c:136
 #, fuzzy
 msgid "cannot allocate placeholder nlhandle for netlink"
 msgstr "mechlistను కేటాయించలేదు"
 
-#: src/util/virnetlink.c:181
+#: src/util/virnetlink.c:191
 #, fuzzy
 msgid "cannot allocate nlhandle for netlink"
 msgstr "mechlistను కేటాయించలేదు"
 
-#: src/util/virnetlink.c:187 src/util/virnetlink.c:432
+#: src/util/virnetlink.c:197 src/util/virnetlink.c:442
 #, fuzzy
 msgid "cannot connect to netlink socket"
 msgstr "నెట్‌లింక్ సాకెట్‌నకు పంపలేదు"
 
-#: src/util/virnetlink.c:199
+#: src/util/virnetlink.c:209
 msgid "cannot send to netlink socket"
 msgstr "నెట్‌లింక్ సాకెట్‌నకు పంపలేదు"
 
-#: src/util/virnetlink.c:213
+#: src/util/virnetlink.c:223
 msgid "error in select call"
 msgstr ""
 
-#: src/util/virnetlink.c:216
+#: src/util/virnetlink.c:226
 #, fuzzy
 msgid "no valid netlink response was received"
 msgstr "తప్పుగారూపొందించిన నెట్‌లింక్ ప్రతిస్పందన సందేశము"
 
-#: src/util/virnetlink.c:224
+#: src/util/virnetlink.c:234
 #, fuzzy
 msgid "nl_recv failed"
 msgstr "మైగ్రేషన్ విఫలమైంది"
 
-#: src/util/virnetlink.c:295
+#: src/util/virnetlink.c:305
 msgid "nl_recv returned with error"
 msgstr ""
 
-#: src/util/virnetlink.c:382
+#: src/util/virnetlink.c:392
 msgid "netlink event service not running"
 msgstr ""
 
-#: src/util/virnetlink.c:426
+#: src/util/virnetlink.c:436
 #, fuzzy
 msgid "cannot allocate nlhandle for virNetlinkEvent server"
 msgstr "mechlistను కేటాయించలేదు"
 
-#: src/util/virnetlink.c:440
+#: src/util/virnetlink.c:450
 #, fuzzy
 msgid "cannot get netlink socket fd"
 msgstr "నెట్‌లింక్ సాకెట్‌ను తెరువలేదు"
 
-#: src/util/virnetlink.c:446
+#: src/util/virnetlink.c:456
 #, fuzzy
 msgid "cannot set netlink socket nonblocking"
 msgstr "నెట్‌లింక్ సాకెట్‌నకు పంపలేదు"
 
-#: src/util/virnetlink.c:455
+#: src/util/virnetlink.c:465
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
 msgstr "సంకేతపు పైప్‌నుండి చదువుటలో విఫలమైంది: %s"
 
-#: src/util/virnetlink.c:505
+#: src/util/virnetlink.c:515
 #, fuzzy
 msgid "Invalid NULL callback provided"
 msgstr "ఎటువంటి దృవీకరణ కాల్‌బాక్ అందిచబడలేదు."
 
-#: src/util/virnetlink.c:605
+#: src/util/virnetlink.c:615
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -20131,48 +20136,48 @@ msgstr "మద్దతీయని పరికరము రకము"
 msgid "Multi-head video devices are unsupported"
 msgstr "ఒక వీడియో కార్డు మాత్రమే ప్రస్తుతం మద్దతిచ్చునది"
 
-#: src/xen/block_stats.c:176
+#: src/xen/block_stats.c:180
 #, fuzzy, c-format
 msgid "Failed to read any block statistics for domain %d"
 msgstr "డొమైన్ %s కొరకు మెమొరీ గణాంకాలను పొందుటలో విఫలమైంది"
 
-#: src/xen/block_stats.c:190
+#: src/xen/block_stats.c:194
 #, fuzzy, c-format
 msgid "Frontend block device not connected for domain %d"
 msgstr "డొమైన్ కు పరికరం బ్లాక్ స్టట్సు ను పొందుము"
 
-#: src/xen/block_stats.c:201
+#: src/xen/block_stats.c:205
 #, c-format
 msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:210
+#: src/xen/block_stats.c:214
 #, c-format
 msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:330
+#: src/xen/block_stats.c:334
 #, c-format
 msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:334
+#: src/xen/block_stats.c:338
 #, c-format
 msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:338
+#: src/xen/block_stats.c:342
 #, c-format
 msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:342
+#: src/xen/block_stats.c:346
 #, c-format
 msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
 msgstr ""
@@ -20659,19 +20664,19 @@ msgstr "లింకు %sను %sకు సృష్టించుటలో �
 msgid "failed to remove link %s"
 msgstr "లింకు %s తీసివేయుటలో విఫలమైంది"
 
-#: src/xen/xs_internal.c:258
+#: src/xen/xs_internal.c:262
 msgid "failed to connect to Xen Store"
 msgstr "Xen స్టోరుకి అనుసంధించటంలో విఫలమైంది"
 
-#: src/xen/xs_internal.c:282
+#: src/xen/xs_internal.c:286
 msgid "adding watch @releaseDomain"
 msgstr "పర్యవేక్షక @releaseDomain జతచేయుచున్నది"
 
-#: src/xen/xs_internal.c:291
+#: src/xen/xs_internal.c:295
 msgid "adding watch @introduceDomain"
 msgstr "పర్యవేక్షక @introduceDomain జతచేయుచున్నది"
 
-#: src/xen/xs_internal.c:1160
+#: src/xen/xs_internal.c:1164
 msgid "watch already tracked"
 msgstr "పర్యవేక్షణ యిప్పటికే పర్యవేక్షించబడింది"
 

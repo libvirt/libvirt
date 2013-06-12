@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-06-12 17:34-0400\n"
 "PO-Revision-Date: 2007-05-10 15:48+0200\n"
 "Last-Translator: Keld Simonsen <keld@rap.dk>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -941,7 +941,7 @@ msgstr ""
 #: src/qemu/qemu_driver.c:11717 src/qemu/qemu_driver.c:11817
 #: src/qemu/qemu_driver.c:12203 src/qemu/qemu_driver.c:12575
 #: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12678
-#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2629
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -5043,8 +5043,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 
 #: src/esx/esx_util.c:150
@@ -6098,7 +6098,7 @@ msgid "could not build absolute output file path"
 msgstr "Kunne ikke læse beskrivelsesfilen %s"
 
 #: src/libvirt.c:2729 src/libvirt.c:2873 src/libvirt.c:3027
-#: src/libvirt.c:16864 src/libvirt.c:17722
+#: src/libvirt.c:16865 src/libvirt.c:17723
 msgid "running and paused flags are mutually exclusive"
 msgstr ""
 
@@ -6157,12 +6157,12 @@ msgstr ""
 msgid "domainMigratePrepare did not set uri"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2242
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2249
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2380
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2387
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
@@ -6190,9 +6190,9 @@ msgstr ""
 msgid "direct migration is not supported by the connection driver"
 msgstr "ingen understøttelse for hypervisor"
 
-#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17945
-#: src/libvirt.c:18001 src/libvirt.c:18069 src/libvirt.c:18142
-#: src/libvirt.c:18223
+#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17946
+#: src/libvirt.c:18002 src/libvirt.c:18070 src/libvirt.c:18143
+#: src/libvirt.c:18224
 msgid "disk is NULL"
 msgstr ""
 
@@ -6218,49 +6218,49 @@ msgstr ""
 msgid "input too large: %d * %d"
 msgstr ""
 
-#: src/libvirt.c:15116
+#: src/libvirt.c:15117
 msgid "data sources cannot be used for non-blocking streams"
 msgstr ""
 
-#: src/libvirt.c:15218
+#: src/libvirt.c:15219
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr ""
 
-#: src/libvirt.c:17165
+#: src/libvirt.c:17166
 msgid "use of current flag requires redefine flag"
 msgstr ""
 
-#: src/libvirt.c:17171
+#: src/libvirt.c:17172
 msgid "redefine and no metadata flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17177
+#: src/libvirt.c:17178
 msgid "redefine and halt flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17230
+#: src/libvirt.c:17231
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:17789
+#: src/libvirt.c:17790
 msgid "children and children_only flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18007
+#: src/libvirt.c:18008
 msgid "info is NULL"
 msgstr ""
 
-#: src/libvirt.c:18292
+#: src/libvirt.c:18293
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "kunne ikke læse konfigurationsfilen %s"
 
-#: src/libvirt.c:18298
+#: src/libvirt.c:18299
 #, fuzzy, c-format
 msgid "File descriptor %d must be a socket"
 msgstr "kunne ikke allokere en knude"
 
-#: src/libvirt.c:18685
+#: src/libvirt.c:18686
 #, c-format
 msgid "input too large: %u * %u"
 msgstr ""
@@ -9577,7 +9577,7 @@ msgstr ""
 msgid "Unable to deny access for disk path %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, fuzzy, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "Kunne ikke oprette domæne fra %s"
@@ -9651,7 +9651,7 @@ msgstr "aktuel hukommelse for domæne"
 #: src/qemu/qemu_driver.c:5145 src/qemu/qemu_driver.c:5374
 #: src/qemu/qemu_driver.c:10125 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
-#: src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "Kunne ikke afdefinere netværk %s"
@@ -10882,8 +10882,8 @@ msgstr ""
 msgid "no domain with matching name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:574
 #: src/qemu/qemu_process.c:3731
 #, fuzzy
 msgid "resume operation failed"
@@ -10975,8 +10975,8 @@ msgstr "Domæne %s mærket som automatisk startet\n"
 #: src/qemu/qemu_driver.c:9748 src/qemu/qemu_driver.c:10160
 #: src/qemu/qemu_driver.c:11084 src/qemu/qemu_driver.c:11135
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1941 src/qemu/qemu_migration.c:2242
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12185,7 +12185,7 @@ msgstr "uventet værdi-knude"
 msgid "canceled by client"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1953
 #, fuzzy
 msgid "migration job"
 msgstr "knudeinformation"
@@ -12214,7 +12214,7 @@ msgstr "forbind til gæstekonsol"
 msgid "target domain name doesn't match source name"
 msgstr "kommandoen '%s' understøtter ikke flaget --%s"
 
-#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2126
+#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2133
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "dump et domæne fra hukommelsen"
@@ -12265,68 +12265,73 @@ msgstr "Kunne ikke starte domæne %s"
 msgid "failed to wakeup migration tunnel"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/qemu/qemu_migration.c:1852
+#: src/qemu/qemu_migration.c:1814
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "Kunne ikke ødelægge netværk %s"
+
+#: src/qemu/qemu_migration.c:1859
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1954
+#: src/qemu/qemu_migration.c:1961
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "Kunne ikke oprette netværk fra %s"
 
-#: src/qemu/qemu_migration.c:2104
+#: src/qemu/qemu_migration.c:2111
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, fuzzy, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "Kunne ikke koble op til hypervisor"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Kunne ikke fortsætte domæne %s"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "henter tid på døgnet"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "Kunne ikke ødelægge netværk %s"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3397
+#: src/qemu/qemu_migration.c:3404
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3399
+#: src/qemu/qemu_migration.c:3406
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "Domæne %s er ved at blive genstartet\n"
@@ -17183,7 +17188,7 @@ msgstr ""
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 
-#: src/util/pci.c:2173 src/util/virnetlink.c:607
+#: src/util/pci.c:2173 src/util/virnetlink.c:617
 #, fuzzy
 msgid "not supported on non-linux platforms"
 msgstr "ingen understøttelse for hypervisor"
@@ -17580,18 +17585,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr ""
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:63 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:71
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "netværksnavn"
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:77
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "Kunne ikke ødelægge netværk %s"
@@ -17802,59 +17807,59 @@ msgstr "Kunne ikke afdefinere netværk %s"
 msgid "Unable to restore net config on this platform"
 msgstr "Kunne ikke afdefinere netværk %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:120 src/util/virnetdevbridge.c:131
+#: src/util/virnetdevbridge.c:138
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:172 src/util/virnetdevbridge.c:184
+#: src/util/virnetdevbridge.c:194
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:226 src/util/virnetdevbridge.c:240
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:264 src/util/virnetdevbridge.c:278
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "Kunne ikke lukke sokkel %d\n"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:305 src/util/virnetdevbridge.c:352
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:311 src/util/virnetdevbridge.c:325
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:359 src/util/virnetdevbridge.c:373
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:504
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "ingen understøttelse for hypervisor"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:512
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "kunne ikke hente domæne '%s'"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:522
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "ingen understøttelse for hypervisor"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:530
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "kunne ikke hente domæne '%s'"
@@ -18032,69 +18037,69 @@ msgstr ""
 msgid "Virtual port profile association not supported on this platform"
 msgstr "ingen understøttelse for hypervisor"
 
-#: src/util/virnetlink.c:126
+#: src/util/virnetlink.c:136
 msgid "cannot allocate placeholder nlhandle for netlink"
 msgstr ""
 
-#: src/util/virnetlink.c:181
+#: src/util/virnetlink.c:191
 msgid "cannot allocate nlhandle for netlink"
 msgstr ""
 
-#: src/util/virnetlink.c:187 src/util/virnetlink.c:432
+#: src/util/virnetlink.c:197 src/util/virnetlink.c:442
 #, fuzzy
 msgid "cannot connect to netlink socket"
 msgstr "kunne ikke forbinde til Xen Store"
 
-#: src/util/virnetlink.c:199
+#: src/util/virnetlink.c:209
 msgid "cannot send to netlink socket"
 msgstr ""
 
-#: src/util/virnetlink.c:213
+#: src/util/virnetlink.c:223
 msgid "error in select call"
 msgstr ""
 
-#: src/util/virnetlink.c:216
+#: src/util/virnetlink.c:226
 msgid "no valid netlink response was received"
 msgstr ""
 
-#: src/util/virnetlink.c:224
+#: src/util/virnetlink.c:234
 #, fuzzy
 msgid "nl_recv failed"
 msgstr "operation mislykkedes"
 
-#: src/util/virnetlink.c:295
+#: src/util/virnetlink.c:305
 msgid "nl_recv returned with error"
 msgstr ""
 
-#: src/util/virnetlink.c:382
+#: src/util/virnetlink.c:392
 msgid "netlink event service not running"
 msgstr ""
 
-#: src/util/virnetlink.c:426
+#: src/util/virnetlink.c:436
 msgid "cannot allocate nlhandle for virNetlinkEvent server"
 msgstr ""
 
-#: src/util/virnetlink.c:440
+#: src/util/virnetlink.c:450
 #, fuzzy
 msgid "cannot get netlink socket fd"
 msgstr "kunne ikke forbinde til Xen Store"
 
-#: src/util/virnetlink.c:446
+#: src/util/virnetlink.c:456
 #, fuzzy
 msgid "cannot set netlink socket nonblocking"
 msgstr "kunne ikke forbinde til Xen Store"
 
-#: src/util/virnetlink.c:455
+#: src/util/virnetlink.c:465
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
 msgstr "Kunne ikke læse beskrivelsesfilen %s"
 
-#: src/util/virnetlink.c:505
+#: src/util/virnetlink.c:515
 #, fuzzy
 msgid "Invalid NULL callback provided"
 msgstr "ugyldigt argument i "
 
-#: src/util/virnetlink.c:605
+#: src/util/virnetlink.c:615
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -20076,48 +20081,48 @@ msgstr "uventet mime-type"
 msgid "Multi-head video devices are unsupported"
 msgstr ""
 
-#: src/xen/block_stats.c:176
+#: src/xen/block_stats.c:180
 #, fuzzy, c-format
 msgid "Failed to read any block statistics for domain %d"
 msgstr "Kunne ikke starte domæne %s"
 
-#: src/xen/block_stats.c:190
+#: src/xen/block_stats.c:194
 #, fuzzy, c-format
 msgid "Frontend block device not connected for domain %d"
 msgstr "Returnerer tilstand for et kørende domæne."
 
-#: src/xen/block_stats.c:201
+#: src/xen/block_stats.c:205
 #, c-format
 msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:210
+#: src/xen/block_stats.c:214
 #, c-format
 msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:330
+#: src/xen/block_stats.c:334
 #, c-format
 msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:334
+#: src/xen/block_stats.c:338
 #, c-format
 msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:338
+#: src/xen/block_stats.c:342
 #, c-format
 msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:342
+#: src/xen/block_stats.c:346
 #, c-format
 msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
 msgstr ""
@@ -20624,19 +20629,19 @@ msgstr "Kunne ikke gemme domæne %s til %s"
 msgid "failed to remove link %s"
 msgstr "Kunne ikke fortsætte domæne %s"
 
-#: src/xen/xs_internal.c:258
+#: src/xen/xs_internal.c:262
 msgid "failed to connect to Xen Store"
 msgstr "kunne ikke forbinde til Xen Store"
 
-#: src/xen/xs_internal.c:282
+#: src/xen/xs_internal.c:286
 msgid "adding watch @releaseDomain"
 msgstr ""
 
-#: src/xen/xs_internal.c:291
+#: src/xen/xs_internal.c:295
 msgid "adding watch @introduceDomain"
 msgstr ""
 
-#: src/xen/xs_internal.c:1160
+#: src/xen/xs_internal.c:1164
 msgid "watch already tracked"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-06-12 17:34-0400\n"
 "PO-Revision-Date: 2010-04-12 11:35+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali INDIA <anubad@lists.ankur.org.in>\n"
@@ -948,7 +948,7 @@ msgstr "mutex আরম্ভ করতে ব্যর্থ"
 #: src/qemu/qemu_driver.c:11717 src/qemu/qemu_driver.c:11817
 #: src/qemu/qemu_driver.c:12203 src/qemu/qemu_driver.c:12575
 #: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12678
-#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2629
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -5083,8 +5083,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 
 #: src/esx/esx_util.c:150
@@ -6150,7 +6150,7 @@ msgid "could not build absolute output file path"
 msgstr "pidfile পাথ নির্মাণ করতে ব্যর্থ"
 
 #: src/libvirt.c:2729 src/libvirt.c:2873 src/libvirt.c:3027
-#: src/libvirt.c:16864 src/libvirt.c:17722
+#: src/libvirt.c:16865 src/libvirt.c:17723
 msgid "running and paused flags are mutually exclusive"
 msgstr ""
 
@@ -6209,11 +6209,11 @@ msgstr "নিরাপত্তার ফ্ল্যাগ সহ virDomainGet
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare দ্বারা uri নির্ধারণ করা হয়নি"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2242
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2249
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 দ্বারা uri নির্ধারণ করা হয়নি"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2380
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2387
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare দ্বারা uri নির্ধারণ করা হয়নি"
@@ -6242,9 +6242,9 @@ msgstr "peer2peer ফ্ল্যাগ বিনা টানেল মাই�
 msgid "direct migration is not supported by the connection driver"
 msgstr "হাইপার-ভাইসর দ্বারা এই কর্ম সমর্থিত নয়"
 
-#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17945
-#: src/libvirt.c:18001 src/libvirt.c:18069 src/libvirt.c:18142
-#: src/libvirt.c:18223
+#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17946
+#: src/libvirt.c:18002 src/libvirt.c:18070 src/libvirt.c:18143
+#: src/libvirt.c:18224
 #, fuzzy
 msgid "disk is NULL"
 msgstr "বাফারের মান NULL"
@@ -6272,51 +6272,51 @@ msgstr "nparams অত্যাধিক বড়"
 msgid "input too large: %d * %d"
 msgstr "nparams অত্যাধিক বড়"
 
-#: src/libvirt.c:15116
+#: src/libvirt.c:15117
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "নন-ব্লকিং স্ট্রিমের জন্য ডাটা সোর্স ব্যবহার করা যাবে না"
 
-#: src/libvirt.c:15218
+#: src/libvirt.c:15219
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "নন-ব্লকিং স্ট্রিমের জন্য ডাটা সিংক ব্যবহার করা যাবে না"
 
-#: src/libvirt.c:17165
+#: src/libvirt.c:17166
 msgid "use of current flag requires redefine flag"
 msgstr ""
 
-#: src/libvirt.c:17171
+#: src/libvirt.c:17172
 msgid "redefine and no metadata flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17177
+#: src/libvirt.c:17178
 msgid "redefine and halt flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17230
+#: src/libvirt.c:17231
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "নিরাপত্তার ফ্ল্যাগ সহ virDomainGetXMLDesc"
 
-#: src/libvirt.c:17789
+#: src/libvirt.c:17790
 msgid "children and children_only flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18007
+#: src/libvirt.c:18008
 #, fuzzy
 msgid "info is NULL"
 msgstr "বাফারের মান NULL"
 
-#: src/libvirt.c:18292
+#: src/libvirt.c:18293
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "কনফিগ ফাইলের হ্যান্ডেল সংরক্ষণ করতে ব্যর্থ"
 
-#: src/libvirt.c:18298
+#: src/libvirt.c:18299
 #, fuzzy, c-format
 msgid "File descriptor %d must be a socket"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
-#: src/libvirt.c:18685
+#: src/libvirt.c:18686
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams অত্যাধিক বড়"
@@ -9636,7 +9636,7 @@ msgstr "%s ডিভাইসটি %s-র জন্য অনুমোদন �
 msgid "Unable to deny access for disk path %s"
 msgstr "%s ডিভাইসটি %s-র জন্য অনুমোদন করতে ব্যর্থ"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "%s ডিভাইসটি %s-র জন্য অনুমোদন করতে ব্যর্থ"
@@ -9712,7 +9712,7 @@ msgstr "বর্তমান সময় প্রাপ্ত করতে ব�
 #: src/qemu/qemu_driver.c:5145 src/qemu/qemu_driver.c:5374
 #: src/qemu/qemu_driver.c:10125 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
-#: src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s-র জন্য cgroup সন্ধান করতে ব্যর্থ\n"
@@ -10956,8 +10956,8 @@ msgstr "%d id-র সাথে সুসংগত ডোমেইন অনু�
 msgid "no domain with matching name '%s'"
 msgstr "'%s' নামক কোনো ডোমেইন উপস্থিত নেই"
 
-#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:574
 #: src/qemu/qemu_process.c:3731
 msgid "resume operation failed"
 msgstr "পুনরারম্ভের কর্ম বিফল"
@@ -11048,8 +11048,8 @@ msgstr "ডোমেইন %s স্বয়ংক্রিয়রূপে প্�
 #: src/qemu/qemu_driver.c:9748 src/qemu/qemu_driver.c:10160
 #: src/qemu/qemu_driver.c:11084 src/qemu/qemu_driver.c:11135
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1941 src/qemu/qemu_migration.c:2242
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12271,7 +12271,7 @@ msgstr "মাইগ্রেশন অপ্রত্যাশিতরূপ�
 msgid "canceled by client"
 msgstr "ক্লায়েন্ট দ্বারা মাইগ্রেশন বাতিল করা হয়েছে"
 
-#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1953
 #, fuzzy
 msgid "migration job"
 msgstr "লাইভ মাইগ্রেশন"
@@ -12301,7 +12301,7 @@ msgid "target domain name doesn't match source name"
 msgstr ""
 "নেটওয়ার্ক কনফিগারেশনের ফাইল '%s'-র নাম নেটওয়ার্কের নাম '%s'-র সাথে সুসংগত নয়"
 
-#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2126
+#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2133
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "টানেল মাইগ্রেশনের জন্য unix সকেট '%s' খোলা সম্ভব নয়"
@@ -12352,73 +12352,78 @@ msgstr "%s-এ মাইগ্রেশন আরম্ভ করতে ব্�
 msgid "failed to wakeup migration tunnel"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ"
 
-#: src/qemu/qemu_migration.c:1852
+#: src/qemu/qemu_migration.c:1814
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "নন-ব্লকিং মোডে মনিটর স্থাপন করতে ব্যর্থ"
+
+#: src/qemu/qemu_migration.c:1859
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1954
+#: src/qemu/qemu_migration.c:1961
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "ড্রাইভার থেকে সংযোগ গ্রহণ করতে বিফল"
 
-#: src/qemu/qemu_migration.c:2104
+#: src/qemu/qemu_migration.c:2111
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 "উৎসস্থলের qemu-র সংস্করণ অতিরমাত্রায় পুরোনো ও টানেল করা মাইগ্রেশন সমর্থন করতে সক্ষম "
 "নয়"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "দূরবর্তী libvirtd URI '%s'-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 "গন্তব্যস্থলের উপস্থিত libvirt দ্বারা পিয়ার-টু-পিয়ার মাইগ্রেশন প্রোটোকল সমর্থিত নয়"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "বিফলতার পরে গেস্ট %s পুনরারম্ভ করতে ব্যর্থ"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 #, fuzzy
 msgid "received unexpected cookie with P2P migration"
 msgstr "স্ট্রিমটি অপ্রত্যাশিতভাবে বন্ধ হয়েছে"
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 #, fuzzy
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "মাইগ্রেট: peer2peer/direct মাইগ্রেশনের ক্ষেত্রে অপ্রত্যাশিত migrateuri"
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "দিনের বর্তমান সময় সংগ্রহ করতে ব্যর্থ"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "মনিটর সংক্রান্ত close-on-exec ফ্ল্যাগের মান নির্ধারণ করতে ব্যর্থ"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3397
+#: src/qemu/qemu_migration.c:3404
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ডোমেইন '%s' বর্তমানে চলছে না"
 
-#: src/qemu/qemu_migration.c:3399
+#: src/qemu/qemu_migration.c:3406
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ডোমেইন বর্তমানে সক্রিয় অবস্থায় নয়"
@@ -17332,7 +17337,7 @@ msgstr "PCI ডিভাইস '%s' আন-বাইন্ড করতে ব�
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 
-#: src/util/pci.c:2173 src/util/virnetlink.c:607
+#: src/util/pci.c:2173 src/util/virnetlink.c:617
 #, fuzzy
 msgid "not supported on non-linux platforms"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
@@ -17736,18 +17741,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr "cd: %s: %s"
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:63 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "কনফিগ ফাইল '%s/%s'-র নাম অত্যাধিক লম্বা"
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:71
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "নেটওয়ার্ক ইন্টারফেসের ধরন"
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:77
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "মনিটর সংক্রান্ত close-on-exec ফ্ল্যাগের মান নির্ধারণ করতে ব্যর্থ"
@@ -17958,59 +17963,59 @@ msgstr "চিহ্নিত ধরনের মনিটর ব্যবস্
 msgid "Unable to restore net config on this platform"
 msgstr "চিহ্নিত ধরনের মনিটর ব্যবস্থাপনা করতে ব্যর্থ: %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:120 src/util/virnetdevbridge.c:131
+#: src/util/virnetdevbridge.c:138
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:172 src/util/virnetdevbridge.c:184
+#: src/util/virnetdevbridge.c:194
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%s খুলতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:226 src/util/virnetdevbridge.c:240
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:264 src/util/virnetdevbridge.c:278
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "গোপনীয় তথ্য %s মুছে ফেলতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:305 src/util/virnetdevbridge.c:352
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "ইন্টারফেস সংক্রান্ত সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:311 src/util/virnetdevbridge.c:325
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "%s ডিভাইসটি %s-র জন্য অনুমোদন করতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:359 src/util/virnetdevbridge.c:373
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%s খুলতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:504
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:512
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "ডোমেইনের অবস্থা প্রাপ্ত করতে ব্যর্থ"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:522
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:530
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "ডোমেইনের অবস্থা প্রাপ্ত করতে ব্যর্থ"
@@ -18191,73 +18196,73 @@ msgstr "%d প্রকৃতির নেটওয়ার্ক সমর্থ�
 msgid "Virtual port profile association not supported on this platform"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
 
-#: src/util/virnetlink.c:126
+#: src/util/virnetlink.c:136
 #, fuzzy
 msgid "cannot allocate placeholder nlhandle for netlink"
 msgstr "mechlist বরাদ্দ করতে ব্যর্থ"
 
-#: src/util/virnetlink.c:181
+#: src/util/virnetlink.c:191
 #, fuzzy
 msgid "cannot allocate nlhandle for netlink"
 msgstr "mechlist বরাদ্দ করতে ব্যর্থ"
 
-#: src/util/virnetlink.c:187 src/util/virnetlink.c:432
+#: src/util/virnetlink.c:197 src/util/virnetlink.c:442
 #, fuzzy
 msgid "cannot connect to netlink socket"
 msgstr "netlink সকেটে পাঠাতে ব্যর্থ"
 
-#: src/util/virnetlink.c:199
+#: src/util/virnetlink.c:209
 msgid "cannot send to netlink socket"
 msgstr "netlink সকেটে পাঠাতে ব্যর্থ"
 
-#: src/util/virnetlink.c:213
+#: src/util/virnetlink.c:223
 msgid "error in select call"
 msgstr ""
 
-#: src/util/virnetlink.c:216
+#: src/util/virnetlink.c:226
 #, fuzzy
 msgid "no valid netlink response was received"
 msgstr "netlink প্রত্যুত্তরের ত্রুটিপূর্ণ বার্তা"
 
-#: src/util/virnetlink.c:224
+#: src/util/virnetlink.c:234
 #, fuzzy
 msgid "nl_recv failed"
 msgstr "মাইগ্রেট করতে বিফল"
 
-#: src/util/virnetlink.c:295
+#: src/util/virnetlink.c:305
 msgid "nl_recv returned with error"
 msgstr ""
 
-#: src/util/virnetlink.c:382
+#: src/util/virnetlink.c:392
 msgid "netlink event service not running"
 msgstr ""
 
-#: src/util/virnetlink.c:426
+#: src/util/virnetlink.c:436
 #, fuzzy
 msgid "cannot allocate nlhandle for virNetlinkEvent server"
 msgstr "mechlist বরাদ্দ করতে ব্যর্থ"
 
-#: src/util/virnetlink.c:440
+#: src/util/virnetlink.c:450
 #, fuzzy
 msgid "cannot get netlink socket fd"
 msgstr "netlink সকেট খুলতে ব্যর্থ"
 
-#: src/util/virnetlink.c:446
+#: src/util/virnetlink.c:456
 #, fuzzy
 msgid "cannot set netlink socket nonblocking"
 msgstr "netlink সকেটে পাঠাতে ব্যর্থ"
 
-#: src/util/virnetlink.c:455
+#: src/util/virnetlink.c:465
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
 msgstr "সিগন্যাল পাইপ থেকে পড়তে ব্যর্থ: %s"
 
-#: src/util/virnetlink.c:505
+#: src/util/virnetlink.c:515
 #, fuzzy
 msgid "Invalid NULL callback provided"
 msgstr "অনুমোদনের কোনো কল-ব্যাক উপলব্ধ করা হয়নি।"
 
-#: src/util/virnetlink.c:605
+#: src/util/virnetlink.c:615
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -20237,48 +20242,48 @@ msgstr "এই প্রকৃতির ডিভাইস সমর্থিত
 msgid "Multi-head video devices are unsupported"
 msgstr "বর্তমানে শুধুমাত্র একটি ভিডিও কার্ড সমর্থিত হবে"
 
-#: src/xen/block_stats.c:176
+#: src/xen/block_stats.c:180
 #, fuzzy, c-format
 msgid "Failed to read any block statistics for domain %d"
 msgstr "%s ডোমেইনের জন্য মেমরি সংক্রান্ত পরিসংখ্যান প্রাপ্ত করতে ব্যর্থ"
 
-#: src/xen/block_stats.c:190
+#: src/xen/block_stats.c:194
 #, fuzzy, c-format
 msgid "Frontend block device not connected for domain %d"
 msgstr "কোনো ডোমেইনের জন্য ডিভাইস ব্লকের পরিসংখ্যান প্রাপ্ত করুন"
 
-#: src/xen/block_stats.c:201
+#: src/xen/block_stats.c:205
 #, c-format
 msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:210
+#: src/xen/block_stats.c:214
 #, c-format
 msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:330
+#: src/xen/block_stats.c:334
 #, c-format
 msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:334
+#: src/xen/block_stats.c:338
 #, c-format
 msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:338
+#: src/xen/block_stats.c:342
 #, c-format
 msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:342
+#: src/xen/block_stats.c:346
 #, c-format
 msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
 msgstr ""
@@ -20771,23 +20776,23 @@ msgstr "%s লিংক, %s-র জন্য তৈরি করতে ব্য
 msgid "failed to remove link %s"
 msgstr "%s লিংক মুছে ফেলতে ব্যর্থ"
 
-#: src/xen/xs_internal.c:258
+#: src/xen/xs_internal.c:262
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
 
 # comments from the maintainer:
 # Those are name of actions, I doubt translating them would add much
-#: src/xen/xs_internal.c:282
+#: src/xen/xs_internal.c:286
 msgid "adding watch @releaseDomain"
 msgstr "watch @releaseDomain যোগ করা হচ্ছে"
 
 # comments from the maintainer:
 # Those are name of actions, I doubt translating them would add much
-#: src/xen/xs_internal.c:291
+#: src/xen/xs_internal.c:295
 msgid "adding watch @introduceDomain"
 msgstr "watch @introduceDomain যোগ করা হচ্ছে"
 
-#: src/xen/xs_internal.c:1160
+#: src/xen/xs_internal.c:1164
 msgid "watch already tracked"
 msgstr "watch বর্তমানে অনুসরণ করা হচ্ছে"
 
@@ -26560,8 +26565,8 @@ msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
-"%s: অস্থায়ী ফাইলের নামের মধ্যে শেল মিটা অথবা অন্য অগ্রহণীয় অক্ষর উপস্থিত রয়েছে"
-"($TMPDIR কী ভুল?)"
+"%s: অস্থায়ী ফাইলের নামের মধ্যে শেল মিটা অথবা অন্য অগ্রহণীয় অক্ষর উপস্থিত "
+"রয়েছে($TMPDIR কী ভুল?)"
 
 #: tools/virsh.c:15338
 #, c-format

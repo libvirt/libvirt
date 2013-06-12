@@ -1299,6 +1299,9 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Wed Jun 12 2013 Cole Robinson <crobinso@redhat.com> - 0.9.11.10-1
+- Maintenance release 0.9.11.10
+
 * Mon Jan 28 2013 Cole Robinson <crobinso@redhat.com> - 0.9.11.9-1
 - Maintenance release 0.9.11.9
 

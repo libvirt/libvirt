@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-06-12 17:34-0400\n"
 "PO-Revision-Date: 2010-04-22 14:04+1000\n"
 "Last-Translator: Hyunsok Oh <hoh@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -948,7 +948,7 @@ msgstr "뮤텍스를 초기화할 수 없습니다."
 #: src/qemu/qemu_driver.c:11717 src/qemu/qemu_driver.c:11817
 #: src/qemu/qemu_driver.c:12203 src/qemu/qemu_driver.c:12575
 #: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12678
-#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2629
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -5063,8 +5063,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 
 #: src/esx/esx_util.c:150
@@ -6130,7 +6130,7 @@ msgid "could not build absolute output file path"
 msgstr "pidfile 경로를 설정하는 데 실패"
 
 #: src/libvirt.c:2729 src/libvirt.c:2873 src/libvirt.c:3027
-#: src/libvirt.c:16864 src/libvirt.c:17722
+#: src/libvirt.c:16865 src/libvirt.c:17723
 msgid "running and paused flags are mutually exclusive"
 msgstr ""
 
@@ -6189,11 +6189,11 @@ msgstr "보안 플래그와 함께 virDomainGetXMLDesc"
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare가 uri를 설정하지 않았음"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2242
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2249
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2가 uri를 설정하지 않았음"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2380
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2387
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare가 uri를 설정하지 않았음"
@@ -6222,9 +6222,9 @@ msgstr "peer2peer 플래그 설정 없이 터널링을 사용한 이전을 수�
 msgid "direct migration is not supported by the connection driver"
 msgstr "이 기능은 하이퍼바이저로 지원되지 않음"
 
-#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17945
-#: src/libvirt.c:18001 src/libvirt.c:18069 src/libvirt.c:18142
-#: src/libvirt.c:18223
+#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17946
+#: src/libvirt.c:18002 src/libvirt.c:18070 src/libvirt.c:18143
+#: src/libvirt.c:18224
 #, fuzzy
 msgid "disk is NULL"
 msgstr "버퍼가 NULL입니다"
@@ -6253,51 +6253,51 @@ msgstr "nparams가 너무 큽니다"
 msgid "input too large: %d * %d"
 msgstr "nparams가 너무 큽니다"
 
-#: src/libvirt.c:15116
+#: src/libvirt.c:15117
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "데이터 소스는 비-블러킹 스트림에 사용할 수 없습니다"
 
-#: src/libvirt.c:15218
+#: src/libvirt.c:15219
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "데이터 싱크는 비-블러킹 스트림에 사용할 수 없습니다"
 
-#: src/libvirt.c:17165
+#: src/libvirt.c:17166
 msgid "use of current flag requires redefine flag"
 msgstr ""
 
-#: src/libvirt.c:17171
+#: src/libvirt.c:17172
 msgid "redefine and no metadata flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17177
+#: src/libvirt.c:17178
 msgid "redefine and halt flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17230
+#: src/libvirt.c:17231
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "보안 플래그와 함께 virDomainGetXMLDesc"
 
-#: src/libvirt.c:17789
+#: src/libvirt.c:17790
 msgid "children and children_only flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18007
+#: src/libvirt.c:18008
 #, fuzzy
 msgid "info is NULL"
 msgstr "버퍼가 NULL입니다"
 
-#: src/libvirt.c:18292
+#: src/libvirt.c:18293
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "설정 파일 핸들을 저장하는 데 실패했습니다."
 
-#: src/libvirt.c:18298
+#: src/libvirt.c:18299
 #, fuzzy, c-format
 msgid "File descriptor %d must be a socket"
 msgstr "소켓 생성 실패"
 
-#: src/libvirt.c:18685
+#: src/libvirt.c:18686
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams가 너무 큽니다"
@@ -9586,7 +9586,7 @@ msgstr "장치 %s를 %s에 대해 허용할 수 없음"
 msgid "Unable to deny access for disk path %s"
 msgstr "장치 %s를 %s에 대해 허용할 수 없음"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "장치 %s를 %s에 대해 허용할 수 없음"
@@ -9662,7 +9662,7 @@ msgstr "현재 시간을 얻을 수 없음"
 #: src/qemu/qemu_driver.c:5145 src/qemu/qemu_driver.c:5374
 #: src/qemu/qemu_driver.c:10125 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
-#: src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s에 대한 cgroup을 찾을 수 없음\n"
@@ -10907,8 +10907,8 @@ msgstr "id가 %d와 일치하는 도메인이 없음"
 msgid "no domain with matching name '%s'"
 msgstr "이름이 '%s'와 일치하는 도메인이 없음"
 
-#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:574
 #: src/qemu/qemu_process.c:3731
 msgid "resume operation failed"
 msgstr "재개 동작이 실패했습니다"
@@ -10999,8 +10999,8 @@ msgstr "%s 도메인은 자동 시작으로 표시됨\n"
 #: src/qemu/qemu_driver.c:9748 src/qemu/qemu_driver.c:10160
 #: src/qemu/qemu_driver.c:11084 src/qemu/qemu_driver.c:11135
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1941 src/qemu/qemu_migration.c:2242
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12221,7 +12221,7 @@ msgstr "이전(migration)이 예기치 않게 실패했습니다"
 msgid "canceled by client"
 msgstr "이전(migration)이 사용자에 의해 최소되었습니다"
 
-#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1953
 #, fuzzy
 msgid "migration job"
 msgstr "실시간 이전"
@@ -12250,7 +12250,7 @@ msgstr "수신지 호스트 연결 URI"
 msgid "target domain name doesn't match source name"
 msgstr "네트워크 설정 파일명 '%s'는 네트워크 이름 '%s'와 부합하지 않습니다"
 
-#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2126
+#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2133
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "유닉스 소켓 '%s'를 터널링을 사용한 이전을 위해 열 수 없음"
@@ -12301,70 +12301,75 @@ msgstr "%s로의 이전을 시작할 수 없음"
 msgid "failed to wakeup migration tunnel"
 msgstr "설정 파일 쓰기 실패"
 
-#: src/qemu/qemu_migration.c:1852
+#: src/qemu/qemu_migration.c:1814
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "모니터를 비-블로킹 모드로 설정할 수 없음"
+
+#: src/qemu/qemu_migration.c:1859
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1954
+#: src/qemu/qemu_migration.c:1961
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "드라이버에서 연결을 받아들이는 데 실패"
 
-#: src/qemu/qemu_migration.c:2104
+#: src/qemu/qemu_migration.c:2111
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "원본 qemu가 너무 오래되서 터널링을 사용한 이전을 지원하지 않습니다"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "원격 libvirt URI %s에 대한 연결 실패"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "목적지 libvirt가 피어간 이전 프로토콜을 지원하지 않습니다"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "실패 후 게스트 %s를 재개하는 데 실패"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 #, fuzzy
 msgid "received unexpected cookie with P2P migration"
 msgstr "스트림이 예기치 못하게 종료했습니다"
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 #, fuzzy
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "이전: 피어간/직접 이전에서 예기치 않은 migrateuri입니다"
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "시간을 가져올 수 없음"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3397
+#: src/qemu/qemu_migration.c:3404
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "도메인이 이전중 아닙니다"
 
-#: src/qemu/qemu_migration.c:3399
+#: src/qemu/qemu_migration.c:3406
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "도메인이 이전중 아닙니다"
@@ -17259,7 +17264,7 @@ msgstr "'%s' PCI 장치를 바인드 해제하는 데 실패"
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 
-#: src/util/pci.c:2173 src/util/virnetlink.c:607
+#: src/util/pci.c:2173 src/util/virnetlink.c:617
 #, fuzzy
 msgid "not supported on non-linux platforms"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
@@ -17663,18 +17668,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr "cd: %s: %s"
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:63 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "설정 파일이름 '%s/%s'가 너무 깁니다"
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:71
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "네트워크 인터페이스 유형"
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:77
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
@@ -17885,59 +17890,59 @@ msgstr "모니터 유형을 처리할 수 없음: %s"
 msgid "Unable to restore net config on this platform"
 msgstr "모니터 유형을 처리할 수 없음: %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:120 src/util/virnetdevbridge.c:131
+#: src/util/virnetdevbridge.c:138
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "PCI 장치 %s를 리셋할 수 없음: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:172 src/util/virnetdevbridge.c:184
+#: src/util/virnetdevbridge.c:194
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%s를 열 수 없음"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:226 src/util/virnetdevbridge.c:240
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "파이프를 생성할 수 없"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:264 src/util/virnetdevbridge.c:278
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "비밀정보 %s 삭제 실패"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:305 src/util/virnetdevbridge.c:352
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "인터페이스 정보 보기 실패"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:311 src/util/virnetdevbridge.c:325
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "장치 %s를 %s에 대해 허용할 수 없음"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:359 src/util/virnetdevbridge.c:373
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%s를 열 수 없음"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:504
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:512
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "도메인 상태를 얻는 데 실패"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:522
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:530
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "도메인 상태를 얻는 데 실패"
@@ -18118,73 +18123,73 @@ msgstr "네트워크 유형 %d를 지원하지 않습니다"
 msgid "Virtual port profile association not supported on this platform"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
 
-#: src/util/virnetlink.c:126
+#: src/util/virnetlink.c:136
 #, fuzzy
 msgid "cannot allocate placeholder nlhandle for netlink"
 msgstr "mechlist를 할당할 수 없습니다"
 
-#: src/util/virnetlink.c:181
+#: src/util/virnetlink.c:191
 #, fuzzy
 msgid "cannot allocate nlhandle for netlink"
 msgstr "mechlist를 할당할 수 없습니다"
 
-#: src/util/virnetlink.c:187 src/util/virnetlink.c:432
+#: src/util/virnetlink.c:197 src/util/virnetlink.c:442
 #, fuzzy
 msgid "cannot connect to netlink socket"
 msgstr "넷링크 소켓에 송신할 수 없습니다"
 
-#: src/util/virnetlink.c:199
+#: src/util/virnetlink.c:209
 msgid "cannot send to netlink socket"
 msgstr "넷링크 소켓에 송신할 수 없습니다"
 
-#: src/util/virnetlink.c:213
+#: src/util/virnetlink.c:223
 msgid "error in select call"
 msgstr ""
 
-#: src/util/virnetlink.c:216
+#: src/util/virnetlink.c:226
 #, fuzzy
 msgid "no valid netlink response was received"
 msgstr "잘못된 형식의 넷링크 응답 메시지"
 
-#: src/util/virnetlink.c:224
+#: src/util/virnetlink.c:234
 #, fuzzy
 msgid "nl_recv failed"
 msgstr "이전이 실패했습니다"
 
-#: src/util/virnetlink.c:295
+#: src/util/virnetlink.c:305
 msgid "nl_recv returned with error"
 msgstr ""
 
-#: src/util/virnetlink.c:382
+#: src/util/virnetlink.c:392
 msgid "netlink event service not running"
 msgstr ""
 
-#: src/util/virnetlink.c:426
+#: src/util/virnetlink.c:436
 #, fuzzy
 msgid "cannot allocate nlhandle for virNetlinkEvent server"
 msgstr "mechlist를 할당할 수 없습니다"
 
-#: src/util/virnetlink.c:440
+#: src/util/virnetlink.c:450
 #, fuzzy
 msgid "cannot get netlink socket fd"
 msgstr "netlink 소켓을 열 수 없음"
 
-#: src/util/virnetlink.c:446
+#: src/util/virnetlink.c:456
 #, fuzzy
 msgid "cannot set netlink socket nonblocking"
 msgstr "넷링크 소켓에 송신할 수 없습니다"
 
-#: src/util/virnetlink.c:455
+#: src/util/virnetlink.c:465
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
 msgstr "시그널 파이프에서 읽기에 실패했습니다: %s "
 
-#: src/util/virnetlink.c:505
+#: src/util/virnetlink.c:515
 #, fuzzy
 msgid "Invalid NULL callback provided"
 msgstr "권한 설정 콜백이 제공되지 않았습니다."
 
-#: src/util/virnetlink.c:605
+#: src/util/virnetlink.c:615
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -20163,48 +20168,48 @@ msgstr "지원하지 않는 장치 유형"
 msgid "Multi-head video devices are unsupported"
 msgstr "현재는 오직 하나의 비디오 카드만을 지원합니다"
 
-#: src/xen/block_stats.c:176
+#: src/xen/block_stats.c:180
 #, fuzzy, c-format
 msgid "Failed to read any block statistics for domain %d"
 msgstr "도메인 %s의 메모리 통계를 얻는 데 실패했습니다"
 
-#: src/xen/block_stats.c:190
+#: src/xen/block_stats.c:194
 #, fuzzy, c-format
 msgid "Frontend block device not connected for domain %d"
 msgstr "도메인의 장치 블럭 상태 보기"
 
-#: src/xen/block_stats.c:201
+#: src/xen/block_stats.c:205
 #, c-format
 msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:210
+#: src/xen/block_stats.c:214
 #, c-format
 msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:330
+#: src/xen/block_stats.c:334
 #, c-format
 msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:334
+#: src/xen/block_stats.c:338
 #, c-format
 msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:338
+#: src/xen/block_stats.c:342
 #, c-format
 msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:342
+#: src/xen/block_stats.c:346
 #, c-format
 msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
 msgstr ""
@@ -20693,19 +20698,19 @@ msgstr "링크 %s를 %s에 대해 생성하는 데 실패"
 msgid "failed to remove link %s"
 msgstr "링크 제거 실패: %s"
 
-#: src/xen/xs_internal.c:258
+#: src/xen/xs_internal.c:262
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store에 연결 실패"
 
-#: src/xen/xs_internal.c:282
+#: src/xen/xs_internal.c:286
 msgid "adding watch @releaseDomain"
 msgstr "@releaseDomain에 감시 추가 중"
 
-#: src/xen/xs_internal.c:291
+#: src/xen/xs_internal.c:295
 msgid "adding watch @introduceDomain"
 msgstr "@introduceDomain에 감시 추가 중"
 
-#: src/xen/xs_internal.c:1160
+#: src/xen/xs_internal.c:1164
 msgid "watch already tracked"
 msgstr "감시가 이미 추적중입니다"
 

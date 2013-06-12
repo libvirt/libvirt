@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.kn\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-06-12 17:34-0400\n"
 "PO-Revision-Date: 2010-04-22 18:26+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kn@li.org>\n"
@@ -948,7 +948,7 @@ msgstr "mutex ಅನ್ನು ಆರಂಭಿಸಲು ಸಾಧ್ಯವಾಗ�
 #: src/qemu/qemu_driver.c:11717 src/qemu/qemu_driver.c:11817
 #: src/qemu/qemu_driver.c:12203 src/qemu/qemu_driver.c:12575
 #: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12678
-#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:12724 src/qemu/qemu_migration.c:2629
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -5078,8 +5078,8 @@ msgstr ""
 #: src/esx/esx_util.c:132
 #, c-format
 msgid ""
-"Query parameter 'proxy' contains unexpected type '%s' (should be (http|socks"
-"(|4|4a|5))"
+"Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
+"socks(|4|4a|5))"
 msgstr ""
 
 #: src/esx/esx_util.c:150
@@ -6146,7 +6146,7 @@ msgid "could not build absolute output file path"
 msgstr "pidfile ಮಾರ್ಗವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ."
 
 #: src/libvirt.c:2729 src/libvirt.c:2873 src/libvirt.c:3027
-#: src/libvirt.c:16864 src/libvirt.c:17722
+#: src/libvirt.c:16865 src/libvirt.c:17723
 msgid "running and paused flags are mutually exclusive"
 msgstr ""
 
@@ -6205,11 +6205,11 @@ msgstr "ಸುರಕ್ಷಿತ ಫ್ಲ್ಯಾಗ್‌ನೊಂದಿಗ�
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare uri ಅನ್ನು ಹೊಂದಿಸಿಲ್ಲ"
 
-#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2242
+#: src/libvirt.c:4769 src/qemu/qemu_migration.c:2249
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 ಯು uri ಅನ್ನು ಹೊಂದಿಸಿಲ್ಲ"
 
-#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2380
+#: src/libvirt.c:4915 src/qemu/qemu_migration.c:2387
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare uri ಅನ್ನು ಹೊಂದಿಸಿಲ್ಲ"
@@ -6238,9 +6238,9 @@ msgstr "peer2peer ಫ್ಲಾಗ್‌ ಅನ್ನು ಬಳಸಿಕೊಳ್
 msgid "direct migration is not supported by the connection driver"
 msgstr "ಈ ಕಾರ್ಯವು ಹೈಪರ್ವೈಸಿರಿನಿಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
-#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17945
-#: src/libvirt.c:18001 src/libvirt.c:18069 src/libvirt.c:18142
-#: src/libvirt.c:18223
+#: src/libvirt.c:7613 src/libvirt.c:7694 src/libvirt.c:17946
+#: src/libvirt.c:18002 src/libvirt.c:18070 src/libvirt.c:18143
+#: src/libvirt.c:18224
 #, fuzzy
 msgid "disk is NULL"
 msgstr "ಬಫರ್ NULL ಆಗಿದೆ"
@@ -6269,51 +6269,51 @@ msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 msgid "input too large: %d * %d"
 msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 
-#: src/libvirt.c:15116
+#: src/libvirt.c:15117
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "ದತ್ತಾಂಶ ಆಕರಗಳನ್ನು ಸ್ಟ್ರೀಮ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸದೆ ಇರಲು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/libvirt.c:15218
+#: src/libvirt.c:15219
 msgid "data sinks cannot be used for non-blocking streams"
 msgstr "ದತ್ತಾಂಶ ಸಿಂಕ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸದೆ ಇರಲು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#: src/libvirt.c:17165
+#: src/libvirt.c:17166
 msgid "use of current flag requires redefine flag"
 msgstr ""
 
-#: src/libvirt.c:17171
+#: src/libvirt.c:17172
 msgid "redefine and no metadata flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17177
+#: src/libvirt.c:17178
 msgid "redefine and halt flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:17230
+#: src/libvirt.c:17231
 #, fuzzy
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "ಸುರಕ್ಷಿತ ಫ್ಲ್ಯಾಗ್‌ನೊಂದಿಗಿನ virDomainGetXMLDesc"
 
-#: src/libvirt.c:17789
+#: src/libvirt.c:17790
 msgid "children and children_only flags are mutually exclusive"
 msgstr ""
 
-#: src/libvirt.c:18007
+#: src/libvirt.c:18008
 #, fuzzy
 msgid "info is NULL"
 msgstr "ಬಫರ್ NULL ಆಗಿದೆ"
 
-#: src/libvirt.c:18292
+#: src/libvirt.c:18293
 #, fuzzy, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ಸಂರಚನಾ ಕಡತದ ಹ್ಯಾಂಡಲ್‌ ಅನ್ನು ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/libvirt.c:18298
+#: src/libvirt.c:18299
 #, fuzzy, c-format
 msgid "File descriptor %d must be a socket"
 msgstr "ಒಂದು ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/libvirt.c:18685
+#: src/libvirt.c:18686
 #, fuzzy, c-format
 msgid "input too large: %u * %u"
 msgstr "nparams ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
@@ -9627,7 +9627,7 @@ msgstr "ಸಾಧನ %s ಅನ್ನು %s ಗಾಗಿ ಅನುಮತಿಸಲ
 msgid "Unable to deny access for disk path %s"
 msgstr "ಸಾಧನ %s ಅನ್ನು %s ಗಾಗಿ ಅನುಮತಿಸಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "ಸಾಧನ %s ಅನ್ನು %s ಗಾಗಿ ಅನುಮತಿಸಲಾಗಿಲ್ಲ"
@@ -9703,7 +9703,7 @@ msgstr "ಪ್ರಸಕ್ತ ಸಮಯವನ್ನು ಪಡೆಯುವಲ್�
 #: src/qemu/qemu_driver.c:5145 src/qemu/qemu_driver.c:5374
 #: src/qemu/qemu_driver.c:10125 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
-#: src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s ಗಾಗಿನ cgroup ಅನ್ನು ಪತ್ತೆ ಮಾಡಲಾಗಿಲ್ಲ\n"
@@ -10948,8 +10948,8 @@ msgstr "id %d ಗೆ ತಾಳೆಯಾಗುವ ಡೊಮೈನ್‌ ಇಲ್
 msgid "no domain with matching name '%s'"
 msgstr "%s ಹೆಸರಿಗೆ ತಾಳೆಯಾಗುವ ಯಾವುದೆ ಡೊಮೈನ್‌ ಇಲ್ಲ"
 
-#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:574
+#: src/qemu/qemu_driver.c:1538 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:574
 #: src/qemu/qemu_process.c:3731
 msgid "resume operation failed"
 msgstr "ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಮರಳಿ ನಡೆಸುವುದು ವಿಫಲಗೊಂಡಿದೆ"
@@ -11040,8 +11040,8 @@ msgstr "ಡೊಮೈನ್‌ %s ವು ಸ್ವಯಂಚಾಲಿತವಾಗ�
 #: src/qemu/qemu_driver.c:9748 src/qemu/qemu_driver.c:10160
 #: src/qemu/qemu_driver.c:11084 src/qemu/qemu_driver.c:11135
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
-#: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1941 src/qemu/qemu_migration.c:2242
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:552 src/qemu/qemu_process.c:565
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12264,7 +12264,7 @@ msgstr "ವರ್ಗಾವಣೆಯು ಅನಿರೀಕ್ಷಿತವಾಗ�
 msgid "canceled by client"
 msgstr "ವರ್ಗಾವಣೆಯನ್ನು ಕ್ಲೈಂಟ್‌ನಿಂದ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ"
 
-#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1946
+#: src/qemu/qemu_migration.c:972 src/qemu/qemu_migration.c:1953
 #, fuzzy
 msgid "migration job"
 msgstr "ಲೈವ್ ವರ್ಗಾವಣೆ"
@@ -12293,7 +12293,7 @@ msgstr "ನಿರ್ದೇಶಿತ ಅತಿಥೇಯದ ಸಂಪರ್ಕ URI
 msgid "target domain name doesn't match source name"
 msgstr "ಜಾಲಬಂಧ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು '%s', '%s' ಜಾಲಬಂಧ ಹೆಸರಿಗೆ ತಾಳೆಯಾಗುತ್ತಿಲ್ಲ"
 
-#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2126
+#: src/qemu/qemu_migration.c:1312 src/qemu/qemu_migration.c:2133
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "ಟನಲ್ ಮಾಡಲಾದ ವರ್ಗಾವಣೆಗಾಗಿ ಯುನಿಕ್ಸ್ ಸಾಕೆಟ್ '%s' ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -12344,71 +12344,76 @@ msgstr "%s ಗೆ ವರ್ಗಾವಣೆಯನ್ನು ಆರಂಭಿಸಲ�
 msgid "failed to wakeup migration tunnel"
 msgstr "ಸಂರಚನಾ ಕಡತಕ್ಕೆ ಬರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_migration.c:1852
+#: src/qemu/qemu_migration.c:1814
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "ಮಾನಿಟರ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸದೆ ಇರುವ ಕ್ರಮಕ್ಕೆ ಇರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#: src/qemu/qemu_migration.c:1859
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1954
+#: src/qemu/qemu_migration.c:1961
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "ಚಾಲಕದಿಂದ ಸಂಪರ್ಕವನ್ನು ಅಂಗೀಕರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_migration.c:2104
+#: src/qemu/qemu_migration.c:2111
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "ಆಕರ qemu ವರ್ಗಾವಣೆಯನ್ನು ಬೆಂಬಲಿಸಲು ಬಹಳ ಹಳೆಯದಾಗಿದೆ"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "libvirt URI %s ನಲ್ಲಿ ಸಂಪರ್ಕ ಹೊಂದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "ಗುರಿ libvirt ಪೀರ್-ಇಂದ-ಪೀರ್ ವರ್ಗಾವನೆ ಪ್ರೊಟೊಕಾಲ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "ವಿಫಲತೆಯ ನಂತರ ಅತಿಥಿ %s ಅನ್ನು ಪುನರಾರಂಭಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 #, fuzzy
 msgid "received unexpected cookie with P2P migration"
 msgstr "ಸ್ಟ್ರೀಮ್ ಅನಿರೀಕ್ಷಿತ ಅಂತ್ಯವನ್ನು ಕಂಡಿದೆ"
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 #, fuzzy
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr ""
 "ವರ್ಗಾವಣೆ ಮಾಡು: peer2peer/ನೇರವಾದ ವರ್ಗಾವಣೆಗಾಗಿ ಅನಿರೀಕ್ಷಿತವಾದ migrateuri ಕಂಡುಬಂದಿದೆ"
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "ದಿನದ ಸಮಯವನ್ನು ಪಡೆಯಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "ಮಾನಿಟರ್ ಅನ್ನು exec ಗುರುತು ಕಂಡಾಗ ಮುಚ್ಚು ಗೆ ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3397
+#: src/qemu/qemu_migration.c:3404
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ಡೊಮೈನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/qemu/qemu_migration.c:3399
+#: src/qemu/qemu_migration.c:3406
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ಡೊಮೈನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -17325,7 +17330,7 @@ msgstr "PCI ಸಾಧನ '%s' ಅನ್ನು ಅನ್‌ಬೈಂಡ್ ಮಾ
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 
-#: src/util/pci.c:2173 src/util/virnetlink.c:607
+#: src/util/pci.c:2173 src/util/virnetlink.c:617
 #, fuzzy
 msgid "not supported on non-linux platforms"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -17729,18 +17734,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr "cd: %s: %s"
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:63 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "'%s/%s' ಎಂಬ ಸಂರಚನಾ ಕಡತದ ಹೆಸರು ಬಹಳ ಉದ್ದವಾಗಿದೆ"
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:71
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "ಜಾಲಬಂಧ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ"
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:77
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "ಮಾನಿಟರ್ ಅನ್ನು exec ಗುರುತು ಕಂಡಾಗ ಮುಚ್ಚು ಗೆ ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
@@ -17951,59 +17956,59 @@ msgstr "ಮಾನಿಟರ್ ಬಗೆಯನ್ನು ನಿಭಾಯಿಸಲ�
 msgid "Unable to restore net config on this platform"
 msgstr "ಮಾನಿಟರ್ ಬಗೆಯನ್ನು ನಿಭಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:120 src/util/virnetdevbridge.c:131
+#: src/util/virnetdevbridge.c:138
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "PCI ಸಾಧನ %s ಅನ್ನು ಮರಳಿ ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:172 src/util/virnetdevbridge.c:184
+#: src/util/virnetdevbridge.c:194
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%s ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:226 src/util/virnetdevbridge.c:240
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "ಪೈಪ್ ಅನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:264 src/util/virnetdevbridge.c:278
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "ಸೀಕ್ರೆಟ್ %s ಅನ್ನು ಅಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:305 src/util/virnetdevbridge.c:352
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "ಸಂಪರ್ಕಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:311 src/util/virnetdevbridge.c:325
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "ಸಾಧನ %s ಅನ್ನು %s ಗಾಗಿ ಅನುಮತಿಸಲಾಗಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:359 src/util/virnetdevbridge.c:373
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%s ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:504
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:512
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "ಡೊಮೈನ್‌ ಸ್ಥಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:522
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:530
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "ಡೊಮೈನ್‌ ಸ್ಥಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -18186,73 +18191,73 @@ msgstr "%d ಬಗೆಯ ಜಾಲಬಂಧವು ಬೆಂಬಲಿತವಾಗ�
 msgid "Virtual port profile association not supported on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
 
-#: src/util/virnetlink.c:126
+#: src/util/virnetlink.c:136
 #, fuzzy
 msgid "cannot allocate placeholder nlhandle for netlink"
 msgstr "mechlist ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:181
+#: src/util/virnetlink.c:191
 #, fuzzy
 msgid "cannot allocate nlhandle for netlink"
 msgstr "mechlist ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:187 src/util/virnetlink.c:432
+#: src/util/virnetlink.c:197 src/util/virnetlink.c:442
 #, fuzzy
 msgid "cannot connect to netlink socket"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಾಕೆಟ್ ಅನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:199
+#: src/util/virnetlink.c:209
 msgid "cannot send to netlink socket"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಾಕೆಟ್ ಅನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:213
+#: src/util/virnetlink.c:223
 msgid "error in select call"
 msgstr ""
 
-#: src/util/virnetlink.c:216
+#: src/util/virnetlink.c:226
 #, fuzzy
 msgid "no valid netlink response was received"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಪ್ರತ್ಯುತ್ತರ ಸಂದೇಶವು ಸರಿಯಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:224
+#: src/util/virnetlink.c:234
 #, fuzzy
 msgid "nl_recv failed"
 msgstr "ವರ್ಗಾವಣೆಯು ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/util/virnetlink.c:295
+#: src/util/virnetlink.c:305
 msgid "nl_recv returned with error"
 msgstr ""
 
-#: src/util/virnetlink.c:382
+#: src/util/virnetlink.c:392
 msgid "netlink event service not running"
 msgstr ""
 
-#: src/util/virnetlink.c:426
+#: src/util/virnetlink.c:436
 #, fuzzy
 msgid "cannot allocate nlhandle for virNetlinkEvent server"
 msgstr "mechlist ಅನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:440
+#: src/util/virnetlink.c:450
 #, fuzzy
 msgid "cannot get netlink socket fd"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಾಕೆಟ್ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:446
+#: src/util/virnetlink.c:456
 #, fuzzy
 msgid "cannot set netlink socket nonblocking"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಾಕೆಟ್ ಅನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/util/virnetlink.c:455
+#: src/util/virnetlink.c:465
 #, fuzzy
 msgid "Failed to add netlink event handle watch"
 msgstr "ಸಿಗ್ನಲ್ ಪೈಪ್‌ನಿಂದ ಓದುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
 
-#: src/util/virnetlink.c:505
+#: src/util/virnetlink.c:515
 #, fuzzy
 msgid "Invalid NULL callback provided"
 msgstr "ಯಾವುದೆ ದೃಢೀಕರಣ ಕಾಲ್‌ಬ್ಯಾಕ್‌ ಅನ್ನು ಒದಗಿಸಲಾಗಿಲ್ಲ."
 
-#: src/util/virnetlink.c:605
+#: src/util/virnetlink.c:615
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -20225,48 +20230,48 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಸಾಧನದ ಬಗೆ"
 msgid "Multi-head video devices are unsupported"
 msgstr "ಕೇವಲ ಒಂದು ವೀಡಿಯೊ ಕಾರ್ಡಿಗೆ ಮಾತ್ರ ಪ್ರಸಕ್ತ ಬೆಂಬಲವಿದೆ"
 
-#: src/xen/block_stats.c:176
+#: src/xen/block_stats.c:180
 #, fuzzy, c-format
 msgid "Failed to read any block statistics for domain %d"
 msgstr "%s ಡೊಮೈನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಅಂಕಿ ಅಂಶಗಳನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/xen/block_stats.c:190
+#: src/xen/block_stats.c:194
 #, fuzzy, c-format
 msgid "Frontend block device not connected for domain %d"
 msgstr "ಒಂದು ಡೊಮೈನ್‌ಗೆ ಸಾಧನದ ಬ್ಲಾಕ್ ಅಂಕಿಅಂಶಗಳನ್ನು(block stats) ಪಡೆದುಕೊ"
 
-#: src/xen/block_stats.c:201
+#: src/xen/block_stats.c:205
 #, c-format
 msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:210
+#: src/xen/block_stats.c:214
 #, c-format
 msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:330
+#: src/xen/block_stats.c:334
 #, c-format
 msgid ""
 "invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:334
+#: src/xen/block_stats.c:338
 #, c-format
 msgid ""
 "invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:338
+#: src/xen/block_stats.c:342
 #, c-format
 msgid ""
 "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
 "domain %d"
 msgstr ""
 
-#: src/xen/block_stats.c:342
+#: src/xen/block_stats.c:346
 #, c-format
 msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
 msgstr ""
@@ -20761,19 +20766,19 @@ msgstr "ಕೊಂಡಿ %s ಅನ್ನು %s ಗಾಗಿ ರಚಿಸುವಲ
 msgid "failed to remove link %s"
 msgstr "%s ಕೊಂಡಿಯನ್ನು ತೆಗೆದುಹಾಕುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/xen/xs_internal.c:258
+#: src/xen/xs_internal.c:262
 msgid "failed to connect to Xen Store"
 msgstr "Xen ಶೇಖರಣೆಗೆ ಸಂಪರ್ಕಕಲ್ಪಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/xen/xs_internal.c:282
+#: src/xen/xs_internal.c:286
 msgid "adding watch @releaseDomain"
 msgstr "releaseDomain ಗೆ ವೀಕ್ಷಿಸುವಿಕೆಯನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ"
 
-#: src/xen/xs_internal.c:291
+#: src/xen/xs_internal.c:295
 msgid "adding watch @introduceDomain"
 msgstr "introduceDomain ನಲ್ಲಿ ವೀಕ್ಷಿಸುವಿಕೆಯನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ"
 
-#: src/xen/xs_internal.c:1160
+#: src/xen/xs_internal.c:1164
 msgid "watch already tracked"
 msgstr "ವೀಕ್ಷಿಸುವಿಕೆಯ ಜಾಡನ್ನು ಈಗಾಗಲೆ ಇರಿಸಲಾಗಿದೆ"
 
@@ -26561,8 +26566,8 @@ msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
-"%s: ತಾತ್ಕಾಲಿಕ ಕಡತದ ಹೆಸರು ಶೆಲ್ ಮೆಟಾ ಅಥವ ಬೇರೆ ಒಪ್ಪಿಗೆ ಇಲ್ಲದ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ"
-"($TMPDIR ತಪ್ಪಾಗಿದೆಯೆ?)"
+"%s: ತಾತ್ಕಾಲಿಕ ಕಡತದ ಹೆಸರು ಶೆಲ್ ಮೆಟಾ ಅಥವ ಬೇರೆ ಒಪ್ಪಿಗೆ ಇಲ್ಲದ ಅಕ್ಷರಗಳನ್ನು "
+"ಹೊಂದಿದೆ($TMPDIR ತಪ್ಪಾಗಿದೆಯೆ?)"
 
 #: tools/virsh.c:15338
 #, c-format
