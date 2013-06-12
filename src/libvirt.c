@@ -5075,7 +5075,81 @@ virDomainMigrateVersion3(virDomainPtr domain,
   * only talks to the source libvirtd instance. The source libvirtd
   * then opens its own connection to the destination and co-ordinates
   * migration itself.
+  *
+  * If useParams is true, params and nparams contain migration parameters and
+  * we know it's safe to call the API which supports extensible parameters.
+  * Otherwise, we have to use xmlin, dname, uri, and bandwidth and pass them
+  * to the old-style APIs.
   */
+static int
+virDomainMigratePeer2PeerFull(virDomainPtr domain,
+                              const char *dconnuri,
+                              const char *xmlin,
+                              const char *dname,
+                              const char *uri,
+                              unsigned long long bandwidth,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              bool useParams,
+                              unsigned int flags)
+{
+    virURIPtr tempuri = NULL;
+
+    VIR_DOMAIN_DEBUG(domain,
+                     "dconnuri=%s, xmlin=%s, dname=%s, uri=%s, bandwidth=%llu "
+                     "params=%p, nparams=%d, useParams=%d, flags=%x",
+                     dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
+                     bandwidth, params, nparams, useParams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    if ((useParams && !domain->conn->driver->domainMigratePerform3Params) ||
+        (!useParams &&
+         !domain->conn->driver->domainMigratePerform &&
+         !domain->conn->driver->domainMigratePerform3)) {
+        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        return -1;
+    }
+
+    if (!(tempuri = virURIParse(dconnuri)))
+        return -1;
+    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
+        virReportInvalidArg(dconnuri,
+                            _("unable to parse server from dconnuri in %s"),
+                            __FUNCTION__);
+        virURIFree(tempuri);
+        return -1;
+    }
+    virURIFree(tempuri);
+
+    if (useParams) {
+        VIR_DEBUG("Using migration protocol 3 with extensible parameters");
+        return domain->conn->driver->domainMigratePerform3Params
+                (domain, dconnuri, params, nparams,
+                 NULL, 0, NULL, NULL, flags);
+    } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                        VIR_DRV_FEATURE_MIGRATION_V3)) {
+        VIR_DEBUG("Using migration protocol 3");
+        return domain->conn->driver->domainMigratePerform3
+                (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
+                 uri, flags, dname, bandwidth);
+    } else {
+        VIR_DEBUG("Using migration protocol 2");
+        if (xmlin) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("Unable to change target guest XML "
+                              "during migration"));
+            return -1;
+        }
+        if (uri) {
+            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to override peer2peer migration URI"));
+            return -1;
+        }
+        return domain->conn->driver->domainMigratePerform
+                (domain, NULL, 0, dconnuri, flags, dname, bandwidth);
+    }
+}
+
 static int
 virDomainMigratePeer2Peer(virDomainPtr domain,
                           const char *xmlin,
@@ -5085,78 +5159,8 @@ virDomainMigratePeer2Peer(virDomainPtr domain,
                           const char *uri,
                           unsigned long bandwidth)
 {
-    virURIPtr tempuri = NULL;
-    VIR_DOMAIN_DEBUG(domain, "xmlin=%s, flags=%lx, dname=%s, "
-                     "dconnuri=%s, uri=%s, bandwidth=%lu",
-                     NULLSTR(xmlin), flags, NULLSTR(dname),
-                     NULLSTR(dconnuri), NULLSTR(uri), bandwidth);
-
-    if (!domain->conn->driver->domainMigratePerform) {
-        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-        virDispatchError(domain->conn);
-        return -1;
-    }
-
-    if (!(tempuri = virURIParse(dconnuri))) {
-        virDispatchError(domain->conn);
-        return -1;
-    }
-
-    if (!tempuri->server) {
-        virReportInvalidArg(dconnuri,
-                            _("unable to parse server from dconnuri in %s"),
-                            __FUNCTION__);
-        virDispatchError(domain->conn);
-        virURIFree(tempuri);
-        return -1;
-    }
-    if (STRPREFIX(tempuri->server, "localhost")) {
-        virReportInvalidArg(dconnuri,
-                            _("unable to parse server from dconnuri in %s"),
-                            __FUNCTION__);
-        virDispatchError(domain->conn);
-        virURIFree(tempuri);
-        return -1;
-    }
-    virURIFree(tempuri);
-
-    /* Perform the migration.  The driver isn't supposed to return
-     * until the migration is complete.
-     */
-    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
-        VIR_DEBUG("Using migration protocol 3");
-        return domain->conn->driver->domainMigratePerform3(domain,
-                                                           xmlin,
-                                                           NULL, /* cookiein */
-                                                           0,    /* cookieinlen */
-                                                           NULL, /* cookieoutlen */
-                                                           NULL, /* cookieoutlen */
-                                                           dconnuri,
-                                                           uri,
-                                                           flags,
-                                                           dname,
-                                                           bandwidth);
-    } else {
-        VIR_DEBUG("Using migration protocol 2");
-        if (xmlin) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to change target guest XML during migration"));
-            return -1;
-        }
-        if (uri) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to override peer2peer migration URI"));
-            return -1;
-        }
-        return domain->conn->driver->domainMigratePerform(domain,
-                                                          NULL, /* cookie */
-                                                          0,    /* cookielen */
-                                                          dconnuri,
-                                                          flags,
-                                                          dname,
-                                                          bandwidth);
-    }
+    return virDomainMigratePeer2PeerFull(domain, dconnuri, xmlin, dname, uri,
+                                         bandwidth, NULL, 0, false, flags);
 }
 
 
