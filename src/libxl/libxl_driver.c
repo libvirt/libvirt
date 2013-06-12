@@ -46,6 +46,7 @@
 #include "virtypedparam.h"
 #include "viruri.h"
 #include "virstring.h"
+#include "virsysinfo.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -1153,6 +1154,7 @@ libxlStateCleanup(void)
     VIR_FREE(libxl_driver->saveDir);
 
     virDomainEventStateFree(libxl_driver->domainEventState);
+    virSysinfoDefFree(libxl_driver->hostsysinfo);
 
     libxlDriverUnlock(libxl_driver);
     virMutexDestroy(&libxl_driver->lock);
@@ -1281,6 +1283,10 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
     VIR_FREE(log_file);
+
+    /* read the host sysinfo */
+    if (privileged)
+        libxl_driver->hostsysinfo = virSysinfoRead();
 
     libxl_driver->domainEventState = virDomainEventStateNew();
     if (!libxl_driver->domainEventState)
@@ -1475,6 +1481,28 @@ static char *libxlConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     return virGetHostname();
 }
 
+static char *
+libxlConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, NULL);
+
+    if (!driver->hostsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
+        return NULL;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&buf);
+}
 
 static int
 libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
@@ -4413,6 +4441,7 @@ static virDriver libxlDriver = {
     .connectGetType = libxlConnectGetType, /* 0.9.0 */
     .connectGetVersion = libxlConnectGetVersion, /* 0.9.0 */
     .connectGetHostname = libxlConnectGetHostname, /* 0.9.0 */
+    .connectGetSysinfo = libxlConnectGetSysinfo, /* 1.0.7 */
     .connectGetMaxVcpus = libxlConnectGetMaxVcpus, /* 0.9.0 */
     .nodeGetInfo = libxlNodeGetInfo, /* 0.9.0 */
     .connectGetCapabilities = libxlConnectGetCapabilities, /* 0.9.0 */

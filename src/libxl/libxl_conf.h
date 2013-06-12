@@ -74,6 +74,7 @@ struct _libxlDriverPrivate {
     virDomainObjListPtr domains;
 
     virDomainEventStatePtr domainEventState;
+    virSysinfoDefPtr hostsysinfo;
 
     char *configDir;
     char *autostartDir;
