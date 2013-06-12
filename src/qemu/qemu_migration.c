@@ -1420,7 +1420,7 @@ cleanup:
  * the fact that older servers did not do checks on the source. */
 bool
 qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                       virDomainDefPtr def, bool remote)
+                       virDomainDefPtr def, bool remote, bool abort_on_error)
 {
     int nsnapshots;
     int pauseReason;
@@ -1448,7 +1448,8 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
             }
 
             /* cancel migration if disk I/O error is emitted while migrating */
-            if (virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
+            if (abort_on_error &&
+                virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
                 pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("cannot migrate domain with I/O error"));
@@ -1709,7 +1710,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 static int
 qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                enum qemuDomainAsyncJob asyncJob,
-                               virConnectPtr dconn)
+                               virConnectPtr dconn, bool abort_on_error)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *job;
@@ -1736,7 +1737,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
         /* cancel migration if disk I/O error is emitted while migrating */
-        if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        if (abort_on_error &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR)
             goto cancel;
@@ -1937,6 +1938,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
+    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p, flags=%lx",
@@ -1953,7 +1955,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL, true))
+    if (!qemuMigrationIsAllowed(driver, vm, NULL, true, abort_on_error))
         goto cleanup;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
@@ -2069,6 +2071,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     const char *listenAddr = NULL;
     char *migrateFrom = NULL;
+    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     if (virTimeMillisNow(&now) < 0)
         return -1;
@@ -2098,7 +2101,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, NULL, *def, true))
+    if (!qemuMigrationIsAllowed(driver, NULL, *def, true, abort_on_error))
         goto cleanup;
 
     /* Let migration hook filter domain XML */
@@ -2795,6 +2798,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
+    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -2947,7 +2951,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     if (qemuMigrationWaitForCompletion(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                       dconn) < 0)
+                                       dconn, abort_on_error) < 0)
         goto cleanup;
 
     /* When migration completed, QEMU will have paused the
@@ -3628,6 +3632,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     int resume = 0;
     virErrorPtr orig_err = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
@@ -3638,7 +3643,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL, true))
+    if (!qemuMigrationIsAllowed(driver, vm, NULL, true, abort_on_error))
         goto endjob;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
@@ -4338,7 +4343,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (rc < 0)
         goto cleanup;
 
-    rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob, NULL);
+    rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob, NULL, false);
 
     if (rc < 0)
         goto cleanup;

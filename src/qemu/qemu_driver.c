@@ -2819,7 +2819,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, vm, vm->def, false))
+    if (!qemuMigrationIsAllowed(driver, vm, vm->def, false, false))
         goto cleanup;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm,
@@ -11670,7 +11670,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     /* do the memory snapshot if necessary */
     if (memory) {
         /* check if migration is possible */
-        if (!qemuMigrationIsAllowed(driver, vm, vm->def, false))
+        if (!qemuMigrationIsAllowed(driver, vm, vm->def, false, false))
             goto endjob;
 
         /* allow the migration job to be cancelled or the domain to be paused */

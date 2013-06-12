@@ -8306,6 +8306,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("compress repeated pages during live migration")
     },
+    {.name = "abort-on-error",
+     .type = VSH_OT_BOOL,
+     .help = N_("abort on soft errors during migration")
+    },
     {.name = "domain",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -8398,6 +8402,9 @@ doMigrate(void *opaque)
     if (vshCommandOptBool(cmd, "offline")) {
         flags |= VIR_MIGRATE_OFFLINE;
     }
+
+    if (vshCommandOptBool(cmd, "abort-on-error"))
+        flags |= VIR_MIGRATE_ABORT_ON_ERROR;
 
     if (xmlfile &&
         virFileReadAll(xmlfile, 8192, &xml) < 0) {

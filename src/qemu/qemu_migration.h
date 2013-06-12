@@ -38,7 +38,8 @@
      VIR_MIGRATE_CHANGE_PROTECTION |            \
      VIR_MIGRATE_UNSAFE |                       \
      VIR_MIGRATE_OFFLINE |                      \
-     VIR_MIGRATE_COMPRESSED)
+     VIR_MIGRATE_COMPRESSED |                   \
+     VIR_MIGRATE_ABORT_ON_ERROR)
 
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,
@@ -147,7 +148,8 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
                          int retcode);
 
 bool qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                            virDomainDefPtr def, bool remote);
+                            virDomainDefPtr def, bool remote,
+                            bool abort_on_error);
 
 int qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         int fd, off_t offset, const char *path,
