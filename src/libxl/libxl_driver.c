@@ -110,6 +110,9 @@ static int
 libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
              bool start_paused, int restore_fd);
 
+static void
+libxlDomainObjPrivateDispose(void *obj);
+
 /* Function definitions */
 static int
 libxlDomainObjPrivateOnceInit(void)
@@ -117,7 +120,7 @@ libxlDomainObjPrivateOnceInit(void)
     if (!(libxlDomainObjPrivateClass = virClassNew(virClassForObjectLockable(),
                                                    "libxlDomainObjPrivate",
                                                    sizeof(libxlDomainObjPrivate),
-                                                   NULL)))
+                                                   libxlDomainObjPrivateDispose)))
         return -1;
 
     return 0;
@@ -418,14 +421,26 @@ libxlDomainObjPrivateAlloc(void)
 }
 
 static void
-libxlDomainObjPrivateFree(void *data)
+libxlDomainObjPrivateDispose(void *obj)
 {
-    libxlDomainObjPrivatePtr priv = data;
+    libxlDomainObjPrivatePtr priv = obj;
 
     if (priv->deathW)
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
 
     libxl_ctx_free(priv->ctx);
+}
+
+static void
+libxlDomainObjPrivateFree(void *data)
+{
+    libxlDomainObjPrivatePtr priv = data;
+
+    if (priv->deathW) {
+        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        priv->deathW = NULL;
+    }
+
     virObjectUnref(priv);
 }
 
