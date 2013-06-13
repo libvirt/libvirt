@@ -49,7 +49,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # include <sys/socket.h>
 # include <sys/ioctl.h>
 
-# include <linux/if.h>
+# include <net/if.h>
 # include <linux/if_tun.h>
 
 /* Older kernels lacked this enum value.  */

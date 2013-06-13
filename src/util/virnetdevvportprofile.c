@@ -49,7 +49,7 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 # include <sys/socket.h>
 # include <sys/ioctl.h>
 
-# include <linux/if.h>
+# include <net/if.h>
 # include <linux/if_tun.h>
 
 # include "virnetlink.h"
