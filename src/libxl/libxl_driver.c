@@ -2321,7 +2321,7 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
     int fd = -1;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SAVE_PAUSED, -1);
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("xml modification unsupported"));
@@ -2343,8 +2343,8 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
 
     def = NULL;
 
-    if ((ret = libxlVmStart(driver, vm, false, fd)) < 0 &&
-        !vm->persistent) {
+    ret = libxlVmStart(driver, vm, (flags & VIR_DOMAIN_SAVE_PAUSED) != 0, fd);
+    if (ret < 0 && !vm->persistent) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
