@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,22 @@
 #ifndef __VIR_NETDEV_H__
 # define __VIR_NETDEV_H__
 
+# include <net/if.h>
+
 # include "virsocketaddr.h"
 # include "virnetlink.h"
 # include "virmacaddr.h"
 # include "virpci.h"
+
+# ifdef HAVE_STRUCT_IFREQ
+typedef struct ifreq virIfreq;
+# else
+typedef void virIfreq;
+# endif
+
+int virNetDevSetupControl(const char *ifname,
+                          virIfreq *ifr)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

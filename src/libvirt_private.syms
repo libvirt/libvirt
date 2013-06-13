@@ -1532,6 +1532,7 @@ virNetDevSetMTUFromDevice;
 virNetDevSetName;
 virNetDevSetNamespace;
 virNetDevSetOnline;
+virNetDevSetupControl;
 virNetDevValidateConfig;
 
 

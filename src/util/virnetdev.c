@@ -88,12 +88,23 @@ static int virNetDevSetupControlFull(const char *ifname,
 }
 
 
-static int virNetDevSetupControl(const char *ifname,
-                                 struct ifreq *ifr)
+int
+virNetDevSetupControl(const char *ifname,
+                      struct ifreq *ifr)
 {
     return virNetDevSetupControlFull(ifname, ifr, VIR_NETDEV_FAMILY, SOCK_DGRAM);
 }
-#endif
+#else /* !HAVE_STRUCT_IFREQ */
+int
+virNetDevSetupControl(const char *ifname ATTRIBUTE_UNUSED,
+                      void *ifr ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Network device configuration is not supported "
+                           "on this platform"));
+    return -1;
+}
+#endif /* HAVE_STRUCT_IFREQ */
 
 
 #if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
