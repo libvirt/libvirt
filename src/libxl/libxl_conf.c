@@ -452,6 +452,8 @@ error:
 int
 libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
+    libxl_device_disk_init(x_disk);
+
     if (VIR_STRDUP(x_disk->pdev_path, l_disk->src) < 0)
         return -1;
 
@@ -559,6 +561,8 @@ libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
      * x_nics[i].mtu = 1492;
      */
 
+    libxl_device_nic_init(x_nic);
+
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
     if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
@@ -631,6 +635,8 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
     unsigned short port;
     const char *listenAddr;
 
+    libxl_device_vfb_init(x_vfb);
+
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
@@ -696,7 +702,6 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     }
 
     for (i = 0; i < nvfbs; i++) {
-        libxl_device_vfb_init(&x_vfbs[i]);
         libxl_device_vkb_init(&x_vkbs[i]);
 
         if (libxlMakeVfb(driver, l_vfbs[i], &x_vfbs[i]) < 0)
@@ -757,6 +762,7 @@ int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainDefPtr def, libxl_domain_config *d_config)
 {
+    libxl_domain_config_init(d_config);
 
     if (libxlMakeDomCreateInfo(driver, def, &d_config->c_info) < 0)
         return -1;
