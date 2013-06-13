@@ -275,7 +275,121 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
-#else /* ! TUNSETIFF */
+#elif defined(SIOCIFCREATE2) && defined(SIOCIFDESTROY)
+int virNetDevTapCreate(char **ifname,
+                       int *tapfd,
+                       int tapfdSize,
+                       unsigned int flags ATTRIBUTE_UNUSED)
+{
+    int s;
+    struct ifreq ifr;
+    int ret = -1;
+    char *newifname = NULL;
+
+    if (tapfdSize > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Multiqueue devices are not supported on this system"));
+        goto cleanup;
+    }
+
+    /* As FreeBSD determines interface type by name,
+     * we have to create 'tap' interface first and
+     * then rename it to 'vnet'
+     */
+    if ((s = virNetDevSetupControl("tap", &ifr)) < 0)
+        return -1;
+
+    if (ioctl(s, SIOCIFCREATE2, &ifr) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create tap device"));
+        goto cleanup;
+    }
+
+    /* In case we were given exact interface name (e.g. 'vnetN'),
+     * we just rename to it. If we have format string like
+     * 'vnet%d', we need to find the first available name that
+     * matches this pattern
+     */
+    if (strstr(*ifname, "%d") != NULL) {
+        int i;
+        for (i = 0; i <= IF_MAXUNIT; i++) {
+            char *newname;
+            if (virAsprintf(&newname, *ifname, i) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if (virNetDevExists(newname) == 0) {
+                newifname = newname;
+                break;
+            }
+
+            VIR_FREE(newname);
+        }
+        if (newifname) {
+            VIR_FREE(*ifname);
+            *ifname = newifname;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to generate new name for interface %s"),
+                           ifr.ifr_name);
+            goto cleanup;
+        }
+    }
+
+    if (tapfd) {
+        char *dev_path = NULL;
+        if (virAsprintf(&dev_path, "/dev/%s", ifr.ifr_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if ((*tapfd = open(dev_path, O_RDWR)) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to open %s"),
+                                 dev_path);
+            VIR_FREE(dev_path);
+            goto cleanup;
+        }
+
+        VIR_FREE(dev_path);
+    }
+
+    if (virNetDevSetName(ifr.ifr_name, *ifname) == -1) {
+        goto cleanup;
+    }
+
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(s);
+
+    return ret;
+}
+
+int virNetDevTapDelete(const char *ifname)
+{
+    int s;
+    struct ifreq ifr;
+    int ret = -1;
+
+    if ((s = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    if (ioctl(s, SIOCIFDESTROY, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to remove tap device %s"),
+                             ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(s);
+    return ret;
+}
+
+#else
 int virNetDevTapCreate(char **ifname ATTRIBUTE_UNUSED,
                        int *tapfd ATTRIBUTE_UNUSED,
                        int tapfdSize ATTRIBUTE_UNUSED,
@@ -291,7 +405,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
                          _("Unable to delete TAP devices on this platform"));
     return -1;
 }
-#endif /* ! TUNSETIFF */
+#endif
 
 
 /**
