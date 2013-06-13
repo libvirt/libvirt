@@ -1117,7 +1117,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
 out:
     libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
     if (!vm->persistent)
-        virDomainObjListRemove(driver->domains, vm);
+        virDomainObjListRemoveLocked(driver->domains, vm);
     else
         virObjectUnlock(vm);
 
