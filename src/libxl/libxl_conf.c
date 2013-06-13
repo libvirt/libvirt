@@ -572,18 +572,20 @@ libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
     if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
         return -1;
 
-    if (l_nic->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (VIR_STRDUP(x_nic->bridge, l_nic->data.bridge.brname) < 0)
+    switch (l_nic->type) {
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+            if (VIR_STRDUP(x_nic->bridge, l_nic->data.bridge.brname) < 0)
+                return -1;
+            /* fallthrough */
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
+                return -1;
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("libxenlight does not support network device type %s"),
+                    virDomainNetTypeToString(l_nic->type));
             return -1;
-        if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
-            return -1;
-    } else {
-        if (l_nic->script) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("scripts are not supported on interfaces of type %s"),
-                           virDomainNetTypeToString(l_nic->type));
-            return -1;
-        }
     }
 
     return 0;
