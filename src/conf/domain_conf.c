@@ -2343,6 +2343,23 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
     virObjectUnlock(doms);
 }
 
+/* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
+ * requirements
+ *
+ * Can be used to remove current element while iterating with
+ * virDomainObjListForEach
+ */
+void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
+                                  virDomainObjPtr dom)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(dom->def->uuid, uuidstr);
+    virObjectUnlock(dom);
+
+    virHashRemoveEntry(doms->objs, uuidstr);
+}
+
 static int
 virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
 {

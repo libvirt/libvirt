@@ -311,6 +311,7 @@ virDomainObjListLoadAllConfigs;
 virDomainObjListNew;
 virDomainObjListNumOfDomains;
 virDomainObjListRemove;
+virDomainObjListRemoveLocked;
 virDomainObjNew;
 virDomainObjSetDefTransient;
 virDomainObjSetState;

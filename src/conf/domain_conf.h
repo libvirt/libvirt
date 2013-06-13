@@ -2260,6 +2260,8 @@ virDomainDefPtr virDomainObjCopyPersistentDef(virDomainObjPtr dom,
 
 void virDomainObjListRemove(virDomainObjListPtr doms,
                             virDomainObjPtr dom);
+void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
+                                  virDomainObjPtr dom);
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               virDomainDefPtr def,
