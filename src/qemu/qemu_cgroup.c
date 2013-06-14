@@ -277,7 +277,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                 if (!pci)
                     goto cleanup;
 
-                if (!(path = virPCIDeviceGetVFIOGroupDev(pci)))
+                if (!(path = virPCIDeviceGetIOMMUGroupDev(pci)))
                     goto cleanup;
 
                 VIR_DEBUG("Cgroup allow %s for PCI device assignment", path);
@@ -376,7 +376,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                 if (!pci)
                     goto cleanup;
 
-                if (!(path = virPCIDeviceGetVFIOGroupDev(pci)))
+                if (!(path = virPCIDeviceGetIOMMUGroupDev(pci)))
                     goto cleanup;
 
                 VIR_DEBUG("Cgroup deny %s for PCI device assignment", path);

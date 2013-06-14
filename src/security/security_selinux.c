@@ -1333,7 +1333,7 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
 
         if (dev->source.subsys.u.pci.backend
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
+            char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);
@@ -1528,7 +1528,7 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
 
         if (dev->source.subsys.u.pci.backend
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
+            char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);

@@ -1852,11 +1852,11 @@ cleanup:
     return ret;
 }
 
-/* virPCIDeviceGetVFIOGroupDev - return the name of the device used to
- * control this PCI device's group (e.g. "/dev/vfio/15")
+/* virPCIDeviceGetIOMMUGroupDev - return the name of the device used
+ * to control this PCI device's group (e.g. "/dev/vfio/15")
  */
 char *
-virPCIDeviceGetVFIOGroupDev(virPCIDevicePtr dev)
+virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev)
 {
     char *devPath = NULL;
     char *groupPath = NULL;
