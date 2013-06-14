@@ -258,6 +258,160 @@ cleanup:
     return NULL;
 }
 
+
+typedef struct {
+    const char *name;
+    int type;
+} virPyTypedParamsHint;
+typedef virPyTypedParamsHint *virPyTypedParamsHintPtr;
+
+/* Automatically convert dict into type parameters based on types reported
+ * by python. All integer types are converted into LLONG (in case of a negative
+ * value) or ULLONG (in case of a positive value). If you need different
+ * handling, use @hints to explicitly specify what types should be used for
+ * specific parameters.
+ */
+static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+virPyDictToTypedParams(PyObject *dict,
+                       virTypedParameterPtr *ret_params,
+                       int *ret_nparams,
+                       virPyTypedParamsHintPtr hints,
+                       int nhints)
+{
+    PyObject *key;
+    PyObject *value;
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 4
+    int pos = 0;
+#else
+    Py_ssize_t pos = 0;
+#endif
+    virTypedParameterPtr params = NULL;
+    int i;
+    int n = 0;
+    int max = 0;
+    int ret = -1;
+
+    *ret_params = NULL;
+    *ret_nparams = 0;
+
+    if (PyDict_Size(dict) < 0)
+        return -1;
+
+    while (PyDict_Next(dict, &pos, &key, &value)) {
+        char *keystr;
+        int type = -1;
+
+        if (!(keystr = PyString_AsString(key)))
+            goto cleanup;
+
+        for (i = 0; i < nhints; i++) {
+            if (STREQ(hints[i].name, keystr)) {
+                type = hints[i].type;
+                break;
+            }
+        }
+
+        if (type == -1) {
+            if (PyString_Check(value)) {
+                type = VIR_TYPED_PARAM_STRING;
+            } else if (PyBool_Check(value)) {
+                type = VIR_TYPED_PARAM_BOOLEAN;
+            } else if (PyLong_Check(value)) {
+                unsigned long long ull = PyLong_AsUnsignedLongLong(value);
+                if (ull == (unsigned long long) -1 && PyErr_Occurred())
+                    type = VIR_TYPED_PARAM_LLONG;
+                else
+                    type = VIR_TYPED_PARAM_ULLONG;
+            } else if (PyInt_Check(value)) {
+                if (PyInt_AS_LONG(value) < 0)
+                    type = VIR_TYPED_PARAM_LLONG;
+                else
+                    type = VIR_TYPED_PARAM_ULLONG;
+            } else if (PyFloat_Check(value)) {
+                type = VIR_TYPED_PARAM_DOUBLE;
+            }
+        }
+
+        if (type == -1) {
+            PyErr_Format(PyExc_TypeError,
+                         "Unknown type of \"%s\" field", keystr);
+            goto cleanup;
+        }
+
+        switch ((virTypedParameterType) type) {
+        case VIR_TYPED_PARAM_INT:
+        {
+            int val;
+            if (libvirt_intUnwrap(value, &val) < 0 ||
+                virTypedParamsAddInt(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_UINT:
+        {
+            unsigned int val;
+            if (libvirt_uintUnwrap(value, &val) < 0 ||
+                virTypedParamsAddUInt(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_LLONG:
+        {
+            long long val;
+            if (libvirt_longlongUnwrap(value, &val) < 0 ||
+                virTypedParamsAddLLong(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_ULLONG:
+        {
+            unsigned long long val;
+            if (libvirt_ulonglongUnwrap(value, &val) < 0 ||
+                virTypedParamsAddULLong(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_DOUBLE:
+        {
+            double val;
+            if (libvirt_doubleUnwrap(value, &val) < 0 ||
+                virTypedParamsAddDouble(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_BOOLEAN:
+        {
+            bool val;
+            if (libvirt_boolUnwrap(value, &val) < 0 ||
+                virTypedParamsAddBoolean(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_STRING:
+        {
+            char *val = PyString_AsString(value);
+            if (!val ||
+                virTypedParamsAddString(&params, &n, &max, keystr, val) < 0)
+                goto cleanup;
+            break;
+        }
+        case VIR_TYPED_PARAM_LAST:
+            break; /* unreachable */
+        }
+    }
+
+    *ret_params = params;
+    *ret_nparams = n;
+    params = NULL;
+    ret = 0;
+
+cleanup:
+    virTypedParamsFree(params, n);
+    return ret;
+}
+
+
 /*
  * Utility function to retrieve the number of node CPUs present.
  * It first tries virGetNodeCPUMap, which will return the
@@ -6495,6 +6649,68 @@ libvirt_virDomainMigrateGetMaxSpeed(PyObject *self ATTRIBUTE_UNUSED, PyObject *a
 }
 
 static PyObject *
+libvirt_virDomainMigrate3(PyObject *self ATTRIBUTE_UNUSED,
+                          PyObject *args)
+{
+    PyObject *pyobj_domain;
+    virDomainPtr domain;
+    PyObject *pyobj_dconn;
+    virConnectPtr dconn;
+    PyObject *dict;
+    unsigned int flags;
+    virTypedParameterPtr params;
+    int nparams;
+    virDomainPtr ddom = NULL;
+
+    if (!PyArg_ParseTuple(args, (char *) "OOOi:virDomainMigrate3",
+                          &pyobj_domain, &pyobj_dconn, &dict, &flags))
+        return NULL;
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+    dconn = (virConnectPtr) PyvirConnect_Get(pyobj_dconn);
+
+    if (virPyDictToTypedParams(dict, &params, &nparams, NULL, 0) < 0)
+        return NULL;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ddom = virDomainMigrate3(domain, dconn, params, nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    virTypedParamsFree(params, nparams);
+    return libvirt_virDomainPtrWrap(ddom);
+}
+
+static PyObject *
+libvirt_virDomainMigrateToURI3(PyObject *self ATTRIBUTE_UNUSED,
+                               PyObject *args)
+{
+    PyObject *pyobj_domain;
+    virDomainPtr domain;
+    char *dconnuri;
+    PyObject *dict;
+    unsigned int flags;
+    virTypedParameterPtr params;
+    int nparams;
+    int ret = -1;
+
+    if (!PyArg_ParseTuple(args, (char *) "OzOi:virDomainMigrate3",
+                          &pyobj_domain, &dconnuri, &dict, &flags))
+        return NULL;
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (virPyDictToTypedParams(dict, &params, &nparams, NULL, 0) < 0)
+        return NULL;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virDomainMigrateToURI3(domain, dconnuri, params, nparams, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    virTypedParamsFree(params, nparams);
+    return libvirt_intWrap(ret);
+}
+
+static PyObject *
 libvirt_virDomainBlockPeek(PyObject *self ATTRIBUTE_UNUSED,
                            PyObject *args) {
     PyObject *py_retval = NULL;
@@ -6876,6 +7092,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainSendKey", libvirt_virDomainSendKey, METH_VARARGS, NULL},
     {(char *) "virDomainMigrateGetCompressionCache", libvirt_virDomainMigrateGetCompressionCache, METH_VARARGS, NULL},
     {(char *) "virDomainMigrateGetMaxSpeed", libvirt_virDomainMigrateGetMaxSpeed, METH_VARARGS, NULL},
+    {(char *) "virDomainMigrate3", libvirt_virDomainMigrate3, METH_VARARGS, NULL},
+    {(char *) "virDomainMigrateToURI3", libvirt_virDomainMigrateToURI3, METH_VARARGS, NULL},
     {(char *) "virDomainBlockPeek", libvirt_virDomainBlockPeek, METH_VARARGS, NULL},
     {(char *) "virDomainMemoryPeek", libvirt_virDomainMemoryPeek, METH_VARARGS, NULL},
     {(char *) "virDomainGetDiskErrors", libvirt_virDomainGetDiskErrors, METH_VARARGS, NULL},

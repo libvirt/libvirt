@@ -527,6 +527,24 @@
       <arg name='flags' type='unsigned int' info='flags, currently unused, pass 0.'/>
       <return type='unsigned long' info='current max migration speed, or None in case of error'/>
     </function>
+    <function name='virDomainMigrate3' file='python'>
+      <info>Migrate the domain object from its current host to the destination host
+            given by dconn (a connection to the destination host).</info>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='dconn' type='virConnectPtr' info='pointer to the destination host connection'/>
+      <arg name='params' type='char *' info='dictionary with migration parameters'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainMigrateFlags'/>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+    </function>
+    <function name='virDomainMigrateToURI3' file='python'>
+      <info>Migrate the domain object from its current host to the destination host
+            given by URI.</info>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='dconnuri' type='virConnectPtr' info='URI for target libvirtd if @flags includes VIR_MIGRATE_PEER2PEER'/>
+      <arg name='params' type='char *' info='dictionary with migration parameters'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of virDomainMigrateFlags'/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+    </function>
     <function name='virDomainSetBlockIoTune' file='python'>
       <info>Change the I/O tunables for a block device</info>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
