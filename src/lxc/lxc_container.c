@@ -629,11 +629,11 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         }
     }
 
-    /* Now we chroot into the tmpfs, then pivot into the
+    /* Now we chdir into the tmpfs, then pivot into the
      * root->src bind-mounted onto '/new' */
     if (chdir(newroot) < 0) {
         virReportSystemError(errno,
-                             _("Failed to chroot into %s"), newroot);
+                             _("Failed to chdir into %s"), newroot);
         goto err;
     }
 
