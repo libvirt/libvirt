@@ -8345,15 +8345,15 @@ doMigrate(void *opaque)
     char ret = '1';
     virDomainPtr dom = NULL;
     const char *desturi = NULL;
-    const char *migrateuri = NULL;
-    const char *dname = NULL;
+    const char *opt = NULL;
     unsigned int flags = 0;
     vshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-    const char *xmlfile = NULL;
-    char *xml = NULL;
     sigset_t sigmask, oldsigmask;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -8363,11 +8363,40 @@ doMigrate(void *opaque)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto out;
 
-    if (vshCommandOptStringReq(ctl, cmd, "desturi", &desturi) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "migrateuri", &migrateuri) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "dname", &dname) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "xml", &xmlfile) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "desturi", &desturi) < 0)
         goto out;
+
+    if (vshCommandOptStringReq(ctl, cmd, "migrateuri", &opt) < 0)
+        goto out;
+    if (opt &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_URI, opt) < 0)
+        goto save_error;
+
+    if (vshCommandOptStringReq(ctl, cmd, "dname", &opt) < 0)
+        goto out;
+    if (opt &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, opt) < 0)
+        goto save_error;
+
+    if (vshCommandOptStringReq(ctl, cmd, "xml", &opt) < 0)
+        goto out;
+    if (opt) {
+        char *xml;
+
+        if (virFileReadAll(opt, 1024 * 1024, &xml) < 0) {
+            vshError(ctl, _("cannot read file '%s'"), opt);
+            goto save_error;
+        }
+
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_DEST_XML, xml) < 0) {
+            VIR_FREE(xml);
+            goto save_error;
+        }
+        VIR_FREE(xml);
+    }
 
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
@@ -8406,23 +8435,19 @@ doMigrate(void *opaque)
     if (vshCommandOptBool(cmd, "abort-on-error"))
         flags |= VIR_MIGRATE_ABORT_ON_ERROR;
 
-    if (xmlfile &&
-        virFileReadAll(xmlfile, 8192, &xml) < 0) {
-        vshError(ctl, _("file '%s' doesn't exist"), xmlfile);
-        goto out;
-    }
-
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool(cmd, "direct")) {
 
         /* migrateuri doesn't make sense for tunnelled migration */
-        if (flags & VIR_MIGRATE_TUNNELLED && migrateuri != NULL) {
-            vshError(ctl, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
+        if (flags & VIR_MIGRATE_TUNNELLED &&
+            virTypedParamsGetString(params, nparams,
+                                    VIR_MIGRATE_PARAM_URI, NULL) == 1) {
+            vshError(ctl, "%s", _("migrate: Unexpected migrateuri for "
+                                  "peer2peer/direct migration"));
             goto out;
         }
 
-        if (virDomainMigrateToURI2(dom, desturi, migrateuri,
-                                   xml, flags, dname, 0) == 0)
+        if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
             ret = '0';
     } else {
         /* For traditional live migration, connect to the destination host directly. */
@@ -8430,10 +8455,10 @@ doMigrate(void *opaque)
         virDomainPtr ddom = NULL;
 
         dconn = virConnectOpenAuth(desturi, virConnectAuthPtrDefault, 0);
-        if (!dconn) goto out;
+        if (!dconn)
+            goto out;
 
-        ddom = virDomainMigrate2(dom, dconn, xml, flags, dname, migrateuri, 0);
-        if (ddom) {
+        if ((ddom = virDomainMigrate3(dom, dconn, params, nparams, flags))) {
             virDomainFree(ddom);
             ret = '0';
         }
@@ -8443,9 +8468,15 @@ doMigrate(void *opaque)
 out:
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 out_sig:
-    if (dom) virDomainFree(dom);
-    VIR_FREE(xml);
+    virTypedParamsFree(params, nparams);
+    if (dom)
+        virDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
+    return;
+
+save_error:
+    vshSaveLibvirtError();
+    goto out;
 }
 
 static void
