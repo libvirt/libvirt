@@ -54,7 +54,11 @@
 %define with_qemu_tcg      %{with_qemu}
 # Change if we ever provide qemu-kvm binaries on non-x86 hosts
 %if 0%{?fedora} >= 18
-    %define qemu_kvm_arches    %{ix86} x86_64 ppc64 s390x
+    %if 0%{?fedora} >= 20
+        %define qemu_kvm_arches    %{ix86} x86_64 ppc64 s390x %{arm}
+    %else
+        %define qemu_kvm_arches    %{ix86} x86_64 ppc64 s390x
+    %endif
 %else
     %define qemu_kvm_arches    %{ix86} x86_64
 %endif
