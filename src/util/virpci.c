@@ -2046,8 +2046,8 @@ logStrToLong_ui(char const *s,
     return ret;
 }
 
-static int
-virPCIParseDeviceAddress(char *address,
+int
+virPCIDeviceAddressParse(char *address,
                          virPCIDeviceAddressPtr bdf)
 {
     char *p = NULL;
@@ -2111,7 +2111,7 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
         goto out;
     }
 
-    if (virPCIParseDeviceAddress(config_address, *bdf) != 0) {
+    if (virPCIDeviceAddressParse(config_address, *bdf) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse PCI config address '%s'"),
                        config_address);

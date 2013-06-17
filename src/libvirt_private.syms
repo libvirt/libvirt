@@ -1694,6 +1694,7 @@ virObjectUnref;
 
 # util/virpci.h
 virPCIDeviceAddressGetSysfsFile;
+virPCIDeviceAddressParse;
 virPCIDeviceCopy;
 virPCIDeviceDetach;
 virPCIDeviceFileIterate;

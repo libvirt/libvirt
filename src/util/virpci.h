@@ -152,6 +152,8 @@ int virPCIGetAddrString(unsigned int domain,
                         char **pciConfigAddr)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
+int virPCIDeviceAddressParse(char *address, virPCIDeviceAddressPtr bdf);
+
 int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  char **pfname, int *vf_index);
 
