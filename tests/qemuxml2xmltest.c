@@ -300,6 +300,8 @@ mymain(void)
 
     DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
 
+    DO_TEST_DIFFERENT("s390-defaultconsole");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
