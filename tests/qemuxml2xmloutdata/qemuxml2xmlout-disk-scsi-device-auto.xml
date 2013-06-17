@@ -26,8 +26,8 @@
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
-    <controller type='scsi' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <controller type='scsi' index='0'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

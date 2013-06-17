@@ -20,8 +20,8 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>
-    <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

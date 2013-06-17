@@ -25,8 +25,8 @@
     <controller type='virtio-serial' index='1'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </controller>
-    <controller type='virtio-serial' index='2'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <controller type='virtio-serial' index='2'/>
     <channel type='pty'>
       <target type='virtio' name='org.linux-kvm.port.0'/>
       <address type='virtio-serial' controller='0' bus='0' port='1'/>

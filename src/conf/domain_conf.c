@@ -12111,12 +12111,12 @@ virDomainDefParseXML(xmlDocPtr xml,
         (def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
         goto error;
 
-    /* Auto-add any implied controllers which aren't present */
-    if (virDomainDefAddImplicitControllers(def) < 0)
-        goto error;
-
     /* callback to fill driver specific domain aspects */
     if (virDomainDefPostParse(def, caps, xmlopt) < 0)
+        goto error;
+
+    /* Auto-add any implied controllers which aren't present */
+    if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
     virHashFree(bootHash);

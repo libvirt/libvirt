@@ -21,8 +21,8 @@
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
-    <controller type='virtio-serial' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <controller type='virtio-serial' index='0'/>
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>
