@@ -1044,7 +1044,7 @@ stats.
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
 [I<--compressed>] [I<--abort-on-error>]
-I<domain> I<desturi> [I<migrateuri>] [I<dname>]
+I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<dname>]
 [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
@@ -1135,6 +1135,22 @@ might be specified to choose a specific port number outside the default range in
 order to comply with local firewall policies.
 
 =back
+
+Optional I<graphicsuri> overrides connection parameters used for automatically
+reconnecting a graphical clients at the end of migration. If omitted, libvirt
+will compute the parameters based on target host IP address. In case the
+client does not have a direct access to the network virtualization hosts are
+connected to and needs to connect through a proxy, I<graphicsuri> may be used
+to specify the address the client should connect to. The URI is formed as
+follows:
+
+    protocol://hostname[:port]/[?parameters]
+
+where protocol is either "spice" or "vnc" and parameters is a list of protocol
+specific parameters separated by '&'. Currently recognized parameters are
+"tlsPort" and "tlsSubject". For example,
+
+    spice://target.host.com:1234/?tlsPort=4567
 
 =item B<migrate-setmaxdowntime> I<domain> I<downtime>
 

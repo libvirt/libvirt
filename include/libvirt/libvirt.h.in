@@ -1246,6 +1246,27 @@ typedef enum {
  */
 #define VIR_MIGRATE_PARAM_BANDWIDTH         "bandwidth"
 
+/**
+ * VIR_MIGRATE_PARAM_GRAPHICS_URI:
+ *
+ * virDomainMigrate* params field: URI to use for migrating client's connection
+ * to domain's graphical console as VIR_TYPED_PARAM_STRING. If specified, the
+ * client will be asked to automatically reconnect using these parameters
+ * instead of the automatically computed ones. This can be useful if, e.g., the
+ * client does not have a direct access to the network virtualization hosts are
+ * connected to and needs to connect through a proxy. The URI is formed as
+ * follows:
+ *
+ *      protocol://hostname[:port]/[?parameters]
+ *
+ * where protocol is either "spice" or "vnc" and parameters is a list of
+ * protocol specific parameters separated by '&'. Currently recognized
+ * parameters are "tlsPort" and "tlsSubject". For example,
+ *
+ *      spice://target.host.com:1234/?tlsPort=4567
+ */
+#define VIR_MIGRATE_PARAM_GRAPHICS_URI      "graphics_uri"
+
 
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
