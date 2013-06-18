@@ -47,6 +47,7 @@
     VIR_MIGRATE_PARAM_DEST_NAME,    VIR_TYPED_PARAM_STRING,     \
     VIR_MIGRATE_PARAM_DEST_XML,     VIR_TYPED_PARAM_STRING,     \
     VIR_MIGRATE_PARAM_BANDWIDTH,    VIR_TYPED_PARAM_ULLONG,     \
+    VIR_MIGRATE_PARAM_GRAPHICS_URI, VIR_TYPED_PARAM_STRING,     \
     NULL
 
 
@@ -132,6 +133,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          const char *xmlin,
                          const char *dconnuri,
                          const char *uri,
+                         const char *graphicsuri,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,

@@ -10097,7 +10097,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               NULL, dconnuri, uri, cookie, cookielen,
+                               NULL, dconnuri, uri, NULL, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
                                flags, dname, resource, false);
 
@@ -10437,7 +10437,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     }
 
     return qemuMigrationPerform(driver, dom->conn, vm, xmlin,
-                                dconnuri, uri, cookiein, cookieinlen,
+                                dconnuri, uri, NULL, cookiein, cookieinlen,
                                 cookieout, cookieoutlen,
                                 flags, dname, resource, true);
 }
@@ -10458,6 +10458,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri = NULL;
+    const char *graphicsuri = NULL;
     unsigned long long bandwidth = 0;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10475,7 +10476,10 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                 &uri) < 0 ||
         virTypedParamsGetULLong(params, nparams,
                                 VIR_MIGRATE_PARAM_BANDWIDTH,
-                                &bandwidth) < 0)
+                                &bandwidth) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_GRAPHICS_URI,
+                                &graphicsuri) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -10487,8 +10491,8 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     }
 
     return qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
-                                dconnuri, uri, cookiein, cookieinlen,
-                                cookieout, cookieoutlen,
+                                dconnuri, uri, graphicsuri,
+                                cookiein, cookieinlen, cookieout, cookieoutlen,
                                 flags, dname, bandwidth, true);
 }
 

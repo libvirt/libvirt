@@ -1785,44 +1785,87 @@ cancel:
 static int
 qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
-                                  qemuMigrationCookiePtr cookie)
+                                  qemuMigrationCookiePtr cookie,
+                                  const char *graphicsuri)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-    char *listenAddress;
+    int ret = -1;
+    const char *listenAddress = NULL;
     virSocketAddr addr;
+    virURIPtr uri = NULL;
+    int type = -1;
+    int port = -1;
+    int tlsPort = -1;
+    const char *tlsSubject = NULL;
 
-    if (!cookie)
+    if (!cookie || (!cookie->graphics && !graphicsuri))
         return 0;
 
-    if (!cookie->graphics)
-        return 0;
+    if (graphicsuri && !(uri = virURIParse(graphicsuri)))
+        goto cleanup;
+
+    if (cookie->graphics) {
+        type = cookie->graphics->type;
+
+        listenAddress = cookie->graphics->listen;
+
+        if (!listenAddress ||
+            (virSocketAddrParse(&addr, listenAddress, AF_UNSPEC) > 0 &&
+             virSocketAddrIsWildcard(&addr)))
+            listenAddress = cookie->remoteHostname;
+
+        port = cookie->graphics->port;
+        tlsPort = cookie->graphics->tlsPort;
+        tlsSubject = cookie->graphics->tlsSubject;
+    }
+
+    if (uri) {
+        int i;
+
+        if ((type = virDomainGraphicsTypeFromString(uri->scheme)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("unknown graphics type %s"), uri->scheme);
+            goto cleanup;
+        }
+
+        if (uri->server)
+            listenAddress = uri->server;
+        if (uri->port > 0)
+            port = uri->port;
+
+        for (i = 0; i < uri->paramsCount; i++) {
+            virURIParamPtr param = uri->params + i;
+
+            if (STRCASEEQ(param->name, "tlsPort")) {
+                if (virStrToLong_i(param->value, NULL, 10, &tlsPort) < 0) {
+                    virReportError(VIR_ERR_INVALID_ARG,
+                                   _("invalid tlsPort number: %s"),
+                                   param->value);
+                    goto cleanup;
+                }
+            } else if (STRCASEEQ(param->name, "tlsSubject")) {
+                tlsSubject = param->value;
+            }
+        }
+    }
 
     /* QEMU doesn't support VNC relocation yet, so
      * skip it to avoid generating an error
      */
-    if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
-        return 0;
+    if (type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        ret = 0;
+        goto cleanup;
+    }
 
-    listenAddress = cookie->graphics->listen;
-
-    if (!listenAddress ||
-        (virSocketAddrParse(&addr, listenAddress, AF_UNSPEC) > 0 &&
-         virSocketAddrIsWildcard(&addr)))
-        listenAddress = cookie->remoteHostname;
-
-    ret = qemuDomainObjEnterMonitorAsync(driver, vm,
-                                         QEMU_ASYNC_JOB_MIGRATION_OUT);
-    if (ret == 0) {
-        ret = qemuMonitorGraphicsRelocate(priv->mon,
-                                          cookie->graphics->type,
-                                          listenAddress,
-                                          cookie->graphics->port,
-                                          cookie->graphics->tlsPort,
-                                          cookie->graphics->tlsSubject);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
+        ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
+                                          port, tlsPort, tlsSubject);
         qemuDomainObjExitMonitor(driver, vm);
     }
 
+cleanup:
+    virURIFree(uri);
     return ret;
 }
 
@@ -3046,7 +3089,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                  unsigned long flags,
                  unsigned long resource,
                  qemuMigrationSpecPtr spec,
-                 virConnectPtr dconn)
+                 virConnectPtr dconn,
+                 const char *graphicsuri)
 {
     int ret = -1;
     unsigned int migrate_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
@@ -3061,10 +3105,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
-              "spec=%p (dest=%d, fwd=%d)",
+              "spec=%p (dest=%d, fwd=%d), dconn=%p, graphicsuri=%s",
               driver, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
-              spec, spec->destType, spec->fwdType);
+              spec, spec->destType, spec->fwdType, dconn,
+              NULLSTR(graphicsuri));
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK) {
         migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
@@ -3090,7 +3135,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (!mig)
         goto cleanup;
 
-    if (qemuDomainMigrateGraphicsRelocate(driver, vm, mig) < 0)
+    if (qemuDomainMigrateGraphicsRelocate(driver, vm, mig, graphicsuri) < 0)
         VIR_WARN("unable to provide data for graphics client relocation");
 
     /* this will update migrate_flags on success */
@@ -3284,7 +3329,8 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
                            int *cookieoutlen,
                            unsigned long flags,
                            unsigned long resource,
-                           virConnectPtr dconn)
+                           virConnectPtr dconn,
+                           const char *graphicsuri)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virURIPtr uribits = NULL;
@@ -3292,9 +3338,11 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
     qemuMigrationSpec spec;
 
     VIR_DEBUG("driver=%p, vm=%p, uri=%s, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu",
+              "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
+              "graphicsuri=%s",
               driver, vm, uri, NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, flags, resource);
+              cookieout, cookieoutlen, flags, resource,
+              NULLSTR(graphicsuri));
 
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
         char *tmp;
@@ -3320,7 +3368,8 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
     spec.fwdType = MIGRATION_FWD_DIRECT;
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
-                           cookieoutlen, flags, resource, &spec, dconn);
+                           cookieoutlen, flags, resource, &spec, dconn,
+                           graphicsuri);
 
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
@@ -3340,7 +3389,8 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
                            int *cookieoutlen,
                            unsigned long flags,
                            unsigned long resource,
-                           virConnectPtr dconn)
+                           virConnectPtr dconn,
+                           const char *graphicsuri)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virNetSocketPtr sock = NULL;
@@ -3349,9 +3399,11 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu",
+              "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
+              "graphicsuri=%s",
               driver, vm, st, NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, flags, resource);
+              cookieout, cookieoutlen, flags, resource,
+              NULLSTR(graphicsuri));
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
         !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
@@ -3405,7 +3457,8 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
     }
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
-                           cookieoutlen, flags, resource, &spec, dconn);
+                           cookieoutlen, flags, resource, &spec, dconn,
+                           graphicsuri);
 
 cleanup:
     if (spec.destType == MIGRATION_DEST_FD) {
@@ -3511,12 +3564,12 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_TUNNELLED)
         ret = doTunnelMigrate(driver, vm, st,
                               NULL, 0, NULL, NULL,
-                              flags, resource, dconn);
+                              flags, resource, dconn, NULL);
     else
         ret = doNativeMigrate(driver, vm, uri_out,
                               cookie, cookielen,
                               NULL, NULL, /* No out cookie with v2 migration */
-                              flags, resource, dconn);
+                              flags, resource, dconn, NULL);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0)
@@ -3574,6 +3627,7 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
                     const char *xmlin,
                     const char *dname,
                     const char *uri,
+                    const char *graphicsuri,
                     unsigned long long bandwidth,
                     bool useParams,
                     unsigned long flags)
@@ -3596,9 +3650,11 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     int maxparams = 0;
 
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, dconnuri=%s, vm=%p, xmlin=%s, "
-              "dname=%s, uri=%s, bandwidth=%llu, useParams=%d, flags=%lx",
+              "dname=%s, uri=%s, graphicsuri=%s, bandwidth=%llu, "
+              "useParams=%d, flags=%lx",
               driver, sconn, dconn, NULLSTR(dconnuri), vm, NULLSTR(xmlin),
-              NULLSTR(dname), NULLSTR(uri), bandwidth, useParams, flags);
+              NULLSTR(dname), NULLSTR(uri), NULLSTR(graphicsuri), bandwidth,
+              useParams, flags);
 
     /* Unlike the virDomainMigrateVersion3 counterpart, we don't need
      * to worry about auto-setting the VIR_MIGRATE_CHANGE_PROTECTION
@@ -3629,6 +3685,12 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
             virTypedParamsAddULLong(&params, &nparams, &maxparams,
                                     VIR_MIGRATE_PARAM_BANDWIDTH,
                                     bandwidth) < 0)
+            goto cleanup;
+
+        if (graphicsuri &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_GRAPHICS_URI,
+                                    graphicsuri) < 0)
             goto cleanup;
     }
 
@@ -3708,12 +3770,12 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         ret = doTunnelMigrate(driver, vm, st,
                               cookiein, cookieinlen,
                               &cookieout, &cookieoutlen,
-                              flags, bandwidth, dconn);
+                              flags, bandwidth, dconn, graphicsuri);
     } else {
         ret = doNativeMigrate(driver, vm, uri,
                               cookiein, cookieinlen,
                               &cookieout, &cookieoutlen,
-                              flags, bandwidth, dconn);
+                              flags, bandwidth, dconn, graphicsuri);
     }
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
@@ -3831,6 +3893,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
                               const char *xmlin,
                               const char *dconnuri,
                               const char *uri,
+                              const char *graphicsuri,
                               unsigned long flags,
                               const char *dname,
                               unsigned long resource,
@@ -3845,9 +3908,10 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
     bool useParams;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
-              "uri=%s, flags=%lx, dname=%s, resource=%lu",
+              "uri=%s, graphicsuri=%s, flags=%lx, dname=%s, resource=%lu",
               driver, sconn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
-              NULLSTR(uri), flags, NULLSTR(dname), resource);
+              NULLSTR(uri), NULLSTR(graphicsuri), flags, NULLSTR(dname),
+              resource);
 
     /* the order of operations is important here; we make sure the
      * destination side is completely setup before we touch the source
@@ -3892,14 +3956,12 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
 
     /* Only xmlin, dname, uri, and bandwidth parameters can be used with
      * old-style APIs. */
-#if 0
-    if (!useParams && /* any new parameter */) {
+    if (!useParams && graphicsuri) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Migration APIs with extensible parameters are not "
                          "supported but extended parameters were passed"));
         goto cleanup;
     }
-#endif
 
     if (flags & VIR_MIGRATE_OFFLINE && !offline) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -3924,7 +3986,8 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
 
     if (*v3proto) {
         ret = doPeer2PeerMigrate3(driver, sconn, dconn, dconnuri, vm, xmlin,
-                                  dname, uri, resource, useParams, flags);
+                                  dname, uri, graphicsuri, resource,
+                                  useParams, flags);
     } else {
         ret = doPeer2PeerMigrate2(driver, sconn, dconn, vm,
                                   dconnuri, flags, dname, resource);
@@ -3956,6 +4019,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
                         const char *xmlin,
                         const char *dconnuri,
                         const char *uri,
+                        const char *graphicsuri,
                         const char *cookiein,
                         int cookieinlen,
                         char **cookieout,
@@ -3991,13 +4055,13 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         ret = doPeer2PeerMigrate(driver, conn, vm, xmlin,
-                                 dconnuri, uri, flags, dname,
+                                 dconnuri, uri, graphicsuri, flags, dname,
                                  resource, &v3proto);
     } else {
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM2);
         ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
                               cookieout, cookieoutlen,
-                              flags, resource, NULL);
+                              flags, resource, NULL, NULL);
     }
     if (ret < 0)
         goto endjob;
@@ -4071,6 +4135,7 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
                           virConnectPtr conn,
                           virDomainObjPtr vm,
                           const char *uri,
+                          const char *graphicsuri,
                           const char *cookiein,
                           int cookieinlen,
                           char **cookieout,
@@ -4098,7 +4163,7 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
     ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
                           cookieout, cookieoutlen,
-                          flags, resource, NULL);
+                          flags, resource, NULL, graphicsuri);
 
     if (ret < 0 && resume &&
         virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
@@ -4155,6 +4220,7 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
                      const char *xmlin,
                      const char *dconnuri,
                      const char *uri,
+                     const char *graphicsuri,
                      const char *cookiein,
                      int cookieinlen,
                      char **cookieout,
@@ -4165,12 +4231,13 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
                      bool v3proto)
 {
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
-              "uri=%s, cookiein=%s, cookieinlen=%d, cookieout=%p, "
-              "cookieoutlen=%p, flags=%lx, dname=%s, resource=%lu, v3proto=%d",
+              "uri=%s, graphicsuri=%s, "
+              "cookiein=%s, cookieinlen=%d, cookieout=%p, cookieoutlen=%p, "
+              "flags=%lx, dname=%s, resource=%lu, v3proto=%d",
               driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
-              NULLSTR(uri), NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, flags, NULLSTR(dname),
-              resource, v3proto);
+              NULLSTR(uri), NULLSTR(graphicsuri),
+              NULLSTR(cookiein), cookieinlen, cookieout, cookieoutlen,
+              flags, NULLSTR(dname), resource, v3proto);
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         if (cookieinlen) {
@@ -4180,9 +4247,9 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
         }
 
         return qemuMigrationPerformJob(driver, conn, vm, xmlin, dconnuri, uri,
-                                       cookiein, cookieinlen, cookieout,
-                                       cookieoutlen, flags, dname, resource,
-                                       v3proto);
+                                       graphicsuri, cookiein, cookieinlen,
+                                       cookieout, cookieoutlen,
+                                       flags, dname, resource, v3proto);
     } else {
         if (dconnuri) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4192,12 +4259,14 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
 
         if (v3proto) {
             return qemuMigrationPerformPhase(driver, conn, vm, uri,
+                                             graphicsuri,
                                              cookiein, cookieinlen,
                                              cookieout, cookieoutlen,
                                              flags, resource);
         } else {
             return qemuMigrationPerformJob(driver, conn, vm, xmlin, dconnuri,
-                                           uri, cookiein, cookieinlen,
+                                           uri, graphicsuri,
+                                           cookiein, cookieinlen,
                                            cookieout, cookieoutlen, flags,
                                            dname, resource, v3proto);
         }
