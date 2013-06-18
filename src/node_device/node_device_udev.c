@@ -1122,16 +1122,13 @@ out:
 }
 
 static bool
-udevDeviceHasProperty(struct udev_device *dev,
+udevHasDeviceProperty(struct udev_device *dev,
                       const char *key)
 {
-    const char *value = NULL;
-    bool ret = false;
+    if (udev_device_get_property_value(dev, key))
+        return true;
 
-    if ((value = udev_device_get_property_value(dev, key)))
-        ret = true;
-
-    return ret;
+    return false;
 }
 
 static int
@@ -1161,14 +1158,14 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_NET;
     } else {
         /* PCI devices don't set the DEVTYPE property. */
-        if (udevDeviceHasProperty(device, "PCI_CLASS"))
+        if (udevHasDeviceProperty(device, "PCI_CLASS"))
             *type = VIR_NODE_DEV_CAP_PCI_DEV;
 
         /* Wired network interfaces don't set the DEVTYPE property,
          * USB devices also have an INTERFACE property, but they do
          * set DEVTYPE, so if devtype is NULL and the INTERFACE
          * property exists, we have a network device. */
-        if (udevDeviceHasProperty(device, "INTERFACE"))
+        if (udevHasDeviceProperty(device, "INTERFACE"))
             *type = VIR_NODE_DEV_CAP_NET;
     }
 
