@@ -2305,7 +2305,8 @@ networkCheckRouteCollision(virNetworkObjPtr network)
 {
     int ret = 0, len;
     char *cur, *buf = NULL;
-    enum {MAX_ROUTE_SIZE = 1024*64};
+    /* allow for up to 100000 routes (each line is 128 bytes) */
+    enum {MAX_ROUTE_SIZE = 128*100000};
 
     /* Read whole routing table into memory */
     if ((len = virFileReadAll(PROC_NET_ROUTE, MAX_ROUTE_SIZE, &buf)) < 0)
