@@ -3663,6 +3663,14 @@ int qemuProcessStart(virConnectPtr conn,
     }
     hookData.nodemask = nodemask;
 
+    /* "volume" type disk's source must be translated before
+     * cgroup and security setting.
+     */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (qemuTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
+            goto cleanup;
+    }
+
     VIR_DEBUG("Setting up domain cgroup (if required)");
     if (qemuSetupCgroup(driver, vm, nodemask) < 0)
         goto cleanup;
@@ -3704,11 +3712,6 @@ int qemuProcessStart(virConnectPtr conn,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
         if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
-            goto cleanup;
-    }
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
             goto cleanup;
     }
 
