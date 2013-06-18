@@ -660,27 +660,28 @@ virBufferStrcat(virBufferPtr buf, ...)
  * further limits how much of the tail is trimmed.  If @str is NULL, then
  * @len must be non-negative.
  *
- * Returns -1 if @buf has previously encountered an error or if @len is
- * invalid, 0 if there was nothing to trim (@buf was too short or @str
- * didn't match), and 1 if the trim was successful.
+ * Sets error to -1 (usage) if str is NULL and len is less than zero.
  */
-int
+void
 virBufferTrim(virBufferPtr buf, const char *str, int len)
 {
     size_t len2 = 0;
 
-    if (!buf || buf->error || (!str && len < 0))
-        return -1;
+    if (!buf || buf->error)
+        return;
+    if (!str && len < 0) {
+        virBufferSetError(buf, -1);
+        return;
+    }
 
     if (len > 0 && len > buf->use)
-        return 0;
+        return;
     if (str) {
         len2 = strlen(str);
         if (len2 > buf->use ||
             memcmp(&buf->content[buf->use - len2], str, len2) != 0)
-            return 0;
+            return;
     }
     buf->use -= len < 0 ? len2 : len;
     buf->content[buf->use] = '\0';
-    return 1;
 }

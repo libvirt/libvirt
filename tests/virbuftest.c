@@ -148,42 +148,31 @@ static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
     char *result = NULL;
     const char *expected = "a,b";
     int ret = -1;
-    int i = 1;
 
-#define ACT(str, len, result) \
-    do {                                          \
-        if (virBufferTrim(buf, str, len) != result) {   \
-            TEST_ERROR("trim %d failed", i);            \
-            goto cleanup;                               \
-        }                                               \
-        i++;                                            \
-    } while (0);
-
-    if (virBufferTrim(buf, "", 0) != -1) {
-        TEST_ERROR("Wrong failure detection 1");
-        goto cleanup;
-    }
+    virBufferTrim(buf, "", 0);
     buf = &bufinit;
-    if (virBufferTrim(buf, NULL, -1) != -1) {
-        TEST_ERROR("Wrong failure detection 2");
-        goto cleanup;
-    }
 
     virBufferAddLit(buf, "a;");
-    ACT("", 0, 1);
-    ACT("", -1, 1);
-    ACT(NULL, 1, 1);
-    ACT(NULL, 5, 0);
-    ACT("a", 2, 0);
+    virBufferTrim(buf, "", 0);
+    virBufferTrim(buf, "", -1);
+    virBufferTrim(buf, NULL, 1);
+    virBufferTrim(buf, NULL, 5);
+    virBufferTrim(buf, "a", 2);
 
     virBufferAddLit(buf, ",b,,");
-    ACT("b", -1, 0);
-    ACT("b,,", 1, 1);
-    ACT(",", -1, 1);
+    virBufferTrim(buf, "b", -1);
+    virBufferTrim(buf, "b,,", 1);
+    virBufferTrim(buf, ",", -1);
 
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {
         virtTestDifference(stderr, expected, result);
+        goto cleanup;
+    }
+
+    virBufferTrim(buf, NULL, -1);
+    if (virBufferError(buf) != -1) {
+        TEST_ERROR("Usage error not flagged");
         goto cleanup;
     }
 

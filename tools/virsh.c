@@ -632,18 +632,15 @@ vshTreePrintInternal(vshControl *ctl,
                                  false, indent) < 0)
             goto cleanup;
     }
-    if (virBufferTrim(indent, "  ", -1) < 0)
-        goto cleanup;
+    virBufferTrim(indent, "  ", -1);
 
     /* If there was no child device, and we're the last in
      * a list of devices, then print another blank line */
     if (nextlastdev == -1 && devid == lastdev)
         vshPrint(ctl, "%s\n", virBufferCurrentContent(indent));
 
-    if (!root) {
-        if (virBufferTrim(indent, NULL, 2) < 0)
-            goto cleanup;
-    }
+    if (!root)
+        virBufferTrim(indent, NULL, 2);
     ret = 0;
 cleanup:
     return ret;
