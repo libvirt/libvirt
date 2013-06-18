@@ -2384,7 +2384,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
     const char *p;
     char *uri_str = NULL;
     int ret = -1;
-    virURIPtr uri;
+    virURIPtr uri = NULL;
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
@@ -2489,6 +2489,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                   cookieout, cookieoutlen, def,
                                   NULL, this_port, flags);
 cleanup:
+    virURIFree(uri);
     VIR_FREE(hostname);
     if (ret != 0)
         VIR_FREE(*uri_out);
