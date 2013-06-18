@@ -17533,7 +17533,10 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     size_t depth = 0;
     virStorageFileMetadata *tmp;
 
-    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
+        (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+         disk->srcpool &&
+         disk->srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT))
         return 0;
 
     if (iter(disk, disk->src, 0, opaque) < 0)
