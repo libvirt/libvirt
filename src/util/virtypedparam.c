@@ -87,7 +87,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
             name = va_arg(ap, const char *);
         }
         if (!name) {
-            virReportError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("parameter '%s' not supported"),
                            params[i].field);
             goto cleanup;
