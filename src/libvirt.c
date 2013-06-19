@@ -11043,6 +11043,22 @@ error:
  * block copy operation on the device being detached; in that case,
  * use virDomainBlockJobAbort() to stop the block copy first.
  *
+ * Beware that depending on the hypervisor and device type, detaching a device
+ * from a running domain may be asynchronous. That is, calling
+ * virDomainDetachDeviceFlags may just request device removal while the device
+ * is actually removed later (in cooperation with a guest OS). Previously,
+ * this fact was ignored and the device could have been removed from domain
+ * configuration before it was actually removed by the hypervisor causing
+ * various failures on subsequent operations. To check whether the device was
+ * successfully removed, either recheck domain configuration using
+ * virDomainGetXMLDesc() or add handler for VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED
+ * event. In case the device is already gone when virDomainDetachDeviceFlags
+ * returns, the event is delivered before this API call ends. To help existing
+ * clients work better in most cases, this API will try to transform an
+ * asynchronous device removal that finishes shortly after the request into
+ * a synchronous removal. In other words, this API may wait a bit for the
+ * removal to complete in case it was not synchronous.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
