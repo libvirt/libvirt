@@ -1316,6 +1316,11 @@ struct virQEMUCapsStringFlags {
 };
 
 
+struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
+    { "BALLOON_CHANGE", QEMU_CAPS_BALLOON_EVENT },
+    { "SPICE_MIGRATE_COMPLETED", QEMU_CAPS_SEAMLESS_MIGRATION },
+};
+
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "hda-duplex", QEMU_CAPS_HDA_DUPLEX },
     { "hda-micro", QEMU_CAPS_HDA_MICRO },
@@ -2014,21 +2019,15 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
 {
     char **events = NULL;
     int nevents;
-    size_t i;
 
     if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
         return -1;
 
-    for (i = 0; i < nevents; i++) {
-        char *name = events[i];
-
-        if (STREQ(name, "BALLOON_CHANGE"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_BALLOON_EVENT);
-        if (STREQ(name, "SPICE_MIGRATE_COMPLETED"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION);
-        VIR_FREE(name);
-    }
-    VIR_FREE(events);
+    virQEMUCapsProcessStringFlags(qemuCaps,
+                                  ARRAY_CARDINALITY(virQEMUCapsEvents),
+                                  virQEMUCapsEvents,
+                                  nevents, events);
+    virQEMUCapsFreeStringList(nevents, events);
 
     return 0;
 }
