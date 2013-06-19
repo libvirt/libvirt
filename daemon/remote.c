@@ -600,6 +600,37 @@ static int remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn ATTRIBUTE_UNUS
     return 0;
 }
 
+static int
+remoteRelayDomainEventDeviceRemoved(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    const char *devAlias,
+                                    void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_device_removed_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain device removed event %s %d %s",
+              dom->name, dom->id, devAlias);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+
+    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
+        return -1;
+
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED,
+                                  (xdrproc_t)xdr_remote_domain_event_device_removed_msg,
+                                  &data);
+
+    return 0;
+}
+
 
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
@@ -617,6 +648,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspend),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBalloonChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspendDisk),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemoved),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

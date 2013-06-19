@@ -4864,6 +4864,23 @@ typedef void (*virConnectDomainEventPMSuspendDiskCallback)(virConnectPtr conn,
                                                            int reason,
                                                            void *opaque);
 
+/**
+ * virConnectDomainEventDeviceRemovedCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @devAlias: device alias
+ * @opaque: application specified data
+ *
+ * This callback occurs when a device is removed from the domain.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
+                                                           virDomainPtr dom,
+                                                           const char *devAlias,
+                                                           void *opaque);
+
 
 /**
  * VIR_DOMAIN_EVENT_CALLBACK:
@@ -4890,6 +4907,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_PMSUSPEND = 12,      /* virConnectDomainEventPMSuspendCallback */
     VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE = 13, /* virConnectDomainEventBalloonChangeCallback */
     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback */
+    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

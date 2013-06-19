@@ -122,6 +122,9 @@ struct _virDomainEvent {
             /* In unit of 1024 bytes */
             unsigned long long actual;
         } balloonChange;
+        struct {
+            char *devAlias;
+        } deviceRemoved;
     } data;
 };
 
@@ -1157,6 +1160,44 @@ virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+static virDomainEventPtr
+virDomainEventDeviceRemovedNew(int id,
+                               const char *name,
+                               unsigned char *uuid,
+                               const char *devAlias)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
+                                  id, name, uuid);
+
+    if (ev) {
+        if (VIR_STRDUP(ev->data.deviceRemoved.devAlias, devAlias) < 0)
+            goto error;
+    }
+
+    return ev;
+
+error:
+    virDomainEventFree(ev);
+    return NULL;
+}
+
+virDomainEventPtr
+virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
+                                      const char *devAlias)
+{
+    return virDomainEventDeviceRemovedNew(obj->def->id, obj->def->name,
+                                          obj->def->uuid, devAlias);
+}
+
+virDomainEventPtr
+virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
+                                      const char *devAlias)
+{
+    return virDomainEventDeviceRemovedNew(dom->id, dom->name, dom->uuid,
+                                          devAlias);
+}
+
 /**
  * virDomainEventQueuePush:
  * @evtQueue: the dom event queue
@@ -1204,30 +1245,30 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         return;
     dom->id = event->dom.id;
 
-    switch (event->eventID) {
+    switch ((virDomainEventID) event->eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
         ((virConnectDomainEventCallback)cb)(conn, dom,
                                             event->data.lifecycle.type,
                                             event->data.lifecycle.detail,
                                             cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_REBOOT:
         (cb)(conn, dom,
              cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
         ((virConnectDomainEventRTCChangeCallback)cb)(conn, dom,
                                                      event->data.rtcChange.offset,
                                                      cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_WATCHDOG:
         ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
                                                     event->data.watchdog.action,
                                                     cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         ((virConnectDomainEventIOErrorCallback)cb)(conn, dom,
@@ -1235,7 +1276,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                    event->data.ioError.devAlias,
                                                    event->data.ioError.action,
                                                    cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
         ((virConnectDomainEventIOErrorReasonCallback)cb)(conn, dom,
@@ -1244,7 +1285,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                          event->data.ioError.action,
                                                          event->data.ioError.reason,
                                                          cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
         ((virConnectDomainEventGraphicsCallback)cb)(conn, dom,
@@ -1254,12 +1295,12 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                     event->data.graphics.authScheme,
                                                     event->data.graphics.subject,
                                                     cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
         (cb)(conn, dom,
              cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
         ((virConnectDomainEventBlockJobCallback)cb)(conn, dom,
@@ -1267,7 +1308,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                     event->data.blockJob.type,
                                                     event->data.blockJob.status,
                                                     cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
         ((virConnectDomainEventDiskChangeCallback)cb)(conn, dom,
@@ -1276,38 +1317,46 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                       event->data.diskChange.devAlias,
                                                       event->data.diskChange.reason,
                                                       cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
         ((virConnectDomainEventTrayChangeCallback)cb)(conn, dom,
                                                       event->data.trayChange.devAlias,
                                                       event->data.trayChange.reason,
                                                       cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
         ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom, 0, cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
         ((virConnectDomainEventPMSuspendCallback)cb)(conn, dom, 0, cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
         ((virConnectDomainEventBalloonChangeCallback)cb)(conn, dom,
                                                          event->data.balloonChange.actual,
                                                          cbopaque);
-        break;
+        goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
         ((virConnectDomainEventPMSuspendDiskCallback)cb)(conn, dom, 0, cbopaque);
-        break;
+        goto cleanup;
 
-    default:
-        VIR_WARN("Unexpected event ID %d", event->eventID);
+    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
+        ((virConnectDomainEventDeviceRemovedCallback)cb)(conn, dom,
+                                                         event->data.deviceRemoved.devAlias,
+                                                         cbopaque);
+        goto cleanup;
+
+    case VIR_DOMAIN_EVENT_ID_LAST:
         break;
     }
 
+    VIR_WARN("Unexpected event ID %d", event->eventID);
+
+cleanup:
     virDomainFree(dom);
 }
 

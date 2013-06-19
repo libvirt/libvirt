@@ -2312,6 +2312,10 @@ struct remote_domain_migrate_confirm3_params_args {
         u_int                      flags;
         int                        cancelled;
 };
+struct remote_domain_event_device_removed_msg {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      devAlias;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2623,4 +2627,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_MEMORY_STATS_PERIOD = 308,
         REMOTE_PROC_DOMAIN_CREATE_XML_WITH_FILES = 309,
         REMOTE_PROC_DOMAIN_CREATE_WITH_FILES = 310,
+        REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED = 311,
 };

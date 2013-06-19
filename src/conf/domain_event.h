@@ -132,6 +132,11 @@ virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj, uns
 virDomainEventPtr virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj);
 virDomainEventPtr virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom);
 
+virDomainEventPtr virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
+                                                        const char *devAlias);
+virDomainEventPtr virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
+                                                        const char *devAlias);
+
 void virDomainEventFree(virDomainEventPtr event);
 
 void virDomainEventStateFree(virDomainEventStatePtr state);

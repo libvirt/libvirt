@@ -2832,6 +2832,11 @@ struct remote_domain_migrate_confirm3_params_args {
     int cancelled;
 };
 
+struct remote_domain_event_device_removed_msg {
+    remote_nonnull_domain dom;
+    remote_nonnull_string devAlias;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -4989,5 +4994,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:start
      */
-    REMOTE_PROC_DOMAIN_CREATE_WITH_FILES = 310
+    REMOTE_PROC_DOMAIN_CREATE_WITH_FILES = 310,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED = 311
 };

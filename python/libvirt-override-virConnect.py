@@ -179,6 +179,15 @@
         cb(self, virDomain(self, _obj=dom), reason, opaque)
         return 0
 
+    def _dispatchDomainEventDeviceRemovedCallback(self, dom, devAlias, cbData):
+        """Dispatches event to python user domain device removed event callbacks
+        """
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
+
+        cb(self, virDomain(self, _obj=dom), devAlias, opaque)
+        return 0
+
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a
            domain callback will disable delivery of this event type """

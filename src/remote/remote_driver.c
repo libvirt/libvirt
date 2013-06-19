@@ -268,6 +268,11 @@ remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog,
                                   virNetClientPtr client,
                                   void *evdata, void *opaque);
 
+static void
+remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog,
+                                    virNetClientPtr client,
+                                    void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -329,6 +334,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventPMSuspendDisk,
       sizeof(remote_domain_event_pmsuspend_disk_msg),
       (xdrproc_t)xdr_remote_domain_event_pmsuspend_disk_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED,
+      remoteDomainBuildEventDeviceRemoved,
+      sizeof(remote_domain_event_device_removed_msg),
+      (xdrproc_t)xdr_remote_domain_event_device_removed_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -4676,6 +4685,29 @@ remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
         return;
 
     event = virDomainEventPMSuspendDiskNewFromDom(dom);
+
+    virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
+
+
+static void
+remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+                                    void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_domain_event_device_removed_msg *msg = evdata;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventDeviceRemovedNewFromDom(dom, msg->devAlias);
 
     virDomainFree(dom);
 
