@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include "virnetdevbridge.h"
+#include "virnetdev.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virfile.h"
@@ -46,49 +47,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-
-#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
-static int virNetDevSetupControlFull(const char *ifname,
-                                     struct ifreq *ifr,
-                                     int domain,
-                                     int type)
-{
-    int fd;
-
-    if (ifname && ifr) {
-        memset(ifr, 0, sizeof(*ifr));
-
-        if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
-            virReportSystemError(ERANGE,
-                                 _("Network interface name '%s' is too long"),
-                                 ifname);
-            return -1;
-        }
-    }
-
-    if ((fd = socket(domain, type, 0)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot open network interface control socket"));
-        return -1;
-    }
-
-    if (virSetInherit(fd, false) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot set close-on-exec flag for socket"));
-        VIR_FORCE_CLOSE(fd);
-        return -1;
-    }
-
-    return fd;
-}
-
-
-static int virNetDevSetupControl(const char *ifname,
-                                 struct ifreq *ifr)
-{
-    return virNetDevSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
-}
-#endif
 
 #if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
 # define SYSFS_NET_DIR "/sys/class/net"
@@ -233,6 +191,31 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
+#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFCREATE2)
+int virNetDevBridgeCreate(const char *brname)
+{
+    int s;
+    struct ifreq ifr;
+    int ret = - 1;
+
+    if ((s = virNetDevSetupControl("bridge", &ifr)) < 0)
+        return -1;
+
+    if (ioctl(s, SIOCIFCREATE2, &ifr) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create bridge device"));
+        goto cleanup;
+    }
+
+    if (virNetDevSetName(ifr.ifr_name, brname) == -1) {
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(s);
+    return ret;
+}
 #else
 int virNetDevBridgeCreate(const char *brname)
 {
@@ -269,6 +252,28 @@ int virNetDevBridgeDelete(const char *brname)
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFDESTROY)
+int virNetDevBridgeDelete(const char *brname)
+{
+    int s;
+    struct ifreq ifr;
+    int ret = -1;
+
+    if ((s = virNetDevSetupControl(brname, &ifr)) < 0)
+        return -1;
+
+    if (ioctl(s, SIOCIFDESTROY, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to remove bridge %s"),
+                             brname);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(s);
     return ret;
 }
 #else
