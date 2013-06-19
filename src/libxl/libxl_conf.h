@@ -63,6 +63,10 @@ struct _libxlDriverPrivate {
 
     virPortAllocatorPtr reservedVNCPorts;
 
+    /* Controls automatic ballooning of domain0. If true, attempt to get
+     * memory for new domains from domain0. */
+    bool autoballoon;
+
     size_t nactive;
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;

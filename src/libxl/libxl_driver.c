@@ -29,6 +29,7 @@
 #include <math.h>
 #include <libxl.h>
 #include <fcntl.h>
+#include <regex.h>
 
 #include "internal.h"
 #include "virlog.h"
@@ -978,7 +979,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (libxlBuildDomainConfig(driver, vm->def, &d_config) < 0)
         goto error;
 
-    if (libxlFreeMem(priv, &d_config) < 0) {
+    if (driver->autoballoon && libxlFreeMem(priv, &d_config) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to get free memory for domain '%s'"),
                        d_config.c_info.name);
@@ -1160,6 +1161,29 @@ libxlStateCleanup(void)
     return 0;
 }
 
+static bool
+libxlGetAutoballoon(libxlDriverPrivatePtr driver)
+{
+    const libxl_version_info *info;
+    regex_t regex;
+    int ret;
+
+    info = libxl_get_version_info(driver->ctx);
+    if (!info)
+        return true; /* default to on */
+
+    ret = regcomp(&regex,
+            "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
+            REG_NOSUB | REG_EXTENDED);
+    if (ret)
+        return true;
+
+    ret = regexec(&regex, info->commandline, 0, NULL, 0);
+    regfree(&regex);
+    return ret == REG_NOMATCH;
+}
+
+
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -1169,6 +1193,7 @@ libxlStateInitialize(bool privileged,
     char *log_file = NULL;
     virCommandPtr cmd;
     int status, ret = 0;
+    unsigned int free_mem;
     char ebuf[1024];
 
     /* Disable libxl driver if non-root */
@@ -1292,6 +1317,16 @@ libxlStateInitialize(bool privileged,
                                                        &libxlDomainXMLPrivateDataCallbacks,
                                                        NULL)))
         goto error;
+
+    /* This will fill xenstore info about free and dom0 memory if missing,
+     * should be called before starting first domain */
+    if (libxl_get_free_memory(libxl_driver->ctx, &free_mem)) {
+        VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
+        goto error;
+    }
+
+    /* setup autoballoon */
+    libxl_driver->autoballoon = libxlGetAutoballoon(libxl_driver);
 
     /* Load running domains first. */
     if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
