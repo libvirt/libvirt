@@ -2399,6 +2399,17 @@ AC_CHECK_DECLS([link_addr],
                 #include <net/if_dl.h>
                ])
 
+# Check for BSD approach for bridge management
+AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
+               [AC_DEFINE([HAVE_BSD_BRIDGE_MGMT],
+                          [1],
+                          [whether BSD style bridge management is available])],
+               [],
+               [#include <net/if.h>
+                #include <net/ethernet.h>
+                #include <net/if_bridgevar.h>
+               ])
+
 # Detect when running under the clang static analyzer's scan-build driver
 # or Coverity-prevent's cov-build.  Define STATIC_ANALYSIS accordingly.
 AC_CACHE_CHECK([whether this build is done by a static analysis tool],
