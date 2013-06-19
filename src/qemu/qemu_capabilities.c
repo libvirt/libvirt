@@ -1316,6 +1316,22 @@ struct virQEMUCapsStringFlags {
 };
 
 
+struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
+    { "system_wakeup", QEMU_CAPS_WAKEUP },
+    { "transaction", QEMU_CAPS_TRANSACTION },
+    { "block_job_cancel", QEMU_CAPS_BLOCKJOB_SYNC },
+    { "block-job-cancel", QEMU_CAPS_BLOCKJOB_ASYNC },
+    { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
+    { "query-spice", QEMU_CAPS_SPICE },
+    { "query-kvm", QEMU_CAPS_KVM },
+    { "block-commit", QEMU_CAPS_BLOCK_COMMIT },
+    { "query-vnc", QEMU_CAPS_VNC },
+    { "drive-mirror", QEMU_CAPS_DRIVE_MIRROR },
+    { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
+    { "add-fd", QEMU_CAPS_ADD_FD },
+    { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
+};
+
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "BALLOON_CHANGE", QEMU_CAPS_BALLOON_EVENT },
     { "SPICE_MIGRATE_COMPLETED", QEMU_CAPS_SEAMLESS_MIGRATION },
@@ -1956,42 +1972,15 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
 {
     char **commands = NULL;
     int ncommands;
-    size_t i;
 
     if ((ncommands = qemuMonitorGetCommands(mon, &commands)) < 0)
         return -1;
 
-    for (i = 0; i < ncommands; i++) {
-        char *name = commands[i];
-        if (STREQ(name, "system_wakeup"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
-        else if (STREQ(name, "transaction"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_TRANSACTION);
-        else if (STREQ(name, "block_job_cancel"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
-        else if (STREQ(name, "block-job-cancel"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
-        else if (STREQ(name, "dump-guest-memory"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY);
-        else if (STREQ(name, "query-spice"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_SPICE);
-        else if (STREQ(name, "query-kvm"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
-        else if (STREQ(name, "block-commit"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCK_COMMIT);
-        else if (STREQ(name, "query-vnc"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC);
-        else if (STREQ(name, "drive-mirror"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_MIRROR);
-        else if (STREQ(name, "blockdev-snapshot-sync"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISK_SNAPSHOT);
-        else if (STREQ(name, "add-fd"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_ADD_FD);
-        else if (STREQ(name, "nbd-server-start"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_NBD_SERVER);
-        VIR_FREE(name);
-    }
-    VIR_FREE(commands);
+    virQEMUCapsProcessStringFlags(qemuCaps,
+                                  ARRAY_CARDINALITY(virQEMUCapsCommands),
+                                  virQEMUCapsCommands,
+                                  ncommands, commands);
+    virQEMUCapsFreeStringList(ncommands, commands);
 
     /* QMP add-fd was introduced in 1.2, but did not support
      * management control of set numbering, and did not have a
