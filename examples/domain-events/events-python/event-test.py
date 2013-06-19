@@ -495,6 +495,9 @@ def myDomainEventBalloonChangeCallback(conn, dom, actual, opaque):
 def myDomainEventPMSuspendDiskCallback(conn, dom, reason, opaque):
     print "myDomainEventPMSuspendDiskCallback: Domain %s(%s) system pmsuspend_disk" % (
             dom.name(), dom.ID())
+def myDomainEventDeviceRemovedCallback(conn, dom, dev, opaque):
+    print "myDomainEventDeviceRemovedCallback: Domain %s(%s) device removed: %s" % (
+            dom.name(), dom.ID(), dev)
 
 run = True
 
@@ -570,6 +573,7 @@ def main():
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMSUSPEND, myDomainEventPMSuspendCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE, myDomainEventBalloonChangeCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK, myDomainEventPMSuspendDiskCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED, myDomainEventDeviceRemovedCallback, None)
 
     vc.setKeepAlive(5, 3)
 
