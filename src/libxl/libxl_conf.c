@@ -609,8 +609,6 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     }
 
     for (i = 0; i < nnics; i++) {
-        x_nics[i].devid = i;
-
         if (libxlMakeNic(l_nics[i], &x_nics[i]))
             goto error;
     }
