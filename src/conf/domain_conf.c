@@ -4972,6 +4972,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                            _("only one of uuid and usage can be specified"));
                             goto error;
                         }
+
+                        if (!authUUID && !authUsage) {
+                            virReportError(VIR_ERR_XML_ERROR, "%s",
+                                           _("either uuid or usage should be "
+                                             "specified for a secret"));
+                            goto error;
+                        }
+
                         if (authUUID != NULL) {
                             def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
                             if (virUUIDParse(authUUID,
