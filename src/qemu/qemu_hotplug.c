@@ -1977,18 +1977,18 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < dev->nListens; i++) {
-        virDomainGraphicsListenDefPtr listen = &dev->listens[i];
+        virDomainGraphicsListenDefPtr newlisten = &dev->listens[i];
         virDomainGraphicsListenDefPtr oldlisten = &olddev->listens[i];
 
-        if (listen->type != oldlisten->type) {
+        if (newlisten->type != oldlisten->type) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("cannot change the type of listen address"));
             goto cleanup;
         }
 
-        switch ((enum virDomainGraphicsListenType) listen->type) {
+        switch ((enum virDomainGraphicsListenType) newlisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            if (STRNEQ_NULLABLE(listen->address, oldlisten->address)) {
+            if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
                                _("cannot change listen address setting on vnc graphics") :
@@ -1998,7 +1998,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            if (STRNEQ_NULLABLE(listen->network, oldlisten->network)) {
+            if (STRNEQ_NULLABLE(newlisten->network, oldlisten->network)) {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
                            _("cannot change listen network setting on vnc graphics") :
