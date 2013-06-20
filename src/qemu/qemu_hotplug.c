@@ -1843,10 +1843,9 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainGraphicsDefPtr dev)
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
-    const char *oldListenAddr, *newListenAddr;
-    const char *oldListenNetwork, *newListenNetwork;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
 
     if (!olddev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1854,10 +1853,49 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    oldListenAddr = virDomainGraphicsListenGetAddress(olddev, 0);
-    newListenAddr = virDomainGraphicsListenGetAddress(dev, 0);
-    oldListenNetwork = virDomainGraphicsListenGetNetwork(olddev, 0);
-    newListenNetwork = virDomainGraphicsListenGetNetwork(dev, 0);
+    if (dev->nListens != olddev->nListens) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("cannot change the number of listen addresses"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < dev->nListens; i++) {
+        virDomainGraphicsListenDefPtr listen = &dev->listens[i];
+        virDomainGraphicsListenDefPtr oldlisten = &olddev->listens[i];
+
+        if (listen->type != oldlisten->type) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("cannot change the type of listen address"));
+            goto cleanup;
+        }
+
+        switch ((enum virDomainGraphicsListenType) listen->type) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            if (STRNEQ_NULLABLE(listen->address, oldlisten->address)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
+                               _("cannot change listen address setting on vnc graphics") :
+                               _("cannot change listen address setting on spice graphics"));
+                goto cleanup;
+            }
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            if (STRNEQ_NULLABLE(listen->network, oldlisten->network)) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
+                           _("cannot change listen network setting on vnc graphics") :
+                           _("cannot change listen network setting on spice graphics"));
+                goto cleanup;
+            }
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+            /* nada */
+            break;
+        }
+    }
 
     switch (dev->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -1866,16 +1904,6 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.vnc.port != dev->data.vnc.port))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change port settings on vnc graphics"));
-            goto cleanup;
-        }
-        if (STRNEQ_NULLABLE(oldListenAddr,newListenAddr)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot change listen address setting on vnc graphics"));
-            goto cleanup;
-        }
-        if (STRNEQ_NULLABLE(oldListenNetwork,newListenNetwork)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot change listen network setting on vnc graphics"));
             goto cleanup;
         }
         if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
@@ -1921,16 +1949,6 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change port settings on spice graphics"));
-            goto cleanup;
-        }
-        if (STRNEQ_NULLABLE(oldListenAddr, newListenAddr)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot change listen address setting on spice graphics"));
-            goto cleanup;
-        }
-        if (STRNEQ_NULLABLE(oldListenNetwork, newListenNetwork)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot change listen network setting on spice graphics"));
             goto cleanup;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
