@@ -38,7 +38,7 @@ typedef void virIfreq;
 
 int virNetDevSetupControl(const char *ifname,
                           virIfreq *ifr)
-    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

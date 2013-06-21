@@ -62,13 +62,15 @@ static int virNetDevSetupControlFull(const char *ifname,
 {
     int fd;
 
-    memset(ifr, 0, sizeof(*ifr));
+    if (ifr && ifname) {
+        memset(ifr, 0, sizeof(*ifr));
 
-    if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
-        virReportSystemError(ERANGE,
-                             _("Network interface name '%s' is too long"),
-                             ifname);
-        return -1;
+        if (virStrcpyStatic(ifr->ifr_name, ifname) == NULL) {
+            virReportSystemError(ERANGE,
+                                 _("Network interface name '%s' is too long"),
+                                 ifname);
+            return -1;
+        }
     }
 
     if ((fd = socket(domain, type, 0)) < 0) {
