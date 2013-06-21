@@ -5786,14 +5786,16 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((enum virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
                 if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
                     virBufferAsprintf(&buf, ",hv_%s",
                                       virDomainHypervTypeToString(i));
                 break;
 
-            case VIR_DOMAIN_HYPERV_VAPIC:
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                /* implemented in the next commit */
+                if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
+                    virBufferAsprintf(&buf, ",hv_spinlocks=0x%x",
+                                      def->hyperv_spinlocks);
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:
@@ -9632,6 +9634,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 {
     virCPUDefPtr cpu = NULL;
     char **tokens;
+    char **hv_tokens = NULL;
     char *model = NULL;
     int ret = -1;
     int i;
@@ -9711,8 +9714,18 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                     goto cleanup;
             }
         } else if (STRPREFIX(tokens[i], "hv_")) {
-            const char *feature = tokens[i] + 3; /* "hv_" */
+            const char *token = tokens[i] + 3; /* "hv_" */
+            const char *feature, *value;
             int f;
+
+            if (*token == '\0')
+                goto syntax;
+
+            if (!(hv_tokens = virStringSplit(token, "=", 2)))
+                goto cleanup;
+
+            feature = hv_tokens[0];
+            value = hv_tokens[1];
 
             if (*feature == '\0')
                 goto syntax;
@@ -9728,17 +9741,39 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
             switch ((enum virDomainHyperv) f) {
             case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
+                if (value) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("HyperV feature '%s' should not "
+                                     "have a value"), feature);
+                    goto cleanup;
+                }
                 dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
                 break;
 
-            case VIR_DOMAIN_HYPERV_VAPIC:
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                /* implemented in the next commit */
+                dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
+                if (!value) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("missing HyperV spinlock retry count"));
+                    goto cleanup;
+                }
+
+                if (virStrToLong_ui(value, NULL, 0, &dom->hyperv_spinlocks) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("cannot parse HyperV spinlock retry count"));
+                    goto cleanup;
+                }
+
+                if (dom->hyperv_spinlocks < 0xFFF)
+                    dom->hyperv_spinlocks = 0xFFF;
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
+            virStringFreeList(hv_tokens);
+            hv_tokens = NULL;
         }
     }
 
@@ -9766,6 +9801,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 cleanup:
     VIR_FREE(model);
     virStringFreeList(tokens);
+    virStringFreeList(hv_tokens);
     return ret;
 
 syntax:
