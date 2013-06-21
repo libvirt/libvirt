@@ -4666,6 +4666,11 @@ networkUnplugBandwidth(virNetworkObjPtr net,
 
     if (iface->data.network.actual &&
         iface->data.network.actual->class_id) {
+        if (!net->def->bandwidth || !net->def->bandwidth->in) {
+            VIR_WARN("Network %s has no bandwidth but unplug requested",
+                     net->def->name);
+            goto cleanup;
+        }
         /* we must remove class from bridge */
         new_rate = net->def->bandwidth->in->average;
 
