@@ -149,7 +149,9 @@ VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
               "off")
 
 VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
-              "relaxed")
+              "relaxed",
+              "vapic",
+              "spinlocks")
 
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "destroy",
@@ -11084,6 +11086,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             switch ((enum virDomainHyperv) feature) {
                 case VIR_DOMAIN_HYPERV_RELAXED:
+                case VIR_DOMAIN_HYPERV_VAPIC:
                     if (!(tmp = virXPathString("string(./@state)", ctxt))) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("missing 'state' attribute for "
@@ -11100,6 +11103,48 @@ virDomainDefParseXML(xmlDocPtr xml,
                         goto error;
                     }
 
+                    VIR_FREE(tmp);
+                    def->hyperv_features[feature] = value;
+                    break;
+
+                case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("missing 'state' attribute for "
+                                         "HyperV Enlightenment feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    if ((value = virDomainFeatureStateTypeFromString(tmp)) < 0) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("invalid value of state argument "
+                                         "for HyperV Enlightenment feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    VIR_FREE(tmp);
+                    if (!(tmp = virXPathString("string(./@retries)", ctxt))) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("missing HyperV spinlock retry count"));
+                        goto error;
+                    }
+
+                    if (virStrToLong_ui(tmp, NULL, 0,
+                                        &def->hyperv_spinlocks) < 0) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("Cannot parse HyperV spinlock retry "
+                                         "count"));
+                        goto error;
+                    }
+
+                    if (def->hyperv_spinlocks < 0xFFF) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("HyperV spinlock retry count must be "
+                                         "at least 4095"));
+                        goto error;
+                    }
                     VIR_FREE(tmp);
                     def->hyperv_features[feature] = value;
                     break;
@@ -16224,10 +16269,25 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
                 switch ((enum virDomainHyperv) i) {
                 case VIR_DOMAIN_HYPERV_RELAXED:
+                case VIR_DOMAIN_HYPERV_VAPIC:
                     if (def->hyperv_features[i])
                         virBufferAsprintf(buf, "      <%s state='%s'/>\n",
                                           virDomainHypervTypeToString(i),
-                                          virDomainFeatureStateTypeToString(def->hyperv_features[i]));
+                                          virDomainFeatureStateTypeToString(
+                                              def->hyperv_features[i]));
+                    break;
+
+                case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                    if (def->hyperv_features[i] == 0)
+                        break;
+
+                    virBufferAsprintf(buf, "      <spinlocks state='%s'",
+                                      virDomainFeatureStateTypeToString(
+                                          def->hyperv_features[i]));
+                    if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
+                        virBufferAsprintf(buf, " retries='%d'",
+                                          def->hyperv_spinlocks);
+                    virBufferAddLit(buf, "/>\n");
                     break;
 
                 case VIR_DOMAIN_HYPERV_LAST:

@@ -1147,6 +1147,8 @@
     &lt;privnet/&gt;
     &lt;hyperv&gt;
       &lt;relaxed state='on'/&gt;
+      &lt;vapic state='on'/&gt;
+      &lt;spinlocks state='on' retries='4096'&lt;/spinlocks&gt;
     &lt;/hyperv&gt;
 
   &lt;/features&gt;
@@ -1197,14 +1199,27 @@
           <th>Feature</th>
           <th>Description</th>
           <th>Value</th>
+          <th>Since</th>
         </tr>
         <tr>
           <td>relaxed</td>
           <td>Relax contstraints on timers</td>
           <td> on, off</td>
+          <td><span class="since">1.0.0 (QEMU only)</span></td>
+        </tr>
+        <tr>
+          <td>vapic</td>
+          <td>Enable virtual APIC</td>
+          <td>on, off</td>
+          <td><span class="since">1.1.0 (QEMU only)</span></td>
+        </tr>
+        <tr>
+          <td>spinlocks</td>
+          <td>Enable spinlock support</td>
+          <td>on, off; retries - at least 4095</td>
+          <td><span class="since">1.1.0 (QEMU only)</span></td>
         </tr>
       </table>
-      <span class="since">Since 1.0.0 (QEMU only)</span>
       </dd>
     </dl>
 

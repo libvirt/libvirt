@@ -1584,6 +1584,8 @@ enum virDomainFeatureState {
 
 enum virDomainHyperv {
     VIR_DOMAIN_HYPERV_RELAXED = 0,
+    VIR_DOMAIN_HYPERV_VAPIC,
+    VIR_DOMAIN_HYPERV_SPINLOCKS,
 
     VIR_DOMAIN_HYPERV_LAST
 };
@@ -1926,6 +1928,7 @@ struct _virDomainDef {
     int apic_eoi;
     /* These options are of type virDomainFeatureState */
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
+    unsigned int hyperv_spinlocks;
 
     virDomainClockDef clock;
 

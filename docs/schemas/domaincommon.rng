@@ -4015,6 +4015,19 @@
             <ref name="hypervtristate"/>
           </element>
         </optional>
+        <optional>
+          <element name="vapic">
+            <ref name="hypervtristate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="spinlocks">
+            <ref name="hypervtristate"/>
+            <attribute name="retries">
+              <data type="integer"/>
+            </attribute>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

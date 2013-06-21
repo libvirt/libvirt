@@ -5791,6 +5791,11 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
                                       virDomainHypervTypeToString(i));
                 break;
 
+            case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                /* implemented in the next commit */
+                break;
+
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -9724,6 +9729,11 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             switch ((enum virDomainHyperv) f) {
             case VIR_DOMAIN_HYPERV_RELAXED:
                 dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
+                break;
+
+            case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                /* implemented in the next commit */
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:
