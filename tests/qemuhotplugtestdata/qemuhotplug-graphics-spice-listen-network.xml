@@ -1,0 +1,11 @@
+    <graphics autoport='yes' connected='disconnect' keymap='en-us' passwd='password2' passwdValidTo='2013-06-20T01:34:37' port='5900' tlsPort='5901' type='spice'>
+      <listen address='10.65.210.231' network='vdsm-rhevm' type='network'/>
+      <channel mode='secure' name='main'/>
+      <channel mode='secure' name='display'/>
+      <channel mode='secure' name='inputs'/>
+      <channel mode='secure' name='cursor'/>
+      <channel mode='secure' name='playback'/>
+      <channel mode='secure' name='record'/>
+      <channel mode='secure' name='smartcard'/>
+      <channel mode='secure' name='usbredir'/>
+    </graphics>
