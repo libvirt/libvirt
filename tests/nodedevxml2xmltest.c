@@ -78,6 +78,7 @@ mymain(void)
     DO_TEST("net_00_13_02_b9_f9_d3");
     DO_TEST("net_00_15_58_2f_e9_55");
     DO_TEST("pci_1002_71c4");
+    DO_TEST("pci_8086_10c9_sriov_pf");
     DO_TEST("pci_8086_27c5_scsi_host_0");
     DO_TEST("pci_8086_27c5_scsi_host_scsi_device_lun0");
     DO_TEST("pci_8086_27c5_scsi_host_scsi_host");

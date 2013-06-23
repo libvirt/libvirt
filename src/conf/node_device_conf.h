@@ -1,7 +1,7 @@
 /*
  * node_device_conf.h: config handling for node devices
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -112,6 +112,9 @@ struct _virNodeDevCapsDef {
             virPCIDeviceAddressPtr *virtual_functions;
             unsigned int num_virtual_functions;
             unsigned int flags;
+            virPCIDeviceAddressPtr *iommuGroupDevices;
+            size_t nIommuGroupDevices;
+            unsigned int iommuGroupNumber;
         } pci_dev;
         struct {
             unsigned int bus;

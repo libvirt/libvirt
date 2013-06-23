@@ -421,7 +421,8 @@ static int udevProcessPCI(struct udev_device *device,
 {
     const char *syspath = NULL;
     union _virNodeDevCapData *data = &def->caps->data;
-    int ret = -1;
+    virPCIDeviceAddress addr;
+    int tmpGroup, ret = -1;
     char *p;
     int rc;
 
@@ -500,6 +501,23 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     else if (!rc && (data->pci_dev.num_virtual_functions > 0))
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+
+    /* iommu group */
+    addr.domain = data->pci_dev.domain;
+    addr.bus = data->pci_dev.bus;
+    addr.slot = data->pci_dev.slot;
+    addr.function = data->pci_dev.function;
+    tmpGroup = virPCIDeviceAddressGetIOMMUGroupNum(&addr);
+    if (tmpGroup == -1) {
+        /* error was already reported */
+        goto out;
+        /* -2 return means there is no iommu_group data */
+    } else if (tmpGroup >= 0) {
+        if (virPCIDeviceAddressGetIOMMUGroupAddresses(&addr, &data->pci_dev.iommuGroupDevices,
+                                                      &data->pci_dev.nIommuGroupDevices) < 0)
+            goto out;
+        data->pci_dev.iommuGroupNumber = tmpGroup;
+    }
 
     ret = 0;
 

@@ -144,6 +144,17 @@
       </element>
     </optional>
 
+    <optional>
+      <element name='iommuGroup'>
+        <attribute name='number'>
+          <ref name='unsignedInt'/>
+        </attribute>
+        <oneOrMore>
+          <ref name='address'/>
+        </oneOrMore>
+      </element>
+    </optional>
+
   </define>
 
   <define name='capusbdev'>

@@ -80,6 +80,36 @@
               <dd>Vendor details from the device ROM, including an
                 attribute <code>id</code> with the hexadecimal vendor
                 id, and an optional text name of that vendor.</dd>
+              <dt><code>iommuGroup</code></dt>
+              <dd>
+                This optional element describes the "IOMMU group" this
+                device belongs to. If the element exists, it has a
+                mandatory <code>number</code> attribute which tells
+                the group number used for management of the group (all
+                devices in group "n" will be found in
+                "/sys/kernel/iommu_groups/n"). It will also have a
+                list of <code>address</code> subelements, each
+                containing the PCI address of a device in the same
+                group. The toplevel device will itself be included in
+                this list.
+              </dd>
+              <dt><code>capability</code></dt>
+              <dd>
+                This optional element can occur multiple times. If it
+                exists, it has a mandatory <code>type</code> attribute
+                which will be set to
+                either <code>physical_function</code>
+                or <code>virtual_functions</code>. If the type
+                is <code>physical_function</code>, there will be a
+                single <code>address</code> subelement which contains
+                the PCI address of the SRIOV Physical Function (PF)
+                that is the parent of this device (and this device is,
+                by implication, an SRIOV Virtual Function (VF)). If
+                the type is <code>virtual_functions</code>, then this
+                device is an SRIOV PF, and the capability element will
+                have a list of <code>address</code> subelements, one
+                for each VF on this PF.
+              </dd>
             </dl>
           </dd>
           <dt><code>usb_device</code></dt>
@@ -232,7 +262,38 @@
     &lt;address&gt;00:27:13:6a:fe:00&lt;/address&gt;
     &lt;capability type='80203'/&gt;
   &lt;/capability&gt;
-&lt;/device&gt;</pre>
+&lt;/device&gt;
+
+&lt;device&gt;
+  &lt;name&gt;pci_0000_02_00_0&lt;/name&gt;
+  &lt;path&gt;/sys/devices/pci0000:00/0000:00:04.0/0000:02:00.0&lt;/path&gt;
+  &lt;parent&gt;pci_0000_00_04_0&lt;/parent&gt;
+  &lt;driver&gt;
+    &lt;name&gt;igb&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='pci'&gt;
+    &lt;domain&gt;0&lt;/domain&gt;
+    &lt;bus&gt;2&lt;/bus&gt;
+    &lt;slot&gt;0&lt;/slot&gt;
+    &lt;function&gt;0&lt;/function&gt;
+    &lt;product id='0x10c9'&gt;82576 Gigabit Network Connection&lt;/product&gt;
+    &lt;vendor id='0x8086'&gt;Intel Corporation&lt;/vendor&gt;
+    &lt;capability type='virt_functions'&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x10' function='0x0'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x10' function='0x2'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x10' function='0x4'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x10' function='0x6'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x11' function='0x0'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x11' function='0x2'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x11' function='0x4'/&gt;
+    &lt;/capability&gt;
+    &lt;iommuGroup number='12'&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x00' function='0x0'/&gt;
+      &lt;address domain='0x0000' bus='0x02' slot='0x00' function='0x1'/&gt;
+    &lt;/iommuGroup&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;
+    </pre>
 
   </body>
 </html>
