@@ -113,12 +113,21 @@ int virPCIDeviceListFindIndex(virPCIDeviceListPtr list,
  */
 typedef int (*virPCIDeviceFileActor)(virPCIDevicePtr dev,
                                      const char *path, void *opaque);
-
 int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                             virPCIDeviceFileActor actor,
                             void *opaque);
-char *
-virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
+
+typedef int (*virPCIDeviceAddressActor)(virPCIDeviceAddress *addr,
+                                        void *opaque);
+int virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
+                                         virPCIDeviceAddressActor actor,
+                                         void *opaque);
+virPCIDeviceListPtr virPCIDeviceGetIOMMUGroupList(virPCIDevicePtr dev);
+int virPCIDeviceAddressGetIOMMUGroupAddresses(virPCIDeviceAddressPtr devAddr,
+                                              virPCIDeviceAddressPtr **iommuGroupDevices,
+                                              size_t *nIommuGroupDevices);
+int virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr dev);
+char *virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
                              int strict_acs_check);

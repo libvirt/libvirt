@@ -1876,6 +1876,230 @@ cleanup:
     return ret;
 }
 
+
+/* virPCIDeviceAddressIOMMUGroupIterate:
+ *   Call @actor for all devices in the same iommu_group as orig
+ *   (including orig itself) Even if there is no iommu_group for the
+ *   device, call @actor once for orig.
+ */
+int
+virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
+                                     virPCIDeviceAddressActor actor,
+                                     void *opaque)
+{
+    char *groupPath = NULL;
+    DIR *groupDir = NULL;
+    int ret = -1;
+    struct dirent *ent;
+
+    if (virAsprintf(&groupPath,
+                    PCI_SYSFS "devices/%04x:%02x:%02x.%x/iommu_group/devices",
+                    orig->domain, orig->bus, orig->slot, orig->function) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(groupDir = opendir(groupPath))) {
+        /* just process the original device, nothing more */
+        ret = (actor)(orig, opaque);
+        goto cleanup;
+    }
+
+    while ((errno = 0, ent = readdir(groupDir)) != NULL) {
+        virPCIDeviceAddress newDev;
+
+        if (ent->d_name[0] == '.')
+            continue;
+
+        if (virPCIDeviceAddressParse(ent->d_name, &newDev) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Found invalid device link '%s' in '%s'"),
+                           ent->d_name, groupPath);
+            goto cleanup;
+        }
+
+        if ((actor)(&newDev, opaque) < 0)
+            goto cleanup;
+    }
+    if (errno != 0) {
+        virReportSystemError(errno,
+                             _("Failed to read directory entry for %s"),
+                             groupPath);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(groupPath);
+    if (groupDir)
+        closedir(groupDir);
+    return ret;
+}
+
+
+static int
+virPCIDeviceGetIOMMUGroupAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaque)
+{
+    int ret = -1;
+    virPCIDeviceListPtr groupList = opaque;
+    virPCIDevicePtr newDev;
+
+    if (!(newDev = virPCIDeviceNew(newDevAddr->domain, newDevAddr->bus,
+                                   newDevAddr->slot, newDevAddr->function)))
+        goto cleanup;
+
+    if (virPCIDeviceListAdd(groupList, newDev) < 0)
+        goto cleanup;
+
+    newDev = NULL; /* it's now on the list */
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(newDev);
+    return ret;
+}
+
+
+/*
+ * virPCIDeviceGetIOMMUGroupList - return a virPCIDeviceList containing
+ * all of the devices in the same iommu_group as @dev.
+ *
+ * Return the new list, or NULL on failure
+ */
+virPCIDeviceListPtr
+virPCIDeviceGetIOMMUGroupList(virPCIDevicePtr dev)
+{
+    virPCIDeviceListPtr groupList = virPCIDeviceListNew();
+    virPCIDeviceAddress devAddr = { dev->domain, dev->bus,
+                                    dev->slot, dev->function };
+
+    if (!groupList)
+        goto error;
+
+    if (virPCIDeviceAddressIOMMUGroupIterate(&devAddr,
+                                             virPCIDeviceGetIOMMUGroupAddOne,
+                                             groupList) < 0)
+        goto error;
+
+    return groupList;
+
+error:
+    virObjectUnref(groupList);
+    return NULL;
+}
+
+
+typedef struct {
+    virPCIDeviceAddressPtr **iommuGroupDevices;
+    size_t *nIommuGroupDevices;
+} virPCIDeviceAddressList;
+typedef virPCIDeviceAddressList *virPCIDeviceAddressListPtr;
+
+static int
+virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaque)
+{
+    int ret = -1;
+    virPCIDeviceAddressListPtr addrList = opaque;
+    virPCIDeviceAddressPtr copyAddr;
+
+    /* make a copy to insert onto the list */
+    if (VIR_ALLOC(copyAddr) < 0)
+        goto cleanup;
+
+    *copyAddr = *newDevAddr;
+
+    if (VIR_APPEND_ELEMENT(*addrList->iommuGroupDevices,
+                           *addrList->nIommuGroupDevices, copyAddr) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(copyAddr);
+    return ret;
+}
+
+
+/*
+ * virPCIDeviceAddressGetIOMMUGroupAddresses - return a
+ * virPCIDeviceList containing all of the devices in the same
+ * iommu_group as @dev.
+ *
+ * Return the new list, or NULL on failure
+ */
+int
+virPCIDeviceAddressGetIOMMUGroupAddresses(virPCIDeviceAddressPtr devAddr,
+                                          virPCIDeviceAddressPtr **iommuGroupDevices,
+                                          size_t *nIommuGroupDevices)
+{
+    int ret = -1;
+    virPCIDeviceAddressList addrList = { iommuGroupDevices,
+                                         nIommuGroupDevices };
+
+    if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
+                                             virPCIGetIOMMUGroupAddressesAddOne,
+                                             &addrList) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
+/* virPCIDeviceAddressGetIOMMUGroupNum - return the group number of
+ * this PCI device's iommu_group, or -2 if there is no iommu_group for
+ * the device (or -1 if there was any other error)
+ */
+int
+virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
+{
+    char *devName = NULL;
+    char *devPath = NULL;
+    char *groupPath = NULL;
+    const char *groupNumStr;
+    unsigned int groupNum;
+    int ret = -1;
+
+    if (virAsprintf(&devName, "%.4x:%.2x:%.2x.%.1x", addr->domain,
+                    addr->bus, addr->slot, addr->function) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virPCIFile(&devPath, devName, "iommu_group") < 0)
+        goto cleanup;
+    if (virFileIsLink(devPath) != 1) {
+        ret = -2;
+        goto cleanup;
+    }
+    if (virFileResolveLink(devPath, &groupPath) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device %s iommu_group symlink %s"),
+                       devName, devPath);
+        goto cleanup;
+    }
+
+    groupNumStr = last_component(groupPath);
+    if (virStrToLong_ui(groupNumStr, NULL, 10, &groupNum) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("device %s iommu_group symlink %s has "
+                         "invalid group number %s"),
+                       devName, groupPath, groupNumStr);
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = groupNum;
+cleanup:
+    VIR_FREE(devName);
+    VIR_FREE(devPath);
+    VIR_FREE(groupPath);
+    return ret;
+}
+
+
 /* virPCIDeviceGetIOMMUGroupDev - return the name of the device used
  * to control this PCI device's group (e.g. "/dev/vfio/15")
  */

@@ -1693,13 +1693,17 @@ virObjectUnref;
 
 
 # util/virpci.h
+virPCIDeviceAddressGetIOMMUGroupAddresses;
+virPCIDeviceAddressGetIOMMUGroupNum;
 virPCIDeviceAddressGetSysfsFile;
+virPCIDeviceAddressIOMMUGroupIterate;
 virPCIDeviceAddressParse;
 virPCIDeviceCopy;
 virPCIDeviceDetach;
 virPCIDeviceFileIterate;
 virPCIDeviceFree;
 virPCIDeviceGetIOMMUGroupDev;
+virPCIDeviceGetIOMMUGroupList;
 virPCIDeviceGetManaged;
 virPCIDeviceGetName;
 virPCIDeviceGetRemoveSlot;
