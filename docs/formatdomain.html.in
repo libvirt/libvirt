@@ -1310,8 +1310,10 @@
           <dt><code>name</code></dt>
           <dd>
             The <code>name</code> attribute selects which timer is
-            being modified, and can be one of "platform", "hpet",
-            "kvmclock", "pit", "rtc", or "tsc".
+            being modified, and can be one of
+            "platform" (currently unsupported),
+            "hpet" (libxl, xen, qemu), "kvmclock" (qemu),
+            "pit" (qemu), "rtc" (qemu), or "tsc" (libxl).
           </dd>
           <dt><code>track</code></dt>
           <dd>
