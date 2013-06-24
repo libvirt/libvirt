@@ -2073,6 +2073,9 @@ struct _virDomainObj {
 typedef struct _virDomainObjList virDomainObjList;
 typedef virDomainObjList *virDomainObjListPtr;
 
+typedef bool (*virDomainObjListFilter)(virConnectPtr conn,
+                                       virDomainDefPtr def);
+
 
 /* This structure holds various callbacks and data needed
  * while parsing and creating domain XMLs */
@@ -2426,14 +2429,21 @@ int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 int virDomainVideoDefaultType(virDomainDefPtr def);
 int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 
-int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active);
+int virDomainObjListNumOfDomains(virDomainObjListPtr doms,
+                                 bool active,
+                                 virDomainObjListFilter filter,
+                                 virConnectPtr conn);
 
 int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
                                  int *ids,
-                                 int maxids);
+                                 int maxids,
+                                 virDomainObjListFilter filter,
+                                 virConnectPtr conn);
 int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                      char **const names,
-                                     int maxnames);
+                                     int maxnames,
+                                     virDomainObjListFilter filter,
+                                     virConnectPtr conn);
 
 typedef int (*virDomainObjListIterator)(virDomainObjPtr dom,
                                         void *opaque);
@@ -2643,6 +2653,7 @@ VIR_ENUM_DECL(virDomainStartupPolicy)
 int virDomainObjListExport(virDomainObjListPtr doms,
                            virConnectPtr conn,
                            virDomainPtr **domains,
+                           virDomainObjListFilter filter,
                            unsigned int flags);
 
 virDomainVcpuPinDefPtr virDomainLookupVcpuPin(virDomainDefPtr def,

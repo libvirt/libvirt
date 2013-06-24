@@ -1566,7 +1566,7 @@ static int openvzConnectNumOfDomains(virConnectPtr conn) {
     int n;
 
     openvzDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, true, NULL, NULL);
     openvzDriverUnlock(driver);
 
     return n;
@@ -1678,7 +1678,7 @@ static int openvzConnectNumOfDefinedDomains(virConnectPtr conn) {
     int n;
 
     openvzDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, false, NULL, NULL);
     openvzDriverUnlock(driver);
 
     return n;
@@ -2122,7 +2122,8 @@ openvzConnectListAllDomains(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     openvzDriverLock(driver);
-    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains,
+                                 NULL, flags);
     openvzDriverUnlock(driver);
 
     return ret;

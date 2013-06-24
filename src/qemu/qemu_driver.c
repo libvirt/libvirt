@@ -1492,7 +1492,8 @@ static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     if (virConnectListDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                     virConnectListDomainsCheckACL, conn);
 
     return n;
 }
@@ -1504,7 +1505,8 @@ static int qemuConnectNumOfDomains(virConnectPtr conn) {
     if (virConnectNumOfDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, true,
+                                     virConnectNumOfDomainsCheckACL, conn);
 
     return n;
 }
@@ -5884,7 +5886,8 @@ static int qemuConnectListDefinedDomains(virConnectPtr conn,
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
         goto cleanup;
 
-    ret = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
+    ret = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                           virConnectListDefinedDomainsCheckACL, NULL);
 
 cleanup:
     return ret;
@@ -5897,7 +5900,8 @@ static int qemuConnectNumOfDefinedDomains(virConnectPtr conn) {
     if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
         goto cleanup;
 
-    ret = virDomainObjListNumOfDomains(driver->domains, 0);
+    ret = virDomainObjListNumOfDomains(driver->domains, false,
+                                       virConnectNumOfDefinedDomainsCheckACL, NULL);
 
 cleanup:
     return ret;
@@ -15787,7 +15791,8 @@ qemuConnectListAllDomains(virConnectPtr conn,
     if (virConnectListAllDomainsEnsureACL(conn) < 0)
         goto cleanup;
 
-    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains,
+                                 virConnectListAllDomainsCheckACL, flags);
 
 cleanup:
     return ret;

@@ -17106,47 +17106,51 @@ virDomainGetRootFilesystem(virDomainDefPtr def)
 }
 
 
-static void
-virDomainObjListCountActive(void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
-                            void *data)
-{
-    virDomainObjPtr obj = payload;
-    int *count = data;
-    virObjectLock(obj);
-    if (virDomainObjIsActive(obj))
-        (*count)++;
-    virObjectUnlock(obj);
-}
+struct virDomainObjListData {
+    virDomainObjListFilter filter;
+    virConnectPtr conn;
+    bool active;
+    int count;
+};
 
 static void
-virDomainObjListCountInactive(void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
-                              void *data)
+virDomainObjListCount(void *payload,
+                      const void *name ATTRIBUTE_UNUSED,
+                      void *opaque)
 {
     virDomainObjPtr obj = payload;
-    int *count = data;
+    struct virDomainObjListData *data = opaque;
     virObjectLock(obj);
-    if (!virDomainObjIsActive(obj))
-        (*count)++;
+    if (data->filter &&
+        !data->filter(data->conn, obj->def))
+        goto cleanup;
+    if (virDomainObjIsActive(obj)) {
+        if (data->active)
+            data->count++;
+    } else {
+        if (!data->active)
+            data->count++;
+    }
+cleanup:
     virObjectUnlock(obj);
 }
 
 int
 virDomainObjListNumOfDomains(virDomainObjListPtr doms,
-                             int active)
+                             bool active,
+                             virDomainObjListFilter filter,
+                             virConnectPtr conn)
 {
-    int count = 0;
+    struct virDomainObjListData data = { filter, conn, active, 0 };
     virObjectLock(doms);
-    if (active)
-        virHashForEach(doms->objs, virDomainObjListCountActive, &count);
-    else
-        virHashForEach(doms->objs, virDomainObjListCountInactive, &count);
+    virHashForEach(doms->objs, virDomainObjListCount, &data);
     virObjectUnlock(doms);
-    return count;
+    return data.count;
 }
 
 struct virDomainIDData {
+    virDomainObjListFilter filter;
+    virConnectPtr conn;
     int numids;
     int maxids;
     int *ids;
@@ -17160,17 +17164,24 @@ virDomainObjListCopyActiveIDs(void *payload,
     virDomainObjPtr obj = payload;
     struct virDomainIDData *data = opaque;
     virObjectLock(obj);
+    if (data->filter &&
+        !data->filter(data->conn, obj->def))
+        goto cleanup;
     if (virDomainObjIsActive(obj) && data->numids < data->maxids)
         data->ids[data->numids++] = obj->def->id;
+cleanup:
     virObjectUnlock(obj);
 }
 
 int
 virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
                              int *ids,
-                             int maxids)
+                             int maxids,
+                             virDomainObjListFilter filter,
+                             virConnectPtr conn)
 {
-    struct virDomainIDData data = { 0, maxids, ids };
+    struct virDomainIDData data = { filter, conn,
+                                    0, maxids, ids };
     virObjectLock(doms);
     virHashForEach(doms->objs, virDomainObjListCopyActiveIDs, &data);
     virObjectUnlock(doms);
@@ -17178,6 +17189,8 @@ virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
 }
 
 struct virDomainNameData {
+    virDomainObjListFilter filter;
+    virConnectPtr conn;
     int oom;
     int numnames;
     int maxnames;
@@ -17196,12 +17209,16 @@ virDomainObjListCopyInactiveNames(void *payload,
         return;
 
     virObjectLock(obj);
+    if (data->filter &&
+        !data->filter(data->conn, obj->def))
+        goto cleanup;
     if (!virDomainObjIsActive(obj) && data->numnames < data->maxnames) {
         if (VIR_STRDUP(data->names[data->numnames], obj->def->name) < 0)
             data->oom = 1;
         else
             data->numnames++;
     }
+cleanup:
     virObjectUnlock(obj);
 }
 
@@ -17209,9 +17226,12 @@ virDomainObjListCopyInactiveNames(void *payload,
 int
 virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                  char **const names,
-                                 int maxnames)
+                                 int maxnames,
+                                 virDomainObjListFilter filter,
+                                 virConnectPtr conn)
 {
-    struct virDomainNameData data = { 0, 0, maxnames, names };
+    struct virDomainNameData data = { filter, conn,
+                                      0, 0, maxnames, names };
     int i;
     virObjectLock(doms);
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
@@ -17927,6 +17947,7 @@ cleanup:
 struct virDomainListData {
     virConnectPtr conn;
     virDomainPtr *domains;
+    virDomainObjListFilter filter;
     unsigned int flags;
     int ndomains;
     bool error;
@@ -17947,6 +17968,11 @@ virDomainListPopulate(void *payload,
 
     virObjectLock(vm);
     /* check if the domain matches the filter */
+
+    /* filter by the callback function (access control checks) */
+    if (data->filter != NULL &&
+        !data->filter(data->conn, vm->def))
+        goto cleanup;
 
     /* filter by active state */
     if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) &&
@@ -18027,12 +18053,17 @@ int
 virDomainObjListExport(virDomainObjListPtr doms,
                        virConnectPtr conn,
                        virDomainPtr **domains,
+                       virDomainObjListFilter filter,
                        unsigned int flags)
 {
     int ret = -1;
     int i;
 
-    struct virDomainListData data = { conn, NULL, flags, 0, false };
+    struct virDomainListData data = {
+        conn, NULL,
+        filter,
+        flags, 0, false
+    };
 
     virObjectLock(doms);
     if (domains) {

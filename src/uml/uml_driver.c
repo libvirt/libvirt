@@ -1545,7 +1545,8 @@ static int umlConnectListDomains(virConnectPtr conn, int *ids, int nids) {
         return -1;
 
     umlDriverLock(driver);
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                     virConnectListDomainsCheckACL, conn);
     umlDriverUnlock(driver);
 
     return n;
@@ -1558,7 +1559,8 @@ static int umlConnectNumOfDomains(virConnectPtr conn) {
         return -1;
 
     umlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, true,
+                                     virConnectNumOfDomainsCheckACL, conn);
     umlDriverUnlock(driver);
 
     return n;
@@ -1965,7 +1967,8 @@ static int umlConnectListDefinedDomains(virConnectPtr conn,
         return -1;
 
     umlDriverLock(driver);
-    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
+    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                         virConnectListDefinedDomainsCheckACL, conn);
     umlDriverUnlock(driver);
 
     return n;
@@ -1979,7 +1982,8 @@ static int umlConnectNumOfDefinedDomains(virConnectPtr conn) {
         return -1;
 
     umlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, false,
+                                     virConnectNumOfDefinedDomainsCheckACL, conn);
     umlDriverUnlock(driver);
 
     return n;
@@ -2710,7 +2714,8 @@ static int umlConnectListAllDomains(virConnectPtr conn,
         return -1;
 
     umlDriverLock(driver);
-    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains,
+                                 virConnectListAllDomainsCheckACL, flags);
     umlDriverUnlock(driver);
 
     return ret;

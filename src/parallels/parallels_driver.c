@@ -1045,7 +1045,8 @@ parallelsConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     int n;
 
     parallelsDriverLock(privconn);
-    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids);
+    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids,
+                                     NULL, NULL);
     parallelsDriverUnlock(privconn);
 
     return n;
@@ -1058,7 +1059,8 @@ parallelsConnectNumOfDomains(virConnectPtr conn)
     int count;
 
     parallelsDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(privconn->domains, 1);
+    count = virDomainObjListNumOfDomains(privconn->domains, true,
+                                         NULL, NULL);
     parallelsDriverUnlock(privconn);
 
     return count;
@@ -1073,7 +1075,7 @@ parallelsConnectListDefinedDomains(virConnectPtr conn, char **const names, int m
     parallelsDriverLock(privconn);
     memset(names, 0, sizeof(*names) * maxnames);
     n = virDomainObjListGetInactiveNames(privconn->domains, names,
-                                         maxnames);
+                                         maxnames, NULL, NULL);
     parallelsDriverUnlock(privconn);
 
     return n;
@@ -1086,7 +1088,8 @@ parallelsConnectNumOfDefinedDomains(virConnectPtr conn)
     int count;
 
     parallelsDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(privconn->domains, 0);
+    count = virDomainObjListNumOfDomains(privconn->domains, false,
+                                         NULL, NULL);
     parallelsDriverUnlock(privconn);
 
     return count;
@@ -1102,7 +1105,8 @@ parallelsConnectListAllDomains(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
     parallelsDriverLock(privconn);
-    ret = virDomainObjListExport(privconn->domains, conn, domains, flags);
+    ret = virDomainObjListExport(privconn->domains, conn, domains,
+                                 NULL, flags);
     parallelsDriverUnlock(privconn);
 
     return ret;

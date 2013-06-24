@@ -392,7 +392,8 @@ static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
         return -1;
 
     lxcDriverLock(driver);
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                     virConnectListDomainsCheckACL, conn);
     lxcDriverUnlock(driver);
 
     return n;
@@ -406,7 +407,8 @@ static int lxcConnectNumOfDomains(virConnectPtr conn) {
         return -1;
 
     lxcDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, true,
+                                     virConnectNumOfDomainsCheckACL, conn);
     lxcDriverUnlock(driver);
 
     return n;
@@ -421,7 +423,8 @@ static int lxcConnectListDefinedDomains(virConnectPtr conn,
         return -1;
 
     lxcDriverLock(driver);
-    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
+    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                         virConnectListDefinedDomainsCheckACL, conn);
     lxcDriverUnlock(driver);
 
     return n;
@@ -436,7 +439,8 @@ static int lxcConnectNumOfDefinedDomains(virConnectPtr conn) {
         return -1;
 
     lxcDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, false,
+                                     virConnectNumOfDefinedDomainsCheckACL, conn);
     lxcDriverUnlock(driver);
 
     return n;
@@ -2829,7 +2833,8 @@ lxcConnectListAllDomains(virConnectPtr conn,
         return -1;
 
     lxcDriverLock(driver);
-    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains,
+                                 virConnectListAllDomainsCheckACL, flags);
     lxcDriverUnlock(driver);
 
     return ret;

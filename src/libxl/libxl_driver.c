@@ -1574,7 +1574,8 @@ libxlConnectListDomains(virConnectPtr conn, int *ids, int nids)
         return -1;
 
     libxlDriverLock(driver);
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                     virConnectListDomainsCheckACL, conn);
     libxlDriverUnlock(driver);
 
     return n;
@@ -1590,7 +1591,8 @@ libxlConnectNumOfDomains(virConnectPtr conn)
         return -1;
 
     libxlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, true,
+                                     virConnectNumOfDomainsCheckACL, conn);
     libxlDriverUnlock(driver);
 
     return n;
@@ -3202,7 +3204,8 @@ libxlConnectListDefinedDomains(virConnectPtr conn,
         return -1;
 
     libxlDriverLock(driver);
-    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
+    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                         virConnectListDefinedDomainsCheckACL, conn);
     libxlDriverUnlock(driver);
     return n;
 }
@@ -3217,7 +3220,8 @@ libxlConnectNumOfDefinedDomains(virConnectPtr conn)
         return -1;
 
     libxlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, false,
+                                     virConnectNumOfDefinedDomainsCheckACL, NULL);
     libxlDriverUnlock(driver);
 
     return n;
@@ -4654,7 +4658,8 @@ libxlConnectListAllDomains(virConnectPtr conn,
         return -1;
 
     libxlDriverLock(driver);
-    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains,
+                                 virConnectListAllDomainsCheckACL, flags);
     libxlDriverUnlock(driver);
 
     return ret;

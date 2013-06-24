@@ -1274,7 +1274,7 @@ static int testConnectNumOfDomains(virConnectPtr conn)
     int count;
 
     testDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(privconn->domains, 1);
+    count = virDomainObjListNumOfDomains(privconn->domains, true, NULL, NULL);
     testDriverUnlock(privconn);
 
     return count;
@@ -1463,7 +1463,7 @@ static int testConnectListDomains(virConnectPtr conn,
     int n;
 
     testDriverLock(privconn);
-    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids);
+    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids, NULL, NULL);
     testDriverUnlock(privconn);
 
     return n;
@@ -2475,7 +2475,7 @@ static int testConnectNumOfDefinedDomains(virConnectPtr conn) {
     int count;
 
     testDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(privconn->domains, 0);
+    count = virDomainObjListNumOfDomains(privconn->domains, false, NULL, NULL);
     testDriverUnlock(privconn);
 
     return count;
@@ -2490,7 +2490,8 @@ static int testConnectListDefinedDomains(virConnectPtr conn,
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*maxnames);
-    n = virDomainObjListGetInactiveNames(privconn->domains, names, maxnames);
+    n = virDomainObjListGetInactiveNames(privconn->domains, names, maxnames,
+                                         NULL, NULL);
     testDriverUnlock(privconn);
 
     return n;
@@ -5688,6 +5689,7 @@ static int testNWFilterClose(virConnectPtr conn) {
     return 0;
 }
 
+
 static int testConnectListAllDomains(virConnectPtr conn,
                                      virDomainPtr **domains,
                                      unsigned int flags)
@@ -5698,7 +5700,8 @@ static int testConnectListAllDomains(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     testDriverLock(privconn);
-    ret = virDomainObjListExport(privconn->domains, conn, domains, flags);
+    ret = virDomainObjListExport(privconn->domains, conn, domains,
+                                 NULL, flags);
     testDriverUnlock(privconn);
 
     return ret;
