@@ -14099,6 +14099,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
+        if (param->value.ul > LLONG_MAX) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("block I/O throttle limit value must"
+                             " be less than %llu"), LLONG_MAX);
+            goto endjob;
+        }
+
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC)) {
             info.total_bytes_sec = param->value.ul;
             set_bytes = true;
