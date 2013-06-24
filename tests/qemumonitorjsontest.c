@@ -23,6 +23,7 @@
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
 #include "qemu/qemu_conf.h"
+#include "qemu/qemu_monitor_json.h"
 #include "virthread.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -699,6 +700,83 @@ cleanup:
     return ret;
 }
 
+/*
+ * This test will request to return a list of paths for "/". It should be
+ * a simple list of 1 real element that being the "machine". The following
+ * is the execution and expected return:
+ *
+ *  {"execute":"qom-list", "arguments": { "path": "/"}}"
+ *  {"return": [{"name": "machine", "type": "child<container>"}, \
+ *              {"name": "type", "type": "string"}]}
+ */
+static int
+testQemuMonitorJSONGetListPaths(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    int ret = -1;
+    qemuMonitorJSONListPathPtr *paths;
+    int npaths = 0;
+    size_t i;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "qom-list",
+                               "{ "
+                               "  \"return\": [ "
+                               "  {\"name\": \"machine\", "
+                               "   \"type\": \"child<container>\"}, "
+                               "  {\"name\": \"type\", "
+                               "   \"type\": \"string\"} "
+                               " ]"
+                               "}") < 0)
+        goto cleanup;
+
+    /* present with path */
+    if ((npaths = qemuMonitorJSONGetObjectListPaths(
+                                                qemuMonitorTestGetMonitor(test),
+                                                "/",
+                                                &paths)) < 0)
+        goto cleanup;
+
+    if (npaths != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "npaths was %d, expected 1", npaths);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname, wanttype)                                    \
+    do {                                                                \
+        if (STRNEQ(paths[i]->name, (wantname))) {                       \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name was %s, expected %s",                  \
+                           paths[i]->name, (wantname));                 \
+            goto cleanup;                                               \
+        }                                                               \
+        if (STRNEQ_NULLABLE(paths[i]->type, (wanttype))) {              \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "type was %s, expected %s",                  \
+                           NULLSTR(paths[i]->type), (wanttype));        \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "machine", "child<container>");
+
+#undef CHECK
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    for (i = 0; i < npaths; i++)
+        qemuMonitorJSONListPathFree(paths[i]);
+    VIR_FREE(paths);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -729,6 +807,7 @@ mymain(void)
     DO_TEST(GetCommandLineOptionParameters);
     DO_TEST(AttachChardev);
     DO_TEST(DetachChardev);
+    DO_TEST(GetListPaths);
 
     virObjectUnref(xmlopt);
 

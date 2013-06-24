@@ -4507,6 +4507,104 @@ cleanup:
 }
 
 
+int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
+                                      const char *path,
+                                      qemuMonitorJSONListPathPtr **paths)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    qemuMonitorJSONListPathPtr *pathlist = NULL;
+    int n = 0;
+    size_t i;
+
+    *paths = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
+                                           "s:path", path,
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-list reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-list reply data was not an array"));
+        goto cleanup;
+    }
+
+    /* null-terminated list */
+    if (VIR_ALLOC_N(pathlist, n + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+        qemuMonitorJSONListPathPtr info;
+
+        if (VIR_ALLOC(info) < 0)
+            goto cleanup;
+
+        pathlist[i] = info;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("qom-list reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(info->name, tmp) < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectHasKey(child, "type")) {
+            if (!(tmp = virJSONValueObjectGetString(child, "type"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("qom-list reply has malformed 'type' data"));
+                goto cleanup;
+            }
+            if (VIR_STRDUP(info->type, tmp) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = n;
+    *paths = pathlist;
+
+cleanup:
+    if (ret < 0 && pathlist) {
+        for (i = 0; i < n; i++)
+            qemuMonitorJSONListPathFree(pathlist[i]);
+        VIR_FREE(pathlist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths)
+{
+    if (!paths)
+        return;
+    VIR_FREE(paths->name);
+    VIR_FREE(paths->type);
+    VIR_FREE(paths);
+}
+
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)

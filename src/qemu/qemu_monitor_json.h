@@ -332,6 +332,23 @@ int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
 int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
                                   char ***types)
     ATTRIBUTE_NONNULL(2);
+
+/* ListPath structures and API's are public only for qemumonitorjsontest */
+typedef struct _qemuMonitorJSONListPath qemuMonitorJSONListPath;
+typedef qemuMonitorJSONListPath *qemuMonitorJSONListPathPtr;
+
+struct _qemuMonitorJSONListPath {
+    char *name;
+    char *type;
+};
+
+int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
+                                      const char *path,
+                                      qemuMonitorJSONListPathPtr **paths)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
+void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths);
+
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)
