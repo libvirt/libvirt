@@ -139,6 +139,13 @@ virIdentityPtr virIdentityGetSystem(void)
 #if WITH_SELINUX
     security_context_t con;
 #endif
+    char *processid = NULL;
+
+    if (virAsprintf(&processid, "%llu",
+                    (unsigned long long)getpid()) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     if (!(username = virGetUserName(getuid())))
         goto cleanup;
@@ -176,11 +183,16 @@ virIdentityPtr virIdentityGetSystem(void)
                            VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
                            seccontext) < 0)
         goto error;
+    if (virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                           processid) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(username);
     VIR_FREE(groupname);
     VIR_FREE(seccontext);
+    VIR_FREE(processid);
     return ret;
 
 error:
