@@ -53,8 +53,7 @@ enum virStorageFileFormat {
 VIR_ENUM_DECL(virStorageFileFormat);
 
 enum virStorageFileFeature {
-    VIR_STORAGE_FILE_FEATURE_NONE = -1,
-    VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS,
+    VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS = 0,
 
     VIR_STORAGE_FILE_FEATURE_LAST
 };

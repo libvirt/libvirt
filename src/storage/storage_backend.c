@@ -666,7 +666,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
                         goto error;
                     }
                     break;
-                case VIR_STORAGE_FILE_FEATURE_NONE:
+
                 case VIR_STORAGE_FILE_FEATURE_LAST:
                     ;
                 }
