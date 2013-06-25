@@ -1820,6 +1820,7 @@ fi
     %if %{with_polkit}
         %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
+%{_datadir}/polkit-1/actions/org.libvirt.api.policy
         %else
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
         %endif
