@@ -10200,81 +10200,20 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
                         const char *dname,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
-    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
-    char *xml = NULL;
-    enum qemuDomainAsyncJob asyncJob;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
         return NULL;
 
-    if (virDomainMigrateBegin3EnsureACL(domain->conn, vm->def) < 0)
-        goto cleanup;
-
-    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
-        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
-            goto cleanup;
-        asyncJob = QEMU_ASYNC_JOB_MIGRATION_OUT;
-    } else {
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-            goto cleanup;
-        asyncJob = QEMU_ASYNC_JOB_NONE;
-    }
-
-    if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
-    }
-
-    /* Check if there is any ejected media.
-     * We don't want to require them on the destination.
-     */
-    if (!(flags & VIR_MIGRATE_OFFLINE) &&
-        qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
-        goto endjob;
-
-    if (!(xml = qemuMigrationBegin(driver, vm, xmlin, dname,
-                                   cookieout, cookieoutlen,
-                                   flags)))
-        goto endjob;
-
-    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
-        /* We keep the job active across API calls until the confirm() call.
-         * This prevents any other APIs being invoked while migration is taking
-         * place.
-         */
-        if (virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, domain->conn,
-                                     qemuMigrationCleanup) < 0)
-            goto endjob;
-        if (qemuMigrationJobContinue(vm) == 0) {
-            vm = NULL;
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("domain disappeared"));
-            VIR_FREE(xml);
-            if (cookieout)
-                VIR_FREE(*cookieout);
-        }
-    } else {
-        goto endjob;
-    }
-
-cleanup:
-    if (vm)
+    if (virDomainMigrateBegin3EnsureACL(domain->conn, vm->def) < 0) {
         virObjectUnlock(vm);
-    return xml;
-
-endjob:
-    if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
-        if (qemuMigrationJobFinish(driver, vm) == 0)
-            vm = NULL;
-    } else {
-        if (qemuDomainObjEndJob(driver, vm) == 0)
-            vm = NULL;
+        return NULL;
     }
-    goto cleanup;
+
+    return qemuMigrationBegin(domain->conn, vm, xmlin, dname,
+                              cookieout, cookieoutlen, flags);
 }
 
 static int

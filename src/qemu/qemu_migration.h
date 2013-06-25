@@ -84,7 +84,7 @@ virDomainObjPtr qemuMigrationCleanup(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virConnectPtr conn);
 
-char *qemuMigrationBegin(virQEMUDriverPtr driver,
+char *qemuMigrationBegin(virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *xmlin,
                          const char *dname,
