@@ -86,6 +86,12 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 }
 
 /*
+ * qemuGetActivePciHostDeviceList - make a new list with a *copy* of
+ *   every virPCIDevice object that is found on the activePciHostdevs
+ *   list *and* is in the hostdev list for this domain.
+ *
+ * Return the new list, or NULL if there was a failure.
+ *
  * Pre-condition: driver->activePciHostdevs is locked
  */
 static virPCIDeviceListPtr
@@ -101,7 +107,7 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virPCIDevicePtr dev;
+        virDevicePCIAddressPtr addr;
         virPCIDevicePtr activeDev;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -109,24 +115,14 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
-                              hostdev->source.subsys.u.pci.addr.bus,
-                              hostdev->source.subsys.u.pci.addr.slot,
-                              hostdev->source.subsys.u.pci.addr.function);
-        if (!dev) {
+        addr = &hostdev->source.subsys.u.pci.addr;
+        activeDev = virPCIDeviceListFindByIDs(driver->activePciHostdevs,
+                                              addr->domain, addr->bus,
+                                              addr->slot, addr->function);
+        if (activeDev && virPCIDeviceListAddCopy(list, activeDev) < 0) {
             virObjectUnref(list);
             return NULL;
         }
-
-        if ((activeDev = virPCIDeviceListFind(driver->activePciHostdevs, dev))) {
-            if (virPCIDeviceListAdd(list, activeDev) < 0) {
-                virPCIDeviceFree(dev);
-                virObjectUnref(list);
-                return NULL;
-            }
-        }
-
-        virPCIDeviceFree(dev);
     }
 
     return list;
@@ -1084,19 +1080,23 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         virPCIDevicePtr activeDev = NULL;
 
-        /* Never delete the dev from list driver->activePciHostdevs
-         * if it's used by other domain.
+        /* delete the copy of the dev from pcidevs if it's used by
+         * other domain. Or delete it from activePciHostDevs if it had
+         * been used by this domain.
          */
         activeDev = virPCIDeviceListFind(driver->activePciHostdevs, dev);
         if (activeDev &&
             STRNEQ_NULLABLE(name, virPCIDeviceGetUsedBy(activeDev))) {
-            virPCIDeviceListSteal(pcidevs, dev);
+            virPCIDeviceListDel(pcidevs, dev);
             continue;
         }
 
-        /* virObjectUnref() will take care of freeing the dev. */
-        virPCIDeviceListSteal(driver->activePciHostdevs, dev);
+        virPCIDeviceListDel(driver->activePciHostdevs, dev);
     }
+
+    /* At this point, any device that had been used by the guest is in
+     * pcidevs, but has been removed from activePciHostdevs.
+     */
 
     /*
      * For SRIOV net host devices, unset mac and port profile before
