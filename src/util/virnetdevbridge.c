@@ -593,10 +593,11 @@ int virNetDevBridgeSetSTPDelay(const char *brname,
                                int delay)
 {
     struct ifbrparam param;
+    u_long delay_seconds = delay / 1000;
 
     /* FreeBSD doesn't allow setting STP delay < 4 */
-    delay = delay < 4 ? 4 : delay;
-    param.ifbrp_fwddelay = ((u_long)delay) & 0xff;
+    delay_seconds = delay_seconds < 4 ? 4 : delay_seconds;
+    param.ifbrp_fwddelay = delay_seconds & 0xff;
 
     if (virNetDevBridgeCmd(brname, BRDGSFD, &param, sizeof(param)) < 0) {
         virReportSystemError(errno,
