@@ -9962,25 +9962,14 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
                                const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
-    virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    if (!dom_xml) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("no domain XML passed"));
-        goto cleanup;
-    }
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("PrepareTunnel called but no TUNNELLED flag set"));
-        goto cleanup;
-    }
-    if (st == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("tunnelled migration requested but NULL stream passed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("PrepareTunnel called but no TUNNELLED flag set"));
         goto cleanup;
     }
 
@@ -9991,19 +9980,8 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
         goto cleanup;
-
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup;
-
-    if (dname) {
-        VIR_FREE(def->name);
-        if (VIR_STRDUP(def->name, dname) < 0)
-            goto cleanup;
-    }
 
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
         goto cleanup;
@@ -10014,7 +9992,6 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
 cleanup:
     virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 
@@ -10034,13 +10011,20 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
                           const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
-    virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    *uri_out = NULL;
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /* this is a logical error; we never should have gotten here with
+         * VIR_MIGRATE_TUNNELLED set
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Tunnelled migration requested but invalid "
+                         "RPC method called"));
+        goto cleanup;
+    }
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10049,34 +10033,8 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (flags & VIR_MIGRATE_TUNNELLED) {
-        /* this is a logical error; we never should have gotten here with
-         * VIR_MIGRATE_TUNNELLED set
-         */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Tunnelled migration requested but invalid RPC method called"));
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
         goto cleanup;
-    }
-
-    if (!dom_xml) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("no domain XML passed"));
-        goto cleanup;
-    }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup;
-
-    if (dname) {
-        VIR_FREE(def->name);
-        if (VIR_STRDUP(def->name, dname) < 0)
-            goto cleanup;
-    }
 
     if (virDomainMigratePrepare2EnsureACL(dconn, def) < 0)
         goto cleanup;
@@ -10092,7 +10050,6 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
 
 cleanup:
     virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 
@@ -10230,42 +10187,23 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                           const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
-    virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    *uri_out = NULL;
-
     if (flags & VIR_MIGRATE_TUNNELLED) {
         /* this is a logical error; we never should have gotten here with
          * VIR_MIGRATE_TUNNELLED set
          */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Tunnelled migration requested but invalid RPC method called"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Tunnelled migration requested but invalid "
+                         "RPC method called"));
         goto cleanup;
     }
 
-    if (!dom_xml) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("no domain XML passed"));
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
         goto cleanup;
-    }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup;
-
-    if (dname) {
-        VIR_FREE(def->name);
-        if (VIR_STRDUP(def->name, dname) < 0)
-            goto cleanup;
-    }
 
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
         goto cleanup;
@@ -10278,7 +10216,6 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
 
 cleanup:
     virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 
@@ -10296,41 +10233,19 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                 const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
-    virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    if (!dom_xml) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("no domain XML passed"));
-        goto cleanup;
-    }
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("PrepareTunnel called but no TUNNELLED flag set"));
-        goto cleanup;
-    }
-    if (st == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("tunnelled migration requested but NULL stream passed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("PrepareTunnel called but no TUNNELLED flag set"));
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
         goto cleanup;
-
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        VIR_DOMAIN_XML_INACTIVE)))
-        goto cleanup;
-
-    if (dname) {
-        VIR_FREE(def->name);
-        if (VIR_STRDUP(def->name, dname) < 0)
-            goto cleanup;
-    }
 
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
         goto cleanup;
@@ -10342,7 +10257,6 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
 cleanup:
     virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 

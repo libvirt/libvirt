@@ -2442,6 +2442,12 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, st, *def, flags);
 
+    if (st == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("tunnelled migration requested but NULL stream passed"));
+        return -1;
+    }
+
     ret = qemuMigrationPrepareAny(driver, dconn, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, def,
                                   st, 0, flags);
@@ -2475,6 +2481,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
               *def, flags);
+
+    *uri_out = NULL;
 
     /* The URI passed in may be NULL or a string "tcp://somehostname:port".
      *
@@ -2577,6 +2585,42 @@ cleanup:
     if (ret != 0)
         VIR_FREE(*uri_out);
     return ret;
+}
+
+
+virDomainDefPtr
+qemuMigrationPrepareDef(virQEMUDriverPtr driver,
+                        const char *dom_xml,
+                        const char *dname)
+{
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def;
+
+    if (!dom_xml) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no domain XML passed"));
+        return NULL;
+    }
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        return NULL;
+
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (dname) {
+        VIR_FREE(def->name);
+        if (VIR_STRDUP(def->name, dname) < 0) {
+            virDomainDefFree(def);
+            def = NULL;
+        }
+    }
+
+cleanup:
+    virObjectUnref(caps);
+    return def;
 }
 
 

@@ -92,6 +92,10 @@ char *qemuMigrationBegin(virConnectPtr conn,
                          int *cookieoutlen,
                          unsigned long flags);
 
+virDomainDefPtr qemuMigrationPrepareDef(virQEMUDriverPtr driver,
+                                        const char *dom_xml,
+                                        const char *dname);
+
 int qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
                                virConnectPtr dconn,
                                const char *cookiein,
