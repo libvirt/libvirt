@@ -4979,7 +4979,7 @@ finish:
             virTypedParamsReplaceString(&params, &nparams,
                                         VIR_MIGRATE_PARAM_DEST_NAME,
                                         domain->name) < 0) {
-            domain = NULL;
+            ddomain = NULL;
         } else {
             ddomain = dconn->driver->domainMigrateFinish3Params
                 (dconn, params, nparams, cookiein, cookieinlen,
