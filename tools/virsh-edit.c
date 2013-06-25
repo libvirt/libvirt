@@ -86,6 +86,7 @@ reedit:
         goto edit_cleanup;
 
     /* Read back the edited file. */
+    VIR_FREE(doc_edited);
     doc_edited = vshEditReadBackFile(ctl, tmp);
     if (!doc_edited)
         goto edit_cleanup;
@@ -102,6 +103,7 @@ redefine:
      * it was being edited?  This also catches problems such as us
      * losing a connection or the object going away.
      */
+    VIR_FREE(doc_reread);
     doc_reread = (EDIT_GET_XML);
     if (!doc_reread)
         goto edit_cleanup;
