@@ -638,8 +638,8 @@ inactivedevs:
     /* Only steal all the devices from driver->activePciHostdevs. We will
      * free them in virObjectUnref().
      */
-    while (virPCIDeviceListCount(pcidevs) > 0) {
-        virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, 0);
+    for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
+        virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         virPCIDeviceListSteal(driver->activePciHostdevs, dev);
     }
 
