@@ -83,6 +83,7 @@ void virPCIDeviceReattachInit(virPCIDevice *dev);
 virPCIDeviceListPtr virPCIDeviceListNew(void);
 int  virPCIDeviceListAdd(virPCIDeviceListPtr list,
                          virPCIDevicePtr dev);
+int virPCIDeviceListAddCopy(virPCIDeviceListPtr list, virPCIDevicePtr dev);
 virPCIDevicePtr virPCIDeviceListGet(virPCIDeviceListPtr list,
                                     int idx);
 int virPCIDeviceListCount(virPCIDeviceListPtr list);

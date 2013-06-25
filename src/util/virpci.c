@@ -1705,6 +1705,23 @@ virPCIDeviceListAdd(virPCIDeviceListPtr list,
     return 0;
 }
 
+
+/* virPCIDeviceListAddCopy - add a *copy* of the device to this list */
+int
+virPCIDeviceListAddCopy(virPCIDeviceListPtr list, virPCIDevicePtr dev)
+{
+    virPCIDevicePtr copy = virPCIDeviceCopy(dev);
+
+    if (!copy)
+        return -1;
+    if (virPCIDeviceListAdd(list, copy) < 0) {
+        virPCIDeviceFree(copy);
+        return -1;
+    }
+    return 0;
+}
+
+
 virPCIDevicePtr
 virPCIDeviceListGet(virPCIDeviceListPtr list,
                     int idx)
