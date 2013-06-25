@@ -3154,9 +3154,11 @@ networkValidate(struct network_driver *driver,
      * a pool, and those using an Open vSwitch bridge.
      */
 
-    vlanAllowed = (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
+    vlanAllowed = ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                    def->virtPortProfile &&
-                   def->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH);
+                   def->virtPortProfile->virtPortType
+                    == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) ||
+                   def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV);
 
     vlanUsed = def->vlan.nTags > 0;
     for (ii = 0; ii < def->nPortGroups; ii++) {
