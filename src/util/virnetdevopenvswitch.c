@@ -81,9 +81,27 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
             goto out_of_memory;
     }
 
+    cmd = virCommandNew(OVSVSCTL);
+
+    virCommandAddArgList(cmd, "--timeout=5", "--", "--may-exist", "add-port",
+                        brname, ifname, NULL);
+
     if (virtVlan && virtVlan->nTags > 0) {
 
-        /* Trunk port first */
+        switch (virtVlan->nativeMode) {
+        case VIR_NATIVE_VLAN_MODE_TAGGED:
+            virCommandAddArg(cmd, "vlan_mode=native-tagged");
+            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+            break;
+        case VIR_NATIVE_VLAN_MODE_UNTAGGED:
+            virCommandAddArg(cmd, "vlan_mode=native-untagged");
+            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+            break;
+        case VIR_NATIVE_VLAN_MODE_DEFAULT:
+        default:
+            break;
+        }
+
         if (virtVlan->trunk) {
             virBufferAddLit(&buf, "trunk=");
 
@@ -99,32 +117,14 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                 virBufferAddLit(&buf, ",");
                 virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
             }
+
+            if (virBufferError(&buf))
+                goto out_of_memory;
+            virCommandAddArg(cmd, virBufferCurrentContent(&buf));
         } else if (virtVlan->nTags) {
-            virBufferAsprintf(&buf, "tag=%d", virtVlan->tag[0]);
+            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
         }
     }
-
-    cmd = virCommandNew(OVSVSCTL);
-
-    virCommandAddArgList(cmd, "--timeout=5", "--", "--may-exist", "add-port",
-                        brname, ifname, NULL);
-
-    switch (virtVlan->nativeMode) {
-    case VIR_NATIVE_VLAN_MODE_TAGGED:
-        virCommandAddArg(cmd, "vlan_mode=native-tagged");
-        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
-        break;
-    case VIR_NATIVE_VLAN_MODE_UNTAGGED:
-        virCommandAddArg(cmd, "vlan_mode=native-untagged");
-        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
-        break;
-    case VIR_NATIVE_VLAN_MODE_DEFAULT:
-    default:
-        break;
-    }
-
-    if (virBufferUse(&buf) != 0)
-        virCommandAddArgList(cmd, virBufferCurrentContent(&buf), NULL);
 
     if (ovsport->profileID[0] == '\0') {
         virCommandAddArgList(cmd,
