@@ -372,14 +372,14 @@
         and <code>1.1</code> so far, specifying QEMU version the images should
         be compatible with. If the <code>feature</code> element is present,
         1.1 is used. If omitted, qemu-img default is used.
-        <span class="since">Since 1.0.7</span>
+        <span class="since">Since 1.1.0</span>
       </dd>
       <dt><code>features</code></dt>
       <dd>Format-specific features. Only used for <code>qcow2</code> now.
         Valid sub-elements are:
         <ul>
           <li><code>&lt;lazy_refcounts/&gt;</code> - allow delayed reference
-          counter updates. <span class="since">Since 1.0.7</span></li>
+          counter updates. <span class="since">Since 1.1.0</span></li>
         </ul>
       </dd>
     </dl>

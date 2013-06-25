@@ -3559,7 +3559,7 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       For network connections using openvswitch it is possible to
       configure the 'native-tagged' and 'native-untagged' vlan modes
-      <span class="since">Since 1.0.7.</span> This uses the optional
+      <span class="since">Since 1.1.0.</span> This uses the optional
       <code>nativeMode</code> attribute on the <code>&lt;tag&gt;</code>
       element: <code>nativeMode</code> may be set to 'tagged' or
       'untagged'. The id atribute of the element sets the native vlan.
