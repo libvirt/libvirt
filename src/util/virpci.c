@@ -1268,11 +1268,9 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
     /* Add *a copy of* the dev into list inactiveDevs, if
      * it's not already there.
      */
-    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev)) {
-        virPCIDevicePtr copy = virPCIDeviceCopy(dev);
-
-        if ((!copy) || virPCIDeviceListAdd(inactiveDevs, copy) < 0)
-            return -1;
+    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev) &&
+        virPCIDeviceListAddCopy(inactiveDevs, dev) < 0) {
+        return -1;
     }
 
     return 0;
