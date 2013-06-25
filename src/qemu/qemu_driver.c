@@ -3118,7 +3118,6 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     char *name = NULL;
     int ret = -1;
-    int compressed;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
@@ -3144,10 +3143,10 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (!(name = qemuDomainManagedSavePath(driver, vm)))
         goto cleanup;
 
-    VIR_INFO("Saving state to %s", name);
+    VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
 
-    compressed = QEMU_SAVE_FORMAT_RAW;
-    if ((ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
+    if ((ret = qemuDomainSaveInternal(driver, dom, vm, name,
+                                      QEMU_SAVE_FORMAT_RAW,
                                       NULL, flags)) == 0)
         vm->hasManagedSave = true;
 
