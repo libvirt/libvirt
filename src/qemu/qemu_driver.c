@@ -10338,53 +10338,20 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
                           unsigned long flags,
                           int cancelled)
 {
-    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
-    int ret = -1;
-    enum qemuMigrationJobPhase phase;
-    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (!(vm = qemuDomObjFromDomain(domain)))
         return -1;
 
-    cfg = virQEMUDriverGetConfig(driver);
-
-    if (virDomainMigrateConfirm3EnsureACL(domain->conn, vm->def) < 0)
-        goto cleanup;
-
-    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
-        goto cleanup;
-
-    if (cancelled)
-        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
-    else
-        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
-
-    qemuMigrationJobStartPhase(driver, vm, phase);
-    virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
-                               qemuMigrationCleanup);
-
-    ret = qemuMigrationConfirm(driver, domain->conn, vm,
-                               cookiein, cookieinlen,
-                               flags, cancelled);
-
-    if (qemuMigrationJobFinish(driver, vm) == 0) {
-        vm = NULL;
-    } else if (!virDomainObjIsActive(vm) &&
-               (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
-        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
-            virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
-        qemuDomainRemoveInactive(driver, vm);
-        vm = NULL;
+    if (virDomainMigrateConfirm3EnsureACL(domain->conn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return -1;
     }
 
-cleanup:
-    if (vm)
-        virObjectUnlock(vm);
-    virObjectUnref(cfg);
-    return ret;
+    return qemuMigrationConfirm(domain->conn, vm, cookiein, cookieinlen,
+                                flags, cancelled);
 }
 
 

@@ -143,13 +143,12 @@ virDomainPtr qemuMigrationFinish(virQEMUDriverPtr driver,
                                  int retcode,
                                  bool v3proto);
 
-int qemuMigrationConfirm(virQEMUDriverPtr driver,
-                         virConnectPtr conn,
+int qemuMigrationConfirm(virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *cookiein,
                          int cookieinlen,
                          unsigned int flags,
-                         int retcode);
+                         int cancelled);
 
 bool qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
                             virDomainDefPtr def, bool remote,

@@ -2624,6 +2624,140 @@ cleanup:
 }
 
 
+static int
+qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
+                          virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          const char *cookiein,
+                          int cookieinlen,
+                          unsigned int flags,
+                          int retcode)
+{
+    qemuMigrationCookiePtr mig;
+    virDomainEventPtr event = NULL;
+    int rv = -1;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
+              "flags=%x, retcode=%d",
+              driver, conn, vm, NULLSTR(cookiein), cookieinlen,
+              flags, retcode);
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+
+    qemuMigrationJobSetPhase(driver, vm,
+                             retcode == 0
+                             ? QEMU_MIGRATION_PHASE_CONFIRM3
+                             : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
+
+    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
+        goto cleanup;
+
+    if (flags & VIR_MIGRATE_OFFLINE)
+        goto done;
+
+    /* Did the migration go as planned?  If yes, kill off the
+     * domain object, but if no, resume CPUs
+     */
+    if (retcode == 0) {
+        /* If guest uses SPICE and supports seamless migration we have to hold
+         * up domain shutdown until SPICE server transfers its data */
+        qemuMigrationWaitForSpice(driver, vm);
+
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
+                        VIR_QEMU_PROCESS_STOP_MIGRATED);
+        virDomainAuditStop(vm, "migrated");
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
+    } else {
+
+        /* cancel any outstanding NBD jobs */
+        qemuMigrationCancelDriveMirror(mig, driver, vm);
+
+        /* run 'cont' on the destination, which allows migration on qemu
+         * >= 0.10.6 to work properly.  This isn't strictly necessary on
+         * older qemu's, but it also doesn't hurt anything there
+         */
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_MIGRATED,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
+            if (virGetLastError() == NULL)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("resume operation failed"));
+            goto cleanup;
+        }
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+            goto cleanup;
+        }
+    }
+
+done:
+    qemuMigrationCookieFree(mig);
+    rv = 0;
+
+cleanup:
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    virObjectUnref(cfg);
+    return rv;
+}
+
+int
+qemuMigrationConfirm(virConnectPtr conn,
+                     virDomainObjPtr vm,
+                     const char *cookiein,
+                     int cookieinlen,
+                     unsigned int flags,
+                     int cancelled)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    enum qemuMigrationJobPhase phase;
+    virQEMUDriverConfigPtr cfg = NULL;
+    int ret = -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
+        goto cleanup;
+
+    if (cancelled)
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+    else
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+
+    qemuMigrationJobStartPhase(driver, vm, phase);
+    virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
+                               qemuMigrationCleanup);
+
+    ret = qemuMigrationConfirmPhase(driver, conn, vm,
+                                    cookiein, cookieinlen,
+                                    flags, cancelled);
+
+    if (qemuMigrationJobFinish(driver, vm) == 0) {
+        vm = NULL;
+    } else if (!virDomainObjIsActive(vm) &&
+               (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
+        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
+            virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
+        qemuDomainRemoveInactive(driver, vm);
+        vm = NULL;
+    }
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 enum qemuMigrationDestinationType {
     MIGRATION_DEST_HOST,
     MIGRATION_DEST_CONNECT_HOST,
@@ -3597,9 +3731,9 @@ finish:
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
-    ret = qemuMigrationConfirm(driver, sconn, vm,
-                               cookiein, cookieinlen,
-                               flags, cancelled);
+    ret = qemuMigrationConfirmPhase(driver, sconn, vm,
+                                    cookiein, cookieinlen,
+                                    flags, cancelled);
     /* If Confirm3 returns -1, there's nothing more we can
      * do, but fortunately worst case is that there is a
      * domain left in 'paused' state on source.
@@ -4264,91 +4398,6 @@ cleanup:
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
-}
-
-
-int qemuMigrationConfirm(virQEMUDriverPtr driver,
-                         virConnectPtr conn,
-                         virDomainObjPtr vm,
-                         const char *cookiein,
-                         int cookieinlen,
-                         unsigned int flags,
-                         int retcode)
-{
-    qemuMigrationCookiePtr mig;
-    virDomainEventPtr event = NULL;
-    int rv = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
-              "flags=%x, retcode=%d",
-              driver, conn, vm, NULLSTR(cookiein), cookieinlen,
-              flags, retcode);
-
-    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
-
-    qemuMigrationJobSetPhase(driver, vm,
-                             retcode == 0
-                             ? QEMU_MIGRATION_PHASE_CONFIRM3
-                             : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
-
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen, 0)))
-        goto cleanup;
-
-    if (flags & VIR_MIGRATE_OFFLINE)
-        goto done;
-
-    /* Did the migration go as planned?  If yes, kill off the
-     * domain object, but if no, resume CPUs
-     */
-    if (retcode == 0) {
-        /* If guest uses SPICE and supports seamless migration we have to hold
-         * up domain shutdown until SPICE server transfers its data */
-        qemuMigrationWaitForSpice(driver, vm);
-
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
-                        VIR_QEMU_PROCESS_STOP_MIGRATED);
-        virDomainAuditStop(vm, "migrated");
-
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
-    } else {
-
-        /* cancel any outstanding NBD jobs */
-        qemuMigrationCancelDriveMirror(mig, driver, vm);
-
-        /* run 'cont' on the destination, which allows migration on qemu
-         * >= 0.10.6 to work properly.  This isn't strictly necessary on
-         * older qemu's, but it also doesn't hurt anything there
-         */
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATED,
-                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
-            if (virGetLastError() == NULL)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("resume operation failed"));
-            goto cleanup;
-        }
-
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
-            VIR_WARN("Failed to save status on vm %s", vm->def->name);
-            goto cleanup;
-        }
-    }
-
-done:
-    qemuMigrationCookieFree(mig);
-    rv = 0;
-
-cleanup:
-    if (event)
-        qemuDomainEventQueue(driver, event);
-    virObjectUnref(cfg);
-    return rv;
 }
 
 
