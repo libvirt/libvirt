@@ -41,6 +41,15 @@
      VIR_MIGRATE_COMPRESSED |                   \
      VIR_MIGRATE_ABORT_ON_ERROR)
 
+/* All supported migration parameters and their types. */
+# define QEMU_MIGRATION_PARAMETERS                              \
+    VIR_MIGRATE_PARAM_URI,          VIR_TYPED_PARAM_STRING,     \
+    VIR_MIGRATE_PARAM_DEST_NAME,    VIR_TYPED_PARAM_STRING,     \
+    VIR_MIGRATE_PARAM_DEST_XML,     VIR_TYPED_PARAM_STRING,     \
+    VIR_MIGRATE_PARAM_BANDWIDTH,    VIR_TYPED_PARAM_ULLONG,     \
+    NULL
+
+
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,
     QEMU_MIGRATION_PHASE_PERFORM2,

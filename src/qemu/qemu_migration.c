@@ -56,6 +56,7 @@
 #include "viruri.h"
 #include "virhook.h"
 #include "virstring.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3564,16 +3565,18 @@ cleanup:
  * from libvirt.c, but running in source libvirtd context,
  * instead of client app context & also adding in tunnel
  * handling */
-static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
-                               virConnectPtr sconn,
-                               virConnectPtr dconn,
-                               virDomainObjPtr vm,
-                               const char *xmlin,
-                               const char *dconnuri,
-                               const char *uri,
-                               unsigned long flags,
-                               const char *dname,
-                               unsigned long resource)
+static int
+doPeer2PeerMigrate3(virQEMUDriverPtr driver,
+                    virConnectPtr sconn,
+                    virConnectPtr dconn,
+                    const char *dconnuri,
+                    virDomainObjPtr vm,
+                    const char *xmlin,
+                    const char *dname,
+                    const char *uri,
+                    unsigned long long bandwidth,
+                    bool useParams,
+                    unsigned long flags)
 {
     virDomainPtr ddomain = NULL;
     char *uri_out = NULL;
@@ -3584,15 +3587,18 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     int cookieoutlen = 0;
     int ret = -1;
     virErrorPtr orig_err = NULL;
-    bool cancelled;
+    bool cancelled = true;
     virStreamPtr st = NULL;
     unsigned int destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
 
-    VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, xmlin=%s, "
-              "dconnuri=%s, uri=%s, flags=%lx, dname=%s, resource=%lu",
-              driver, sconn, dconn, vm, NULLSTR(xmlin),
-              NULLSTR(dconnuri), NULLSTR(uri), flags,
-              NULLSTR(dname), resource);
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+
+    VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, dconnuri=%s, vm=%p, xmlin=%s, "
+              "dname=%s, uri=%s, bandwidth=%llu, useParams=%d, flags=%lx",
+              driver, sconn, dconn, NULLSTR(dconnuri), vm, NULLSTR(xmlin),
+              NULLSTR(dname), NULLSTR(uri), bandwidth, useParams, flags);
 
     /* Unlike the virDomainMigrateVersion3 counterpart, we don't need
      * to worry about auto-setting the VIR_MIGRATE_CHANGE_PROTECTION
@@ -3603,6 +3609,28 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
                                       &cookieout, &cookieoutlen, flags);
     if (!dom_xml)
         goto cleanup;
+
+    if (useParams) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_DEST_XML, dom_xml) < 0)
+            goto cleanup;
+
+        if (dname &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_DEST_NAME, dname) < 0)
+            goto cleanup;
+
+        if (uri &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_URI, uri) < 0)
+            goto cleanup;
+
+        if (bandwidth &&
+            virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_BANDWIDTH,
+                                    bandwidth) < 0)
+            goto cleanup;
+    }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
@@ -3617,16 +3645,27 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
             goto cleanup;
 
         qemuDomainObjEnterRemote(vm);
-        ret = dconn->driver->domainMigratePrepareTunnel3
-            (dconn, st, cookiein, cookieinlen,
-             &cookieout, &cookieoutlen,
-             destflags, dname, resource, dom_xml);
+        if (useParams) {
+            ret = dconn->driver->domainMigratePrepareTunnel3Params
+                (dconn, st, params, nparams, cookiein, cookieinlen,
+                 &cookieout, &cookieoutlen, destflags);
+        } else {
+            ret = dconn->driver->domainMigratePrepareTunnel3
+                (dconn, st, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+                 destflags, dname, bandwidth, dom_xml);
+        }
         qemuDomainObjExitRemote(vm);
     } else {
         qemuDomainObjEnterRemote(vm);
-        ret = dconn->driver->domainMigratePrepare3
-            (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-             uri, &uri_out, destflags, dname, resource, dom_xml);
+        if (useParams) {
+            ret = dconn->driver->domainMigratePrepare3Params
+                (dconn, params, nparams, cookiein, cookieinlen,
+                 &cookieout, &cookieoutlen, &uri_out, destflags);
+        } else {
+            ret = dconn->driver->domainMigratePrepare3
+                (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+                 uri, &uri_out, destflags, dname, bandwidth, dom_xml);
+        }
         qemuDomainObjExitRemote(vm);
     }
     VIR_FREE(dom_xml);
@@ -3641,11 +3680,15 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         goto finish;
     }
 
-    if (!(flags & VIR_MIGRATE_TUNNELLED) &&
-        (uri_out == NULL)) {
+    if (uri_out) {
+        uri = uri_out;
+        if (useParams &&
+            virTypedParamsReplaceString(&params, &nparams,
+                                        VIR_MIGRATE_PARAM_URI, uri_out) < 0)
+            goto finish;
+    } else if (!uri && !(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
-        cancelled = true;
         goto finish;
     }
 
@@ -3654,23 +3697,24 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
      * running, but in paused state until the destination can
      * confirm migration completion.
      */
-    VIR_DEBUG("Perform3 %p uri=%s uri_out=%s", sconn, uri, uri_out);
+    VIR_DEBUG("Perform3 %p uri=%s", sconn, NULLSTR(uri));
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     VIR_FREE(cookiein);
     cookiein = cookieout;
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
-    if (flags & VIR_MIGRATE_TUNNELLED)
+    if (flags & VIR_MIGRATE_TUNNELLED) {
         ret = doTunnelMigrate(driver, vm, st,
                               cookiein, cookieinlen,
                               &cookieout, &cookieoutlen,
-                              flags, resource, dconn);
-    else
-        ret = doNativeMigrate(driver, vm, uri_out,
+                              flags, bandwidth, dconn);
+    } else {
+        ret = doNativeMigrate(driver, vm, uri,
                               cookiein, cookieinlen,
                               &cookieout, &cookieoutlen,
-                              flags, resource, dconn);
+                              flags, bandwidth, dconn);
+    }
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0) {
@@ -3698,12 +3742,29 @@ finish:
     cookieinlen = cookieoutlen;
     cookieout = NULL;
     cookieoutlen = 0;
-    dname = dname ? dname : vm->def->name;
-    qemuDomainObjEnterRemote(vm);
-    ddomain = dconn->driver->domainMigrateFinish3
-        (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
-         dconnuri, uri_out ? uri_out : uri, destflags, cancelled);
-    qemuDomainObjExitRemote(vm);
+
+    if (useParams) {
+        if (virTypedParamsGetString(params, nparams,
+                                    VIR_MIGRATE_PARAM_DEST_NAME, NULL) <= 0 &&
+            virTypedParamsReplaceString(&params, &nparams,
+                                        VIR_MIGRATE_PARAM_DEST_NAME,
+                                        vm->def->name) < 0) {
+            ddomain = NULL;
+        } else {
+            qemuDomainObjEnterRemote(vm);
+            ddomain = dconn->driver->domainMigrateFinish3Params
+                (dconn, params, nparams, cookiein, cookieinlen,
+                 &cookieout, &cookieoutlen, destflags, cancelled);
+            qemuDomainObjExitRemote(vm);
+        }
+    } else {
+        dname = dname ? dname : vm->def->name;
+        qemuDomainObjEnterRemote(vm);
+        ddomain = dconn->driver->domainMigrateFinish3
+            (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
+             dconnuri, uri, destflags, cancelled);
+        qemuDomainObjExitRemote(vm);
+    }
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
@@ -3759,7 +3820,7 @@ finish:
     VIR_FREE(uri_out);
     VIR_FREE(cookiein);
     VIR_FREE(cookieout);
-
+    virTypedParamsFree(params, nparams);
     return ret;
 }
 
@@ -3781,6 +3842,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     bool offline = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool useParams;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, flags=%lx, dname=%s, resource=%lu",
@@ -3815,6 +3877,8 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
          */
     *v3proto = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                         VIR_DRV_FEATURE_MIGRATION_V3);
+    useParams = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                         VIR_DRV_FEATURE_MIGRATION_PARAMS);
     if (flags & VIR_MIGRATE_OFFLINE)
         offline = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                            VIR_DRV_FEATURE_MIGRATION_OFFLINE);
@@ -3825,6 +3889,17 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
                        _("Destination libvirt does not support peer-to-peer migration protocol"));
         goto cleanup;
     }
+
+    /* Only xmlin, dname, uri, and bandwidth parameters can be used with
+     * old-style APIs. */
+#if 0
+    if (!useParams && /* any new parameter */) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Migration APIs with extensible parameters are not "
+                         "supported but extended parameters were passed"));
+        goto cleanup;
+    }
+#endif
 
     if (flags & VIR_MIGRATE_OFFLINE && !offline) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -3847,12 +3922,13 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
      * Therefore it is safe to clear the bit here.  */
     flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
 
-    if (*v3proto)
-        ret = doPeer2PeerMigrate3(driver, sconn, dconn, vm, xmlin,
-                                  dconnuri, uri, flags, dname, resource);
-    else
+    if (*v3proto) {
+        ret = doPeer2PeerMigrate3(driver, sconn, dconn, dconnuri, vm, xmlin,
+                                  dname, uri, resource, useParams, flags);
+    } else {
         ret = doPeer2PeerMigrate2(driver, sconn, dconn, vm,
                                   dconnuri, flags, dname, resource);
+    }
 
 cleanup:
     orig_err = virSaveLastError();

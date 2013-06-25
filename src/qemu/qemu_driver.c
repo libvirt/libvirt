@@ -1095,6 +1095,7 @@ qemuConnectSupportsFeature(virConnectPtr conn, int feature)
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_XML_MIGRATABLE:
     case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
         return 1;
     default:
         return 0;
@@ -10173,6 +10174,43 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
                               cookieout, cookieoutlen, flags);
 }
 
+static char *
+qemuDomainMigrateBegin3Params(virDomainPtr domain,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              unsigned int flags)
+{
+    const char *xmlin = NULL;
+    const char *dname = NULL;
+    virDomainObjPtr vm;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return NULL;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML,
+                                &xmlin) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0)
+        return NULL;
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        return NULL;
+
+    if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return NULL;
+    }
+
+    return qemuMigrationBegin(domain->conn, vm, xmlin, dname,
+                              cookieout, cookieoutlen, flags);
+}
+
+
 static int
 qemuDomainMigratePrepare3(virConnectPtr dconn,
                           const char *cookiein,
@@ -10206,6 +10244,66 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         goto cleanup;
 
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
+        goto cleanup;
+
+    ret = qemuMigrationPrepareDirect(driver, dconn,
+                                     cookiein, cookieinlen,
+                                     cookieout, cookieoutlen,
+                                     uri_in, uri_out,
+                                     &def, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
+}
+
+static int
+qemuDomainMigratePrepare3Params(virConnectPtr dconn,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                const char *cookiein,
+                                int cookieinlen,
+                                char **cookieout,
+                                int *cookieoutlen,
+                                char **uri_out,
+                                unsigned int flags)
+{
+    virQEMUDriverPtr driver = dconn->privateData;
+    virDomainDefPtr def = NULL;
+    const char *dom_xml = NULL;
+    const char *dname = NULL;
+    const char *uri_in = NULL;
+    int ret = -1;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML,
+                                &dom_xml) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI,
+                                &uri_in) < 0)
+        return -1;
+
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /* this is a logical error; we never should have gotten here with
+         * VIR_MIGRATE_TUNNELLED set
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Tunnelled migration requested but invalid "
+                         "RPC method called"));
+        goto cleanup;
+    }
+
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+        goto cleanup;
+
+    if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
     ret = qemuMigrationPrepareDirect(driver, dconn,
@@ -10260,6 +10358,57 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
+                                      virStreamPtr st,
+                                      virTypedParameterPtr params,
+                                      int nparams,
+                                      const char *cookiein,
+                                      int cookieinlen,
+                                      char **cookieout,
+                                      int *cookieoutlen,
+                                      unsigned int flags)
+{
+    virQEMUDriverPtr driver = dconn->privateData;
+    virDomainDefPtr def = NULL;
+    const char *dom_xml = NULL;
+    const char *dname = NULL;
+    int ret = -1;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML,
+                                &dom_xml) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0)
+        return -1;
+
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("PrepareTunnel called but no TUNNELLED flag set"));
+        goto cleanup;
+    }
+
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+        goto cleanup;
+
+    if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
+        goto cleanup;
+
+    ret = qemuMigrationPrepareTunnel(driver, dconn,
+                                     cookiein, cookieinlen,
+                                     cookieout, cookieoutlen,
+                                     st, &def, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
+}
+
 
 static int
 qemuDomainMigratePerform3(virDomainPtr dom,
@@ -10293,6 +10442,56 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                                 flags, dname, resource, true);
 }
 
+static int
+qemuDomainMigratePerform3Params(virDomainPtr dom,
+                                const char *dconnuri,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                const char *cookiein,
+                                int cookieinlen,
+                                char **cookieout,
+                                int *cookieoutlen,
+                                unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    const char *dom_xml = NULL;
+    const char *dname = NULL;
+    const char *uri = NULL;
+    unsigned long long bandwidth = 0;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML,
+                                &dom_xml) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI,
+                                &uri) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH,
+                                &bandwidth) < 0)
+        return -1;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return -1;
+    }
+
+    return qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
+                                dconnuri, uri, cookiein, cookieinlen,
+                                cookieout, cookieoutlen,
+                                flags, dname, bandwidth, true);
+}
+
 
 static virDomainPtr
 qemuDomainMigrateFinish3(virConnectPtr dconn,
@@ -10308,28 +10507,71 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainObjPtr vm;
-    virDomainPtr dom = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
-    vm = virDomainObjListFindByName(driver->domains, dname);
-    if (!vm) {
+    if (!dname ||
+        !(vm = virDomainObjListFindByName(driver->domains, dname))) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), dname);
-        goto cleanup;
+                       _("no domain with matching name '%s'"),
+                       NULLSTR(dname));
+        return NULL;
     }
 
-    if (virDomainMigrateFinish3EnsureACL(dconn, vm->def) < 0)
-        goto cleanup;
+    if (virDomainMigrateFinish3EnsureACL(dconn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return NULL;
+    }
 
-    dom = qemuMigrationFinish(driver, dconn, vm,
-                              cookiein, cookieinlen,
-                              cookieout, cookieoutlen,
-                              flags, cancelled, true);
-
-cleanup:
-    return dom;
+    return qemuMigrationFinish(driver, dconn, vm,
+                               cookiein, cookieinlen,
+                               cookieout, cookieoutlen,
+                               flags, cancelled, true);
 }
+
+static virDomainPtr
+qemuDomainMigrateFinish3Params(virConnectPtr dconn,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               const char *cookiein,
+                               int cookieinlen,
+                               char **cookieout,
+                               int *cookieoutlen,
+                               unsigned int flags,
+                               int cancelled)
+{
+    virQEMUDriverPtr driver = dconn->privateData;
+    virDomainObjPtr vm;
+    const char *dname = NULL;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return NULL;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME,
+                                &dname) < 0)
+        return NULL;
+
+    if (!dname ||
+        !(vm = virDomainObjListFindByName(driver->domains, dname))) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"),
+                       NULLSTR(dname));
+        return NULL;
+    }
+
+    if (virDomainMigrateFinish3ParamsEnsureACL(dconn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return NULL;
+    }
+
+    return qemuMigrationFinish(driver, dconn, vm,
+                               cookiein, cookieinlen,
+                               cookieout, cookieoutlen,
+                               flags, cancelled, true);
+}
+
 
 static int
 qemuDomainMigrateConfirm3(virDomainPtr domain,
@@ -10346,6 +10588,34 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         return -1;
 
     if (virDomainMigrateConfirm3EnsureACL(domain->conn, vm->def) < 0) {
+        virObjectUnlock(vm);
+        return -1;
+    }
+
+    return qemuMigrationConfirm(domain->conn, vm, cookiein, cookieinlen,
+                                flags, cancelled);
+}
+
+static int
+qemuDomainMigrateConfirm3Params(virDomainPtr domain,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                const char *cookiein,
+                                int cookieinlen,
+                                unsigned int flags,
+                                int cancelled)
+{
+    virDomainObjPtr vm;
+
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+
+    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainMigrateConfirm3ParamsEnsureACL(domain->conn, vm->def) < 0) {
         virObjectUnlock(vm);
         return -1;
     }
@@ -15776,6 +16046,12 @@ static virDriver qemuDriver = {
     .nodeGetCPUMap = qemuNodeGetCPUMap, /* 1.0.0 */
     .domainFSTrim = qemuDomainFSTrim, /* 1.0.1 */
     .domainOpenChannel = qemuDomainOpenChannel, /* 1.0.2 */
+    .domainMigrateBegin3Params = qemuDomainMigrateBegin3Params, /* 1.1.0 */
+    .domainMigratePrepare3Params = qemuDomainMigratePrepare3Params, /* 1.1.0 */
+    .domainMigratePrepareTunnel3Params = qemuDomainMigratePrepareTunnel3Params, /* 1.1.0 */
+    .domainMigratePerform3Params = qemuDomainMigratePerform3Params, /* 1.1.0 */
+    .domainMigrateFinish3Params = qemuDomainMigrateFinish3Params, /* 1.1.0 */
+    .domainMigrateConfirm3Params = qemuDomainMigrateConfirm3Params, /* 1.1.0 */
 };
 
 
