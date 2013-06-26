@@ -2203,10 +2203,11 @@ virStoragePoolMatch(virStoragePoolObjPtr poolobj,
 #undef MATCH
 
 int
-virStoragePoolList(virConnectPtr conn,
-                   virStoragePoolObjList poolobjs,
-                   virStoragePoolPtr **pools,
-                   unsigned int flags)
+virStoragePoolObjListExport(virConnectPtr conn,
+                            virStoragePoolObjList poolobjs,
+                            virStoragePoolPtr **pools,
+                            virStoragePoolObjListFilter filter,
+                            unsigned int flags)
 {
     virStoragePoolPtr *tmp_pools = NULL;
     virStoragePoolPtr pool = NULL;
@@ -2224,7 +2225,8 @@ virStoragePoolList(virConnectPtr conn,
     for (i = 0; i < poolobjs.count; i++) {
         virStoragePoolObjPtr poolobj = poolobjs.objs[i];
         virStoragePoolObjLock(poolobj);
-        if (virStoragePoolMatch(poolobj, flags)) {
+        if ((!filter || filter(conn, poolobj->def)) &&
+            virStoragePoolMatch(poolobj, flags)) {
             if (pools) {
                 if (!(pool = virGetStoragePool(conn,
                                                poolobj->def->name,

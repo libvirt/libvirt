@@ -357,6 +357,8 @@ struct _virStoragePoolSourceList {
     virStoragePoolSourcePtr sources;
 };
 
+typedef bool (*virStoragePoolObjListFilter)(virConnectPtr conn,
+                                            virStoragePoolDefPtr def);
 
 static inline int
 virStoragePoolObjIsActive(virStoragePoolObjPtr pool)
@@ -570,9 +572,10 @@ VIR_ENUM_DECL(virStoragePartedFsType)
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART  | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)
 
-int virStoragePoolList(virConnectPtr conn,
-                       virStoragePoolObjList poolobjs,
-                       virStoragePoolPtr **pools,
-                       unsigned int flags);
+int virStoragePoolObjListExport(virConnectPtr conn,
+                                virStoragePoolObjList poolobjs,
+                                virStoragePoolPtr **pools,
+                                virStoragePoolObjListFilter filter,
+                                unsigned int flags);
 
 #endif /* __VIR_STORAGE_CONF_H__ */
