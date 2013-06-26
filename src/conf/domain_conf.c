@@ -8574,23 +8574,33 @@ error:
 
 static virDomainMemballoonDefPtr
 virDomainMemballoonDefParseXML(const xmlNodePtr node,
+                               xmlXPathContextPtr ctxt,
                                unsigned int flags)
 {
     char *model;
     virDomainMemballoonDefPtr def;
+    xmlNodePtr save = ctxt->node;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
     model = virXMLPropString(node, "model");
     if (model == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("balloon memory must contain model name"));
         goto error;
     }
+
     if ((def->model = virDomainMemballoonModelTypeFromString(model)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_XML_ERROR,
                        _("unknown memory balloon model '%s'"), model);
+        goto error;
+    }
+
+    ctxt->node = node;
+    if (virXPathUInt("string(./stats/@period)", ctxt, &def->period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid statistics collection period"));
         goto error;
     }
 
@@ -8600,6 +8610,7 @@ virDomainMemballoonDefParseXML(const xmlNodePtr node,
 cleanup:
     VIR_FREE(model);
 
+    ctxt->node = save;
     return def;
 
 error:
@@ -9472,7 +9483,9 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
-        if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(node, flags)))
+        if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(node,
+                                                                    ctxt,
+                                                                    flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NVRAM:
@@ -12105,7 +12118,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     if (n > 0) {
         virDomainMemballoonDefPtr memballoon =
-            virDomainMemballoonDefParseXML(nodes[0], flags);
+            virDomainMemballoonDefParseXML(nodes[0], ctxt, flags);
         if (!memballoon)
             goto error;
 
@@ -15301,6 +15314,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
                              unsigned int flags)
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
+    bool noopts = true;
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15314,10 +15328,20 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
-        virBufferAddLit(buf, "    </memballoon>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
+        noopts = false;
     }
+
+    if (def->period) {
+        if (noopts)
+            virBufferAddLit(buf, ">\n");
+        virBufferAsprintf(buf, "      <stats period='%u'/>\n", def->period);
+        noopts = false;
+    }
+
+    if (noopts)
+        virBufferAddLit(buf, "/>\n");
+    else
+        virBufferAddLit(buf, "    </memballoon>\n");
 
     return 0;
 }

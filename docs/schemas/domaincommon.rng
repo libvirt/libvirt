@@ -2946,6 +2946,13 @@
       <optional>
         <ref name="address"/>
       </optional>
+      <optional>
+        <element name="stats">
+          <attribute name="period">
+            <ref name="positiveInteger"/>
+          </attribute>
+        </element>
+      </optional>
     </element>
   </define>
   <define name="parallel">
