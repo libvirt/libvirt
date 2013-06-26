@@ -1076,6 +1076,7 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
          * aware that it needs to move.  Therefore, we must iterate
          * until content is empty.  */
         while (1) {
+            VIR_FREE(content);
             rc = virCgroupGetValueStr(src_group, i, "tasks", &content);
             if (rc != 0)
                 return rc;
@@ -1085,8 +1086,6 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
             rc = virCgroupAddTaskStrController(dest_group, content, i);
             if (rc != 0)
                 goto cleanup;
-
-            VIR_FREE(content);
         }
     }
 
