@@ -280,9 +280,13 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC)
 
-int virNodeDeviceList(virConnectPtr conn,
-                      virNodeDeviceObjList devobjs,
-                      virNodeDevicePtr **devices,
-                      unsigned int flags);
+typedef bool (*virNodeDeviceObjListFilter)(virConnectPtr conn,
+                                           virNodeDeviceDefPtr def);
+
+int virNodeDeviceObjListExport(virConnectPtr conn,
+                               virNodeDeviceObjList devobjs,
+                               virNodeDevicePtr **devices,
+                               virNodeDeviceObjListFilter filter,
+                               unsigned int flags);
 
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

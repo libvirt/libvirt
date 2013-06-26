@@ -1594,10 +1594,11 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
 #undef MATCH
 
 int
-virNodeDeviceList(virConnectPtr conn,
-                  virNodeDeviceObjList devobjs,
-                  virNodeDevicePtr **devices,
-                  unsigned int flags)
+virNodeDeviceObjListExport(virConnectPtr conn,
+                           virNodeDeviceObjList devobjs,
+                           virNodeDevicePtr **devices,
+                           virNodeDeviceObjListFilter filter,
+                           unsigned int flags)
 {
     virNodeDevicePtr *tmp_devices = NULL;
     virNodeDevicePtr device = NULL;
@@ -1615,7 +1616,8 @@ virNodeDeviceList(virConnectPtr conn,
     for (i = 0; i < devobjs.count; i++) {
         virNodeDeviceObjPtr devobj = devobjs.objs[i];
         virNodeDeviceObjLock(devobj);
-        if (virNodeDeviceMatch(devobj, flags)) {
+        if ((!filter || filter(conn, devobj->def)) &&
+            virNodeDeviceMatch(devobj, flags)) {
             if (devices) {
                 if (!(device = virGetNodeDevice(conn,
                                                 devobj->def->name))) {

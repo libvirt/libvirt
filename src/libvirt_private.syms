@@ -532,7 +532,7 @@ virNodeDeviceFindBySysfsPath;
 virNodeDeviceGetParentHost;
 virNodeDeviceGetWWNs;
 virNodeDeviceHasCap;
-virNodeDeviceList;
+virNodeDeviceObjListExport;
 virNodeDeviceObjListFree;
 virNodeDeviceObjLock;
 virNodeDeviceObjRemove;

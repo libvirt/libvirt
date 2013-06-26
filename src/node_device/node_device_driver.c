@@ -140,11 +140,13 @@ nodeNumOfDevices(virConnectPtr conn,
 
     nodeDeviceLock(driver);
     for (i = 0; i < driver->devs.count; i++) {
-        virNodeDeviceObjLock(driver->devs.objs[i]);
-        if ((cap == NULL) ||
-            virNodeDeviceHasCap(driver->devs.objs[i], cap))
+        virNodeDeviceObjPtr obj = driver->devs.objs[i];
+        virNodeDeviceObjLock(obj);
+        if (virNodeNumOfDevicesCheckACL(conn, obj->def) &&
+            ((cap == NULL) ||
+             virNodeDeviceHasCap(obj, cap)))
             ++ndevs;
-        virNodeDeviceObjUnlock(driver->devs.objs[i]);
+        virNodeDeviceObjUnlock(obj);
     }
     nodeDeviceUnlock(driver);
 
@@ -168,15 +170,17 @@ nodeListDevices(virConnectPtr conn,
 
     nodeDeviceLock(driver);
     for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
-        virNodeDeviceObjLock(driver->devs.objs[i]);
-        if (cap == NULL ||
-            virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
-            if (VIR_STRDUP(names[ndevs++], driver->devs.objs[i]->def->name) < 0) {
-                virNodeDeviceObjUnlock(driver->devs.objs[i]);
+        virNodeDeviceObjPtr obj = driver->devs.objs[i];
+        virNodeDeviceObjLock(obj);
+        if (virNodeListDevicesCheckACL(conn, obj->def) &&
+            (cap == NULL ||
+             virNodeDeviceHasCap(obj, cap))) {
+            if (VIR_STRDUP(names[ndevs++], obj->def->name) < 0) {
+                virNodeDeviceObjUnlock(obj);
                 goto failure;
             }
         }
-        virNodeDeviceObjUnlock(driver->devs.objs[i]);
+        virNodeDeviceObjUnlock(obj);
     }
     nodeDeviceUnlock(driver);
 
@@ -204,7 +208,9 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
         return -1;
 
     nodeDeviceLock(driver);
-    ret = virNodeDeviceList(conn, driver->devs, devices, flags);
+    ret = virNodeDeviceObjListExport(conn, driver->devs, devices,
+                                     virConnectListAllNodeDevicesCheckACL,
+                                     flags);
     nodeDeviceUnlock(driver);
     return ret;
 }
