@@ -296,6 +296,10 @@ void virNetworkDefFree(virNetworkDefPtr def);
 void virNetworkObjFree(virNetworkObjPtr net);
 void virNetworkObjListFree(virNetworkObjListPtr vms);
 
+
+typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
+                                        virNetworkDefPtr def);
+
 virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
                                      const virNetworkDefPtr def,
                                      bool live);
@@ -417,9 +421,10 @@ VIR_ENUM_DECL(virNetworkForward)
                  VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT | \
                  VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)
 
-int virNetworkList(virConnectPtr conn,
-                   virNetworkObjList netobjs,
-                   virNetworkPtr **nets,
-                   unsigned int flags);
+int virNetworkObjListExport(virConnectPtr conn,
+                            virNetworkObjList netobjs,
+                            virNetworkPtr **nets,
+                            virNetworkObjListFilter filter,
+                            unsigned int flags);
 
 #endif /* __NETWORK_CONF_H__ */

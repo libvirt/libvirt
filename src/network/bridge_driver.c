@@ -2844,10 +2844,12 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count; i++) {
-        virNetworkObjLock(driver->networks.objs[i]);
-        if (virNetworkObjIsActive(driver->networks.objs[i]))
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkObjLock(obj);
+        if (virConnectNumOfNetworksCheckACL(conn, obj->def) &&
+            virNetworkObjIsActive(obj))
             nactive++;
-        virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjUnlock(obj);
     }
     networkDriverUnlock(driver);
 
@@ -2863,15 +2865,17 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count && got < nnames; i++) {
-        virNetworkObjLock(driver->networks.objs[i]);
-        if (virNetworkObjIsActive(driver->networks.objs[i])) {
-            if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
-                virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkObjLock(obj);
+        if (virConnectListNetworksCheckACL(conn, obj->def) &&
+            virNetworkObjIsActive(obj)) {
+            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
+                virNetworkObjUnlock(obj);
                 goto cleanup;
             }
             got++;
         }
-        virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjUnlock(obj);
     }
     networkDriverUnlock(driver);
 
@@ -2893,10 +2897,12 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count; i++) {
-        virNetworkObjLock(driver->networks.objs[i]);
-        if (!virNetworkObjIsActive(driver->networks.objs[i]))
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkObjLock(obj);
+        if (virConnectNumOfDefinedNetworksCheckACL(conn, obj->def) &&
+            !virNetworkObjIsActive(obj))
             ninactive++;
-        virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjUnlock(obj);
     }
     networkDriverUnlock(driver);
 
@@ -2912,15 +2918,17 @@ static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const na
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count && got < nnames; i++) {
-        virNetworkObjLock(driver->networks.objs[i]);
-        if (!virNetworkObjIsActive(driver->networks.objs[i])) {
-            if (VIR_STRDUP(names[got], driver->networks.objs[i]->def->name) < 0) {
-                virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkObjLock(obj);
+        if (virConnectListDefinedNetworksCheckACL(conn, obj->def) &&
+            !virNetworkObjIsActive(obj)) {
+            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
+                virNetworkObjUnlock(obj);
                 goto cleanup;
             }
             got++;
         }
-        virNetworkObjUnlock(driver->networks.objs[i]);
+        virNetworkObjUnlock(obj);
     }
     networkDriverUnlock(driver);
     return got;
@@ -2946,7 +2954,9 @@ networkConnectListAllNetworks(virConnectPtr conn,
         goto cleanup;
 
     networkDriverLock(driver);
-    ret = virNetworkList(conn, driver->networks, nets, flags);
+    ret = virNetworkObjListExport(conn, driver->networks, nets,
+                                  virConnectListAllNetworksCheckACL,
+                                  flags);
     networkDriverUnlock(driver);
 
 cleanup:
