@@ -234,7 +234,8 @@ size_t virQEMUCapsGetMachineTypes(virQEMUCapsPtr qemuCaps,
                                   char ***names);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name);
-
+int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
+                                 const char *name);
 int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                    size_t *nmachines,
                                    virCapsGuestMachinePtr **machines);

@@ -853,6 +853,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
             virBufferAddLit(&xml, "      <machine");
             if (machine->canonical)
                 virBufferAsprintf(&xml, " canonical='%s'", machine->canonical);
+            if (machine->maxCpus > 0)
+                virBufferAsprintf(&xml, " maxCpus='%d'", machine->maxCpus);
             virBufferAsprintf(&xml, ">%s</machine>\n", machine->name);
         }
 
@@ -871,6 +873,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
                 virBufferAddLit(&xml, "        <machine");
                 if (machine->canonical)
                     virBufferAsprintf(&xml, " canonical='%s'", machine->canonical);
+                if (machine->maxCpus > 0)
+                    virBufferAsprintf(&xml, " maxCpus='%d'", machine->maxCpus);
                 virBufferAsprintf(&xml, ">%s</machine>\n", machine->name);
             }
             virBufferAddLit(&xml, "      </domain>\n");

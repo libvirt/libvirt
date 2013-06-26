@@ -290,6 +290,11 @@
           <text/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name='maxCpus'>
+          <ref name='unsignedInt'/>
+        </attribute>
+      </optional>
       <text/>
     </element>
   </define>

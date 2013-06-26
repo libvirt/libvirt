@@ -33,18 +33,18 @@
     <arch name='i686'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/qemu</emulator>
-      <machine>pc-0.11</machine>
-      <machine canonical='pc-0.11'>pc</machine>
-      <machine>pc-0.10</machine>
-      <machine>isapc</machine>
+      <machine maxCpus='255'>pc-0.11</machine>
+      <machine canonical='pc-0.11' maxCpus='255'>pc</machine>
+      <machine maxCpus='255'>pc-0.10</machine>
+      <machine maxCpus='1'>isapc</machine>
       <domain type='qemu'>
       </domain>
       <domain type='kvm'>
         <emulator>/usr/bin/qemu-kvm</emulator>
-        <machine>pc-0.11</machine>
-        <machine canonical='pc-0.11'>pc</machine>
-        <machine>pc-0.10</machine>
-        <machine>isapc</machine>
+        <machine maxCpus='255'>pc-0.11</machine>
+        <machine canonical='pc-0.11' maxCpus='255'>pc</machine>
+        <machine maxCpus='255'>pc-0.10</machine>
+        <machine maxCpus='1'>isapc</machine>
       </domain>
     </arch>
     <features>

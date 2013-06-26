@@ -3330,6 +3330,24 @@ error:
 }
 
 
+static bool
+qemuValidateCpuMax(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+{
+    unsigned int maxCpus;
+
+    maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
+    if (!maxCpus)
+        return true;
+
+    if (def->maxvcpus > maxCpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("Maximum CPUs greater than specified machine type limit"));
+        return false;
+    }
+
+    return true;
+}
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -3517,6 +3535,9 @@ int qemuProcessStart(virConnectPtr conn,
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
                                                       vm->def->emulator)))
+        goto cleanup;
+
+    if (!qemuValidateCpuMax(vm->def, priv->qemuCaps))
         goto cleanup;
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)

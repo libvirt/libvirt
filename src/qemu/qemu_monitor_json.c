@@ -4042,6 +4042,12 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
             if (VIR_STRDUP(info->alias, tmp) < 0)
                 goto cleanup;
         }
+        if (virJSONValueObjectHasKey(child, "cpu-max") &&
+            virJSONValueObjectGetNumberUint(child, "cpu-max", &info->maxCpus) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-machines reply has malformed 'cpu-max' data"));
+            goto cleanup;
+        }
     }
 
     ret = n;

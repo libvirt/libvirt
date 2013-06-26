@@ -46,6 +46,7 @@ typedef virCapsGuestMachine *virCapsGuestMachinePtr;
 struct _virCapsGuestMachine {
     char *name;
     char *canonical;
+    unsigned int maxCpus;
 };
 
 typedef struct _virCapsGuestDomainInfo virCapsGuestDomainInfo;
