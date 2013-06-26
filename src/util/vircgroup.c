@@ -366,7 +366,7 @@ static int virCgroupGetValueStr(virCgroupPtr group,
         VIR_DEBUG("Failed to read %s: %m\n", keypath);
     } else {
         /* Terminated with '\n' has sometimes harmful effects to the caller */
-        if ((*value)[rc - 1] == '\n')
+        if (rc > 0 && (*value)[rc - 1] == '\n')
             (*value)[rc - 1] = '\0';
 
         rc = 0;
