@@ -434,27 +434,24 @@
     <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
 
 <pre>
-  ...
-  &lt;devices&gt;
-    &lt;interface type='bridge'&gt;
-      <b>&lt;vlan trunk='yes'&gt;</b>
-        <b>&lt;tag id='42'/&gt;</b>
-        <b>&lt;tag id='47'/&gt;</b>
-      <b>&lt;/vlan&gt;</b>
-      &lt;source bridge='ovsbr0'/&gt;
-      &lt;virtualport type='openvswitch'&gt;
-        &lt;parameters interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
-      &lt;/virtualport&gt;
-    &lt;/interface&gt;
-    &lt;interface type='bridge'&gt;
-      <b>&lt;vlan trunk='yes'&gt;</b>
-        <b>&lt;tag id='42'/&gt;</b>
-        <b>&lt;tag id='123' nativeMode='untagged'/&gt;</b>
-      <b>&lt;/vlan&gt;</b>
-      ...
-    &lt;/interface&gt;
-  &lt;devices&gt;
-  ...</pre>
+&lt;network&gt;
+  &lt;name&gt;ovs-net&lt;/name&gt;
+  &lt;forward mode='bridge'/&gt;
+  &lt;bridge name='ovsbr0'/&gt;
+  &lt;virtualport type='openvswitch'&gt;
+    &lt;parameters interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
+  &lt;/virtualport&gt;
+  <b>&lt;vlan trunk='yes'&gt;</b>
+    <b>&lt;tag id='42' nativeMode='untagged'/&gt;</b>
+    <b>&lt;tag id='47'/&gt;</b>
+  <b>&lt;/vlan&gt;</b>
+  &lt;portgroup name='dontpanic'&gt;
+    <b>&lt;vlan&gt;</b>
+      <b>&lt;tag id='42'/&gt;</b>
+    <b>&lt;/vlan&gt;</b>
+  &lt;/portgroup&gt;
+&lt;/network&gt;
+</pre>
 
     <p>
       If (and only if) the network type supports vlan tagging
