@@ -80,6 +80,7 @@ EXTRA_DIST =		\
 	nwfilterxml2xmlout \
 	oomtrace.pl \
 	qemuhelpdata \
+	qemuhotplugtestdata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
