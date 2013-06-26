@@ -4735,7 +4735,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;tpm model='tpm-tis'&gt;
       &lt;backend type='passthrough'&gt;
-        &lt;backend path='/dev/tpm0'/&gt;
+        &lt;device path='/dev/tpm0'/&gt;
       &lt;/backend&gt;
     &lt;/tpm&gt;
   &lt;/devices&gt;
