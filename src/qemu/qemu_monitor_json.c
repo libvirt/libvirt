@@ -1488,6 +1488,30 @@ cleanup:
 }
 
 
+/*
+ * Using the provided balloonpath, determine if we need to set the
+ * collection interval property to enable statistics gathering.
+ */
+int
+qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
+                                    char *balloonpath,
+                                    int period)
+{
+    qemuMonitorJSONObjectProperty prop;
+
+    /* Set to the value in memballoon (could enable or disable) */
+    memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty));
+    prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT;
+    prop.val.iv = period;
+    if (qemuMonitorJSONSetObjectProperty(mon, balloonpath,
+                                         "guest-stats-polling-interval",
+                                         &prop) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {

@@ -3883,6 +3883,8 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
     }
     qemuDomainObjEnterMonitor(driver, vm);
+    if (vm->def->memballoon && vm->def->memballoon->period)
+        qemuMonitorSetMemoryStatsPeriod(priv->mon, vm->def->memballoon->period);
     if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
@@ -4409,11 +4411,18 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!virDomainObjIsActive(vm))
         goto cleanup;
 
-    if (running)
+    if (running) {
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
-    else
+        if (vm->def->memballoon && vm->def->memballoon->period) {
+            qemuDomainObjEnterMonitor(driver, vm);
+            qemuMonitorSetMemoryStatsPeriod(priv->mon,
+                                            vm->def->memballoon->period);
+            qemuDomainObjExitMonitor(driver, vm);
+        }
+    } else {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
+    }
 
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)

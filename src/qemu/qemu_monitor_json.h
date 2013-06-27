@@ -61,6 +61,9 @@ int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);
+int qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
+                                        char *balloonpath,
+                                        int period);
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table);
 int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
