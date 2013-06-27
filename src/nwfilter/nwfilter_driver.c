@@ -441,11 +441,21 @@ nwfilterClose(virConnectPtr conn) {
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
+    int i, n;
 
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    return driver->nwfilters.count;
+    n = 0;
+    for (i = 0; i < driver->nwfilters.count; i++) {
+        virNWFilterObjPtr obj = driver->nwfilters.objs[i];
+        virNWFilterObjLock(obj);
+        if (virConnectNumOfNWFiltersCheckACL(conn, obj->def))
+            n++;
+        virNWFilterObjUnlock(obj);
+    }
+
+    return n;
 }
 
 
@@ -461,13 +471,16 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
 
     nwfilterDriverLock(driver);
     for (i = 0; i < driver->nwfilters.count && got < nnames; i++) {
-        virNWFilterObjLock(driver->nwfilters.objs[i]);
-        if (VIR_STRDUP(names[got], driver->nwfilters.objs[i]->def->name) < 0) {
-             virNWFilterObjUnlock(driver->nwfilters.objs[i]);
-             goto cleanup;
+        virNWFilterObjPtr obj = driver->nwfilters.objs[i];
+        virNWFilterObjLock(obj);
+        if (virConnectListNWFiltersCheckACL(conn, obj->def)) {
+            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
+                virNWFilterObjUnlock(obj);
+                goto cleanup;
+            }
+            got++;
         }
-        got++;
-        virNWFilterObjUnlock(driver->nwfilters.objs[i]);
+        virNWFilterObjUnlock(obj);
     }
     nwfilterDriverUnlock(driver);
     return got;
@@ -513,13 +526,15 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
     for (i = 0; i < driver->nwfilters.count; i++) {
         obj = driver->nwfilters.objs[i];
         virNWFilterObjLock(obj);
-        if (!(filter = virGetNWFilter(conn, obj->def->name,
-                                      obj->def->uuid))) {
-            virNWFilterObjUnlock(obj);
-            goto cleanup;
+        if (virConnectListAllNWFiltersCheckACL(conn, obj->def)) {
+            if (!(filter = virGetNWFilter(conn, obj->def->name,
+                                          obj->def->uuid))) {
+                virNWFilterObjUnlock(obj);
+                goto cleanup;
+            }
+            tmp_filters[nfilters++] = filter;
         }
         virNWFilterObjUnlock(obj);
-        tmp_filters[nfilters++] = filter;
     }
 
     *filters = tmp_filters;
