@@ -181,7 +181,8 @@ udevInterfaceClose(virConnectPtr conn)
 }
 
 static int
-udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status)
+udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status,
+                            virInterfaceObjListFilter filter)
 {
     struct udev_iface_driver *driverState = conn->interfacePrivateData;
     struct udev *udev = udev_ref(driverState->udev);
@@ -208,7 +209,18 @@ udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status)
 
     /* For each item so we can count */
     udev_list_entry_foreach(dev_entry, devices) {
-        count++;
+        struct udev_device *dev;
+        const char *path;
+        virInterfaceDefPtr def;
+
+        path = udev_list_entry_get_name(dev_entry);
+        dev = udev_device_new_from_syspath(udev, path);
+
+        def = udevGetMinimalDefForDevice(dev);
+        if (filter(conn, def))
+            count++;
+        udev_device_unref(dev);
+        virInterfaceDefFree(def);
     }
 
 cleanup:
@@ -223,7 +235,8 @@ static int
 udevListInterfacesByStatus(virConnectPtr conn,
                            char **const names,
                            int names_len,
-                           virUdevStatus status)
+                           virUdevStatus status,
+                           virInterfaceObjListFilter filter)
 {
     struct udev_iface_driver *driverState = conn->interfacePrivateData;
     struct udev *udev = udev_ref(driverState->udev);
@@ -251,6 +264,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
     udev_list_entry_foreach(dev_entry, devices) {
         struct udev_device *dev;
         const char *path;
+        virInterfaceDefPtr def;
 
         /* Ensure we won't exceed the size of our array */
         if (count > names_len)
@@ -258,13 +272,18 @@ udevListInterfacesByStatus(virConnectPtr conn,
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
-        if (VIR_STRDUP(names[count], udev_device_get_sysname(dev)) < 0) {
-            udev_device_unref(dev);
-            goto error;
+
+        def = udevGetMinimalDefForDevice(dev);
+        if (filter(conn, def)) {
+            if (VIR_STRDUP(names[count], udev_device_get_sysname(dev)) < 0) {
+                udev_device_unref(dev);
+                virInterfaceDefFree(def);
+                goto error;
+            }
+            count++;
         }
         udev_device_unref(dev);
-
-        count++;
+        virInterfaceDefFree(def);
     }
 
     udev_enumerate_unref(enumerate);
@@ -289,7 +308,8 @@ udevConnectNumOfInterfaces(virConnectPtr conn)
     if (virConnectNumOfInterfacesEnsureACL(conn) < 0)
         return -1;
 
-    return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_ACTIVE);
+    return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_ACTIVE,
+                                       virConnectNumOfInterfacesCheckACL);
 }
 
 static int
@@ -301,7 +321,8 @@ udevConnectListInterfaces(virConnectPtr conn,
         return -1;
 
     return udevListInterfacesByStatus(conn, names, names_len,
-                                      VIR_UDEV_IFACE_ACTIVE);
+                                      VIR_UDEV_IFACE_ACTIVE,
+                                      virConnectListInterfacesCheckACL);
 }
 
 static int
@@ -310,7 +331,8 @@ udevConnectNumOfDefinedInterfaces(virConnectPtr conn)
     if (virConnectNumOfDefinedInterfacesEnsureACL(conn) < 0)
         return -1;
 
-    return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_INACTIVE);
+    return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_INACTIVE,
+                                       virConnectNumOfDefinedInterfacesCheckACL);
 }
 
 static int
@@ -322,7 +344,8 @@ udevConnectListDefinedInterfaces(virConnectPtr conn,
         return -1;
 
     return udevListInterfacesByStatus(conn, names, names_len,
-                                      VIR_UDEV_IFACE_INACTIVE);
+                                      VIR_UDEV_IFACE_INACTIVE,
+                                      virConnectListDefinedInterfacesCheckACL);
 }
 
 #define MATCH(FLAG) (flags & (FLAG))
@@ -400,12 +423,21 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         const char *path;
         const char *name;
         const char *macaddr;
+        virInterfaceDefPtr def;
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
         name = udev_device_get_sysname(dev);
         macaddr = udev_device_get_sysattr_value(dev, "address");
         status = STREQ(udev_device_get_sysattr_value(dev, "operstate"), "up");
+
+        def = udevGetMinimalDefForDevice(dev);
+        if (!virConnectListAllInterfacesCheckACL(conn, def)) {
+            udev_device_unref(dev);
+            virInterfaceDefFree(def);
+            continue;
+        }
+        virInterfaceDefFree(def);
 
         /* Filter the results */
         if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
