@@ -605,7 +605,7 @@ static const vshCmdOptDef opts_node_device_detach[] = {
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
-     .help = N_("pci device assignment backend driver (e.g. 'vfio' or 'kvm'")
+     .help = N_("pci device assignment backend driver (e.g. 'vfio' or 'kvm')")
     },
     {.name = NULL}
 };
