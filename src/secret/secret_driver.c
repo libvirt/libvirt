@@ -566,8 +566,11 @@ secretConnectNumOfSecrets(virConnectPtr conn)
     secretDriverLock(driver);
 
     i = 0;
-    for (secret = driver->secrets; secret != NULL; secret = secret->next)
-        i++;
+    for (secret = driver->secrets; secret != NULL; secret = secret->next) {
+        if (virConnectNumOfSecretsCheckACL(conn,
+                                           secret->def))
+            i++;
+    }
 
     secretDriverUnlock(driver);
     return i;
@@ -590,6 +593,9 @@ secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
     i = 0;
     for (secret = driver->secrets; secret != NULL; secret = secret->next) {
         char *uuidstr;
+        if (!virConnectListSecretsCheckACL(conn,
+                                           secret->def))
+            continue;
         if (i == maxuuids)
             break;
         if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0) {
@@ -666,6 +672,10 @@ secretConnectListAllSecrets(virConnectPtr conn,
     }
 
     for (entry = driver->secrets; entry != NULL; entry = entry->next) {
+        if (!virConnectListAllSecretsCheckACL(conn,
+                                              entry->def))
+            continue;
+
         /* filter by whether it's ephemeral */
         if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
             !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
