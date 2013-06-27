@@ -42,6 +42,7 @@ my $intable = 0;
 my $table;
 
 my %acls;
+my %aclfilters;
 
 my %whitelist = (
     "connectClose" => 1,
@@ -73,8 +74,79 @@ my %implwhitelist = (
     "xenUnifiedDomainIsUpdated" => 1,
     "xenUnifiedDomainOpenConsole" => 1,
     );
+my %filterimplwhitelist = (
+    "xenUnifiedConnectListDomains" => 1,
+    "xenUnifiedConnectNumOfDomains" => 1,
+    "xenUnifiedConnectListDefinedDomains" => 1,
+    "xenUnifiedConnectNumOfDefinedDomains" => 1,
+    );
 
 my $lastfile;
+
+sub fixup_name {
+    my $name = shift;
+
+    $name =~ s/Nwfilter/NWFilter/;
+    $name =~ s/Xml$/XML/;
+    $name =~ s/Uri$/URI/;
+    $name =~ s/Uuid$/UUID/;
+    $name =~ s/Id$/ID/;
+    $name =~ s/Mac$/MAC/;
+    $name =~ s/Cpu$/CPU/;
+    $name =~ s/Os$/OS/;
+    $name =~ s/Nmi$/NMI/;
+    $name =~ s/Pm/PM/;
+    $name =~ s/Fstrim$/FSTrim/;
+    $name =~ s/Scsi/SCSI/;
+    $name =~ s/Wwn$/WWN/;
+
+    return $name;
+}
+
+sub name_to_ProcName {
+    my $name = shift;
+
+    my @elems;
+    if ($name =~ /_/ || (lc $name) eq "open" || (lc $name) eq "close") {
+        @elems = split /_/, $name;
+        @elems = map lc, @elems;
+        @elems = map ucfirst, @elems;
+    } else {
+        @elems = $name;
+    }
+    @elems = map { fixup_name($_) } @elems;
+    my $procname = join "", @elems;
+
+    $procname =~ s/^([A-Z])/lc $1/e;
+
+    return $procname;
+}
+
+
+my $proto = shift @ARGV;
+
+open PROTO, "<$proto" or die "cannot read $proto";
+
+my %filtered;
+my $incomment = 0;
+my $filtered = 0;
+while (<PROTO>) {
+    if (m,/\*\*,) {
+        $incomment = 1;
+        $filtered = 0;
+    } elsif ($incomment) {
+        if (m,\*\s\@aclfilter,) {
+            $filtered = 1;
+        } elsif ($filtered &&
+                 m,REMOTE_PROC_(.*)\s+=\s*\d+,) {
+            my $api = name_to_ProcName($1);
+            $filtered{$api} = 1;
+            $incomment = 0;
+        }
+    }
+}
+
+close PROTO;
 
 while (<>) {
     if (!defined $lastfile ||
@@ -107,6 +179,21 @@ while (<>) {
                 }
             }
             $acls{$maybefunc} = 1;
+        } elsif (m,(\w+)CheckACL,) {
+            # Record the fact that maybefunc contains an
+            # ACL filter call, and make sure it is the right call!
+            my $func = $1;
+            $func =~ s/^vir//;
+            if (!defined $maybefunc) {
+                print "$ARGV:$. Unexpected check '$func' outside function\n";
+                $status = 1;
+            } else {
+                unless ($maybefunc =~ /$func$/i) {
+                    print "$ARGV:$. Mismatch check 'vir${func}CheckACL' for function '$maybefunc'\n";
+                    $status = 1;
+                }
+            }
+            $aclfilters{$maybefunc} = 1;
         } elsif (m,\b(\w+)\(,) {
             # Handles case where we replaced an API with a new
             # one which  adds new parameters, and we're left with
@@ -114,6 +201,9 @@ while (<>) {
             my $callfunc = $1;
             if (exists $acls{$callfunc}) {
                 $acls{$maybefunc} = 1;
+            }
+            if (exists $aclfilters{$callfunc}) {
+                $aclfilters{$maybefunc} = 1;
             }
         }
     }
@@ -136,6 +226,13 @@ while (<>) {
                 !exists $whitelist{$api} &&
                 !exists $implwhitelist{$impl}) {
                 print "$ARGV:$. Missing ACL check in function '$impl' for '$api'\n";
+                $status = 1;
+            }
+
+            if (exists $filtered{$api} &&
+                !exists $aclfilters{$impl} &&
+                !exists $filterimplwhitelist{$impl}) {
+                print "$ARGV:$. Missing ACL filter in function '$impl' for '$api'\n";
                 $status = 1;
             }
         }

@@ -500,6 +500,7 @@ check-driverimpls:
 
 check-aclrules:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclrules.pl \
+		$(addprefix $(srcdir)/,$(filter-out /%,$(REMOTE_PROTOCOL))) \
 		$(addprefix $(srcdir)/,$(filter-out /%,$(STATEFUL_DRIVER_SOURCE_FILES)))
 
 EXTRA_DIST += check-driverimpls.pl check-aclrules.pl
