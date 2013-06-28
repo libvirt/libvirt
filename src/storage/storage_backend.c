@@ -865,8 +865,10 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
                                                do_encryption, preallocate,
                                                vol->target.format,
                                                vol->target.compat,
-                                               vol->target.features) < 0)
+                                               vol->target.features) < 0) {
+            virCommandFree(cmd);
             return NULL;
+        }
         if (opts)
             virCommandAddArgList(cmd, "-o", opts, NULL);
         VIR_FREE(opts);
