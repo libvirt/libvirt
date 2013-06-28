@@ -6683,6 +6683,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     int spice = 0;
     int usbcontroller = 0;
     bool usblegacy = false;
+    bool mlock = false;
     int contOrder[] = {
         /* We don't add an explicit IDE or FD controller because the
          * provided PIIX4 device already includes one. It isn't possible to
@@ -8337,22 +8338,15 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (hostdev->source.subsys.u.pci.backend
                 == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                unsigned long long memKB;
-
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("VFIO PCI device assignment is not "
                                      "supported by this version of qemu"));
                     goto error;
                 }
-                /* VFIO requires all of the guest's memory to be
-                 * locked resident, plus some amount for IO
-                 * space. Alex Williamson suggested adding 1GiB for IO
-                 * space just to be safe (some finer tuning might be
-                 * nice, though).
-                 */
-                memKB = def->mem.max_balloon + (1024 * 1024);
-                virCommandSetMaxMemLock(cmd, memKB * 1024);
+                /* VFIO requires all of the guest's memory to be locked
+                 * resident */
+                mlock = true;
             }
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -8571,6 +8565,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                        _("QEMU does not support seccomp sandboxes"));
         goto error;
     }
+
+    if (mlock)
+        virCommandSetMaxMemLock(cmd, qemuDomainMemoryLimit(def) * 1024);
 
     virObjectUnref(cfg);
     return cmd;

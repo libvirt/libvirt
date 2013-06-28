@@ -2199,6 +2199,9 @@ qemuDomainMemoryLimit(virDomainDefPtr def)
          *     cache per each disk) + F
          * where k = 0.5 and F = 200MB.  The cache for disks is important as
          * kernel cache on the host side counts into the RSS limit.
+         * Moreover, VFIO requires some amount for IO space. Alex Williamson
+         * suggested adding 1GiB for IO space just to be safe (some finer
+         * tuning might be nice, though).
          *
          * Technically, the disk cache does not have to be included in
          * RLIMIT_MEMLOCK but it doesn't hurt as it's just an upper limit and
@@ -2210,6 +2213,18 @@ qemuDomainMemoryLimit(virDomainDefPtr def)
         mem *= 1.5;
         mem += def->ndisks * 32768;
         mem += 204800;
+
+        for (i = 0; i < def->nhostdevs; i++) {
+            virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+            if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                hostdev->source.subsys.type ==
+                    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                hostdev->source.subsys.u.pci.backend ==
+                    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                mem += 1024 * 1024;
+                break;
+            }
+        }
     }
 
     return mem;

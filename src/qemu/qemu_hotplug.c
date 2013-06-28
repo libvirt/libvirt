@@ -1054,23 +1054,21 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
 
     if (hostdev->source.subsys.u.pci.backend
         == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-        unsigned long long memKB;
-
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VFIO PCI device assignment is not "
                              "supported by this version of qemu"));
             goto error;
         }
-        /* VFIO requires all of the guest's memory to be locked
-         * resident, plus some amount for IO space. Alex Williamson
-         * suggested adding 1GiB for IO space just to be safe (some
-         * finer tuning might be nice, though).
-         * In this case, the guest's memory may already be locked, but
-         * it doesn't hurt to "change" the limit to the same value.
+
+        /* VFIO requires all of the guest's memory to be locked resident.
+         * In this case, the guest's memory may already be locked, but it
+         * doesn't hurt to "change" the limit to the same value.
          */
-        memKB = vm->def->mem.max_balloon + (1024 * 1024);
-        virProcessSetMaxMemLock(vm->pid, memKB * 1024);
+        vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+        virProcessSetMaxMemLock(vm->pid,
+                                qemuDomainMemoryLimit(vm->def) * 1024);
+        vm->def->hostdevs[vm->def->nhostdevs--] = NULL;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
