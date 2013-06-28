@@ -275,7 +275,7 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
-#elif defined(SIOCIFCREATE2) && defined(SIOCIFDESTROY)
+#elif defined(SIOCIFCREATE2) && defined(SIOCIFDESTROY) && defined(IF_MAXUNIT)
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
                        int tapfdSize,
