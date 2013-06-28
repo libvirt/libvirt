@@ -2261,21 +2261,6 @@ int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
     return 1;
 }
 
-#ifdef __linux__
-
-/*
- * returns true if equal
- */
-static bool
-virPCIDeviceAddressIsEqual(virPCIDeviceAddressPtr bdf1,
-                           virPCIDeviceAddressPtr bdf2)
-{
-    return ((bdf1->domain == bdf2->domain) &&
-            (bdf1->bus == bdf2->bus) &&
-            (bdf1->slot == bdf2->slot) &&
-            (bdf1->function == bdf2->function));
-}
-
 static int
 logStrToLong_ui(char const *s,
                 char **end_ptr,
@@ -2325,6 +2310,21 @@ virPCIDeviceAddressParse(char *address,
 
 out:
     return ret;
+}
+
+#ifdef __linux__
+
+/*
+ * returns true if equal
+ */
+static bool
+virPCIDeviceAddressIsEqual(virPCIDeviceAddressPtr bdf1,
+                           virPCIDeviceAddressPtr bdf2)
+{
+    return ((bdf1->domain == bdf2->domain) &&
+            (bdf1->bus == bdf2->bus) &&
+            (bdf1->slot == bdf2->slot) &&
+            (bdf1->function == bdf2->function));
 }
 
 static int
