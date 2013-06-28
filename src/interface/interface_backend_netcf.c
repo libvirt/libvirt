@@ -365,6 +365,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
               (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) &&
                (status & NETCF_IFACE_INACTIVE)))) {
             ncf_if_free(iface);
+            iface = NULL;
             continue;
         }
 
