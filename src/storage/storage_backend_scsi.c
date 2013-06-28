@@ -667,8 +667,8 @@ createVport(virStoragePoolSourceAdapter adapter)
     if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
         return -1;
 
-    if (virManageVport(parent_host, adapter.data.fchost.wwnn,
-                       adapter.data.fchost.wwpn, VPORT_CREATE) < 0)
+    if (virManageVport(parent_host, adapter.data.fchost.wwpn,
+                       adapter.data.fchost.wwnn, VPORT_CREATE) < 0)
         return -1;
 
     virFileWaitForDevices();
@@ -690,8 +690,8 @@ deleteVport(virStoragePoolSourceAdapter adapter)
     if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
         return -1;
 
-    if (virManageVport(parent_host, adapter.data.fchost.wwnn,
-                       adapter.data.fchost.wwpn, VPORT_DELETE) < 0)
+    if (virManageVport(parent_host, adapter.data.fchost.wwpn,
+                       adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
         return -1;
 
     return 0;
