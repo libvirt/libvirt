@@ -88,52 +88,8 @@ enum {
     REMOVE
 };
 
-typedef struct
-{
-    char  *table;
-    char  *chain;
-} iptRules;
-
-struct _iptablesContext
-{
-    iptRules *input_filter;
-    iptRules *forward_filter;
-    iptRules *nat_postrouting;
-    iptRules *mangle_postrouting;
-};
-
-static void
-iptRulesFree(iptRules *rules)
-{
-    VIR_FREE(rules->table);
-    VIR_FREE(rules->chain);
-    VIR_FREE(rules);
-}
-
-static iptRules *
-iptRulesNew(const char *table,
-            const char *chain)
-{
-    iptRules *rules;
-
-    if (VIR_ALLOC(rules) < 0)
-        return NULL;
-
-    if (VIR_STRDUP(rules->table, table) < 0)
-        goto error;
-
-    if (VIR_STRDUP(rules->chain, chain) < 0)
-        goto error;
-
-    return rules;
-
- error:
-    iptRulesFree(rules);
-    return NULL;
-}
-
 static virCommandPtr
-iptablesCommandNew(iptRules *rules, int family, int action)
+iptablesCommandNew(const char *table, const char *chain, int family, int action)
 {
     virCommandPtr cmd = NULL;
 #if HAVE_FIREWALLD
@@ -150,9 +106,9 @@ iptablesCommandNew(iptRules *rules, int family, int action)
                         ? IP6TABLES_PATH : IPTABLES_PATH);
     }
 
-    virCommandAddArgList(cmd, "--table", rules->table,
+    virCommandAddArgList(cmd, "--table", table,
                          action == ADD ? "--insert" : "--delete",
-                         rules->chain, NULL);
+                         chain, NULL);
     return cmd;
 }
 
@@ -166,14 +122,14 @@ iptablesCommandRunAndFree(virCommandPtr cmd)
 }
 
 static int ATTRIBUTE_SENTINEL
-iptablesAddRemoveRule(iptRules *rules, int family, int action,
+iptablesAddRemoveRule(const char *table, const char *chain, int family, int action,
                       const char *arg, ...)
 {
     va_list args;
     virCommandPtr cmd = NULL;
     const char *s;
 
-    cmd = iptablesCommandNew(rules, family, action);
+    cmd = iptablesCommandNew(table, chain, family, action);
     virCommandAddArg(cmd, arg);
 
     va_start(args, arg);
@@ -184,63 +140,8 @@ iptablesAddRemoveRule(iptRules *rules, int family, int action,
     return iptablesCommandRunAndFree(cmd);
 }
 
-/**
- * iptablesContextNew:
- *
- * Create a new IPtable context
- *
- * Returns a pointer to the new structure or NULL in case of error
- */
-iptablesContext *
-iptablesContextNew(void)
-{
-    iptablesContext *ctx;
-
-    if (VIR_ALLOC(ctx) < 0)
-        return NULL;
-
-    if (!(ctx->input_filter = iptRulesNew("filter", "INPUT")))
-        goto error;
-
-    if (!(ctx->forward_filter = iptRulesNew("filter", "FORWARD")))
-        goto error;
-
-    if (!(ctx->nat_postrouting = iptRulesNew("nat", "POSTROUTING")))
-        goto error;
-
-    if (!(ctx->mangle_postrouting = iptRulesNew("mangle", "POSTROUTING")))
-        goto error;
-
-    return ctx;
-
- error:
-    iptablesContextFree(ctx);
-    return NULL;
-}
-
-/**
- * iptablesContextFree:
- * @ctx: pointer to the IP table context
- *
- * Free the resources associated with an IP table context
- */
-void
-iptablesContextFree(iptablesContext *ctx)
-{
-    if (ctx->input_filter)
-        iptRulesFree(ctx->input_filter);
-    if (ctx->forward_filter)
-        iptRulesFree(ctx->forward_filter);
-    if (ctx->nat_postrouting)
-        iptRulesFree(ctx->nat_postrouting);
-    if (ctx->mangle_postrouting)
-        iptRulesFree(ctx->mangle_postrouting);
-    VIR_FREE(ctx);
-}
-
 static int
-iptablesInput(iptablesContext *ctx,
-              int family,
+iptablesInput(int family,
               const char *iface,
               int port,
               int action,
@@ -251,7 +152,7 @@ iptablesInput(iptablesContext *ctx,
     snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
-    return iptablesAddRemoveRule(ctx->input_filter,
+    return iptablesAddRemoveRule("filter", "INPUT",
                                  family,
                                  action,
                                  "--in-interface", iface,
@@ -274,12 +175,11 @@ iptablesInput(iptablesContext *ctx,
  */
 
 int
-iptablesAddTcpInput(iptablesContext *ctx,
-                    int family,
+iptablesAddTcpInput(int family,
                     const char *iface,
                     int port)
 {
-    return iptablesInput(ctx, family, iface, port, ADD, 1);
+    return iptablesInput(family, iface, port, ADD, 1);
 }
 
 /**
@@ -294,12 +194,11 @@ iptablesAddTcpInput(iptablesContext *ctx,
  * Returns 0 in case of success or an error code in case of error
  */
 int
-iptablesRemoveTcpInput(iptablesContext *ctx,
-                       int family,
+iptablesRemoveTcpInput(int family,
                        const char *iface,
                        int port)
 {
-    return iptablesInput(ctx, family, iface, port, REMOVE, 1);
+    return iptablesInput(family, iface, port, REMOVE, 1);
 }
 
 /**
@@ -315,12 +214,11 @@ iptablesRemoveTcpInput(iptablesContext *ctx,
  */
 
 int
-iptablesAddUdpInput(iptablesContext *ctx,
-                    int family,
+iptablesAddUdpInput(int family,
                     const char *iface,
                     int port)
 {
-    return iptablesInput(ctx, family, iface, port, ADD, 0);
+    return iptablesInput(family, iface, port, ADD, 0);
 }
 
 /**
@@ -335,12 +233,11 @@ iptablesAddUdpInput(iptablesContext *ctx,
  * Returns 0 in case of success or an error code in case of error
  */
 int
-iptablesRemoveUdpInput(iptablesContext *ctx,
-                       int family,
+iptablesRemoveUdpInput(int family,
                        const char *iface,
                        int port)
 {
-    return iptablesInput(ctx, family, iface, port, REMOVE, 0);
+    return iptablesInput(family, iface, port, REMOVE, 0);
 }
 
 
@@ -381,8 +278,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
  * to proceed to WAN
  */
 static int
-iptablesForwardAllowOut(iptablesContext *ctx,
-                        virSocketAddr *netaddr,
+iptablesForwardAllowOut(virSocketAddr *netaddr,
                         unsigned int prefix,
                         const char *iface,
                         const char *physdev,
@@ -395,7 +291,7 @@ iptablesForwardAllowOut(iptablesContext *ctx,
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
-    cmd = iptablesCommandNew(ctx->forward_filter,
+    cmd = iptablesCommandNew("filter", "FORWARD",
                              VIR_SOCKET_ADDR_FAMILY(netaddr),
                              action);
     virCommandAddArgList(cmd,
@@ -426,13 +322,12 @@ iptablesForwardAllowOut(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardAllowOut(iptablesContext *ctx,
-                           virSocketAddr *netaddr,
+iptablesAddForwardAllowOut(virSocketAddr *netaddr,
                            unsigned int prefix,
                            const char *iface,
                            const char *physdev)
 {
-    return iptablesForwardAllowOut(ctx, netaddr, prefix, iface, physdev, ADD);
+    return iptablesForwardAllowOut(netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -449,13 +344,12 @@ iptablesAddForwardAllowOut(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardAllowOut(iptablesContext *ctx,
-                              virSocketAddr *netaddr,
+iptablesRemoveForwardAllowOut(virSocketAddr *netaddr,
                               unsigned int prefix,
                               const char *iface,
                               const char *physdev)
 {
-    return iptablesForwardAllowOut(ctx, netaddr, prefix, iface, physdev, REMOVE);
+    return iptablesForwardAllowOut(netaddr, prefix, iface, physdev, REMOVE);
 }
 
 
@@ -463,8 +357,7 @@ iptablesRemoveForwardAllowOut(iptablesContext *ctx,
  * and associated with an existing connection
  */
 static int
-iptablesForwardAllowRelatedIn(iptablesContext *ctx,
-                              virSocketAddr *netaddr,
+iptablesForwardAllowRelatedIn(virSocketAddr *netaddr,
                               unsigned int prefix,
                               const char *iface,
                               const char *physdev,
@@ -477,7 +370,7 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
         return -1;
 
     if (physdev && physdev[0]) {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
+        ret = iptablesAddRemoveRule("filter", "FORWARD",
                                     VIR_SOCKET_ADDR_FAMILY(netaddr),
                                     action,
                                     "--destination", networkstr,
@@ -488,7 +381,7 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
                                     "--jump", "ACCEPT",
                                     NULL);
     } else {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
+        ret = iptablesAddRemoveRule("filter", "FORWARD",
                                     VIR_SOCKET_ADDR_FAMILY(netaddr),
                                     action,
                                     "--destination", networkstr,
@@ -516,13 +409,12 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
-                                 virSocketAddr *netaddr,
+iptablesAddForwardAllowRelatedIn(virSocketAddr *netaddr,
                                  unsigned int prefix,
                                  const char *iface,
                                  const char *physdev)
 {
-    return iptablesForwardAllowRelatedIn(ctx, netaddr, prefix, iface, physdev, ADD);
+    return iptablesForwardAllowRelatedIn(netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -539,20 +431,18 @@ iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
-                                    virSocketAddr *netaddr,
+iptablesRemoveForwardAllowRelatedIn(virSocketAddr *netaddr,
                                     unsigned int prefix,
                                     const char *iface,
                                     const char *physdev)
 {
-    return iptablesForwardAllowRelatedIn(ctx, netaddr, prefix, iface, physdev, REMOVE);
+    return iptablesForwardAllowRelatedIn(netaddr, prefix, iface, physdev, REMOVE);
 }
 
 /* Allow all traffic destined to the bridge, with a valid network address
  */
 static int
-iptablesForwardAllowIn(iptablesContext *ctx,
-                       virSocketAddr *netaddr,
+iptablesForwardAllowIn(virSocketAddr *netaddr,
                        unsigned int prefix,
                        const char *iface,
                        const char *physdev,
@@ -565,7 +455,7 @@ iptablesForwardAllowIn(iptablesContext *ctx,
         return -1;
 
     if (physdev && physdev[0]) {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
+        ret = iptablesAddRemoveRule("filter", "FORWARD",
                                     VIR_SOCKET_ADDR_FAMILY(netaddr),
                                     action,
                                     "--destination", networkstr,
@@ -574,7 +464,7 @@ iptablesForwardAllowIn(iptablesContext *ctx,
                                     "--jump", "ACCEPT",
                                     NULL);
     } else {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
+        ret = iptablesAddRemoveRule("filter", "FORWARD",
                                     VIR_SOCKET_ADDR_FAMILY(netaddr),
                                     action,
                                     "--destination", networkstr,
@@ -600,13 +490,12 @@ iptablesForwardAllowIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardAllowIn(iptablesContext *ctx,
-                          virSocketAddr *netaddr,
+iptablesAddForwardAllowIn(virSocketAddr *netaddr,
                           unsigned int prefix,
                           const char *iface,
                           const char *physdev)
 {
-    return iptablesForwardAllowIn(ctx, netaddr, prefix, iface, physdev, ADD);
+    return iptablesForwardAllowIn(netaddr, prefix, iface, physdev, ADD);
 }
 
 /**
@@ -623,13 +512,12 @@ iptablesAddForwardAllowIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardAllowIn(iptablesContext *ctx,
-                             virSocketAddr *netaddr,
+iptablesRemoveForwardAllowIn(virSocketAddr *netaddr,
                              unsigned int prefix,
                              const char *iface,
                              const char *physdev)
 {
-    return iptablesForwardAllowIn(ctx, netaddr, prefix, iface, physdev, REMOVE);
+    return iptablesForwardAllowIn(netaddr, prefix, iface, physdev, REMOVE);
 }
 
 
@@ -637,12 +525,11 @@ iptablesRemoveForwardAllowIn(iptablesContext *ctx,
  * with a valid network address
  */
 static int
-iptablesForwardAllowCross(iptablesContext *ctx,
-                          int family,
+iptablesForwardAllowCross(int family,
                           const char *iface,
                           int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
+    return iptablesAddRemoveRule("filter", "FORWARD",
                                  family,
                                  action,
                                  "--in-interface", iface,
@@ -663,11 +550,10 @@ iptablesForwardAllowCross(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardAllowCross(iptablesContext *ctx,
-                             int family,
+iptablesAddForwardAllowCross(int family,
                              const char *iface)
 {
-    return iptablesForwardAllowCross(ctx, family, iface, ADD);
+    return iptablesForwardAllowCross(family, iface, ADD);
 }
 
 /**
@@ -682,11 +568,10 @@ iptablesAddForwardAllowCross(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardAllowCross(iptablesContext *ctx,
-                                int family,
+iptablesRemoveForwardAllowCross(int family,
                                 const char *iface)
 {
-    return iptablesForwardAllowCross(ctx, family, iface, REMOVE);
+    return iptablesForwardAllowCross(family, iface, REMOVE);
 }
 
 
@@ -694,12 +579,11 @@ iptablesRemoveForwardAllowCross(iptablesContext *ctx,
  * ie the bridge is the in interface
  */
 static int
-iptablesForwardRejectOut(iptablesContext *ctx,
-                         int family,
+iptablesForwardRejectOut(int family,
                          const char *iface,
                          int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
+    return iptablesAddRemoveRule("filter", "FORWARD",
                                  family,
                                  action,
                                  "--in-interface", iface,
@@ -718,11 +602,10 @@ iptablesForwardRejectOut(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardRejectOut(iptablesContext *ctx,
-                            int family,
+iptablesAddForwardRejectOut(int family,
                             const char *iface)
 {
-    return iptablesForwardRejectOut(ctx, family, iface, ADD);
+    return iptablesForwardRejectOut(family, iface, ADD);
 }
 
 /**
@@ -736,11 +619,10 @@ iptablesAddForwardRejectOut(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardRejectOut(iptablesContext *ctx,
-                               int family,
+iptablesRemoveForwardRejectOut(int family,
                                const char *iface)
 {
-    return iptablesForwardRejectOut(ctx, family, iface, REMOVE);
+    return iptablesForwardRejectOut(family, iface, REMOVE);
 }
 
 
@@ -750,12 +632,11 @@ iptablesRemoveForwardRejectOut(iptablesContext *ctx,
  * ie the bridge is the out interface
  */
 static int
-iptablesForwardRejectIn(iptablesContext *ctx,
-                        int family,
+iptablesForwardRejectIn(int family,
                         const char *iface,
                         int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
+    return iptablesAddRemoveRule("filter", "FORWARD",
                                  family,
                                  action,
                                  "--out-interface", iface,
@@ -774,11 +655,10 @@ iptablesForwardRejectIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardRejectIn(iptablesContext *ctx,
-                           int family,
+iptablesAddForwardRejectIn(int family,
                            const char *iface)
 {
-    return iptablesForwardRejectIn(ctx, family, iface, ADD);
+    return iptablesForwardRejectIn(family, iface, ADD);
 }
 
 /**
@@ -792,11 +672,10 @@ iptablesAddForwardRejectIn(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardRejectIn(iptablesContext *ctx,
-                              int family,
+iptablesRemoveForwardRejectIn(int family,
                               const char *iface)
 {
-    return iptablesForwardRejectIn(ctx, family, iface, REMOVE);
+    return iptablesForwardRejectIn(family, iface, REMOVE);
 }
 
 
@@ -804,8 +683,7 @@ iptablesRemoveForwardRejectIn(iptablesContext *ctx,
  * with the bridge
  */
 static int
-iptablesForwardMasquerade(iptablesContext *ctx,
-                          virSocketAddr *netaddr,
+iptablesForwardMasquerade(virSocketAddr *netaddr,
                           unsigned int prefix,
                           const char *physdev,
                           virSocketAddrRangePtr addr,
@@ -841,7 +719,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         }
     }
 
-    cmd = iptablesCommandNew(ctx->nat_postrouting, AF_INET, action);
+    cmd = iptablesCommandNew("nat", "POSTROUTING", AF_INET, action);
     virCommandAddArgList(cmd, "--source", networkstr, NULL);
 
     if (protocol && protocol[0])
@@ -922,15 +800,14 @@ cleanup:
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesAddForwardMasquerade(iptablesContext *ctx,
-                             virSocketAddr *netaddr,
+iptablesAddForwardMasquerade(virSocketAddr *netaddr,
                              unsigned int prefix,
                              const char *physdev,
                              virSocketAddrRangePtr addr,
                              virPortRangePtr port,
                              const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addr, port,
+    return iptablesForwardMasquerade(netaddr, prefix, physdev, addr, port,
                                      protocol, ADD);
 }
 
@@ -948,22 +825,20 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
  * Returns 0 in case of success or an error code otherwise
  */
 int
-iptablesRemoveForwardMasquerade(iptablesContext *ctx,
-                                virSocketAddr *netaddr,
+iptablesRemoveForwardMasquerade(virSocketAddr *netaddr,
                                 unsigned int prefix,
                                 const char *physdev,
                                 virSocketAddrRangePtr addr,
                                 virPortRangePtr port,
                                 const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addr, port,
+    return iptablesForwardMasquerade(netaddr, prefix, physdev, addr, port,
                                      protocol, REMOVE);
 }
 
 
 static int
-iptablesOutputFixUdpChecksum(iptablesContext *ctx,
-                             const char *iface,
+iptablesOutputFixUdpChecksum(const char *iface,
                              int port,
                              int action)
 {
@@ -972,7 +847,7 @@ iptablesOutputFixUdpChecksum(iptablesContext *ctx,
     snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
-    return iptablesAddRemoveRule(ctx->mangle_postrouting,
+    return iptablesAddRemoveRule("mangle", "POSTROUTING",
                                  AF_INET,
                                  action,
                                  "--out-interface", iface,
@@ -998,11 +873,10 @@ iptablesOutputFixUdpChecksum(iptablesContext *ctx,
  */
 
 int
-iptablesAddOutputFixUdpChecksum(iptablesContext *ctx,
-                                const char *iface,
+iptablesAddOutputFixUdpChecksum(const char *iface,
                                 int port)
 {
-    return iptablesOutputFixUdpChecksum(ctx, iface, port, ADD);
+    return iptablesOutputFixUdpChecksum(iface, port, ADD);
 }
 
 /**
@@ -1019,9 +893,8 @@ iptablesAddOutputFixUdpChecksum(iptablesContext *ctx,
  * return an error, which should be ignored)
  */
 int
-iptablesRemoveOutputFixUdpChecksum(iptablesContext *ctx,
-                                   const char *iface,
+iptablesRemoveOutputFixUdpChecksum(const char *iface,
                                    int port)
 {
-    return iptablesOutputFixUdpChecksum(ctx, iface, port, REMOVE);
+    return iptablesOutputFixUdpChecksum(iface, port, REMOVE);
 }

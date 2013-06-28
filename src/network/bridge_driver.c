@@ -75,7 +75,6 @@ struct network_driver {
 
     virNetworkObjList networks;
 
-    iptablesContext *iptables;
     char *networkConfigDir;
     char *networkAutostartDir;
     char *stateDir;
@@ -107,7 +106,7 @@ static int networkStartNetworkVirtual(struct network_driver *driver,
                                      virNetworkObjPtr network);
 
 static int networkShutdownNetworkVirtual(struct network_driver *driver,
-                                        virNetworkObjPtr network);
+                                         virNetworkObjPtr network);
 
 static int networkStartNetworkExternal(struct network_driver *driver,
                                      virNetworkObjPtr network);
@@ -420,10 +419,6 @@ networkStateInitialize(bool privileged,
         }
     }
 
-    if (!(driverState->iptables = iptablesContextNew())) {
-        goto out_of_memory;
-    }
-
     /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
     driverState->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
@@ -530,9 +525,6 @@ networkStateCleanup(void) {
     VIR_FREE(driverState->pidDir);
     VIR_FREE(driverState->dnsmasqStateDir);
     VIR_FREE(driverState->radvdStateDir);
-
-    if (driverState->iptables)
-        iptablesContextFree(driverState->iptables);
 
     virObjectUnref(driverState->dnsmasqCaps);
 
@@ -1544,8 +1536,7 @@ networkRefreshDaemons(struct network_driver *driver)
 }
 
 static int
-networkAddMasqueradingIptablesRules(struct network_driver *driver,
-                                    virNetworkObjPtr network,
+networkAddMasqueradingIptablesRules(virNetworkObjPtr network,
                                     virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1559,8 +1550,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     }
 
     /* allow forwarding packets from the bridge interface */
-    if (iptablesAddForwardAllowOut(driver->iptables,
-                                   &ipdef->address,
+    if (iptablesAddForwardAllowOut(&ipdef->address,
                                    prefix,
                                    network->def->bridge,
                                    forwardIf) < 0) {
@@ -1573,8 +1563,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     /* allow forwarding packets to the bridge interface if they are
      * part of an existing connection
      */
-    if (iptablesAddForwardAllowRelatedIn(driver->iptables,
-                                         &ipdef->address,
+    if (iptablesAddForwardAllowRelatedIn(&ipdef->address,
                                          prefix,
                                          network->def->bridge,
                                          forwardIf) < 0) {
@@ -1608,8 +1597,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
      */
 
     /* First the generic masquerade rule for other protocols */
-    if (iptablesAddForwardMasquerade(driver->iptables,
-                                     &ipdef->address,
+    if (iptablesAddForwardMasquerade(&ipdef->address,
                                      prefix,
                                      forwardIf,
                                      &network->def->forward.addr,
@@ -1626,8 +1614,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     }
 
     /* UDP with a source port restriction */
-    if (iptablesAddForwardMasquerade(driver->iptables,
-                                     &ipdef->address,
+    if (iptablesAddForwardMasquerade(&ipdef->address,
                                      prefix,
                                      forwardIf,
                                      &network->def->forward.addr,
@@ -1644,8 +1631,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     }
 
     /* TCP with a source port restriction */
-    if (iptablesAddForwardMasquerade(driver->iptables,
-                                     &ipdef->address,
+    if (iptablesAddForwardMasquerade(&ipdef->address,
                                      prefix,
                                      forwardIf,
                                      &network->def->forward.addr,
@@ -1664,30 +1650,26 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
     return 0;
 
  masqerr5:
-    iptablesRemoveForwardMasquerade(driver->iptables,
-                                    &ipdef->address,
+    iptablesRemoveForwardMasquerade(&ipdef->address,
                                     prefix,
                                     forwardIf,
                                     &network->def->forward.addr,
                                     &network->def->forward.port,
                                     "udp");
  masqerr4:
-    iptablesRemoveForwardMasquerade(driver->iptables,
-                                    &ipdef->address,
+    iptablesRemoveForwardMasquerade(&ipdef->address,
                                     prefix,
                                     forwardIf,
                                     &network->def->forward.addr,
                                     &network->def->forward.port,
                                     NULL);
  masqerr3:
-    iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                        &ipdef->address,
+    iptablesRemoveForwardAllowRelatedIn(&ipdef->address,
                                         prefix,
                                         network->def->bridge,
                                         forwardIf);
  masqerr2:
-    iptablesRemoveForwardAllowOut(driver->iptables,
-                                  &ipdef->address,
+    iptablesRemoveForwardAllowOut(&ipdef->address,
                                   prefix,
                                   network->def->bridge,
                                   forwardIf);
@@ -1696,43 +1678,37 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
 }
 
 static void
-networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
-                                       virNetworkObjPtr network,
+networkRemoveMasqueradingIptablesRules(virNetworkObjPtr network,
                                        virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix >= 0) {
-        iptablesRemoveForwardMasquerade(driver->iptables,
-                                        &ipdef->address,
+        iptablesRemoveForwardMasquerade(&ipdef->address,
                                         prefix,
                                         forwardIf,
                                         &network->def->forward.addr,
                                         &network->def->forward.port,
                                         "tcp");
-        iptablesRemoveForwardMasquerade(driver->iptables,
-                                        &ipdef->address,
+        iptablesRemoveForwardMasquerade(&ipdef->address,
                                         prefix,
                                         forwardIf,
                                         &network->def->forward.addr,
                                         &network->def->forward.port,
                                         "udp");
-        iptablesRemoveForwardMasquerade(driver->iptables,
-                                        &ipdef->address,
+        iptablesRemoveForwardMasquerade(&ipdef->address,
                                         prefix,
                                         forwardIf,
                                         &network->def->forward.addr,
                                         &network->def->forward.port,
                                         NULL);
 
-        iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                            &ipdef->address,
+        iptablesRemoveForwardAllowRelatedIn(&ipdef->address,
                                             prefix,
                                             network->def->bridge,
                                             forwardIf);
-        iptablesRemoveForwardAllowOut(driver->iptables,
-                                      &ipdef->address,
+        iptablesRemoveForwardAllowOut(&ipdef->address,
                                       prefix,
                                       network->def->bridge,
                                       forwardIf);
@@ -1740,8 +1716,7 @@ networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
 }
 
 static int
-networkAddRoutingIptablesRules(struct network_driver *driver,
-                               virNetworkObjPtr network,
+networkAddRoutingIptablesRules(virNetworkObjPtr network,
                                virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1755,8 +1730,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
     }
 
     /* allow routing packets from the bridge interface */
-    if (iptablesAddForwardAllowOut(driver->iptables,
-                                   &ipdef->address,
+    if (iptablesAddForwardAllowOut(&ipdef->address,
                                    prefix,
                                    network->def->bridge,
                                    forwardIf) < 0) {
@@ -1767,8 +1741,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
     }
 
     /* allow routing packets to the bridge interface */
-    if (iptablesAddForwardAllowIn(driver->iptables,
-                                  &ipdef->address,
+    if (iptablesAddForwardAllowIn(&ipdef->address,
                                   prefix,
                                   network->def->bridge,
                                   forwardIf) < 0) {
@@ -1781,8 +1754,7 @@ networkAddRoutingIptablesRules(struct network_driver *driver,
     return 0;
 
 routeerr2:
-    iptablesRemoveForwardAllowOut(driver->iptables,
-                                  &ipdef->address,
+    iptablesRemoveForwardAllowOut(&ipdef->address,
                                   prefix,
                                   network->def->bridge,
                                   forwardIf);
@@ -1791,22 +1763,19 @@ routeerr1:
 }
 
 static void
-networkRemoveRoutingIptablesRules(struct network_driver *driver,
-                                  virNetworkObjPtr network,
+networkRemoveRoutingIptablesRules(virNetworkObjPtr network,
                                   virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix >= 0) {
-        iptablesRemoveForwardAllowIn(driver->iptables,
-                                     &ipdef->address,
+        iptablesRemoveForwardAllowIn(&ipdef->address,
                                      prefix,
                                      network->def->bridge,
                                      forwardIf);
 
-        iptablesRemoveForwardAllowOut(driver->iptables,
-                                      &ipdef->address,
+        iptablesRemoveForwardAllowOut(&ipdef->address,
                                       prefix,
                                       network->def->bridge,
                                       forwardIf);
@@ -1819,8 +1788,7 @@ networkRemoveRoutingIptablesRules(struct network_driver *driver,
  * If any IPv6 addresses are defined, then add the rules for regular operation.
  */
 static int
-networkAddGeneralIp6tablesRules(struct network_driver *driver,
-                               virNetworkObjPtr network)
+networkAddGeneralIp6tablesRules(virNetworkObjPtr network)
 {
 
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
@@ -1830,16 +1798,14 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
 
     /* Catch all rules to block forwarding to/from bridges */
 
-    if (iptablesAddForwardRejectOut(driver->iptables, AF_INET6,
-                                    network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectOut(AF_INET6, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to block outbound traffic from '%s'"),
                        network->def->bridge);
         goto err1;
     }
 
-    if (iptablesAddForwardRejectIn(driver->iptables, AF_INET6,
-                                   network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectIn(AF_INET6, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to block inbound traffic to '%s'"),
                        network->def->bridge);
@@ -1847,8 +1813,7 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
     }
 
     /* Allow traffic between guests on the same bridge */
-    if (iptablesAddForwardAllowCross(driver->iptables, AF_INET6,
-                                     network->def->bridge) < 0) {
+    if (iptablesAddForwardAllowCross(AF_INET6, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to allow cross bridge traffic on '%s'"),
                        network->def->bridge);
@@ -1860,24 +1825,21 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
         return 0;
 
     /* allow DNS over IPv6 */
-    if (iptablesAddTcpInput(driver->iptables, AF_INET6,
-                            network->def->bridge, 53) < 0) {
+    if (iptablesAddTcpInput(AF_INET6, network->def->bridge, 53) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
         goto err4;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, AF_INET6,
-                            network->def->bridge, 53) < 0) {
+    if (iptablesAddUdpInput(AF_INET6, network->def->bridge, 53) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
         goto err5;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, AF_INET6,
-                            network->def->bridge, 547) < 0) {
+    if (iptablesAddUdpInput(AF_INET6, network->def->bridge, 547) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add ip6tables rule to allow DHCP6 requests from '%s'"),
                        network->def->bridge);
@@ -1888,44 +1850,42 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
 
     /* unwind in reverse order from the point of failure */
 err6:
-    iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+    iptablesRemoveUdpInput(AF_INET6, network->def->bridge, 53);
 err5:
-    iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+    iptablesRemoveTcpInput(AF_INET6, network->def->bridge, 53);
 err4:
-    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardAllowCross(AF_INET6, network->def->bridge);
 err3:
-    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectIn(AF_INET6, network->def->bridge);
 err2:
-    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectOut(AF_INET6, network->def->bridge);
 err1:
     return -1;
 }
 
 static void
-networkRemoveGeneralIp6tablesRules(struct network_driver *driver,
-                                  virNetworkObjPtr network)
+networkRemoveGeneralIp6tablesRules(virNetworkObjPtr network)
 {
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
         !network->def->ipv6nogw) {
         return;
     }
     if (virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
-        iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 547);
-        iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
-        iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+        iptablesRemoveUdpInput(AF_INET6, network->def->bridge, 547);
+        iptablesRemoveUdpInput(AF_INET6, network->def->bridge, 53);
+        iptablesRemoveTcpInput(AF_INET6, network->def->bridge, 53);
     }
 
     /* the following rules are there if no IPv6 address has been defined
      * but network->def->ipv6nogw == true
      */
-    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
-    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
-    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);
+    iptablesRemoveForwardAllowCross(AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectIn(AF_INET6, network->def->bridge);
+    iptablesRemoveForwardRejectOut(AF_INET6, network->def->bridge);
 }
 
 static int
-networkAddGeneralIptablesRules(struct network_driver *driver,
-                               virNetworkObjPtr network)
+networkAddGeneralIptablesRules(virNetworkObjPtr network)
 {
     int ii;
     virNetworkIpDefPtr ipv4def;
@@ -1941,16 +1901,14 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* allow DHCP requests through to dnsmasq */
 
-    if (iptablesAddTcpInput(driver->iptables, AF_INET,
-                            network->def->bridge, 67) < 0) {
+    if (iptablesAddTcpInput(AF_INET, network->def->bridge, 67) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DHCP requests from '%s'"),
                        network->def->bridge);
         goto err1;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, AF_INET,
-                            network->def->bridge, 67) < 0) {
+    if (iptablesAddUdpInput(AF_INET, network->def->bridge, 67) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DHCP requests from '%s'"),
                        network->def->bridge);
@@ -1964,24 +1922,21 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
      */
 
     if (ipv4def && (ipv4def->nranges || ipv4def->nhosts) &&
-        (iptablesAddOutputFixUdpChecksum(driver->iptables,
-                                         network->def->bridge, 68) < 0)) {
+        (iptablesAddOutputFixUdpChecksum(network->def->bridge, 68) < 0)) {
         VIR_WARN("Could not add rule to fixup DHCP response checksums "
                  "on network '%s'.", network->def->name);
         VIR_WARN("May need to update iptables package & kernel to support CHECKSUM rule.");
     }
 
     /* allow DNS requests through to dnsmasq */
-    if (iptablesAddTcpInput(driver->iptables, AF_INET,
-                            network->def->bridge, 53) < 0) {
+    if (iptablesAddTcpInput(AF_INET, network->def->bridge, 53) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
         goto err3;
     }
 
-    if (iptablesAddUdpInput(driver->iptables, AF_INET,
-                            network->def->bridge, 53) < 0) {
+    if (iptablesAddUdpInput(AF_INET, network->def->bridge, 53) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
@@ -1990,8 +1945,7 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* allow TFTP requests through to dnsmasq if necessary */
     if (ipv4def && ipv4def->tftproot &&
-        iptablesAddUdpInput(driver->iptables, AF_INET,
-                            network->def->bridge, 69) < 0) {
+        iptablesAddUdpInput(AF_INET, network->def->bridge, 69) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow TFTP requests from '%s'"),
                        network->def->bridge);
@@ -2000,16 +1954,14 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* Catch all rules to block forwarding to/from bridges */
 
-    if (iptablesAddForwardRejectOut(driver->iptables, AF_INET,
-                                    network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectOut(AF_INET, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to block outbound traffic from '%s'"),
                        network->def->bridge);
         goto err6;
     }
 
-    if (iptablesAddForwardRejectIn(driver->iptables, AF_INET,
-                                   network->def->bridge) < 0) {
+    if (iptablesAddForwardRejectIn(AF_INET, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to block inbound traffic to '%s'"),
                        network->def->bridge);
@@ -2017,8 +1969,7 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
     }
 
     /* Allow traffic between guests on the same bridge */
-    if (iptablesAddForwardAllowCross(driver->iptables, AF_INET,
-                                     network->def->bridge) < 0) {
+    if (iptablesAddForwardAllowCross(AF_INET, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
                        network->def->bridge);
@@ -2026,7 +1977,7 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
     }
 
     /* add IPv6 general rules, if needed */
-    if (networkAddGeneralIp6tablesRules(driver, network) < 0) {
+    if (networkAddGeneralIp6tablesRules(network) < 0) {
         goto err9;
     }
 
@@ -2034,35 +1985,34 @@ networkAddGeneralIptablesRules(struct network_driver *driver,
 
     /* unwind in reverse order from the point of failure */
 err9:
-    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardAllowCross(AF_INET, network->def->bridge);
 err8:
-    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectIn(AF_INET, network->def->bridge);
 err7:
-    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectOut(AF_INET, network->def->bridge);
 err6:
     if (ipv4def && ipv4def->tftproot) {
-        iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 69);
+        iptablesRemoveUdpInput(AF_INET, network->def->bridge, 69);
     }
 err5:
-    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 53);
+    iptablesRemoveUdpInput(AF_INET, network->def->bridge, 53);
 err4:
-    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 53);
+    iptablesRemoveTcpInput(AF_INET, network->def->bridge, 53);
 err3:
-    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 67);
+    iptablesRemoveUdpInput(AF_INET, network->def->bridge, 67);
 err2:
-    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 67);
+    iptablesRemoveTcpInput(AF_INET, network->def->bridge, 67);
 err1:
     return -1;
 }
 
 static void
-networkRemoveGeneralIptablesRules(struct network_driver *driver,
-                                  virNetworkObjPtr network)
+networkRemoveGeneralIptablesRules(virNetworkObjPtr network)
 {
     int ii;
     virNetworkIpDefPtr ipv4def;
 
-    networkRemoveGeneralIp6tablesRules(driver, network);
+    networkRemoveGeneralIp6tablesRules(network);
 
     for (ii = 0;
          (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
@@ -2071,25 +2021,23 @@ networkRemoveGeneralIptablesRules(struct network_driver *driver,
             break;
     }
 
-    iptablesRemoveForwardAllowCross(driver->iptables, AF_INET, network->def->bridge);
-    iptablesRemoveForwardRejectIn(driver->iptables, AF_INET, network->def->bridge);
-    iptablesRemoveForwardRejectOut(driver->iptables, AF_INET, network->def->bridge);
+    iptablesRemoveForwardAllowCross(AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectIn(AF_INET, network->def->bridge);
+    iptablesRemoveForwardRejectOut(AF_INET, network->def->bridge);
     if (ipv4def && ipv4def->tftproot) {
-        iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 69);
+        iptablesRemoveUdpInput(AF_INET, network->def->bridge, 69);
     }
-    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 53);
-    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 53);
+    iptablesRemoveUdpInput(AF_INET, network->def->bridge, 53);
+    iptablesRemoveTcpInput(AF_INET, network->def->bridge, 53);
     if (ipv4def && (ipv4def->nranges || ipv4def->nhosts)) {
-        iptablesRemoveOutputFixUdpChecksum(driver->iptables,
-                                           network->def->bridge, 68);
+        iptablesRemoveOutputFixUdpChecksum(network->def->bridge, 68);
     }
-    iptablesRemoveUdpInput(driver->iptables, AF_INET, network->def->bridge, 67);
-    iptablesRemoveTcpInput(driver->iptables, AF_INET, network->def->bridge, 67);
+    iptablesRemoveUdpInput(AF_INET, network->def->bridge, 67);
+    iptablesRemoveTcpInput(AF_INET, network->def->bridge, 67);
 }
 
 static int
-networkAddIpSpecificIptablesRules(struct network_driver *driver,
-                                  virNetworkObjPtr network,
+networkAddIpSpecificIptablesRules(virNetworkObjPtr network,
                                   virNetworkIpDefPtr ipdef)
 {
     /* NB: in the case of IPv6, routing rules are added when the
@@ -2098,48 +2046,46 @@ networkAddIpSpecificIptablesRules(struct network_driver *driver,
 
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            return networkAddMasqueradingIptablesRules(driver, network, ipdef);
+            return networkAddMasqueradingIptablesRules(network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            return networkAddRoutingIptablesRules(driver, network, ipdef);
+            return networkAddRoutingIptablesRules(network, ipdef);
     } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        return networkAddRoutingIptablesRules(driver, network, ipdef);
+        return networkAddRoutingIptablesRules(network, ipdef);
     }
     return 0;
 }
 
 static void
-networkRemoveIpSpecificIptablesRules(struct network_driver *driver,
-                                     virNetworkObjPtr network,
+networkRemoveIpSpecificIptablesRules(virNetworkObjPtr network,
                                      virNetworkIpDefPtr ipdef)
 {
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
+            networkRemoveMasqueradingIptablesRules(network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            networkRemoveRoutingIptablesRules(driver, network, ipdef);
+            networkRemoveRoutingIptablesRules(network, ipdef);
     } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        networkRemoveRoutingIptablesRules(driver, network, ipdef);
+        networkRemoveRoutingIptablesRules(network, ipdef);
     }
 }
 
 /* Add all rules for all ip addresses (and general rules) on a network */
 static int
-networkAddIptablesRules(struct network_driver *driver,
-                        virNetworkObjPtr network)
+networkAddIptablesRules(virNetworkObjPtr network)
 {
     int ii;
     virNetworkIpDefPtr ipdef;
     virErrorPtr orig_error;
 
     /* Add "once per network" rules */
-    if (networkAddGeneralIptablesRules(driver, network) < 0)
+    if (networkAddGeneralIptablesRules(network) < 0)
         return -1;
 
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
         /* Add address-specific iptables rules */
-        if (networkAddIpSpecificIptablesRules(driver, network, ipdef) < 0) {
+        if (networkAddIpSpecificIptablesRules(network, ipdef) < 0) {
             goto err;
         }
     }
@@ -2155,9 +2101,9 @@ err:
      */
     while ((--ii >= 0) &&
            (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii))) {
-        networkRemoveIpSpecificIptablesRules(driver, network, ipdef);
+        networkRemoveIpSpecificIptablesRules(network, ipdef);
     }
-    networkRemoveGeneralIptablesRules(driver, network);
+    networkRemoveGeneralIptablesRules(network);
 
     /* return the original error */
     virSetError(orig_error);
@@ -2167,8 +2113,7 @@ err:
 
 /* Remove all rules for all ip addresses (and general rules) on a network */
 static void
-networkRemoveIptablesRules(struct network_driver *driver,
-                           virNetworkObjPtr network)
+networkRemoveIptablesRules(virNetworkObjPtr network)
 {
     int ii;
     virNetworkIpDefPtr ipdef;
@@ -2176,9 +2121,9 @@ networkRemoveIptablesRules(struct network_driver *driver,
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
          ii++) {
-        networkRemoveIpSpecificIptablesRules(driver, network, ipdef);
+        networkRemoveIpSpecificIptablesRules(network, ipdef);
     }
-    networkRemoveGeneralIptablesRules(driver, network);
+    networkRemoveGeneralIptablesRules(network);
 }
 
 static void
@@ -2199,8 +2144,8 @@ networkReloadIptablesRules(struct network_driver *driver)
             /* Only the three L3 network types that are configured by libvirt
              * need to have iptables rules reloaded.
              */
-            networkRemoveIptablesRules(driver, network);
-            if (networkAddIptablesRules(driver, network) < 0) {
+            networkRemoveIptablesRules(network);
+            if (networkAddIptablesRules(network) < 0) {
                 /* failed to add but already logged */
             }
         }
@@ -2526,7 +2471,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         goto err1;
 
     /* Add "once per network" rules */
-    if (networkAddIptablesRules(driver, network) < 0)
+    if (networkAddIptablesRules(network) < 0)
         goto err1;
 
     for (ii = 0;
@@ -2619,7 +2564,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
  err2:
     if (!save_err)
         save_err = virSaveLastError();
-    networkRemoveIptablesRules(driver, network);
+    networkRemoveIptablesRules(network);
 
  err1:
     if (!save_err)
@@ -2644,8 +2589,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
     return -1;
 }
 
-static int networkShutdownNetworkVirtual(struct network_driver *driver,
-                                        virNetworkObjPtr network)
+static int networkShutdownNetworkVirtual(struct network_driver *driver ATTRIBUTE_UNUSED,
+                                         virNetworkObjPtr network)
 {
     virNetDevBandwidthClear(network->def->bridge);
 
@@ -2677,7 +2622,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
 
     ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
-    networkRemoveIptablesRules(driver, network);
+    networkRemoveIptablesRules(network);
 
     ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
@@ -3490,8 +3435,8 @@ networkUpdate(virNetworkPtr net,
             network->def->forward.type == VIR_NETWORK_FORWARD_NAT ||
             network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
             /* these could affect the iptables rules */
-            networkRemoveIptablesRules(driver, network);
-            if (networkAddIptablesRules(driver, network) < 0)
+            networkRemoveIptablesRules(network);
+            if (networkAddIptablesRules(network) < 0)
                 goto cleanup;
 
         }
