@@ -358,4 +358,6 @@ extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
 extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 
+unsigned long long qemuDomainMemoryLimit(virDomainDefPtr def);
+
 #endif /* __QEMU_DOMAIN_H__ */
