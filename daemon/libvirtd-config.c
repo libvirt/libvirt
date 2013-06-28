@@ -316,6 +316,12 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data->listen_addr);
     VIR_FREE(data->tls_port);
     VIR_FREE(data->tcp_port);
+    tmp = data->access_drivers;
+    while (tmp && *tmp) {
+        VIR_FREE(*tmp);
+        tmp++;
+    }
+    VIR_FREE(data->access_drivers);
 
     VIR_FREE(data->unix_sock_ro_perms);
     VIR_FREE(data->unix_sock_rw_perms);
