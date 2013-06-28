@@ -146,7 +146,7 @@
         configure in the desired way, which is why per-device boot elements
         (see <a href="#elementsDisks">disks</a>,
         <a href="#elementsNICS">network interfaces</a>, and
-        <a href="#elementsUSB">USB and PCI devices</a> sections below) were
+        <a href="#elementsHostDev">USB and PCI devices</a> sections below) were
         introduced and they are the preferred way providing full control over
         booting order. The <code>boot</code> element and per-device boot
         elements are mutually exclusive. <span class="since">Since 0.1.3,

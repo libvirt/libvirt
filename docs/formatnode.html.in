@@ -13,7 +13,7 @@
       prefix <code>virNodeDevice</code>, which deal with management of
       host devices that can be handed to guests via passthrough as
       &lt;hostdev&gt; elements
-      in <a href="formatdomain.html#elementsUSB">the domain XML</a>.
+      in <a href="formatdomain.html#elementsHostDev">the domain XML</a>.
       These devices are represented as a hierarchy, where a device on
       a bus has a parent of the bus controller device; the root of the
       hierarchy is the node named "computer".
