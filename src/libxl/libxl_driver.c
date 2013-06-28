@@ -4098,6 +4098,51 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
 }
 
 static int
+libxlNodeGetCellsFreeMemory(virConnectPtr conn,
+                            unsigned long long *freeMems,
+                            int startCell,
+                            int maxCells)
+{
+    int n, lastCell, numCells;
+    int ret = -1, nr_nodes = 0;
+    libxl_numainfo *numa_info = NULL;
+    libxlDriverPrivatePtr driver = conn->privateData;
+
+    if (virNodeGetCellsFreeMemoryEnsureACL(conn) < 0)
+        return -1;
+
+    /* Early failure is probably worth just a warning */
+    numa_info = libxl_get_numainfo(driver->ctx, &nr_nodes);
+    if (numa_info == NULL || nr_nodes == 0) {
+        VIR_WARN("libxl_get_numainfo failed to retrieve NUMA data");
+        return 0;
+    }
+
+    /* Check/sanitize the cell range */
+    if (startCell > nr_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("start cell %d out of range (0-%d)"),
+                       startCell, nr_nodes);
+        goto cleanup;
+    }
+    lastCell = startCell + maxCells - 1;
+    if (lastCell > nr_nodes)
+        lastCell = nr_nodes;
+
+    for (numCells = 0, n = startCell; n <= lastCell; n++) {
+        if (numa_info[n].size == LIBXL_NUMAINFO_INVALID_ENTRY)
+            freeMems[numCells++] = 0;
+        else
+            freeMems[numCells++] = numa_info[n].free;
+    }
+    ret = numCells;
+
+cleanup:
+    libxl_numainfo_list_free(numa_info, nr_nodes);
+    return ret;
+}
+
+static int
 libxlConnectDomainEventRegister(virConnectPtr conn,
                                 virConnectDomainEventCallback callback, void *opaque,
                                 virFreeCallback freecb)
@@ -4683,6 +4728,7 @@ static virDriver libxlDriver = {
     .domainSetSchedulerParameters = libxlDomainSetSchedulerParameters, /* 0.9.0 */
     .domainSetSchedulerParametersFlags = libxlDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
+    .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
     .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
