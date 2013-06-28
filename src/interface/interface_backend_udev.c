@@ -139,7 +139,7 @@ udevInterfaceOpen(virConnectPtr conn,
 {
     struct udev_iface_driver *driverState = NULL;
 
-    virCheckFlags(0, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (VIR_ALLOC(driverState) < 0) {
         virReportOOMError();
