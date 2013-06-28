@@ -1034,6 +1034,7 @@ virNodeDevCapPciDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
     ret = 0;
 cleanup:
     ctxt->node = origNode;
+    VIR_FREE(numberStr);
     VIR_FREE(addrNodes);
     VIR_FREE(pciAddr);
     return ret;
@@ -1466,9 +1467,11 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
             VIR_FREE(data->pci_dev.virtual_functions[i]);
         }
+        VIR_FREE(data->pci_dev.virtual_functions);
         for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++) {
             VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
         }
+        VIR_FREE(data->pci_dev.iommuGroupDevices);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         VIR_FREE(data->usb_dev.product_name);
