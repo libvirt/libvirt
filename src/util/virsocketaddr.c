@@ -235,10 +235,10 @@ virSocketAddrIsPrivate(const virSocketAddrPtr addr)
 bool
 virSocketAddrIsWildcard(const virSocketAddrPtr addr)
 {
-    in_addr_t tmp = INADDR_ANY;
+    struct in_addr tmp = { .s_addr = INADDR_ANY };
     switch (addr->data.stor.ss_family) {
     case AF_INET:
-        return memcmp(&addr->data.inet4.sin_addr.s_addr, &tmp,
+        return memcmp(&addr->data.inet4.sin_addr.s_addr, &tmp.s_addr,
                       sizeof(addr->data.inet4.sin_addr.s_addr)) == 0;
     case AF_INET6:
         return IN6_IS_ADDR_UNSPECIFIED(&addr->data.inet6.sin6_addr);
