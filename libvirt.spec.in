@@ -412,7 +412,7 @@ BuildRequires: python-devel
 %if %{with_systemd}
 BuildRequires: systemd-units
 %endif
-%if %{with_xen}
+%if %{with_xen} || %{with_libxl}
 BuildRequires: xen-devel
 %endif
 BuildRequires: libxml2-devel
