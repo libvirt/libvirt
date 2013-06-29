@@ -544,8 +544,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
      * can safely reset them */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
-        if (STREQ_NULLABLE(virPCIDeviceGetStubDriver(dev), "vfio-pci"))
-            continue;
+
         if (virPCIDeviceReset(dev, driver->activePciHostdevs,
                               driver->inactivePciHostdevs) < 0)
             goto reattachdevs;
@@ -1119,8 +1118,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
-        if (STREQ_NULLABLE(virPCIDeviceGetStubDriver(dev), "vfio-pci"))
-            continue;
+
         if (virPCIDeviceReset(dev, driver->activePciHostdevs,
                               driver->inactivePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();

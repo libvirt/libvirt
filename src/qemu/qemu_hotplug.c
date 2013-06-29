@@ -2492,9 +2492,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
     if (pci) {
         activePci = virPCIDeviceListSteal(driver->activePciHostdevs, pci);
         if (activePci &&
-            (subsys->u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO ||
-             virPCIDeviceReset(activePci, driver->activePciHostdevs,
-                               driver->inactivePciHostdevs) == 0)) {
+            virPCIDeviceReset(activePci, driver->activePciHostdevs,
+                               driver->inactivePciHostdevs) == 0) {
             qemuReattachPciDevice(activePci, driver);
             ret = 0;
         } else {

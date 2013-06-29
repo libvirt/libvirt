@@ -866,8 +866,10 @@ virPCIDeviceReset(virPCIDevicePtr dev,
                   virPCIDeviceList *activeDevs,
                   virPCIDeviceList *inactiveDevs)
 {
+    char *drvPath = NULL;
+    char *drvName = NULL;
     int ret = -1;
-    int fd;
+    int fd = -1;
 
     if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -875,8 +877,24 @@ virPCIDeviceReset(virPCIDevicePtr dev,
         return -1;
     }
 
+    /* If the device is currently bound to vfio-pci, ignore all
+     * requests to reset it, since the vfio-pci driver will always
+     * reset it whenever appropriate, so doing it ourselves would just
+     * be redundant.
+     */
+    if (virPCIDeviceGetDriverPathAndName(dev, &drvPath, &drvName) < 0)
+        goto cleanup;
+
+    if (STREQ_NULLABLE(drvName, "vfio-pci")) {
+        VIR_DEBUG("Device %s is bound to vfio-pci - skip reset",
+                  dev->name);
+        ret = 0;
+        goto cleanup;
+    }
+    VIR_DEBUG("Resetting device %s", dev->name);
+
     if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
-        return -1;
+        goto cleanup;
 
     if (virPCIDeviceInit(dev, fd) < 0)
         goto cleanup;
@@ -905,10 +923,13 @@ virPCIDeviceReset(virPCIDevicePtr dev,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to reset PCI device %s: %s"),
                        dev->name,
-                       err ? err->message : _("no FLR, PM reset or bus reset available"));
+                       err ? err->message :
+                       _("no FLR, PM reset or bus reset available"));
     }
 
 cleanup:
+    VIR_FREE(drvPath);
+    VIR_FREE(drvName);
     virPCIDeviceConfigClose(dev, fd);
     return ret;
 }
