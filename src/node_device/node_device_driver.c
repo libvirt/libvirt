@@ -60,10 +60,15 @@ static int update_caps(virNodeDeviceObjPtr dev)
 }
 
 
-#if defined (__linux__) && defined (WITH_HAL)
-/* Under libudev changes to the driver name should be picked up as
- * "change" events, so we don't call update driver name unless we're
- * using the HAL backend. */
+#if defined (__linux__) && ( defined (WITH_HAL) || defined(WITH_UDEV))
+/* NB: It was previously believed that changes in driver name were
+ * relayed to libvirt as "change" events by udev, and the udev event
+ * notification is setup to recognize such events and effectively
+ * recreate the device entry in the cache. However, neither the kernel
+ * nor udev sends such an event, so it is necessary to manually update
+ * the driver name for a device each time its entry is used, both for
+ * udev *and* HAL backends.
+ */
 static int update_driver_name(virNodeDeviceObjPtr dev)
 {
     char *driver_link = NULL;
