@@ -427,19 +427,22 @@ qemuMigrationCookieAddGraphics(qemuMigrationCookiePtr mig,
                                virQEMUDriverPtr driver,
                                virDomainObjPtr dom)
 {
+    size_t i = 0;
+
     if (mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Migration graphics data already present"));
         return -1;
     }
 
-    if (dom->def->ngraphics == 1 &&
-        (dom->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-         dom->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
-        if (!(mig->graphics =
-              qemuMigrationCookieGraphicsAlloc(driver, dom->def->graphics[0])))
-            return -1;
-        mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
+    for (i = 0; i < dom->def->ngraphics; i++) {
+       if (dom->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+           if (!(mig->graphics =
+                 qemuMigrationCookieGraphicsAlloc(driver, dom->def->graphics[i])))
+               return -1;
+           mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
+           break;
+       }
     }
 
     return 0;
@@ -1602,11 +1605,16 @@ qemuMigrationWaitForSpice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool wait_for_spice = false;
     bool spice_migrated = false;
+    size_t i = 0;
 
-    if (vm->def->ngraphics == 1 &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION))
-        wait_for_spice = true;
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
+        for (i = 0; i < vm->def->ngraphics; i++) {
+            if (vm->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+                wait_for_spice = true;
+                break;
+            }
+        }
+    }
 
     if (!wait_for_spice)
         return 0;
