@@ -2066,6 +2066,14 @@ fi
 %endif
 
 %changelog
+* Mon Jul  1 2013 Daniel Veillard <veillard@redhat.com> - 1.1.0-1
+- CVE-2013-2218: Fix crash listing network interfaces with filters
+- Fine grained ACL support for the API
+- Extensible migration APIs
+- various improvements in the Xen driver
+- agent based vCPU hotplug support
+- various bug fixes and improvements including localizations
+
 * Mon Jun  3 2013 Daniel Veillard <veillard@redhat.com> - 1.0.6-1
 - Move VirtualBox driver into libvirtd
 - Support for static routes on a virtual bridge

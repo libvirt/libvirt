@@ -9,6 +9,246 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.1.0: July 1 2013</h3>
+    <ul>
+      <li>Features:<br/>
+      Extensible migration APIs (Jiri Denemark),<br/>
+      Add a policy kit access control driver (Daniel P. Berrange),<br/>
+      various improvements in the Xen driver (Jim Fehlig and Marek Marczykowski-Górecki),<br/>
+      improve networking support on BSD (Roman Bogorodskiy),<br/>
+      agent based vCPU hotplug support (Peter Krempa)<br/>
+      </li>
+
+      <li>Security:<br/>
+      CVE-2013-2218: Fix crash listing network interfaces with filters (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Document security reporting &amp; handling process (Daniel P. Berrange),<br/>
+      Fix reference to #elementsUSB (Philipp Hahn),<br/>
+      Fix sample TPM XML (Stefan Berger),<br/>
+      correct and update network vlan example (Laine Stump),<br/>
+      add spaces to formatstorage.html (Ján Tomko)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      spec: require xen-devel for libxl driver (Eric Blake),<br/>
+      Conditionalize use of IF_MAXUNIT in virnetdevtap.c (Daniel P. Berrange),<br/>
+      Replace use of 'in_addr_t' with 'struct in_addr' (Daniel P. Berrange),<br/>
+      build: Fix VPATH build for access/* (Viktor Mihajlovski),<br/>
+      util: fix build error on non-Linux systems (Laine Stump),<br/>
+      conf: Swap order of AddImplicitControllers and DomainDefPostParse (Viktor Mihajlovski),<br/>
+      S390: Testcase for console default target type (virtio) (Viktor Mihajlovski),<br/>
+      Fix units in virNetDevBridgeSetSTPDelay on BSD (Roman Bogorodskiy),<br/>
+      build: Fix check-aclrules in VPATH build (Jiri Denemark),<br/>
+      build: Fix build with -Werror (Jim Fehlig),<br/>
+      use net/if.h instead of linux/if.h (Roman Bogorodskiy),<br/>
+      build: fix build without posix_fallocate (Eric Blake),<br/>
+      spec: Explicitly require libgcrypt-devel (Jiri Denemark)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      pci: initialize virtual_functions array pointer to avoid segfault (Laine Stump),<br/>
+      node device driver: update driver name during dumpxml (Laine Stump),<br/>
+      Resolve valgrind errors for nodedev cap parsing (John Ferlan),<br/>
+      Resolve valgrind error in remoteConfigGetStringList() (John Ferlan),<br/>
+      Resolve valgrind error in virStorageBackendCreateQemuImgCmd() (John Ferlan),<br/>
+      Resolve valgrind error in virNetDevVlanParse() (John Ferlan),<br/>
+      Fix vPort management: FC vHBA creation (Dennis Chen),<br/>
+      bridge: don't crash on bandwidth unplug with no bandwidth (Ján Tomko),<br/>
+      Plug leak in virCgroupMoveTask (Ján Tomko),<br/>
+      Fix invalid read in virCgroupGetValueStr (Ján Tomko),<br/>
+      qemu: fix infinite loop in OOM error path (Laine Stump),<br/>
+      pci: fix dangling pointer in qemuDomainReAttachHostdevDevices (Laine Stump),<br/>
+      pci: eliminate leak in OOM condition (Laine Stump),<br/>
+      util: fix bug found by Coverity (Laine Stump),<br/>
+      Fix possible NULL dereference during migration (Jiri Denemark),<br/>
+      virsh: edit: don't leak XML string on reedit or redefine (Ján Tomko),<br/>
+      qemu: don't reset PCI devices being assigned with VFIO (Laine Stump),<br/>
+      pci: eliminate memory leak in virPCIDeviceReattach (Laine Stump),<br/>
+      qemu: check if block I/O limits fit into long long (Ján Tomko),<br/>
+      network: increase max number of routes (Laine Stump),<br/>
+      lxc: Resolve issue with GetScheduler APIs for non running domain (John Ferlan),<br/>
+      qemu: Resolve issue with GetScheduler APIs for non running domain (John Ferlan),<br/>
+      qemu: Avoid leaking uri in qemuMigrationPrepareDirect (Jiri Denemark),<br/>
+      udev: fix crash in libudev logging (Ján Tomko),<br/>
+      remote: Fix client crash when URI path is empty when using ssh (Peter Krempa),<br/>
+      remote: Forbid default "/session" connections when using ssh transport (Peter Krempa),<br/>
+      nodedev: fix vport detection for FC HBA (Ján Tomko),<br/>
+      qemu: Fix memory leak in Prepare phase (Jiri Denemark),<br/>
+      virSocketAddrIsWildcard: Use IN6_IS_ADDR_UNSPECIFIED correctly (Michal Privoznik),<br/>
+      Fix ordering of file open in virProcessGetNamespaces (Richard Weinberger),<br/>
+      qemuDomainGetVcpusFlags: Initialize ncpuinfo (Michal Privoznik),<br/>
+      virtlockd: fix socket path (Ján Tomko),<br/>
+      nwfilter: grab driver lock earlier during init (bz96649) (Stefan Berger),<br/>
+      Fix a invalid usage of virDomainNetDef in OpenVZ driver (Alvaro Polo),<br/>
+      use virBitmapFree instead of VIR_FREE for cpumask (Ján Tomko),<br/>
+      usb: don't spoil decimal addresses (Martin Kletzander)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      Allow RO connections to interface udev backend (Doug Goldstein),<br/>
+      virsh: Add parenthesis into virsh nodedev-detach help (xuzhang),<br/>
+      nodedev: add iommuGroup to node device object (Laine Stump),<br/>
+      pci: new iommu_group functions (Laine Stump),<br/>
+      network: allow &lt;vlan&gt; in type='hostdev' networks (Laine Stump),<br/>
+      test: include qemuhotplugtest data files in source rpm (Laine Stump),<br/>
+      pci: virPCIDeviceListAddCopy API (Laine Stump),<br/>
+      pci: update stubDriver name in virPCIDeviceBindToStub (Laine Stump),<br/>
+      pci: eliminate repetitive path constructions in virPCIDeviceBindToStub (Laine Stump),<br/>
+      pci: rename virPCIParseDeviceAddress and make it public (Laine Stump),<br/>
+      pci: rename virPCIDeviceGetVFIOGroupDev to virPCIDeviceGetIOMMUGroupDev (Laine Stump),<br/>
+      pci: eliminate unused driver arg from virPCIDeviceDetach (Laine Stump),<br/>
+      tests: Introduce qemuhotplugtest (Michal Privoznik),<br/>
+      qemu: Implement support for VIR_MIGRATE_PARAM_GRAPHICS_URI (Jiri Denemark),<br/>
+      Implement extensible migration APIs in qemu driver (Jiri Denemark),<br/>
+      qemu: Move internals of Confirm phase to qemu_migration.c (Jiri Denemark),<br/>
+      qemu: Move common parts of Prepare phase to qemu_migration.c (Jiri Denemark),<br/>
+      qemu: Move internals of Begin phase to qemu_migration.c (Jiri Denemark),<br/>
+      Use 1.1.0 everywhere in the documentation (Ján Tomko),<br/>
+      Add polkit policy for API checks to rpm spec (Daniel Veillard),<br/>
+      Configure native vlan modes on Open vSwitch ports (james robson),<br/>
+      Introduce VIR_MIGRATE_PARAM_GRAPHICS_URI parameter (Jiri Denemark),<br/>
+      virsh: Use extensible migration APIs (Jiri Denemark),<br/>
+      python: Add bindings for extensible migration APIs (Jiri Denemark),<br/>
+      Adapt virDomainMigratePeer2Peer for extensible migration APIs (Jiri Denemark),<br/>
+      Adapt virDomainMigrateVersion3 for extensible migration APIs (Jiri Denemark),<br/>
+      Implement extensible migration APIs in remote driver (Jiri Denemark),<br/>
+      New internal migration APIs with extensible parameters (Jiri Denemark),<br/>
+      Introduce migration parameters (Jiri Denemark),<br/>
+      Introduce virTypedParamsCopy internal API (Jiri Denemark),<br/>
+      Log input type parameters in API entry points (Jiri Denemark),<br/>
+      Introduce VIR_TYPED_PARAMS_DEBUG macro for dumping typed params (Jiri Denemark),<br/>
+      Introduce virTypedParamsReplaceString internal API (Jiri Denemark),<br/>
+      Introduce virTypedParamsCheck internal API (Jiri Denemark),<br/>
+      util: Emit proper error code in virTypedParamsValidate (Jiri Denemark),<br/>
+      Rename virTypedParameterArrayValidate as virTypedParamsValidate (Jiri Denemark),<br/>
+      pci: make virPCIDeviceDetach consistent in behavior (Laine Stump),<br/>
+      pci: new utility functions (Laine Stump),<br/>
+      pci: change stubDriver from const char* to char* (Laine Stump),<br/>
+      syntax: virPCIDeviceFree is also a NOP for NULL args (Laine Stump),<br/>
+      libxl: support qdisk backend (Jim Fehlig),<br/>
+      libxl: Fix disk format error message (Jim Fehlig),<br/>
+      Add validation that all APIs contain ACL checks (Daniel P. Berrange),<br/>
+      Set process ID in system identity (Daniel P. Berrange),<br/>
+      Add ACL checks into the secrets driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the nwfilter driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the node device driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the interface driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the network driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the storage driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the libxl driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the Xen driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the UML driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the LXC driver (Daniel P. Berrange),<br/>
+      Add ACL checks into the QEMU driver (Daniel P. Berrange),<br/>
+      Auto-generate helpers for checking access control rules (Daniel P. Berrange),<br/>
+      Add ACL annotations to all RPC messages (Daniel P. Berrange),<br/>
+      Setup default access control manager in libvirtd (Daniel P. Berrange),<br/>
+      Set conn-&gt;driver before running driver connectOpen method (Daniel P. Berrange),<br/>
+      Define basic internal API for access control (Daniel P. Berrange),<br/>
+      netdev: accept NULL in virNetDevSetupControl (Ján Tomko),<br/>
+      xen: Implement virConnectGetSysinfo (Jim Fehlig),<br/>
+      libxl: Implement virConnectGetSysinfo (Jim Fehlig),<br/>
+      libxl: Allow libxl to set NIC devid (Jim Fehlig),<br/>
+      storage: add support for creating qcow2 images with extensions (Ján Tomko),<br/>
+      conf: add features to volume target XML (Ján Tomko),<br/>
+      util: add support for qcow2v3 image detection (Ján Tomko),<br/>
+      qemu: add hv_vapic and hv_spinlocks support (Ján Tomko),<br/>
+      conf: add vapic and spinlocks to hyperv features (Ján Tomko),<br/>
+      BSD: implement bridge add/remove port and set STP (Roman Bogorodskiy),<br/>
+      BSD: implement virNetDevBridgeCreate() and virNetDevBridgeDelete() (Roman Bogorodskiy),<br/>
+      conf: Requires either uuid or usage of secret (Osier Yang),<br/>
+      qemu: Make probing for commands declarative (Jiri Denemark),<br/>
+      qemu: Make probing for events declarative (Jiri Denemark),<br/>
+      libxl: support paused domain restore in virDomainRestoreFlags (Marek Marczykowski-Górecki),<br/>
+      qemuDomainChangeGraphics: Check listen address change by listen type (Michal Privoznik),<br/>
+      libxl: initialize device structures (Marek Marczykowski-Górecki),<br/>
+      libxl: populate xenstore memory entries at startup, handle dom0_mem (Marek Marczykowski-Górecki),<br/>
+      conf: split out snapshot disk XML formatting (Ján Tomko),<br/>
+      storage: rework qemu-img command line generation (Ján Tomko),<br/>
+      util: switch virBufferTrim to void (Ján Tomko),<br/>
+      migration: Don't propagate VIR_MIGRATE_ABORT_ON_ERROR (Peter Krempa),<br/>
+      migration: Make erroring out on I/O error controllable by flag (Peter Krempa),<br/>
+      qemu_migration: Move waiting for SPICE migration (Michal Privoznik),<br/>
+      spec: Enable KVM support on ARM (Cole Robinson),<br/>
+      virsh: Support SCSI_GENERIC cap flag for nodedev-list (Osier Yang),<br/>
+      nodedev: Support SCSI_GENERIC cap flag for listAllNodeDevices (Osier Yang),<br/>
+      nodedev_hal: Enumerate scsi generic device (Osier Yang),<br/>
+      nodedev_udev: Enumerate scsi generic device (Osier Yang),<br/>
+      qemu: set QEMU_CAPS_DEVICE_VIDEO_PRIMARY cap flag in QMP detection (Guannan Ren),<br/>
+      nodedev_udev: changes missed by commit 1aa0ba3cef (Osier Yang),<br/>
+      nodedev_udev: Refactor udevGetDeviceType (Osier Yang),<br/>
+      nodedev: Expose sysfs path of device (Osier Yang),<br/>
+      Move virGetUserEnt() to where its needed (Doug Goldstein),<br/>
+      BSD: implement virNetDevTapCreate() and virNetDevTapDelete() (Roman Bogorodskiy),<br/>
+      Make virNetDevSetupControl() public. (Roman Bogorodskiy),<br/>
+      LXC: s/chroot/chdir in lxcContainerPivotRoot() (Richard Weinberger),<br/>
+      Implement dispose method for libxlDomainObjPrivate (Frediano Ziglio),<br/>
+      libxl: allow only 'ethernet' and 'bridge' interfaces, allow script there (Marek Marczykowski-Górecki),<br/>
+      qemu: allow restore with non-migratable XML input (Ján Tomko),<br/>
+      libxl: set bootloader for PV domains if not specified (Jim Fehlig),<br/>
+      libxl: Report connect type as Xen (Jim Fehlig),<br/>
+      schema: simplify RNG pattern, remove superfluous &lt;optional&gt; (Claudio Bley),<br/>
+      libvirt_private.syms: add virProcessGetStartTime (Ján Tomko),<br/>
+      qemu: Forbid migration of machines with I/O errors (Peter Krempa),<br/>
+      qemu: Cancel migration if guest encoutners I/O error while migrating (Peter Krempa),<br/>
+      qemu_migrate: Dispose listen address if set from config (Michal Privoznik),<br/>
+      selinux: assume 's0' if the range is empty (Ján Tomko),<br/>
+      storage: fix description of versionOffset (Martin Kletzander),<br/>
+      spec: Drop Requires: vbox (Cole Robinson),<br/>
+      Prefer VIR_STRDUP over virAsprintf(&amp;dst, "%s", str) (Michal Privoznik),<br/>
+      qemu: Implement new QMP command for cpu hotplug (Peter Krempa),<br/>
+      qemu: Implement support for VIR_DOMAIN_VCPU_AGENT in qemuDomainSetVcpusFlags (Peter Krempa),<br/>
+      qemu: Implement request of vCPU state using the guest agent (Peter Krempa),<br/>
+      API: Introduce VIR_DOMAIN_VCPU_AGENT, for agent based CPU hot(un)plug (Peter Krempa),<br/>
+      qemu_agent: Introduce helpers for agent based CPU hot(un)plug (Peter Krempa),<br/>
+      qemu: Use bool instead of int in qemuMonitorSetCPU APIs (Peter Krempa),<br/>
+      virsh-domain-monitor: Remove ATTRIBUTE_UNUSED from a argument (Peter Krempa),<br/>
+      Add support for VirtualBox 4.2 APIs (ryan woodsmall),<br/>
+      qemuDomainMigrateGraphicsRelocate: Use then new virSocketAddrIsWildcard (Michal Privoznik),<br/>
+      virsocket: Introduce virSocketAddrIsWildcard (Michal Privoznik),<br/>
+      iscsi: pass hostnames to iscsiadm instead of resolving them (Ján Tomko),<br/>
+      qemu: Report the offset from host UTC for RTC_CHANGE event (Osier Yang),<br/>
+      qemu: simplify CPU command line parsing (Ján Tomko),<br/>
+      qemu: change two-state int parameters to bool (Ján Tomko),<br/>
+      nwfilter: change two-state int parameters to bool (Ján Tomko),<br/>
+      Remove redundant two-state integers (Ján Tomko),<br/>
+      Replace two-state local integers with bool (Ján Tomko),<br/>
+      storage: Avoid unnecessary ternary operators and refactor the code (Peter Krempa),<br/>
+      openvz: Fix code coverage issue in OpenVZ driver (Alvaro Polo),<br/>
+      qemu: Reformat listen address prior to checking (Michal Privoznik),<br/>
+      Ensure non-root can read /proc/meminfo file in LXC containers (Daniel P. Berrange),<br/>
+      storage: Provide better error message if metadata pre-alloc is unsupported (Peter Krempa),<br/>
+      storage: Clean up function header and reflow error message (Peter Krempa),<br/>
+      storagevolxml2argvtest: Report better error messages on test failure (Peter Krempa),<br/>
+      maint: don't use config.h in .h files (Eric Blake),<br/>
+      qemu: Abstract code for the cpu controller setting into a helper (Osier Yang),<br/>
+      storage: Forbid to shrink the vol's capacity if no --shrink is specified (Osier Yang),<br/>
+      storage: Support preallocate the new capacity for vol-resize (Osier Yang),<br/>
+      snapshot: remove mutually exclusive memory and disk-only duplicate check (Guannan Ren),<br/>
+      virsh: Allow attach-disk to specify disk wwn (Osier Yang),<br/>
+      tests: fix typo in securityselinuxtest (Ján Tomko),<br/>
+      virsh: Obey pool-or-uuid spec when creating volumes (Jiri Denemark),<br/>
+      libvirt-qemu: Dispatch errors from virDomainQemuAgentCommand() (Peter Krempa),<br/>
+      qemu: Properly report guest agent errors on command passthrough (Peter Krempa),<br/>
+      virsh-domain: Report errors and don't deref NULL in qemu-agent-command (Peter Krempa),<br/>
+      RPC: Support up to 16384 cpus on the host and 4096 in the guest (Peter Krempa),<br/>
+      virsh iface-bridge: Ignore delay if stp is turned off (Jiri Denemark),<br/>
+      Fix warning about using an uninitialized next_unit value (Jiri Denemark),<br/>
+      virsh-domain: Add --live, --config, --current logic to cmdAttachInterface (Peter Krempa),<br/>
+      virsh-domain: Add --live, --config, --current logic to cmdAttachDisk (Peter Krempa),<br/>
+      virsh-domain: Add --live, --config, --current logic to cmdAttachDevice (Peter Krempa)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      Get rid of useless VIR_STORAGE_FILE_FEATURE_NONE (Ján Tomko),<br/>
+      configure: Remove unused brctl check (Cole Robinson),<br/>
+      storage_backend: Drop unused code (Cole Robinson),<br/>
+      Remove legacy code for single-instance devpts filesystem (Daniel P. Berrange)<br/>
+      </li>
+    </ul>
+
     <h3>1.0.6: June 3 2013</h3>
     <ul>
       <li>Features:<br/>
