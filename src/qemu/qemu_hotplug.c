@@ -947,6 +947,16 @@ cleanup:
         if (iface_connected) {
             virDomainConfNWFilterTeardown(net);
 
+            if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+                ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
+                                 net->ifname, &net->mac,
+                                 virDomainNetGetActualDirectDev(net),
+                                 virDomainNetGetActualDirectMode(net),
+                                 virDomainNetGetActualVirtPortProfile(net),
+                                 cfg->stateDir));
+                VIR_FREE(net->ifname);
+            }
+
             vport = virDomainNetGetActualVirtPortProfile(net);
             if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
                ignore_value(virNetDevOpenvswitchRemovePort(
