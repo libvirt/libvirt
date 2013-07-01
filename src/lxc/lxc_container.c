@@ -294,6 +294,7 @@ int lxcContainerSendContinue(int control)
     lxc_message_t msg = LXC_CONTINUE_MSG;
     int writeCount = 0;
 
+    VIR_DEBUG("Send continue on fd %d", control);
     writeCount = safewrite(control, &msg, sizeof(msg));
     if (writeCount != sizeof(msg)) {
         goto error_out;
@@ -319,7 +320,9 @@ int lxcContainerWaitForContinue(int control)
     lxc_message_t msg;
     int readLen;
 
+    VIR_DEBUG("Wait continue on fd %d", control);
     readLen = saferead(control, &msg, sizeof(msg));
+    VIR_DEBUG("Got continue on fd %d %d", control, readLen);
     if (readLen != sizeof(msg)) {
         if (readLen >= 0)
             errno = EIO;
@@ -348,6 +351,7 @@ static int lxcContainerSetID(virDomainDefPtr def)
      * for this container. And user namespace is only enabled
      * when nuidmap&ngidmap is not zero */
 
+    VIR_DEBUG("Set UID/GID to 0/0");
     if (def->idmap.nuidmap && virSetUIDGID(0, 0) < 0) {
         virReportSystemError(errno, "%s",
                              _("setuid or setgid failed"));

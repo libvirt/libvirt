@@ -1158,6 +1158,8 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
     if (virBufferError(&map_value))
         goto no_memory;
 
+    VIR_DEBUG("Set '%s' to '%s'", path, virBufferCurrentContent(&map_value));
+
     if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {
         virReportSystemError(errno, _("unable write to %s"), path);
         goto cleanup;
