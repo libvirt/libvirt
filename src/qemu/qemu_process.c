@@ -2055,10 +2055,10 @@ qemuProcessInitPasswords(virConnectPtr conn,
                                                     &graphics->data.spice.auth,
                                                     cfg->spicePassword);
         }
-    }
 
-    if (ret < 0)
-        goto cleanup;
+        if (ret < 0)
+            goto cleanup;
+    }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         for (i = 0; i < vm->def->ndisks; i++) {
