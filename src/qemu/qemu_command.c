@@ -7003,7 +7003,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unsupported rtc tickpolicy '%s'"),
                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
-                goto error;
+                    goto error;
                 }
             } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC)
                        && (def->clock.timers[i]->tickpolicy
