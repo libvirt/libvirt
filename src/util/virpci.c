@@ -188,6 +188,81 @@ static int virPCIOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virPCI)
 
+
+static int
+virPCIDriverDir(char **buffer, const char *driver)
+{
+    VIR_FREE(*buffer);
+
+    return virAsprintf(buffer, PCI_SYSFS "drivers/%s", driver);
+}
+
+
+static int
+virPCIDriverFile(char **buffer, const char *driver, const char *file)
+{
+    VIR_FREE(*buffer);
+
+    return virAsprintf(buffer, PCI_SYSFS "drivers/%s/%s", driver, file);
+}
+
+
+static int
+virPCIFile(char **buffer, const char *device, const char *file)
+{
+    VIR_FREE(*buffer);
+
+    return virAsprintf(buffer, PCI_SYSFS "devices/%s/%s", device, file);
+}
+
+
+/* virPCIDeviceGetDriverPathAndName - put the path to the driver
+ * directory of the driver in use for this device in @path and the
+ * name of the driver in @name. Both could be NULL if it's not bound
+ * to any driver.
+ *
+ * Return 0 for success, -1 for error.
+ */
+static int
+virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
+{
+    int ret = -1;
+    char *drvlink = NULL;
+
+    *path = *name = NULL;
+    /* drvlink = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
+    if (virPCIFile(&drvlink, dev->name, "driver") < 0)
+        goto cleanup;
+
+    if (virFileIsLink(drvlink) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid device %s driver file %s is not a symlink"),
+                       dev->name, drvlink);
+        goto cleanup;
+    }
+    if (virFileResolveLink(drvlink, path) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device %s driver symlink %s"),
+                       dev->name, drvlink);
+        goto cleanup;
+    }
+    /* path = "/sys/bus/pci/drivers/${drivername}" */
+
+    if (VIR_STRDUP(*name, last_component(*path)) < 0)
+        goto cleanup;
+    /* name = "${drivername}" */
+
+    ret = 0;
+cleanup:
+    VIR_FREE(drvlink);
+    if (ret < 0) {
+        VIR_FREE(*path);
+        VIR_FREE(*name);
+    }
+    return ret;
+}
+
+
 static int
 virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
 {
@@ -835,78 +910,6 @@ virPCIDeviceReset(virPCIDevicePtr dev,
 
 cleanup:
     virPCIDeviceConfigClose(dev, fd);
-    return ret;
-}
-
-
-static int
-virPCIDriverDir(char **buffer, const char *driver)
-{
-    VIR_FREE(*buffer);
-
-    return virAsprintf(buffer, PCI_SYSFS "drivers/%s", driver);
-}
-
-static int
-virPCIDriverFile(char **buffer, const char *driver, const char *file)
-{
-    VIR_FREE(*buffer);
-
-    return virAsprintf(buffer, PCI_SYSFS "drivers/%s/%s", driver, file);
-}
-
-static int
-virPCIFile(char **buffer, const char *device, const char *file)
-{
-    VIR_FREE(*buffer);
-
-    return virAsprintf(buffer, PCI_SYSFS "devices/%s/%s", device, file);
-}
-
-
-/* virPCIDeviceGetDriverPathAndName - put the path to the driver
- * directory of the driver in use for this device in @path and the
- * name of the driver in @name. Both could be NULL if it's not bound
- * to any driver.
- *
- * Return 0 for success, -1 for error.
- */
-static int
-virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
-{
-    int ret = -1;
-    char *drvlink = NULL;
-
-    *path = *name = NULL;
-    /* drvlink = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
-    if (virPCIFile(&drvlink, dev->name, "driver") < 0)
-        goto cleanup;
-
-    if (virFileIsLink(drvlink) != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid device %s driver file %s is not a symlink"),
-                       dev->name, drvlink);
-        goto cleanup;
-    }
-    if (virFileResolveLink(drvlink, path) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to resolve device %s driver symlink %s"),
-                       dev->name, drvlink);
-        goto cleanup;
-    }
-    /* path = "/sys/bus/pci/drivers/${drivername}" */
-
-    if (VIR_STRDUP(*name, last_component(*path)) < 0)
-        goto cleanup;
-    /* name = "${drivername}" */
-
-    ret = 0;
-cleanup:
-    VIR_FREE(drvlink);
-    if (ret < 0) {
-        VIR_FREE(*path);
-        VIR_FREE(*name);
-    }
     return ret;
 }
 
