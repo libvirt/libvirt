@@ -1100,6 +1100,9 @@ virNetDevGetVirtualFunctions(const char *pfname,
     char *pci_sysfs_device_link = NULL;
     char *pciConfigAddr = NULL;
 
+    *virt_fns = NULL;
+    *n_vfname = 0;
+
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
