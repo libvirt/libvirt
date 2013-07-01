@@ -609,6 +609,7 @@ doRemoteOpen(virConnectPtr conn,
         priv->is_secure = 1;
 #else
         (void)sanity;
+        (void)verify;
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("GNUTLS support not available in this build"));
         goto failed;
