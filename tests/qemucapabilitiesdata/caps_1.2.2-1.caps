@@ -111,4 +111,5 @@
     <flag name='vnc-share-policy'/>
     <flag name='usb-storage'/>
     <flag name='usb-storage.removable'/>
+    <flag name='kvm-pit-lost-tick-policy'/>
   </qemuCaps>

@@ -242,6 +242,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "usb-storage.removable",
               "virtio-mmio",
               "ich9-intel-hda",
+              "kvm-pit-lost-tick-policy",
     );
 
 struct _virQEMUCaps {
@@ -1458,6 +1459,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsKVMPit[] = {
+    { "lost_tick_policy", QEMU_CAPS_KVM_PIT_TICK_POLICY },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1501,6 +1506,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PciHost) },
     { "usb-storage", virQEMUCapsObjectPropsUsbStorage,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbStorage) },
+    { "kvm-pit", virQEMUCapsObjectPropsKVMPit,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsKVMPit) },
 };
 
 

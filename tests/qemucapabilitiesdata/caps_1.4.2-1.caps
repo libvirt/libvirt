@@ -126,4 +126,5 @@
     <flag name='usb-storage'/>
     <flag name='usb-storage.removable'/>
     <flag name='ich9-intel-hda'/>
+    <flag name='kvm-pit-lost-tick-policy'/>
   </qemuCaps>

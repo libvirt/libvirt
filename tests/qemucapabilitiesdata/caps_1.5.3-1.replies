@@ -1674,6 +1674,20 @@
 {
     "return": [
         {
+            "name": "lost_tick_policy",
+            "type": "LostTickPolicy"
+        },
+        {
+            "name": "iobase",
+            "type": "hex32"
+        }
+    ],
+    "id": "libvirt-26"
+}
+
+{
+    "return": [
+        {
             "name": "pc-q35-1.4",
             "cpu-max": 255
         },
