@@ -1083,6 +1083,11 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
 
+    DO_TEST("kvm-pit-device", QEMU_CAPS_KVM_PIT_TICK_POLICY);
+    DO_TEST("kvm-pit-delay", QEMU_CAPS_NO_KVM_PIT);
+    DO_TEST("kvm-pit-device", QEMU_CAPS_NO_KVM_PIT,
+            QEMU_CAPS_KVM_PIT_TICK_POLICY);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
