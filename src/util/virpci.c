@@ -2080,6 +2080,9 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     VIR_DEBUG("Attempting to get SR IOV virtual functions for device"
               "with sysfs path '%s'", sysfs_path);
 
+    *virtual_functions = NULL;
+    *num_virtual_functions = 0;
+
     dir = opendir(sysfs_path);
     if (dir == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
@@ -2089,8 +2092,6 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
         return ret;
     }
 
-    *virtual_functions = NULL;
-    *num_virtual_functions = 0;
     while ((entry = readdir(dir))) {
         if (STRPREFIX(entry->d_name, "virtfn")) {
             virPCIDeviceAddress *config_addr = NULL;
