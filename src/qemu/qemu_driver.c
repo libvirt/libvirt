@@ -13078,7 +13078,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
                      virQEMUDriverPtr driver, virDomainObjPtr vm,
                      const char *device, virDomainDiskDefPtr disk)
 {
-    int ret = -1;
+    int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainBlockJobInfo info;
     const char *format = virStorageFileFormatTypeToString(disk->mirrorFormat);
@@ -13092,17 +13092,17 @@ qemuDomainBlockPivot(virConnectPtr conn,
     /* Probe the status, if needed.  */
     if (!disk->mirroring) {
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorBlockJob(priv->mon, device, NULL, 0, &info,
+        rc = qemuMonitorBlockJob(priv->mon, device, NULL, 0, &info,
                                   BLOCK_JOB_INFO, true);
         qemuDomainObjExitMonitor(driver, vm);
-        if (ret < 0)
+        if (rc < 0)
             goto cleanup;
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("domain is not running"));
             goto cleanup;
         }
-        if (ret == 1 && info.cur == info.end &&
+        if (rc == 1 && info.cur == info.end &&
             info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
             disk->mirroring = true;
     }
