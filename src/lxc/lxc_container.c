@@ -741,6 +741,12 @@ static int lxcContainerMountBasicFS(void)
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
                   srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
         if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
+#if WITH_SELINUX
+            if (STREQ(mnts[i].src, SELINUX_MOUNT) &&
+                (errno == EINVAL || errno == EPERM))
+                continue;
+#endif
+
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x opts=%s"),
                                  srcpath, mnts[i].dst, NULLSTR(mnts[i].type),
