@@ -9914,9 +9914,7 @@ qemuConnectDomainEventRegisterAny(virConnectPtr conn,
                                       driver->domainEventState,
                                       dom, eventID,
                                       callback, opaque, freecb, &ret) < 0)
-        goto cleanup;
-
-    ret = 0;
+        ret = -1;
 
 cleanup:
     return ret;
