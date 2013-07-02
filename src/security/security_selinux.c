@@ -687,13 +687,12 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if (!seclabel->norelabel) {
-        seclabel->imagelabel = virSecuritySELinuxGenNewContext(data->file_context,
-                                                               mcs,
-                                                               true);
-        if (!seclabel->imagelabel)
-            goto cleanup;
-    }
+    /* always generate a image label, needed to label new objects */
+    seclabel->imagelabel = virSecuritySELinuxGenNewContext(data->file_context,
+                                                           mcs,
+                                                           true);
+    if (!seclabel->imagelabel)
+        goto cleanup;
 
     if (!seclabel->model &&
         VIR_STRDUP(seclabel->model, SECURITY_SELINUX_NAME) < 0)
