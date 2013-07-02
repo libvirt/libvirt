@@ -10669,7 +10669,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci = NULL;
-    unsigned domain, bus, slot, function;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
@@ -10737,7 +10737,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci = NULL;
     virPCIDevicePtr other;
-    unsigned domain, bus, slot, function;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
@@ -10799,7 +10799,7 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci;
-    unsigned domain, bus, slot, function;
+    unsigned domain = 0, bus = 0, slot = 0, function = 0;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
