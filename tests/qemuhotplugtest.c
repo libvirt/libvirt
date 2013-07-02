@@ -33,11 +33,20 @@
 
 static virQEMUDriver driver;
 
+enum {
+    ATTACH,
+    DETACH,
+    UPDATE
+};
+
 struct qemuHotplugTestData {
     const char *domain_filename;
     const char *device_filename;
     bool fail;
     const char *const *mon;
+    int action;
+    bool keep;
+    virDomainObjPtr vm;
 };
 
 static int
@@ -46,6 +55,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          const char *filename)
 {
     int ret = -1;
+    qemuDomainObjPrivatePtr priv = NULL;
 
     if (!(*vm = virDomainObjNew(xmlopt)))
         goto cleanup;
@@ -57,8 +67,81 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                                              0)))
         goto cleanup;
 
+    priv = (*vm)->privateData;
+
+    if (!(priv->qemuCaps = virQEMUCapsNew()))
+        goto cleanup;
+
+    /* for attach & detach qemu must support -device */
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE);
+
     ret = 0;
 cleanup:
+    return ret;
+}
+
+static int
+testQemuHotplugAttach(virDomainObjPtr vm,
+                      virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
+        break;
+    default:
+        if (virTestGetVerbose())
+            fprintf(stderr, "device type '%s' cannot be attached",
+                    virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
+    return ret;
+}
+
+static int
+testQemuHotplugDetach(virDomainObjPtr vm,
+                      virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainDetachChrDevice(&driver, vm, dev->data.chr);
+        break;
+    default:
+        if (virTestGetVerbose())
+            fprintf(stderr, "device type '%s' cannot be attached",
+                    virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
+    return ret;
+}
+
+static int
+testQemuHotplugUpdate(virDomainObjPtr vm,
+                      virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    /* XXX Ideally, we would call qemuDomainUpdateDeviceLive here.  But that
+     * would require us to provide virConnectPtr and virDomainPtr (they're used
+     * in case of updating a disk device. So for now, we will proceed with
+     * breaking the function into pieces. If we ever learn how to fake those
+     * required object, we can replace this code then. */
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        ret = qemuDomainChangeGraphics(&driver, vm, dev->data.graphics);
+        break;
+    default:
+        if (virTestGetVerbose())
+            fprintf(stderr, "device type '%s' cannot be updated",
+                    virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
     return ret;
 }
 
@@ -72,6 +155,7 @@ testQemuHotplug(const void *data)
     char *device_xml = NULL;
     const char *const *tmp;
     bool fail = test->fail;
+    bool keep = test->keep;
     virDomainObjPtr vm = NULL;
     virDomainDeviceDefPtr dev = NULL;
     virCapsPtr caps = NULL;
@@ -87,17 +171,18 @@ testQemuHotplug(const void *data)
     if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
         goto cleanup;
 
-    if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_filename) < 0)
-        goto cleanup;
-
-    priv = vm->privateData;
+    if (test->vm) {
+        vm = test->vm;
+    } else {
+        if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_filename) < 0)
+            goto cleanup;
+    }
 
     if (virtTestLoadFile(device_filename, &device_xml) < 0)
         goto cleanup;
 
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
-                                        caps, driver.xmlopt,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+                                        caps, driver.xmlopt, 0)))
         goto cleanup;
 
     /* Now is the best time to feed the spoofed monitor with predefined
@@ -117,6 +202,7 @@ testQemuHotplug(const void *data)
             goto cleanup;
     }
 
+    priv = vm->privateData;
     priv->mon = qemuMonitorTestGetMonitor(test_mon);
     priv->monJSON = true;
 
@@ -125,20 +211,22 @@ testQemuHotplug(const void *data)
      * tries to lock it again */
     virObjectUnlock(priv->mon);
 
-    /* XXX Ideally, we would call qemuDomainUpdateDeviceLive here.  But that
-     * would require us to provide virConnectPtr and virDomainPtr (they're used
-     * in case of updating a disk device. So for now, we will proceed with
-     * breaking the function into pieces. If we ever learn how to fake those
-     * required object, we can replace this code then. */
-    switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_GRAPHICS:
-        ret = qemuDomainChangeGraphics(&driver, vm, dev->data.graphics);
+    switch (test->action) {
+    case ATTACH:
+        ret = testQemuHotplugAttach(vm, dev);
+        if (!ret) {
+            /* avoid @dev double free on success,
+             * as @dev is part of vm->def now */
+            dev = NULL;
+        }
         break;
-    default:
-        if (virTestGetVerbose())
-            fprintf(stderr, "device type '%s' cannot be updated",
-                    virDomainDeviceTypeToString(dev->type));
+
+    case DETACH:
+        ret = testQemuHotplugDetach(vm, dev);
         break;
+
+    case UPDATE:
+        ret = testQemuHotplugUpdate(vm, dev);
     }
 
 cleanup:
@@ -148,7 +236,12 @@ cleanup:
     /* don't dispose test monitor with VM */
     if (priv)
         priv->mon = NULL;
-    virObjectUnref(vm);
+    if (keep) {
+        test->vm = vm;
+    } else {
+        virObjectUnref(vm);
+        test->vm = NULL;
+    }
     virDomainDeviceDefFree(dev);
     virObjectUnref(caps);
     qemuMonitorTestFree(test_mon);
@@ -159,6 +252,7 @@ static int
 mymain(void)
 {
     int ret = 0;
+    struct qemuHotplugTestData data = {0};
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -180,26 +274,52 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
 
-#define DO_TEST(file, dev, fial, ...) \
-    do { \
-        const char *my_mon[] = { __VA_ARGS__, NULL}; \
-        struct qemuHotplugTestData data =                                    \
-            {.domain_filename = file, .device_filename = dev, .fail = fial,  \
-             .mon = my_mon}; \
-        if (virtTestRun(#file, 1, testQemuHotplug, &data) < 0)               \
-            ret = -1;                                                        \
+#define DO_TEST(file, dev, fial, kep, ...)                                  \
+        const char *my_mon[] = { __VA_ARGS__, NULL};                        \
+        data.domain_filename = file;                                        \
+        data.device_filename = dev;                                         \
+        data.fail = fial;                                                   \
+        data.mon = my_mon;                                                  \
+        data.keep = kep;                                                    \
+        if (virtTestRun(#file, 1, testQemuHotplug, &data) < 0)              \
+            ret = -1;                                                       \
+
+#define DO_TEST_ATTACH(file, dev, fial, kep, ...)                           \
+    do {                                                                    \
+        data.action = ATTACH;                                               \
+        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
     } while (0)
 
-    DO_TEST("graphics-spice", "graphics-spice-nochange", false, NULL);
-    DO_TEST("graphics-spice-timeout", "graphics-spice-timeout-nochange", false,
-            "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
-    DO_TEST("graphics-spice-timeout", "graphics-spice-timeout-password", false,
-            "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
-    DO_TEST("graphics-spice", "graphics-spice-listen", true, NULL);
-    DO_TEST("graphics-spice-listen-network", "graphics-spice-listen-network", false,
-            "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
-    /* Strange huh? Currently, only graphics can be testet :-P */
-    DO_TEST("disk-cdrom", "disk-cdrom-nochange", true, NULL);
+#define DO_TEST_DETACH(file, dev, fial, kep, ...)                           \
+    do {                                                                    \
+        data.action = DETACH;                                               \
+        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
+    } while (0)
+
+#define DO_TEST_UPDATE(file, dev, fial, kep, ...)                           \
+    do {                                                                    \
+        data.action = UPDATE;                                               \
+        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
+    } while (0)
+
+    DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
+    DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
+                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+    DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-password", false, false,
+                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+    DO_TEST_UPDATE("graphics-spice", "graphics-spice-listen", true, false, NULL);
+    DO_TEST_UPDATE("graphics-spice-listen-network", "graphics-spice-listen-network", false, false,
+                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+    /* Strange huh? Currently, only graphics can be updated :-P */
+    DO_TEST_UPDATE("disk-cdrom", "disk-cdrom-nochange", true, false, NULL);
+
+    DO_TEST_ATTACH("console-compat-2", "console-virtio", false, true,
+                   "chardev-add", "{\"return\": {\"pty\": \"/dev/pts/26\"}}",
+                   "device_add", "{\"return\": {}}");
+
+    DO_TEST_DETACH("console-compat-2", "console-virtio", false, false,
+                   "device_del", "{\"return\": {}}",
+                   "chardev-remove", "{\"return\": {}}");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
