@@ -99,7 +99,8 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-sanlock-cleanup.8: virt-sanlock-cleanup.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP $< $(srcdir)/$@ \
+	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP --section=8 \
+	    $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
 
