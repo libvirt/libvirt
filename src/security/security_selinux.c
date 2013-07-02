@@ -589,23 +589,22 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     int catMin, catMax;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (seclabel == NULL) {
+    if (seclabel == NULL)
         return rc;
-    }
 
     data = virSecurityManagerGetPrivateData(mgr);
 
     VIR_DEBUG("label=%s", virSecurityManagerGetDriver(mgr));
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         seclabel->label) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("security label already defined for VM"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("security label already defined for VM"));
         return rc;
     }
 
     if (seclabel->imagelabel) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("security image label already defined for VM"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("security image label already defined for VM"));
         return rc;
     }
 
@@ -628,8 +627,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
             return rc;
         }
 
-        range = context_range_get(ctx);
-        if (!range) {
+        if (!(range = context_range_get(ctx))) {
             virReportOOMError();
             goto cleanup;
         }
