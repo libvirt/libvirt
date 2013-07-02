@@ -1,7 +1,7 @@
 /*
  * virdbus.h: helper for using DBus
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 # define __VIR_DBUS_H__
 
 # ifdef WITH_DBUS
+#  undef interface /* Work around namespace pollution in mingw's rpc.h */
 #  include <dbus/dbus.h>
 # else
 #  define DBusConnection void
