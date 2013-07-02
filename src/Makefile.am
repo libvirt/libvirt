@@ -815,7 +815,7 @@ ACCESS_DRIVER_GENERATED = \
 		$(srcdir)/access/viraccessapichecklxc.h \
 		$(srcdir)/access/viraccessapichecklxc.c
 
-ACCESS_DRIVER_SYMFILES = \
+ACCESS_DRIVER_SYM_FILES = \
 		libvirt_access.syms \
 		libvirt_access_qemu.syms \
 		libvirt_access_lxc.syms
@@ -927,8 +927,14 @@ libvirt_driver_la_CFLAGS = \
 libvirt_driver_la_LIBADD = \
 		$(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
 
+# All .syms files should be placed in exactly one of these three lists,
+# depending on whether they are stored in git and/or used in the build.
 SYM_FILES = $(USED_SYM_FILES)
 USED_SYM_FILES = $(srcdir)/libvirt_private.syms
+GENERATED_SYM_FILES = \
+	$(ACCESS_DRIVER_SYM_FILES) \
+	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
+	$(NULL)
 
 if WITH_TEST
 noinst_LTLIBRARIES += libvirt_driver_test.la
@@ -1474,9 +1480,8 @@ EXTRA_DIST += $(ACCESS_DRIVER_POLKIT_SOURCES)
 endif
 
 
-USED_SYM_FILES += $(ACCESS_DRIVER_SYMFILES)
-BUILT_SOURCES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_SYMFILES)
-CLEANFILES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_SYMFILES)
+BUILT_SOURCES += $(ACCESS_DRIVER_GENERATED)
+CLEANFILES += $(ACCESS_DRIVER_GENERATED)
 
 libvirt_access.syms: $(srcdir)/rpc/gendispatch.pl \
 			$(REMOTE_PROTOCOL) Makefile.am
@@ -1713,12 +1718,9 @@ EXTRA_DIST += \
 	$(SYM_FILES)			\
 	$(NULL)
 
-GENERATED_SYM_FILES = \
-	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def
-
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
 
-libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
+libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) $(ACCESS_DRIVER_SYM_FILES) \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)rm -f $@-tmp $@ ; \
 	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
@@ -1726,7 +1728,7 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
 	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
 	printf 'global:\n\n' >>$@-tmp && \
-	cat $(USED_SYM_FILES) >>$@-tmp && \
+	cat $(USED_SYM_FILES) $(ACCESS_DRIVER_SYM_FILES) >>$@-tmp && \
 	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.syms
