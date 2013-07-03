@@ -79,6 +79,7 @@ testSELinuxLoadFileList(const char *testname,
     int ret = -1;
     char *path = NULL;
     FILE *fp = NULL;
+    char *line = NULL;
 
     *files = NULL;
     *nfiles = 0;
@@ -93,37 +94,43 @@ testSELinuxLoadFileList(const char *testname,
         goto cleanup;
     }
 
+    if (VIR_ALLOC_N(line, 1024) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     while (!feof(fp)) {
-        char *line;
-        char *file, *context;
-        if (VIR_ALLOC_N(line, 1024) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
+        char *file, *context, *tmp;
         if (!fgets(line, 1024, fp)) {
             if (!feof(fp))
                 goto cleanup;
             break;
         }
 
-        char *tmp = strchr(line, ';');
+        tmp = strchr(line, ';');
+        if (!tmp) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "unexpected format for line '%s'",
+                           line);
+            goto cleanup;
+        }
         *tmp = '\0';
         tmp++;
 
-        if (virAsprintf(&file, "%s/securityselinuxlabeldata%s", abs_builddir, line) < 0) {
-            VIR_FREE(line);
+        if (virAsprintf(&file, "%s/securityselinuxlabeldata%s",
+                        abs_builddir, line) < 0) {
             virReportOOMError();
             goto cleanup;
         }
         if (*tmp != '\0' && *tmp != '\n') {
             if (VIR_STRDUP(context, tmp) < 0) {
-                VIR_FREE(line);
                 VIR_FREE(file);
                 goto cleanup;
             }
 
             tmp = strchr(context, '\n');
-            *tmp = '\0';
+            if (tmp)
+                *tmp = '\0';
         } else {
             context = NULL;
         }
@@ -142,6 +149,7 @@ testSELinuxLoadFileList(const char *testname,
 cleanup:
     VIR_FORCE_FCLOSE(fp);
     VIR_FREE(path);
+    VIR_FREE(line);
     return ret;
 }
 
