@@ -519,6 +519,7 @@ virNetDevBandwidthUnplug(const char *brname,
     if (virCommandRun(cmd, &cmd_ret) < 0)
         goto cleanup;
 
+    virCommandFree(cmd);
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "class", "del", "dev", brname,
                          "classid", class_id, NULL);
