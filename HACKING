@@ -36,7 +36,8 @@ developer is:
   git checkout -t origin -b workbranch
   Hack, committing any changes along the way
 
-Then, when you want to post your patches:
+More hints on compiling can be found here <compiling.html>. When you want to
+post your patches:
 
   git pull --rebase
   (fix any conflicts)

@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2013-05-08.20; # UTC
+scriptversion=2013-07-03.20; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -551,7 +551,7 @@ fi
 echo "$0: Bootstrapping from checked-out $package sources..."
 
 # See if we can use gnulib's git-merge-changelog merge driver.
-if test -d .git && (git --version) >/dev/null 2>/dev/null ; then
+if $use_git && test -d .git && (git --version) >/dev/null 2>/dev/null ; then
   if git config merge.merge-changelog.driver >/dev/null ; then
     :
   elif (git-merge-changelog --version) >/dev/null 2>/dev/null ; then
@@ -574,13 +574,17 @@ git_modules_config () {
   test -f .gitmodules && git config --file .gitmodules "$@"
 }
 
-gnulib_path=$(git_modules_config submodule.gnulib.path)
-test -z "$gnulib_path" && gnulib_path=gnulib
+if $use_git; then
+  gnulib_path=$(git_modules_config submodule.gnulib.path)
+  test -z "$gnulib_path" && gnulib_path=gnulib
+fi
 
-# Get gnulib files.
+# Get gnulib files.  Populate $GNULIB_SRCDIR, possibly updating a
+# submodule, for use in the rest of the script.
 
 case ${GNULIB_SRCDIR--} in
 -)
+  # Note that $use_git is necessarily true in this case.
   if git_modules_config submodule.gnulib.url >/dev/null; then
     echo "$0: getting gnulib files..."
     git submodule init || exit $?
@@ -601,8 +605,8 @@ case ${GNULIB_SRCDIR--} in
   GNULIB_SRCDIR=$gnulib_path
   ;;
 *)
-  # Use GNULIB_SRCDIR as a reference.
-  if test -d "$GNULIB_SRCDIR"/.git && \
+  # Use GNULIB_SRCDIR directly or as a reference.
+  if $use_git && test -d "$GNULIB_SRCDIR"/.git && \
         git_modules_config submodule.gnulib.url >/dev/null; then
     echo "$0: getting gnulib files..."
     if git submodule -h|grep -- --reference > /dev/null; then
@@ -627,6 +631,9 @@ case ${GNULIB_SRCDIR--} in
   fi
   ;;
 esac
+
+# $GNULIB_SRCDIR now points to the version of gnulib to use, and
+# we no longer need to use git or $gnulib_path below here.
 
 if $bootstrap_sync; then
   cmp -s "$0" "$GNULIB_SRCDIR/build-aux/bootstrap" || {
