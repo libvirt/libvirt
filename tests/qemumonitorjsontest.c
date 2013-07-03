@@ -777,6 +777,53 @@ cleanup:
 }
 
 
+/*
+ * This test will use a path to /machine/i440fx which should exist in order
+ * to ensure that the qom-get property fetch works properly. The following
+ * is the execution and expected return:
+ *
+ *
+ *  { "execute": "qom-get","arguments": \
+ *      { "path": "/machine/i440fx","property": "realized"}}
+ *   {"return": true}
+ */
+static int
+testQemuMonitorJSONGetObjectProperty(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    int ret = -1;
+    qemuMonitorJSONObjectProperty prop;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "qom-get",
+                               "{ \"return\": true }") < 0)
+        goto cleanup;
+
+    /* Present with path and property */
+    memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty));
+    prop.type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN;
+    if (qemuMonitorJSONGetObjectProperty(qemuMonitorTestGetMonitor(test),
+                                         "/machine/i440fx",
+                                         "realized",
+                                         &prop) < 0)
+        goto cleanup;
+
+    if (!prop.val.b) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "expected true, but false returned");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -808,6 +855,7 @@ mymain(void)
     DO_TEST(AttachChardev);
     DO_TEST(DetachChardev);
     DO_TEST(GetListPaths);
+    DO_TEST(GetObjectProperty);
 
     virObjectUnref(xmlopt);
 

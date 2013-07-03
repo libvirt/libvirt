@@ -349,6 +349,41 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
 
 void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths);
 
+/* ObjectProperty structures and API are public only for qemumonitorjsontest */
+/* Flags for the 'type' field in _qemuMonitorJSONObjectProperty */
+typedef enum {
+    QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN=1,
+    QEMU_MONITOR_OBJECT_PROPERTY_INT,
+    QEMU_MONITOR_OBJECT_PROPERTY_LONG,
+    QEMU_MONITOR_OBJECT_PROPERTY_UINT,
+    QEMU_MONITOR_OBJECT_PROPERTY_ULONG,
+    QEMU_MONITOR_OBJECT_PROPERTY_DOUBLE,
+    QEMU_MONITOR_OBJECT_PROPERTY_STRING,
+
+    QEMU_MONITOR_OBJECT_PROPERTY_LAST
+} qemuMonitorJSONObjectPropertyType;
+
+typedef struct _qemuMonitorJSONObjectProperty qemuMonitorJSONObjectProperty;
+typedef qemuMonitorJSONObjectProperty *qemuMonitorJSONObjectPropertyPtr;
+struct _qemuMonitorJSONObjectProperty {
+    int type;    /* qemuMonitorJSONObjectPropertyType */
+    union {
+        bool b;
+        int iv;
+        long long l;
+        unsigned int ui;
+        unsigned long long ul;
+        double d;
+        char *str;
+    } val;
+};
+
+int qemuMonitorJSONGetObjectProperty(qemuMonitorPtr mon,
+                                     const char *path,
+                                     const char *property,
+                                     qemuMonitorJSONObjectPropertyPtr prop)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)

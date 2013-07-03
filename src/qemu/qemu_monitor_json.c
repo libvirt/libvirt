@@ -4605,6 +4605,92 @@ void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths)
     VIR_FREE(paths);
 }
 
+
+int qemuMonitorJSONGetObjectProperty(qemuMonitorPtr mon,
+                                     const char *path,
+                                     const char *property,
+                                     qemuMonitorJSONObjectPropertyPtr prop)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    const char *tmp;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", path,
+                                           "s:property", property,
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-get reply was missing return data"));
+        goto cleanup;
+    }
+
+    switch ((qemuMonitorJSONObjectPropertyType) prop->type) {
+    /* Simple cases of boolean, int, long, uint, ulong, double, and string
+     * will receive return value as part of {"return": xxx} statement
+     */
+    case QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN:
+        ret = virJSONValueGetBoolean(data, &prop->val.b);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_INT:
+        ret = virJSONValueGetNumberInt(data, &prop->val.iv);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_LONG:
+        ret = virJSONValueGetNumberLong(data, &prop->val.l);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_UINT:
+        ret = virJSONValueGetNumberUint(data, &prop->val.ui);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_ULONG:
+        ret = virJSONValueGetNumberUlong(data, &prop->val.ul);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_DOUBLE:
+        ret = virJSONValueGetNumberDouble(data, &prop->val.d);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_STRING:
+        tmp = virJSONValueGetString(data);
+        if (tmp && VIR_STRDUP(prop->val.str, tmp) < 0)
+            goto cleanup;
+        if (tmp)
+            ret = 0;
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qom-get invalid object property type %d"),
+                       prop->type);
+        goto cleanup;
+        break;
+    }
+
+    if (ret == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-get reply was missing return data"));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
+    return ret;
+}
+
+
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)
