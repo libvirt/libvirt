@@ -4691,6 +4691,68 @@ cleanup:
 }
 
 
+#define MAKE_SET_CMD(STRING, VALUE)                                   \
+    cmd = qemuMonitorJSONMakeCommand("qom-set",                       \
+                                      "s:path", path,                 \
+                                      "s:property", property,         \
+                                      STRING, VALUE,                  \
+                                      NULL)
+int qemuMonitorJSONSetObjectProperty(qemuMonitorPtr mon,
+                                     const char *path,
+                                     const char *property,
+                                     qemuMonitorJSONObjectPropertyPtr prop)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+
+    switch ((qemuMonitorJSONObjectPropertyType) prop->type) {
+    /* Simple cases of boolean, int, long, uint, ulong, double, and string
+     * will receive return value as part of {"return": xxx} statement
+     */
+    case QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN:
+        MAKE_SET_CMD("b:value", prop->val.b);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_INT:
+        MAKE_SET_CMD("i:value", prop->val.iv);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_LONG:
+        MAKE_SET_CMD("I:value", prop->val.l);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_UINT:
+        MAKE_SET_CMD("u:value", prop->val.ui);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_ULONG:
+        MAKE_SET_CMD("U:value", prop->val.ul);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_DOUBLE:
+        MAKE_SET_CMD("d:value", prop->val.d);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_STRING:
+        MAKE_SET_CMD("s:value", prop->val.str);
+        break;
+    case QEMU_MONITOR_OBJECT_PROPERTY_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qom-set invalid object property type %d"),
+                       prop->type);
+        goto cleanup;
+
+    }
+    if (!cmd)
+        return -1;
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
+    return ret;
+}
+#undef MAKE_SET_CMD
+
+
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)

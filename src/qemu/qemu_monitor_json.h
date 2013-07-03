@@ -349,7 +349,9 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
 
 void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths);
 
-/* ObjectProperty structures and API are public only for qemumonitorjsontest */
+/* ObjectProperty structures and Get/Set API's are public only
+ * for qemumonitorjsontest
+ */
 /* Flags for the 'type' field in _qemuMonitorJSONObjectProperty */
 typedef enum {
     QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN=1,
@@ -379,6 +381,12 @@ struct _qemuMonitorJSONObjectProperty {
 };
 
 int qemuMonitorJSONGetObjectProperty(qemuMonitorPtr mon,
+                                     const char *path,
+                                     const char *property,
+                                     qemuMonitorJSONObjectPropertyPtr prop)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
+int qemuMonitorJSONSetObjectProperty(qemuMonitorPtr mon,
                                      const char *path,
                                      const char *property,
                                      qemuMonitorJSONObjectPropertyPtr prop)
