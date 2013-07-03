@@ -1249,7 +1249,7 @@ int virCgroupNewPartition(const char *path,
     int rc;
     char *parentPath = NULL;
     virCgroupPtr parent = NULL;
-    char *newpath;
+    char *newpath = NULL;
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
 
@@ -1295,6 +1295,7 @@ cleanup:
         virCgroupFree(group);
     virCgroupFree(&parent);
     VIR_FREE(parentPath);
+    VIR_FREE(newpath);
     return rc;
 }
 #else
