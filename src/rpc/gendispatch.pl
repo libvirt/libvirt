@@ -1762,8 +1762,21 @@ elsif ($mode eq "client") {
                 push @argdecls, "unsigned int flags";
             }
 
+            my $ret;
+            my $pass;
+            my $fail;
+            if ($action eq "Check") {
+                $ret = "bool";
+                $pass = "true";
+                $fail = "false";
+            } else {
+                $ret = "int";
+                $pass = "0";
+                $fail = "-1";
+            }
+
             if ($mode eq "aclheader") {
-                print "extern int $apiname(" . join(", ", @argdecls) . ");\n";
+                print "extern $ret $apiname(" . join(", ", @argdecls) . ");\n";
             } else {
                 my @argvars;
                 push @argvars, "mgr";
@@ -1775,18 +1788,18 @@ elsif ($mode eq "client") {
                     push @argvars, $arg;
                 }
 
-                if ($action eq "Check") {
-                    print "/* Returns: -1 on error, 0 on denied, 1 on allowed */\n";
-                } else {
-                    print "/* Returns: -1 on error (denied==error), 0 on allowed */\n";
-                }
-                print "int $apiname(" . join(", ", @argdecls) . ")\n";
+                print "/* Returns: $fail on error/denied, $pass on allowed */\n";
+                print "$ret $apiname(" . join(", ", @argdecls) . ")\n";
                 print "{\n";
                 print "    virAccessManagerPtr mgr;\n";
                 print "    int rv;\n";
                 print "\n";
-                print "    if (!(mgr = virAccessManagerGetDefault()))\n";
-                print "        return -1;\n";
+                print "    if (!(mgr = virAccessManagerGetDefault())) {\n";
+                if ($action eq "Check") {
+                    print "        virResetLastError();\n";
+                }
+                print "        return $fail;\n";
+                print "    }\n";
                 print "\n";
 
                 foreach my $acl (@acl) {
@@ -1811,20 +1824,17 @@ elsif ($mode eq "client") {
                     if ($action eq "Ensure") {
                         print "        if (rv == 0)\n";
                         print "            virReportError(VIR_ERR_ACCESS_DENIED, NULL);\n";
-                        print "        return -1;\n";
+                        print "        return $fail;\n";
                     } else {
-                        print "        return rv;\n";
+                        print "        virResetLastError();\n";
+                        print "        return $fail;\n";
                     }
                     print "    }";
                     print "\n";
                 }
 
                 print "    virObjectUnref(mgr);\n";
-                if ($action eq "Check") {
-                    print "    return 1;\n";
-                } else {
-                    print "    return 0;\n";
-                }
+                print "    return $pass;\n";
                 print "}\n\n";
             }
         }
