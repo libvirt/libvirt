@@ -2131,6 +2131,7 @@ int lxcContainerStart(virDomainDefPtr def,
         } else {
             virReportSystemError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                  _("Kernel doesn't support user namespace"));
+            VIR_FREE(stack);
             return -1;
         }
     }
