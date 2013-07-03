@@ -33,7 +33,9 @@
   git checkout -t origin -b workbranch
   Hack, committing any changes along the way
 </pre>
-        <p>Then, when you want to post your patches:</p>
+        <p>More hints on compiling can be
+        found <a href="compiling.html">here</a>.  When you want to
+        post your patches:</p>
 <pre>
   git pull --rebase
   (fix any conflicts)
