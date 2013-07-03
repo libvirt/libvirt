@@ -49,6 +49,10 @@ fi
 # we rerun bootstrap to pull in those diffs.
 bootstrap_hash()
 {
+    if test "$no_git"; then
+        echo no-git
+        return
+    fi
     git submodule status | sed 's/^[ +-]//;s/ .*//'
     git hash-object bootstrap.conf
     git ls-tree -d HEAD gnulib/local | awk '{print $3}'
@@ -62,7 +66,9 @@ bootstrap_hash()
 # Only run bootstrap from a git checkout, never from a tarball.
 if test -d .git; then
     curr_status=.git-module-status t=
-    if test -d .gnulib; then
+    if test "$no_git"; then
+        t=no-git
+    elif test -d .gnulib; then
         t=$(bootstrap_hash; git diff .gnulib)
     fi
     case $t:${CLEAN_SUBMODULE+set} in
@@ -78,7 +84,7 @@ if test -d .git; then
         # good, it's up to date, all we need is autoreconf
         autoreconf -if
     else
-        if test ${CLEAN_SUBMODULE+set}; then
+        if test -z "$no_git" && test ${CLEAN_SUBMODULE+set}; then
             echo cleaning up submodules...
             git submodule foreach 'git clean -dfqx && git reset --hard'
         fi
