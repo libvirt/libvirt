@@ -123,21 +123,35 @@ cleanup:
 static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
-    int ret = -1;
+    int i, rc;
 
     if (def->blkio.weight) {
-        int rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
+        rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
         if (rc != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set Blkio weight for domain %s"),
                                  def->name);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-cleanup:
-    return ret;
+    if (def->blkio.ndevices) {
+        for (i = 0; i < def->blkio.ndevices; i++) {
+            virBlkioDeviceWeightPtr dw = &def->blkio.devices[i];
+            if (!dw->weight)
+                continue;
+            rc = virCgroupSetBlkioDeviceWeight(cgroup, dw->path, dw->weight);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to set io device weight "
+                                       "for domain %s"),
+                                     def->name);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 
