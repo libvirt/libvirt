@@ -126,10 +126,8 @@ vmwareConnectOpen(virConnectPtr conn,
         VIR_FREE(vmrun);
     }
 
-    if (VIR_ALLOC(driver) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
 
     if (virMutexInit(&driver->lock) < 0)
         goto cleanup;

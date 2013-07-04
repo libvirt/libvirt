@@ -77,10 +77,8 @@ vmwareCapsInit(void)
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cpu) < 0)
         goto error;
-    }
 
     if (!(cpu->arch = caps->host.arch)) {
         virReportOOMError();
@@ -315,18 +313,9 @@ error:
 int
 vmwareConstructVmxPath(char *directoryName, char *name, char **vmxPath)
 {
-    if (directoryName != NULL) {
-        if (virAsprintf(vmxPath, "%s/%s.vmx", directoryName, name) < 0) {
-            virReportOOMError();
-            return -1;
-        }
-    } else {
-        if (virAsprintf(vmxPath, "%s.vmx", name) < 0) {
-            virReportOOMError();
-            return -1;
-        }
-    }
-    return 0;
+    if (directoryName != NULL)
+        return virAsprintf(vmxPath, "%s/%s.vmx", directoryName, name);
+    return virAsprintf(vmxPath, "%s.vmx", name);
 }
 
 int
@@ -385,10 +374,8 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
         goto cleanup;
     }
 
-    if (vmwareConstructVmxPath(directoryName, vmdef->name, vmxPath) < 0) {
-        virReportOOMError();
+    if (vmwareConstructVmxPath(directoryName, vmdef->name, vmxPath) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -427,11 +414,7 @@ vmwareMoveFile(char *srcFile, char *dstFile)
 int
 vmwareMakePath(char *srcDir, char *srcName, char *srcExt, char **outpath)
 {
-    if (virAsprintf(outpath, "%s/%s.%s", srcDir, srcName, srcExt) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-    return 0;
+    return virAsprintf(outpath, "%s/%s.%s", srcDir, srcName, srcExt);
 }
 
 int
@@ -448,10 +431,8 @@ vmwareExtractPid(const char * vmxPath)
         goto cleanup;
 
     if (virAsprintf(&logFilePath, "%s/vmware.log",
-                    vmxDir) < 0) {
-        virReportOOMError();
+                    vmxDir) < 0)
         goto cleanup;
-    }
 
     if ((logFile = fopen(logFilePath, "r")) == NULL)
         goto cleanup;
