@@ -170,18 +170,18 @@ testBuildCapabilities(virConnectPtr conn) {
     int i;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686, 0, 0)) == NULL)
-        goto no_memory;
+        goto error;
 
     if (virCapabilitiesAddHostFeature(caps, "pae") < 0)
-        goto no_memory;
+        goto error;
     if (virCapabilitiesAddHostFeature(caps ,"nonpae") < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < privconn->numCells; i++) {
         virCapsHostNUMACellCPUPtr cpu_cells;
 
         if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0)
-            goto no_memory;
+            goto error;
 
         memcpy(cpu_cells, privconn->cells[i].cpus,
                sizeof(*cpu_cells) * privconn->cells[i].numCpus);
@@ -189,7 +189,7 @@ testBuildCapabilities(virConnectPtr conn) {
 
         if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].numCpus,
                                            0, cpu_cells) < 0)
-            goto no_memory;
+            goto error;
     }
 
     for (i = 0; i < ARRAY_CARDINALITY(guest_types); i++) {
@@ -200,7 +200,7 @@ testBuildCapabilities(virConnectPtr conn) {
                                              NULL,
                                              0,
                                              NULL)) == NULL)
-            goto no_memory;
+            goto error;
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           "test",
@@ -208,17 +208,17 @@ testBuildCapabilities(virConnectPtr conn) {
                                           NULL,
                                           0,
                                           NULL) == NULL)
-            goto no_memory;
+            goto error;
 
         if (virCapabilitiesAddGuestFeature(guest, "pae", 1, 1) == NULL)
-            goto no_memory;
+            goto error;
         if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
-            goto no_memory;
+            goto error;
     }
 
     caps->host.nsecModels = 1;
     if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
-        goto no_memory;
+        goto error;
     if (VIR_STRDUP(caps->host.secModels[0].model, "testSecurity") < 0)
         goto error;
 
@@ -227,8 +227,6 @@ testBuildCapabilities(virConnectPtr conn) {
 
     return caps;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(caps);
     return NULL;
@@ -337,10 +335,8 @@ testDomainGenerateIfname(virDomainDefPtr domdef) {
         char *ifname;
         int found = 0;
 
-        if (virAsprintf(&ifname, "testnet%d", ifctr) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&ifname, "testnet%d", ifctr) < 0)
             return NULL;
-        }
 
         /* Generate network interface names */
         for (i = 0; i < domdef->nnets; i++) {
@@ -446,15 +442,11 @@ testDomainUpdateVCPUs(virConnectPtr conn,
     maxcpu  = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
-    if (VIR_REALLOC_N(privdata->vcpu_infos, nvcpus) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(privdata->vcpu_infos, nvcpus) < 0)
         goto cleanup;
-    }
 
-    if (VIR_REALLOC_N(privdata->cpumaps, nvcpus * cpumaplen) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(privdata->cpumaps, nvcpus * cpumaplen) < 0)
         goto cleanup;
-    }
 
     /* Set running VCPU and cpumap state */
     if (clear_all) {
@@ -534,10 +526,8 @@ static int testOpenDefault(virConnectPtr conn) {
     virNodeDeviceDefPtr nodedef = NULL;
     virNodeDeviceObjPtr nodeobj = NULL;
 
-    if (VIR_ALLOC(privconn) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(privconn) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -561,10 +551,8 @@ static int testOpenDefault(virConnectPtr conn) {
     }
     for (u = 0; u < 16; u++) {
         virBitmapPtr siblings = virBitmapNew(16);
-        if (!siblings) {
-            virReportOOMError();
+        if (!siblings)
             goto error;
-        }
         ignore_value(virBitmapSetBit(siblings, u));
         privconn->cells[u / 8].cpus[(u % 8)].id = u;
         privconn->cells[u / 8].cpus[(u % 8)].socket_id = u / 8;
@@ -710,10 +698,8 @@ static int testOpenVolumesForPool(xmlDocPtr xml,
     virStorageVolDefPtr def = NULL;
 
     /* Find storage volumes */
-    if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", poolidx) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", poolidx) < 0)
         goto error;
-    }
 
     ret = virXPathNodeSet(vol_xpath, ctxt, &vols);
     VIR_FREE(vol_xpath);
@@ -744,18 +730,14 @@ static int testOpenVolumesForPool(xmlDocPtr xml,
         }
 
         if (VIR_REALLOC_N(pool->volumes.objs,
-                          pool->volumes.count+1) < 0) {
-            virReportOOMError();
+                          pool->volumes.count+1) < 0)
             goto error;
-        }
 
         if (def->target.path == NULL) {
             if (virAsprintf(&def->target.path, "%s/%s",
                             pool->def->target.path,
-                            def->name) == -1) {
-                virReportOOMError();
+                            def->name) == -1)
                 goto error;
-            }
         }
 
         if (!def->key && VIR_STRDUP(def->key, def->target.path) < 0)
@@ -790,10 +772,8 @@ static int testOpenFromFile(virConnectPtr conn,
     virInterfaceObjPtr iface;
     virDomainObjPtr dom;
     testConnPtr privconn;
-    if (VIR_ALLOC(privconn) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(privconn) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -1944,10 +1924,8 @@ testDomainRestoreFlags(virConnectPtr conn,
                        "%s", _("length of metadata out of range"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(xml, len+1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(xml, len+1) < 0)
         goto cleanup;
-    }
     if (saferead(fd, xml, len) != len) {
         virReportSystemError(errno,
                              _("incomplete metdata in '%s'"), path);
@@ -4176,9 +4154,8 @@ testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
             goto cleanup;
         }
 
-        if (virAsprintf(&ret, defaultPoolSourcesNetFSXML,
-                        source->hosts[0].name) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&ret, defaultPoolSourcesNetFSXML,
+                                 source->hosts[0].name));
         break;
 
     default:
@@ -4687,10 +4664,8 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(tmp_vols, pool->volumes.count + 1) < 0) {
-         virReportOOMError();
+    if (VIR_ALLOC_N(tmp_vols, pool->volumes.count + 1) < 0)
          goto cleanup;
-    }
 
     for (i = 0; i < pool->volumes.count; i++) {
         if (!(vol = virGetStorageVol(obj->conn, pool->def->name,
@@ -4882,17 +4857,13 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     }
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
-                      privpool->volumes.count+1) < 0) {
-        virReportOOMError();
+                      privpool->volumes.count+1) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     privpool->def->target.path,
-                    privvol->name) == -1) {
-        virReportOOMError();
+                    privvol->name) == -1)
         goto cleanup;
-    }
 
     if (VIR_STRDUP(privvol->key, privvol->target.path) < 0)
         goto cleanup;
@@ -4974,17 +4945,13 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                                 privpool->def->allocation);
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
-                      privpool->volumes.count+1) < 0) {
-        virReportOOMError();
+                      privpool->volumes.count+1) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     privpool->def->target.path,
-                    privvol->name) == -1) {
-        virReportOOMError();
+                    privvol->name) == -1)
         goto cleanup;
-    }
 
     if (VIR_STRDUP(privvol->key, privvol->target.path) < 0)
         goto cleanup;
@@ -5721,10 +5688,8 @@ testNodeGetCPUMap(virConnectPtr conn,
 
     testDriverLock(privconn);
     if (cpumap) {
-        if (VIR_ALLOC_N(*cpumap, 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(*cpumap, 1) < 0)
             goto cleanup;
-        }
         *cpumap[0] = 0x15;
     }
 
