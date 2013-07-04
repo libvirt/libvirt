@@ -767,8 +767,7 @@ openvzGenerateVethName(int veid, char *dev_name_ve)
 
     if (sscanf(dev_name_ve, "%*[^0-9]%d", &ifNo) != 1)
         return NULL;
-    if (virAsprintf(&ret, "veth%d.%d.", veid, ifNo) < 0)
-        virReportOOMError();
+    ignore_value(virAsprintf(&ret, "veth%d.%d.", veid, ifNo));
     return ret;
 }
 
@@ -795,8 +794,7 @@ openvzGenerateContainerVethName(int veid)
         }
 
         /* set new name */
-        if (virAsprintf(&name, "eth%d", max + 1) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&name, "eth%d", max + 1));
     }
 
     VIR_FREE(temp);
@@ -1448,10 +1446,8 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */
 
-    if (VIR_ALLOC(driver) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
 
     if (!(driver->domains = virDomainObjListNew()))
         goto cleanup;

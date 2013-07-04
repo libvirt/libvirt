@@ -225,14 +225,14 @@ openvzReadNetworkConf(virDomainDefPtr def,
         token = strtok_r(temp, " ", &saveptr);
         while (token != NULL) {
             if (VIR_ALLOC(net) < 0)
-                goto no_memory;
+                goto error;
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             if (VIR_STRDUP(net->data.ethernet.ipaddr, token) < 0)
                 goto error;
 
             if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
-                goto no_memory;
+                goto error;
             def->nets[def->nnets++] = net;
             net = NULL;
 
@@ -256,7 +256,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
         while (token != NULL) {
             /*add new device to list*/
             if (VIR_ALLOC(net) < 0)
-                goto no_memory;
+                goto error;
 
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
@@ -279,7 +279,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                     }
 
                     if (VIR_ALLOC_N(net->ifname, len+1) < 0)
-                        goto no_memory;
+                        goto error;
 
                     if (virStrncpy(net->ifname, p, len, len+1) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -296,7 +296,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                     }
 
                     if (VIR_ALLOC_N(net->data.bridge.brname, len+1) < 0)
-                        goto no_memory;
+                        goto error;
 
                     if (virStrncpy(net->data.bridge.brname, p, len, len+1) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -326,7 +326,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
             } while (p < token + strlen(token));
 
             if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
-                goto no_memory;
+                goto error;
             def->nets[def->nnets++] = net;
             net = NULL;
 
@@ -337,8 +337,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
     VIR_FREE(temp);
 
     return 0;
-no_memory:
-    virReportOOMError();
+
 error:
     VIR_FREE(temp);
     virDomainNetDefFree(net);
@@ -398,7 +397,7 @@ openvzReadFSConf(virDomainDefPtr def,
         goto error;
     } else if (ret > 0) {
         if (VIR_ALLOC(fs) < 0)
-            goto no_memory;
+            goto error;
 
         fs->type = VIR_DOMAIN_FS_TYPE_TEMPLATE;
         if (VIR_STRDUP(fs->src, temp) < 0)
@@ -414,10 +413,10 @@ openvzReadFSConf(virDomainDefPtr def,
         }
 
         if (VIR_ALLOC(fs) < 0)
-            goto no_memory;
+            goto error;
 
         if (virAsprintf(&veid_str, "%d", veid) < 0)
-            goto no_memory;
+            goto error;
 
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
         if (!(fs->src = openvz_replace(temp, "$VEID", veid_str)))
@@ -451,7 +450,7 @@ openvzReadFSConf(virDomainDefPtr def,
     }
 
     if (VIR_REALLOC_N(def->fss, def->nfss + 1) < 0)
-        goto no_memory;
+        goto error;
     def->fss[def->nfss++] = fs;
     fs = NULL;
 
@@ -583,7 +582,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         *line++ = '\0';
 
         if (VIR_ALLOC(def) < 0)
-            goto no_memory;
+            goto cleanup;
 
         def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
 
@@ -592,7 +591,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         else
             def->id = veid;
         if (virAsprintf(&def->name, "%i", veid) < 0)
-            goto no_memory;
+            goto cleanup;
 
         openvzGetVPSUUID(veid, uuidstr, sizeof(uuidstr));
         ret = virUUIDParse(uuidstr, def->uuid);
@@ -663,9 +662,6 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
     return 0;
 
- no_memory:
-    virReportOOMError();
-
  cleanup:
     virCommandFree(cmd);
     VIR_FREE(temp);
@@ -695,10 +691,8 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     char *line = NULL;
     size_t line_size = 0;
 
-    if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0) {
-        virReportOOMError();
+    if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0)
         return -1;
-    }
 
     fp = fopen(conf_file, "r");
     if (fp == NULL)
@@ -899,10 +893,8 @@ openvzCopyDefaultConfig(int vpsid)
         goto cleanup;
 
     if (virAsprintf(&default_conf_file, "%s/ve-%s.conf-sample", confdir,
-                    configfile_value) < 0) {
-        virReportOOMError();
+                    configfile_value) < 0)
         goto cleanup;
-    }
 
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         goto cleanup;
@@ -933,10 +925,8 @@ openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext)
         return -1;
 
     if (virAsprintf(conffile, "%s/%d.%s", confdir, vpsid,
-                    ext ? ext : "conf") < 0) {
-        virReportOOMError();
+                    ext ? ext : "conf") < 0)
         ret = -1;
-    }
 
     VIR_FREE(confdir);
     return ret;
