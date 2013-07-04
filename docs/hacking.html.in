@@ -663,10 +663,8 @@
 <pre>
   virDomainPtr domain;
 
-  if (VIR_ALLOC(domain) &lt; 0) {
-      virReportOOMError();
+  if (VIR_ALLOC(domain) &lt; 0)
       return NULL;
-  }
 </pre>
       </li>
 
@@ -675,10 +673,8 @@
   virDomainPtr domains;
   size_t ndomains = 10;
 
-  if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-      virReportOOMError();
+  if (VIR_ALLOC_N(domains, ndomains) &lt; 0)
       return NULL;
-  }
 </pre>
       </li>
 
@@ -687,10 +683,8 @@
   virDomainPtr *domains;
   size_t ndomains = 10;
 
-  if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-      virReportOOMError();
+  if (VIR_ALLOC_N(domains, ndomains) &lt; 0)
       return NULL;
-  }
 </pre>
       </li>
 
@@ -702,10 +696,8 @@
   virDomainPtr domains;
   size_t ndomains = 0;
 
-  if (VIR_EXPAND_N(domains, ndomains, 1) &lt; 0) {
-      virReportOOMError();
+  if (VIR_EXPAND_N(domains, ndomains, 1) &lt; 0)
       return NULL;
-  }
   domains[ndomains - 1] = domain;
 </pre></li>
 
@@ -718,10 +710,8 @@
   size_t ndomains = 0;
   size_t ndomains_max = 0;
 
-  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) &lt; 0) {
-      virReportOOMError();
+  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) &lt; 0)
       return NULL;
-  }
   domains[ndomains++] = domain;
 </pre>
       </li>

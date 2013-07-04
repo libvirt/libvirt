@@ -528,10 +528,8 @@ routines, use the macros from viralloc.h.
 
   virDomainPtr domain;
 
-  if (VIR_ALLOC(domain) < 0) {
-      virReportOOMError();
+  if (VIR_ALLOC(domain) < 0)
       return NULL;
-  }
 
 
 
@@ -540,10 +538,8 @@ routines, use the macros from viralloc.h.
   virDomainPtr domains;
   size_t ndomains = 10;
 
-  if (VIR_ALLOC_N(domains, ndomains) < 0) {
-      virReportOOMError();
+  if (VIR_ALLOC_N(domains, ndomains) < 0)
       return NULL;
-  }
 
 
 
@@ -552,10 +548,8 @@ routines, use the macros from viralloc.h.
   virDomainPtr *domains;
   size_t ndomains = 10;
 
-  if (VIR_ALLOC_N(domains, ndomains) < 0) {
-      virReportOOMError();
+  if (VIR_ALLOC_N(domains, ndomains) < 0)
       return NULL;
-  }
 
 
 
@@ -566,10 +560,8 @@ recommended only for smaller arrays):
   virDomainPtr domains;
   size_t ndomains = 0;
 
-  if (VIR_EXPAND_N(domains, ndomains, 1) < 0) {
-      virReportOOMError();
+  if (VIR_EXPAND_N(domains, ndomains, 1) < 0)
       return NULL;
-  }
   domains[ndomains - 1] = domain;
 
 
@@ -581,10 +573,8 @@ scales better, but requires tracking allocation separately from usage)
   size_t ndomains = 0;
   size_t ndomains_max = 0;
 
-  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) < 0) {
-      virReportOOMError();
+  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) < 0)
       return NULL;
-  }
   domains[ndomains++] = domain;
 
 
