@@ -132,10 +132,8 @@ virLockDaemonNew(bool privileged)
 {
     virLockDaemonPtr lockd;
 
-    if (VIR_ALLOC(lockd) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(lockd) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&lockd->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -177,10 +175,8 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     size_t i;
     int n;
 
-    if (VIR_ALLOC(lockd) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(lockd) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&lockd->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -388,7 +384,6 @@ virLockDaemonPidFilePath(bool privileged,
 
         if (virAsprintf(pidfile, "%s/virtlockd.pid", rundir) < 0) {
             VIR_FREE(rundir);
-            virReportOOMError();
             goto error;
         }
 
@@ -425,7 +420,6 @@ virLockDaemonUnixSocketPaths(bool privileged,
 
         if (virAsprintf(sockfile, "%s/virtlockd-sock", rundir) < 0) {
             VIR_FREE(rundir);
-            virReportOOMError();
             goto error;
         }
 
@@ -499,7 +493,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
         char *tmp;
         if (access("/run/systemd/journal/socket", W_OK) >= 0) {
             if (virAsprintf(&tmp, "%d:journald", virLogGetDefaultPriority()) < 0)
-                goto no_memory;
+                goto error;
             virLogParseOutputs(tmp);
             VIR_FREE(tmp);
         }
@@ -517,7 +511,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
                 if (virAsprintf(&tmp, "%d:file:%s/log/libvirt/virtlockd.log",
                                 virLogGetDefaultPriority(),
                                 LOCALSTATEDIR) == -1)
-                    goto no_memory;
+                    goto error;
             } else {
                 char *logdir = virGetUserCacheDirectory();
                 mode_t old_umask;
@@ -535,13 +529,13 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
                 if (virAsprintf(&tmp, "%d:file:%s/virtlockd.log",
                                 virLogGetDefaultPriority(), logdir) == -1) {
                     VIR_FREE(logdir);
-                    goto no_memory;
+                    goto error;
                 }
                 VIR_FREE(logdir);
             }
         } else {
             if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
-                goto no_memory;
+                goto error;
         }
         virLogParseOutputs(tmp);
         VIR_FREE(tmp);
@@ -555,8 +549,6 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
@@ -784,14 +776,12 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     unsigned long long timestamp;
     bool privileged = opaque != NULL;
 
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&priv->lock) < 0) {
         VIR_FREE(priv);
-        virReportOOMError();
+        virReportSystemError(errno, "%s", _("unable to init mutex"));
         return NULL;
     }
 
@@ -940,12 +930,7 @@ virLockDaemonGetExecRestartMagic(void)
 {
     char *ret;
 
-    if (virAsprintf(&ret, "%lld",
-                    (long long int)getpid()) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&ret, "%lld", (long long int)getpid()));
     return ret;
 }
 

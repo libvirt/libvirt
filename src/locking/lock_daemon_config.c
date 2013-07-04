@@ -93,15 +93,13 @@ virLockDaemonConfigFilePath(bool privileged, char **configfile)
 
         if (virAsprintf(configfile, "%s/virtlockd.conf", configdir) < 0) {
             VIR_FREE(configdir);
-            goto no_memory;
+            goto error;
         }
         VIR_FREE(configdir);
     }
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
@@ -112,10 +110,8 @@ virLockDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 {
     virLockDaemonConfigPtr data;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return NULL;
-    }
 
     data->log_buffer_size = 64;
 

@@ -198,10 +198,8 @@ static int virLockManagerSanlockSetupLockspace(void)
 
     if (virAsprintf(&path, "%s/%s",
                     driver->autoDiskLeasePath,
-                    VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE) < 0) {
-        virReportOOMError();
+                    VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE) < 0)
         goto error;
-    }
 
     if (!virStrcpyStatic(ls.name,
                          VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE)) {
@@ -395,10 +393,8 @@ static int virLockManagerSanlockInit(unsigned int version,
     if (driver)
         return 0;
 
-    if (VIR_ALLOC(driver) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driver) < 0)
         return -1;
-    }
 
     driver->requireLeaseForDisks = true;
     driver->hostID = 0;
@@ -467,10 +463,8 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
         return -1;
     }
 
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         return -1;
-    }
 
     priv->flags = flags;
 
@@ -559,10 +553,8 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
     struct sanlk_resource *res = NULL;
     int i;
 
-    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
         goto cleanup;
-    }
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
@@ -624,10 +616,8 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
         return -1;
     }
 
-    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
         goto cleanup;
-    }
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
@@ -635,10 +625,8 @@ static int virLockManagerSanlockAddDisk(virLockManagerPtr lock,
         goto cleanup;
 
     if (virAsprintf(&path, "%s/%s",
-                    driver->autoDiskLeasePath, res->name) < 0) {
-        virReportOOMError();
+                    driver->autoDiskLeasePath, res->name) < 0)
         goto cleanup;
-    }
     if (!virStrcpy(res->disks[0].path, path, SANLK_PATH_LEN)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Lease path '%s' exceeds %d characters"),
@@ -918,10 +906,8 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
         return -1;
     }
 
-    if (VIR_ALLOC(opt) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(opt) < 0)
         return -1;
-    }
 
     if (!virStrcpy(opt->owner_name, priv->vm_name, SANLK_NAME_LEN)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

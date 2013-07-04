@@ -181,7 +181,6 @@ static char *virLockManagerLockDaemonPath(bool privileged)
 
         if (virAsprintf(&path, "%s/virtlockd-sock", rundir) < 0) {
             VIR_FREE(rundir);
-            virReportOOMError();
             return NULL;
         }
 
@@ -375,10 +374,8 @@ static int virLockManagerLockDaemonInit(unsigned int version,
     if (driver)
         return 0;
 
-    if (VIR_ALLOC(driver) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driver) < 0)
         return -1;
-    }
 
     driver->requireLeaseForDisks = true;
     driver->autoDiskLease = true;
@@ -451,10 +448,8 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
 
     virCheckFlags(VIR_LOCK_MANAGER_USES_STATE, -1);
 
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         return -1;
-    }
     lock->privateData = priv;
 
     switch (type) {
@@ -525,10 +520,8 @@ static char *virLockManagerLockDaemonDiskLeaseName(const char *path)
         return NULL;
     }
 
-    if (VIR_ALLOC_N(ret, (SHA256_DIGEST_SIZE * 2) + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, (SHA256_DIGEST_SIZE * 2) + 1) < 0)
         return NULL;
-    }
 
     for (i = 0; i < SHA256_DIGEST_SIZE; i++) {
         ret[i*2] = hex[(buf[i] >> 4) & 0xf];
@@ -613,7 +606,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
                 goto error;
             if (!(newName = virLockManagerLockDaemonDiskLeaseName(name)))
-                goto no_memory;
+                goto error;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
         } else {
@@ -653,10 +646,8 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             return -1;
         }
         if (virAsprintf(&newLockspace, "%s/%s",
-                        path, lockspace) < 0) {
-            virReportOOMError();
+                        path, lockspace) < 0)
             return -1;
-        }
         if (VIR_STRDUP(newName, name) < 0)
             goto error;
 
@@ -669,7 +660,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     }
 
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
-        goto no_memory;
+        goto error;
 
     priv->resources[priv->nresources-1].lockspace = newLockspace;
     priv->resources[priv->nresources-1].name = newName;
@@ -684,8 +675,6 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(newLockspace);
     VIR_FREE(newName);
