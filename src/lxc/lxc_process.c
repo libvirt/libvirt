@@ -442,10 +442,8 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         if (networkAllocateActualDevice(def->nets[i]) < 0)
             goto cleanup;
 
-        if (VIR_EXPAND_N(*veths, *nveths, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(*veths, *nveths, 1) < 0)
             goto cleanup;
-        }
 
         switch (virDomainNetGetActualType(def->nets[i])) {
         case VIR_DOMAIN_NET_TYPE_NETWORK: {
@@ -648,10 +646,8 @@ virLXCProcessGetNsInode(pid_t pid,
     int ret = -1;
 
     if (virAsprintf(&path, "/proc/%llu/ns/%s",
-                    (unsigned long long)pid, nsname) < 0) {
-        virReportOOMError();
+                    (unsigned long long)pid, nsname) < 0)
         goto cleanup;
-    }
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
@@ -992,7 +988,7 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
         return 0;
 
     if (VIR_ALLOC(root) < 0)
-        goto no_memory;
+        goto error;
 
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
@@ -1000,16 +996,14 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
         VIR_STRDUP(root->dst, "/") < 0)
         goto error;
 
-    if (VIR_INSERT_ELEMENT_QUIET(vm->def->fss,
-                                 0,
-                                 vm->def->nfss,
-                                 root) < 0)
-        goto no_memory;
+    if (VIR_INSERT_ELEMENT(vm->def->fss,
+                           0,
+                           vm->def->nfss,
+                           root) < 0)
+        goto error;
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainFSDefFree(root);
     return -1;
@@ -1084,10 +1078,8 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     if (virAsprintf(&logfile, "%s/%s.log",
-                    driver->logDir, vm->def->name) < 0) {
-        virReportOOMError();
+                    driver->logDir, vm->def->name) < 0)
         return -1;
-    }
 
     /* Do this up front, so any part of the startup process can add
      * runtime state to vm->def that won't be persisted. This let's us
@@ -1127,10 +1119,8 @@ int virLXCProcessStart(virConnectPtr conn,
      * and forward I/O between them.
      */
     nttyFDs = vm->def->nconsoles;
-    if (VIR_ALLOC_N(ttyFDs, nttyFDs) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ttyFDs, nttyFDs) < 0)
         goto cleanup;
-    }
     for (i = 0; i < vm->def->nconsoles; i++)
         ttyFDs[i] = -1;
 
@@ -1170,10 +1160,8 @@ int virLXCProcessStart(virConnectPtr conn,
         vm->def->consoles[i]->source.data.file.path = ttyPath;
 
         VIR_FREE(vm->def->consoles[i]->info.alias);
-        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0)
             goto cleanup;
-        }
     }
 
     if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) < 0)
@@ -1224,10 +1212,8 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     /* Log timestamp */
-    if ((timestamp = virTimeStringNow()) == NULL) {
-        virReportOOMError();
+    if ((timestamp = virTimeStringNow()) == NULL)
         goto cleanup;
-    }
     if (safewrite(logfd, timestamp, strlen(timestamp)) < 0 ||
         safewrite(logfd, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
         VIR_WARN("Unable to write timestamp to logfile: %s",

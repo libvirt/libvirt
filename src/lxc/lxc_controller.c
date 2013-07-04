@@ -150,10 +150,8 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
     virDomainXMLOptionPtr xmlopt = NULL;
     char *configFile = NULL;
 
-    if (VIR_ALLOC(ctrl) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ctrl) < 0)
         goto error;
-    }
 
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
@@ -279,10 +277,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 static int virLXCControllerAddConsole(virLXCControllerPtr ctrl,
                                       int hostFd)
 {
-    if (VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1) < 0) {
-        virReportOOMError();
+    if (VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1) < 0)
         return -1;
-    }
     ctrl->consoles[ctrl->nconsoles-1].server = ctrl->server;
     ctrl->consoles[ctrl->nconsoles-1].hostFd = hostFd;
     ctrl->consoles[ctrl->nconsoles-1].hostWatch = -1;
@@ -473,7 +469,6 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             VIR_DEBUG("Saving loop fd %d", fd);
             if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
-                virReportOOMError();
                 goto cleanup;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
@@ -521,7 +516,6 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             VIR_DEBUG("Saving loop fd %d", fd);
             if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
-                virReportOOMError();
                 goto cleanup;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
@@ -707,10 +701,8 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     char *sockpath;
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
-                    LXC_STATE_DIR, ctrl->name) < 0) {
-        virReportOOMError();
+                    LXC_STATE_DIR, ctrl->name) < 0)
         return -1;
-    }
 
     if (!(ctrl->server = virNetServerNew(0, 0, 0, 1,
                                          -1, 0, false,
@@ -1228,10 +1220,8 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
                                                       ctrl->def);
 
     if (virAsprintf(&dev, "/%s/%s.dev",
-                    LXC_STATE_DIR, ctrl->def->name) < 0) {
-        virReportOOMError();
+                    LXC_STATE_DIR, ctrl->def->name) < 0)
         goto cleanup;
-    }
 
     if (virFileMakePath(dev) < 0) {
         virReportSystemError(errno,
@@ -1245,10 +1235,8 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
      */
 
     if (virAsprintf(&opts,
-                    "mode=755,size=65536%s", mount_options) < 0) {
-        virReportOOMError();
+                    "mode=755,size=65536%s", mount_options) < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Mount devfs on %s type=tmpfs flags=%x, opts=%s",
               dev, MS_NOSUID, opts);
@@ -1295,10 +1283,8 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
     /* Populate /dev/ with a few important bits */
     for (i = 0; i < ARRAY_CARDINALITY(devs); i++) {
         if (virAsprintf(&path, "/%s/%s.dev/%s",
-                        LXC_STATE_DIR, ctrl->def->name, devs[i].path) < 0) {
-            virReportOOMError();
+                        LXC_STATE_DIR, ctrl->def->name, devs[i].path) < 0)
             goto cleanup;
-        }
 
         dev_t dev = makedev(devs[i].maj, devs[i].min);
         if (mknod(path, S_IFCHR, dev) < 0 ||
@@ -1439,7 +1425,6 @@ lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
     if ((virAsprintf(ttyName, "/dev/pts/%d", ptyno) < 0) ||
         (virAsprintf(ttyHostPath, "/%s/%s.devpts/%d", LXC_STATE_DIR,
                     ctrl->def->name, ptyno) < 0)) {
-        virReportOOMError();
         errno = ENOMEM;
         goto cleanup;
     }
@@ -1516,10 +1501,8 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     if (virAsprintf(&devpts, "%s/%s.devpts",
                     LXC_STATE_DIR, ctrl->def->name) < 0 ||
         virAsprintf(&ctrl->devptmx, "%s/%s.devpts/ptmx",
-                    LXC_STATE_DIR, ctrl->def->name) < 0) {
-        virReportOOMError();
+                    LXC_STATE_DIR, ctrl->def->name) < 0)
         goto cleanup;
-    }
 
     if (virFileMakePath(devpts) < 0) {
         virReportSystemError(errno,
@@ -1531,10 +1514,8 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     /* XXX should we support gid=X for X!=5 for distros which use
      * a different gid for tty?  */
     if (virAsprintf(&opts, "newinstance,ptmxmode=0666,mode=0620,gid=5%s",
-                    (mount_options ? mount_options : "")) < 0) {
-        virReportOOMError();
+                    (mount_options ? mount_options : "")) < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
               devpts, MS_NOSUID, opts);
@@ -1709,10 +1690,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     size_t i;
     virCgroupPtr cgroup = NULL;
 
-    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0)
         goto cleanup;
-    }
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
         virReportSystemError(errno, "%s",
@@ -1872,19 +1851,15 @@ int main(int argc, char *argv[])
             break;
 
         case 'v':
-            if (VIR_REALLOC_N(veths, nveths+1) < 0) {
-                virReportOOMError();
+            if (VIR_REALLOC_N(veths, nveths+1) < 0)
                 goto cleanup;
-            }
             if (VIR_STRDUP(veths[nveths++], optarg) < 0)
                 goto cleanup;
             break;
 
         case 'c':
-            if (VIR_REALLOC_N(ttyFDs, nttyFDs + 1) < 0) {
-                virReportOOMError();
+            if (VIR_REALLOC_N(ttyFDs, nttyFDs + 1) < 0)
                 goto cleanup;
-            }
             if (virStrToLong_i(optarg, NULL, 10, &ttyFDs[nttyFDs++]) < 0) {
                 fprintf(stderr, "malformed --console argument '%s'", optarg);
                 goto cleanup;

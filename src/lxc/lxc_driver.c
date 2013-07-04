@@ -2885,10 +2885,8 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (flags == 0 ||
         (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
@@ -2977,10 +2975,8 @@ lxcDomainReboot(virDomainPtr dom,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (flags == 0 ||
         (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
@@ -3037,10 +3033,8 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("target %s already exists."), disk->dst);
             return -1;
         }
-        if (virDomainDiskInsert(vmdef, disk)) {
-            virReportOOMError();
+        if (virDomainDiskInsert(vmdef, disk))
             return -1;
-        }
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
         dev->data.disk = NULL;
         ret = 0;
@@ -3048,10 +3042,8 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if (virDomainNetInsert(vmdef, net) < 0) {
-            virReportOOMError();
+        if (virDomainNetInsert(vmdef, net) < 0)
             goto cleanup;
-        }
         dev->data.net = NULL;
         ret = 0;
         break;
@@ -3063,10 +3055,8 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("device is already in the domain configuration"));
             return -1;
         }
-        if (virDomainHostdevInsert(vmdef, hostdev) < 0) {
-            virReportOOMError();
+        if (virDomainHostdevInsert(vmdef, hostdev) < 0)
             return -1;
-        }
         dev->data.hostdev = NULL;
         ret = 0;
         break;
@@ -3241,15 +3231,11 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     }
 
     if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
-                    (unsigned long long)priv->initpid, def->dst) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid, def->dst) < 0)
         goto cleanup;
-    }
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto cleanup;
-    }
 
     mode = 0700;
     if (S_ISCHR(sb.st_mode))
@@ -3329,10 +3315,8 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     }
 
     /* preallocate new slot for device */
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
         return -1;
-    }
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -3466,31 +3450,23 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dstdir, "%s/dev/bus/%03d",
                     vroot,
-                    def->source.subsys.u.usb.bus) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.bus) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dstfile, "%s/%03d",
                     dstdir,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.device) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&src, "/dev/bus/usb/%03d/%03d",
                     def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.device) < 0)
         goto cleanup;
-    }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3599,22 +3575,16 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dst, "%s/%s",
                     vroot,
-                    def->source.caps.u.storage.block) < 0) {
-        virReportOOMError();
+                    def->source.caps.u.storage.block) < 0)
         goto cleanup;
-    }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
         goto cleanup;
-    }
 
     if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
         virReportSystemError(errno,
@@ -3710,22 +3680,16 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dst, "%s/%s",
                     vroot,
-                    def->source.caps.u.misc.chardev) < 0) {
-        virReportOOMError();
+                    def->source.caps.u.misc.chardev) < 0)
         goto cleanup;
-    }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
         goto cleanup;
-    }
 
     if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
         virReportSystemError(errno,
@@ -3913,10 +3877,8 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     def = vm->def->disks[i];
 
     if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
-                    (unsigned long long)priv->initpid, def->dst) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid, def->dst) < 0)
         goto cleanup;
-    }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4035,18 +3997,14 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     }
 
     if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)priv->initpid) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dst, "%s/dev/bus/usb/%03d/%03d",
                     vroot,
                     def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.device) < 0)
         goto cleanup;
-    }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4113,10 +4071,8 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
 
     if (virAsprintf(&dst, "/proc/%llu/root/%s",
                     (unsigned long long)priv->initpid,
-                    def->source.caps.u.storage.block) < 0) {
-        virReportOOMError();
+                    def->source.caps.u.storage.block) < 0)
         goto cleanup;
-    }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4174,10 +4130,8 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
 
     if (virAsprintf(&dst, "/proc/%llu/root/%s",
                     (unsigned long long)priv->initpid,
-                    def->source.caps.u.misc.chardev) < 0) {
-        virReportOOMError();
+                    def->source.caps.u.misc.chardev) < 0)
         goto cleanup;
-    }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",

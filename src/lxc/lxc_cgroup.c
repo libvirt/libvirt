@@ -547,10 +547,8 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
     if (!def->resource && startup) {
         virDomainResourceDefPtr res;
 
-        if (VIR_ALLOC(res) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(res) < 0)
             goto cleanup;
-        }
 
         if (VIR_STRDUP(res->partition, "/machine") < 0) {
             VIR_FREE(res);

@@ -52,10 +52,8 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
     virDomainDefPtr def = (virDomainDefPtr)context->private_data;
 
     memset(stbuf, 0, sizeof(struct stat));
-    if (virAsprintf(&mempath, "/proc/%s", path) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&mempath, "/proc/%s", path) < 0)
         return -errno;
-    }
 
     res = 0;
 
@@ -238,10 +236,8 @@ static int lxcProcRead(const char *path ATTRIBUTE_UNUSED,
     struct fuse_context *context = NULL;
     virDomainDefPtr def = NULL;
 
-    if (virAsprintf(&hostpath, "/proc/%s", path) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&hostpath, "/proc/%s", path) < 0)
         return -errno;
-    }
 
     context = fuse_get_context();
     def = (virDomainDefPtr)context->private_data;
@@ -297,10 +293,8 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
         goto cleanup2;
 
     if (virAsprintf(&fuse->mountpoint, "%s/%s.fuse/", LXC_STATE_DIR,
-                    def->name) < 0) {
-        virReportOOMError();
+                    def->name) < 0)
         goto cleanup1;
-    }
 
     if (virFileMakePath(fuse->mountpoint) < 0) {
         virReportSystemError(errno, _("Cannot create %s"),

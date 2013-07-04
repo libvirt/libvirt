@@ -117,7 +117,7 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
         if (STRNEQ(model, "none")) {
             /* Allocate just the primary security driver for LXC. */
             if (VIR_ALLOC(caps->host.secModels) < 0)
-                goto no_memory;
+                goto error;
             caps->host.nsecModels = 1;
             if (VIR_STRDUP(caps->host.secModels[0].model, model) < 0)
                 goto error;
@@ -132,9 +132,6 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
     }
 
     return caps;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virObjectUnref(caps);

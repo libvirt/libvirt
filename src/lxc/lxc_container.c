@@ -158,10 +158,8 @@ int lxcContainerHasReboot(void)
     VIR_FREE(buf);
     cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
 
-    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0)
         return -1;
-    }
 
     childStack = stack + (getpagesize() * 4);
 
@@ -383,7 +381,6 @@ static int lxcContainerRenameAndEnableInterfaces(bool privNet,
 
     for (i = 0; i < nveths; i++) {
         if (virAsprintf(&newname, "eth%zu", i) < 0) {
-            virReportOOMError();
             rc = -1;
             goto error_out;
         }
@@ -467,10 +464,8 @@ static int lxcContainerGetSubtree(const char *prefix,
         if (!STRPREFIX(mntent.mnt_dir, prefix))
             continue;
 
-        if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(mounts, nmounts+1) < 0)
             goto cleanup;
-        }
         if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
             goto cleanup;
         nmounts++;
@@ -568,10 +563,8 @@ static int lxcContainerPrepareRoot(virDomainDefPtr def,
     }
 
     if (virAsprintf(&dst, "%s/%s.root",
-                    LXC_STATE_DIR, def->name) < 0) {
-        virReportOOMError();
+                    LXC_STATE_DIR, def->name) < 0)
         return -1;
-    }
 
     tmp = root->dst;
     root->dst = dst;
@@ -606,10 +599,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
-    if (virAsprintf(&oldroot, "%s/.oldroot", root->src) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&oldroot, "%s/.oldroot", root->src) < 0)
         goto err;
-    }
 
     if (virFileMakePath(oldroot) < 0) {
         virReportSystemError(errno,
@@ -628,10 +619,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     /* Create a directory called 'new' in tmpfs */
-    if (virAsprintf(&newroot, "%s/new", oldroot) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&newroot, "%s/new", oldroot) < 0)
         goto err;
-    }
 
     if (virFileMakePath(newroot) < 0) {
         virReportSystemError(errno,
@@ -893,10 +882,8 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
 
     for (i = 0; i < nttyPaths; i++) {
         char *tty;
-        if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0)
             return -1;
-        }
         if (symlink(ttyPaths[i], tty) < 0) {
             VIR_FREE(tty);
             virReportSystemError(errno,
@@ -924,10 +911,8 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
     int ret = -1;
     struct stat st;
 
-    if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
-    }
 
     if (stat(fs->dst, &st) < 0) {
         if (errno != ENOENT) {
@@ -1097,10 +1082,8 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     /* First time around we use /etc/filesystems */
 retry:
     if (virAsprintf(&fslist, "/.oldroot%s",
-                    tryProc ? "/proc/filesystems" : "/etc/filesystems") < 0) {
-        virReportOOMError();
+                    tryProc ? "/proc/filesystems" : "/etc/filesystems") < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Open fslist %s", fslist);
     if (!(fp = fopen(fslist, "r"))) {
@@ -1254,10 +1237,8 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
     char *src = NULL;
     int ret = -1;
 
-    if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
-    }
 
     ret = lxcContainerMountFSBlockHelper(fs, src);
 
@@ -1276,10 +1257,8 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
     char *data = NULL;
 
     if (virAsprintf(&data,
-                    "size=%lldk%s", fs->usage, sec_mount_options) < 0) {
-        virReportOOMError();
+                    "size=%lldk%s", fs->usage, sec_mount_options) < 0)
         goto cleanup;
-    }
 
     if (virFileMakePath(fs->dst) < 0) {
         virReportSystemError(errno,
@@ -1396,15 +1375,11 @@ static int lxcContainerSetupDisk(virDomainDefPtr vmDef,
         goto cleanup;
     }
 
-    if (virAsprintf(&src, "/.oldroot/%s", def->src) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "/.oldroot/%s", def->src) < 0)
         goto cleanup;
-    }
 
-    if (virAsprintf(&dst, "/dev/%s", def->dst) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&dst, "/dev/%s", def->dst) < 0)
         goto cleanup;
-    }
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
@@ -1484,22 +1459,16 @@ static int lxcContainerSetupHostdevSubsysUSB(virDomainDefPtr vmDef ATTRIBUTE_UNU
     mode_t mode;
 
     if (virAsprintf(&dstdir, USB_DEVFS "/%03d",
-                    def->source.subsys.u.usb.bus) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.bus) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&dstfile, "%s/%03d",
                     dstdir,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError();
+                    def->source.subsys.u.usb.device) < 0)
         goto cleanup;
-    }
 
-    if (virAsprintf(&src, "/.oldroot/%s", dstfile) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "/.oldroot/%s", dstfile) < 0)
         goto cleanup;
-    }
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
@@ -1586,10 +1555,8 @@ static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_U
         goto cleanup;
     }
 
-    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0)
         goto cleanup;
-    }
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
@@ -1650,10 +1617,8 @@ static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0)
         goto cleanup;
-    }
 
     if (stat(src, &sb) < 0) {
         virReportSystemError(errno,
@@ -2002,10 +1967,8 @@ static int lxcContainerChild(void *data)
         if (STRPREFIX(tty, "/dev/pts/"))
             tty += strlen("/dev/pts/");
         if (virAsprintf(&ttyPath, "%s/%s.devpts/%s",
-                        LXC_STATE_DIR, vmDef->name, tty) < 0) {
-            virReportOOMError();
+                        LXC_STATE_DIR, vmDef->name, tty) < 0)
             goto cleanup;
-        }
     } else if (VIR_STRDUP(ttyPath, "/dev/null") < 0) {
             goto cleanup;
     }
@@ -2156,10 +2119,8 @@ int lxcContainerStart(virDomainDefPtr def,
                               ttyPaths, nttyPaths, handshakefd};
 
     /* allocate a stack for the container */
-    if (VIR_ALLOC_N(stack, stacksize) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(stack, stacksize) < 0)
         return -1;
-    }
     stacktop = stack + stacksize;
 
     cflags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;

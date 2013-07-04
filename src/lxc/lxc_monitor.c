@@ -155,7 +155,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     socketdir, vm->def->name) < 0)
-        goto no_memory;
+        goto error;
 
     if (!(mon->client = virNetClientNewUNIX(sockpath, false, NULL)))
         goto error;
@@ -185,8 +185,6 @@ cleanup:
     VIR_FREE(sockpath);
     return mon;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(mon);
     mon = NULL;
