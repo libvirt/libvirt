@@ -1361,15 +1361,16 @@ storageVolLookupByKey(virConnectPtr conn,
                 virStorageVolDefFindByKey(driver->pools.objs[i], key);
 
             if (vol) {
-                if (virStorageVolLookupByKeyEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0)
+                if (virStorageVolLookupByKeyEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0) {
+                    virStoragePoolObjUnlock(driver->pools.objs[i]);
                     goto cleanup;
+                }
 
                 ret = virGetStorageVol(conn,
                                        driver->pools.objs[i]->def->name,
                                        vol->name,
                                        vol->key,
                                        NULL, NULL);
-                goto cleanup;
             }
         }
         virStoragePoolObjUnlock(driver->pools.objs[i]);
@@ -1421,15 +1422,16 @@ storageVolLookupByPath(virConnectPtr conn,
             VIR_FREE(stable_path);
 
             if (vol) {
-                if (virStorageVolLookupByPathEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0)
+                if (virStorageVolLookupByPathEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0) {
+                    virStoragePoolObjUnlock(driver->pools.objs[i]);
                     goto cleanup;
+                }
 
                 ret = virGetStorageVol(conn,
                                        driver->pools.objs[i]->def->name,
                                        vol->name,
                                        vol->key,
                                        NULL, NULL);
-                goto cleanup;
             }
         }
         virStoragePoolObjUnlock(driver->pools.objs[i]);
