@@ -49,10 +49,8 @@ static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
     unsigned long msg_buf_size = VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX;
     int ret = -1;
 
-    if (!msg) {
-        virReportOOMError();
+    if (!msg)
         return -1;
-    }
 
     msg->header.prog = 0x11223344;
     msg->header.vers = 0x01;
@@ -101,16 +99,12 @@ static int testMessageHeaderDecode(const void *args ATTRIBUTE_UNUSED)
     };
     int ret = -1;
 
-    if (!msg) {
-        virReportOOMError();
+    if (!msg)
         return -1;
-    }
 
     msg->bufferLength = 4;
-    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
         goto cleanup;
-    }
     memcpy(msg->buffer, input_buf, msg->bufferLength);
 
     msg->header.prog = 0x11223344;
@@ -225,10 +219,8 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
         0x00, 0x00, 0x00, 0x00,  /* Error network pointer */
     };
 
-    if (!msg) {
-        virReportOOMError();
+    if (!msg)
         return -1;
-    }
 
     memset(&err, 0, sizeof(err));
 
@@ -336,10 +328,8 @@ static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
 
     msg->bufferLength = 4;
-    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
         goto cleanup;
-    }
     memcpy(msg->buffer, input_buffer, msg->bufferLength);
     memset(&err, 0, sizeof(err));
 

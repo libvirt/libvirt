@@ -87,10 +87,8 @@ static int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
 
     if (have < want) {
         size_t need = want - have;
-        if (VIR_EXPAND_N(test->outgoing, test->outgoingCapacity, need) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(test->outgoing, test->outgoingCapacity, need) < 0)
             return -1;
-        }
     }
 
     want -= 2;
@@ -403,7 +401,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     qemuMonitorTestItemPtr item;
 
     if (VIR_ALLOC(item) < 0)
-        goto no_memory;
+        goto error;
 
     if (VIR_STRDUP(item->command_name, command_name) < 0 ||
         VIR_STRDUP(item->response, response) < 0)
@@ -412,7 +410,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     virMutexLock(&test->lock);
     if (VIR_EXPAND_N(test->items, test->nitems, 1) < 0) {
         virMutexUnlock(&test->lock);
-        goto no_memory;
+        goto error;
     }
     test->items[test->nitems - 1] = item;
 
@@ -420,8 +418,6 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuMonitorTestItemFree(item);
     return -1;
@@ -457,7 +453,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     char *tmpdir_template = NULL;
 
     if (VIR_ALLOC(test) < 0)
-        goto no_memory;
+        goto error;
 
     if (virMutexInit(&test->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -478,7 +474,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     tmpdir_template = NULL;
 
     if (virAsprintf(&path, "%s/qemumonitorjsontest.sock", test->tmpdir) < 0)
-        goto no_memory;
+        goto error;
 
     test->json = json;
     if (!(test->vm = virDomainObjNew(xmlopt)))
@@ -537,9 +533,6 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
 cleanup:
     VIR_FREE(path);
     return test;
-
-no_memory:
-    virReportOOMError();
 
 error:
     VIR_FREE(tmpdir_template);

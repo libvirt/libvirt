@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         origenv++;
     }
 
-    if (VIR_ALLOC_N(newenv, n) < 0)
+    if (VIR_ALLOC_N_QUIET(newenv, n) < 0)
         return EXIT_FAILURE;
 
     origenv = environ;

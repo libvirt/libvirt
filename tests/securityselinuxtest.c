@@ -69,13 +69,13 @@ testBuildDomainDef(bool dynamic,
     virSecurityLabelDefPtr secdef;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto error;
 
     if (VIR_ALLOC_N(def->seclabels, 1) < 0)
-        goto no_memory;
+        goto error;
 
     if (VIR_ALLOC(secdef) < 0)
-        goto no_memory;
+        goto error;
 
     def->virtType = VIR_DOMAIN_VIRT_KVM;
     def->seclabels[0] = secdef;
@@ -91,8 +91,6 @@ testBuildDomainDef(bool dynamic,
 
     return def;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainDefFree(def);
     return NULL;

@@ -820,10 +820,8 @@ static int test20(const void *unused ATTRIBUTE_UNUSED)
 
     sigaction(SIGPIPE, &sig_action, NULL);
 
-    if (virAsprintf(&buf, "1\n%100000d\n", 2) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&buf, "1\n%100000d\n", 2) < 0)
         goto cleanup;
-    }
     virCommandSetInputBuffer(cmd, buf);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -996,10 +994,8 @@ mymain(void)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
-    if (VIR_ALLOC(test) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(test) < 0)
         goto cleanup;
-    }
 
     if (virMutexInit(&test->lock) < 0) {
         printf("Unable to init mutex: %d\n", errno);

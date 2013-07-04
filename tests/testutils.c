@@ -103,7 +103,7 @@ void virtTestResult(const char *name, int ret, const char *msg, ...)
             fprintf(stderr, "FAILED\n");
             if (msg) {
                 char *str;
-                if (virVasprintf(&str, msg, vargs) == 0) {
+                if (virVasprintfQuiet(&str, msg, vargs) == 0) {
                     fprintf(stderr, "%s", str);
                     VIR_FREE(str);
                 }

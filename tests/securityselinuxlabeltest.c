@@ -61,10 +61,8 @@ testSELinuxMungePath(char **path)
     char *tmp;
 
     if (virAsprintf(&tmp, "%s/securityselinuxlabeldata%s",
-                    abs_builddir, *path) < 0) {
-        virReportOOMError();
+                    abs_builddir, *path) < 0)
         return -1;
-    }
 
     VIR_FREE(*path);
     *path = tmp;
@@ -85,19 +83,15 @@ testSELinuxLoadFileList(const char *testname,
     *nfiles = 0;
 
     if (virAsprintf(&path, "%s/securityselinuxlabeldata/%s.txt",
-                    abs_srcdir, testname) < 0) {
-        virReportOOMError();
+                    abs_srcdir, testname) < 0)
         goto cleanup;
-    }
 
     if (!(fp = fopen(path, "r"))) {
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(line, 1024) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(line, 1024) < 0)
         goto cleanup;
-    }
 
     while (!feof(fp)) {
         char *file, *context, *tmp;
@@ -118,10 +112,8 @@ testSELinuxLoadFileList(const char *testname,
         tmp++;
 
         if (virAsprintf(&file, "%s/securityselinuxlabeldata%s",
-                        abs_builddir, line) < 0) {
-            virReportOOMError();
+                        abs_builddir, line) < 0)
             goto cleanup;
-        }
         if (*tmp != '\0' && *tmp != '\n') {
             if (VIR_STRDUP(context, tmp) < 0) {
                 VIR_FREE(file);
@@ -135,10 +127,8 @@ testSELinuxLoadFileList(const char *testname,
             context = NULL;
         }
 
-        if (VIR_EXPAND_N(*files, *nfiles, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(*files, *nfiles, 1) < 0)
             goto cleanup;
-        }
 
         (*files)[(*nfiles)-1].file = file;
         (*files)[(*nfiles)-1].context = context;
@@ -163,10 +153,8 @@ testSELinuxLoadDef(const char *testname)
     size_t i;
 
     if (virAsprintf(&xmlfile, "%s/securityselinuxlabeldata/%s.xml",
-                    abs_srcdir, testname) < 0) {
-        virReportOOMError();
+                    abs_srcdir, testname) < 0)
         goto cleanup;
-    }
 
     if (virFileReadAll(xmlfile, 1024*1024, &xmlstr) < 0) {
         goto cleanup;

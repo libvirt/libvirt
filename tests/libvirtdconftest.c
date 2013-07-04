@@ -78,10 +78,8 @@ munge_param(const char *datain,
         strlen(replace) +
         strlen(eol) + 1;
 
-    if (VIR_ALLOC_N(dataout, dataoutlen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(dataout, dataoutlen) < 0)
         return NULL;
-    }
     memcpy(dataout, datain, (eq - datain) + 1);
     memcpy(dataout + (eq - datain) + 1,
            replace, strlen(replace));
