@@ -88,10 +88,8 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) < 0)
         goto cleanup;
-    }
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
@@ -465,7 +463,6 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
     if (VIR_ALLOC_N(passphrase, size + 1) < 0) {
         memset(data, 0, size);
         VIR_FREE(data);
-        virReportOOMError();
         goto cleanup;
     }
     memcpy(passphrase, data, size);
@@ -879,8 +876,6 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                     vm = NULL;
                 VIR_FREE(processEvent);
             }
-        } else {
-            virReportOOMError();
         }
     }
 
@@ -1023,24 +1018,24 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     int i;
 
     if (VIR_ALLOC(localAddr) < 0)
-        goto no_memory;
+        goto error;
     localAddr->family = localFamily;
     if (VIR_STRDUP(localAddr->service, localService) < 0 ||
         VIR_STRDUP(localAddr->node, localNode) < 0)
         goto error;
 
     if (VIR_ALLOC(remoteAddr) < 0)
-        goto no_memory;
+        goto error;
     remoteAddr->family = remoteFamily;
     if (VIR_STRDUP(remoteAddr->service, remoteService) < 0 ||
         VIR_STRDUP(remoteAddr->node, remoteNode) < 0)
         goto error;
 
     if (VIR_ALLOC(subject) < 0)
-        goto no_memory;
+        goto error;
     if (x509dname) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
-            goto no_memory;
+            goto error;
         subject->nidentity++;
         if (VIR_STRDUP(subject->identities[subject->nidentity-1].type, "x509dname") < 0 ||
             VIR_STRDUP(subject->identities[subject->nidentity-1].name, x509dname) < 0)
@@ -1048,7 +1043,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
     if (saslUsername) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
-            goto no_memory;
+            goto error;
         subject->nidentity++;
         if (VIR_STRDUP(subject->identities[subject->nidentity-1].type, "saslUsername") < 0 ||
             VIR_STRDUP(subject->identities[subject->nidentity-1].name, saslUsername) < 0)
@@ -1064,8 +1059,6 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     if (localAddr) {
         VIR_FREE(localAddr->service);
@@ -1296,10 +1289,8 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     struct qemuProcessEvent *processEvent;
 
     virObjectLock(vm);
-    if (VIR_ALLOC(processEvent) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(processEvent) < 0)
         goto cleanup;
-    }
 
     processEvent->eventType = QEMU_PROCESS_EVENT_GUESTPANIC;
     processEvent->action = vm->def->onCrash;
@@ -1733,10 +1724,8 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
         if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
             return -1;
 
-        if (VIR_ALLOC_N(buf, buf_size) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(buf, buf_size) < 0)
             goto closelog;
-        }
 
         if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
                                      qemuProcessFindCharDevicePTYs,
@@ -1777,10 +1766,8 @@ cleanup:
             if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
                 return -1;
 
-            if (VIR_ALLOC_N(buf, buf_size) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(buf, buf_size) < 0)
                 goto closelog;
-            }
         }
 
         len = strlen(buf);
@@ -1820,10 +1807,8 @@ qemuProcessDetectVcpuPIDs(virQEMUDriverPtr driver,
         virResetLastError();
 
         priv->nvcpupids = 1;
-        if (VIR_ALLOC_N(priv->vcpupids, priv->nvcpupids) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
             return -1;
-        }
         priv->vcpupids[0] = vm->pid;
         return 0;
     }
@@ -1864,10 +1849,8 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
-    if (!(cpumap = virBitmapNew(maxcpu))) {
-        virReportOOMError();
+    if (!(cpumap = virBitmapNew(maxcpu)))
         return NULL;
-    }
 
     if (nodemask) {
         if (!(caps = virQEMUDriverGetCapabilities(driver, false))) {
@@ -2577,13 +2560,8 @@ qemuProcessPrepareMonitorChr(virQEMUDriverConfigPtr cfg,
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = true;
 
-    if (virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
-                    cfg->libDir, vm) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
+                       cfg->libDir, vm);
 }
 
 
@@ -3172,10 +3150,8 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     struct qemuProcessReconnectData *src = opaque;
     struct qemuProcessReconnectData *data;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return -1;
-    }
 
     memcpy(data, src, sizeof(*data));
     data->payload = obj;
@@ -3536,10 +3512,8 @@ int qemuProcessStart(virConnectPtr conn,
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
             graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (graphics->nListens == 0) {
-                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0) {
-                    virReportOOMError();
+                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0)
                     goto cleanup;
-                }
                 graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
                 if (VIR_STRDUP(graphics->listens[0].address,
                                graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
@@ -3621,10 +3595,8 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuSetupCgroup(driver, vm, nodemask) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(priv->monConfig) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Preparing monitor state");
     if (qemuProcessPrepareMonitorChr(cfg, priv->monConfig, vm->def->name) < 0)
@@ -3693,7 +3665,6 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     if ((timestamp = virTimeStringNow()) == NULL) {
-        virReportOOMError();
         goto cleanup;
     } else {
         if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
@@ -4053,9 +4024,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         VIR_WARN("Unable to open logfile: %s",
                   virStrerror(errno, ebuf, sizeof(ebuf)));
     } else {
-        if ((timestamp = virTimeStringNow()) == NULL) {
-            virReportOOMError();
-        } else {
+        if ((timestamp = virTimeStringNow()) != NULL) {
             if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
                 safewrite(logfile, SHUTDOWN_POSTFIX,
                           strlen(SHUTDOWN_POSTFIX)) < 0) {
@@ -4336,7 +4305,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
         seclabeldef->type = VIR_DOMAIN_SECLABEL_STATIC;
         if (VIR_ALLOC(seclabel) < 0)
-            goto no_memory;
+            goto cleanup;
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
                                               vm->def, vm->pid, seclabel) < 0)
             goto cleanup;
@@ -4380,7 +4349,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if ((timestamp = virTimeStringNow()) == NULL) {
-        virReportOOMError();
         goto cleanup;
     } else {
         if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
@@ -4474,8 +4442,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 cleanup:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and

@@ -277,10 +277,8 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             goto error;
     }
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -387,10 +385,8 @@ int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -440,10 +436,8 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
 
     /* No SCSI controller present, for backward compatibility we
      * now hotplug a controller */
-    if (VIR_ALLOC(cont) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cont) < 0)
         return NULL;
-    }
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
     cont->idx = controller;
     cont->model = -1;
@@ -534,10 +528,8 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
     }
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -638,10 +630,8 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
             goto error;
     }
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -711,10 +701,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     int i;
 
     /* preallocate new slot for device */
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
         goto cleanup;
-    }
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -758,10 +746,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
         if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
-            VIR_ALLOC_N(vhostfd, vhostfdSize) < 0) {
-            virReportOOMError();
+            VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
             goto cleanup;
-        }
         if (qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                     priv->qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
@@ -770,10 +756,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         tapfdSize = vhostfdSize = 1;
-        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0)
             goto cleanup;
-        }
         if ((tapfd[0] = qemuPhysIfaceConnect(vm->def, driver, net,
                                              priv->qemuCaps,
                                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
@@ -783,10 +767,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
         vhostfdSize = 1;
-        if (VIR_ALLOC(vhostfd) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(vhostfd) < 0)
             goto cleanup;
-        }
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
@@ -826,19 +808,17 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(tapfdName, tapfdSize) < 0 ||
-        VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0) {
-        virReportOOMError();
+        VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < tapfdSize; i++) {
         if (virAsprintf(&tapfdName[i], "fd-%s%d", net->info.alias, i) < 0)
-            goto no_memory;
+            goto cleanup;
     }
 
     for (i = 0; i < vhostfdSize; i++) {
         if (virAsprintf(&vhostfdName[i], "vhostfd-%s%d", net->info.alias, i) < 0)
-            goto no_memory;
+            goto cleanup;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
@@ -1003,7 +983,7 @@ try_remove:
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
             char *netdev_name;
             if (virAsprintf(&netdev_name, "host%s", net->info.alias) < 0)
-                goto no_memory;
+                goto cleanup;
             qemuDomainObjEnterMonitor(driver, vm);
             if (qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
                 VIR_WARN("Failed to remove network backend for netdev %s",
@@ -1016,7 +996,7 @@ try_remove:
     } else {
         char *hostnet_name;
         if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
-            goto no_memory;
+            goto cleanup;
         qemuDomainObjEnterMonitor(driver, vm);
         if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
             VIR_WARN("Failed to remove network backend for vlan %d, net %s",
@@ -1024,10 +1004,6 @@ try_remove:
         qemuDomainObjExitMonitor(driver, vm);
         VIR_FREE(hostnet_name);
     }
-    goto cleanup;
-
-no_memory:
-    virReportOOMError();
     goto cleanup;
 }
 
@@ -1043,10 +1019,8 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     char *configfd_name = NULL;
     bool releaseaddr = false;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
         return -1;
-    }
 
     if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
                                      &hostdev, 1) < 0)
@@ -1083,10 +1057,8 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
                 if (virAsprintf(&configfd_name, "fd-%s",
-                                hostdev->info->alias) < 0) {
-                    virReportOOMError();
+                                hostdev->info->alias) < 0)
                     goto error;
-                }
             }
         }
 
@@ -1162,10 +1134,8 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
             goto error;
     }
 
-    if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0)
         goto error;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
@@ -1223,10 +1193,8 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
@@ -1291,10 +1259,8 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if ((ret = qemuMonitorAddDrive(priv->mon, drvstr)) == 0) {
@@ -2208,10 +2174,8 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     /* build the actual drive id string as the disk->info.alias doesn't
      * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
     if (virAsprintf(&drivestr, "%s%s",
-                    QEMU_DRIVE_HOST_PREFIX, detach->info.alias) < 0) {
-        virReportOOMError();
+                    QEMU_DRIVE_HOST_PREFIX, detach->info.alias) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -2307,10 +2271,8 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     /* build the actual drive id string as the disk->info.alias doesn't
      * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
     if (virAsprintf(&drivestr, "%s%s",
-                    QEMU_DRIVE_HOST_PREFIX, detach->info.alias) < 0) {
-        virReportOOMError();
+                    QEMU_DRIVE_HOST_PREFIX, detach->info.alias) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
@@ -2829,10 +2791,8 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0)
         goto cleanup;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {

@@ -348,10 +348,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     xmlNodePtr *nodes = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
 
-    if (VIR_ALLOC(priv->monConfig) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv->monConfig) < 0)
         goto error;
-    }
 
     if (!(monitorpath =
           virXPathString("string(./monitor[1]/@path)", ctxt))) {
@@ -390,10 +388,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     if (n) {
         priv->nvcpupids = n;
-        if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
             goto error;
-        }
 
         for (i = 0; i < n; i++) {
             char *pidstr = virXMLPropString(nodes[i], "pid");
@@ -536,10 +532,8 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (VIR_ALLOC(cmd) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cmd) < 0)
         return -1;
-    }
 
     /* first handle the extra command-line arguments */
     n = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes);
@@ -548,7 +542,7 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     uses_qemu_ns |= n > 0;
 
     if (n && VIR_ALLOC_N(cmd->args, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");
@@ -569,10 +563,10 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     uses_qemu_ns |= n > 0;
 
     if (n && VIR_ALLOC_N(cmd->env_name, n) < 0)
-        goto no_memory;
+        goto error;
 
     if (n && VIR_ALLOC_N(cmd->env_value, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         char *tmp;
@@ -614,9 +608,6 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
         VIR_FREE(cmd);
 
     return 0;
-
-no_memory:
-    virReportOOMError();
 
 error:
     VIR_FREE(nodes);
@@ -800,10 +791,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         if (virAsprintf(&dev->data.chr->source.data.nix.path,
                         "%s/channel/target/%s.%s",
                         cfg->libDir, def->name,
-                        dev->data.chr->target.name) < 0) {
-            virReportOOMError();
+                        dev->data.chr->target.name) < 0)
             goto cleanup;
-        }
         dev->data.chr->source.data.nix.listen = true;
     }
 
@@ -1393,7 +1382,6 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             ncontrollers = def->ncontrollers;
             if (VIR_ALLOC_N(def->controllers, ncontrollers - toremove) < 0) {
                 controllers = NULL;
-                virReportOOMError();
                 goto cleanup;
             }
 
@@ -1581,10 +1569,8 @@ qemuDomainOpenLogHelper(virQEMUDriverConfigPtr cfg,
     int fd = -1;
     bool trunc = false;
 
-    if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
         return -1;
-    }
 
     /* To make SELinux happy we always need to open in append mode.
      * So we fake O_TRUNC by calling ftruncate after open instead
@@ -1694,10 +1680,8 @@ int qemuDomainAppendLog(virQEMUDriverPtr driver,
         (fd = qemuDomainCreateLog(driver, obj, true)) < 0)
         goto cleanup;
 
-    if (virVasprintf(&message, fmt, argptr) < 0) {
-        virReportOOMError();
+    if (virVasprintf(&message, fmt, argptr) < 0)
         goto cleanup;
-    }
     if (safewrite(fd, message, strlen(message)) < 0) {
         virReportSystemError(errno, _("Unable to write to domain logfile %s"),
                              obj->def->name);
@@ -1744,20 +1728,16 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     if (newxml == NULL)
         return -1;
 
-    if (virAsprintf(&snapDir, "%s/%s", snapshotDir, vm->def->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&snapDir, "%s/%s", snapshotDir, vm->def->name) < 0)
         goto cleanup;
-    }
     if (virFileMakePath(snapDir) < 0) {
         virReportSystemError(errno, _("cannot create snapshot directory '%s'"),
                              snapDir);
         goto cleanup;
     }
 
-    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&snapFile, "%s/%s.xml", snapDir, snapshot->def->name) < 0)
         goto cleanup;
-    }
 
     ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);
 
@@ -1889,10 +1869,8 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     }
 
     if (virAsprintf(&snapFile, "%s/%s/%s.xml", cfg->snapshotDir,
-                    vm->def->name, snap->def->name) < 0) {
-        virReportOOMError();
+                    vm->def->name, snap->def->name) < 0)
         goto cleanup;
-    }
 
     if (snap == vm->current_snapshot) {
         if (update_current && snap->def->parent) {
@@ -2101,10 +2079,8 @@ qemuDomainCleanupAdd(virDomainObjPtr vm,
 
     if (VIR_RESIZE_N(priv->cleanupCallbacks,
                      priv->ncleanupCallbacks_max,
-                     priv->ncleanupCallbacks, 1) < 0) {
-        virReportOOMError();
+                     priv->ncleanupCallbacks, 1) < 0)
         return -1;
-    }
 
     priv->cleanupCallbacks[priv->ncleanupCallbacks++] = cb;
     return 0;

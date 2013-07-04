@@ -138,31 +138,31 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (privileged) {
         if (virAsprintf(&cfg->logDir,
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
 
         if (VIR_STRDUP(cfg->configBaseDir, SYSCONFDIR "/libvirt") < 0)
             goto error;
 
         if (virAsprintf(&cfg->stateDir,
                       "%s/run/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
 
         if (virAsprintf(&cfg->libDir,
                       "%s/lib/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
 
         if (virAsprintf(&cfg->cacheDir,
                       "%s/cache/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->saveDir,
                       "%s/lib/libvirt/qemu/save", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->snapshotDir,
                         "%s/lib/libvirt/qemu/snapshot", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->autoDumpPath,
                         "%s/lib/libvirt/qemu/dump", LOCALSTATEDIR) < 0)
-            goto no_memory;
+            goto error;
     } else {
         char *rundir;
         char *cachedir;
@@ -174,11 +174,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         if (virAsprintf(&cfg->logDir,
                         "%s/qemu/log", cachedir) < 0) {
             VIR_FREE(cachedir);
-            goto no_memory;
+            goto error;
         }
         if (virAsprintf(&cfg->cacheDir, "%s/qemu/cache", cachedir) < 0) {
             VIR_FREE(cachedir);
-            goto no_memory;
+            goto error;
         }
         VIR_FREE(cachedir);
 
@@ -187,7 +187,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->stateDir, "%s/qemu/run", rundir) < 0) {
             VIR_FREE(rundir);
-            goto no_memory;
+            goto error;
         }
         VIR_FREE(rundir);
 
@@ -195,19 +195,19 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
 
         if (virAsprintf(&cfg->libDir, "%s/qemu/lib", cfg->configBaseDir) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->saveDir, "%s/qemu/save", cfg->configBaseDir) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->snapshotDir, "%s/qemu/snapshot", cfg->configBaseDir) < 0)
-            goto no_memory;
+            goto error;
         if (virAsprintf(&cfg->autoDumpPath, "%s/qemu/dump", cfg->configBaseDir) < 0)
-            goto no_memory;
+            goto error;
     }
 
     if (virAsprintf(&cfg->configDir, "%s/qemu", cfg->configBaseDir) < 0)
-        goto no_memory;
+        goto error;
     if (virAsprintf(&cfg->autostartDir, "%s/qemu/autostart", cfg->configBaseDir) < 0)
-        goto no_memory;
+        goto error;
 
 
     if (VIR_STRDUP(cfg->vncListen, "127.0.0.1") < 0)
@@ -255,8 +255,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
     return cfg;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(cfg);
     return NULL;
@@ -377,7 +375,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         }
 
         if (VIR_ALLOC_N(cfg->securityDriverNames, len + 1) < 0)
-            goto no_memory;
+            goto cleanup;
 
         for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
             if (VIR_STRDUP(cfg->securityDriverNames[i], pp->str) < 0)
@@ -388,7 +386,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         CHECK_TYPE("security_driver", VIR_CONF_STRING);
         if (p && p->str) {
             if (VIR_ALLOC_N(cfg->securityDriverNames, 2) < 0)
-                goto no_memory;
+                goto cleanup;
             if (VIR_STRDUP(cfg->securityDriverNames[0], p->str) < 0)
                 goto cleanup;
 
@@ -508,7 +506,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         for (pp = p->list; pp; pp = pp->next)
             len++;
         if (VIR_ALLOC_N(cfg->cgroupDeviceACL, 1+len) < 0)
-            goto no_memory;
+            goto cleanup;
 
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
@@ -555,10 +553,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 cleanup:
     virConfFree(conf);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 #undef GET_VALUE_BOOL
 #undef GET_VALUE_LONG
@@ -594,7 +588,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 
     /* Basic host arch / guest machine capabilities */
     if (!(caps = virQEMUCapsInit(driver->qemuCapsCache)))
-        goto no_memory;
+        goto error;
 
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -612,7 +606,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     caps->host.nsecModels = i;
 
     if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; sec_managers[i]; i++) {
         doi = virSecurityManagerGetDOI(sec_managers[i]);
@@ -628,8 +622,6 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     virObjectUnref(cfg);
     return caps;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(sec_managers);
     virObjectUnref(caps);
@@ -740,10 +732,8 @@ virQEMUCloseCallbacksSet(virQEMUCloseCallbacksPtr closeCallbacks,
 
         closeDef->cb = cb;
     } else {
-        if (VIR_ALLOC(closeDef) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(closeDef) < 0)
             goto cleanup;
-        }
 
         closeDef->conn = conn;
         closeDef->cb = cb;
@@ -878,10 +868,8 @@ virQEMUCloseCallbacksGetForConn(virQEMUCloseCallbacksPtr closeCallbacks,
     virQEMUCloseCallbacksListPtr list = NULL;
     struct virQEMUCloseCallbacksData data;
 
-    if (VIR_ALLOC(list) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(list) < 0)
         return NULL;
-    }
 
     data.conn = conn;
     data.list = list;
@@ -965,10 +953,8 @@ qemuGetSharedDeviceKey(const char *device_path)
         return NULL;
     }
 
-    if (virAsprintf(&key, "%d:%d", maj, min) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&key, "%d:%d", maj, min) < 0)
         return NULL;
-    }
 
     return key;
 }
@@ -1013,10 +999,8 @@ qemuCheckSharedDevice(virHashTablePtr sharedDevices,
                                                      hostdev->source.subsys.u.scsi.unit)))
             goto cleanup;
 
-        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0)
             goto cleanup;
-        }
 
         device_path = hostdev_path;
     } else {
@@ -1127,15 +1111,11 @@ qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntryPtr entry)
     qemuSharedDeviceEntryPtr ret = NULL;
     size_t i;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
-    if (VIR_ALLOC_N(ret->domains, entry->ref) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret->domains, entry->ref) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < entry->ref; i++) {
         if (VIR_STRDUP(ret->domains[i], entry->domains[i]) < 0)
@@ -1212,10 +1192,8 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
                                                  hostdev->source.subsys.u.scsi.unit)))
             goto cleanup;
 
-        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
             goto cleanup;
-        }
 
         if (!(key = qemuGetSharedDeviceKey(dev_path)))
             goto cleanup;
@@ -1236,7 +1214,6 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
         if (VIR_EXPAND_N(new_entry->domains, new_entry->ref, 1) < 0 ||
             VIR_STRDUP(new_entry->domains[new_entry->ref - 1], name) < 0) {
             qemuSharedDeviceEntryFree(new_entry, NULL);
-            virReportOOMError();
             goto cleanup;
         }
 
@@ -1249,7 +1226,6 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
             VIR_ALLOC_N(entry->domains, 1) < 0 ||
             VIR_STRDUP(entry->domains[0], name) < 0) {
             qemuSharedDeviceEntryFree(entry, NULL);
-            virReportOOMError();
             goto cleanup;
         }
 
@@ -1325,10 +1301,8 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
                                                  hostdev->source.subsys.u.scsi.unit)))
             goto cleanup;
 
-        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
             goto cleanup;
-        }
 
         if (!(key = qemuGetSharedDeviceKey(dev_path)))
             goto cleanup;
@@ -1415,10 +1389,8 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
                                                      hostdev->source.subsys.u.scsi.unit)))
             goto cleanup;
 
-        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0)
             goto cleanup;
-        }
 
         path = hostdev_path;
     } else {

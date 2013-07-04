@@ -252,10 +252,8 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
 
     if (!(cmdstr = virJSONValueToString(cmd, false)))
         goto cleanup;
-    if (virAsprintf(&msg.txBuffer, "%s\r\n", cmdstr) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&msg.txBuffer, "%s\r\n", cmdstr) < 0)
         goto cleanup;
-    }
     msg.txLength = strlen(msg.txBuffer);
     msg.txFD = scm_fd;
 
@@ -409,11 +407,11 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
     va_start(args, cmdname);
 
     if (!(obj = virJSONValueNewObject()))
-        goto no_memory;
+        goto error;
 
     if (virJSONValueObjectAppendString(obj, wrap ? "type" : "execute",
                                        cmdname) < 0)
-        goto no_memory;
+        goto error;
 
     while ((key = va_arg(args, char *)) != NULL) {
         int ret;
@@ -432,7 +430,7 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
 
         if (!jargs &&
             !(jargs = virJSONValueNewObject()))
-            goto no_memory;
+            goto error;
 
         /* This doesn't support maps, but no command uses those.  */
         switch (type) {
@@ -488,19 +486,17 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
             goto error;
         }
         if (ret < 0)
-            goto no_memory;
+            goto error;
     }
 
     if (jargs &&
         virJSONValueObjectAppend(obj, wrap ? "data" : "arguments", jargs) < 0)
-        goto no_memory;
+        goto error;
 
     va_end(args);
 
     return obj;
 
-no_memory:
-    virReportOOMError();
 error:
     virJSONValueFree(obj);
     virJSONValueFree(jargs);
@@ -533,7 +529,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     int i;
 
     if (!(ret = virJSONValueNewObject()))
-        goto no_memory;
+        goto error;
 
     nkeywords = qemuParseKeywords(str, &keywords, &values, 1);
 
@@ -550,19 +546,17 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
                 /* This 3rd arg isn't a typo - the way the parser works is
                  * that the value ended up in the keyword field */
                 if (virJSONValueObjectAppendString(ret, firstkeyword, keywords[i]) < 0)
-                    goto no_memory;
+                    goto error;
             }
         } else {
             if (virJSONValueObjectAppendString(ret, keywords[i], values[i]) < 0)
-                goto no_memory;
+                goto error;
         }
     }
 
     qemuFreeKeywords(nkeywords, keywords, values);
     return ret;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuFreeKeywords(nkeywords, keywords, values);
     virJSONValueFree(ret);
@@ -1202,10 +1196,8 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(threads, ncpus) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(threads, ncpus) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < ncpus; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
@@ -1545,10 +1537,8 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
             thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-        if (VIR_ALLOC(info) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(info) < 0)
             goto cleanup;
-        }
 
         if (virHashAddEntry(table, thisdev, info) < 0) {
             VIR_FREE(info);
@@ -2885,10 +2875,8 @@ int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
     if (!args)
         goto cleanup;
 
-    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0) {
-        virReportOOMError();
+    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
         goto cleanup;
-    }
     args = NULL; /* obj owns reference to args now */
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
@@ -3082,10 +3070,8 @@ int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
     if (!args)
         goto cleanup;
 
-    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0) {
-        virReportOOMError();
+    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
         goto cleanup;
-    }
     args = NULL; /* obj owns reference to args now */
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
@@ -3139,10 +3125,8 @@ int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     char *drive;
 
-    if (virAsprintf(&drive, "%s%s", QEMU_DRIVE_HOST_PREFIX, alias) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&drive, "%s%s", QEMU_DRIVE_HOST_PREFIX, alias) < 0)
         return -1;
-    }
 
     cmd = qemuMonitorJSONMakeCommand("block_passwd",
                                      "s:device", drive,
@@ -3204,9 +3188,7 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
         return -1;
 
     if (actions) {
-        if (virJSONValueArrayAppend(actions, cmd) < 0) {
-            virReportOOMError();
-        } else {
+        if (virJSONValueArrayAppend(actions, cmd) == 0) {
             ret = 0;
             cmd = NULL;
         }
@@ -3412,7 +3394,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 
     /* create the key data array */
     if (!(keys = virJSONValueNewArray()))
-        goto no_memory;
+        goto cleanup;
 
     for (i = 0; i < nkeycodes; i++) {
         if (keycodes[i] > 0xffff) {
@@ -3423,18 +3405,18 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 
         /* create single key object */
         if (!(key = virJSONValueNewObject()))
-            goto no_memory;
+            goto cleanup;
 
         /* Union KeyValue has two types, use the generic one */
         if (virJSONValueObjectAppendString(key, "type", "number") < 0)
-            goto no_memory;
+            goto cleanup;
 
         /* with the keycode */
         if (virJSONValueObjectAppendNumberInt(key, "data", keycodes[i]) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (virJSONValueArrayAppend(keys, key) < 0)
-            goto no_memory;
+            goto cleanup;
 
         key = NULL;
 
@@ -3463,10 +3445,6 @@ cleanup:
     virJSONValueFree(keys);
     virJSONValueFree(key);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
@@ -4007,20 +3985,16 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(infolist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(infolist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
         qemuMonitorMachineInfoPtr info;
 
-        if (VIR_ALLOC(info) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(info) < 0)
             goto cleanup;
-        }
 
         infolist[i] = info;
 
@@ -4123,10 +4097,8 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(cpulist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(cpulist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4193,10 +4165,8 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(commandlist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(commandlist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4268,10 +4238,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(eventlist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(eventlist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4382,10 +4350,8 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(paramlist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(paramlist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4509,10 +4475,8 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(typelist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(typelist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4587,10 +4551,8 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(proplist, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(proplist, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
@@ -4740,18 +4702,18 @@ qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
         goto cleanup;
 
     if (!(cap = virJSONValueNewObject()))
-        goto no_memory;
+        goto cleanup;
 
     if (virJSONValueObjectAppendString(
                 cap, "capability",
                 qemuMonitorMigrationCapsTypeToString(capability)) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (virJSONValueObjectAppendBoolean(cap, "state", 1) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (virJSONValueArrayAppend(caps, cap) < 0)
-        goto no_memory;
+        goto cleanup;
 
     cap = NULL;
 
@@ -4774,10 +4736,6 @@ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 int
@@ -4794,19 +4752,15 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
 
     if (!(data = virJSONValueNewObject()) ||
         !(addr = virJSONValueNewObject()) ||
-        (virAsprintf(&port_str, "%u", port) < 0)) {
-        virReportOOMError();
+        (virAsprintf(&port_str, "%u", port) < 0))
         goto cleanup;
-    }
 
     /* port is really expected as a string here by qemu */
     if (virJSONValueObjectAppendString(data, "host", host) < 0 ||
         virJSONValueObjectAppendString(data, "port", port_str) < 0 ||
         virJSONValueObjectAppendString(addr, "type", "inet") < 0 ||
-        virJSONValueObjectAppend(addr, "data", data) < 0) {
-        virReportOOMError();
+        virJSONValueObjectAppend(addr, "data", data) < 0)
         goto cleanup;
-    }
 
     /* From now on, @data is part of @addr */
     data = NULL;
@@ -4929,10 +4883,8 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     }
 
     /* null-terminated list */
-    if (VIR_ALLOC_N(list, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(list, n + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);

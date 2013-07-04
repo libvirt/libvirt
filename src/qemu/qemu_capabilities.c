@@ -400,7 +400,6 @@ virQEMUCapsParseMachineTypesStr(const char *output,
             VIR_REALLOC_N(qemuCaps->machineMaxCpus, qemuCaps->nmachineTypes + 1) < 0) {
             VIR_FREE(name);
             VIR_FREE(canonical);
-            virReportOOMError();
             return -1;
         }
         qemuCaps->nmachineTypes++;
@@ -499,10 +498,8 @@ virQEMUCapsParseX86Models(const char *output,
         if (*p == '\0' || *p == '\n')
             continue;
 
-        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0)
             goto cleanup;
-        }
 
         if (next)
             len = next - p - 1;
@@ -558,10 +555,8 @@ virQEMUCapsParsePPCModels(const char *output,
         if (*p == '\n')
             continue;
 
-        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0)
             goto cleanup;
-        }
 
         len = t - p - 1;
 
@@ -622,10 +617,8 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     const char *archstr = virQEMUCapsArchToString(guestarch);
     char *binary;
 
-    if (virAsprintf(&binary, "qemu-system-%s", archstr) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&binary, "qemu-system-%s", archstr) < 0)
         return NULL;
-    }
 
     ret = virFindFileInPath(binary);
     VIR_FREE(binary);
@@ -842,10 +835,8 @@ virQEMUCapsInitCPU(virCapsPtr caps,
     virNodeInfo nodeinfo;
     int ret = -1;
 
-    if (VIR_ALLOC(cpu) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cpu) < 0)
         goto error;
-    }
 
     cpu->arch = arch;
 
@@ -1536,10 +1527,8 @@ virQEMUCapsParseDeviceStrObjectTypes(const char *str,
             goto cleanup;
         }
 
-        if (VIR_EXPAND_N(typelist, ntypelist, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(typelist, ntypelist, 1) < 0)
             goto cleanup;
-        }
         if (VIR_STRNDUP(typelist[ntypelist - 1], tmp, end-tmp) < 0)
             goto cleanup;
     }
@@ -1591,10 +1580,8 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
                            _("Malformed QEMU device list string, missing '='"));
             goto cleanup;
         }
-        if (VIR_EXPAND_N(proplist, nproplist, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(proplist, nproplist, 1) < 0)
             goto cleanup;
-        }
         if (VIR_STRNDUP(proplist[nproplist - 1], tmp, end-tmp) < 0)
             goto cleanup;
     }
@@ -1735,12 +1722,11 @@ virQEMUCapsNew(void)
         return NULL;
 
     if (!(qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST)))
-        goto no_memory;
+        goto error;
 
     return qemuCaps;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(qemuCaps);
     return NULL;
 }
@@ -1762,7 +1748,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->arch = qemuCaps->arch;
 
     if (VIR_ALLOC_N(ret->cpuDefinitions, qemuCaps->ncpuDefinitions) < 0)
-        goto no_memory;
+        goto error;
     ret->ncpuDefinitions = qemuCaps->ncpuDefinitions;
     for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
         if (VIR_STRDUP(ret->cpuDefinitions[i], qemuCaps->cpuDefinitions[i]) < 0)
@@ -1770,11 +1756,11 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     }
 
     if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
-        goto no_memory;
+        goto error;
     if (VIR_ALLOC_N(ret->machineAliases, qemuCaps->nmachineTypes) < 0)
-        goto no_memory;
+        goto error;
     if (VIR_ALLOC_N(ret->machineMaxCpus, qemuCaps->nmachineTypes) < 0)
-        goto no_memory;
+        goto error;
     ret->nmachineTypes = qemuCaps->nmachineTypes;
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         if (VIR_STRDUP(ret->machineTypes[i], qemuCaps->machineTypes[i]) < 0 ||
@@ -1785,8 +1771,6 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     return ret;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(ret);
     return NULL;
@@ -1896,7 +1880,6 @@ int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
         return -1;
     if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0) {
         VIR_FREE(tmp);
-        virReportOOMError();
         return -1;
     }
     qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions-1] = tmp;
@@ -2108,18 +2091,12 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(qemuCaps->machineTypes, nmachines) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(qemuCaps->machineTypes, nmachines) < 0)
         goto cleanup;
-    }
-    if (VIR_ALLOC_N(qemuCaps->machineAliases, nmachines) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(qemuCaps->machineAliases, nmachines) < 0)
         goto cleanup;
-    }
-    if (VIR_ALLOC_N(qemuCaps->machineMaxCpus, nmachines) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(qemuCaps->machineMaxCpus, nmachines) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < nmachines; i++) {
         if (VIR_STRDUP(qemuCaps->machineAliases[i], machines[i]->alias) < 0 ||
@@ -2506,14 +2483,10 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
      * domain called "capabilities"
      */
-    if (virAsprintf(&monpath, "%s/%s", libDir, "capabilities.monitor.sock") < 0) {
-        virReportOOMError();
+    if (virAsprintf(&monpath, "%s/%s", libDir, "capabilities.monitor.sock") < 0)
         goto cleanup;
-    }
-    if (virAsprintf(&monarg, "unix:%s,server,nowait", monpath) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&monarg, "unix:%s,server,nowait", monpath) < 0)
         goto cleanup;
-    }
 
     /* ".pidfile" suffix is used rather than ".pid" to avoid a possible clash
      * with a qemu domain called "capabilities"
@@ -2521,10 +2494,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
      * -daemonize we need QEMU to be allowed to create them, rather
      * than libvirtd. So we're using libDir which QEMU can write to
      */
-    if (virAsprintf(&pidfile, "%s/%s", libDir, "capabilities.pidfile") < 0) {
-        virReportOOMError();
+    if (virAsprintf(&pidfile, "%s/%s", libDir, "capabilities.pidfile") < 0)
         goto cleanup;
-    }
 
     memset(&config, 0, sizeof(config));
     config.type = VIR_DOMAIN_CHR_TYPE_UNIX;
@@ -2744,10 +2715,8 @@ virQEMUCapsCacheNew(const char *libDir,
 {
     virQEMUCapsCachePtr cache;
 
-    if (VIR_ALLOC(cache) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cache) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&cache->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

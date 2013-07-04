@@ -231,7 +231,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     size_t subjectlen;
 
     if (virAsprintf(&certfile, "%s/server-cert.pem", certdir) < 0)
-        goto no_memory;
+        goto error;
 
     if (virFileReadAll(certfile, 8192, &pemdata) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -260,7 +260,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
 
     subjectlen = 1024;
     if (VIR_ALLOC_N(subject, subjectlen+1) < 0)
-        goto no_memory;
+        goto error;
 
     gnutls_x509_crt_get_dn(cert, subject, &subjectlen);
     subject[subjectlen] = '\0';
@@ -270,8 +270,6 @@ qemuDomainExtractTLSSubject(const char *certdir)
 
     return subject;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(certfile);
     VIR_FREE(pemdata);
@@ -288,7 +286,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_ALLOC(mig) < 0)
-        goto no_memory;
+        goto error;
 
     mig->type = def->type;
     if (mig->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
@@ -324,8 +322,6 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     return mig;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuMigrationCookieGraphicsFree(mig);
     virObjectUnref(cfg);
@@ -341,12 +337,12 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     int i;
 
     if (VIR_ALLOC(mig) < 0)
-        goto no_memory;
+        goto error;
 
     mig->nnets = def->nnets;
 
     if (VIR_ALLOC_N(mig->net, def->nnets) <0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr netptr;
@@ -379,8 +375,6 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     }
     return mig;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuMigrationCookieNetworkFree(mig);
     return NULL;
@@ -394,7 +388,7 @@ qemuMigrationCookieNew(virDomainObjPtr dom)
     const char *name;
 
     if (VIR_ALLOC(mig) < 0)
-        goto no_memory;
+        goto error;
 
     if (priv->origname)
         name = priv->origname;
@@ -414,8 +408,6 @@ qemuMigrationCookieNew(virDomainObjPtr dom)
 
     return mig;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuMigrationCookieFree(mig);
     return NULL;
@@ -533,10 +525,8 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
 
     /* It is not a bug if there already is a NBD data */
     if (!mig->nbd &&
-        VIR_ALLOC(mig->nbd) < 0) {
-        virReportOOMError();
+        VIR_ALLOC(mig->nbd) < 0)
         return -1;
-    }
 
     mig->nbd->port = priv->nbdPort;
     mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
@@ -686,7 +676,7 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
     char *tmp;
 
     if (VIR_ALLOC(grap) < 0)
-        goto no_memory;
+        goto error;
 
     if (!(tmp = virXPathString("string(./graphics/@type)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -722,8 +712,6 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
 
     return grap;
 
-no_memory:
-    virReportOOMError();
 error:
     qemuMigrationCookieGraphicsFree(grap);
     return NULL;
@@ -741,7 +729,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     xmlNodePtr save_ctxt = ctxt->node;
 
     if (VIR_ALLOC(optr) < 0)
-        goto no_memory;
+        goto error;
 
     if ((n = virXPathNodeSet("./network/interface", ctxt, &interfaces)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -751,7 +739,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
 
     optr->nnets = n;
     if (VIR_ALLOC_N(optr->net, optr->nnets) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         /* portdata is optional, and may not exist */
@@ -772,8 +760,6 @@ cleanup:
     ctxt->node = save_ctxt;
     return optr;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(interfaces);
     qemuMigrationCookieNetworkFree(optr);
@@ -942,10 +928,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         virXPathBoolean("boolean(./nbd)", ctxt)) {
         char *port;
 
-        if (VIR_ALLOC(mig->nbd) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(mig->nbd) < 0)
             goto error;
-        }
 
         port = virXPathString("string(./nbd/@port)", ctxt);
         if (port && virStrToLong_i(port, NULL, 10, &mig->nbd->port) < 0) {
@@ -1131,10 +1115,8 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
 
         VIR_FREE(diskAlias);
         if (virAsprintf(&diskAlias, "%s%s",
-                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
-            virReportOOMError();
+                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
             goto cleanup;
-        }
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
@@ -1220,10 +1202,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
 
     /* escape literal IPv6 address */
     if (strchr(host, ':')) {
-        if (virAsprintf(&hoststr, "[%s]", host) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&hoststr, "[%s]", host) < 0)
             goto error;
-        }
     } else if (VIR_STRDUP(hoststr, host) < 0) {
         goto error;
     }
@@ -1244,10 +1224,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         if ((virAsprintf(&diskAlias, "%s%s",
                          QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) ||
             (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
-                         hoststr, port, diskAlias) < 0)) {
-            virReportOOMError();
+                         hoststr, port, diskAlias) < 0))
             goto error;
-        }
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
@@ -1329,10 +1307,8 @@ error:
 
         VIR_FREE(diskAlias);
         if (virAsprintf(&diskAlias, "%s%s",
-                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
-            virReportOOMError();
+                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
             continue;
-        }
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
             if (qemuMonitorBlockJob(priv->mon, diskAlias, NULL, 0,
@@ -1394,10 +1370,8 @@ qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
 
         VIR_FREE(diskAlias);
         if (virAsprintf(&diskAlias, "%s%s",
-                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
-            virReportOOMError();
+                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
             goto cleanup;
-        }
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
@@ -2309,10 +2283,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         /* QEMU will be started with -incoming [::]:port
          * or -incoming 0.0.0.0:port
          */
-        if (virAsprintf(&migrateFrom, "tcp:%s:%d", listenAddr, port) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&migrateFrom, "tcp:%s:%d", listenAddr, port) < 0)
             goto cleanup;
-        }
     }
 
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
@@ -2567,10 +2539,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
          * new targets accept both syntaxes though.
          */
         /* Caller frees */
-        if (virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
-            virReportOOMError();
+        if (virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0)
             goto cleanup;
-        }
     } else {
         /* Check the URI starts with "tcp:".  We will escape the
          * URI when passing it to the qemu monitor, so bad
@@ -2585,10 +2555,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
 
         /* Convert uri_in to well-formed URI with // after tcp: */
         if (!(STRPREFIX(uri_in, "tcp://"))) {
-            if (virAsprintf(&uri_str, "tcp://%s", p) < 0) {
-                virReportOOMError();
+            if (virAsprintf(&uri_str, "tcp://%s", p) < 0)
                 goto cleanup;
-            }
         }
 
         uri = virURIParse(uri_str ? uri_str : uri_in);
@@ -2615,10 +2583,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                 port = 0;
 
             /* Caller frees */
-            if (virAsprintf(uri_out, "%s:%d", uri_in, this_port) < 0) {
-                virReportOOMError();
+            if (virAsprintf(uri_out, "%s:%d", uri_in, this_port) < 0)
                 goto cleanup;
-            }
 
         } else {
             this_port = uri->port;
@@ -2873,10 +2839,8 @@ static void qemuMigrationIOFunc(void *arg)
     VIR_DEBUG("Running migration tunnel; stream=%p, sock=%d",
               data->st, data->sock);
 
-    if (VIR_ALLOC_N(buffer, TUNNEL_SEND_BUF_SIZE) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(buffer, TUNNEL_SEND_BUF_SIZE) < 0)
         goto abrt;
-    }
 
     fds[0].fd = data->sock;
     fds[1].fd = data->wakeupRecvFD;
@@ -2982,7 +2946,7 @@ qemuMigrationStartTunnel(virStreamPtr st,
     }
 
     if (VIR_ALLOC(io) < 0)
-        goto no_memory;
+        goto error;
 
     io->st = st;
     io->sock = sock;
@@ -2999,8 +2963,6 @@ qemuMigrationStartTunnel(virStreamPtr st,
 
     return io;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FORCE_CLOSE(wakeupFD[0]);
     VIR_FORCE_CLOSE(wakeupFD[1]);
@@ -3053,10 +3015,8 @@ qemuMigrationConnect(virQEMUDriverPtr driver,
     int ret = -1;
 
     host = spec->dest.host.name;
-    if (virAsprintf(&port, "%d", spec->dest.host.port) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&port, "%d", spec->dest.host.port) < 0)
         return -1;
-    }
 
     spec->destType = MIGRATION_DEST_FD;
     spec->dest.fd.qemu = -1;
@@ -3355,10 +3315,8 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
         char *tmp;
         /* HACK: source host generates bogus URIs, so fix them up */
-        if (virAsprintf(&tmp, "tcp://%s", uri + strlen("tcp:")) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&tmp, "tcp://%s", uri + strlen("tcp:")) < 0)
             return -1;
-        }
         uribits = virURIParse(tmp);
         VIR_FREE(tmp);
     } else {
@@ -3450,10 +3408,8 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
 
         if (virAsprintf(&spec.dest.unix_socket.file,
                         "%s/qemu.tunnelmigrate.src.%s",
-                        cfg->libDir, vm->def->name) < 0) {
-            virReportOOMError();
+                        cfg->libDir, vm->def->name) < 0)
             goto cleanup;
-        }
 
         if (virNetSocketNewListenUNIX(spec.dest.unix_socket.file, 0700,
                                       cfg->user, cfg->group,

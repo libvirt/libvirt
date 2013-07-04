@@ -600,7 +600,7 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     if (virAsprintf(&driverConf, "%s/qemu.conf", cfg->configBaseDir) < 0)
-        goto out_of_memory;
+        goto error;
 
     if (virQEMUDriverConfigLoadFile(cfg, driverConf) < 0)
         goto error;
@@ -753,7 +753,7 @@ qemuStateInitialize(bool privileged,
         if (virAsprintf(&membase, "%s/libvirt",
                         cfg->hugetlbfsMount) < 0 ||
             virAsprintf(&mempath, "%s/qemu", membase) < 0)
-            goto out_of_memory;
+            goto error;
 
         if (virFileMakePath(mempath) < 0) {
             virReportSystemError(errno,
@@ -835,8 +835,6 @@ qemuStateInitialize(bool privileged,
     virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 
-out_of_memory:
-    virReportOOMError();
 error:
     if (conn)
         virConnectClose(conn);
@@ -917,10 +915,8 @@ qemuStateStop(void) {
                                                VIR_CONNECT_LIST_DOMAINS_ACTIVE)) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(flags, numDomains) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(flags, numDomains) < 0)
         goto cleanup;
-    }
 
     /* First we pause all VMs to make them stop dirtying
        pages, etc. We remember if any VMs were paused so
@@ -2825,10 +2821,8 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     pad = 1024;
     pad += (QEMU_MONITOR_MIGRATE_TO_FILE_BS -
             ((offset + pad) % QEMU_MONITOR_MIGRATE_TO_FILE_BS));
-    if (VIR_ALLOC_N(xml, len + pad) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(xml, len + pad) < 0)
         goto cleanup;
-    }
     strcpy(xml, domXML);
 
     offset += pad;
@@ -3112,7 +3106,6 @@ qemuDomainManagedSavePath(virQEMUDriverPtr driver, virDomainObjPtr vm)
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (virAsprintf(&ret, "%s/%s.save", cfg->saveDir, vm->def->name) < 0) {
-        virReportOOMError();
         virObjectUnref(cfg);
         return NULL;
     }
@@ -3522,10 +3515,8 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virAsprintf(&tmp, "%s/qemu.screendump.XXXXXX", cfg->cacheDir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&tmp, "%s/qemu.screendump.XXXXXX", cfg->cacheDir) < 0)
         goto endjob;
-    }
 
     if ((tmp_fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
         virReportSystemError(errno, _("mkostemp(\"%s\") failed"), tmp);
@@ -3585,10 +3576,8 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
             if (virAsprintf(&dumpfile, "%s/%s-%u",
                             cfg->autoDumpPath,
                             vm->def->name,
-                            (unsigned int)time(NULL)) < 0) {
-                virReportOOMError();
+                            (unsigned int)time(NULL)) < 0)
                 goto cleanup;
-            }
 
             if (qemuDomainObjBeginAsyncJob(driver, vm,
                                            QEMU_ASYNC_JOB_DUMP) < 0) {
@@ -3653,10 +3642,8 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
     if (virAsprintf(&dumpfile, "%s/%s-%s",
                     cfg->autoDumpPath,
                     vm->def->name,
-                    timestr) < 0) {
-        virReportOOMError();
+                    timestr) < 0)
         goto cleanup;
-    }
 
     if (qemuDomainObjBeginAsyncJob(driver, vm,
                                    QEMU_ASYNC_JOB_DUMP) < 0) {
@@ -3916,15 +3903,11 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                 virDomainVcpuPinDefPtr vcpupin = NULL;
 
                 if (VIR_REALLOC_N(vm->def->cputune.vcpupin,
-                                  vm->def->cputune.nvcpupin + 1) < 0) {
-                    virReportOOMError();
+                                  vm->def->cputune.nvcpupin + 1) < 0)
                     goto cleanup;
-                }
 
-                if (VIR_ALLOC(vcpupin) < 0) {
-                    virReportOOMError();
+                if (VIR_ALLOC(vcpupin) < 0)
                     goto cleanup;
-                }
 
                 vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
                 virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
@@ -4283,10 +4266,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
             newVcpuPinNum = vm->def->cputune.nvcpupin;
         } else {
-            if (VIR_ALLOC(newVcpuPin) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(newVcpuPin) < 0)
                 goto cleanup;
-            }
             newVcpuPinNum = 0;
         }
 
@@ -4349,10 +4330,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             }
         } else {
             if (!persistentDef->cputune.vcpupin) {
-                if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0) {
-                    virReportOOMError();
+                if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)
                     goto cleanup;
-                }
                 persistentDef->cputune.nvcpupin = 0;
             }
             if (virDomainVcpuPinAdd(&persistentDef->cputune.vcpupin,
@@ -4549,10 +4528,8 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
         if (priv->vcpupids != NULL) {
-            if (VIR_ALLOC(newVcpuPin) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(newVcpuPin) < 0)
                 goto cleanup;
-            }
 
             if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5002,7 +4979,6 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
             len++;
 
         if (VIR_ALLOC_N((*seclabels), len) < 0) {
-            virReportOOMError();
             VIR_FREE(mgrs);
             goto cleanup;
         }
@@ -5170,10 +5146,8 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, header.xml_len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(xml, header.xml_len) < 0)
         goto error;
-    }
 
     if (saferead(fd, xml, header.xml_len) != header.xml_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -5500,10 +5474,8 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
                        _("new xml too large to fit in file"));
         goto cleanup;
     }
-    if (VIR_EXPAND_N(xml, len, header.xml_len - len) < 0) {
-        virReportOOMError();
+    if (VIR_EXPAND_N(xml, len, header.xml_len - len) < 0)
         goto cleanup;
-    }
 
     if (lseek(fd, 0, SEEK_SET) != 0) {
         virReportSystemError(errno, _("cannot seek in '%s'"), path);
@@ -6644,10 +6616,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
                            _("target %s already exists"), disk->dst);
             return -1;
         }
-        if (virDomainDiskInsert(vmdef, disk)) {
-            virReportOOMError();
+        if (virDomainDiskInsert(vmdef, disk))
             return -1;
-        }
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
         dev->data.disk = NULL;
         if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
@@ -6659,10 +6629,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
 
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
-        if (virDomainNetInsert(vmdef, net)) {
-            virReportOOMError();
+        if (virDomainNetInsert(vmdef, net))
             return -1;
-        }
         dev->data.net = NULL;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
@@ -6675,10 +6643,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
                            _("device is already in the domain configuration"));
             return -1;
         }
-        if (virDomainHostdevInsert(vmdef, hostdev)) {
-            virReportOOMError();
+        if (virDomainHostdevInsert(vmdef, hostdev))
             return -1;
-        }
         dev->data.hostdev = NULL;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
@@ -7513,10 +7479,8 @@ qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
 
     ndevices = (nsep + 1) / 2;
 
-    if (VIR_ALLOC_N(result, ndevices) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(result, ndevices) < 0)
         return -1;
-    }
 
     i = 0;
     temp = deviceWeightStr;
@@ -7589,10 +7553,8 @@ qemuDomainMergeDeviceWeights(virBlkioDeviceWeightPtr *dest_array,
         if (!found) {
             if (!src->weight)
                 continue;
-            if (VIR_EXPAND_N(*dest_array, *dest_size, 1) < 0) {
-                virReportOOMError();
+            if (VIR_EXPAND_N(*dest_array, *dest_size, 1) < 0)
                 return -1;
-            }
             dest = &(*dest_array)[*dest_size - 1];
             dest->path = src->path;
             dest->weight = src->weight;
@@ -9053,10 +9015,8 @@ qemuDomainBlockResize(virDomainPtr dom,
     disk = vm->def->disks[i];
 
     if (virAsprintf(&device, "%s%s", QEMU_DRIVE_HOST_PREFIX,
-                    disk->info.alias) < 0) {
-        virReportOOMError();
+                    disk->info.alias) < 0)
         goto endjob;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorBlockResize(priv->mon, device, size) < 0) {
@@ -9442,10 +9402,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if ((VIR_ALLOC(bandwidth) < 0) ||
         (VIR_ALLOC(bandwidth->in) < 0) ||
-        (VIR_ALLOC(bandwidth->out) < 0)) {
-        virReportOOMError();
+        (VIR_ALLOC(bandwidth->out) < 0))
         goto cleanup;
-    }
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -9476,20 +9434,16 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (VIR_ALLOC(newBandwidth) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(newBandwidth) < 0)
             goto cleanup;
-        }
 
         /* virNetDevBandwidthSet() will clear any previous value of
          * bandwidth parameters, so merge with old bandwidth parameters
          * here to prevent them from being lost. */
         if (bandwidth->in ||
             (net->bandwidth && net->bandwidth->in)) {
-            if (VIR_ALLOC(newBandwidth->in) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(newBandwidth->in) < 0)
                 goto cleanup;
-            }
 
             memcpy(newBandwidth->in,
                    bandwidth->in ? bandwidth->in : net->bandwidth->in,
@@ -9497,10 +9451,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
         if (bandwidth->out ||
             (net->bandwidth && net->bandwidth->out)) {
-            if (VIR_ALLOC(newBandwidth->out) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(newBandwidth->out) < 0)
                 goto cleanup;
-            }
 
             memcpy(newBandwidth->out,
                    bandwidth->out ? bandwidth->out : net->bandwidth->out,
@@ -9821,10 +9773,8 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virAsprintf(&tmp, "%s/qemu.mem.XXXXXX", cfg->cacheDir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&tmp, "%s/qemu.mem.XXXXXX", cfg->cacheDir) < 0)
         goto endjob;
-    }
 
     /* Create a temporary filename. */
     if ((fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
@@ -11697,10 +11647,8 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
     if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
         goto cleanup;
 
-    if (!(created = virBitmapNew(snap->def->ndisks))) {
-        virReportOOMError();
+    if (!(created = virBitmapNew(snap->def->ndisks)))
         goto cleanup;
-    }
 
     /* If reuse is true, then qemuDomainSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to
@@ -12053,10 +12001,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
         VIR_STRDUP(source, snap->file) < 0 ||
-        (persistDisk && VIR_STRDUP(persistSource, source) < 0)) {
-        virReportOOMError();
+        (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
-    }
 
     /* create the stub file and set selinux labels; manipulate disk in
      * place, in a way that can be reverted on failure. */
@@ -12180,10 +12126,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-        if (!(actions = virJSONValueNewArray())) {
-            virReportOOMError();
+        if (!(actions = virJSONValueNewArray()))
             goto cleanup;
-        }
     } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DISK_SNAPSHOT)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live disk snapshot not supported with this "
@@ -13773,10 +13717,8 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
     }
 
     if (!(def->name) &&
-        virAsprintf(&def->name, "attach-pid-%u", pid_value) < 0) {
-        virReportOOMError();
+        virAsprintf(&def->name, "attach-pid-%u", pid_value) < 0)
         goto cleanup;
-    }
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
         goto cleanup;
@@ -14001,10 +13943,8 @@ qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idx)
         *idx = i;
 
     if (disk->src) {
-        if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0)
             return NULL;
-        }
     }
 
 cleanup:
@@ -15552,10 +15492,8 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(sum_cpu_time, n) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(sum_cpu_time, n) < 0)
         goto cleanup;
-    }
     if (getSumVcpuPercpuStats(vm, sum_cpu_time, n) < 0)
         goto cleanup;
 

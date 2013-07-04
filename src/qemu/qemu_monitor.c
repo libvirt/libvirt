@@ -489,10 +489,8 @@ qemuMonitorIORead(qemuMonitorPtr mon)
 
     if (avail < 1024) {
         if (VIR_REALLOC_N(mon->buffer,
-                          mon->bufferLength + 1024) < 0) {
-            virReportOOMError();
+                          mon->bufferLength + 1024) < 0)
             return -1;
-        }
         mon->bufferLength += 1024;
         avail += 1024;
     }
@@ -864,10 +862,7 @@ char *qemuMonitorNextCommandID(qemuMonitorPtr mon)
 {
     char *id;
 
-    if (virAsprintf(&id, "libvirt-%d", ++mon->nextSerial) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
+    ignore_value(virAsprintf(&id, "libvirt-%d", ++mon->nextSerial));
     return id;
 }
 
@@ -1962,10 +1957,8 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
     }
 
 
-    if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0)
         return -1;
-    }
 
     if (mon->json)
         ret = qemuMonitorJSONMigrate(mon, flags, uri);
@@ -1994,15 +1987,11 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     }
 
     argstr = virArgvToString(argv);
-    if (!argstr) {
-        virReportOOMError();
+    if (!argstr)
         goto cleanup;
-    }
 
-    if (virAsprintf(&dest, "exec:%s", argstr) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&dest, "exec:%s", argstr) < 0)
         goto cleanup;
-    }
 
     if (mon->json)
         ret = qemuMonitorJSONMigrate(mon, flags, dest);
@@ -2043,10 +2032,8 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     }
 
     argstr = virArgvToString(argv);
-    if (!argstr) {
-        virReportOOMError();
+    if (!argstr)
         goto cleanup;
-    }
 
     /* Migrate to file */
     virBufferEscapeShell(&buf, target);
@@ -2068,10 +2055,8 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
                     offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
                     QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
                     QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
-                    safe_target) < 0) {
-        virReportOOMError();
+                    safe_target) < 0)
         goto cleanup;
-    }
 
     if (mon->json)
         ret = qemuMonitorJSONMigrate(mon, flags, dest);
@@ -2100,10 +2085,8 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&dest, "unix:%s", unixfile) < 0)
         return -1;
-    }
 
     if (mon->json)
         ret = qemuMonitorJSONMigrate(mon, flags, dest);
