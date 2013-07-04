@@ -372,10 +372,8 @@ vboxLookupRegistryValue(HKEY key, const char *keyName, const char *valueName)
     }
 
     /* +1 for the null-terminator if it's missing */
-    if (VIR_ALLOC_N(value, length + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(value, length + 1) < 0)
         goto cleanup;
-    }
 
     status = RegQueryValueEx(key, valueName, NULL, NULL, (LPBYTE)value, &length);
 
@@ -534,10 +532,8 @@ vboxComInitialize_v2(const char *pszVirtualBoxIID, IVirtualBox **ppVirtualBox,
     CoInitialize(NULL);
 
     if (virAsprintf(&mbsVirtualBoxIID, "{%s}", pszVirtualBoxIID) < 0 ||
-        virAsprintf(&mbsSessionIID, "{%s}", pszSessionIID) < 0) {
-        virReportOOMError();
+        virAsprintf(&mbsSessionIID, "{%s}", pszSessionIID) < 0)
         goto cleanup;
-    }
 
     if (vboxUtf8ToUtf16(mbsVirtualBoxIID, &wcsVirtualBoxIID) < 0 ||
         vboxUtf8ToUtf16(mbsSessionIID, &wcsSessionIID) < 0) {

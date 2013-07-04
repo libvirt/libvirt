@@ -1036,10 +1036,8 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
         }
     }
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
 
     if (!(data->caps = vboxCapsInit()) ||
         vboxInitialize(data) < 0 ||
@@ -2240,10 +2238,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
     /* Flags checked by virDomainDefFormat */
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -2420,12 +2416,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                         if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
                             def->videos[0]->accel->support3d = accelerate3DEnabled;
                             def->videos[0]->accel->support2d = accelerate2DEnabled;
-                        } else
-                            virReportOOMError();
-                    } else
-                        virReportOOMError();
-                } else
-                    virReportOOMError();
+                        }
+                    }
+                }
             }
 
             /* dump display options vrdp/gui/sdl */
@@ -2631,8 +2624,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                         def->disks[i]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                         def->disks[i]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                         def->disks[i]->type = VIR_DOMAIN_DISK_TYPE_FILE;
-                    } else
-                        virReportOOMError();
+                    }
                 }
             }
 
@@ -2726,13 +2718,11 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             if (VIR_ALLOC_N(def->disks, def->ndisks) >= 0) {
                 for (i = 0; i < def->ndisks; i++) {
                     if (VIR_ALLOC(def->disks[i]) < 0) {
-                        virReportOOMError();
                         error = true;
                         break;
                     }
                 }
             } else {
-                virReportOOMError();
                 error = true;
             }
 
@@ -2785,7 +2775,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 if (!(def->disks[diskCount]->src)) {
                     VBOX_RELEASE(medium);
                     VBOX_RELEASE(storageController);
-                    virReportOOMError();
                     error = true;
                     break;
                 }
@@ -2861,10 +2850,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                          machine->vtbl->GetSharedFolders);
 
             if (sharedFolders.count > 0) {
-                if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0) {
-                    virReportOOMError();
+                if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0)
                     goto sharedFoldersCleanup;
-                }
 
                 for (i = 0; i < sharedFolders.count; i++) {
                     ISharedFolder *sharedFolder = sharedFolders.items[i];
@@ -2874,10 +2861,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     char *hostPath = NULL;
                     PRBool writable = PR_FALSE;
 
-                    if (VIR_ALLOC(def->fss[i]) < 0) {
-                        virReportOOMError();
+                    if (VIR_ALLOC(def->fss[i]) < 0)
                         goto sharedFoldersCleanup;
-                    }
 
                     def->fss[i]->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
@@ -2933,9 +2918,7 @@ sharedFoldersCleanup:
             /* Allocate memory for the networkcards which are enabled */
             if ((def->nnets > 0) && (VIR_ALLOC_N(def->nets, def->nnets) >= 0)) {
                 for (i = 0; i < def->nnets; i++) {
-                    if (VIR_ALLOC(def->nets[i]) >= 0) {
-                    } else
-                        virReportOOMError();
+                    ignore_value(VIR_ALLOC(def->nets[i]));
                 }
             }
 
@@ -3082,11 +3065,9 @@ sharedFoldersCleanup:
                         } else {
                             VIR_FREE(def->sounds);
                             def->nsounds = 0;
-                            virReportOOMError();
                         }
                     } else {
                         def->nsounds = 0;
-                        virReportOOMError();
                     }
                 }
                 VBOX_RELEASE(audioAdapter);
@@ -3122,11 +3103,9 @@ sharedFoldersCleanup:
                                 def->ndisks--;
                             } else {
                                 def->ndisks--;
-                                virReportOOMError();
                             }
                         } else {
                             def->ndisks--;
-                            virReportOOMError();
                         }
 
                         VBOX_UTF8_FREE(location);
@@ -3170,11 +3149,9 @@ sharedFoldersCleanup:
                                     def->ndisks--;
                                 } else {
                                     def->ndisks--;
-                                    virReportOOMError();
                                 }
                             } else {
                                 def->ndisks--;
-                                virReportOOMError();
                             }
 
                             VBOX_UTF8_FREE(location);
@@ -3211,9 +3188,7 @@ sharedFoldersCleanup:
             /* Allocate memory for the serial ports which are enabled */
             if ((def->nserials > 0) && (VIR_ALLOC_N(def->serials, def->nserials) >= 0)) {
                 for (i = 0; i < def->nserials; i++) {
-                    if (VIR_ALLOC(def->serials[i]) >= 0) {
-                    } else
-                        virReportOOMError();
+                    ignore_value(VIR_ALLOC(def->serials[i]));
                 }
             }
 
@@ -3297,9 +3272,7 @@ sharedFoldersCleanup:
             /* Allocate memory for the parallel ports which are enabled */
             if ((def->nparallels > 0) && (VIR_ALLOC_N(def->parallels, def->nparallels) >= 0)) {
                 for (i = 0; i < def->nparallels; i++) {
-                    if (VIR_ALLOC(def->parallels[i]) >= 0) {
-                    } else
-                        virReportOOMError();
+                    ignore_value(VIR_ALLOC(def->parallels[i]));
                 }
             }
 
@@ -3419,12 +3392,10 @@ sharedFoldersCleanup:
                                             VBOX_UTF8_FREE(productIdUtf8);
 
                                             USBFilterCount++;
-                                        } else
-                                            virReportOOMError();
+                                        }
                                     }
                                 }
-                            } else
-                                virReportOOMError();
+                            }
                         }
                     }
 
@@ -3628,9 +3599,7 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
     if (guiPresent) {
         if (guiDisplay) {
             char *displayutf8;
-            if (virAsprintf(&displayutf8, "DISPLAY=%s", guiDisplay) < 0)
-                virReportOOMError();
-            else {
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", guiDisplay) >= 0) {
                 VBOX_UTF8_TO_UTF16(displayutf8, &env);
                 VIR_FREE(displayutf8);
             }
@@ -3643,9 +3612,7 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
     if (sdlPresent) {
         if (sdlDisplay) {
             char *displayutf8;
-            if (virAsprintf(&displayutf8, "DISPLAY=%s", sdlDisplay) < 0)
-                virReportOOMError();
-            else {
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", sdlDisplay) >= 0) {
                 VBOX_UTF8_TO_UTF16(displayutf8, &env);
                 VIR_FREE(displayutf8);
             }
@@ -4949,9 +4916,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                         /* Zero pad for nice alignment when fewer than 9999
                          * devices.
                          */
-                        if (virAsprintf(&filtername, "filter%04d", i) < 0) {
-                            virReportOOMError();
-                        } else {
+                        if (virAsprintf(&filtername, "filter%04d", i) >= 0) {
                             VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
                             VIR_FREE(filtername);
                             USBController->vtbl->CreateDeviceFilter(USBController,
@@ -5403,10 +5368,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     virDomainDeviceDefPtr dev  = NULL;
     nsresult rc;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return ret;
-    }
 
     if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
@@ -5634,10 +5597,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
     virDomainDeviceDefPtr dev  = NULL;
     nsresult rc;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return ret;
-    }
 
     if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
@@ -5798,10 +5759,8 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
     if (count == 0)
         goto out;
 
-    if (VIR_ALLOC_N(list, count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(list, count) < 0)
         goto error;
-    }
 
 #if VBOX_API_VERSION < 4000
     rc = machine->vtbl->GetSnapshot(machine, empty.value, list);
@@ -6066,7 +6025,7 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto cleanup;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto cleanup;
     if (VIR_STRDUP(def->name, snapshot->name) < 0)
         goto cleanup;
 
@@ -6116,7 +6075,7 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         VBOX_UTF16_FREE(str16);
         if (VIR_STRDUP(def->parent, str8) < 0) {
             VBOX_UTF8_FREE(str8);
-            goto no_memory;
+            goto cleanup;
         }
         VBOX_UTF8_FREE(str8);
     }
@@ -6143,10 +6102,6 @@ cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&domiid);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 static int
@@ -6229,10 +6184,8 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) {
         vboxIID empty = VBOX_IID_INITIALIZER;
 
-        if (VIR_ALLOC_N(snapshots, 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(snapshots, 1) < 0)
             goto cleanup;
-        }
 #if VBOX_API_VERSION < 4000
         rc = machine->vtbl->GetSnapshot(machine, empty.value, snapshots);
 #else /* VBOX_API_VERSION >= 4000 */
@@ -6266,7 +6219,6 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
         VBOX_UTF16_TO_UTF8(nameUtf16, &name);
         VBOX_UTF16_FREE(nameUtf16);
         if (VIR_STRDUP(names[i], name) < 0) {
-            virReportOOMError();
             VBOX_UTF8_FREE(name);
             goto cleanup;
         }
@@ -7218,7 +7170,6 @@ static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
      */
     if ((VIR_ALLOC(vboxCallback) < 0) || (VIR_ALLOC(vboxCallback->vtbl) < 0)) {
         VIR_FREE(vboxCallback);
-        virReportOOMError();
         return NULL;
     }
 
@@ -7795,7 +7746,6 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", networkInterfaceNameUtf8) < 0) {
                 VBOX_RELEASE(host);
                 VBOX_RELEASE(networkInterface);
-                virReportOOMError();
                 goto cleanup;
             }
         }
@@ -7951,10 +7901,8 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
      * show up in the net-list in virsh
      */
 
-    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
         goto cleanup;
-    }
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 
@@ -8040,10 +7988,8 @@ static int vboxNetworkCreate(virNetworkPtr network) {
      * server by giving the machine static IP
      */
 
-    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
         goto cleanup;
-    }
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 
@@ -8112,21 +8058,15 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
-    if (VIR_ALLOC(ipdef) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ipdef) < 0)
         goto cleanup;
-    }
     def->ips = ipdef;
     def->nips = 1;
 
-    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0)
         goto cleanup;
-    }
 
     VBOX_UTF8_TO_UTF16(network->name, &networkInterfaceNameUtf16);
 
@@ -8190,7 +8130,6 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
                         }
                     } else {
                         ipdef->nranges = 0;
-                        virReportOOMError();
                     }
 
                     ipdef->nhosts = 1;
@@ -8251,8 +8190,6 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
                 DEBUGIID("Network UUID", vboxnet0IID.value);
                 vboxIIDUnalloc(&vboxnet0IID);
                 VBOX_UTF16_FREE(networkNameUtf16);
-            } else {
-                virReportOOMError();
             }
         }
 
@@ -9182,7 +9119,6 @@ vboxDomainScreenshot(virDomainPtr dom,
     }
 
     if (virAsprintf(&tmp, "%s/cache/libvirt/vbox.screendump.XXXXXX", LOCALSTATEDIR) < 0) {
-        virReportOOMError();
         VBOX_RELEASE(machine);
         return NULL;
     }
@@ -9303,7 +9239,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE))) {
         if (domains &&
             VIR_ALLOC_N(*domains, 1) < 0)
-            goto no_memory;
+            goto cleanup;
 
         ret = 0;
         goto cleanup;
@@ -9318,7 +9254,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
     if (domains &&
         VIR_ALLOC_N(doms, machines.count + 1) < 0)
-        goto no_memory;
+        goto cleanup;
 
     for (i = 0; i < machines.count; i++) {
         IMachine *machine = machines.items[i];
@@ -9419,10 +9355,6 @@ cleanup:
 
     vboxArrayRelease(&machines);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 #undef MATCH
 
