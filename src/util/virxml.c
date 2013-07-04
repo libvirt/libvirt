@@ -607,7 +607,6 @@ virXPathNodeSet(const char *xpath,
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
         if (VIR_ALLOC_N(*list, ret) < 0) {
-            virReportOOMError();
             ret = -1;
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,

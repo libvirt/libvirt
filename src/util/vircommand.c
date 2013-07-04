@@ -1840,17 +1840,13 @@ virCommandProcessIO(virCommandPtr cmd)
      * results accumulated over a prior run of the same command.  */
     if (cmd->outbuf) {
         outfd = cmd->outfd;
-        if (VIR_REALLOC_N(*cmd->outbuf, 1) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(*cmd->outbuf, 1) < 0)
             ret = -1;
-        }
     }
     if (cmd->errbuf) {
         errfd = cmd->errfd;
-        if (VIR_REALLOC_N(*cmd->errbuf, 1) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(*cmd->errbuf, 1) < 0)
             ret = -1;
-        }
     }
     if (ret == -1)
         goto cleanup;
@@ -1924,10 +1920,8 @@ virCommandProcessIO(virCommandPtr cmd)
                     else
                         errfd = -1;
                 } else {
-                    if (VIR_REALLOC_N(*buf, *len + done + 1) < 0) {
-                        virReportOOMError();
+                    if (VIR_REALLOC_N(*buf, *len + done + 1) < 0)
                         goto cleanup;
-                    }
                     memcpy(*buf + *len, data, done);
                     *len += done;
                 }
@@ -2471,7 +2465,6 @@ int virCommandHandshakeWait(virCommandPtr cmd)
         char *msg;
         ssize_t len;
         if (VIR_ALLOC_N(msg, 1024) < 0) {
-            virReportOOMError();
             VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
             return -1;
         }

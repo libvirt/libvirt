@@ -516,10 +516,8 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
 
     VIR_INFO("starting netlink event service with protocol %d", protocol);
 
-    if (VIR_ALLOC(srv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(srv) < 0)
         return -1;
-    }
 
     if (virMutexInit(&srv->lock) < 0) {
         VIR_FREE(srv);
@@ -645,10 +643,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
         VIR_DEBUG("Used %zu handle slots, adding at least %d more",
                   srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
         if (VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
-                        srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0) {
-            virReportOOMError();
+                        srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0)
             goto error;
-        }
     }
     r = srv->handlesCount++;
 

@@ -42,10 +42,8 @@ virAuthConfigPtr virAuthConfigNew(const char *path)
 {
     virAuthConfigPtr auth;
 
-    if (VIR_ALLOC(auth) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(auth) < 0)
         goto error;
-    }
 
     if (VIR_STRDUP(auth->path, path) < 0)
         goto error;
@@ -70,10 +68,8 @@ virAuthConfigPtr virAuthConfigNewData(const char *path,
 {
     virAuthConfigPtr auth;
 
-    if (VIR_ALLOC(auth) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(auth) < 0)
         goto error;
-    }
 
     if (VIR_STRDUP(auth->path, path) < 0)
         goto error;
@@ -121,10 +117,8 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
     if (!hostname)
         hostname = "localhost";
 
-    if (virAsprintf(&authgroup, "auth-%s-%s", service, hostname) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&authgroup, "auth-%s-%s", service, hostname) < 0)
         goto cleanup;
-    }
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
         ret = 0;
@@ -138,10 +132,8 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
         goto cleanup;
     }
 
-    if (virAsprintf(&credgroup, "credentials-%s", authcred) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&credgroup, "credentials-%s", authcred) < 0)
         goto cleanup;
-    }
 
     if (!virKeyFileHasGroup(auth->keyfile, credgroup)) {
         virReportError(VIR_ERR_CONF_SYNTAX,

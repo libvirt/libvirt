@@ -297,22 +297,17 @@ virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
         return 0;
     }
 
-    if (VIR_ALLOC(*dest) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(*dest) < 0)
         goto cleanup;
-    }
 
     if (src->in) {
-        if (VIR_ALLOC((*dest)->in) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC((*dest)->in) < 0)
             goto cleanup;
-        }
         memcpy((*dest)->in, src->in, sizeof(*src->in));
     }
 
     if (src->out) {
         if (VIR_ALLOC((*dest)->out) < 0) {
-            virReportOOMError();
             VIR_FREE((*dest)->in);
             goto cleanup;
         }
@@ -417,10 +412,8 @@ virNetDevBandwidthPlug(const char *brname,
         virAsprintf(&floor, "%llukbps", bandwidth->in->floor) < 0 ||
         virAsprintf(&ceil, "%llukbps", net_bandwidth->in->peak ?
                     net_bandwidth->in->peak :
-                    net_bandwidth->in->average) < 0) {
-        virReportOOMError();
+                    net_bandwidth->in->average) < 0)
         goto cleanup;
-    }
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "class", "add", "dev", brname, "parent", "1:1",
@@ -497,10 +490,8 @@ virNetDevBandwidthUnplug(const char *brname,
 
     if (virAsprintf(&class_id, "1:%x", id) < 0 ||
         virAsprintf(&qdisc_id, "%x:", id) < 0 ||
-        virAsprintf(&filter_id, "%u", id) < 0) {
-        virReportOOMError();
+        virAsprintf(&filter_id, "%u", id) < 0)
         goto cleanup;
-    }
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "qdisc", "del", "dev", brname,
@@ -564,10 +555,8 @@ virNetDevBandwidthUpdateRate(const char *ifname,
     if (virAsprintf(&rate, "%llukbps", new_rate) < 0 ||
         virAsprintf(&ceil, "%llukbps", bandwidth->in->peak ?
                     bandwidth->in->peak :
-                    bandwidth->in->average) < 0) {
-        virReportOOMError();
+                    bandwidth->in->average) < 0)
         goto cleanup;
-    }
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "class", "change", "dev", ifname,

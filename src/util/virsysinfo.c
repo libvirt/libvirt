@@ -305,10 +305,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
         eol = strchr(base, '\n');
         cur = strchr(base, ':') + 1;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
             goto error;
-        }
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);
@@ -435,10 +433,8 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     while ((tmp_base = strstr(tmp_base, "processor "))
            && (tmp_base = virSysinfoParseLine(tmp_base, "processor ",
                                               &procline))) {
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
             goto cleanup;
-        }
         processor = &ret->processor[ret->nprocessor - 1];
         if (VIR_STRDUP(processor->processor_manufacturer, manufacturer) < 0)
             goto cleanup;
@@ -843,25 +839,25 @@ virSysinfoRead(void) {
         goto cleanup;
 
     if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
+        goto error;
 
     ret->type = VIR_SYSINFO_SMBIOS;
 
     if (virSysinfoParseBIOS(outbuf, ret) < 0)
-        goto no_memory;
+        goto error;
 
     if (virSysinfoParseSystem(outbuf, ret) < 0)
-        goto no_memory;
+        goto error;
 
     ret->nprocessor = 0;
     ret->processor = NULL;
     if (virSysinfoParseProcessor(outbuf, ret) < 0)
-        goto no_memory;
+        goto error;
 
     ret->nmemory = 0;
     ret->memory = NULL;
     if (virSysinfoParseMemory(outbuf, ret) < 0)
-        goto no_memory;
+        goto error;
 
 cleanup:
     VIR_FREE(outbuf);
@@ -869,9 +865,7 @@ cleanup:
 
     return ret;
 
-no_memory:
-    virReportOOMError();
-
+error:
     virSysinfoDefFree(ret);
     ret = NULL;
     goto cleanup;

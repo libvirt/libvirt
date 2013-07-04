@@ -68,17 +68,17 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     if (virAsprintf(&attachedmac_ex_id, "external-ids:attached-mac=\"%s\"",
                     macaddrstr) < 0)
-        goto out_of_memory;
+        goto cleanup;
     if (virAsprintf(&ifaceid_ex_id, "external-ids:iface-id=\"%s\"",
                     ifuuidstr) < 0)
-        goto out_of_memory;
+        goto cleanup;
     if (virAsprintf(&vmid_ex_id, "external-ids:vm-id=\"%s\"",
                     vmuuidstr) < 0)
-        goto out_of_memory;
+        goto cleanup;
     if (ovsport->profileID[0] != '\0') {
         if (virAsprintf(&profile_ex_id, "external-ids:port-profile=\"%s\"",
                         ovsport->profileID) < 0)
-            goto out_of_memory;
+            goto cleanup;
     }
 
     cmd = virCommandNew(OVSVSCTL);
@@ -118,8 +118,10 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                 virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
             }
 
-            if (virBufferError(&buf))
-                goto out_of_memory;
+            if (virBufferError(&buf)) {
+                virReportOOMError();
+                goto cleanup;
+            }
             virCommandAddArg(cmd, virBufferCurrentContent(&buf));
         } else if (virtVlan->nTags) {
             virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
@@ -161,10 +163,6 @@ cleanup:
     VIR_FREE(profile_ex_id);
     virCommandFree(cmd);
     return ret;
-
-out_of_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 /**

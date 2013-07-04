@@ -108,10 +108,8 @@ static int virNetDevBridgeSet(const char *brname,
     char *path = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0)
         return -1;
-    }
 
     if (virFileExists(path)) {
         char valuestr[INT_BUFSIZE_BOUND(value)];
@@ -157,10 +155,8 @@ static int virNetDevBridgeGet(const char *brname,
     char *path = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0)
         return -1;
-    }
 
     if (virFileExists(path)) {
         char *valuestr;

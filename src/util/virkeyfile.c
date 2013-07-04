@@ -282,10 +282,8 @@ virKeyFilePtr virKeyFileNew(void)
 {
     virKeyFilePtr conf;
 
-    if (VIR_ALLOC(conf) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(conf) < 0)
         goto error;
-    }
 
     if (!(conf->groups = virHashCreate(10,
                                        virKeyFileEntryFree)))

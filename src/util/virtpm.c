@@ -47,10 +47,8 @@ virTPMCreateCancelPath(const char *devpath)
         if (dev) {
             dev++;
             if (virAsprintf(&path, "/sys/class/misc/%s/device/cancel",
-                            dev) < 0) {
-                virReportOOMError();
+                            dev) < 0)
                 goto cleanup;
-            }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("TPM device path %s is invalid"), devpath);

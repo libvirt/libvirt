@@ -95,10 +95,8 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
     }
     buf = base;
 #else
-    if (VIR_ALLOC_N(buf, buflen + alignMask) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(buf, buflen + alignMask) < 0)
         goto cleanup;
-    }
     base = buf;
     buf = (char *) (((intptr_t) base + alignMask) & ~alignMask);
 #endif

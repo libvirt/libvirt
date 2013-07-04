@@ -379,10 +379,8 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     }
 
     /* Setup the poll file handle data structs */
-    if (VIR_ALLOC_N(fds, *nfds) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(fds, *nfds) < 0)
         return NULL;
-    }
 
     *nfds = 0;
     for (i = 0; i < eventLoop.handlesCount; i++) {

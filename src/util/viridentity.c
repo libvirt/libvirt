@@ -142,10 +142,8 @@ virIdentityPtr virIdentityGetSystem(void)
     char *processid = NULL;
 
     if (virAsprintf(&processid, "%llu",
-                    (unsigned long long)getpid()) < 0) {
-        virReportOOMError();
+                    (unsigned long long)getpid()) < 0)
         goto cleanup;
-    }
 
     if (!(username = virGetUserName(getuid())))
         goto cleanup;

@@ -64,16 +64,10 @@ static char *virLockSpaceGetResourcePath(virLockSpacePtr lockspace,
                                          const char *resname)
 {
     char *ret;
-    if (lockspace->dir) {
-        if (virAsprintf(&ret, "%s/%s", lockspace->dir, resname) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
-    } else {
-        if (VIR_STRDUP(ret, resname) < 0)
-            return NULL;
-    }
-
+    if (lockspace->dir)
+        ignore_value(virAsprintf(&ret, "%s/%s", lockspace->dir, resname));
+    else
+        ignore_value(VIR_STRDUP(ret, resname));
     return ret;
 }
 
@@ -134,7 +128,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
         goto error;
 
     if (!(res->path = virLockSpaceGetResourcePath(lockspace, resname)))
-        goto no_memory;
+        goto error;
 
     if (flags & VIR_LOCK_SPACE_ACQUIRE_AUTOCREATE) {
         while (1) {
@@ -223,14 +217,12 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
     res->lockHeld = true;
 
     if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0)
-        goto no_memory;
+        goto error;
 
     res->owners[res->nOwners-1] = owner;
 
     return res;
 
-no_memory:
-    virReportOOMError();
 error:
     virLockSpaceResourceFree(res);
     return NULL;
@@ -343,10 +335,8 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         size_t j;
         int m;
 
-        if (VIR_ALLOC(res) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(res) < 0)
             goto error;
-        }
         res->fd = -1;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
@@ -412,7 +402,6 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
         res->nOwners = m;
         if (VIR_ALLOC_N(res->owners, res->nOwners) < 0) {
-            virReportOOMError();
             virLockSpaceResourceFree(res);
             goto error;
         }
@@ -451,10 +440,8 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
     virJSONValuePtr resources;
     virHashKeyValuePairPtr pairs = NULL, tmp;
 
-    if (!object) {
-        virReportOOMError();
+    if (!object)
         return NULL;
-    }
 
     virMutexLock(&lockspace->lock);
 
@@ -477,10 +464,8 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         virJSONValuePtr owners = NULL;
         size_t i;
 
-        if (!child) {
-            virReportOOMError();
+        if (!child)
             goto error;
-        }
 
         if (virJSONValueArrayAppend(resources, child) < 0) {
             virJSONValueFree(child);
@@ -641,10 +626,8 @@ int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
         if ((res->flags & VIR_LOCK_SPACE_ACQUIRE_SHARED) &&
             (flags & VIR_LOCK_SPACE_ACQUIRE_SHARED)) {
 
-            if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0) {
-                virReportOOMError();
+            if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0)
                 goto cleanup;
-            }
             res->owners[res->nOwners-1] = owner;
 
             goto done;

@@ -410,10 +410,8 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
     }
 
     /* at least one of the source profiles is non-empty */
-    if (VIR_ALLOC(*result) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(*result) < 0)
         return ret;
-    }
 
     /* start with the interface's profile. There are no pointers in a
      * virtualPortProfile, so a shallow copy is sufficient.

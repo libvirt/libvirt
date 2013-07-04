@@ -117,10 +117,8 @@ virSCSIDeviceGetSgName(const char *adapter,
 
     if (virAsprintf(&path,
                     SYSFS_SCSI_DEVICES "/%d:%d:%d:%d/scsi_generic",
-                    adapter_id, bus, target, unit) < 0) {
-        virReportOOMError();
+                    adapter_id, bus, target, unit) < 0)
         return NULL;
-    }
 
     if (!(dir = opendir(path))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -162,10 +160,8 @@ virSCSIDeviceGetDevName(const char *adapter,
 
     if (virAsprintf(&path,
                     SYSFS_SCSI_DEVICES "/%d:%d:%d:%d/block",
-                    adapter_id, bus, target, unit) < 0) {
-        virReportOOMError();
+                    adapter_id, bus, target, unit) < 0)
         return NULL;
-    }
 
     if (!(dir = opendir(path))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -201,10 +197,8 @@ virSCSIDeviceNew(const char *adapter,
     char *vendor = NULL;
     char *model = NULL;
 
-    if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(dev) < 0)
         return NULL;
-    }
 
     dev->bus = bus;
     dev->target = target;
@@ -219,10 +213,8 @@ virSCSIDeviceNew(const char *adapter,
 
     if (virAsprintf(&dev->name, "%d:%d:%d:%d", dev->adapter,
                     dev->bus, dev->target, dev->unit) < 0 ||
-        virAsprintf(&dev->sg_path, "/dev/%s", sg) < 0) {
-        virReportOOMError();
+        virAsprintf(&dev->sg_path, "/dev/%s", sg) < 0)
         goto cleanup;
-    }
 
     if (access(dev->sg_path, F_OK) != 0) {
         virReportSystemError(errno,
@@ -234,10 +226,8 @@ virSCSIDeviceNew(const char *adapter,
     if (virAsprintf(&vendor_path,
                     SYSFS_SCSI_DEVICES "/%s/vendor", dev->name) < 0 ||
         virAsprintf(&model_path,
-                    SYSFS_SCSI_DEVICES "/%s/model", dev->name) < 0) {
-        virReportOOMError();
+                    SYSFS_SCSI_DEVICES "/%s/model", dev->name) < 0)
         goto cleanup;
-    }
 
     if (virFileReadAll(vendor_path, 1024, &vendor) < 0)
         goto cleanup;
@@ -248,10 +238,8 @@ virSCSIDeviceNew(const char *adapter,
     virTrimSpaces(vendor, NULL);
     virTrimSpaces(model, NULL);
 
-    if (virAsprintf(&dev->id, "%s:%s", vendor, model) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&dev->id, "%s:%s", vendor, model) < 0)
         goto cleanup;
-    }
 
     ret = dev;
 cleanup:
@@ -371,10 +359,8 @@ virSCSIDeviceListAdd(virSCSIDeviceListPtr list,
         return -1;
     }
 
-    if (VIR_REALLOC_N(list->devs, list->count + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(list->devs, list->count + 1) < 0)
         return -1;
-    }
 
     list->devs[list->count++] = dev;
 

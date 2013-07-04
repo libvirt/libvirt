@@ -86,10 +86,8 @@ virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlanPtr src)
     if (!src || src->nTags == 0)
         return 0;
 
-    if (VIR_ALLOC_N(dst->tag, src->nTags) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(dst->tag, src->nTags) < 0)
         return -1;
-    }
 
     dst->trunk = src->trunk;
     dst->nTags = src->nTags;

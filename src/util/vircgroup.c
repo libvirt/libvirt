@@ -1171,7 +1171,7 @@ static int virCgroupPartitionEscape(char **path)
     if ((rc = virCgroupPartitionNeedsEscaping(*path)) <= 0)
         return rc;
 
-    if (VIR_INSERT_ELEMENT_QUIET(*path, 0, len, escape) < 0)
+    if (VIR_INSERT_ELEMENT(*path, 0, len, escape) < 0)
         return -ENOMEM;
 
     return 0;
@@ -1204,7 +1204,6 @@ static int virCgroupSetPartitionSuffix(const char *path, char **res)
             if (VIR_REALLOC_N(tokens[i],
                               strlen(tokens[i]) + strlen(".partition") + 1) < 0) {
                 ret = -ENOMEM;
-                virReportOOMError();
                 goto cleanup;
             }
             strcat(tokens[i], ".partition");
@@ -1212,8 +1211,6 @@ static int virCgroupSetPartitionSuffix(const char *path, char **res)
 
         ret = virCgroupPartitionEscape(&(tokens[i]));
         if (ret < 0) {
-            if (ret == -ENOMEM)
-                virReportOOMError();
             goto cleanup;
         }
     }
@@ -2592,10 +2589,8 @@ int virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
     }
 
     if (virAsprintf(&opts,
-                    "mode=755,size=65536%s", mountopts) < 0) {
-        virReportOOMError();
+                    "mode=755,size=65536%s", mountopts) < 0)
         goto cleanup;
-    }
 
     if (mount("tmpfs", root, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, opts) < 0) {
         virReportSystemError(errno,
@@ -2613,10 +2608,8 @@ int virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
             if (virAsprintf(&src, "%s%s%s",
                             oldroot,
                             group->controllers[i].mountPoint,
-                            group->controllers[i].placement) < 0) {
-                virReportOOMError();
+                            group->controllers[i].placement) < 0)
                 goto cleanup;
-            }
 
             VIR_DEBUG("Create mount point '%s'", group->controllers[i].mountPoint);
             if (virFileMakePath(group->controllers[i].mountPoint) < 0) {

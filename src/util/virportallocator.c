@@ -86,7 +86,6 @@ virPortAllocatorPtr virPortAllocatorNew(unsigned short start,
     pa->end = end;
 
     if (!(pa->bitmap = virBitmapNew((end-start)+1))) {
-        virReportOOMError();
         virObjectUnref(pa);
         return NULL;
     }

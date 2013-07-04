@@ -178,11 +178,6 @@ virRandomGenerateWWN(char **wwn,
         return -1;
     }
 
-    if (virAsprintf(wwn, "5" "%s%09llx", oui,
-                    (unsigned long long)virRandomBits(36)) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return virAsprintf(wwn, "5" "%s%09llx", oui,
+                       (unsigned long long)virRandomBits(36));
 }

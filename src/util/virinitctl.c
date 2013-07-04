@@ -132,10 +132,8 @@ int virInitctlSetRunLevel(virInitctlRunLevel level,
     req.runlevel = '0' + level;
 
     if (vroot) {
-        if (virAsprintf(&path, "%s/%s", vroot, VIR_INITCTL_FIFO) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&path, "%s/%s", vroot, VIR_INITCTL_FIFO) < 0)
             return -1;
-        }
     } else {
         if (VIR_STRDUP(path, VIR_INITCTL_FIFO) < 0)
             return -1;

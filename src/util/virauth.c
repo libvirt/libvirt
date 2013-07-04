@@ -73,7 +73,7 @@ int virAuthGetConfigFilePath(virConnectPtr conn,
         goto cleanup;
 
     if (virAsprintf(path, "%s/auth.conf", userdir) < 0)
-        goto no_memory;
+        goto cleanup;
 
     VIR_DEBUG("Checking for readability of '%s'", *path);
     if (access(*path, R_OK) == 0)
@@ -98,10 +98,6 @@ cleanup:
     VIR_FREE(userdir);
 
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 

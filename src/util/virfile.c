@@ -211,10 +211,8 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         return NULL;
     }
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     mode = fcntl(*fd, F_GETFL);
 
@@ -426,10 +424,8 @@ virFileRewrite(const char *path,
     int fd = -1;
     int ret = -1;
 
-    if (virAsprintf(&newfile, "%s.new", path) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&newfile, "%s.new", path) < 0)
         goto cleanup;
-    }
 
     if ((fd = open(newfile, O_WRONLY | O_CREAT | O_TRUNC, mode)) < 0) {
         virReportSystemError(errno, _("cannot create file '%s'"),
@@ -553,10 +549,8 @@ static int virFileLoopDeviceOpen(char **dev_name)
         if (!STRPREFIX(de->d_name, "loop"))
             continue;
 
-        if (virAsprintf(&looppath, "/dev/%s", de->d_name) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&looppath, "/dev/%s", de->d_name) < 0)
             goto cleanup;
-        }
 
         VIR_DEBUG("Checking up on device %s", looppath);
         if ((fd = open(looppath, O_RDWR)) < 0) {
@@ -666,10 +660,8 @@ virFileNBDDeviceIsBusy(const char *devname)
     int ret = -1;
 
     if (virAsprintf(&path, SYSFS_BLOCK_DIR "/%s/pid",
-                    devname) < 0) {
-        virReportOOMError();
+                    devname) < 0)
         return -1;
-    }
 
     if (access(path, F_OK) < 0) {
         if (errno == ENOENT)
@@ -709,10 +701,8 @@ virFileNBDDeviceFindUnused(void)
             if (rv < 0)
                 goto cleanup;
             if (rv == 0) {
-                if (virAsprintf(&ret, "/dev/%s", de->d_name) < 0) {
-                    virReportOOMError();
+                if (virAsprintf(&ret, "/dev/%s", de->d_name) < 0)
                     goto cleanup;
-                }
                 goto cleanup;
             }
         }
@@ -847,10 +837,8 @@ int virFileDeleteTree(const char *dir)
             continue;
 
         if (virAsprintf(&filepath, "%s/%s",
-                        dir, de->d_name) < 0) {
-            virReportOOMError();
+                        dir, de->d_name) < 0)
             goto cleanup;
-        }
 
         if (lstat(filepath, &sb) < 0) {
             virReportSystemError(errno, _("Cannot access '%s'"),
@@ -2064,15 +2052,9 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
     char *path;
 
     if (ext == NULL) {
-        if (virAsprintf(&path, "%s/%s", dir, name) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
+        ignore_value(virAsprintf(&path, "%s/%s", dir, name));
     } else {
-        if (virAsprintf(&path, "%s/%s%s", dir, name, ext) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
+        ignore_value(virAsprintf(&path, "%s/%s%s", dir, name, ext));
     }
 
     return path;

@@ -56,18 +56,14 @@ static int virNetDevVethGetFreeName(char **veth, int startDev)
     do {
         VIR_FREE(path);
         ++devNum;
-        if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0)
             return -1;
-        }
         VIR_DEBUG("Probe %s", path);
     } while (virFileExists(path));
     VIR_FREE(path);
 
-    if (virAsprintf(veth, "veth%d", devNum) < 0) {
-        virReportOOMError();
+    if (virAsprintf(veth, "veth%d", devNum) < 0)
         return -1;
-    }
 
     return devNum;
 }

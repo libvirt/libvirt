@@ -192,10 +192,8 @@ virPipeReadUntilEOF(int outfd, int errfd,
 
             buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
             size = (*buf ? strlen(*buf) : 0);
-            if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
-                virReportOOMError();
+            if (VIR_REALLOC_N(*buf, size+got+1) < 0)
                 goto error;
-            }
             memmove(*buf+size, data, got);
             (*buf)[size+got] = '\0';
         }
@@ -549,10 +547,8 @@ char *virIndexToDiskName(int idx, const char *prefix)
 
     offset = strlen(prefix);
 
-    if (VIR_ALLOC_N(name, offset + i + 1)) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(name, offset + i + 1))
         return NULL;
-    }
 
     strcpy(name, prefix);
     name[offset + i] = '\0';
@@ -645,8 +641,6 @@ char *virGetHostname(void)
     freeaddrinfo(info);
 
 cleanup:
-    if (result == NULL)
-        virReportOOMError();
     return result;
 }
 
@@ -671,10 +665,8 @@ static char *virGetUserEnt(uid_t uid,
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
         return NULL;
-    }
 
     /*
      * From the manpage (terrifying but true):
@@ -684,11 +676,9 @@ static char *virGetUserEnt(uid_t uid,
      *        The given name or uid was not found.
      */
     while ((rc = getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
-            virReportOOMError();
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
             VIR_FREE(strbuf);
             return NULL;
-        }
     }
     if (rc != 0 || pw == NULL) {
         virReportSystemError(rc,
@@ -718,10 +708,8 @@ static char *virGetGroupEnt(gid_t gid)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
         return NULL;
-    }
 
     /*
      * From the manpage (terrifying but true):
@@ -732,7 +720,6 @@ static char *virGetGroupEnt(gid_t gid)
      */
     while ((rc = getgrgid_r(gid, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
-            virReportOOMError();
             VIR_FREE(strbuf);
             return NULL;
         }
@@ -762,20 +749,14 @@ static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
     char *home = NULL;
 
     if (path && path[0]) {
-        if (virAsprintf(&ret, "%s/libvirt", path) < 0)
-            goto no_memory;
+        ignore_value(virAsprintf(&ret, "%s/libvirt", path));
     } else {
         home = virGetUserEnt(geteuid(), VIR_USER_ENT_DIRECTORY);
-        if (virAsprintf(&ret, "%s/%s/libvirt", home, xdgdefdir) < 0)
-            goto no_memory;
+        ignore_value(virAsprintf(&ret, "%s/%s/libvirt", home, xdgdefdir));
     }
 
- cleanup:
     VIR_FREE(home);
     return ret;
- no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 char *virGetUserConfigDirectory(void)
@@ -797,11 +778,7 @@ char *virGetUserRuntimeDirectory(void)
     } else {
         char *ret;
 
-        if (virAsprintf(&ret, "%s/libvirt", path) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
-
+        ignore_value(virAsprintf(&ret, "%s/libvirt", path));
         return ret;
     }
 }
@@ -834,16 +811,12 @@ virGetUserIDByName(const char *name, uid_t *uid)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
         goto cleanup;
-    }
 
     while ((rc = getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
-            virReportOOMError();
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
             goto cleanup;
-        }
     }
 
     if (!pw) {
@@ -918,16 +891,12 @@ virGetGroupIDByName(const char *name, gid_t *gid)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
         goto cleanup;
-    }
 
     while ((rc = getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
-            virReportOOMError();
+        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
             goto cleanup;
-        }
     }
 
     if (!gr) {
@@ -1015,14 +984,12 @@ virSetUIDGID(uid_t uid, gid_t gid)
             bufsize = 16384;
 
         if (VIR_ALLOC_N(buf, bufsize) < 0) {
-            virReportOOMError();
             err = ENOMEM;
             goto error;
         }
         while ((rc = getpwuid_r(uid, &pwd, buf, bufsize,
                                 &pwd_result)) == ERANGE) {
             if (VIR_RESIZE_N(buf, bufsize, bufsize, bufsize) < 0) {
-                virReportOOMError();
                 err = ENOMEM;
                 goto error;
             }
@@ -1543,13 +1510,9 @@ virGetUnprivSGIOSysfsPath(const char *path,
         return NULL;
     }
 
-    if (virAsprintf(&sysfs_path, "%s/%d:%d/queue/unpriv_sgio",
-                    sysfs_dir ? sysfs_dir : SYSFS_DEV_BLOCK_PATH,
-                    maj, min) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&sysfs_path, "%s/%d:%d/queue/unpriv_sgio",
+                             sysfs_dir ? sysfs_dir : SYSFS_DEV_BLOCK_PATH,
+                             maj, min));
     return sysfs_path;
 }
 
@@ -1572,10 +1535,8 @@ virSetDeviceUnprivSGIO(const char *path,
         goto cleanup;
     }
 
-    if (virAsprintf(&val, "%d", unpriv_sgio) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&val, "%d", unpriv_sgio) < 0)
         goto cleanup;
-    }
 
     if ((rc = virFileWriteStr(sysfs_path, val, 0)) < 0) {
         virReportSystemError(-rc, _("failed to set %s"), sysfs_path);
@@ -1656,10 +1617,8 @@ virReadFCHost(const char *sysfs_prefix,
 
     if (virAsprintf(&sysfs_path, "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host, entry) < 0) {
-        virReportOOMError();
+                    host, entry) < 0)
         goto cleanup;
-    }
 
     if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
         goto cleanup;
@@ -1691,10 +1650,8 @@ virIsCapableFCHost(const char *sysfs_prefix,
 
     if (virAsprintf(&sysfs_path, "%s/host%d",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host) < 0) {
-        virReportOOMError();
+                    host) < 0)
         return false;
-    }
 
     if (access(sysfs_path, F_OK) == 0)
         ret = true;
@@ -1715,19 +1672,15 @@ virIsCapableVport(const char *sysfs_prefix,
                     "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host,
-                    "vport_create") < 0) {
-        virReportOOMError();
+                    "vport_create") < 0)
         return false;
-    }
 
     if (virAsprintf(&scsi_host_path,
                     "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
                     host,
-                    "vport_create") < 0) {
-        virReportOOMError();
+                    "vport_create") < 0)
         goto cleanup;
-    }
 
     if ((access(fc_host_path, F_OK) == 0) ||
         (access(scsi_host_path, F_OK) == 0))
@@ -1766,10 +1719,8 @@ virManageVport(const int parent_host,
                     "%s/host%d/%s",
                     SYSFS_FC_HOST_PATH,
                     parent_host,
-                    operation_file) < 0) {
-        virReportOOMError();
+                    operation_file) < 0)
         goto cleanup;
-    }
 
     if (!virFileExists(operation_path)) {
         VIR_FREE(operation_path);
@@ -1777,10 +1728,8 @@ virManageVport(const int parent_host,
                         "%s/host%d/%s",
                         SYSFS_SCSI_HOST_PATH,
                         parent_host,
-                        operation_file) < 0) {
-            virReportOOMError();
+                        operation_file) < 0)
             goto cleanup;
-        }
 
         if (!virFileExists(operation_path)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1793,10 +1742,8 @@ virManageVport(const int parent_host,
     if (virAsprintf(&vport_name,
                     "%s:%s",
                     wwpn,
-                    wwnn) < 0) {
-        virReportOOMError();
+                    wwnn) < 0)
         goto cleanup;
-    }
 
     if (virFileWriteStr(operation_path, vport_name, 0) == 0)
         ret = 0;
@@ -1856,10 +1803,8 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
             continue;
 
         if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
-                        entry->d_name) < 0) {
-            virReportOOMError();
+                        entry->d_name) < 0)
             goto cleanup;
-        }
 
         if (!virFileExists(wwnn_path)) {
             VIR_FREE(wwnn_path);
@@ -1875,10 +1820,8 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
         }
 
         if (virAsprintf(&wwpn_path, "%s/%s/port_name", prefix,
-                        entry->d_name) < 0) {
-            virReportOOMError();
+                        entry->d_name) < 0)
             goto cleanup;
-        }
 
         if (!virFileExists(wwpn_path)) {
             VIR_FREE(wwnn_buf);

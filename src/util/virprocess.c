@@ -429,10 +429,8 @@ realloc:
     }
 
     *map = virBitmapNew(maxcpu);
-    if (!*map) {
-        virReportOOMError();
+    if (!*map)
         return -1;
-    }
 
     for (i = 0; i < maxcpu; i++)
         if (CPU_ISSET_S(i, masklen, mask))
@@ -476,10 +474,8 @@ int virProcessGetAffinity(pid_t pid ATTRIBUTE_UNUSED,
                           virBitmapPtr *map,
                           int maxcpu)
 {
-    if (!(*map = virBitmapNew(maxcpu))) {
-        virReportOOMError();
+    if (!(*map = virBitmapNew(maxcpu)))
         return -1;
-    }
     virBitmapSetAll(*map);
 
     return 0;
@@ -524,15 +520,12 @@ int virProcessGetNamespaces(pid_t pid,
 
         if (virAsprintf(&nsfile, "/proc/%llu/ns/%s",
                         (unsigned long long)pid,
-                        ns[i]) < 0) {
-            virReportOOMError();
+                        ns[i]) < 0)
             goto cleanup;
-        }
 
         if ((fd = open(nsfile, O_RDWR)) >= 0) {
             if (VIR_EXPAND_N(*fdlist, *nfdlist, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
-                virReportOOMError();
                 goto cleanup;
             }
 
@@ -763,10 +756,8 @@ int virProcessGetStartTime(pid_t pid,
     char **tokens = NULL;
 
     if (virAsprintf(&filename, "/proc/%llu/stat",
-                    (unsigned long long)pid) < 0) {
-        virReportOOMError();
+                    (unsigned long long)pid) < 0)
         return -1;
-    }
 
     if ((len = virFileReadAll(filename, 1024, &buf)) < 0)
         goto cleanup;

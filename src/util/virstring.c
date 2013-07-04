@@ -83,7 +83,7 @@ char **virStringSplit(const char *string,
             size_t len = tmp - remainder;
 
             if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-                goto no_memory;
+                goto error;
 
             if (VIR_STRNDUP(tokens[ntokens], remainder, len) < 0)
                 goto error;
@@ -94,7 +94,7 @@ char **virStringSplit(const char *string,
     }
     if (*string) {
         if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-            goto no_memory;
+            goto error;
 
         if (VIR_STRDUP(tokens[ntokens], remainder) < 0)
             goto error;
@@ -102,13 +102,11 @@ char **virStringSplit(const char *string,
     }
 
     if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-        goto no_memory;
+        goto error;
     tokens[ntokens++] = NULL;
 
     return tokens;
 
-no_memory:
-    virReportOOMError();
 error:
     for (i = 0; i < ntokens; i++)
         VIR_FREE(tokens[i]);

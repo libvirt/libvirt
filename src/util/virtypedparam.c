@@ -137,36 +137,29 @@ virTypedParamsCheck(virTypedParameterPtr params,
 char *
 virTypedParameterToString(virTypedParameterPtr param)
 {
-    char *value;
-    int ret = -1;
+    char *value = NULL;
 
     switch (param->type) {
     case VIR_TYPED_PARAM_INT:
-        if ((ret = virAsprintf(&value, "%d", param->value.i)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%d", param->value.i));
         break;
     case VIR_TYPED_PARAM_UINT:
-        if ((ret = virAsprintf(&value, "%u", param->value.ui)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%u", param->value.ui));
         break;
     case VIR_TYPED_PARAM_LLONG:
-        if ((ret = virAsprintf(&value, "%lld", param->value.l)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%lld", param->value.l));
         break;
     case VIR_TYPED_PARAM_ULLONG:
-        if ((ret = virAsprintf(&value, "%llu", param->value.ul)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%llu", param->value.ul));
         break;
     case VIR_TYPED_PARAM_DOUBLE:
-        if ((ret = virAsprintf(&value, "%g", param->value.d)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%g", param->value.d));
         break;
     case VIR_TYPED_PARAM_BOOLEAN:
-        if ((ret = virAsprintf(&value, "%d", param->value.b)) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&value, "%d", param->value.b));
         break;
     case VIR_TYPED_PARAM_STRING:
-        ret = VIR_STRDUP(value, param->value.s);
+        ignore_value(VIR_STRDUP(value, param->value.s));
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -174,10 +167,7 @@ virTypedParameterToString(virTypedParameterPtr param)
                        param->type, param->field);
     }
 
-    if (ret < 0)
-        return NULL;
-    else
-        return value;
+    return value;
 }
 
 /* Assign name, type, and the appropriately typed arg to param; in the
@@ -368,10 +358,8 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
         }
         old = param->value.s;
     } else {
-        if (VIR_EXPAND_N(*params, n, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(*params, n, 1) < 0)
             goto error;
-        }
         param = *params + n - 1;
     }
 
@@ -406,10 +394,8 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
     if (!src || nparams <= 0)
         return 0;
 
-    if (VIR_ALLOC_N(*dst, nparams) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(*dst, nparams) < 0)
         return -1;
-    }
 
     for (i = 0; i < nparams; i++) {
         ignore_value(virStrcpyStatic((*dst)[i].field, src[i].field));
@@ -768,10 +754,8 @@ virTypedParamsAddInt(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -818,10 +802,8 @@ virTypedParamsAddUInt(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -868,10 +850,8 @@ virTypedParamsAddLLong(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -918,10 +898,8 @@ virTypedParamsAddULLong(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -968,10 +946,8 @@ virTypedParamsAddDouble(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -1018,10 +994,8 @@ virTypedParamsAddBoolean(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -1071,10 +1045,8 @@ virTypedParamsAddString(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (VIR_STRDUP(str, value) < 0)
@@ -1131,10 +1103,8 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
     virResetLastError();
 
     VIR_TYPED_PARAM_CHECK();
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0) {
-        virReportOOMError();
+    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
-    }
     *maxparams = max;
 
     if (virTypedParameterAssignFromStr(*params + n, name, type, value) < 0)

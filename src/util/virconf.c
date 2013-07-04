@@ -173,10 +173,8 @@ virConfNew(void)
 {
     virConfPtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
     ret->filename = NULL;
     ret->flags = 0;
 
@@ -225,10 +223,8 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     if ((comm == NULL) && (name == NULL))
         return NULL;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     ret->name = name;
     ret->value = value;
@@ -529,7 +525,6 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         return NULL;
     }
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
         virConfFreeList(lst);
         VIR_FREE(str);
         return NULL;
@@ -883,7 +878,6 @@ virConfSetValue(virConfPtr conf,
 
     if (!cur) {
         if (VIR_ALLOC(cur) < 0) {
-            virReportOOMError();
             virConfFreeValue(value);
             return -1;
         }

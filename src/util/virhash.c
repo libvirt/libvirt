@@ -129,10 +129,8 @@ virHashTablePtr virHashCreateFull(ssize_t size,
     if (size <= 0)
         size = 256;
 
-    if (VIR_ALLOC(table) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(table) < 0)
         return NULL;
-    }
 
     table->seed = virRandomBits(32);
     table->size = size;
@@ -144,7 +142,6 @@ virHashTablePtr virHashCreateFull(ssize_t size,
     table->keyFree = keyFree;
 
     if (VIR_ALLOC_N(table->table, size) < 0) {
-        virReportOOMError();
         VIR_FREE(table);
         return NULL;
     }
@@ -204,7 +201,6 @@ virHashGrow(virHashTablePtr table, size_t size)
         return -1;
 
     if (VIR_ALLOC_N(table->table, size) < 0) {
-        virReportOOMError();
         table->table = oldtable;
         return -1;
     }
@@ -302,7 +298,6 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     }
 
     if (VIR_ALLOC(entry) < 0 || !(new_name = table->keyCopy(name))) {
-        virReportOOMError();
         VIR_FREE(entry);
         return -1;
     }
@@ -673,10 +668,8 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
     if (numElems < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(iter.sortArray, numElems + 1)) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(iter.sortArray, numElems + 1))
         return NULL;
-    }
 
     virHashForEach(table, virHashGetKeysIterator, &iter);
 

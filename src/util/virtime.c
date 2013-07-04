@@ -303,10 +303,8 @@ char *virTimeStringNow(void)
 {
     char *ret;
 
-    if (VIR_ALLOC_N(ret, VIR_TIME_STRING_BUFLEN) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, VIR_TIME_STRING_BUFLEN) < 0)
         return NULL;
-    }
 
     if (virTimeStringNowRaw(ret) < 0) {
         virReportSystemError(errno, "%s",
@@ -334,10 +332,8 @@ char *virTimeStringThen(unsigned long long when)
 {
     char *ret;
 
-    if (VIR_ALLOC_N(ret, VIR_TIME_STRING_BUFLEN) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, VIR_TIME_STRING_BUFLEN) < 0)
         return NULL;
-    }
 
     if (virTimeStringThenRaw(when, ret) < 0) {
         virReportSystemError(errno, "%s",

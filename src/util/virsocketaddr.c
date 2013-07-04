@@ -290,7 +290,7 @@ virSocketAddrFormatFull(virSocketAddrPtr addr,
         if (withService) {
             if (virAsprintf(&addrstr, "127.0.0.1%s0",
                             separator ? separator : ":") < 0)
-                goto no_memory;
+                goto error;
         } else {
             if (VIR_STRDUP(addrstr, "127.0.0.1") < 0)
                 goto error;
@@ -311,7 +311,7 @@ virSocketAddrFormatFull(virSocketAddrPtr addr,
 
     if (withService) {
         if (virAsprintf(&addrstr, "%s%s%s", host, separator, port) == -1)
-            goto no_memory;
+            goto error;
     } else {
         if (VIR_STRDUP(addrstr, host) < 0)
             goto error;
@@ -319,8 +319,6 @@ virSocketAddrFormatFull(virSocketAddrPtr addr,
 
     return addrstr;
 
-no_memory:
-    virReportOOMError();
 error:
     return NULL;
 }

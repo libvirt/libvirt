@@ -96,10 +96,8 @@ static int virUSBSysReadFile(const char *f_name, const char *d_name,
     char *ignore = NULL;
 
     tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
-    if (tmp < 0) {
-        virReportOOMError();
+    if (tmp < 0)
         goto cleanup;
-    }
 
     if (virFileReadAll(filename, 1024, &buf) < 0)
         goto cleanup;
@@ -334,10 +332,8 @@ virUSBDeviceNew(unsigned int bus,
 {
     virUSBDevicePtr dev;
 
-    if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(dev) < 0)
         return NULL;
-    }
 
     dev->bus     = bus;
     dev->dev     = devno;
@@ -353,7 +349,6 @@ virUSBDeviceNew(unsigned int bus,
     if (virAsprintf(&dev->path, "%s" USB_DEVFS "%03d/%03d",
                     vroot ? vroot : "",
                     dev->bus, dev->dev) < 0) {
-        virReportOOMError();
         virUSBDeviceFree(dev);
         return NULL;
     }
@@ -456,10 +451,8 @@ virUSBDeviceListAdd(virUSBDeviceListPtr list,
         return -1;
     }
 
-    if (VIR_REALLOC_N(list->devs, list->count+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(list->devs, list->count+1) < 0)
         return -1;
-    }
 
     list->devs[list->count++] = dev;
 

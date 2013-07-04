@@ -357,10 +357,8 @@ qcowXGetBackingStore(char **res,
         return BACKING_STORE_INVALID;
     if (size + 1 == 0)
         return BACKING_STORE_INVALID;
-    if (VIR_ALLOC_N(*res, size + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(*res, size + 1) < 0)
         return BACKING_STORE_ERROR;
-    }
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
@@ -444,10 +442,8 @@ vmdk4GetBackingStore(char **res,
     size_t len;
     int ret = BACKING_STORE_ERROR;
 
-    if (VIR_ALLOC_N(desc, STORAGE_MAX_HEAD + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(desc, STORAGE_MAX_HEAD + 1) < 0)
         goto cleanup;
-    }
 
     *res = NULL;
     /*
@@ -526,10 +522,8 @@ qedGetBackingStore(char **res,
         return BACKING_STORE_OK;
     if (offset + size > buf_size || offset + size < offset)
         return BACKING_STORE_INVALID;
-    if (VIR_ALLOC_N(*res, size + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(*res, size + 1) < 0)
         return BACKING_STORE_ERROR;
-    }
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
@@ -569,10 +563,8 @@ virFindBackingFile(const char *start, bool start_is_dir, const char *path,
             start = ".";
             d_len = 1;
         }
-        if (virAsprintf(&combined, "%.*s/%s", (int)d_len, start, path) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&combined, "%.*s/%s", (int)d_len, start, path) < 0)
             goto cleanup;
-        }
     }
 
     if (directory && !(*directory = mdir_name(combined))) {
@@ -737,10 +729,8 @@ qcow2GetFeatures(virBitmapPtr *features,
     if (len < QCOW2v3_HDR_SIZE)
         return -1;
 
-    if (!(feat = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST))) {
-        virReportOOMError();
+    if (!(feat = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
         return -1;
-    }
 
     /* todo: check for incompatible or autoclear features? */
     bits = virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_COMPATIBLE);
@@ -771,10 +761,8 @@ virStorageFileGetMetadataInternal(const char *path,
 
     VIR_DEBUG("path=%s, fd=%d, format=%d", path, fd, format);
 
-    if (VIR_ALLOC(meta) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(meta) < 0)
         return NULL;
-    }
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
@@ -792,10 +780,8 @@ virStorageFileGetMetadataInternal(const char *path,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(buf, len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(buf, len) < 0)
         goto cleanup;
-    }
 
     if ((len = read(fd, buf, len)) < 0) {
         virReportSystemError(errno, _("cannot read header '%s'"), path);
@@ -940,10 +926,8 @@ virStorageFileProbeFormatFromFD(const char *path, int fd)
         return VIR_STORAGE_FILE_DIR;
     }
 
-    if (VIR_ALLOC_N(head, len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(head, len) < 0)
         return -1;
-    }
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
         virReportSystemError(errno, _("cannot set to start of '%s'"), path);

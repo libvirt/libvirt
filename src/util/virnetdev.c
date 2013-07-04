@@ -315,10 +315,8 @@ virNetDevReplaceMacAddress(const char *linkdev,
 
     if (virAsprintf(&path, "%s/%s",
                     stateDir,
-                    linkdev) < 0) {
-        virReportOOMError();
+                    linkdev) < 0)
         return -1;
-    }
     virMacAddrFormat(&oldmac, macstr);
     if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
         virReportSystemError(errno, _("Unable to preserve mac for %s"),
@@ -352,10 +350,8 @@ virNetDevRestoreMacAddress(const char *linkdev,
 
     if (virAsprintf(&path, "%s/%s",
                     stateDir,
-                    linkdev) < 0) {
-        virReportOOMError();
+                    linkdev) < 0)
         return -1;
-    }
 
     if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0)
         return -1;
@@ -505,10 +501,8 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
         "ip", "link", "set", ifname, "netns", NULL, NULL
     };
 
-    if (virAsprintf(&pid, "%lld", (long long) pidInNs) == -1) {
-        virReportOOMError();
+    if (virAsprintf(&pid, "%lld", (long long) pidInNs) == -1)
         return -1;
-    }
 
     argv[5] = pid;
     rc = virRun(argv, NULL);
@@ -1056,13 +1050,7 @@ virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
                const char *file)
 {
 
-    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s",
-        ifname, file) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s", ifname, file);
 }
 
 static int
@@ -1070,13 +1058,8 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
                      const char *file)
 {
 
-    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s",
-        ifname, file) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s",
+                       ifname, file);
 }
 
 /**
@@ -1110,10 +1093,8 @@ virNetDevGetVirtualFunctions(const char *pfname,
                                   n_vfname) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(*vfname, *n_vfname) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(*vfname, *n_vfname) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < *n_vfname; i++)
     {
@@ -1661,16 +1642,12 @@ virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
         goto cleanup;
 
     if (virAsprintf(&path, "%s/%s_vf%d",
-                    stateDir, pflinkdev, vf) < 0) {
-        virReportOOMError();
+                    stateDir, pflinkdev, vf) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&fileData, "%s\n%d\n",
-                    virMacAddrFormat(&oldmac, macstr), oldvlanid) < 0) {
-        virReportOOMError();
+                    virMacAddrFormat(&oldmac, macstr), oldvlanid) < 0)
         goto cleanup;
-    }
     if (virFileWriteStr(path, fileData, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
         virReportSystemError(errno, _("Unable to preserve mac/vlan tag "
                                       "for pf = %s, vf = %d"), pflinkdev, vf);
@@ -1699,10 +1676,8 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
     int ifindex = -1;
 
     if (virAsprintf(&path, "%s/%s_vf%d",
-                    stateDir, pflinkdev, vf) < 0) {
-        virReportOOMError();
+                    stateDir, pflinkdev, vf) < 0)
         return rc;
-    }
 
     if (virFileReadAll(path, 128, &fileData) < 0) {
         goto cleanup;

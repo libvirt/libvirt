@@ -48,10 +48,8 @@ sexpr_new(void)
 {
     struct sexpr *ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
     ret->kind = SEXPR_NIL;
     return ret;
 }

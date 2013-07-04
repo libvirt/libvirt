@@ -266,8 +266,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
     if (!netstr)
         return NULL;
 
-    if (virAsprintf(&ret, "%s/%d", netstr, prefix) < 0)
-        virReportOOMError();
+    ignore_value(virAsprintf(&ret, "%s/%d", netstr, prefix));
 
     VIR_FREE(netstr);
     return ret;
@@ -738,10 +737,8 @@ iptablesForwardMasquerade(virSocketAddr *netaddr,
 
         if (port->start < port->end && port->end < 65536) {
             if (virAsprintf(&portRangeStr, ":%u-%u",
-                            port->start, port->end) < 0) {
-                virReportOOMError();
+                            port->start, port->end) < 0)
                 goto cleanup;
-            }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid port range '%u-%u'."),
@@ -761,10 +758,8 @@ iptablesForwardMasquerade(virSocketAddr *netaddr,
                             portRangeStr ? portRangeStr : "");
         }
 
-        if (r < 0) {
-            virReportOOMError();
+        if (r < 0)
             goto cleanup;
-        }
 
         virCommandAddArgList(cmd, "--jump", "SNAT",
                                   "--to-source", natRangeStr, NULL);

@@ -169,10 +169,8 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
     if (minWorkers > maxWorkers)
         minWorkers = maxWorkers;
 
-    if (VIR_ALLOC(pool) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(pool) < 0)
         return NULL;
-    }
 
     pool->jobList.tail = pool->jobList.head = NULL;
 
@@ -193,10 +191,8 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
     pool->maxWorkers = maxWorkers;
 
     for (i = 0; i < minWorkers; i++) {
-        if (VIR_ALLOC(data) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(data) < 0)
             goto error;
-        }
         data->pool = pool;
         data->cond = &pool->cond;
 
@@ -216,10 +212,8 @@ virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
             goto error;
 
         for (i = 0; i < prioWorkers; i++) {
-            if (VIR_ALLOC(data) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(data) < 0)
                 goto error;
-            }
             data->pool = pool;
             data->cond = &pool->prioCond;
             data->priority = true;
@@ -313,14 +307,11 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
 
     if (pool->freeWorkers - pool->jobQueueDepth <= 0 &&
         pool->nWorkers < pool->maxWorkers) {
-        if (VIR_EXPAND_N(pool->workers, pool->nWorkers, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(pool->workers, pool->nWorkers, 1) < 0)
             goto error;
-        }
 
         if (VIR_ALLOC(data) < 0) {
             pool->nWorkers--;
-            virReportOOMError();
             goto error;
         }
 
@@ -337,10 +328,8 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
         }
     }
 
-    if (VIR_ALLOC(job) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(job) < 0)
         goto error;
-    }
 
     job->data = jobData;
     job->priority = priority;

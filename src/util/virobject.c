@@ -132,10 +132,8 @@ virClassPtr virClassNew(virClassPtr parent,
         return NULL;
     }
 
-    if (VIR_ALLOC(klass) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(klass) < 0)
         goto error;
-    }
 
     klass->parent = parent;
     if (VIR_STRDUP(klass->name, name) < 0)
@@ -191,10 +189,8 @@ void *virObjectNew(virClassPtr klass)
 
     if (VIR_ALLOC_VAR(obj,
                       char,
-                      klass->objectSize - sizeof(virObject)) < 0) {
-        virReportOOMError();
+                      klass->objectSize - sizeof(virObject)) < 0)
         return NULL;
-    }
 
     obj->magic = klass->magic;
     obj->klass = klass;
