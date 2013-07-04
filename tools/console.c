@@ -128,7 +128,6 @@ virConsoleEventOnStream(virStreamPtr st,
         if (avail < 1024) {
             if (VIR_REALLOC_N(con->streamToTerminal.data,
                               con->streamToTerminal.length + 1024) < 0) {
-                virReportOOMError();
                 virConsoleShutdown(con);
                 return;
             }
@@ -204,7 +203,6 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
         if (avail < 1024) {
             if (VIR_REALLOC_N(con->terminalToStream.data,
                               con->terminalToStream.length + 1024) < 0) {
-                virReportOOMError();
                 virConsoleShutdown(con);
                 return;
             }
@@ -357,10 +355,8 @@ int vshRunConsole(virDomainPtr dom,
     old_sigpipe = signal(SIGPIPE, do_signal);
     got_signal = 0;
 
-    if (VIR_ALLOC(con) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(con) < 0)
         goto cleanup;
-    }
 
     con->escapeChar = vshGetEscapeChar(escape_seq);
     con->st = virStreamNew(virDomainGetConnect(dom),

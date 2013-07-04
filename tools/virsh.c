@@ -197,7 +197,6 @@ vshStringToArray(const char *str,
     }
 
     if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
-        virReportOOMError();
         VIR_FREE(str_copied);
         return -1;
     }

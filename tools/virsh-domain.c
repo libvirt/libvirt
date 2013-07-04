@@ -6275,7 +6275,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (VIR_ALLOC_N(params, nparams * MIN(show_count, 128)) < 0)
-        goto no_memory;
+        goto cleanup;
 
     while (show_count) {
         int ncpus = MIN(show_count, 128);
@@ -6324,7 +6324,7 @@ do_show_total:
     }
 
     if (VIR_ALLOC_N(params, nparams) < 0)
-        goto no_memory;
+        goto cleanup;
 
     /* passing start_cpu == -1 gives us domain's total status */
     if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, flags)) < 0)
@@ -6353,10 +6353,6 @@ cleanup:
     virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 
 failed_stats:
     vshError(ctl, _("Failed to retrieve CPU statistics for domain '%s'"),
@@ -8843,7 +8839,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     for (iter = 0; scheme[iter] != NULL; iter++) {
         /* Create our XPATH lookup for the current display's port */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "port") < 0)
-            goto no_memory;
+            goto cleanup;
 
         /* Attempt to get the port number for the current graphics scheme */
         tmp = virXPathInt(xpath, ctxt, &port);
@@ -8856,7 +8852,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* Create our XPATH lookup for the current display's address */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen") < 0)
-            goto no_memory;
+            goto cleanup;
 
         /* Attempt to get the listening addr if set for the current
          * graphics scheme */
@@ -8870,7 +8866,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* Create our XPATH lookup for the password */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "passwd") < 0)
-            goto no_memory;
+            goto cleanup;
 
         /* Attempt to get the password */
         passwd = virXPathString(xpath, ctxt);
@@ -8885,7 +8881,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         /* Create our XPATH lookup for TLS Port (automatically skipped
          * for unsupported schemes */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "tlsPort") < 0)
-            goto no_memory;
+            goto cleanup;
 
         /* Attempt to get the TLS port number */
         tmp = virXPathInt(xpath, ctxt, &tls_port);
@@ -8951,10 +8947,6 @@ cleanup:
     xmlFreeDoc(xml);
     virDomainFree(dom);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 /*
@@ -9192,10 +9184,8 @@ vshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
     if (n1_child_size == 0 && n2_child_size == 0)
         return true;
 
-    if (!(bitmap = virBitmapNew(n1_child_size))) {
-        virReportOOMError();
+    if (!(bitmap = virBitmapNew(n1_child_size)))
         return false;
-    }
 
     child2 = n2->children;
     while (child2) {
@@ -9841,10 +9831,8 @@ cleanup:
     VIR_FREE(disk_type);
     if (xml_buf) {
         int len = xmlBufferLength(xml_buf);
-        if (VIR_ALLOC_N(ret, len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(ret, len + 1) < 0)
             return NULL;
-        }
         memcpy(ret, (char *)xmlBufferContent(xml_buf), len);
         ret[len] = '\0';
         xmlBufferFree(xml_buf);

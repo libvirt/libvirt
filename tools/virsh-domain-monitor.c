@@ -709,10 +709,8 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 
     if (virAsprintf(&xpath, "/domain/devices/interface[(mac/@address = '%s') or "
                             "                          (target/@dev = '%s')]",
-                           macstr, iface) < 0) {
-        virReportOOMError();
+                           macstr, iface) < 0)
         goto cleanup;
-    }
 
     if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0) {
         vshError(ctl, _("Failed to extract interface information"));
