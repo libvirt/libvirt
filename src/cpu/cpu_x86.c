@@ -252,7 +252,7 @@ x86DataExpand(union cpuData *data,
     if (basic_by > 0) {
         size_t len = data->x86.basic_len;
         if (VIR_EXPAND_N(data->x86.basic, data->x86.basic_len, basic_by) < 0)
-            goto no_memory;
+            return -1;
 
         for (i = 0; i < basic_by; i++)
             data->x86.basic[len + i].function = len + i;
@@ -261,17 +261,13 @@ x86DataExpand(union cpuData *data,
     if (extended_by > 0) {
         size_t len = data->x86.extended_len;
         if (VIR_EXPAND_N(data->x86.extended, data->x86.extended_len, extended_by) < 0)
-            goto no_memory;
+            return -1;
 
         for (i = 0; i < extended_by; i++)
             data->x86.extended[len + i].function = len + i + CPUX86_EXTENDED;
     }
 
     return 0;
-
-no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 
@@ -452,11 +448,11 @@ x86DataToCPU(const union cpuData *data,
         VIR_STRDUP(cpu->model, model->name) < 0 ||
         !(copy = x86DataCopy(data)) ||
         !(modelData = x86DataCopy(model->data)))
-        goto no_memory;
+        goto error;
 
     if ((vendor = x86DataToVendor(copy, map)) &&
         VIR_STRDUP(cpu->vendor, vendor->name) < 0)
-        goto no_memory;
+        goto error;
 
     x86DataSubtract(copy, modelData);
     x86DataSubtract(modelData, data);
@@ -473,8 +469,6 @@ cleanup:
     x86DataFree(copy);
     return cpu;
 
-no_memory:
-    virReportOOMError();
 error:
     virCPUDefFree(cpu);
     cpu = NULL;
@@ -520,7 +514,7 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     int ret = 0;
 
     if (VIR_ALLOC(vendor) < 0)
-        goto no_memory;
+        goto error;
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
@@ -564,8 +558,7 @@ out:
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     ret = -1;
 ignore:
     x86VendorFree(vendor);
@@ -660,7 +653,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     int n;
 
     if (!(feature = x86FeatureNew()))
-        goto no_memory;
+        goto error;
 
     feature->name = virXPathString("string(@name)", ctxt);
     if (feature->name == NULL) {
@@ -706,7 +699,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         cpuid.edx = edx;
 
         if (x86DataAddCpuid(feature->data, &cpuid))
-            goto no_memory;
+            goto error;
     }
 
     if (map->features == NULL)
@@ -722,8 +715,7 @@ out:
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     ret = -1;
 
 ignore:
@@ -813,9 +805,9 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
         }
 
         if ((model = x86ModelCopy(model)) == NULL)
-            goto no_memory;
+            goto error;
     } else if (!(model = x86ModelNew())) {
-        goto no_memory;
+        goto error;
     } else if (cpu->type == VIR_CPU_TYPE_HOST) {
         return model;
     }
@@ -834,13 +826,10 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
         }
 
         if (x86DataAdd(model->data, feature->data))
-            goto no_memory;
+            goto error;
     }
 
     return model;
-
-no_memory:
-    virReportOOMError();
 
 error:
     x86ModelFree(model);
@@ -940,7 +929,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
     int n;
 
     if (!(model = x86ModelNew()))
-        goto no_memory;
+        goto error;
 
     model->name = virXPathString("string(@name)", ctxt);
     if (model->name == NULL) {
@@ -974,7 +963,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         model->vendor = ancestor->vendor;
         x86DataFree(model->data);
         if (!(model->data = x86DataCopy(ancestor->data)))
-            goto no_memory;
+            goto error;
     }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
@@ -1018,7 +1007,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         VIR_FREE(name);
 
         if (x86DataAdd(model->data, feature->data))
-            goto no_memory;
+            goto error;
     }
 
     if (map->models == NULL)
@@ -1033,8 +1022,7 @@ out:
     VIR_FREE(nodes);
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     ret = -1;
 
 ignore:
@@ -1098,10 +1086,8 @@ x86LoadMap(void)
 {
     struct x86_map *map;
 
-    if (VIR_ALLOC(map) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(map) < 0)
         return NULL;
-    }
 
     if (cpuMapLoad("x86", x86MapLoadCallback, map) < 0)
         goto error;
@@ -1125,12 +1111,14 @@ error:
 #define virX86CpuIncompatible(MSG, CPU_DEF)                             \
         do {                                                            \
             char *flagsStr = NULL;                                      \
-            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF))))    \
-                goto no_memory;                                         \
+            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) {  \
+                virReportOOMError();                                    \
+                goto error;                                             \
+            }                                                           \
             if (message &&                                              \
                 virAsprintf(message, "%s: %s", _(MSG), flagsStr) < 0) { \
                 VIR_FREE(flagsStr);                                     \
-                goto no_memory;                                         \
+                goto error;                                             \
             }                                                           \
             VIR_DEBUG("%s: %s", MSG, flagsStr);                         \
             VIR_FREE(flagsStr);                                         \
@@ -1173,7 +1161,7 @@ x86Compute(virCPUDefPtr host,
                 virAsprintf(message,
                             _("CPU arch %s does not match host arch"),
                             virArchToString(cpu->arch)) < 0)
-                goto no_memory;
+                goto error;
             return VIR_CPU_COMPARE_INCOMPATIBLE;
         }
     }
@@ -1187,7 +1175,7 @@ x86Compute(virCPUDefPtr host,
                         _("host CPU vendor does not match required "
                           "CPU vendor %s"),
                         cpu->vendor) < 0)
-            goto no_memory;
+            goto error;
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
@@ -1220,7 +1208,7 @@ x86Compute(virCPUDefPtr host,
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
     if ((diff = x86ModelCopy(host_model)) == NULL)
-        goto no_memory;
+        goto error;
 
     x86DataSubtract(diff->data, cpu_optional->data);
     x86DataSubtract(diff->data, cpu_require->data);
@@ -1241,19 +1229,19 @@ x86Compute(virCPUDefPtr host,
 
     if (guest != NULL) {
         if ((guest_model = x86ModelCopy(host_model)) == NULL)
-            goto no_memory;
+            goto error;
 
         if (cpu->type == VIR_CPU_TYPE_GUEST
             && cpu->match == VIR_CPU_MATCH_EXACT)
             x86DataSubtract(guest_model->data, diff->data);
 
         if (x86DataAdd(guest_model->data, cpu_force->data))
-            goto no_memory;
+            goto error;
 
         x86DataSubtract(guest_model->data, cpu_disable->data);
 
         if ((*guest = x86DataCopy(guest_model->data)) == NULL)
-            goto no_memory;
+            goto error;
     }
 
 out:
@@ -1268,9 +1256,6 @@ out:
     x86ModelFree(guest_model);
 
     return ret;
-
-no_memory:
-    virReportOOMError();
 
 error:
     ret = VIR_CPU_COMPARE_ERROR;
@@ -1481,7 +1466,6 @@ x86Encode(const virCPUDefPtr cpu,
         if (v &&
             (VIR_ALLOC(data_vendor) < 0 ||
              x86DataAddCpuid(data_vendor, &v->cpuid) < 0)) {
-            virReportOOMError();
             goto error;
         }
     }
@@ -1562,10 +1546,8 @@ cpuidSet(uint32_t base, struct cpuX86cpuid **set)
     cpuidCall(&cpuid);
     max = cpuid.eax - base;
 
-    if (VIR_ALLOC_N(*set, max + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(*set, max + 1) < 0)
         return -1;
-    }
 
     for (i = 0; i <= max; i++) {
         cpuid.function = base | i;
@@ -1583,10 +1565,8 @@ x86NodeData(void)
     union cpuData *data;
     int ret;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return NULL;
-    }
 
     if ((ret = cpuidSet(CPUX86_BASIC, &data->x86.basic)) < 0)
         goto error;
@@ -1627,7 +1607,7 @@ x86Baseline(virCPUDefPtr *cpus,
         goto error;
 
     if (VIR_ALLOC(cpu) < 0)
-        goto no_memory;
+        goto error;
 
     cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
@@ -1689,7 +1669,7 @@ x86Baseline(virCPUDefPtr *cpus,
     }
 
     if (vendor && x86DataAddCpuid(base_model->data, &vendor->cpuid) < 0)
-        goto no_memory;
+        goto error;
 
     if (x86Decode(cpu, base_model->data, models, nmodels, NULL) < 0)
         goto error;
@@ -1705,8 +1685,6 @@ cleanup:
 
     return cpu;
 
-no_memory:
-    virReportOOMError();
 error:
     x86ModelFree(model);
     virCPUDefFree(cpu);

@@ -35,11 +35,7 @@ ArmNodeData(void)
 {
     union cpuData *data;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_ALLOC(data));
     return data;
 }
 

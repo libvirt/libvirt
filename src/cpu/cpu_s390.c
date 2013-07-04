@@ -36,10 +36,8 @@ s390NodeData(void)
 {
     union cpuData *data;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return NULL;
-    }
 
     return data;
 }

@@ -308,7 +308,7 @@ cpuBaselineXML(const char **xmlCPUs,
     }
 
     if (VIR_ALLOC_N(cpus, ncpus))
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < ncpus; i++) {
         if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
@@ -341,8 +341,6 @@ cleanup:
 
     return cpustr;
 
-no_memory:
-    virReportOOMError();
 error:
     cpustr = NULL;
     goto cleanup;

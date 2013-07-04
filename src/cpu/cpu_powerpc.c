@@ -132,10 +132,8 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
 {
     struct ppc_vendor *vendor = NULL;
 
-    if (VIR_ALLOC(vendor) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(vendor) < 0)
         return -1;
-    }
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
@@ -173,10 +171,8 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
     char *vendor = NULL;
     unsigned long pvr;
 
-    if (VIR_ALLOC(model) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(model) < 0)
         return -1;
-    }
 
     model->name = virXPathString("string(@name)", ctxt);
     if (!model->name) {
@@ -279,10 +275,8 @@ ppcLoadMap(void)
 {
     struct ppc_map *map;
 
-    if (VIR_ALLOC(map) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(map) < 0)
         return NULL;
-    }
 
     if (cpuMapLoad("ppc64", ppcMapLoadCallback, map) < 0)
         goto error;
@@ -362,10 +356,8 @@ ppcNodeData(void)
 {
     union cpuData *data;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return NULL;
-    }
 
     asm("mfpvr %0"
         : "=r" (data->ppc.pvr));
@@ -449,7 +441,7 @@ ppcBaseline(virCPUDefPtr *cpus,
 
     if (VIR_ALLOC(cpu) < 0 ||
         VIR_STRDUP(cpu->model, model->name) < 0)
-        goto no_memory;
+        goto error;
 
     if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
         goto error;
@@ -462,8 +454,6 @@ cleanup:
 
     return cpu;
 
-no_memory:
-    virReportOOMError();
 error:
     virCPUDefFree(cpu);
     cpu = NULL;

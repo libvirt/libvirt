@@ -69,10 +69,8 @@ genericCompare(virCPUDefPtr host,
         STRNEQ(host->model, cpu->model))
         return VIR_CPU_COMPARE_INCOMPATIBLE;
 
-    if ((hash = genericHashFeatures(host)) == NULL) {
-        virReportOOMError();
+    if ((hash = genericHashFeatures(host)) == NULL)
         goto cleanup;
-    }
 
     reqfeatures = 0;
     for (i = 0; i < cpu->nfeatures; i++) {
@@ -133,7 +131,7 @@ genericBaseline(virCPUDefPtr *cpus,
     if (VIR_ALLOC(cpu) < 0 ||
         VIR_STRDUP(cpu->model, cpus[0]->model) < 0 ||
         VIR_ALLOC_N(features, cpus[0]->nfeatures) < 0)
-        goto no_memory;
+        goto error;
 
     cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_HOST;
@@ -161,7 +159,7 @@ genericBaseline(virCPUDefPtr *cpus,
         }
 
         if (!(hash = genericHashFeatures(cpus[i])))
-            goto no_memory;
+            goto error;
 
         for (j = 0; j < nfeatures; j++) {
             if (features[j].name &&
@@ -175,7 +173,7 @@ genericBaseline(virCPUDefPtr *cpus,
     }
 
     if (VIR_ALLOC_N(cpu->features, count) < 0)
-        goto no_memory;
+        goto error;
     cpu->nfeatures = count;
 
     j = 0;
@@ -192,8 +190,6 @@ cleanup:
 
     return cpu;
 
-no_memory:
-    virReportOOMError();
 error:
     virCPUDefFree(cpu);
     cpu = NULL;
