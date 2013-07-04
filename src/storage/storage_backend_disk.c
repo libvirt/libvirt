@@ -50,14 +50,11 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     char *tmp, *devpath;
 
     if (vol == NULL) {
-        if (VIR_ALLOC(vol) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(vol) < 0)
             return -1;
-        }
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count+1) < 0) {
-            virReportOOMError();
             virStorageVolDefFree(vol);
             return -1;
         }
@@ -94,10 +91,8 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     }
 
     if (vol->source.extents == NULL) {
-        if (VIR_ALLOC(vol->source.extents) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(vol->source.extents) < 0)
             return -1;
-        }
         vol->source.nextent = 1;
 
         if (virStrToLong_ull(groups[3], NULL, 10,
@@ -487,10 +482,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             /* XXX Only support one extended partition */
             switch (virStorageBackendDiskPartTypeToCreate(pool)) {
             case VIR_STORAGE_VOL_DISK_TYPE_PRIMARY:
-                if (virAsprintf(partFormat, "primary %s", partedFormat) < 0) {
-                    virReportOOMError();
+                if (virAsprintf(partFormat, "primary %s", partedFormat) < 0)
                     return -1;
-                }
                 break;
             case VIR_STORAGE_VOL_DISK_TYPE_LOGICAL:
                 /* make sure we have a extended partition */
@@ -498,10 +491,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                     if (pool->volumes.objs[i]->target.format ==
                         VIR_STORAGE_VOL_DISK_EXTENDED) {
                         if (virAsprintf(partFormat, "logical %s",
-                                        partedFormat) < 0) {
-                            virReportOOMError();
+                                        partedFormat) < 0)
                             return -1;
-                        }
                         break;
                     }
                 }

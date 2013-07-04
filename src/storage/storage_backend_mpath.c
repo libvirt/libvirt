@@ -75,22 +75,16 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     virStorageVolDefPtr vol;
     int ret = -1;
 
-    if (VIR_ALLOC(vol) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(vol) < 0)
         goto cleanup;
-    }
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
-    if (virAsprintf(&(vol->name), "dm-%u", devnum) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&(vol->name), "dm-%u", devnum) < 0)
         goto cleanup;
-    }
 
-    if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0)
         goto cleanup;
-    }
 
     if (virStorageBackendMpathUpdateVolTargetInfo(&vol->target,
                                                   &vol->allocation,
@@ -103,10 +97,8 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
         goto cleanup;
 
     if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count + 1) < 0) {
-        virReportOOMError();
+                      pool->volumes.count + 1) < 0)
         goto cleanup;
-    }
     pool->volumes.objs[pool->volumes.count++] = vol;
     pool->def->capacity += vol->capacity;
     pool->def->allocation += vol->allocation;
@@ -220,10 +212,8 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
         if (is_mpath == 1) {
 
-            if (virAsprintf(&map_device, "mapper/%s", names->name) < 0) {
-                virReportOOMError();
+            if (virAsprintf(&map_device, "mapper/%s", names->name) < 0)
                 goto out;
-            }
 
             if (virStorageBackendGetMinorNumber(names->name, &minor) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,

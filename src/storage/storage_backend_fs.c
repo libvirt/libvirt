@@ -129,10 +129,8 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
         *capacity = meta->capacity;
 
     if (encryption != NULL && meta->encrypted) {
-        if (VIR_ALLOC(*encryption) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(*encryption) < 0)
             goto cleanup;
-        }
 
         switch (target->format) {
         case VIR_STORAGE_FILE_QCOW:
@@ -211,10 +209,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     if (!(src = virStoragePoolSourceListNewSource(&state->list)))
         goto cleanup;
 
-    if (VIR_ALLOC_N(src->hosts, 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(src->hosts, 1) < 0)
         goto cleanup;
-    }
     src->nhost = 1;
 
     if (VIR_STRDUP(src->hosts[0].name, state->host) < 0 ||
@@ -292,10 +288,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
         goto cleanup;
 
     retval = virStoragePoolSourceListFormat(&state.list);
-    if (retval == NULL) {
-        virReportOOMError();
+    if (retval == NULL)
         goto cleanup;
-    }
 
  cleanup:
     for (i = 0; i < state.list.nsources; i++)
@@ -397,10 +391,8 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (virAsprintf(&src, "%s:%s",
                         pool->def->source.hosts[0].name,
-                        pool->def->source.dir) == -1) {
-            virReportOOMError();
+                        pool->def->source.dir) == -1)
             return -1;
-        }
 
     } else {
         if (VIR_STRDUP(src, pool->def->source.devices[0].path) < 0)
@@ -833,7 +825,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         int backingStoreFormat;
 
         if (VIR_ALLOC(vol) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (VIR_STRDUP(vol->name, ent->d_name) < 0)
             goto cleanup;
@@ -843,7 +835,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
                         vol->name) == -1)
-            goto no_memory;
+            goto cleanup;
 
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
             goto cleanup;
@@ -897,7 +889,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count+1) < 0)
-            goto no_memory;
+            goto cleanup;
         pool->volumes.objs[pool->volumes.count++] = vol;
         vol = NULL;
     }
@@ -917,10 +909,6 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     pool->def->allocation = pool->def->capacity - pool->def->available;
 
     return 0;
-
-no_memory:
-    virReportOOMError();
-    /* fallthrough */
 
  cleanup:
     if (dir)
@@ -1000,10 +988,8 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
-                    vol->name) == -1) {
-        virReportOOMError();
+                    vol->name) == -1)
         return -1;
-    }
 
     if (virFileExists(vol->target.path)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1194,7 +1180,6 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
             if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
                 VIR_ALLOC(encsec) < 0) {
                 VIR_FREE(vol->target.encryption->secrets);
-                virReportOOMError();
                 virSecretFree(sec);
                 return -1;
             }

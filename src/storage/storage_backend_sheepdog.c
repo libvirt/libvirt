@@ -263,10 +263,8 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name, vol->name) == -1) {
-        virReportOOMError();
+                    pool->def->source.name, vol->name) == -1)
         goto cleanup;
-    }
 
     VIR_FREE(vol->target.path);
     ignore_value(VIR_STRDUP(vol->target.path, vol->name));

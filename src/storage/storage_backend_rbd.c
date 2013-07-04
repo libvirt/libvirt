@@ -238,18 +238,14 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1) {
-        virReportOOMError();
+                    vol->name) == -1)
         goto cleanup;
-    }
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1) {
-        virReportOOMError();
+                    vol->name) == -1)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -308,7 +304,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     while (true) {
         if (VIR_ALLOC_N(names, max_size) < 0)
-            goto out_of_memory;
+            goto cleanup;
 
         len = rbd_list(ptr.ioctx, names, &max_size);
         if (len >= 0)
@@ -325,14 +321,14 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0) {
             virStoragePoolObjClearVols(pool);
-            goto out_of_memory;
+            goto cleanup;
         }
 
         if (STREQ(name, ""))
             break;
 
         if (VIR_ALLOC(vol) < 0)
-            goto out_of_memory;
+            goto cleanup;
 
         if (VIR_STRDUP(vol->name, name) < 0) {
             VIR_FREE(vol);
@@ -358,10 +354,6 @@ cleanup:
     VIR_FREE(names);
     virStorageBackendRBDCloseRADOSConn(ptr);
     return ret;
-
-out_of_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 static int virStorageBackendRBDDeleteVol(virConnectPtr conn,

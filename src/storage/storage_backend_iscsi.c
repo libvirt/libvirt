@@ -62,11 +62,9 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
         port = source->hosts[0].port;
 
     if (strchr(host, ':')) {
-        if (virAsprintf(&portal, "[%s]:%d,1", host, port) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&portal, "[%s]:%d,1", host, port));
     } else {
-        if (virAsprintf(&portal, "%s:%d,1", host, port) < 0)
-            virReportOOMError();
+        ignore_value(virAsprintf(&portal, "%s:%d,1", host, port));
     }
 
     return portal;
@@ -234,10 +232,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
 
     if (virAsprintf(&temp_ifacename,
                     "libvirt-iface-%08llx",
-                    (unsigned long long)virRandomBits(30)) < 0) {
-        virReportOOMError();
+                    (unsigned long long)virRandomBits(30)) < 0)
         return -1;
-    }
 
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               temp_ifacename, initiatoriqn);
@@ -396,10 +392,8 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
     uint32_t host;
 
     if (virAsprintf(&sysfs_path,
-                    "/sys/class/iscsi_session/session%s/device", session) < 0) {
-        virReportOOMError();
+                    "/sys/class/iscsi_session/session%s/device", session) < 0)
         return -1;
-    }
 
     if (virStorageBackendISCSIGetHostNumber(sysfs_path, &host) < 0) {
         virReportSystemError(errno,
@@ -452,7 +446,6 @@ virStorageBackendISCSIGetTargets(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 
     if (VIR_REALLOC_N(list->targets, list->ntargets + 1) < 0) {
         VIR_FREE(target);
-        virReportOOMError();
         return -1;
     }
 
@@ -590,17 +583,13 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
                                           &ntargets, &targets) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(list.sources, ntargets) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(list.sources, ntargets) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < ntargets; i++) {
         if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
-            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0) {
-            virReportOOMError();
+            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0)
             goto cleanup;
-        }
         list.sources[i].nhost = 1;
         list.sources[i].hosts[0] = source->hosts[0];
         list.sources[i].initiator = source->initiator;
@@ -609,10 +598,8 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         list.nsources++;
     }
 
-    if (!(ret = virStoragePoolSourceListFormat(&list))) {
-        virReportOOMError();
+    if (!(ret = virStoragePoolSourceListFormat(&list)))
         goto cleanup;
-    }
 
 cleanup:
     if (list.sources) {

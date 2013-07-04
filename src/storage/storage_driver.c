@@ -158,11 +158,11 @@ storageStateInitialize(bool privileged,
      */
     if (virAsprintf(&driverState->configDir,
                     "%s/storage", base) == -1)
-        goto out_of_memory;
+        goto error;
 
     if (virAsprintf(&driverState->autostartDir,
                     "%s/storage/autostart", base) == -1)
-        goto out_of_memory;
+        goto error;
 
     VIR_FREE(base);
 
@@ -175,8 +175,6 @@ storageStateInitialize(bool privileged,
     storageDriverUnlock(driverState);
     return 0;
 
-out_of_memory:
-    virReportOOMError();
 error:
     VIR_FREE(base);
     storageDriverUnlock(driverState);
@@ -1283,10 +1281,8 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(tmp_vols, obj->volumes.count + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(tmp_vols, obj->volumes.count + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < obj->volumes.count; i++) {
         if (!virStoragePoolListAllVolumesCheckACL(pool->conn, obj->def,
@@ -1514,10 +1510,8 @@ storageVolCreateXML(virStoragePoolPtr obj,
     }
 
     if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count+1) < 0) {
-        virReportOOMError();
+                      pool->volumes.count+1) < 0)
         goto cleanup;
-    }
 
     if (!backend->createVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
@@ -1543,7 +1537,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
         virStorageVolDefPtr buildvoldef = NULL;
 
         if (VIR_ALLOC(buildvoldef) < 0) {
-            virReportOOMError();
             voldef = NULL;
             goto cleanup;
         }
@@ -1695,10 +1688,8 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
 
     if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count+1) < 0) {
-        virReportOOMError();
+                      pool->volumes.count+1) < 0)
         goto cleanup;
-    }
 
     /* 'Define' the new volume so we get async progress reporting */
     if (backend->createVol(obj->conn, pool, newvol) < 0) {
@@ -2175,10 +2166,8 @@ storageVolWipeInternal(virStorageVolDefPtr def,
             ret = storageVolZeroSparseFile(def, st.st_size, fd);
         } else {
 
-            if (VIR_ALLOC_N(writebuf, st.st_blksize) != 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(writebuf, st.st_blksize) < 0)
                 goto out;
-            }
 
             ret = storageWipeExtent(def,
                                     fd,
