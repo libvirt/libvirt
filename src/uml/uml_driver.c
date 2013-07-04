@@ -239,10 +239,8 @@ umlIdentifyOneChrPTY(struct uml_driver *driver,
     char *cmd;
     char *res = NULL;
     int retries = 0;
-    if (virAsprintf(&cmd, "config %s%d", dev, def->target.port) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&cmd, "config %s%d", dev, def->target.port) < 0)
         return -1;
-    }
 requery:
     if (umlMonitorCommand(driver, dom, cmd, &res) < 0)
         return -1;
@@ -793,10 +791,8 @@ static int umlReadPidFile(struct uml_driver *driver,
 
     vm->pid = -1;
     if (virAsprintf(&pidfile, "%s/%s/pid",
-                    driver->monitorDir, vm->def->name) < 0) {
-        virReportOOMError();
+                    driver->monitorDir, vm->def->name) < 0)
         return -1;
-    }
 
 reopen:
     if (!(file = fopen(pidfile, "r"))) {
@@ -835,10 +831,8 @@ static int umlMonitorAddress(const struct uml_driver *driver,
     int retval = 0;
 
     if (virAsprintf(&sockname, "%s/%s/mconsole",
-                    driver->monitorDir, vm->def->name) < 0) {
-        virReportOOMError();
+                    driver->monitorDir, vm->def->name) < 0)
         return -1;
-    }
 
     memset(addr, 0, sizeof(*addr));
     addr->sun_family = AF_UNIX;
@@ -974,10 +968,8 @@ static int umlMonitorCommand(const struct uml_driver *driver,
             goto error;
         }
 
-        if (VIR_REALLOC_N(retdata, retlen + res.length) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(retdata, retlen + res.length) < 0)
             goto error;
-        }
         memcpy(retdata + retlen, res.data, res.length);
         retlen += res.length - 1;
         retdata[retlen] = '\0';
@@ -1057,10 +1049,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
     }
 
     if (virAsprintf(&logfile, "%s/%s.log",
-                    driver->logDir, vm->def->name) < 0) {
-        virReportOOMError();
+                    driver->logDir, vm->def->name) < 0)
         return -1;
-    }
 
     if ((logfd = open(logfile, O_CREAT | O_TRUNC | O_WRONLY,
                       S_IRUSR | S_IWUSR)) < 0) {
@@ -1095,10 +1085,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     for (i = 0; i < vm->def->nconsoles; i++) {
         VIR_FREE(vm->def->consoles[i]->info.alias);
-        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0)
             goto cleanup;
-        }
     }
 
     virCommandWriteArgLog(cmd, logfd);
@@ -2145,18 +2133,14 @@ static int umlDomainAttachUmlDisk(struct uml_driver *driver,
         goto error;
     }
 
-    if (virAsprintf(&cmd, "config %s=%s", disk->dst, disk->src) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&cmd, "config %s=%s", disk->dst, disk->src) < 0)
         return -1;
-    }
 
     if (umlMonitorCommand(driver, vm, cmd, &reply) < 0)
         goto error;
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
-    }
 
     virDomainDiskInsertPreAlloced(vm->def, disk);
 
@@ -2274,10 +2258,8 @@ static int umlDomainDetachUmlDisk(struct uml_driver *driver,
 
     detach = vm->def->disks[i];
 
-    if (virAsprintf(&cmd, "remove %s", detach->dst) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&cmd, "remove %s", detach->dst) < 0)
         return -1;
-    }
 
     if (umlMonitorCommand(driver, vm, cmd, &reply) < 0)
         goto cleanup;

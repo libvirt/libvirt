@@ -285,32 +285,24 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
 
     switch (def->source.type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        if (virAsprintf(&ret, "%s%d=null", dev, def->target.port) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&ret, "%s%d=null", dev, def->target.port) < 0)
             return NULL;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (virAsprintf(&ret, "%s%d=pts", dev, def->target.port) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&ret, "%s%d=pts", dev, def->target.port) < 0)
             return NULL;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
         if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->target.port,
-                        def->source.data.file.path) < 0) {
-            virReportOOMError();
+                        def->source.data.file.path) < 0)
             return NULL;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->target.port) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->target.port) < 0)
             return NULL;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -321,10 +313,8 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
         }
 
         if (virAsprintf(&ret, "%s%d=port:%s", dev, def->target.port,
-                        def->source.data.tcp.service) < 0) {
-            virReportOOMError();
+                        def->source.data.tcp.service) < 0)
             return NULL;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -339,7 +329,6 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
                 return NULL;
             }
             if (virAsprintf(&ret, "%s%d=null,fd:%d", dev, def->target.port, fd_out) < 0) {
-                virReportOOMError();
                 VIR_FORCE_CLOSE(fd_out);
                 return NULL;
             }
@@ -440,7 +429,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
             ret = umlBuildCommandLineChr(chr, "con", cmd);
         if (!ret)
             if (virAsprintf(&ret, "con%d=none", i) < 0)
-                goto no_memory;
+                goto error;
         virCommandAddArg(cmd, ret);
         VIR_FREE(ret);
     }
@@ -455,7 +444,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
             ret = umlBuildCommandLineChr(chr, "ssl", cmd);
         if (!ret)
             if (virAsprintf(&ret, "ssl%d=none", i) < 0)
-                goto no_memory;
+                goto error;
 
         virCommandAddArg(cmd, ret);
         VIR_FREE(ret);
@@ -481,10 +470,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
 
     return cmd;
 
- no_memory:
-    virReportOOMError();
  error:
-
     virCommandFree(cmd);
     return NULL;
 }
