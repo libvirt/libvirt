@@ -4222,7 +4222,7 @@ retry:
             }
             if (graphics->data.vnc.websocket) {
                 ignore_value(virPortAllocatorRelease(driver->webSocketPorts,
-                                                     graphics->data.vnc.port));
+                                                     graphics->data.vnc.websocket));
             }
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
