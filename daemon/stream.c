@@ -325,10 +325,8 @@ daemonCreateClientStream(virNetServerClientPtr client,
     VIR_DEBUG("client=%p, proc=%d, serial=%d, st=%p",
               client, header->proc, header->serial, st);
 
-    if (VIR_ALLOC(stream) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(stream) < 0)
         return NULL;
-    }
 
     stream->refs = 1;
     stream->priv = priv;

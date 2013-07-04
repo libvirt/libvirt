@@ -200,15 +200,13 @@ daemonConfigFilePath(bool privileged, char **configfile)
 
         if (virAsprintf(configfile, "%s/libvirtd.conf", configdir) < 0) {
             VIR_FREE(configdir);
-            goto no_memory;
+            goto error;
         }
         VIR_FREE(configdir);
     }
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
@@ -220,10 +218,8 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     char *localhost;
     int ret;
 
-    if (VIR_ALLOC(data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(data) < 0)
         return NULL;
-    }
 
     data->listen_tls = 1;
     data->listen_tcp = 0;
@@ -294,12 +290,10 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     }
     VIR_FREE(localhost);
     if (ret < 0)
-        goto no_memory;
+        goto error;
 
     return data;
 
-no_memory:
-    virReportOOMError();
 error:
     daemonConfigFree(data);
     return NULL;
