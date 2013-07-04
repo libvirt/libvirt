@@ -110,10 +110,8 @@ int
 virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                            void *data)
 {
-    if (VIR_REALLOC_N(res->data, res->ndata+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(res->data, res->ndata+1) < 0)
         return -1;
-    }
     res->data[res->ndata++] = data;
     return 0;
 }
@@ -201,10 +199,8 @@ virNWFilterHashTablePtr
 virNWFilterCreateVarHashmap(char *macaddr,
                             const virNWFilterVarValuePtr ipaddr) {
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
-    if (!table) {
-        virReportOOMError();
+    if (!table)
         return NULL;
-    }
 
     if (virNWFilterVarHashmapAddStdValues(table, macaddr, ipaddr) < 0) {
         virNWFilterHashTableFree(table);
@@ -303,10 +299,8 @@ virNWFilterRuleInstantiate(virNWFilterTechDriverPtr techdriver,
     int i;
     virNWFilterRuleInstPtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     ret->techdriver = techdriver;
 
@@ -340,10 +334,8 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
                           virNWFilterHashTablePtr vars2)
 {
     virNWFilterHashTablePtr res = virNWFilterHashTableCreate(0);
-    if (!res) {
-        virReportOOMError();
+    if (!res)
         return NULL;
-    }
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
         goto err_exit;
@@ -415,7 +407,6 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
             }
 
             if (VIR_REALLOC_N(*insts, (*nEntries)+1) < 0) {
-                virReportOOMError();
                 rc = -1;
                 break;
             }
@@ -441,7 +432,6 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
                                       virNWFilterCreateVarsFrom(inc->params,
                                                                 vars);
                 if (!tmpvars) {
-                    virReportOOMError();
                     rc = -1;
                     virNWFilterObjUnlock(obj);
                     break;
@@ -553,7 +543,6 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                                       virNWFilterCreateVarsFrom(inc->params,
                                                                 vars);
                 if (!tmpvars) {
-                    virReportOOMError();
                     rc = -1;
                     virNWFilterObjUnlock(obj);
                     break;
@@ -611,10 +600,8 @@ virNWFilterRuleInstancesToArray(int nEntries,
     if ((*nptrs) == 0)
         return 0;
 
-    if (VIR_ALLOC_N((*ptrs), (*nptrs)) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N((*ptrs), (*nptrs)) < 0)
         return -1;
-    }
 
     (*nptrs) = 0;
 
@@ -674,7 +661,6 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
 
     virNWFilterHashTablePtr missing_vars = virNWFilterHashTableCreate(0);
     if (!missing_vars) {
-        virReportOOMError();
         rc = -1;
         goto err_exit;
     }

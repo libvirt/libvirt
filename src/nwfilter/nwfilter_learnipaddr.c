@@ -143,10 +143,8 @@ virNWFilterLockIface(const char *ifname) {
 
     ifaceLock = virHashLookup(ifaceLockMap, ifname);
     if (!ifaceLock) {
-        if (VIR_ALLOC(ifaceLock) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(ifaceLock) < 0)
             goto err_exit;
-        }
 
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -699,16 +697,12 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
         return -1;
     }
 
-    if (VIR_ALLOC(req) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(req) < 0)
         goto err_no_req;
-    }
 
     ht = virNWFilterHashTableCreate(0);
-    if (ht == NULL) {
-        virReportOOMError();
+    if (ht == NULL)
         goto err_free_req;
-    }
 
     if (virNWFilterHashTablePutAll(filterparams, ht) < 0)
         goto err_free_ht;

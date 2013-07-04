@@ -178,10 +178,8 @@ nwfilterStateInitialize(bool privileged,
     sysbus = virDBusGetSystemBus();
 #endif /* WITH_DBUS */
 
-    if (VIR_ALLOC(driverState) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driverState) < 0)
         return -1;
-    }
 
     if (virMutexInit(&driverState->lock) < 0)
         goto err_free_driverstate;
@@ -227,7 +225,7 @@ nwfilterStateInitialize(bool privileged,
 
     if (virAsprintf(&driverState->configDir,
                     "%s/nwfilter", base) == -1)
-        goto out_of_memory;
+        goto error;
 
     VIR_FREE(base);
 
@@ -239,9 +237,6 @@ nwfilterStateInitialize(bool privileged,
     nwfilterDriverUnlock(driverState);
 
     return 0;
-
-out_of_memory:
-    virReportOOMError();
 
 error:
     VIR_FREE(base);
@@ -518,10 +513,8 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(tmp_filters, driver->nwfilters.count + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(tmp_filters, driver->nwfilters.count + 1) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < driver->nwfilters.count; i++) {
         obj = driver->nwfilters.objs[i];

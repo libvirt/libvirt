@@ -494,10 +494,8 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
 {
     ebiptablesRuleInstPtr inst;
 
-    if (VIR_ALLOC(inst) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(inst) < 0)
         return -1;
-    }
 
     inst->commandTemplate = commandTemplate;
     inst->neededProtocolChain = neededChain;
@@ -3016,10 +3014,8 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
         break;
     }
 
-    if (!protostr) {
-        virReportOOMError();
+    if (!protostr)
         return -1;
-    }
 
     virBufferAsprintf(&buf,
                       CMD_DEF("$EBT -t nat -F %s") CMD_SEPARATOR
@@ -3393,10 +3389,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
             dhcpserver = virNWFilterVarValueGetNthValue(dhcpsrvrs, idx);
 
-            if (virAsprintf(&srcIPParam, "--ip-src %s", dhcpserver) < 0) {
-                virReportOOMError();
+            if (virAsprintf(&srcIPParam, "--ip-src %s", dhcpserver) < 0)
                 goto tear_down_tmpebchains;
-            }
         }
 
         /*
@@ -3720,10 +3714,8 @@ ebiptablesApplyNewRules(const char *ifname,
     if (inst == NULL)
         nruleInstances = 0;
 
-    if (!chains_in_set || !chains_out_set) {
-        virReportOOMError();
+    if (!chains_in_set || !chains_out_set)
         goto exit_free_sets;
-    }
 
     if (nruleInstances > 1 && inst)
         qsort(inst, nruleInstances, sizeof(inst[0]),
@@ -3736,16 +3728,12 @@ ebiptablesApplyNewRules(const char *ifname,
             const char *name = inst[i]->neededProtocolChain;
             if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
                 if (virHashUpdateEntry(chains_in_set, name,
-                                       &inst[i]->chainPriority) < 0) {
-                    virReportOOMError();
+                                       &inst[i]->chainPriority) < 0)
                     goto exit_free_sets;
-                }
             } else {
                 if (virHashUpdateEntry(chains_out_set, name,
-                                       &inst[i]->chainPriority) < 0) {
-                    virReportOOMError();
+                                       &inst[i]->chainPriority) < 0)
                     goto exit_free_sets;
-                }
             }
         }
     }
@@ -4210,19 +4198,15 @@ ebiptablesDriverInitWithFirewallD(void)
         } else {
             VIR_INFO("firewalld support enabled for nwfilter");
 
-            ignore_value(virAsprintf(&ebtables_cmd_path,
-                                     "%s --direct --passthrough eb",
-                                     firewall_cmd_path));
-            ignore_value(virAsprintf(&iptables_cmd_path,
-                                     "%s --direct --passthrough ipv4",
-                                     firewall_cmd_path));
-            ignore_value(virAsprintf(&ip6tables_cmd_path,
-                                     "%s --direct --passthrough ipv6",
-                                     firewall_cmd_path));
-
-            if (!ebtables_cmd_path || !iptables_cmd_path ||
-                !ip6tables_cmd_path) {
-                virReportOOMError();
+            if (virAsprintf(&ebtables_cmd_path,
+                            "%s --direct --passthrough eb",
+                            firewall_cmd_path) < 0 ||
+                virAsprintf(&iptables_cmd_path,
+                            "%s --direct --passthrough ipv4",
+                            firewall_cmd_path) < 0 ||
+                virAsprintf(&ip6tables_cmd_path,
+                            "%s --direct --passthrough ipv6",
+                            firewall_cmd_path) < 0) {
                 VIR_FREE(ebtables_cmd_path);
                 VIR_FREE(iptables_cmd_path);
                 VIR_FREE(ip6tables_cmd_path);
