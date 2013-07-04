@@ -210,10 +210,8 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
             goto cleanup;
         }
 
-        if (VIR_ALLOC(object) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(object) < 0)
             goto cleanup;
-        }
 
         object->serializerInfo = serializerInfo;
         object->data = data;
@@ -414,10 +412,8 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
 
     if (virAsprintf(&selector, "Name=%s&CreationClassName=Msvm_ComputerSystem",
                     uuid_string) < 0 ||
-        virAsprintf(&properties, "RequestedState=%d", requestedState) < 0) {
-        virReportOOMError();
+        virAsprintf(&properties, "RequestedState=%d", requestedState) < 0)
         goto cleanup;
-    }
 
     options = wsmc_options_init();
 

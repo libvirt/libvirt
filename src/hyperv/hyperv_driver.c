@@ -117,10 +117,8 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags
     }
 
     /* Allocate per-connection private data */
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         goto cleanup;
-    }
 
     if (hypervParseUri(&priv->parsedUri, conn->uri) < 0) {
         goto cleanup;
@@ -802,10 +800,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     /* Flags checked by virDomainDefFormat */
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     virUUIDFormat(domain->uuid, uuid_string);
 
@@ -1255,9 +1251,8 @@ hypervConnectListAllDomains(virConnectPtr conn,
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)) ||
         (MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT))) {
-        if (domains &&
-            VIR_ALLOC_N(*domains, 1) < 0)
-            goto no_memory;
+        if (domains && VIR_ALLOC_N(*domains, 1) < 0)
+            goto cleanup;
 
         ret = 0;
         goto cleanup;
@@ -1287,7 +1282,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
 
     if (domains) {
         if (VIR_ALLOC_N(doms, 1) < 0)
-            goto no_memory;
+            goto cleanup;
         ndoms = 1;
     }
 
@@ -1326,7 +1321,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
         }
 
         if (VIR_RESIZE_N(doms, ndoms, count, 2) < 0)
-            goto no_memory;
+            goto cleanup;
 
         domain = NULL;
 
@@ -1354,10 +1349,6 @@ cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystemList);
 
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 #undef MATCH
 
