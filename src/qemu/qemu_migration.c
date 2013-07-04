@@ -1158,7 +1158,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FREE(diskAlias);
-    if ((ret < 0) && port)
+    if (ret < 0)
         virPortAllocatorRelease(driver->remotePorts, port);
     return ret;
 }
@@ -2291,7 +2291,7 @@ cleanup:
             virObjectUnlock(vm);
         else
             qemuDomainRemoveInactive(driver, vm);
-        if (ret < 0 && priv->nbdPort) {
+        if (ret < 0) {
             virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
             priv->nbdPort = 0;
         }

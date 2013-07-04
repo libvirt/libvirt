@@ -166,6 +166,10 @@ int virPortAllocatorRelease(virPortAllocatorPtr pa,
                             unsigned short port)
 {
     int ret = -1;
+
+    if (!port)
+        return 0;
+
     virObjectLock(pa);
 
     if (port < pa->start ||

@@ -3340,8 +3340,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
     return 0;
 
 error:
-    if (port)
-        virPortAllocatorRelease(driver->remotePorts, port);
+    virPortAllocatorRelease(driver->remotePorts, port);
     return -1;
 }
 
@@ -4052,10 +4051,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
-    if (priv->nbdPort) {
-        virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
-        priv->nbdPort = 0;
-    }
+    virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+    priv->nbdPort = 0;
 
     if (priv->agent) {
         qemuAgentClose(priv->agent);
@@ -4172,15 +4169,15 @@ retry:
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             graphics->data.vnc.autoport) {
-            ignore_value(virPortAllocatorRelease(driver->remotePorts,
-                                                 graphics->data.vnc.port));
+            virPortAllocatorRelease(driver->remotePorts,
+                                    graphics->data.vnc.port);
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
             graphics->data.spice.autoport) {
-            ignore_value(virPortAllocatorRelease(driver->remotePorts,
-                                                 graphics->data.spice.port));
-            ignore_value(virPortAllocatorRelease(driver->remotePorts,
-                                                 graphics->data.spice.tlsPort));
+            virPortAllocatorRelease(driver->remotePorts,
+                                    graphics->data.spice.port);
+            virPortAllocatorRelease(driver->remotePorts,
+                                    graphics->data.spice.tlsPort);
         }
     }
 
