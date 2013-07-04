@@ -347,10 +347,8 @@ allocStringMap(xen_string_string_map **strings, char *key, char *val)
     int sz = ((*strings) == NULL) ? 0 : (*strings)->size;
     sz++;
     if (VIR_REALLOC_N(*strings, sizeof(xen_string_string_map) +
-                                sizeof(xen_string_string_map_contents) * sz) < 0) {
-        virReportOOMError();
+                                sizeof(xen_string_string_map_contents) * sz) < 0)
         return -1;
-    }
     (*strings)->size = sz;
     if (VIR_STRDUP((*strings)->contents[sz-1].key, key) < 0 ||
         VIR_STRDUP((*strings)->contents[sz-1].val, val) < 0)
@@ -427,7 +425,7 @@ createVifNetwork(virConnectPtr conn, xen_vm vm, int device,
         vif_record->other_config = xen_string_string_map_alloc(0);
         vif_record->runtime_properties = xen_string_string_map_alloc(0);
         vif_record->qos_algorithm_params = xen_string_string_map_alloc(0);
-        if (virAsprintf(&vif_record->device, "%d", device) < 0)
+        if (virAsprintfQuiet(&vif_record->device, "%d", device) < 0)
             return -1;
         xen_vif_create(session, &vif, vif_record);
         if (!vif) {
@@ -545,22 +543,21 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
             char *mac;
 
             if (VIR_ALLOC_N(mac, VIR_MAC_STRING_BUFLEN) < 0)
-                goto error_cleanup;
+                goto error;
             virMacAddrFormat(&def->nets[i]->mac, mac);
 
             if (createVifNetwork(conn, *vm, device_number,
                                  def->nets[i]->data.bridge.brname,
                                  mac) < 0) {
                 VIR_FREE(mac);
-                goto error_cleanup;
+                virReportOOMError();
+                goto error;
             }
             device_number++;
         }
     }
     return 0;
 
-  error_cleanup:
-    virReportOOMError();
   error:
     xen_vm_record_free(*record);
     return -1;

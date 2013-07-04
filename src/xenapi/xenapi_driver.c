@@ -77,10 +77,8 @@ getCapsObject(void)
     virCapsGuestDomainPtr domain1, domain2;
     virCapsPtr caps = virCapabilitiesNew(virArchFromHost(), 0, 0);
 
-    if (!caps) {
-        virReportOOMError();
+    if (!caps)
         return NULL;
-    }
     guest1 = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64, "", "", 0, NULL);
     if (!guest1)
         goto error_cleanup;
@@ -155,15 +153,11 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto error;
     }
 
-    if (VIR_ALLOC(privP) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(privP) < 0)
         goto error;
-    }
 
-    if (virAsprintf(&privP->url, "https://%s", conn->uri->server) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&privP->url, "https://%s", conn->uri->server) < 0)
         goto error;
-    }
 
     if (xenapiUtil_ParseQuery(conn, conn->uri, &privP->noVerify) < 0)
         goto error;
@@ -1372,7 +1366,6 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         return NULL;
     }
     if (VIR_ALLOC(defPtr) < 0) {
-        virReportOOMError();
         xen_vm_set_free(vms);
         return NULL;
     }
@@ -1502,12 +1495,12 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         defPtr->nnets = vif_set->size;
         if (VIR_ALLOC_N(defPtr->nets, vif_set->size) < 0) {
             xen_vif_set_free(vif_set);
-            goto error_cleanup;
+            goto error;
         }
         for (i = 0; i < vif_set->size; i++) {
             if (VIR_ALLOC(defPtr->nets[i]) < 0) {
                 xen_vif_set_free(vif_set);
-                goto error_cleanup;
+                goto error;
             }
             defPtr->nets[i]->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
             vif = vif_set->contents[i];
@@ -1534,13 +1527,10 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefFree(defPtr);
     return xml;
 
-  error_cleanup:
-    virReportOOMError();
   error:
     xen_vm_set_free(vms);
     virDomainDefFree(defPtr);
     return NULL;
-
 }
 
 /*
