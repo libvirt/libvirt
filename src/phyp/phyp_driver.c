@@ -110,10 +110,8 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
     int sock = connection_data->sock;
     int rc = 0;
 
-    if (VIR_ALLOC_N(buffer, buffer_size) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(buffer, buffer_size) < 0)
         return NULL;
-    }
 
     /* Exec non-blocking on the remove host */
     while ((channel = libssh2_channel_open_session(session)) == NULL &&
@@ -476,10 +474,8 @@ phypUUIDTable_Push(virConnectPtr conn)
     int ret = -1;
 
     if (virAsprintf(&remote_file, "/home/%s/libvirt_uuid_table",
-                    NULLSTR(conn->uri->user)) < 0) {
-        virReportOOMError();
+                    NULLSTR(conn->uri->user)) < 0)
         goto cleanup;
-    }
 
     if (stat(local_file, &local_fileinfo) == -1) {
         VIR_WARN("Unable to stat local file.");
@@ -580,15 +576,11 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     unsigned int i = uuid_table->nlpars;
     i--;
 
-    if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0)
         goto err;
-    }
 
-    if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(uuid_table->lpars[i]) < 0)
         goto err;
-    }
 
     uuid_table->lpars[i]->id = id;
     memcpy(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN);
@@ -627,10 +619,8 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
 
             rc = read(fd, &id, sizeof(int));
             if (rc == sizeof(int)) {
-                if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-                    virReportOOMError();
+                if (VIR_ALLOC(uuid_table->lpars[i]) < 0)
                     goto err;
-                }
                 uuid_table->lpars[i]->id = id;
             } else {
                 VIR_WARN
@@ -644,8 +634,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
                 goto err;
             }
         }
-    } else
-        virReportOOMError();
+    }
 
     VIR_FORCE_CLOSE(fd);
     return 0;
@@ -674,10 +663,8 @@ phypUUIDTable_Pull(virConnectPtr conn)
     int ret = -1;
 
     if (virAsprintf(&remote_file, "/home/%s/libvirt_uuid_table",
-                    NULLSTR(conn->uri->user)) < 0) {
-        virReportOOMError();
+                    NULLSTR(conn->uri->user)) < 0)
         goto cleanup;
-    }
 
     /* Trying to stat the remote file. */
     do {
@@ -771,10 +758,8 @@ phypUUIDTable_Init(virConnectPtr conn)
     if ((nids_numdomains = phypConnectNumOfDomainsGeneric(conn, 2)) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(ids, nids_numdomains) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ids, nids_numdomains) < 0)
         goto cleanup;
-    }
 
     if ((nids_listdomains =
          phypConnectListDomainsGeneric(conn, ids, nids_numdomains, 1)) < 0)
@@ -800,20 +785,16 @@ phypUUIDTable_Init(virConnectPtr conn)
         table_created = true;
         if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
             for (i = 0; i < uuid_table->nlpars; i++) {
-                if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-                    virReportOOMError();
+                if (VIR_ALLOC(uuid_table->lpars[i]) < 0)
                     goto cleanup;
-                }
                 uuid_table->lpars[i]->id = ids[i];
 
                 if (virUUIDGenerate(uuid_table->lpars[i]->uuid) < 0)
                     VIR_WARN("Unable to generate UUID for domain %d",
                              ids[i]);
             }
-        } else {
-            virReportOOMError();
+        } else
             goto cleanup;
-        }
 
         if (phypUUIDTable_WriteFile(conn) == -1)
             goto cleanup;
@@ -890,10 +871,8 @@ escape_specialcharacters(const char *src)
     if (len == 0)
         return NULL;
 
-    if (VIR_ALLOC_N(dst, len + 1) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(dst, len + 1) < 0)
         return NULL;
-    }
 
     for (i = 0; i < len; i++) {
         switch (src[i]) {
@@ -931,15 +910,11 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     if (userhome == NULL)
         goto err;
 
-    if (virAsprintf(&pubkey, "%s/.ssh/id_rsa.pub", userhome) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&pubkey, "%s/.ssh/id_rsa.pub", userhome) < 0)
         goto err;
-    }
 
-    if (virAsprintf(&pvtkey, "%s/.ssh/id_rsa", userhome) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&pvtkey, "%s/.ssh/id_rsa", userhome) < 0)
         goto err;
-    }
 
     if (conn->uri->user != NULL) {
         if (VIR_STRDUP(username, conn->uri->user) < 0)
@@ -1107,20 +1082,14 @@ phypConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (VIR_ALLOC(phyp_driver) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(phyp_driver) < 0)
         goto failure;
-    }
 
-    if (VIR_ALLOC(uuid_table) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(uuid_table) < 0)
         goto failure;
-    }
 
-    if (VIR_ALLOC(connection_data) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(connection_data) < 0)
         goto failure;
-    }
     connection_data->sock = -1;
 
     if (conn->uri->path) {
@@ -1161,10 +1130,8 @@ phypConnectOpen(virConnectPtr conn,
         phyp_driver->managed_system = managed_system;
 
     phyp_driver->uuid_table = uuid_table;
-    if ((phyp_driver->caps = phypCapsInit()) == NULL) {
-        virReportOOMError();
+    if ((phyp_driver->caps = phypCapsInit()) == NULL)
         goto failure;
-    }
 
     if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto failure;
@@ -1694,10 +1661,8 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *domain_name = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     domain_name = escape_specialcharacters(domain->name);
 
@@ -1984,10 +1949,8 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     virStorageVolPtr dup_vol = NULL;
     char *key = NULL;
 
-    if (VIR_ALLOC(spdef) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(spdef) < 0)
         return NULL;
-    }
 
     /* Filling spdef manually
      * */
@@ -2310,10 +2273,8 @@ phypStorageVolGetPath(virStorageVolPtr vol)
     if (!pv)
         goto cleanup;
 
-    if (virAsprintf(&path, "/%s/%s/%s", pv, ret, vol->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "/%s/%s/%s", pv, ret, vol->name) < 0)
         goto cleanup;
-    }
 
 cleanup:
     VIR_FREE(ret);
@@ -2597,25 +2558,17 @@ phypStoragePoolLookupByUUID(virConnectPtr conn,
     unsigned int i = 0;
     unsigned char *local_uuid = NULL;
 
-    if (VIR_ALLOC_N(local_uuid, VIR_UUID_BUFLEN) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(local_uuid, VIR_UUID_BUFLEN) < 0)
         goto err;
-    }
 
-    if ((npools = phypConnectNumOfStoragePools(conn)) == -1) {
-        virReportOOMError();
+    if ((npools = phypConnectNumOfStoragePools(conn)) == -1)
         goto err;
-    }
 
-    if (VIR_ALLOC_N(pools, npools) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(pools, npools) < 0)
         goto err;
-    }
 
-    if ((gotpools = phypConnectListStoragePools(conn, pools, npools)) == -1) {
-        virReportOOMError();
+    if ((gotpools = phypConnectListStoragePools(conn, pools, npools)) == -1)
         goto err;
-    }
 
     if (gotpools != npools) {
         virReportOOMError();
