@@ -3503,7 +3503,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     bool cancelled;
     virStreamPtr st = NULL;
-    unsigned int destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    unsigned long destflags;
 
     VIR_DEBUG("driver=%p, sconn=%p, dconn=%p, vm=%p, dconnuri=%s, "
               "flags=%lx, dname=%s, resource=%lu",
@@ -3521,6 +3521,8 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
+
+    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
 
     VIR_DEBUG("Prepare2 %p", dconn);
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -3651,8 +3653,7 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     bool cancelled = true;
     virStreamPtr st = NULL;
-    unsigned int destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
-
+    unsigned long destflags;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
@@ -3704,6 +3705,8 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
+
+    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
 
     VIR_DEBUG("Prepare3 %p", dconn);
     cookiein = cookieout;
