@@ -360,10 +360,8 @@ xenInotifyOpen(virConnectPtr conn,
         priv->configDir = XEND_DOMAINS_DIR;
         priv->useXenConfigCache = 0;
 
-        if (VIR_ALLOC(priv->configInfoList) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(priv->configInfoList) < 0)
             return -1;
-        }
 
         /* populate initial list */
         if (!(dh = opendir(priv->configDir))) {

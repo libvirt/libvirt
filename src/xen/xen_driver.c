@@ -208,20 +208,14 @@ xenDomainUsedCpus(virDomainPtr dom)
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
         return NULL;
 
-    if (!(cpulist = virBitmapNew(priv->nbNodeCpus))) {
-        virReportOOMError();
+    if (!(cpulist = virBitmapNew(priv->nbNodeCpus)))
         goto done;
-    }
-    if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0)
         goto done;
-    }
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (xalloc_oversized(nb_vcpu, cpumaplen) ||
-        VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0) {
-        virReportOOMError();
+        VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0)
         goto done;
-    }
 
     if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
                                           cpumap, cpumaplen)) >= 0) {
@@ -415,10 +409,8 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
         return VIR_DRV_OPEN_ERROR;
 
     /* Allocate per-connection private data. */
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
     if (virMutexInit(&priv->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -856,10 +848,8 @@ xenUnifiedDomainIsPersistent(virDomainPtr dom)
                 /* If its running there's no official way to tell, so we
                  * go behind xend's back & look at the config dir */
                 virUUIDFormat(dom->uuid, uuidstr);
-                if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
-                    virReportOOMError();
+                if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0)
                     goto cleanup;
-                }
                 if (access(path, R_OK) == 0)
                     ret = 1;
                 else if (errno == ENOENT)
@@ -1202,10 +1192,8 @@ xenUnifiedDomainManagedSavePath(xenUnifiedPrivatePtr priv,
 {
     char *ret;
 
-    if (virAsprintf(&ret, "%s/%s.save", priv->saveDir, def->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&ret, "%s/%s.save", priv->saveDir, def->name) < 0)
         return NULL;
-    }
 
     VIR_DEBUG("managed save image: %s", ret);
     return ret;
@@ -1617,10 +1605,8 @@ xenUnifiedConnectDomainXMLToNative(virConnectPtr conn,
         if (!conf)
             goto cleanup;
 
-        if (VIR_ALLOC_N(ret, len) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(ret, len) < 0)
             goto cleanup;
-        }
 
         if (virConfWriteMem(ret, &len, conf) < 0) {
             VIR_FREE(ret);
@@ -2473,10 +2459,8 @@ xenUnifiedNodeDeviceAssignedDomainId(virNodeDevicePtr dev)
         return ret;
     }
     if (numdomains > 0){
-        if (VIR_ALLOC_N(ids, numdomains) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(ids, numdomains) < 0)
             goto out;
-        }
         if ((numdomains = xenUnifiedConnectListDomains(conn, &ids[0], numdomains)) < 0) {
             goto out;
         }
@@ -2487,10 +2471,8 @@ xenUnifiedNodeDeviceAssignedDomainId(virNodeDevicePtr dev)
         goto out;
 
     if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
-                    domain, bus, slot, function) < 0) {
-        virReportOOMError();
+                    domain, bus, slot, function) < 0)
         goto out;
-    }
 
     xenUnifiedLock(priv);
     /* Check if bdf is assigned to one of active domains */
@@ -2824,7 +2806,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     }
 
     if (VIR_ALLOC(info) < 0)
-        goto memory_error;
+        goto error;
     if (VIR_STRDUP(info->name, name) < 0)
         goto error;
 
@@ -2834,14 +2816,12 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     /* Make space on list */
     n = list->count;
     if (VIR_REALLOC_N(list->doms, n + 1) < 0) {
-        goto memory_error;
+        goto error;
     }
 
     list->doms[n] = info;
     list->count++;
     return 0;
-memory_error:
-    virReportOOMError();
 error:
     if (info)
         VIR_FREE(info->name);

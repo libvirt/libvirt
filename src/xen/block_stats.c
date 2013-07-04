@@ -114,10 +114,8 @@ read_bd_stat(int device, int domid, const char *str)
     int64_t r;
 
     for (i = 0; i < ARRAY_CARDINALITY(paths); ++i) {
-        if (virAsprintf(&path, paths[i], domid, device, str) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&path, paths[i], domid, device, str) < 0)
             return -1;
-        }
 
         r = read_stat(path);
 
@@ -296,10 +294,8 @@ xenLinuxDomainDeviceID(int domid, const char *path)
         if (VIR_STRDUP(mod_path, path) < 0)
             return -1;
     } else {
-        if (virAsprintf(&mod_path, "/dev/%s", path) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&mod_path, "/dev/%s", path) < 0)
             return -1;
-        }
     }
 
     retval = -1;

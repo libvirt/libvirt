@@ -132,18 +132,14 @@ xenStoreOpen(virConnectPtr conn,
     }
 
     /* Init activeDomainList */
-    if (VIR_ALLOC(priv->activeDomainList) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv->activeDomainList) < 0)
         return -1;
-    }
 
     /* Init watch list before filling in domInfoList,
        so we can know if it is the first time through
        when the callback fires */
-    if (VIR_ALLOC(priv->xsWatchList) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv->xsWatchList) < 0)
         return -1;
-    }
 
     /* This will get called once at start */
     if (xenStoreAddWatch(conn, "@releaseDomain",
@@ -656,10 +652,8 @@ xenStoreAddWatch(virConnectPtr conn,
         }
     }
 
-    if (VIR_ALLOC(watch) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(watch) < 0)
         goto error;
-    }
 
     watch->cb = cb;
     watch->opaque = opaque;
@@ -669,10 +663,8 @@ xenStoreAddWatch(virConnectPtr conn,
 
     /* Make space on list */
     n = list->count;
-    if (VIR_REALLOC_N(list->watches, n + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(list->watches, n + 1) < 0)
         goto error;
-    }
 
     list->watches[n] = watch;
     list->count++;
@@ -817,10 +809,8 @@ retry:
     if (new_domain_cnt < 0)
         return -1;
 
-    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0)
         return -1;
-    }
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
         /* mismatch. retry this read */
@@ -901,10 +891,8 @@ retry:
     if (new_domain_cnt < 0)
         return -1;
 
-    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0)
         return -1;
-    }
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
         /* mismatch. retry this read */

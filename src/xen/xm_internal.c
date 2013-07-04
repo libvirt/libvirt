@@ -237,10 +237,8 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
         entry->def = NULL;
     } else { /* Completely new entry */
         newborn = 1;
-        if (VIR_ALLOC(entry) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(entry) < 0)
             return -1;
-        }
         if (VIR_STRDUP(entry->filename, filename) < 0) {
             VIR_FREE(entry);
             return -1;
@@ -1030,10 +1028,8 @@ xenXMDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
     if (virConfWriteFile(filename, conf) < 0)
         goto error;
 
-    if (VIR_ALLOC(entry) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(entry) < 0)
         goto error;
-    }
 
     if ((entry->refreshedAt = time(NULL)) == ((time_t)-1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1257,20 +1253,16 @@ xenXMDomainAttachDeviceFlags(virConnectPtr conn,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
     {
-        if (virDomainDiskInsert(def, dev->data.disk) < 0) {
-            virReportOOMError();
+        if (virDomainDiskInsert(def, dev->data.disk) < 0)
             goto cleanup;
-        }
         dev->data.disk = NULL;
     }
     break;
 
     case VIR_DOMAIN_DEVICE_NET:
     {
-        if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
             goto cleanup;
-        }
         def->nets[def->nnets++] = dev->data.net;
         dev->data.net = NULL;
         break;
@@ -1444,10 +1436,8 @@ xenXMDomainGetAutostart(virDomainDefPtr def,
     char *config = xenXMDomainConfigName(def);
     int ret = -1;
 
-    if (!linkname || !config) {
-        virReportOOMError();
+    if (!linkname || !config)
         goto cleanup;
-    }
 
     *autostart = virFileLinkPointsTo(linkname, config);
     if (*autostart < 0) {
@@ -1474,10 +1464,8 @@ xenXMDomainSetAutostart(virDomainDefPtr def,
     char *config = xenXMDomainConfigName(def);
     int ret = -1;
 
-    if (!linkname || !config) {
-        virReportOOMError();
+    if (!linkname || !config)
         goto cleanup;
-    }
 
     if (autostart) {
         if (symlink(config, linkname) < 0 &&

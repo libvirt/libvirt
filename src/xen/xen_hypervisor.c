@@ -1509,10 +1509,8 @@ virXen_setvcpumap(int handle,
         /* The allocated memory to cpumap must be 'sizeof(uint64_t)' byte *
          * for Xen, and also nr_cpus must be 'sizeof(uint64_t) * 8'       */
         if (maplen < 8) {
-            if (VIR_ALLOC_N(new, sizeof(uint64_t)) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(new, sizeof(uint64_t)) < 0)
                 return -1;
-            }
             memcpy(new, cpumap, maplen);
             bitmap = new;
             nr_cpus = sizeof(uint64_t) * 8;
@@ -1829,10 +1827,8 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
      */
     hv_versions.hypervisor = 2;
 
-    if (VIR_ALLOC(ipt) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ipt) < 0)
         return -1;
-    }
     /* Currently consider RHEL5.0 Fedora7, xen-3.1, and xen-unstable */
     hv_versions.sys_interface = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
@@ -2265,11 +2261,10 @@ xenHypervisorMakeCapabilitiesSunOS(virConnectPtr conn)
         }
     }
 
-    if ((caps = xenHypervisorBuildCapabilities(conn,
-                                               virArchFromHost(),
-                                               pae, hvm,
-                                               guest_arches, i)) == NULL)
-        virReportOOMError();
+    caps = xenHypervisorBuildCapabilities(conn,
+                                          virArchFromHost(),
+                                          pae, hvm,
+                                          guest_arches, i);
 
     return caps;
 }
@@ -2428,7 +2423,6 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
     return caps;
 
  no_memory:
-    virReportOOMError();
     virObjectUnref(caps);
     return NULL;
 }
