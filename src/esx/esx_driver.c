@@ -146,10 +146,8 @@ esxParseVMXFileName(const char *fileName, void *opaque)
     if (strchr(fileName, '/') == NULL && strchr(fileName, '\\') == NULL) {
         /* Plain file name, use same directory as for the .vmx file */
         if (virAsprintf(&result, "%s/%s",
-                        data->datastorePathWithoutFileName, fileName) < 0) {
-            virReportOOMError();
+                        data->datastorePathWithoutFileName, fileName) < 0)
             goto cleanup;
-        }
     } else {
         if (esxVI_String_AppendValueToList(&propertyNameList,
                                            "summary.name") < 0 ||
@@ -199,10 +197,8 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             }
 
             if (virAsprintf(&result, "[%s] %s", datastoreName,
-                            strippedFileName) < 0) {
-                virReportOOMError();
+                            strippedFileName) < 0)
                 goto cleanup;
-            }
 
             break;
         }
@@ -239,10 +235,8 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             }
 
             if (virAsprintf(&result, "[%s] %s", datastoreName,
-                            directoryAndFileName) < 0) {
-                virReportOOMError();
+                            directoryAndFileName) < 0)
                 goto cleanup;
-            }
         }
 
         /* If it's an absolute path outside of a datastore just use it as is */
@@ -587,10 +581,8 @@ esxCapsInit(esxPrivate *priv)
         caps = virCapabilitiesNew(VIR_ARCH_I686, 1, 1);
     }
 
-    if (caps == NULL) {
-        virReportOOMError();
+    if (caps == NULL)
         return NULL;
-    }
 
     virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
@@ -695,10 +687,8 @@ esxConnectToHost(esxPrivate *priv,
     }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
-                    conn->uri->server, conn->uri->port) < 0) {
-        virReportOOMError();
+                    conn->uri->server, conn->uri->port) < 0)
         goto cleanup;
-    }
 
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, ipAddress, username, password,
@@ -818,10 +808,8 @@ esxConnectToVCenter(esxPrivate *priv,
     }
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
-                    hostname, conn->uri->port) < 0) {
-        virReportOOMError();
+                    hostname, conn->uri->port) < 0)
         goto cleanup;
-    }
 
     if (esxVI_Context_Alloc(&priv->vCenter) < 0 ||
         esxVI_Context_Connect(priv->vCenter, url, ipAddress, username,
@@ -973,10 +961,8 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     /* Allocate per-connection private data */
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         goto cleanup;
-    }
 
     if (esxUtil_ParseUri(&priv->parsedUri, conn->uri) < 0) {
         goto cleanup;
@@ -1269,10 +1255,8 @@ esxConnectGetHostname(virConnectPtr conn)
         if (VIR_STRDUP(complete, hostName) < 0)
             goto cleanup;
     } else {
-        if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0)
             goto cleanup;
-        }
     }
 
   cleanup:
@@ -2739,16 +2723,12 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if (directoryName == NULL) {
         if (virAsprintf(&data.datastorePathWithoutFileName, "[%s]",
-                        datastoreName) < 0) {
-            virReportOOMError();
+                        datastoreName) < 0)
             goto cleanup;
-        }
     } else {
         if (virAsprintf(&data.datastorePathWithoutFileName, "[%s] %s",
-                        datastoreName, directoryName) < 0) {
-            virReportOOMError();
+                        datastoreName, directoryName) < 0)
             goto cleanup;
-        }
     }
 
     ctx.opaque = &data;
@@ -3213,16 +3193,12 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Register the domain */
     if (directoryName != NULL) {
         if (virAsprintf(&datastoreRelatedPath, "[%s] %s/%s.vmx", datastoreName,
-                        directoryName, escapedName) < 0) {
-            virReportOOMError();
+                        directoryName, escapedName) < 0)
             goto cleanup;
-        }
     } else {
         if (virAsprintf(&datastoreRelatedPath, "[%s] %s.vmx", datastoreName,
-                        escapedName) < 0) {
-            virReportOOMError();
+                        escapedName) < 0)
             goto cleanup;
-        }
     }
 
     if (esxVI_RegisterVM_Task(priv->primary, priv->primary->datacenter->vmFolder,
@@ -3860,10 +3836,8 @@ esxDomainMigratePrepare(virConnectPtr dconn,
         if (virAsprintf(uri_out, "vpxmigr://%s/%s/%s",
                         priv->vCenter->ipAddress,
                         priv->vCenter->computeResource->resourcePool->value,
-                        priv->vCenter->hostSystem->_reference->value) < 0) {
-            virReportOOMError();
+                        priv->vCenter->hostSystem->_reference->value) < 0)
             return -1;
-        }
     }
 
     return 0;
@@ -5020,7 +4994,7 @@ esxConnectListAllDomains(virConnectPtr conn,
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE))) {
         if (domains &&
             VIR_ALLOC_N(*domains, 1) < 0)
-            goto no_memory;
+            goto cleanup;
 
         ret = 0;
         goto cleanup;
@@ -5074,7 +5048,7 @@ esxConnectListAllDomains(virConnectPtr conn,
 
     if (domains) {
         if (VIR_ALLOC_N(doms, 1) < 0)
-            goto no_memory;
+            goto cleanup;
         ndoms = 1;
     }
 
@@ -5167,7 +5141,7 @@ esxConnectListAllDomains(virConnectPtr conn,
         }
 
         if (VIR_RESIZE_N(doms, ndoms, count, 2) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (!(dom = virGetDomain(conn, name, uuid)))
             goto cleanup;
@@ -5203,10 +5177,6 @@ cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 #undef MATCH
 

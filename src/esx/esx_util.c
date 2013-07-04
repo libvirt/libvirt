@@ -54,10 +54,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         return -1;
     }
 
-    if (VIR_ALLOC(*parsedUri) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(*parsedUri) < 0)
         return -1;
-    }
 
     for (i = 0; i < uri->paramsCount; i++) {
         virURIParamPtr queryParam = &uri->params[i];

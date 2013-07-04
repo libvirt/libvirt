@@ -334,10 +334,8 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
     def.source.nhost = 1;
 
-    if (VIR_ALLOC_N(def.source.hosts, def.source.nhost) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def.source.hosts, def.source.nhost) < 0)
         goto cleanup;
-    }
 
     def.source.hosts[0].name = target->address;
 

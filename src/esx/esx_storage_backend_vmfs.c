@@ -484,10 +484,8 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     if (esxVI_LocalDatastoreInfo_DynamicCast(info) != NULL) {
         def.type = VIR_STORAGE_POOL_DIR;
     } else if ((nasInfo = esxVI_NasDatastoreInfo_DynamicCast(info)) != NULL) {
-        if (VIR_ALLOC_N(def.source.hosts, 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def.source.hosts, 1) < 0)
             goto cleanup;
-        }
         def.type = VIR_STORAGE_POOL_NETFS;
         def.source.hosts[0].name = nasInfo->nas->remoteHost;
         def.source.dir = nasInfo->nas->remotePath;
@@ -615,7 +613,6 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
                     goto cleanup;
             } else if (virAsprintf(&names[count], "%s/%s", directoryAndFileName,
                                    fileInfo->path) < 0) {
-                virReportOOMError();
                 goto cleanup;
             }
 
@@ -651,10 +648,8 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
     char *datastorePath = NULL;
     char *key = NULL;
 
-    if (virAsprintf(&datastorePath, "[%s] %s", pool->name, name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s] %s", pool->name, name) < 0)
         goto cleanup;
-    }
 
     if (esxVI_LookupStorageVolumeKeyByDatastorePath(priv->primary,
                                                     datastorePath, &key) < 0) {
@@ -789,15 +784,12 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
                 } else if (virAsprintf(&volumeName, "%s/%s",
                                        directoryAndFileName,
                                        fileInfo->path) < 0) {
-                    virReportOOMError();
                     goto cleanup;
                 }
 
                 if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
-                                volumeName) < 0) {
-                    virReportOOMError();
+                                volumeName) < 0)
                     goto cleanup;
-                }
 
                 if (esxVI_VmDiskFileInfo_DynamicCast(fileInfo) == NULL) {
                     /* Only a VirtualDisk has a UUID */
@@ -907,10 +899,8 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     }
 
     if (virAsprintf(&unescapedDatastorePath, "[%s] %s", pool->name,
-                    def->name) < 0) {
-        virReportOOMError();
+                    def->name) < 0)
         goto cleanup;
-    }
 
     if (def->target.format == VIR_STORAGE_FILE_VMDK) {
         /* Parse and escape datastore path */
@@ -934,16 +924,12 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         }
 
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s", pool->name,
-                        directoryName) < 0) {
-            virReportOOMError();
+                        directoryName) < 0)
             goto cleanup;
-        }
 
         if (virAsprintf(&datastorePath, "[%s] %s/%s", pool->name, directoryName,
-                        fileName) < 0) {
-            virReportOOMError();
+                        fileName) < 0)
             goto cleanup;
-        }
 
         /* Create directory, if it doesn't exist yet */
         if (esxVI_LookupFileInfoByDatastorePath
@@ -1015,10 +1001,8 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         }
 
         if (priv->primary->hasQueryVirtualDiskUuid) {
-            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0)
                 goto cleanup;
-            }
 
             if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
                                            priv->primary->datacenter->_reference,
@@ -1107,10 +1091,8 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     if (virAsprintf(&sourceDatastorePath, "[%s] %s", sourceVolume->pool,
-                    sourceVolume->name) < 0) {
-        virReportOOMError();
+                    sourceVolume->name) < 0)
         goto cleanup;
-    }
 
     /* Parse config */
     def = virStorageVolDefParseString(&poolDef, xmldesc);
@@ -1143,10 +1125,8 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     if (virAsprintf(&unescapedDatastorePath, "[%s] %s", pool->name,
-                    def->name) < 0) {
-        virReportOOMError();
+                    def->name) < 0)
         goto cleanup;
-    }
 
     if (def->target.format == VIR_STORAGE_FILE_VMDK) {
         /* Parse and escape datastore path */
@@ -1170,16 +1150,12 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         }
 
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s", pool->name,
-                        directoryName) < 0) {
-            virReportOOMError();
+                        directoryName) < 0)
             goto cleanup;
-        }
 
         if (virAsprintf(&datastorePath, "[%s] %s/%s", pool->name, directoryName,
-                        fileName) < 0) {
-            virReportOOMError();
+                        fileName) < 0)
             goto cleanup;
-        }
 
         /* Create directory, if it doesn't exist yet */
         if (esxVI_LookupFileInfoByDatastorePath
@@ -1217,10 +1193,8 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         }
 
         if (priv->primary->hasQueryVirtualDiskUuid) {
-            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0)
                 goto cleanup;
-            }
 
             if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
                                            priv->primary->datacenter->_reference,
@@ -1280,10 +1254,8 @@ esxStorageVolDelete(virStorageVolPtr volume, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0)
         goto cleanup;
-    }
 
     if (esxVI_DeleteVirtualDisk_Task(priv->primary, datastorePath,
                                      priv->primary->datacenter->_reference,
@@ -1325,10 +1297,8 @@ esxStorageVolWipe(virStorageVolPtr volume, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0)
         goto cleanup;
-    }
 
     if (esxVI_ZeroFillVirtualDisk_Task(priv->primary, datastorePath,
                                        priv->primary->datacenter->_reference,
@@ -1370,10 +1340,8 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
 
     memset(info, 0, sizeof(*info));
 
-    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0)
         goto cleanup;
-    }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, datastorePath,
                                             false, &fileInfo,
@@ -1430,10 +1398,8 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
     }
 
     /* Lookup file info */
-    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s] %s", volume->pool, volume->name) < 0)
         goto cleanup;
-    }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, datastorePath,
                                             false, &fileInfo,
@@ -1494,11 +1460,7 @@ esxStorageVolGetPath(virStorageVolPtr volume)
 {
     char *path;
 
-    if (virAsprintf(&path, "[%s] %s", volume->pool, volume->name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&path, "[%s] %s", volume->pool, volume->name));
     return path;
 }
 

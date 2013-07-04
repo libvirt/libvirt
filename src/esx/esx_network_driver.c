@@ -642,10 +642,8 @@ esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy
 
     if (VIR_ALLOC(*bandwidth) < 0 ||
         VIR_ALLOC((*bandwidth)->in) < 0 ||
-        VIR_ALLOC((*bandwidth)->out) < 0) {
-        virReportOOMError();
+        VIR_ALLOC((*bandwidth)->out) < 0)
         return -1;
-    }
 
     if (shapingPolicy->averageBandwidth != NULL) {
         /* Scale bits per second to kilobytes per second */
@@ -694,10 +692,8 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         return NULL;
     }
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     /* Lookup HostVirtualSwitch */
     if (esxVI_LookupHostVirtualSwitchByName(priv->primary, network_->name,
@@ -724,10 +720,8 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     if (count > 0) {
         def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
 
-        if (VIR_ALLOC_N(def->forward.ifs, count) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->forward.ifs, count) < 0)
             goto cleanup;
-        }
 
         /* Find PhysicalNic by key */
         if (esxVI_LookupPhysicalNicList(priv->primary, &physicalNicList) < 0) {
@@ -772,10 +766,8 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     }
 
     if (count > 0) {
-        if (VIR_ALLOC_N(def->portGroups, count) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->portGroups, count) < 0)
             goto cleanup;
-        }
 
         /* Lookup Network list and create name list */
         if (esxVI_String_AppendValueToList(&propertyNameList, "name") < 0 ||

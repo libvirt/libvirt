@@ -51,7 +51,8 @@
     int                                                                       \
     esxVI_##_type##_Alloc(esxVI_##_type **ptrptr)                             \
     {                                                                         \
-        return esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##_type));           \
+        return esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##_type),            \
+                           __FILE__, __FUNCTION__, __LINE__);                 \
     }
 
 
@@ -392,15 +393,11 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
             return -1;
         }
 
-        if (virAsprintf(&range, "%llu-%llu", offset, offset + *length - 1) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&range, "%llu-%llu", offset, offset + *length - 1) < 0)
             goto cleanup;
-        }
     } else if (offset > 0) {
-        if (virAsprintf(&range, "%llu-", offset) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&range, "%llu-", offset) < 0)
             goto cleanup;
-        }
     }
 
     virMutexLock(&curl->lock);
@@ -808,10 +805,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
-    if (VIR_ALLOC(ctx->sessionLock) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ctx->sessionLock) < 0)
         return -1;
-    }
 
     if (virMutexInit(ctx->sessionLock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1315,10 +1310,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         } else {
             if (virAsprintf(&xpathExpression,
                             "/soapenv:Envelope/soapenv:Body/vim:%sResponse",
-                            methodName) < 0) {
-                virReportOOMError();
+                            methodName) < 0)
                 goto cleanup;
-            }
 
             responseNode = virXPathNode(xpathExpression, xpathContext);
 
@@ -1743,19 +1736,16 @@ esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
  */
 
 int
-esxVI_Alloc(void **ptrptr, size_t size)
+esxVI_Alloc(void **ptrptr, size_t size, const char *file,
+            const char *function, size_t linenr)
 {
     if (ptrptr == NULL || *ptrptr != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (virAllocN(ptrptr, size, 1, false, 0, NULL, NULL, 0) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return virAllocN(ptrptr, size, 1, true, VIR_FROM_THIS,
+                     file, function, linenr);
 }
 
 
@@ -3480,20 +3470,16 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
          * that the <path> part is actually the file name.
          */
         if (virAsprintf(&datastorePathWithoutFileName, "[%s]",
-                        datastoreName) < 0) {
-            virReportOOMError();
+                        datastoreName) < 0)
             goto cleanup;
-        }
 
         if (VIR_STRDUP(fileName, directoryAndFileName) < 0) {
             goto cleanup;
         }
     } else {
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s",
-                        datastoreName, directoryName) < 0) {
-            virReportOOMError();
+                        datastoreName, directoryName) < 0)
             goto cleanup;
-        }
 
         length = strlen(directoryName);
 
@@ -3715,10 +3701,8 @@ esxVI_LookupDatastoreContentByDatastoreName
     }
 
     /* Search datastore for files */
-    if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0)
         goto cleanup;
-    }
 
     if (esxVI_SearchDatastoreSubFolders_Task(ctx, hostDatastoreBrowser,
                                              datastorePath, searchSpec,
@@ -3788,10 +3772,8 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
                 goto cleanup;
             }
 
-            if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0)
                 goto cleanup;
-            }
 
             if (esxUtil_ReformatUuid(uuid_string, *key) < 0) {
                 goto cleanup;
@@ -4493,10 +4475,8 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
         } else {
             if (virAsprintf(errorMessage, "%s - %s",
                             taskInfo->error->fault->_actualType,
-                            taskInfo->error->localizedMessage) < 0) {
-                virReportOOMError();
+                            taskInfo->error->localizedMessage) < 0)
                 goto cleanup;
-            }
         }
     }
 
