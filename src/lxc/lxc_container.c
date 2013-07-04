@@ -1466,7 +1466,6 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       virSecurityManagerPtr securityDriver)
 {
     virCgroupPtr cgroup = NULL;
-    int rc;
     int ret = -1;
     char *sec_mount_options;
     char *stateDir = NULL;
@@ -1478,11 +1477,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Before pivoting we need to identify any
      * cgroups controllers that are mounted */
-    if ((rc = virCgroupNewSelf(&cgroup)) != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Cannot identify cgroup placement"));
+    if (virCgroupNewSelf(&cgroup) < 0)
         goto cleanup;
-    }
 
     if (virFileResolveAllLinks(LXC_STATE_DIR, &stateDir) < 0)
         goto cleanup;

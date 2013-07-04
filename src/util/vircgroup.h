@@ -46,6 +46,8 @@ enum {
 
 VIR_ENUM_DECL(virCgroupController);
 
+bool virCgroupAvailable(void);
+
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
@@ -83,6 +85,8 @@ int virCgroupNewEmulator(virCgroupPtr domain,
                          bool create,
                          virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
+bool virCgroupNewIgnoreError(void);
 
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,

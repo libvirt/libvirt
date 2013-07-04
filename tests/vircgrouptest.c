@@ -136,6 +136,18 @@ cleanup:
 }
 
 
+# define ENSURE_ERRNO(en)                                           \
+    do {                                                            \
+    if (!virLastErrorIsSystemErrno(en)) {                           \
+        virErrorPtr err = virGetLastError();                        \
+        fprintf(stderr, "Did not get " #en " error code: %d:%d\n",  \
+                err ? err->code : 0, err ? err->int1 : 0);          \
+        goto cleanup;                                               \
+    } } while (0)
+
+    /* Asking for impossible combination since CPU is co-mounted */
+
+
 static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -160,26 +172,28 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/libvirt/lxc",
     };
 
-    if ((rv = virCgroupNewDriver("lxc", false, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewDriver("lxc", false, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected found LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
-    /* Asking for impossible combination since CPU is co-mounted */
     if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_CPU),
-                                 &cgroup)) != -EINVAL) {
+                                 &cgroup)) != -1) {
         fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(EINVAL);
 
     /* Asking for impossible combination since devices is not mounted */
     if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_DEVICES),
-                                 &cgroup)) != -ENXIO) {
+                                 &cgroup)) != -1) {
         fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENXIO);
 
     /* Asking for small combination since devices is not mounted */
     if ((rv = virCgroupNewDriver("lxc", true,
@@ -264,26 +278,29 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/virtualmachines.partition",
     };
 
-    if ((rv = virCgroupNewPartition("/virtualmachines", false, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewPartition("/virtualmachines", false, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected found /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
     /* Asking for impossible combination since CPU is co-mounted */
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_CPU),
-                                    &cgroup)) != -EINVAL) {
+                                    &cgroup)) != -1) {
         fprintf(stderr, "Should not have created /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(EINVAL);
 
     /* Asking for impossible combination since devices is not mounted */
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_DEVICES),
-                                    &cgroup)) != -ENXIO) {
+                                    &cgroup)) != -1) {
         fprintf(stderr, "Should not have created /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENXIO);
 
     /* Asking for small combination since devices is not mounted */
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
@@ -324,16 +341,18 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/deployment.partition/production.partition",
     };
 
-    if ((rv = virCgroupNewPartition("/deployment/production", false, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewPartition("/deployment/production", false, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected found /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
     /* Should not work, since we require /deployment to be pre-created */
-    if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected created /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
     if ((rv = virCgroupNewPartition("/deployment", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /deployment cgroup: %d\n", -rv);
@@ -370,16 +389,18 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/user/berrange.user/production.partition",
     };
 
-    if ((rv = virCgroupNewPartition("/user/berrange.user/production", false, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewPartition("/user/berrange.user/production", false, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected found /user/berrange.user/production cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
     /* Should not work, since we require /user/berrange.user to be pre-created */
-    if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != -1) {
         fprintf(stderr, "Unexpected created /user/berrange.user/production cgroup: %d\n", -rv);
         goto cleanup;
     }
+    ENSURE_ERRNO(ENOENT);
 
     if ((rv = virCgroupNewPartition("/user", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Failed to create /user/berrange.user cgroup: %d\n", -rv);

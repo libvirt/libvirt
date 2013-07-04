@@ -3940,14 +3940,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             if (priv->cgroup) {
                 int rv = -1;
                 /* Create cgroup for the onlined vcpu */
-                rv = virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu);
-                if (rv < 0) {
-                    virReportSystemError(-rv,
-                                         _("Unable to create vcpu cgroup for %s(vcpu:"
-                                           " %zu)"),
-                                         vm->def->name, i);
+                if (virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu) < 0)
                     goto cleanup;
-                }
 
                 /* Add vcpu thread to the cgroup */
                 rv = virCgroupAddTask(cgroup_vcpu, cpupids[i]);
@@ -4008,16 +4002,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             virDomainVcpuPinDefPtr vcpupin = NULL;
 
             if (priv->cgroup) {
-                int rv = -1;
-
-                rv = virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_vcpu);
-                if (rv < 0) {
-                    virReportSystemError(-rv,
-                                         _("Unable to access vcpu cgroup for %s(vcpu:"
-                                           " %zu)"),
-                                         vm->def->name, i);
+                if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_vcpu) < 0)
                     goto cleanup;
-                }
 
                 /* Remove cgroup for the offlined vcpu */
                 virCgroupRemove(cgroup_vcpu);
@@ -4358,8 +4344,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
         /* Configure the corresponding cpuset cgroup before set affinity. */
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            if (virCgroupNewVcpu(priv->cgroup, vcpu, false, &cgroup_vcpu) == 0 &&
-                qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum, vcpu) < 0) {
+            if (virCgroupNewVcpu(priv->cgroup, vcpu, false, &cgroup_vcpu) < 0)
+                goto cleanup;
+            if (qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum, vcpu) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("failed to set cpuset.cpus in cgroup"
                                  " for vcpu %d"), vcpu);
@@ -4620,16 +4607,15 @@ qemuDomainPinEmulator(virDomainPtr dom,
                                        VIR_CGROUP_CONTROLLER_CPUSET)) {
                 /*
                  * Configure the corresponding cpuset cgroup.
-                 * If no cgroup for domain or hypervisor exists, do nothing.
                  */
-                if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_emulator) == 0) {
-                    if (qemuSetupCgroupEmulatorPin(cgroup_emulator,
-                                                   newVcpuPin[0]->cpumask) < 0) {
-                        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                       _("failed to set cpuset.cpus in cgroup"
-                                         " for emulator threads"));
-                        goto cleanup;
-                    }
+                if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_emulator) < 0)
+                    goto cleanup;
+                if (qemuSetupCgroupEmulatorPin(cgroup_emulator,
+                                               newVcpuPin[0]->cpumask) < 0) {
+                    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                   _("failed to set cpuset.cpus in cgroup"
+                                     " for emulator threads"));
+                    goto cleanup;
                 }
             } else {
                 if (virProcessSetAffinity(pid, pcpumap) < 0) {
@@ -8596,7 +8582,6 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_vcpu = NULL;
-    int rc;
 
     if (period == 0 && quota == 0)
         return 0;
@@ -8607,14 +8592,8 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
      */
     if (priv->nvcpupids != 0 && priv->vcpupids[0] != vm->pid) {
         for (i = 0; i < priv->nvcpupids; i++) {
-            rc = virCgroupNewVcpu(cgroup, i, false, &cgroup_vcpu);
-            if (rc < 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to find vcpu cgroup for %s(vcpu:"
-                                       " %zu)"),
-                                     vm->def->name, i);
+            if (virCgroupNewVcpu(cgroup, i, false, &cgroup_vcpu) < 0)
                 goto cleanup;
-            }
 
             if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
                 goto cleanup;
@@ -8636,7 +8615,6 @@ qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_emulator = NULL;
-    int rc;
 
     if (period == 0 && quota == 0)
         return 0;
@@ -8645,13 +8623,8 @@ qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         return 0;
     }
 
-    rc = virCgroupNewEmulator(cgroup, false, &cgroup_emulator);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to find emulator cgroup for %s"),
-                             vm->def->name);
+    if (virCgroupNewEmulator(cgroup, false, &cgroup_emulator) < 0)
         goto cleanup;
-    }
 
     if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
         goto cleanup;
@@ -8897,13 +8870,8 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
     }
 
     /* get period and quota for vcpu0 */
-    rc = virCgroupNewVcpu(priv->cgroup, 0, false, &cgroup_vcpu);
-    if (!cgroup_vcpu) {
-        virReportSystemError(-rc,
-                             _("Unable to find vcpu cgroup for %s(vcpu: 0)"),
-                             vm->def->name);
+    if (virCgroupNewVcpu(priv->cgroup, 0, false, &cgroup_vcpu) < 0)
         goto cleanup;
-    }
 
     rc = qemuGetVcpuBWLive(cgroup_vcpu, period, quota);
     if (rc < 0)
@@ -8935,13 +8903,8 @@ qemuGetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     }
 
     /* get period and quota for emulator */
-    rc = virCgroupNewEmulator(cgroup, false, &cgroup_emulator);
-    if (!cgroup_emulator) {
-        virReportSystemError(-rc,
-                             _("Unable to find emulator cgroup for %s"),
-                             vm->def->name);
+    if (virCgroupNewEmulator(cgroup, false, &cgroup_emulator) < 0)
         goto cleanup;
-    }
 
     rc = qemuGetVcpuBWLive(cgroup_emulator, period, quota);
     if (rc < 0)
@@ -15537,11 +15500,8 @@ getSumVcpuPercpuStats(virDomainObjPtr vm,
         unsigned long long tmp;
         size_t j;
 
-        if (virCgroupNewVcpu(priv->cgroup, i, false, &group_vcpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("error accessing cgroup cpuacct for vcpu"));
+        if (virCgroupNewVcpu(priv->cgroup, i, false, &group_vcpu) < 0)
             goto cleanup;
-        }
 
         if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
             goto cleanup;

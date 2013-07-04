@@ -139,8 +139,10 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     virBufferPtr new_meminfo = &buffer;
 
-    if ((res = virLXCCgroupGetMeminfo(&meminfo)) < 0)
-        return res;
+    if (virLXCCgroupGetMeminfo(&meminfo) < 0) {
+        virErrorSetErrnoFromLastError();
+        return -errno;
+    }
 
     fd = fopen(hostpath, "r");
     if (fd == NULL) {

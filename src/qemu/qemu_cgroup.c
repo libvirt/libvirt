@@ -731,6 +731,9 @@ qemuInitCgroup(virQEMUDriverPtr driver,
     if (!cfg->privileged)
         goto done;
 
+    if (!virCgroupAvailable())
+        goto done;
+
     virCgroupFree(&priv->cgroup);
 
     if (!vm->def->resource && startup) {
@@ -757,64 +760,38 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         }
         /* We only auto-create the default partition. In other
          * cases we expec the sysadmin/app to have done so */
-        rc = virCgroupNewPartition(vm->def->resource->partition,
-                                   STREQ(vm->def->resource->partition, "/machine"),
-                                   cfg->cgroupControllers,
-                                   &parent);
-        if (rc != 0) {
-            if (rc == -ENXIO ||
-                rc == -EPERM ||
-                rc == -EACCES) { /* No cgroups mounts == success */
-                VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
+        if (virCgroupNewPartition(vm->def->resource->partition,
+                                  STREQ(vm->def->resource->partition, "/machine"),
+                                  cfg->cgroupControllers,
+                                  &parent) < 0) {
+            if (virCgroupNewIgnoreError())
                 goto done;
-            }
 
-            virReportSystemError(-rc,
-                                 _("Unable to initialize %s cgroup"),
-                                 vm->def->resource->partition);
             goto cleanup;
         }
 
-        rc = virCgroupNewDomainPartition(parent,
-                                         "qemu",
-                                         vm->def->name,
-                                         true,
-                                         &priv->cgroup);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 vm->def->name);
+        if (virCgroupNewDomainPartition(parent,
+                                        "qemu",
+                                        vm->def->name,
+                                        true,
+                                        &priv->cgroup) < 0)
             goto cleanup;
-        }
     } else {
-        rc = virCgroupNewDriver("qemu",
-                                true,
-                                cfg->cgroupControllers,
-                                &parent);
-        if (rc != 0) {
-            if (rc == -ENXIO ||
-                rc == -EPERM ||
-                rc == -EACCES) { /* No cgroups mounts == success */
-                VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
+        if (virCgroupNewDriver("qemu",
+                               true,
+                               cfg->cgroupControllers,
+                               &parent) < 0) {
+            if (virCgroupNewIgnoreError())
                 goto done;
-            }
 
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 vm->def->name);
             goto cleanup;
         }
 
-        rc = virCgroupNewDomainDriver(parent,
-                                      vm->def->name,
-                                      true,
-                                      &priv->cgroup);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 vm->def->name);
+        if (virCgroupNewDomainDriver(parent,
+                                     vm->def->name,
+                                     true,
+                                     &priv->cgroup) < 0)
             goto cleanup;
-        }
     }
 
 done:
@@ -994,14 +971,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     }
 
     for (i = 0; i < priv->nvcpupids; i++) {
-        rc = virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create vcpu cgroup for %s(vcpu:"
-                                   " %zu)"),
-                                 vm->def->name, i);
+        if (virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu) < 0)
             goto cleanup;
-        }
 
         /* move the thread for vcpu to sub dir */
         rc = virCgroupAddTask(cgroup_vcpu, priv->vcpupids[i]);
@@ -1061,7 +1032,7 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long period = vm->def->cputune.emulator_period;
     long long quota = vm->def->cputune.emulator_quota;
-    int rc;
+    int rc = -1;
 
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -1073,13 +1044,8 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    rc = virCgroupNewEmulator(priv->cgroup, true, &cgroup_emulator);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to create emulator cgroup for %s"),
-                             vm->def->name);
+    if (virCgroupNewEmulator(priv->cgroup, true, &cgroup_emulator) < 0)
         goto cleanup;
-    }
 
     rc = virCgroupMoveTask(priv->cgroup, cgroup_emulator);
     if (rc < 0) {

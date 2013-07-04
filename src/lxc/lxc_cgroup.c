@@ -306,33 +306,29 @@ cleanup:
 
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
 {
-    int ret;
+    int ret = -1, rc;
     virCgroupPtr cgroup;
 
-    ret = virCgroupNewSelf(&cgroup);
-    if (ret < 0) {
-        virReportSystemError(-ret, "%s",
-                             _("Unable to get cgroup for container"));
-        return ret;
-    }
+    if (virCgroupNewSelf(&cgroup) < 0)
+        return -1;
 
-    ret = virLXCCgroupGetMemStat(cgroup, meminfo);
-    if (ret < 0) {
-        virReportSystemError(-ret, "%s",
+    rc = virLXCCgroupGetMemStat(cgroup, meminfo);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
                              _("Unable to get memory cgroup stat info"));
         goto cleanup;
     }
 
-    ret = virLXCCgroupGetMemTotal(cgroup, meminfo);
-    if (ret < 0) {
-        virReportSystemError(-ret, "%s",
+    rc = virLXCCgroupGetMemTotal(cgroup, meminfo);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
                              _("Unable to get memory cgroup total"));
         goto cleanup;
     }
 
-    ret = virLXCCgroupGetMemUsage(cgroup, meminfo);
-    if (ret < 0) {
-        virReportSystemError(-ret, "%s",
+    rc = virLXCCgroupGetMemUsage(cgroup, meminfo);
+    if (rc < 0) {
+        virReportSystemError(-rc, "%s",
                              _("Unable to get memory cgroup stat usage"));
         goto cleanup;
     }
@@ -541,7 +537,6 @@ cleanup:
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
 {
-    int rc;
     virCgroupPtr parent = NULL;
     virCgroupPtr cgroup = NULL;
 
@@ -569,50 +564,30 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
         }
         /* We only auto-create the default partition. In other
          * cases we expec the sysadmin/app to have done so */
-        rc = virCgroupNewPartition(def->resource->partition,
-                                   STREQ(def->resource->partition, "/machine"),
-                                   -1,
-                                   &parent);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to initialize %s cgroup"),
-                                 def->resource->partition);
+        if (virCgroupNewPartition(def->resource->partition,
+                                  STREQ(def->resource->partition, "/machine"),
+                                  -1,
+                                  &parent) < 0)
             goto cleanup;
-        }
 
-        rc = virCgroupNewDomainPartition(parent,
-                                         "lxc",
-                                         def->name,
-                                         true,
-                                         &cgroup);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 def->name);
+        if (virCgroupNewDomainPartition(parent,
+                                        "lxc",
+                                        def->name,
+                                        true,
+                                        &cgroup) < 0)
             goto cleanup;
-        }
     } else {
-        rc = virCgroupNewDriver("lxc",
-                                true,
-                                -1,
-                                &parent);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 def->name);
+        if (virCgroupNewDriver("lxc",
+                               true,
+                               -1,
+                               &parent) < 0)
             goto cleanup;
-        }
 
-        rc = virCgroupNewDomainDriver(parent,
-                                      def->name,
-                                      true,
-                                      &cgroup);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to create cgroup for %s"),
-                                 def->name);
+        if (virCgroupNewDomainDriver(parent,
+                                     def->name,
+                                     true,
+                                     &cgroup) < 0)
             goto cleanup;
-        }
     }
 
 cleanup:
