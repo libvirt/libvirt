@@ -3221,7 +3221,8 @@ libxlConnectNumOfDefinedDomains(virConnectPtr conn)
 
     libxlDriverLock(driver);
     n = virDomainObjListNumOfDomains(driver->domains, false,
-                                     virConnectNumOfDefinedDomainsCheckACL, NULL);
+                                     virConnectNumOfDefinedDomainsCheckACL,
+                                     conn);
     libxlDriverUnlock(driver);
 
     return n;

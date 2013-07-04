@@ -5887,7 +5887,8 @@ static int qemuConnectListDefinedDomains(virConnectPtr conn,
         goto cleanup;
 
     ret = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
-                                           virConnectListDefinedDomainsCheckACL, NULL);
+                                           virConnectListDefinedDomainsCheckACL,
+                                           conn);
 
 cleanup:
     return ret;
@@ -5901,7 +5902,8 @@ static int qemuConnectNumOfDefinedDomains(virConnectPtr conn) {
         goto cleanup;
 
     ret = virDomainObjListNumOfDomains(driver->domains, false,
-                                       virConnectNumOfDefinedDomainsCheckACL, NULL);
+                                       virConnectNumOfDefinedDomainsCheckACL,
+                                       conn);
 
 cleanup:
     return ret;
