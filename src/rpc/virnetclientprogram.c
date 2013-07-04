@@ -250,10 +250,8 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
         return -1;
     }
 
-    if (VIR_ALLOC_N(evdata, event->msg_len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(evdata, event->msg_len) < 0)
         return -1;
-    }
 
     if (virNetMessageDecodePayload(msg, event->msg_filter, evdata) < 0)
         goto cleanup;
@@ -297,10 +295,8 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     msg->header.serial = serial;
     msg->header.proc = proc;
     msg->nfds = noutfds;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
         goto error;
-    }
     for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
     for (i = 0; i < msg->nfds; i++) {
@@ -358,10 +354,8 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     case VIR_NET_OK:
         if (infds && ninfds) {
             *ninfds = msg->nfds;
-            if (VIR_ALLOC_N(*infds, *ninfds) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(*infds, *ninfds) < 0)
                 goto error;
-            }
             for (i = 0; i < *ninfds; i++)
                 (*infds)[i] = -1;
             for (i = 0; i < *ninfds; i++) {

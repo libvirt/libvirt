@@ -297,10 +297,8 @@ int virNetSocketNewListenTCP(const char *nodename,
 
         VIR_DEBUG("%p f=%d f=%d", &addr, runp->ai_family, addr.data.sa.sa_family);
 
-        if (VIR_EXPAND_N(socks, nsocks, 1) < 0) {
-            virReportOOMError();
+        if (VIR_EXPAND_N(socks, nsocks, 1) < 0)
             goto error;
-        }
 
         if (!(socks[nsocks-1] = virNetSocketNew(&addr, NULL, false, fd, -1, 0)))
             goto error;
@@ -1435,10 +1433,8 @@ static ssize_t virNetSocketReadSASL(virNetSocketPtr sock, char *buf, size_t len)
     if (sock->saslDecoded == NULL) {
         ssize_t encodedLen = virNetSASLSessionGetMaxBufSize(sock->saslSession);
         char *encoded;
-        if (VIR_ALLOC_N(encoded, encodedLen) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(encoded, encodedLen) < 0)
             return -1;
-        }
         encodedLen = virNetSocketReadWire(sock, encoded, encodedLen);
 
         if (encodedLen <= 0) {

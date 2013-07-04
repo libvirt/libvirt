@@ -378,7 +378,6 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
                             keyhash,
                             sess->hostname, sess->port,
                             "y", "n") < 0) {
-                virReportOOMError();
                 VIR_FREE(keyhash);
                 return -1;
             }
@@ -635,10 +634,8 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
 
     if (virAsprintf((char **)&retr_passphrase.prompt,
                     _("Passphrase for key '%s'"),
-                    priv->filename) < 0) {
-        virReportOOMError();
+                    priv->filename) < 0)
         return -1;
-    }
 
     if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
         virReportError(VIR_ERR_SSH, "%s",
@@ -966,10 +963,8 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
         VIR_STRDUP(pass, password) < 0)
         goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
-        virReportOOMError();
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
-    }
 
     auth->username = user;
     auth->password = pass;
@@ -1004,10 +999,8 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
     if (VIR_STRDUP(user, username) < 0)
         goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
-        virReportOOMError();
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
-    }
 
     auth->username = user;
     auth->method = VIR_NET_SSH_AUTH_AGENT;
@@ -1047,10 +1040,8 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
         VIR_STRDUP(pass, password) < 0)
         goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
-        virReportOOMError();
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
-    }
 
     auth->username = user;
     auth->password = pass;
@@ -1088,10 +1079,8 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
     if (VIR_STRDUP(user, username) < 0)
         goto error;
 
-    if (!(auth = virNetSSHSessionAuthMethodNew(sess))) {
-        virReportOOMError();
+    if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
-    }
 
     auth->username = user;
     auth->tries = tries;

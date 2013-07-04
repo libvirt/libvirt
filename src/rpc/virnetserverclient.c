@@ -241,10 +241,8 @@ int virNetServerClientAddFilter(virNetServerClientPtr client,
     virNetServerClientFilterPtr *place;
     int ret;
 
-    if (VIR_ALLOC(filter) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(filter) < 0)
         return -1;
-    }
 
     virObjectLock(client);
 
@@ -316,7 +314,6 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
      */
     confirm->bufferLength = 1;
     if (VIR_ALLOC_N(confirm->buffer, confirm->bufferLength) < 0) {
-        virReportOOMError();
         virNetMessageFree(confirm);
         return -1;
     }
@@ -378,10 +375,8 @@ virNetServerClientNewInternal(virNetSocketPtr sock,
     if (!(client->rx = virNetMessageNew(true)))
         goto error;
     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-    if (VIR_ALLOC_N(client->rx->buffer, client->rx->bufferLength) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(client->rx->buffer, client->rx->bufferLength) < 0)
         goto error;
-    }
     client->nrequests = 1;
 
     PROBE(RPC_SERVER_CLIENT_NEW,
@@ -680,15 +675,11 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
         if (!(groupname = virGetGroupName(gid)))
             goto cleanup;
         if (virAsprintf(&processid, "%llu",
-                        (unsigned long long)pid) < 0) {
-            virReportOOMError();
+                        (unsigned long long)pid) < 0)
             goto cleanup;
-        }
         if (virAsprintf(&processtime, "%llu",
-                        timestamp) < 0) {
-            virReportOOMError();
+                        timestamp) < 0)
             goto cleanup;
-        }
     }
 
 #if WITH_SASL
@@ -1243,7 +1234,6 @@ readmore:
                 client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                 if (VIR_ALLOC_N(client->rx->buffer,
                                 client->rx->bufferLength) < 0) {
-                    virReportOOMError();
                     client->wantClose = true;
                 } else {
                     client->nrequests++;
@@ -1346,7 +1336,6 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                     virNetMessageClear(msg);
                     msg->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                     if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-                        virReportOOMError();
                         virNetMessageFree(msg);
                         return;
                     }

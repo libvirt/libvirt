@@ -273,10 +273,8 @@ static AvahiWatch *virNetServerMDNSWatchNew(const AvahiPoll *api ATTRIBUTE_UNUSE
 {
     AvahiWatch *w;
     virEventHandleType hEvents;
-    if (VIR_ALLOC(w) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(w) < 0)
         return NULL;
-    }
 
     w->fd = fd;
     w->revents = 0;
@@ -338,10 +336,8 @@ static AvahiTimeout *virNetServerMDNSTimeoutNew(const AvahiPoll *api ATTRIBUTE_U
     struct timeval now;
     long long nowms, thenms, timeout;
     VIR_DEBUG("Add timeout TV %p", tv);
-    if (VIR_ALLOC(t) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(t) < 0)
         return NULL;
-    }
 
     if (gettimeofday(&now, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -413,10 +409,8 @@ static void virNetServerMDNSTimeoutFree(AvahiTimeout *t)
 static AvahiPoll *virNetServerMDNSCreatePoll(void)
 {
     AvahiPoll *p;
-    if (VIR_ALLOC(p) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(p) < 0)
         return NULL;
-    }
 
     p->userdata = NULL;
 
@@ -475,10 +469,8 @@ virNetServerMDNSGroupPtr virNetServerMDNSAddGroup(virNetServerMDNS *mdns,
     virNetServerMDNSGroupPtr group;
 
     VIR_DEBUG("Adding group '%s'", name);
-    if (VIR_ALLOC(group) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(group) < 0)
         return NULL;
-    }
 
     if (VIR_STRDUP(group->name, name) < 0) {
         VIR_FREE(group);
@@ -519,10 +511,8 @@ virNetServerMDNSEntryPtr virNetServerMDNSAddEntry(virNetServerMDNSGroupPtr group
     virNetServerMDNSEntryPtr entry;
 
     VIR_DEBUG("Adding entry %s %d to group %s", type, port, group->name);
-    if (VIR_ALLOC(entry) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(entry) < 0)
         return NULL;
-    }
 
     entry->port = port;
     if (VIR_STRDUP(entry->type, type) < 0) {

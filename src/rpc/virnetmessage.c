@@ -37,10 +37,8 @@ virNetMessagePtr virNetMessageNew(bool tracked)
 {
     virNetMessagePtr msg;
 
-    if (VIR_ALLOC(msg) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(msg) < 0)
         return NULL;
-    }
 
     msg->tracked = tracked;
     VIR_DEBUG("msg=%p tracked=%d", msg, tracked);
@@ -144,10 +142,8 @@ int virNetMessageDecodeLength(virNetMessagePtr msg)
     /* Extend our declared buffer length and carry
        on reading the header + payload */
     msg->bufferLength += len;
-    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
         goto cleanup;
-    }
 
     VIR_DEBUG("Got length, now need %zu total (%u more)",
               msg->bufferLength, len);
@@ -223,10 +219,8 @@ int virNetMessageEncodeHeader(virNetMessagePtr msg)
     unsigned int len = 0;
 
     msg->bufferLength = VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX;
-    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
         return ret;
-    }
     msg->bufferOffset = 0;
 
     /* Format the header. */
@@ -322,10 +316,8 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
     }
 
     msg->nfds = numFDs;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
         goto cleanup;
-    }
     for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
 
@@ -364,10 +356,8 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
         msg->bufferLength = (msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4 +
             VIR_NET_MESSAGE_LEN_MAX;
 
-        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
             goto error;
-        }
 
         xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
                       msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
@@ -445,10 +435,8 @@ int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
 
         msg->bufferLength = msg->bufferOffset + len;
 
-        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
             return -1;
-        }
 
         VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
     }
@@ -533,7 +521,7 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     } else {
         rerr->code = VIR_ERR_INTERNAL_ERROR;
         rerr->domain = VIR_FROM_RPC;
-        if (VIR_ALLOC(rerr->message) == 0 &&
+        if (VIR_ALLOC_QUIET(rerr->message) == 0 &&
             VIR_STRDUP_QUIET(*rerr->message,
                              _("Library function returned error but did not set virError")) < 0)
             VIR_FREE(rerr->message);

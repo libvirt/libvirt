@@ -175,7 +175,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
     svc->nsocks = 1;
     if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
-        goto no_memory;
+        goto error;
 
     if (virNetSocketNewListenUNIX(path,
                                   mask,
@@ -204,8 +204,6 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
     return svc;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(svc);
     return NULL;
@@ -237,7 +235,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
 
     svc->nsocks = 1;
     if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
-        goto no_memory;
+        goto error;
 
     if (virNetSocketNewListenFD(fd,
                                 &svc->socks[0]) < 0)
@@ -257,8 +255,6 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
 
     return svc;
 
-no_memory:
-    virReportOOMError();
 error:
     virObjectUnref(svc);
     return NULL;
@@ -310,10 +306,8 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     }
 
     svc->nsocks = n;
-    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
         goto error;
-    }
 
     for (i = 0; i < svc->nsocks; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(socks, i);

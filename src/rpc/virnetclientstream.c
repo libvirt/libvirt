@@ -373,10 +373,8 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
             goto cleanup;
         }
 
-        if (!(msg = virNetMessageNew(false))) {
-            virReportOOMError();
+        if (!(msg = virNetMessageNew(false)))
             goto cleanup;
-        }
 
         msg->header.prog = virNetClientProgramGetProgram(st->prog);
         msg->header.vers = virNetClientProgramGetVersion(st->prog);

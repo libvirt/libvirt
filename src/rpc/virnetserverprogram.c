@@ -408,14 +408,10 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
         goto error;
     }
 
-    if (VIR_ALLOC_N(arg, dispatcher->arg_len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(arg, dispatcher->arg_len) < 0)
         goto error;
-    }
-    if (VIR_ALLOC_N(ret, dispatcher->ret_len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, dispatcher->ret_len) < 0)
         goto error;
-    }
 
     if (virNetMessageDecodePayload(msg, dispatcher->arg_filter, arg) < 0)
         goto error;

@@ -661,10 +661,8 @@ elsif ($mode eq "server") {
                     push(@free_list, "    VIR_FREE($1);");
                     push(@free_list_on_error, "VIR_FREE($1_p);");
                     push(@prepare_ret_list,
-                         "if (VIR_ALLOC($1_p) < 0) {\n" .
-                         "        virReportOOMError();\n" .
+                         "if (VIR_ALLOC($1_p) < 0)\n" .
                          "        goto cleanup;\n" .
-                         "    }\n" .
                          "    \n" .
                          "    if (VIR_STRDUP(*$1_p, $1) < 0)\n".
                          "        goto cleanup;\n");
@@ -932,10 +930,8 @@ elsif ($mode eq "server") {
             if ($single_ret_as_list) {
                 print "    /* Allocate return buffer. */\n";
                 print "    if (VIR_ALLOC_N(ret->$single_ret_list_name.${single_ret_list_name}_val," .
-                      " args->$single_ret_list_max_var) < 0) {\n";
-                print "        virReportOOMError();\n";
+                      " args->$single_ret_list_max_var) < 0)\n";
                 print "        goto cleanup;\n";
-                print "    }\n";
                 print "\n";
             }
 
