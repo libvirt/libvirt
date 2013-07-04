@@ -265,10 +265,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     char *script = NULL;
     char *listenAddr = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
@@ -424,10 +422,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             virDomainTimerDefPtr timer;
 
             if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
-                VIR_ALLOC(timer) < 0) {
-                virReportOOMError();
+                VIR_ALLOC(timer) < 0)
                 goto cleanup;
-            }
 
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = val;
@@ -482,7 +478,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             head = list->str;
 
             if (VIR_ALLOC(disk) < 0)
-                goto no_memory;
+                goto cleanup;
 
             /*
              * Disks have 3 components, SOURCE,DEST-DEVICE,MODE
@@ -500,7 +496,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 disk->src = NULL; /* No source file given, eg CDROM with no media */
             } else {
                 if (VIR_ALLOC_N(disk->src, (offset - head) + 1) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (virStrncpy(disk->src, head, offset - head,
                                (offset - head) + 1) == NULL) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -519,7 +515,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (!(offset = strchr(head, ',')))
                 goto skipdisk;
             if (VIR_ALLOC_N(disk->dst, (offset - head) + 1) < 0)
-                goto no_memory;
+                goto cleanup;
             if (virStrncpy(disk->dst, head, offset - head,
                            (offset - head) + 1) == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -534,7 +530,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 /* The main type  phy:, file:, tap: ... */
                 if ((tmp = strchr(disk->src, ':')) != NULL) {
                     if (VIR_ALLOC_N(disk->driverName, (tmp - disk->src) + 1) < 0)
-                        goto no_memory;
+                        goto cleanup;
                     if (virStrncpy(disk->driverName, disk->src,
                                    (tmp - disk->src),
                                    (tmp - disk->src) + 1) == NULL) {
@@ -613,7 +609,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             /* Maintain list in sorted order according to target device name */
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
-                goto no_memory;
+                goto cleanup;
             def->disks[def->ndisks++] = disk;
             disk = NULL;
 
@@ -628,7 +624,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         if (str) {
             if (VIR_ALLOC(disk) < 0)
-                goto no_memory;
+                goto cleanup;
 
             disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
@@ -642,7 +638,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             disk->readonly = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
-                goto no_memory;
+                goto cleanup;
             def->disks[def->ndisks++] = disk;
             disk = NULL;
         }
@@ -739,7 +735,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             }
 
             if (VIR_ALLOC(net) < 0)
-                goto no_memory;
+                goto cleanup;
 
             if (mac[0]) {
                 if (virMacAddrParse(mac, &net->mac) < 0) {
@@ -772,7 +768,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             if (model[0] &&
                 VIR_STRDUP(net->model, model) < 0)
-                goto no_memory;
+                goto cleanup;
 
             if (!model[0] && type[0] && STREQ(type, "netfront") &&
                 VIR_STRDUP(net->model, "netfront") < 0)
@@ -783,7 +779,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto cleanup;
 
             if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
-                goto no_memory;
+                goto cleanup;
             def->nets[def->nnets++] = net;
             net = NULL;
 
@@ -875,7 +871,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
                 virDomainHostdevDefFree(hostdev);
-                goto no_memory;
+                goto cleanup;
             }
             def->hostdevs[def->nhostdevs++] = hostdev;
             hostdev = NULL;
@@ -893,14 +889,14 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
              STREQ(str, "mouse"))) {
             virDomainInputDefPtr input;
             if (VIR_ALLOC(input) < 0)
-                goto no_memory;
+                goto cleanup;
             input->bus = VIR_DOMAIN_INPUT_BUS_USB;
             input->type = STREQ(str, "tablet") ?
                 VIR_DOMAIN_INPUT_TYPE_TABLET :
                 VIR_DOMAIN_INPUT_TYPE_MOUSE;
             if (VIR_ALLOC_N(def->inputs, 1) < 0) {
                 virDomainInputDefFree(input);
-                goto no_memory;
+                goto cleanup;
             }
             def->inputs[0] = input;
             def->ninputs = 1;
@@ -914,7 +910,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
         if (val) {
             if (VIR_ALLOC(graphics) < 0)
-                goto no_memory;
+                goto cleanup;
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
             if (xenXMConfigGetBool(conf, "vncunused", &val, 1) < 0)
                 goto cleanup;
@@ -942,7 +938,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto cleanup;
 
             if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                goto no_memory;
+                goto cleanup;
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -951,14 +947,14 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 goto cleanup;
             if (val) {
                 if (VIR_ALLOC(graphics) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
                 if (xenXMConfigCopyStringOpt(conf, "display", &graphics->data.sdl.display) < 0)
                     goto cleanup;
                 if (xenXMConfigCopyStringOpt(conf, "xauthority", &graphics->data.sdl.xauth) < 0)
                     goto cleanup;
                 if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 def->graphics[0] = graphics;
                 def->ngraphics = 1;
                 graphics = NULL;
@@ -982,7 +978,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             }
 
             if (VIR_ALLOC(graphics) < 0)
-                goto no_memory;
+                goto cleanup;
 
             if (strstr(key, "type=sdl"))
                 graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
@@ -1034,7 +1030,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 key = nextkey;
             }
             if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                goto no_memory;
+                goto cleanup;
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -1053,7 +1049,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         if (chr) {
             if (VIR_ALLOC_N(def->parallels, 1) < 0) {
                 virDomainChrDefFree(chr);
-                goto no_memory;
+                goto cleanup;
             }
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
@@ -1085,7 +1081,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     goto cleanup;
 
                 if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0)
-                    goto no_memory;
+                    goto cleanup;
 
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = portnum;
@@ -1105,7 +1101,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (chr) {
                 if (VIR_ALLOC_N(def->serials, 1) < 0) {
                     virDomainChrDefFree(chr);
-                    goto no_memory;
+                    goto cleanup;
                 }
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = 0;
@@ -1116,7 +1112,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     } else {
         def->nconsoles = 1;
         if (VIR_ALLOC_N(def->consoles, 1) < 0)
-            goto no_memory;
+            goto cleanup;
         if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
             goto cleanup;
         def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
@@ -1136,9 +1132,6 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     VIR_FREE(script);
     return def;
 
-no_memory:
-    virReportOOMError();
-    /* fallthrough */
 cleanup:
     virDomainGraphicsDefFree(graphics);
     virDomainNetDefFree(net);
@@ -1159,10 +1152,8 @@ int xenXMConfigSetInt(virConfPtr conf, const char *setting, long long l) {
                        l, setting);
         return -1;
     }
-    if (VIR_ALLOC(value) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(value) < 0)
         return -1;
-    }
 
     value->type = VIR_CONF_LONG;
     value->next = NULL;
@@ -1176,10 +1167,8 @@ static
 int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) {
     virConfValuePtr value = NULL;
 
-    if (VIR_ALLOC(value) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(value) < 0)
         return -1;
-    }
 
     value->type = VIR_CONF_STRING;
     value->next = NULL;
@@ -1253,10 +1242,8 @@ static int xenFormatXMDisk(virConfValuePtr list,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(val) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(val) < 0)
         goto cleanup;
-    }
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1284,10 +1271,8 @@ static int xenFormatXMSerial(virConfValuePtr list,
 
     if (serial) {
         ret = xenFormatSxprChr(serial, &buf);
-        if (ret < 0) {
-            virReportOOMError();
+        if (ret < 0)
             goto cleanup;
-        }
     } else {
         virBufferAddLit(&buf, "none");
     }
@@ -1296,10 +1281,8 @@ static int xenFormatXMSerial(virConfValuePtr list,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(val) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(val) < 0)
         goto cleanup;
-    }
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1404,10 +1387,8 @@ static int xenFormatXMNet(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(val) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(val) < 0)
         goto cleanup;
-    }
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1445,10 +1426,8 @@ xenFormatXMPCI(virConfPtr conf,
     if (!hasPCI)
         return 0;
 
-    if (VIR_ALLOC(pciVal) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(pciVal) < 0)
         return -1;
-    }
 
     pciVal->type = VIR_CONF_LIST;
     pciVal->list = NULL;
@@ -1463,14 +1442,11 @@ xenFormatXMPCI(virConfPtr conf,
                             def->hostdevs[i]->source.subsys.u.pci.addr.domain,
                             def->hostdevs[i]->source.subsys.u.pci.addr.bus,
                             def->hostdevs[i]->source.subsys.u.pci.addr.slot,
-                            def->hostdevs[i]->source.subsys.u.pci.addr.function) < 0) {
-                virReportOOMError();
+                            def->hostdevs[i]->source.subsys.u.pci.addr.function) < 0)
                 goto error;
-            }
 
             if (VIR_ALLOC(val) < 0) {
                 VIR_FREE(buf);
-                virReportOOMError();
                 goto error;
             }
             val->type = VIR_CONF_STRING;
@@ -1521,27 +1497,27 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
 
     if (xenXMConfigSetString(conf, "name", def->name) < 0)
-        goto no_memory;
+        goto cleanup;
 
     virUUIDFormat(def->uuid, uuid);
     if (xenXMConfigSetString(conf, "uuid", uuid) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (xenXMConfigSetInt(conf, "maxmem",
                           VIR_DIV_UP(def->mem.max_balloon, 1024)) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (xenXMConfigSetInt(conf, "memory",
                           VIR_DIV_UP(def->mem.cur_balloon, 1024)) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (xenXMConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
-        goto no_memory;
+        goto cleanup;
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
     if (def->vcpus < def->maxvcpus &&
         xenXMConfigSetInt(conf, "vcpu_avail", (1UL << def->vcpus) - 1) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if ((def->cpumask != NULL) &&
         ((cpus = virBitmapFormat(def->cpumask)) == NULL)) {
@@ -1550,7 +1526,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
     if (cpus &&
         xenXMConfigSetString(conf, "cpus", cpus) < 0)
-        goto no_memory;
+        goto cleanup;
     VIR_FREE(cpus);
 
     hvm = STREQ(def->os.type, "hvm") ? 1 : 0;
@@ -1558,11 +1534,11 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     if (hvm) {
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenXMConfigSetString(conf, "builder", "hvm") < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (def->os.loader &&
             xenXMConfigSetString(conf, "kernel", def->os.loader) < 0)
-            goto no_memory;
+            goto cleanup;
 
         for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
@@ -1589,33 +1565,33 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         }
 
         if (xenXMConfigSetString(conf, "boot", boot) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (xenXMConfigSetInt(conf, "pae",
                               (def->features &
                                (1 << VIR_DOMAIN_FEATURE_PAE)) ? 1 : 0) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (xenXMConfigSetInt(conf, "acpi",
                               (def->features &
                                (1 << VIR_DOMAIN_FEATURE_ACPI)) ? 1 : 0) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (xenXMConfigSetInt(conf, "apic",
                               (def->features &
                                (1 << VIR_DOMAIN_FEATURE_APIC)) ? 1 : 0) < 0)
-            goto no_memory;
+            goto cleanup;
 
         if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4) {
             if (xenXMConfigSetInt(conf, "hap",
                                   (def->features &
                                    (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
-                goto no_memory;
+                goto cleanup;
 
             if (xenXMConfigSetInt(conf, "viridian",
                                   (def->features &
                                    (1 << VIR_DOMAIN_FEATURE_VIRIDIAN)) ? 1 : 0) < 0)
-                goto no_memory;
+                goto cleanup;
         }
 
         for (i = 0; i < def->clock.ntimers; i++) {
@@ -1633,7 +1609,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     def->disks[i]->src) {
                     if (xenXMConfigSetString(conf, "cdrom",
                                              def->disks[i]->src) < 0)
-                        goto no_memory;
+                        goto cleanup;
                     break;
                 }
             }
@@ -1643,19 +1619,19 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     } else {
         if (def->os.bootloader &&
             xenXMConfigSetString(conf, "bootloader", def->os.bootloader) < 0)
-            goto no_memory;
+            goto cleanup;
         if (def->os.bootloaderArgs &&
             xenXMConfigSetString(conf, "bootargs", def->os.bootloaderArgs) < 0)
-            goto no_memory;
+            goto cleanup;
         if (def->os.kernel &&
             xenXMConfigSetString(conf, "kernel", def->os.kernel) < 0)
-            goto no_memory;
+            goto cleanup;
         if (def->os.initrd &&
             xenXMConfigSetString(conf, "ramdisk", def->os.initrd) < 0)
-            goto no_memory;
+            goto cleanup;
         if (def->os.cmdline &&
             xenXMConfigSetString(conf, "extra", def->os.cmdline) < 0)
-            goto no_memory;
+            goto cleanup;
     } /* !hvm */
 
 
@@ -1708,7 +1684,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 goto cleanup;
             }
             if (xenXMConfigSetInt(conf, "rtc_timeoffset", rtc_timeoffset) < 0)
-                goto no_memory;
+                goto cleanup;
         } else {
             /* >=3.1 PV: UTC and LOCALTIME */
             switch (def->clock.offset) {
@@ -1727,7 +1703,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         } /* !hvm */
     }
     if (xenXMConfigSetInt(conf, "localtime", vmlocaltime) < 0)
-        goto no_memory;
+        goto cleanup;
 
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
@@ -1736,7 +1712,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_poweroff", lifecycle) < 0)
-        goto no_memory;
+        goto cleanup;
 
 
     if (!(lifecycle = virDomainLifecycleTypeToString(def->onReboot))) {
@@ -1745,7 +1721,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_reboot", lifecycle) < 0)
-        goto no_memory;
+        goto cleanup;
 
 
     if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
@@ -1754,23 +1730,23 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         goto cleanup;
     }
     if (xenXMConfigSetString(conf, "on_crash", lifecycle) < 0)
-        goto no_memory;
+        goto cleanup;
 
 
 
     if (hvm) {
         if (def->emulator &&
             xenXMConfigSetString(conf, "device_model", def->emulator) < 0)
-            goto no_memory;
+            goto cleanup;
 
         for (i = 0; i < def->ninputs; i++) {
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenXMConfigSetInt(conf, "usb", 1) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (xenXMConfigSetString(conf, "usbdevice",
                                          def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
                                          "mouse" : "tablet") < 0)
-                    goto no_memory;
+                    goto cleanup;
                 break;
             }
         }
@@ -1780,43 +1756,43 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
             if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (xenXMConfigSetInt(conf, "vnc", 0) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (def->graphics[0]->data.sdl.display &&
                     xenXMConfigSetString(conf, "display",
                                      def->graphics[0]->data.sdl.display) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (def->graphics[0]->data.sdl.xauth &&
                     xenXMConfigSetString(conf, "xauthority",
                                          def->graphics[0]->data.sdl.xauth) < 0)
-                    goto no_memory;
+                    goto cleanup;
             } else {
                 const char *listenAddr;
 
                 if (xenXMConfigSetInt(conf, "sdl", 0) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (xenXMConfigSetInt(conf, "vnc", 1) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (xenXMConfigSetInt(conf, "vncunused",
                               def->graphics[0]->data.vnc.autoport ? 1 : 0) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (!def->graphics[0]->data.vnc.autoport &&
                     xenXMConfigSetInt(conf, "vncdisplay",
                                   def->graphics[0]->data.vnc.port - 5900) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
                 if (listenAddr &&
                     xenXMConfigSetString(conf, "vnclisten", listenAddr) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (def->graphics[0]->data.vnc.auth.passwd &&
                     xenXMConfigSetString(conf, "vncpasswd",
                                         def->graphics[0]->data.vnc.auth.passwd) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 if (def->graphics[0]->data.vnc.keymap &&
                     xenXMConfigSetString(conf, "keymap",
                                         def->graphics[0]->data.vnc.keymap) < 0)
-                    goto no_memory;
+                    goto cleanup;
             }
         } else {
             virConfValuePtr vfb, disp;
@@ -1851,20 +1827,21 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             }
             if (virBufferError(&buf)) {
                 virBufferFreeAndReset(&buf);
-                goto no_memory;
+                virReportOOMError();
+                goto cleanup;
             }
 
             vfbstr = virBufferContentAndReset(&buf);
 
             if (VIR_ALLOC(vfb) < 0) {
                 VIR_FREE(vfbstr);
-                goto no_memory;
+                goto cleanup;
             }
 
             if (VIR_ALLOC(disp) < 0) {
                 VIR_FREE(vfb);
                 VIR_FREE(vfbstr);
-                goto no_memory;
+                goto cleanup;
             }
 
             vfb->type = VIR_CONF_LIST;
@@ -1873,13 +1850,13 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             disp->str = vfbstr;
 
             if (virConfSetValue(conf, "vfb", vfb) < 0)
-                goto no_memory;
+                goto cleanup;
         }
     }
 
     /* analyze of the devices */
     if (VIR_ALLOC(diskVal) < 0)
-        goto no_memory;
+        goto cleanup;
     diskVal->type = VIR_CONF_LIST;
     diskVal->list = NULL;
 
@@ -1901,12 +1878,12 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         int ret = virConfSetValue(conf, "disk", diskVal);
         diskVal = NULL;
         if (ret < 0)
-            goto no_memory;
+            goto cleanup;
     }
     VIR_FREE(diskVal);
 
     if (VIR_ALLOC(netVal) < 0)
-        goto no_memory;
+        goto cleanup;
     netVal->type = VIR_CONF_LIST;
     netVal->list = NULL;
 
@@ -1919,7 +1896,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
         int ret = virConfSetValue(conf, "vif", netVal);
         netVal = NULL;
         if (ret < 0)
-            goto no_memory;
+            goto cleanup;
     }
     VIR_FREE(netVal);
 
@@ -1938,10 +1915,10 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 ret = xenXMConfigSetString(conf, "parallel", str);
             VIR_FREE(str);
             if (ret < 0)
-                goto no_memory;
+                goto cleanup;
         } else {
             if (xenXMConfigSetString(conf, "parallel", "none") < 0)
-                goto no_memory;
+                goto cleanup;
         }
 
         if (def->nserials) {
@@ -1956,14 +1933,14 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     ret = xenXMConfigSetString(conf, "serial", str);
                 VIR_FREE(str);
                 if (ret < 0)
-                    goto no_memory;
+                    goto cleanup;
             } else {
                 int j = 0;
                 int maxport = -1;
                 virConfValuePtr serialVal = NULL;
 
                 if (VIR_ALLOC(serialVal) < 0)
-                    goto no_memory;
+                    goto cleanup;
                 serialVal->type = VIR_CONF_LIST;
                 serialVal->list = NULL;
 
@@ -1987,13 +1964,13 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     int ret = virConfSetValue(conf, "serial", serialVal);
                     serialVal = NULL;
                     if (ret < 0)
-                        goto no_memory;
+                        goto cleanup;
                 }
                 VIR_FREE(serialVal);
             }
         } else {
             if (xenXMConfigSetString(conf, "serial", "none") < 0)
-                goto no_memory;
+                goto cleanup;
         }
 
 
@@ -2007,14 +1984,11 @@ virConfPtr xenFormatXM(virConnectPtr conn,
 
             VIR_FREE(str);
             if (ret < 0)
-                goto no_memory;
+                goto cleanup;
         }
     }
 
     return conf;
-
-no_memory:
-    virReportOOMError();
 
 cleanup:
     virConfFreeValue(diskVal);

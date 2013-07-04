@@ -89,10 +89,10 @@ xenParseSxprOS(const struct sexpr *node,
 {
     if (hvm) {
         if (sexpr_node_copy(node, "domain/image/hvm/loader", &def->os.loader) < 0)
-            goto no_memory;
+            goto error;
         if (def->os.loader == NULL) {
             if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.loader) < 0)
-                goto no_memory;
+                goto error;
 
             if (def->os.loader == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -101,23 +101,23 @@ xenParseSxprOS(const struct sexpr *node,
             }
         } else {
             if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.kernel) < 0)
-                goto no_memory;
+                goto error;
             if (sexpr_node_copy(node, "domain/image/hvm/ramdisk", &def->os.initrd) < 0)
-                goto no_memory;
+                goto error;
             if (sexpr_node_copy(node, "domain/image/hvm/args", &def->os.cmdline) < 0)
-                goto no_memory;
+                goto error;
             if (sexpr_node_copy(node, "domain/image/hvm/root", &def->os.root) < 0)
-                goto no_memory;
+                goto error;
         }
     } else {
         if (sexpr_node_copy(node, "domain/image/linux/kernel", &def->os.kernel) < 0)
-            goto no_memory;
+            goto error;
         if (sexpr_node_copy(node, "domain/image/linux/ramdisk", &def->os.initrd) < 0)
-            goto no_memory;
+            goto error;
         if (sexpr_node_copy(node, "domain/image/linux/args", &def->os.cmdline) < 0)
-            goto no_memory;
+            goto error;
         if (sexpr_node_copy(node, "domain/image/linux/root", &def->os.root) < 0)
-            goto no_memory;
+            goto error;
     }
 
     /* If HVM kenrel == loader, then old xend, so kill off kernel */
@@ -162,8 +162,7 @@ xenParseSxprOS(const struct sexpr *node,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     return -1;
 }
 
@@ -367,7 +366,7 @@ xenParseSxprDisks(virDomainDefPtr def,
             }
 
             if (VIR_ALLOC(disk) < 0)
-                goto no_memory;
+                goto error;
 
             if (dst == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -401,7 +400,7 @@ xenParseSxprDisks(virDomainDefPtr def,
                         goto error;
                 } else {
                     if (VIR_ALLOC_N(disk->driverName, (offset-src)+1) < 0)
-                        goto no_memory;
+                        goto error;
                     if (virStrncpy(disk->driverName, src, offset-src,
                                    (offset-src)+1) == NULL) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -498,7 +497,7 @@ xenParseSxprDisks(virDomainDefPtr def,
                 disk->shared = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
-                goto no_memory;
+                goto error;
 
             /* re-order disks if there is a bootable device */
             if (STREQ_NULLABLE(bootable, "1")) {
@@ -512,9 +511,6 @@ xenParseSxprDisks(virDomainDefPtr def,
     }
 
     return 0;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virDomainDiskDefFree(disk);
@@ -550,7 +546,7 @@ xenParseSxprNets(virDomainDefPtr def,
             type = sexpr_node(node, "device/vif/type");
 
             if (VIR_ALLOC(net) < 0)
-                goto no_memory;
+                goto cleanup;
 
             if (tmp != NULL ||
                 (tmp2 != NULL && STREQ(tmp2, DEFAULT_VIF_SCRIPT))) {
@@ -583,7 +579,7 @@ xenParseSxprNets(virDomainDefPtr def,
                     goto cleanup;
             } else if (def->id != -1) {
                 if (virAsprintf(&net->ifname, "vif%d.%d", def->id, vif_index) < 0)
-                    goto no_memory;
+                    goto cleanup;
             }
 
             tmp = sexpr_node(node, "device/vif/mac");
@@ -603,7 +599,7 @@ xenParseSxprNets(virDomainDefPtr def,
                 goto cleanup;
 
             if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
-                goto no_memory;
+                goto cleanup;
 
             def->nets[def->nnets++] = net;
             vif_index++;
@@ -612,8 +608,6 @@ xenParseSxprNets(virDomainDefPtr def,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 cleanup:
     virDomainNetDefFree(net);
     return -1;
@@ -651,13 +645,13 @@ xenParseSxprSound(virDomainDefPtr def,
 
         if (VIR_ALLOC_N(def->sounds,
                         VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) < 0)
-            goto no_memory;
+            goto error;
 
 
         for (i = 0; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1); i++) {
             virDomainSoundDefPtr sound;
             if (VIR_ALLOC(sound) < 0)
-                goto no_memory;
+                goto error;
             sound->model = i;
             def->sounds[def->nsounds++] = sound;
         }
@@ -681,7 +675,7 @@ xenParseSxprSound(virDomainDefPtr def,
             }
 
             if (VIR_ALLOC(sound) < 0)
-                goto no_memory;
+                goto error;
 
             if ((sound->model = virDomainSoundModelTypeFromString(model)) < 0) {
                 VIR_FREE(sound);
@@ -690,7 +684,7 @@ xenParseSxprSound(virDomainDefPtr def,
 
             if (VIR_REALLOC_N(def->sounds, def->nsounds+1) < 0) {
                 virDomainSoundDefFree(sound);
-                goto no_memory;
+                goto error;
             }
 
             def->sounds[def->nsounds++] = sound;
@@ -700,8 +694,6 @@ xenParseSxprSound(virDomainDefPtr def,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
@@ -732,7 +724,7 @@ xenParseSxprUSB(virDomainDefPtr def,
                     STREQ(tmp, "mouse")) {
                     virDomainInputDefPtr input;
                     if (VIR_ALLOC(input) < 0)
-                        goto no_memory;
+                        goto error;
                     input->bus = VIR_DOMAIN_INPUT_BUS_USB;
                     if (STREQ(tmp, "tablet"))
                         input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
@@ -741,7 +733,7 @@ xenParseSxprUSB(virDomainDefPtr def,
 
                     if (VIR_REALLOC_N(def->inputs, def->ninputs+1) < 0) {
                         VIR_FREE(input);
-                        goto no_memory;
+                        goto error;
                     }
                     def->inputs[def->ninputs++] = input;
                 } else {
@@ -752,8 +744,7 @@ xenParseSxprUSB(virDomainDefPtr def,
     }
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     return -1;
 }
 
@@ -791,7 +782,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
         port = vncport;
 
         if (VIR_ALLOC(graphics) < 0)
-            goto no_memory;
+            goto error;
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
         /* For Xen >= 3.0.3, don't generate a fixed port mapping
@@ -818,7 +809,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
             goto error;
 
         if (VIR_ALLOC_N(def->graphics, 1) < 0)
-            goto no_memory;
+            goto error;
         def->graphics[0] = graphics;
         def->ngraphics = 1;
         graphics = NULL;
@@ -829,7 +820,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
         const char *xauth = sexpr_fmt_node(root, "domain/image/%s/xauthority", hvm ? "hvm" : "linux");
 
         if (VIR_ALLOC(graphics) < 0)
-            goto no_memory;
+            goto error;
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
         if (VIR_STRDUP(graphics->data.sdl.display, display) < 0)
@@ -838,7 +829,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
             goto error;
 
         if (VIR_ALLOC_N(def->graphics, 1) < 0)
-            goto no_memory;
+            goto error;
         def->graphics[0] = graphics;
         def->ngraphics = 1;
         graphics = NULL;
@@ -846,8 +837,6 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainGraphicsDefFree(graphics);
     return -1;
@@ -889,7 +878,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
             }
 
             if (VIR_ALLOC(graphics) < 0)
-                goto no_memory;
+                goto error;
 
             if ((graphics->type = virDomainGraphicsTypeFromString(tmp)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -940,7 +929,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
             }
 
             if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                goto no_memory;
+                goto error;
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -950,8 +939,6 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainGraphicsDefFree(graphics);
     return -1;
@@ -1067,16 +1054,13 @@ xenParseSxprPCI(virDomainDefPtr def,
 
         if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
             virDomainHostdevDefFree(dev);
-            goto no_memory;
+            goto error;
         }
 
         def->hostdevs[def->nhostdevs++] = dev;
     }
 
     return 0;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virDomainHostdevDefFree(dev);
@@ -1108,7 +1092,7 @@ xenParseSxpr(const struct sexpr *root,
     int hvm = 0, vmlocaltime;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto error;
 
     tmp = sexpr_node(root, "domain/domid");
     if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
@@ -1123,7 +1107,7 @@ xenParseSxpr(const struct sexpr *root,
         def->id = -1;
 
     if (sexpr_node_copy(root, "domain/name", &def->name) < 0)
-        goto no_memory;
+        goto error;
     if (def->name == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("domain information incomplete, missing name"));
@@ -1140,13 +1124,13 @@ xenParseSxpr(const struct sexpr *root,
         goto error;
 
     if (sexpr_node_copy(root, "domain/description", &def->description) < 0)
-        goto no_memory;
+        goto error;
 
     hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
     if (!hvm) {
         if (sexpr_node_copy(root, "domain/bootloader",
                             &def->os.bootloader) < 0)
-            goto no_memory;
+            goto error;
 
         if (!def->os.bootloader &&
             sexpr_has(root, "domain/bootloader") &&
@@ -1156,7 +1140,7 @@ xenParseSxpr(const struct sexpr *root,
         if (def->os.bootloader &&
             sexpr_node_copy(root, "domain/bootloader_args",
                             &def->os.bootloaderArgs) < 0)
-            goto no_memory;
+            goto error;
     }
 
     if (VIR_STRDUP(def->os.type, hvm ? "hvm" : "linux") < 0)
@@ -1263,10 +1247,8 @@ xenParseSxpr(const struct sexpr *root,
             virDomainTimerDefPtr timer;
 
             if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
-                VIR_ALLOC(timer) < 0) {
-                virReportOOMError();
+                VIR_ALLOC(timer) < 0)
                 goto error;
-            }
 
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = sexpr_int(root, "domain/image/hvm/hpet");
@@ -1296,7 +1278,7 @@ xenParseSxpr(const struct sexpr *root,
                         "domain/image/hvm/device_model" :
                         "domain/image/linux/device_model",
                         &def->emulator) < 0)
-        goto no_memory;
+        goto error;
 
     /* append block devices */
     if (xenParseSxprDisks(def, root, hvm, xendConfigVersion) < 0)
@@ -1326,7 +1308,7 @@ xenParseSxpr(const struct sexpr *root,
         if ((tmp != NULL) && (tmp[0] != 0)) {
             virDomainDiskDefPtr disk;
             if (VIR_ALLOC(disk) < 0)
-                goto no_memory;
+                goto error;
             if (VIR_STRDUP(disk->src, tmp) < 0) {
                 virDomainDiskDefFree(disk);
                 goto error;
@@ -1346,7 +1328,7 @@ xenParseSxpr(const struct sexpr *root,
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);
-                goto no_memory;
+                goto error;
             }
             def->disks[def->ndisks++] = disk;
         }
@@ -1362,7 +1344,7 @@ xenParseSxpr(const struct sexpr *root,
             if ((tmp != NULL) && (tmp[0] != 0)) {
                 virDomainDiskDefPtr disk;
                 if (VIR_ALLOC(disk) < 0)
-                    goto no_memory;
+                    goto error;
                 if (VIR_STRDUP(disk->src, tmp) < 0) {
                     VIR_FREE(disk);
                     goto error;
@@ -1381,7 +1363,7 @@ xenParseSxpr(const struct sexpr *root,
 
                 if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                     virDomainDiskDefFree(disk);
-                    goto no_memory;
+                    goto error;
                 }
                 def->disks[def->ndisks++] = disk;
             }
@@ -1415,7 +1397,7 @@ xenParseSxpr(const struct sexpr *root,
                             goto error;
                         if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
                             virDomainChrDefFree(chr);
-                            goto no_memory;
+                            goto error;
                         }
                         chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                         chr->target.port = def->nserials + ports_skipped;
@@ -1437,7 +1419,7 @@ xenParseSxpr(const struct sexpr *root,
                     goto error;
                 if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
                     virDomainChrDefFree(chr);
-                    goto no_memory;
+                    goto error;
                 }
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = 0;
@@ -1453,7 +1435,7 @@ xenParseSxpr(const struct sexpr *root,
                 goto error;
             if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
                 virDomainChrDefFree(chr);
-                goto no_memory;
+                goto error;
             }
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
@@ -1462,7 +1444,7 @@ xenParseSxpr(const struct sexpr *root,
     } else if (def->id != 0) {
         def->nconsoles = 1;
         if (VIR_ALLOC_N(def->consoles, 1) < 0)
-            goto no_memory;
+            goto error;
         /* Fake a paravirt console, since that's not in the sexpr */
         if (!(def->consoles[0] = xenParseSxprChar("pty", tty)))
             goto error;
@@ -1483,8 +1465,6 @@ xenParseSxpr(const struct sexpr *root,
 
     return def;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(tty);
     virDomainDefFree(def);
