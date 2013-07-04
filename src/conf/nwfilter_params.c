@@ -71,10 +71,8 @@ virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
     unsigned i;
     char *str;
 
-    if (VIR_ALLOC(res) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(res) < 0)
         return NULL;
-    }
     res->valType = val->valType;
 
     switch (res->valType) {
@@ -99,7 +97,6 @@ virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
     return res;
 
 err_exit:
-    virReportOOMError();
     virNWFilterVarValueFree(res);
     return NULL;
 }
@@ -115,10 +112,8 @@ virNWFilterVarValueCreateSimple(char *value)
         return NULL;
     }
 
-    if (VIR_ALLOC(val) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(val) < 0)
         return NULL;
-    }
 
     val->valType = NWFILTER_VALUE_TYPE_SIMPLE;
     val->u.simple.value = value;
@@ -227,7 +222,6 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
         tmp = val->u.simple.value;
         if (VIR_ALLOC_N(val->u.array.values, 2) < 0) {
             val->u.simple.value = tmp;
-            virReportOOMError();
             return -1;
         }
         val->valType = NWFILTER_VALUE_TYPE_ARRAY;
@@ -239,10 +233,8 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
 
     case NWFILTER_VALUE_TYPE_ARRAY:
         if (VIR_EXPAND_N(val->u.array.values,
-                         val->u.array.nValues, 1) < 0) {
-            virReportOOMError();
+                         val->u.array.nValues, 1) < 0)
             return -1;
-        }
         val->u.array.values[val->u.array.nValues - 1] = value;
         rc = 0;
         break;
@@ -383,10 +375,8 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
         }
     }
 
-    if (VIR_EXPAND_N(cie->varNames, cie->nVarNames, 1) < 0) {
-        virReportOOMError();
+    if (VIR_EXPAND_N(cie->varNames, cie->nVarNames, 1) < 0)
         return -1;
-    }
 
     cie->varNames[cie->nVarNames - 1] = varName;
 
@@ -477,10 +467,8 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
     int iterIndex = -1;
     unsigned int nextIntIterId = VIR_NWFILTER_MAX_ITERID + 1;
 
-    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1 + nVarAccess) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1 + nVarAccess) < 0)
         return NULL;
-    }
 
     res->hashTable = hash;
 
@@ -703,10 +691,8 @@ virNWFilterHashTablePtr
 virNWFilterHashTableCreate(int n) {
     virNWFilterHashTablePtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
     ret->hashTable = virHashCreate(n, hashDataFree);
     if (!ret->hashTable) {
         VIR_FREE(ret);
@@ -754,7 +740,6 @@ addToTable(void *payload, const void *name, void *data)
 
     val = virNWFilterVarValueCopy((virNWFilterVarValuePtr)payload);
     if (!val) {
-        virReportOOMError();
         atts->errOccurred = 1;
         return;
     }
@@ -836,10 +821,8 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
     virNWFilterVarValuePtr value;
 
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
-    if (!table) {
-        virReportOOMError();
+    if (!table)
         return NULL;
-    }
 
     cur = cur->children;
 
@@ -989,10 +972,8 @@ virNWFilterVarAccessParse(const char *varAccess)
     virNWFilterVarAccessPtr dest;
     const char *input = varAccess;
 
-    if (VIR_ALLOC(dest) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(dest) < 0)
         return NULL;
-    }
 
     idx = strspn(input, VALID_VARNAME);
 

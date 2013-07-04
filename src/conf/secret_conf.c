@@ -152,10 +152,8 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     }
     ctxt->node = root;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {

@@ -58,10 +58,8 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
     val = virHashLookup(ipAddressMap->hashTable, ifname);
     if (!val) {
         val = virNWFilterVarValueCreateSimple(addr);
-        if (!val) {
-            virReportOOMError();
+        if (!val)
             goto cleanup;
-        }
         ret = virNWFilterHashTablePut(ipAddressMap, ifname, val, 1);
         goto cleanup;
     } else {
@@ -146,10 +144,8 @@ int
 virNWFilterIPAddrMapInit(void)
 {
     ipAddressMap = virNWFilterHashTableCreate(0);
-    if (!ipAddressMap) {
-        virReportOOMError();
+    if (!ipAddressMap)
         return -1;
-    }
 
     if (virMutexInit(&ipAddressMapLock) < 0) {
         virNWFilterIPAddrMapShutdown();

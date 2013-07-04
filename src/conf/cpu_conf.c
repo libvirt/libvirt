@@ -103,7 +103,7 @@ virCPUDefCopyModel(virCPUDefPtr dst,
         VIR_STRDUP(dst->vendor, src->vendor) < 0 ||
         VIR_STRDUP(dst->vendor_id, src->vendor_id) < 0 ||
         VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
-        goto no_memory;
+        return -1;
     dst->nfeatures_max = dst->nfeatures = src->nfeatures;
 
     for (i = 0; i < dst->nfeatures; i++) {
@@ -123,10 +123,6 @@ virCPUDefCopyModel(virCPUDefPtr dst,
     }
 
     return 0;
-
-no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 virCPUDefPtr
@@ -135,11 +131,8 @@ virCPUDefCopy(const virCPUDefPtr cpu)
     virCPUDefPtr copy;
     unsigned int i;
 
-    if (!cpu)
+    if (!cpu || VIR_ALLOC(copy) < 0)
         return NULL;
-
-    if (VIR_ALLOC(copy) < 0)
-        goto no_memory;
 
     copy->type = cpu->type;
     copy->mode = cpu->mode;
@@ -155,7 +148,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
 
     if (cpu->ncells) {
         if (VIR_ALLOC_N(copy->cells, cpu->ncells) < 0)
-            goto no_memory;
+            goto error;
         copy->ncells_max = copy->ncells = cpu->ncells;
 
         for (i = 0; i < cpu->ncells; i++) {
@@ -165,7 +158,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
             copy->cells[i].cpumask = virBitmapNewCopy(cpu->cells[i].cpumask);
 
             if (!copy->cells[i].cpumask)
-                goto no_memory;
+                goto error;
 
             if (VIR_STRDUP(copy->cells[i].cpustr, cpu->cells[i].cpustr) < 0)
                 goto error;
@@ -175,8 +168,6 @@ virCPUDefCopy(const virCPUDefPtr cpu)
 
     return copy;
 
-no_memory:
-    virReportOOMError();
 error:
     virCPUDefFree(copy);
     return NULL;
@@ -202,10 +193,8 @@ virCPUDefParseXML(const xmlNodePtr node,
         return NULL;
     }
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (mode == VIR_CPU_TYPE_AUTO) {
         if (virXPathBoolean("boolean(./arch)", ctxt)) {
@@ -383,7 +372,7 @@ virCPUDefParseXML(const xmlNodePtr node,
 
         if (VIR_RESIZE_N(def->features, def->nfeatures_max,
                          def->nfeatures, n) < 0)
-            goto no_memory;
+            goto error;
         def->nfeatures = n;
     }
 
@@ -443,7 +432,7 @@ virCPUDefParseXML(const xmlNodePtr node,
 
         if (VIR_RESIZE_N(def->cells, def->ncells_max,
                          def->ncells, n) < 0)
-            goto no_memory;
+            goto error;
 
         def->ncells = n;
 
@@ -489,9 +478,6 @@ cleanup:
     VIR_FREE(vendor_id);
     VIR_FREE(nodes);
     return def;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virCPUDefFree(def);
@@ -689,7 +675,7 @@ virCPUDefAddFeature(virCPUDefPtr def,
 
     if (VIR_RESIZE_N(def->features, def->nfeatures_max,
                      def->nfeatures, 1) < 0)
-        goto no_memory;
+        return -1;
 
     if (def->type == VIR_CPU_TYPE_HOST)
         policy = -1;
@@ -701,10 +687,6 @@ virCPUDefAddFeature(virCPUDefPtr def,
     def->nfeatures++;
 
     return 0;
-
-no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 bool

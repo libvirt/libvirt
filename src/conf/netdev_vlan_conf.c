@@ -54,10 +54,8 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(def->tag, nTags) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def->tag, nTags) < 0)
         goto cleanup;
-    }
 
     def->nativeMode = 0;
     def->nativeTag = 0;

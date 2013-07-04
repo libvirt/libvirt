@@ -50,10 +50,8 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     virNetDevVPortProfilePtr virtPort = NULL;
     xmlNodePtr cur = node->children;
 
-    if (VIR_ALLOC(virtPort) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(virtPort) < 0)
         return NULL;
-    }
 
     if ((virtPortType = virXMLPropString(node, "type")) &&
         (virtPort->virtPortType = virNetDevVPortTypeFromString(virtPortType)) <= 0) {

@@ -376,7 +376,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     }
     /* Allocate new event */
     if (VIR_ALLOC(event) < 0)
-        goto no_memory;
+        goto error;
     event->conn = conn;
     event->cb = callback;
     event->eventID = eventID;
@@ -385,7 +385,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
     if (dom) {
         if (VIR_ALLOC(event->dom) < 0)
-            goto no_memory;
+            goto error;
         if (VIR_STRDUP(event->dom->name, dom->name) < 0)
             goto error;
         memcpy(event->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
@@ -394,7 +394,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
     /* Make space on list */
     if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0)
-        goto no_memory;
+        goto error;
 
     virObjectRef(event->conn);
 
@@ -415,8 +415,6 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
     return ret;
 
-no_memory:
-    virReportOOMError();
 error:
     if (event) {
         if (event->dom)
@@ -566,11 +564,7 @@ virDomainEventQueueNew(void)
 {
     virDomainEventQueuePtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_ALLOC(ret));
     return ret;
 }
 
@@ -627,10 +621,8 @@ virDomainEventStateNew(void)
 {
     virDomainEventStatePtr state = NULL;
 
-    if (VIR_ALLOC(state) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(state) < 0)
         goto error;
-    }
 
     if (virMutexInit(&state->lock) < 0) {
         virReportSystemError(errno, "%s",
@@ -639,10 +631,8 @@ virDomainEventStateNew(void)
         goto error;
     }
 
-    if (VIR_ALLOC(state->callbacks) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(state->callbacks) < 0)
         goto error;
-    }
 
     if (!(state->queue = virDomainEventQueueNew()))
         goto error;
@@ -663,10 +653,8 @@ static virDomainEventPtr virDomainEventNewInternal(int eventID,
 {
     virDomainEventPtr event;
 
-    if (VIR_ALLOC(event) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(event) < 0)
         return NULL;
-    }
 
     event->eventID = eventID;
     if (VIR_STRDUP(event->dom.name, name) < 0) {
@@ -1188,10 +1176,8 @@ virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
 
     /* Make space on queue */
     if (VIR_REALLOC_N(evtQueue->events,
-                      evtQueue->count + 1) < 0) {
-        virReportOOMError();
+                      evtQueue->count + 1) < 0)
         return -1;
-    }
 
     evtQueue->events[evtQueue->count] = event;
     evtQueue->count++;

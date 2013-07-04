@@ -318,20 +318,16 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0)
         goto error;
-    }
 
     def->nips = 0;
     for (ii = 0; ii < nIpNodes; ii++) {
 
         virInterfaceIpDefPtr ip;
 
-        if (VIR_ALLOC(ip) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(ip) < 0)
             goto error;
-        }
 
         ctxt->node = ipNodes[ii];
         ret = virInterfaceDefParseIp(ip, ctxt);
@@ -377,20 +373,16 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0)
         goto error;
-    }
 
     def->nips = 0;
     for (ii = 0; ii < nIpNodes; ii++) {
 
         virInterfaceIpDefPtr ip;
 
-        if (VIR_ALLOC(ip) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(ip) < 0)
             goto error;
-        }
 
         ctxt->node = ipNodes[ii];
         ret = virInterfaceDefParseIp(ip, ctxt);
@@ -427,20 +419,16 @@ virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
         return 0;
     }
 
-    if (VIR_ALLOC_N(def->protos, nProtoNodes) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def->protos, nProtoNodes) < 0)
         goto error;
-    }
 
     def->nprotos = 0;
     for (pp = 0; pp < nProtoNodes; pp++) {
 
         virInterfaceProtocolDefPtr proto;
 
-        if (VIR_ALLOC(proto) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(proto) < 0)
             goto error;
-        }
 
         ctxt->node = protoNodes[pp];
         tmp = virXPathString("string(./@family)", ctxt);
@@ -498,7 +486,6 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
     }
     if (nbItf > 0) {
         if (VIR_ALLOC_N(def->data.bridge.itf, nbItf) < 0) {
-            virReportOOMError();
             ret = -1;
             goto error;
         }
@@ -545,7 +532,6 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
     }
 
     if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0) {
-        virReportOOMError();
         ret = -1;
         goto error;
     }
@@ -682,10 +668,8 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType) {
     }
     VIR_FREE(tmp);
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (((parentIfType == VIR_INTERFACE_TYPE_BOND)
          && (type != VIR_INTERFACE_TYPE_ETHERNET))
@@ -1266,10 +1250,8 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
         return iface;
     }
 
-    if (VIR_ALLOC(iface) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(iface) < 0)
         return NULL;
-    }
     if (virMutexInit(&iface->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -1280,7 +1262,6 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
     iface->def = def;
 
     if (VIR_REALLOC_N(interfaces->objs, interfaces->count + 1) < 0) {
-        virReportOOMError();
         VIR_FREE(iface);
         return NULL;
     }

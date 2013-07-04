@@ -378,7 +378,6 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
     }
 
     if (VIR_EXPAND_N(nwf->varAccess, nwf->nVarAccess, 1) < 0) {
-        virReportOOMError();
         virNWFilterVarAccessFree(varAccess);
         return -1;
     }
@@ -395,10 +394,8 @@ virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
                             const char *string,
                             size_t maxstrlen)
 {
-    if (VIR_REALLOC_N(nwf->strings, nwf->nstrings+1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(nwf->strings, nwf->nstrings+1) < 0)
         return NULL;
-    }
 
     if (VIR_STRNDUP(nwf->strings[nwf->nstrings], string, maxstrlen) < 0)
         return NULL;
@@ -2039,10 +2036,8 @@ virNWFilterIncludeParse(xmlNodePtr cur)
 {
     virNWFilterIncludeDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     ret->filterref = virXMLPropString(cur, "filter");
     if (!ret->filterref) {
@@ -2303,10 +2298,8 @@ virNWFilterRuleParse(xmlNodePtr node)
     xmlNodePtr cur;
     virNWFilterRuleDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     action    = virXMLPropString(node, "action");
     direction = virXMLPropString(node, "direction");
@@ -2499,10 +2492,8 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     int chain_priority;
     const char *name_prefix;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     ret->name = virXPathString("string(./@name)", ctxt);
     if (!ret->name) {
@@ -2577,10 +2568,8 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
 
     while (curr != NULL) {
         if (curr->type == XML_ELEMENT_NODE) {
-            if (VIR_ALLOC(entry) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(entry) < 0)
                 goto cleanup;
-            }
 
             /* ignore malformed rule and include elements */
             if (xmlStrEqual(curr->name, BAD_CAST "rule"))
@@ -2591,7 +2580,6 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
             if (entry->rule || entry->include) {
                 if (VIR_REALLOC_N(ret->filterEntries, ret->nentries+1) < 0) {
                     VIR_FREE(entry);
-                    virReportOOMError();
                     goto cleanup;
                 }
                 ret->filterEntries[ret->nentries++] = entry;
@@ -3032,10 +3020,8 @@ virNWFilterObjAssignDef(virConnectPtr conn,
 
     virNWFilterUnlockFilterUpdates();
 
-    if (VIR_ALLOC(nwfilter) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(nwfilter) < 0)
         return NULL;
-    }
 
     if (virMutexInitRecursive(&nwfilter->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3051,7 +3037,6 @@ virNWFilterObjAssignDef(virConnectPtr conn,
         nwfilter->def = NULL;
         virNWFilterObjUnlock(nwfilter);
         virNWFilterObjFree(nwfilter);
-        virReportOOMError();
         return NULL;
     }
     nwfilters->objs[nwfilters->count++] = nwfilter;
@@ -3485,11 +3470,7 @@ char *virNWFilterConfigFile(const char *dir,
 {
     char *ret = NULL;
 
-    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
     return ret;
 }
 

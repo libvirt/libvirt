@@ -36,6 +36,7 @@
 #include "c-ctype.h"
 #include "count-one-bits.h"
 #include "virstring.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -66,8 +67,10 @@ virBitmapPtr virBitmapNew(size_t size)
     virBitmapPtr bitmap;
     size_t sz;
 
-    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0)
+    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0) {
+        virReportOOMError();
         return NULL;
+    }
 
     sz = (size + VIR_BITMAP_BITS_PER_UNIT - 1) /
           VIR_BITMAP_BITS_PER_UNIT;

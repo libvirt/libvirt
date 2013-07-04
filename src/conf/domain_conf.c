@@ -1603,15 +1603,9 @@ virDomainHostdevDefPtr virDomainHostdevDefAlloc(void)
 {
     virDomainHostdevDefPtr def = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-    if (VIR_ALLOC(def->info) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0 ||
+        VIR_ALLOC(def->info) < 0)
         VIR_FREE(def);
-        return NULL;
-    }
     return def;
 }
 
@@ -1793,21 +1787,20 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
     int i = 0;
     virDomainVcpuPinDefPtr *ret = NULL;
 
-    if (VIR_ALLOC_N(ret, nvcpupin) < 0) {
-        goto no_memory;
-    }
+    if (VIR_ALLOC_N(ret, nvcpupin) < 0)
+        goto error;
 
     for (i = 0; i < nvcpupin; i++) {
         if (VIR_ALLOC(ret[i]) < 0)
-            goto no_memory;
+            goto error;
         ret[i]->vcpuid = src[i]->vcpuid;
         if ((ret[i]->cpumask = virBitmapNewCopy(src[i]->cpumask)) == NULL)
-            goto no_memory;
+            goto error;
     }
 
     return ret;
 
-no_memory:
+error:
     if (ret) {
         for (; i >= 0; --i) {
             if (ret[i]) {
@@ -1817,7 +1810,6 @@ no_memory:
         }
         VIR_FREE(ret);
     }
-    virReportOOMError();
 
     return NULL;
 }
@@ -2031,10 +2023,8 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
         return NULL;
 
     if (xmlopt->privateData.alloc) {
-        if (!(domain->privateData = (xmlopt->privateData.alloc)())) {
-            virReportOOMError();
+        if (!(domain->privateData = (xmlopt->privateData.alloc)()))
             goto error;
-        }
         domain->privateDataFreeFunc = xmlopt->privateData.free;
     }
 
@@ -2060,10 +2050,8 @@ virDomainDefPtr virDomainDefNew(const char *name,
 {
     virDomainDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (VIR_STRDUP(def->name, name) < 0) {
         VIR_FREE(def);
@@ -2664,7 +2652,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
 
     for (i = 0; i < VIR_DOMAIN_CONTROLLER_TYPE_LAST; i++) {
         if (max_idx[i] >= 0 && !(bitmaps[i] = virBitmapNew(max_idx[i] + 1)))
-            goto no_memory;
+            goto cleanup;
         nbitmaps++;
     }
 
@@ -2690,10 +2678,6 @@ cleanup:
     for (i = 0; i < nbitmaps; i++)
         virBitmapFree(bitmaps[i]);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 
@@ -2749,10 +2733,10 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 
         /* create the serial port definition from the console definition */
         if (def->nserials == 0) {
-            if (VIR_APPEND_ELEMENT_QUIET(def->serials,
-                                         def->nserials,
-                                         def->consoles[0]) < 0)
-                goto no_memory;
+            if (VIR_APPEND_ELEMENT(def->serials,
+                                   def->nserials,
+                                   def->consoles[0]) < 0)
+                return -1;
 
             /* modify it to be a serial port */
             def->serials[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
@@ -2770,7 +2754,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         if (!def->consoles[0]) {
             /* allocate a new console type for the stolen one */
             if (VIR_ALLOC(def->consoles[0]) < 0)
-                goto no_memory;
+                return -1;
 
             /* Create an console alias for the serial port */
             def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
@@ -2781,10 +2765,6 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefRejectDuplicateControllers(def) < 0)
         return -1;
     return 0;
-
-no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 
@@ -4258,10 +4238,8 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     char *p;
     virSecurityLabelDefPtr def = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto error;
-    }
 
     p = virXPathStringLimit("string(./@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -4382,10 +4360,8 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
     if (n == 0)
         return 0;
 
-    if (VIR_ALLOC_N(def->seclabels, n) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(def->seclabels, n) < 0)
         goto error;
-    }
 
     /* Parse each "seclabel" tag */
     for (i = 0; i < n; i++) {
@@ -4468,16 +4444,12 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     if (n == 0)
         return 0;
 
-    if (VIR_ALLOC_N(seclabels, n) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(seclabels, n) < 0)
         goto error;
-    }
     nseclabels = n;
     for (i = 0; i < n; i++) {
-        if (VIR_ALLOC(seclabels[i]) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(seclabels[i]) < 0)
             goto error;
-        }
     }
 
     for (i = 0; i < n; i++) {
@@ -4562,10 +4534,8 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
     char *path = NULL;
     char *offset = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     cur = node->children;
     while (cur != NULL) {
@@ -4643,10 +4613,8 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(def->srcpool) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def->srcpool) < 0)
         goto cleanup;
-    }
 
     def->srcpool->pool = pool;
     pool = NULL;
@@ -4723,10 +4691,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     def->geometry.cylinders = 0;
     def->geometry.heads = 0;
@@ -4801,10 +4767,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     while (child != NULL) {
                         if (child->type == XML_ELEMENT_NODE &&
                             xmlStrEqual(child->name, BAD_CAST "host")) {
-                            if (VIR_REALLOC_N(hosts, nhosts + 1) < 0) {
-                                virReportOOMError();
+                            if (VIR_REALLOC_N(hosts, nhosts + 1) < 0)
                                 goto error;
-                            }
                             hosts[nhosts].name = NULL;
                             hosts[nhosts].port = NULL;
                             hosts[nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
@@ -5187,10 +5151,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (def->srcpool) {
             char *tmp;
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
-                def->srcpool->pool, def->srcpool->volume) < 0) {
-                virReportOOMError();
+                def->srcpool->pool, def->srcpool->volume) < 0)
                 goto error;
-            }
 
             virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
             VIR_FREE(tmp);
@@ -5578,10 +5540,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *model = NULL;
     char *queues = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     if (type) {
@@ -5751,10 +5711,8 @@ virDomainParseScaledValue(const char *xpath,
     unsigned long long bytes;
 
     *val = 0;
-    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0)
         goto cleanup;
-    }
     ret = virXPathULongLong(xpath_full, ctxt, &bytes);
     if (ret < 0) {
         if (ret == -2)
@@ -5771,10 +5729,8 @@ virDomainParseScaledValue(const char *xpath,
     }
     VIR_FREE(xpath_full);
 
-    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0)
         goto cleanup;
-    }
     unit = virXPathString(xpath_full, ctxt);
 
     if (virScaleInteger(&bytes, unit, scale, max) < 0)
@@ -5810,10 +5766,8 @@ virDomainFSDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     if (type) {
@@ -5985,10 +5939,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     char *mode = NULL;
     char *addrtype = NULL;
 
-    if (VIR_ALLOC(actual) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(actual) < 0)
         return -1;
-    }
 
     ctxt->node = node;
 
@@ -6149,10 +6101,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     xmlNodePtr oldnode = ctxt->node;
     int ret;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     ctxt->node = node;
 
@@ -6704,10 +6654,8 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
             addrStr = virXMLPropString(cur, "address");
             portStr = virXMLPropString(cur, "port");
 
-            if (VIR_ALLOC(def->target.addr) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(def->target.addr) < 0)
                 goto error;
-            }
 
             if (addrStr == NULL) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -7003,10 +6951,8 @@ virDomainChrDefPtr
 virDomainChrDefNew(void) {
     virDomainChrDefPtr def = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     def->target.port = -1;
     return def;
@@ -7148,10 +7094,8 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
     virDomainSmartcardDefPtr def;
     int i;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     mode = virXMLPropString(node, "mode");
     if (mode == NULL) {
@@ -7292,10 +7236,8 @@ virDomainTPMDefParseXML(const xmlNodePtr node,
     xmlNodePtr *backends = NULL;
     int nbackends;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     model = virXMLPropString(node, "model");
     if (model != NULL &&
@@ -7378,10 +7320,8 @@ virDomainInputDefParseXML(const char *ostype,
     char *type = NULL;
     char *bus = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     bus = virXMLPropString(node, "bus");
@@ -7474,10 +7414,8 @@ virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
     virDomainHubDefPtr def;
     char *type = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
 
@@ -7524,10 +7462,8 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
     xmlNodePtr catchup;
     int ret;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     ctxt->node = node;
 
@@ -7797,10 +7733,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
     char *listenAddr = NULL;
     xmlNodePtr save = ctxt->node;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     ctxt->node = node;
 
@@ -7830,10 +7764,8 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         if (nListens > 0) {
             int ii;
 
-            if (VIR_ALLOC_N(def->listens, nListens) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC_N(def->listens, nListens) < 0)
                 goto error;
-            }
 
             for (ii = 0; ii < nListens; ii++) {
                 int ret = virDomainGraphicsListenDefParseXML(&def->listens[ii],
@@ -8321,10 +8253,8 @@ virDomainSoundCodecDefParseXML(const xmlNodePtr node)
     char *type;
     virDomainSoundCodecDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     if ((def->type = virDomainSoundCodecTypeFromString(type)) < 0) {
@@ -8354,10 +8284,8 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
     virDomainSoundDefPtr def;
     xmlNodePtr save = ctxt->node;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     ctxt->node = node;
 
@@ -8381,7 +8309,6 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
             int ii;
 
             if (VIR_ALLOC_N(def->codecs, ncodecs) < 0) {
-                virReportOOMError();
                 VIR_FREE(codecNodes);
                 goto error;
             }
@@ -8423,10 +8350,8 @@ virDomainWatchdogDefParseXML(const xmlNodePtr node,
     char *action = NULL;
     virDomainWatchdogDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     model = virXMLPropString(node, "model");
     if (model == NULL) {
@@ -8482,10 +8407,8 @@ virDomainRNGDefParseXML(const xmlNodePtr node,
     xmlNodePtr *backends = NULL;
     int nbackends;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (!(model = virXMLPropString(node, "model"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("missing RNG device model"));
@@ -8553,10 +8476,8 @@ virDomainRNGDefParseXML(const xmlNodePtr node,
             goto error;
         }
 
-        if (VIR_ALLOC(def->source.chardev) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(def->source.chardev) < 0)
             goto error;
-        }
 
         def->source.chardev->type = virDomainChrTypeFromString(type);
         if (def->source.chardev->type < 0) {
@@ -8601,10 +8522,8 @@ virDomainMemballoonDefParseXML(const xmlNodePtr node,
     char *model;
     virDomainMemballoonDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     model = virXMLPropString(node, "model");
     if (model == NULL) {
@@ -8638,10 +8557,8 @@ virDomainNVRAMDefParseXML(const xmlNodePtr node,
 {
    virDomainNVRAMDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
@@ -8669,10 +8586,8 @@ virSysinfoParseXML(const xmlNodePtr node,
         return NULL;
     }
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     type = virXMLPropString(node, "type");
     if (type == NULL) {
@@ -8854,10 +8769,8 @@ virDomainVideoAccelDefParseXML(const xmlNodePtr node) {
     if (!support3d && !support2d)
         return NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (support3d) {
         if (STREQ(support3d, "yes"))
@@ -8891,10 +8804,8 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
     char *ram = NULL;
     char *primary = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     cur = node->children;
     while (cur != NULL) {
@@ -9088,10 +8999,8 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
     char *bus, *type = NULL;
     int remaining;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     bus = virXMLPropString(node, "bus");
     if (bus) {
@@ -9225,10 +9134,8 @@ virDomainRedirFilterUsbDevDefParseXML(const xmlNodePtr node)
     char *version = NULL, *allow = NULL;
     virDomainRedirFilterUsbDevDefPtr def;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     class = virXMLPropString(node, "class");
     if (class) {
@@ -9321,7 +9228,7 @@ virDomainRedirFilterDefParseXML(const xmlNodePtr node,
     virDomainRedirFilterDefPtr def = NULL;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto error;
 
     ctxt->node = node;
     if ((n = virXPathNodeSet("./usbdev", ctxt, &nodes)) < 0) {
@@ -9329,7 +9236,7 @@ virDomainRedirFilterDefParseXML(const xmlNodePtr node,
     }
 
     if (n && VIR_ALLOC_N(def->usbdevs, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainRedirFilterUsbDevDefPtr usbdev =
@@ -9343,9 +9250,6 @@ virDomainRedirFilterDefParseXML(const xmlNodePtr node,
 
     ctxt->node = save;
     return def;
-
-no_memory:
-    virReportOOMError();
 
 error:
     VIR_FREE(nodes);
@@ -9416,10 +9320,8 @@ virDomainDeviceDefParse(const char *xmlStr,
 
     node = ctxt->node;
 
-    if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(dev) < 0)
         goto error;
-    }
 
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
@@ -10048,11 +9950,7 @@ int virDomainLeaseIndex(virDomainDefPtr def,
 
 int virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
 {
-    if (VIR_EXPAND_N(def->leases, def->nleases, 1) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-    return 0;
+    return VIR_EXPAND_N(def->leases, def->nleases, 1);
 }
 
 int virDomainLeaseInsert(virDomainDefPtr def,
@@ -10276,10 +10174,8 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
     virDomainIdMapEntryPtr idmap = NULL;
     xmlNodePtr save_ctxt = ctxt->node;
 
-    if (VIR_ALLOC_N(idmap, num) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(idmap, num) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < num; i++) {
         ctxt->node = node[i];
@@ -10333,10 +10229,8 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
     char *tmp = NULL;
     int ret;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     ctxt->node = node;
 
@@ -10422,10 +10316,8 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
             return 0;
     }
 
-    if (VIR_ALLOC(cont) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cont) < 0)
         return -1;
-    }
 
     cont->type = type;
     cont->idx = idx;
@@ -10436,9 +10328,8 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
         cont->opts.vioserial.vectors = -1;
     }
 
-    if (VIR_APPEND_ELEMENT_QUIET(def->controllers, def->ncontrollers, cont) < 0) {
+    if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
         VIR_FREE(cont);
-        virReportOOMError();
         return -1;
     }
 
@@ -10485,10 +10376,8 @@ virDomainResourceDefParse(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto error;
-    }
 
     /* Find out what type of virtualization to use */
     if (!(def->partition = virXPathString("string(./partition)", ctxt))) {
@@ -10554,10 +10443,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_master = false;
     bool primaryVideo = false;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (!(flags & VIR_DOMAIN_XML_INACTIVE))
         if (virXPathLong("string(./@id)", ctxt, &id) < 0)
@@ -10717,7 +10604,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->blkio.devices, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         int j;
@@ -10896,7 +10783,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (n && VIR_ALLOC_N(def->cputune.vcpupin, n) < 0)
-        goto no_memory;
+        goto error;
 
     if (n > def->maxvcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -10936,10 +10823,8 @@ virDomainDefParseXML(xmlDocPtr xml,
      * the policy specified explicitly as def->cpuset.
      */
     if (def->cpumask) {
-        if (VIR_REALLOC_N(def->cputune.vcpupin, def->vcpus) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(def->cputune.vcpupin, def->vcpus) < 0)
             goto error;
-        }
 
         for (i = 0; i < def->vcpus; i++) {
             if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
@@ -10949,10 +10834,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             virDomainVcpuPinDefPtr vcpupin = NULL;
 
-            if (VIR_ALLOC(vcpupin) < 0) {
-                virReportOOMError();
+            if (VIR_ALLOC(vcpupin) < 0)
                 goto error;
-            }
 
             vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
             virBitmapCopy(vcpupin->cpumask, def->cpumask);
@@ -11356,7 +11239,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
@@ -11467,7 +11350,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
 
         if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
-            goto no_memory;
+            goto error;
         for (i = 0; i < n; i++) {
             if (!nodes[i]->children ||
                 !nodes[i]->children->content) {
@@ -11508,7 +11391,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(xmlopt,
@@ -11530,7 +11413,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (n && VIR_ALLOC_N(def->controllers, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
@@ -11587,7 +11470,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->leases, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainLeaseDefPtr lease = virDomainLeaseDefParseXML(nodes[i]);
         if (!lease)
@@ -11602,7 +11485,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainFSDefPtr fs = virDomainFSDefParseXML(nodes[i], ctxt,
                                                       flags);
@@ -11618,7 +11501,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->nets, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainNetDefPtr net = virDomainNetDefParseXML(xmlopt,
                                                          nodes[i],
@@ -11633,7 +11516,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         /* <interface type='hostdev'> must also be in the hostdevs array */
         if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
             virDomainHostdevInsert(def, &net->data.hostdev.def) < 0) {
-            goto no_memory;
+            goto error;
         }
     }
     VIR_FREE(nodes);
@@ -11644,7 +11527,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->smartcards, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(nodes[i],
@@ -11662,7 +11545,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->parallels, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
@@ -11690,7 +11573,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (n && VIR_ALLOC_N(def->serials, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
@@ -11720,7 +11603,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->consoles, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
@@ -11740,7 +11623,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->channels, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
@@ -11781,7 +11664,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->inputs, n) < 0)
-        goto no_memory;
+        goto error;
 
     for (i = 0; i < n; i++) {
         virDomainInputDefPtr input = virDomainInputDefParseXML(def->os.type,
@@ -11821,7 +11704,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->graphics, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(nodes[i],
                                                                         ctxt,
@@ -11838,7 +11721,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainInputDefPtr input;
 
         if (VIR_ALLOC(input) < 0) {
-            goto no_memory;
+            goto error;
         }
         if (STREQ(def->os.type, "hvm")) {
             input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
@@ -11850,7 +11733,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (VIR_REALLOC_N(def->inputs, def->ninputs + 1) < 0) {
             virDomainInputDefFree(input);
-            goto no_memory;
+            goto error;
         }
         def->inputs[def->ninputs] = input;
         def->ninputs++;
@@ -11862,7 +11745,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(nodes[i],
                                                                ctxt,
@@ -11879,7 +11762,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         size_t ii = def->nvideos;
         virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[i],
@@ -11899,10 +11782,10 @@ virDomainDefParseXML(xmlDocPtr xml,
             ii = 0;
             primaryVideo = true;
         }
-        if (VIR_INSERT_ELEMENT_INPLACE_QUIET(def->videos,
-                                             ii,
-                                             def->nvideos,
-                                             video) < 0) {
+        if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
+                                       ii,
+                                       def->nvideos,
+                                       video) < 0) {
             virDomainVideoDefFree(video);
             goto error;
         }
@@ -11914,7 +11797,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (def->ngraphics && !def->nvideos) {
         virDomainVideoDefPtr video;
         if (VIR_ALLOC(video) < 0)
-            goto no_memory;
+            goto error;
         video->type = virDomainVideoDefaultType(def);
         if (video->type < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -11926,7 +11809,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         video->heads = 1;
         if (VIR_ALLOC_N(def->videos, 1) < 0) {
             virDomainVideoDefFree(video);
-            goto no_memory;
+            goto error;
         }
         def->videos[def->nvideos++] = video;
     }
@@ -11936,7 +11819,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainHostdevDefPtr hostdev;
 
@@ -12005,7 +11888,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             def->virtType == VIR_DOMAIN_VIRT_KVM) {
             virDomainMemballoonDefPtr memballoon;
             if (VIR_ALLOC(memballoon) < 0)
-                goto no_memory;
+                goto error;
             memballoon->model = def->virtType == VIR_DOMAIN_VIRT_XEN ?
                 VIR_DOMAIN_MEMBALLOON_MODEL_XEN :
                 VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
@@ -12068,7 +11951,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->hubs, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainHubDefPtr hub = virDomainHubDefParseXML(nodes[i], flags);
         if (!hub)
@@ -12091,7 +11974,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n && VIR_ALLOC_N(def->redirdevs, n) < 0)
-        goto no_memory;
+        goto error;
     for (i = 0; i < n; i++) {
         virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
                                                                         bootHash,
@@ -12236,8 +12119,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     return def;
 
-no_memory:
-    virReportOOMError();
 error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
@@ -13688,10 +13569,8 @@ virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
         vcpupin->vcpuid = vcpu;
         virBitmapFree(vcpupin->cpumask);
         vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!vcpupin->cpumask) {
-            virReportOOMError();
+        if (!vcpupin->cpumask)
             return -1;
-        }
 
         return 0;
     }
@@ -13699,22 +13578,21 @@ virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
     /* No existing vcpupin matches vcpu, adding a new one */
 
     if (VIR_ALLOC(vcpupin) < 0)
-        goto no_memory;
+        goto error;
 
     vcpupin->vcpuid = vcpu;
     vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
     if (!vcpupin->cpumask)
-        goto no_memory;
+        goto error;
 
     if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0)
-        goto no_memory;
+        goto error;
 
     (*vcpupin_list)[(*nvcpupin)++] = vcpupin;
 
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     virDomainVcpuPinDefFree(vcpupin);
     return -1;
 }
@@ -13749,10 +13627,8 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
     if (--def->cputune.nvcpupin == 0) {
         VIR_FREE(def->cputune.vcpupin);
     } else {
-        if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0) {
-            virReportOOMError();
+        if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin) < 0)
             return -1;
-        }
     }
 
     return 0;
@@ -13767,10 +13643,8 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
 
     if (!def->cputune.emulatorpin) {
         /* No emulatorpin exists yet. */
-        if (VIR_ALLOC(emulatorpin) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(emulatorpin) < 0)
             return -1;
-        }
 
         emulatorpin->vcpuid = -1;
         emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
@@ -17059,9 +16933,7 @@ char
 {
     char *ret;
 
-    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0)
-        virReportOOMError();
-
+    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
     return ret;
 }
 
@@ -17686,9 +17558,7 @@ virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t ii, bool force0)
         def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
 
         if (!def->listens && (ii == 0) && force0) {
-            if (VIR_ALLOC(def->listens) < 0)
-                virReportOOMError();
-            else
+            if (VIR_ALLOC(def->listens) >= 0)
                 def->nListens = 1;
         }
 
@@ -18078,12 +17948,9 @@ virDomainObjListExport(virDomainObjListPtr doms,
     };
 
     virObjectLock(doms);
-    if (domains) {
-        if (VIR_ALLOC_N(data.domains, virHashSize(doms->objs) + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (domains &&
+        VIR_ALLOC_N(data.domains, virHashSize(doms->objs) + 1) < 0)
+        goto cleanup;
 
     virHashForEach(doms->objs, virDomainListPopulate, &data);
 
@@ -18167,7 +18034,6 @@ virDomainDefGenSecurityLabelDef(const char *model)
 
     if (VIR_ALLOC(seclabel) < 0 ||
         VIR_STRDUP(seclabel->model, model) < 0) {
-        virReportOOMError();
         virSecurityLabelDefFree(seclabel);
         seclabel = NULL;
     }
@@ -18182,7 +18048,6 @@ virDomainDiskDefGenSecurityLabelDef(const char *model)
 
     if (VIR_ALLOC(seclabel) < 0 ||
         VIR_STRDUP(seclabel->model, model) < 0) {
-        virReportOOMError();
         virSecurityDeviceLabelDefFree(seclabel);
         seclabel = NULL;
     }

@@ -176,10 +176,8 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
         return device;
     }
 
-    if (VIR_ALLOC(device) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(device) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&device->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -194,7 +192,6 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
         device->def = NULL;
         virNodeDeviceObjUnlock(device);
         virNodeDeviceObjFree(device);
-        virReportOOMError();
         return NULL;
     }
     devs->objs[devs->count++] = device;
@@ -1015,20 +1012,16 @@ virNodeDevCapPciDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
         virDevicePCIAddress addr = { 0, 0, 0, 0, 0 };
         if (virDevicePCIAddressParseXML(addrNodes[ii], &addr) < 0)
             goto cleanup;
-        if (VIR_ALLOC(pciAddr) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(pciAddr) < 0)
             goto cleanup;
-        }
         pciAddr->domain = addr.domain;
         pciAddr->bus = addr.bus;
         pciAddr->slot = addr.slot;
         pciAddr->function = addr.function;
         if (VIR_APPEND_ELEMENT(data->pci_dev.iommuGroupDevices,
                                data->pci_dev.nIommuGroupDevices,
-                               pciAddr) < 0) {
-            virReportOOMError();
+                               pciAddr) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -1159,10 +1152,8 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     char *tmp;
     int val, ret;
 
-    if (VIR_ALLOC(caps) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(caps) < 0)
         return NULL;
-    }
 
     tmp = virXMLPropString(node, "type");
     if (!tmp) {
@@ -1238,10 +1229,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr *nodes;
     int n, i;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     /* Extract device name */
     if (create == EXISTING_DEVICE) {
@@ -1606,12 +1595,8 @@ virNodeDeviceObjListExport(virConnectPtr conn,
     int ret = -1;
     int i;
 
-    if (devices) {
-        if (VIR_ALLOC_N(tmp_devices, devobjs.count + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (devices && VIR_ALLOC_N(tmp_devices, devobjs.count + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < devobjs.count; i++) {
         virNodeDeviceObjPtr devobj = devobjs.objs[i];

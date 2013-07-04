@@ -569,10 +569,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     source->nhost = n;
 
     if (source->nhost) {
-        if (VIR_ALLOC_N(source->hosts, source->nhost) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(source->hosts, source->nhost) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < source->nhost; i++) {
             name = virXMLPropString(nodeset[i], "name");
@@ -605,7 +603,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     if (nsource > 0) {
         if (VIR_ALLOC_N(source->devices, nsource) < 0) {
             VIR_FREE(nodeset);
-            virReportOOMError();
             goto cleanup;
         }
 
@@ -728,10 +725,8 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
                                       &xpath_ctxt)))
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         goto cleanup;
-    }
 
     if (!(node = virXPathNode("/source", xpath_ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -840,10 +835,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     char *uuid = NULL;
     char *target_path = NULL;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     type = virXPathString("string(./@type)", ctxt);
     if (type == NULL) {
@@ -1267,10 +1260,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (options == NULL)
         return NULL;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     ret->name = virXPathString("string(./name)", ctxt);
     if (ret->name == NULL) {
@@ -1373,7 +1364,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             goto error;
 
         if (!(ret->target.features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
-            goto no_memory;
+            goto error;
 
         for (i = 0; i < n; i++) {
             int f = options->featureFromString((const char*)nodes[i]->name);
@@ -1400,8 +1391,6 @@ cleanup:
     VIR_FREE(unit);
     return ret;
 
-no_memory:
-    virReportOOMError();
 error:
     virStorageVolDefFree(ret);
     ret = NULL;
@@ -1743,10 +1732,8 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
         return pool;
     }
 
-    if (VIR_ALLOC(pool) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(pool) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&pool->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1762,7 +1749,6 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
         pool->def = NULL;
         virStoragePoolObjUnlock(pool);
         virStoragePoolObjFree(pool);
-        virReportOOMError();
         return NULL;
     }
     pools->objs[pools->count++] = pool;
@@ -1933,10 +1919,8 @@ virStoragePoolSourceListNewSource(virStoragePoolSourceListPtr list)
 {
     virStoragePoolSourcePtr source;
 
-    if (VIR_REALLOC_N(list->sources, list->nsources + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(list->sources, list->nsources + 1) < 0)
         return NULL;
-    }
 
     source = &list->sources[list->nsources++];
     memset(source, 0, sizeof(*source));
@@ -2215,12 +2199,8 @@ virStoragePoolObjListExport(virConnectPtr conn,
     int ret = -1;
     int i;
 
-    if (pools) {
-        if (VIR_ALLOC_N(tmp_pools, poolobjs.count + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (pools && VIR_ALLOC_N(tmp_pools, poolobjs.count + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < poolobjs.count; i++) {
         virStoragePoolObjPtr poolobj = poolobjs.objs[i];

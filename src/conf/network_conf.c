@@ -344,15 +344,11 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
         return network;
     }
 
-    if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0)
         return NULL;
-    }
 
-    if (VIR_ALLOC(network) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(network) < 0)
         return NULL;
-    }
     if (virMutexInit(&network->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -362,10 +358,8 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     virNetworkObjLock(network);
     network->def = def;
 
-    if (!(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE))) {
-        virReportOOMError();
+    if (!(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
         goto error;
-    }
 
     /* The first three class IDs are already taken */
     ignore_value(virBitmapSetBit(network->class_id, 0));
@@ -796,10 +790,8 @@ virNetworkDHCPDefParseXML(const char *networkName,
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "range")) {
 
-            if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
-                virReportOOMError();
+            if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0)
                 return -1;
-            }
             if (virSocketAddrRangeParseXML(networkName, cur,
                                                &def->ranges[def->nranges]) < 0) {
                 return -1;
@@ -809,10 +801,8 @@ virNetworkDHCPDefParseXML(const char *networkName,
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
 
-            if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
-                virReportOOMError();
+            if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0)
                 return -1;
-            }
             if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
                                               &def->hosts[def->nhosts],
                                               false) < 0) {
@@ -883,10 +873,8 @@ virNetworkDNSHostDefParseXML(const char *networkName,
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "hostname")) {
               if (cur->children != NULL) {
-                  if (VIR_REALLOC_N(def->names, def->nnames + 1) < 0) {
-                      virReportOOMError();
+                  if (VIR_REALLOC_N(def->names, def->nnames + 1) < 0)
                       goto error;
-                  }
                   def->names[def->nnames++] = (char *)xmlNodeGetContent(cur);
                   if (!def->names[def->nnames - 1]) {
                       virReportError(VIR_ERR_XML_DETAIL,
@@ -1062,10 +1050,8 @@ virNetworkDNSDefParseXML(const char *networkName,
         goto cleanup;
     }
     if (nhosts > 0) {
-        if (VIR_ALLOC_N(def->hosts, nhosts) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->hosts, nhosts) < 0)
             goto cleanup;
-        }
 
         for (ii = 0; ii < nhosts; ii++) {
             if (virNetworkDNSHostDefParseXML(networkName, hostNodes[ii],
@@ -1084,10 +1070,8 @@ virNetworkDNSDefParseXML(const char *networkName,
         goto cleanup;
     }
     if (nsrvs > 0) {
-        if (VIR_ALLOC_N(def->srvs, nsrvs) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->srvs, nsrvs) < 0)
             goto cleanup;
-        }
 
         for (ii = 0; ii < nsrvs; ii++) {
             if (virNetworkDNSSrvDefParseXML(networkName, srvNodes[ii], ctxt,
@@ -1106,10 +1090,8 @@ virNetworkDNSDefParseXML(const char *networkName,
         goto cleanup;
     }
     if (ntxts > 0) {
-        if (VIR_ALLOC_N(def->txts, ntxts) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->txts, ntxts) < 0)
             goto cleanup;
-        }
 
         for (ii = 0; ii < ntxts; ii++) {
             if (virNetworkDNSTxtDefParseXML(networkName, txtNodes[ii],
@@ -1786,11 +1768,8 @@ virNetworkForwardDefParseXML(const char *networkName,
     }
 
     if (nForwardIfs > 0 || forwardDev) {
-
-        if (VIR_ALLOC_N(def->ifs, MAX(nForwardIfs, 1)) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->ifs, MAX(nForwardIfs, 1)) < 0)
             goto cleanup;
-        }
 
         if (forwardDev) {
             def->ifs[0].device.dev = forwardDev;
@@ -1833,11 +1812,8 @@ virNetworkForwardDefParseXML(const char *networkName,
         }
 
     } else if (nForwardAddrs > 0) {
-
-        if (VIR_ALLOC_N(def->ifs, nForwardAddrs) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->ifs, nForwardAddrs) < 0)
             goto cleanup;
-        }
 
         for (ii = 0; ii < nForwardAddrs; ii++) {
             if (!(type = virXMLPropString(forwardAddrNodes[ii], "type"))) {
@@ -1880,11 +1856,8 @@ virNetworkForwardDefParseXML(const char *networkName,
                        networkName);
         goto cleanup;
     } else if (nForwardPfs == 1) {
-
-        if (VIR_ALLOC_N(def->pfs, nForwardPfs) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->pfs, nForwardPfs) < 0)
             goto cleanup;
-        }
 
         forwardDev = virXMLPropString(*forwardPfNodes, "dev");
         if (!forwardDev) {
@@ -1898,7 +1871,6 @@ virNetworkForwardDefParseXML(const char *networkName,
         def->pfs->dev = forwardDev;
         forwardDev = NULL;
         def->npfs++;
-
     }
 
     ret = 0;
@@ -1933,10 +1905,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     /* Extract network name */
     def->name = virXPathString("string(./name[1])", ctxt);
@@ -2040,10 +2010,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         int ii;
 
         /* allocate array to hold all the portgroups */
-        if (VIR_ALLOC_N(def->portGroups, nPortGroups) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->portGroups, nPortGroups) < 0)
             goto error;
-        }
         /* parse each portgroup */
         for (ii = 0; ii < nPortGroups; ii++) {
             int ret = virNetworkPortGroupParseXML(&def->portGroups[ii],
@@ -2063,10 +2031,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         int ii;
 
         /* allocate array to hold all the addrs */
-        if (VIR_ALLOC_N(def->ips, nIps) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->ips, nIps) < 0)
             goto error;
-        }
         /* parse each addr */
         for (ii = 0; ii < nIps; ii++) {
             int ret = virNetworkIPDefParseXML(def->name, ipNodes[ii],
@@ -2086,10 +2052,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         int ii;
 
         /* allocate array to hold all the route definitions */
-        if (VIR_ALLOC_N(def->routes, nRoutes) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(def->routes, nRoutes) < 0)
             goto error;
-        }
         /* parse each definition */
         for (ii = 0; ii < nRoutes; ii++) {
             int ret = virNetworkRouteDefParseXML(def->name, routeNodes[ii],
@@ -3121,11 +3085,7 @@ char *virNetworkConfigFile(const char *dir,
 {
     char *ret = NULL;
 
-    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
     return ret;
 }
 
@@ -3159,10 +3119,8 @@ char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
         template = "virbr%d";
 
     do {
-        if (virAsprintf(&newname, template, id) < 0) {
-            virReportOOMError();
+        if (virAsprintf(&newname, template, id) < 0)
             return NULL;
-        }
         if (!virNetworkBridgeInUse(nets, newname, NULL)) {
             return newname;
         }
@@ -3411,13 +3369,11 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(ipdef->hosts,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : ipdef->nhosts,
-                                     ipdef->nhosts, host) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(ipdef->hosts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : ipdef->nhosts,
+                               ipdef->nhosts, host) < 0)
             goto cleanup;
-        }
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
@@ -3517,14 +3473,11 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(ipdef->ranges,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : ipdef->nranges,
-                                     ipdef->nranges, range) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(ipdef->ranges,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : ipdef->nranges,
+                               ipdef->nranges, range) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (ii == ipdef->nranges) {
@@ -3612,14 +3565,11 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(def->forward.ifs,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : def->forward.nifs,
-                                     def->forward.nifs, iface) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(def->forward.ifs,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : def->forward.nifs,
+                               def->forward.nifs, iface) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (ii == def->forward.nifs) {
@@ -3739,14 +3689,11 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
         (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(def->portGroups,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : def->nPortGroups,
-                                     def->nPortGroups, portgroup) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(def->portGroups,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : def->nPortGroups,
+                               def->nPortGroups, portgroup) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         /* remove it */
@@ -3823,13 +3770,10 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(dns->hosts,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : dns->nhosts, dns->nhosts, host) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(dns->hosts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->nhosts, dns->nhosts, host) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (foundCt == 0) {
@@ -3911,13 +3855,10 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(dns->srvs,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : dns->nsrvs, dns->nsrvs, srv) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(dns->srvs,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->nsrvs, dns->nsrvs, srv) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (foundCt == 0) {
@@ -3993,13 +3934,10 @@ virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_INSERT_ELEMENT_QUIET(dns->txts,
-                                     command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
-                                     ? 0 : dns->ntxts, dns->ntxts, txt) < 0) {
-            virReportOOMError();
+        if (VIR_INSERT_ELEMENT(dns->txts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->ntxts, dns->ntxts, txt) < 0)
             goto cleanup;
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (foundIdx == dns->ntxts) {
@@ -4301,12 +4239,8 @@ virNetworkObjListExport(virConnectPtr conn,
     int ret = -1;
     int i;
 
-    if (nets) {
-        if (VIR_ALLOC_N(tmp_nets, netobjs.count + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (nets && VIR_ALLOC_N(tmp_nets, netobjs.count + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < netobjs.count; i++) {
         virNetworkObjPtr netobj = netobjs.objs[i];

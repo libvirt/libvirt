@@ -206,16 +206,19 @@ qemuDomainTrackJob(enum qemuDomainJob job)
 }
 
 
-static void
-*qemuDomainObjPrivateAlloc(void)
+static void *
+qemuDomainObjPrivateAlloc(void)
 {
     qemuDomainObjPrivatePtr priv;
 
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (qemuDomainObjInitJob(priv) < 0)
+    if (qemuDomainObjInitJob(priv) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to init qemu driver mutexes"));
         goto error;
+    }
 
     if (!(priv->devs = virChrdevAlloc()))
         goto error;

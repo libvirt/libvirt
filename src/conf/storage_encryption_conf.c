@@ -77,10 +77,8 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     int type;
     char *uuidstr = NULL;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     old_node = ctxt->node;
     ctxt->node = node;
@@ -134,10 +132,8 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
     char *format_str;
     int format, i, n;
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ret) < 0)
         return NULL;
-    }
 
     format_str = virXPathString("string(./@format)", ctxt);
     if (format_str == NULL) {
@@ -160,10 +156,8 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
     if (n < 0){
         goto cleanup;
     }
-    if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0) {
-        virReportOOMError();
+    if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0)
         goto cleanup;
-    }
     ret->nsecrets = n;
     for (i = 0; i < n; i++) {
         ret->secrets[i] = virStorageEncryptionSecretParse(ctxt, nodes[i]);

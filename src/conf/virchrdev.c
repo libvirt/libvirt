@@ -89,10 +89,8 @@ static char *virChrdevLockFilePath(const char *dev)
         ++p;
     }
 
-    if (virAsprintf(&path, "%s/LCK..%s", VIR_CHRDEV_LOCK_FILE_PATH, filename) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/LCK..%s", VIR_CHRDEV_LOCK_FILE_PATH, filename) < 0)
         goto cleanup;
-    }
 
     sanitizedPath = virFileSanitizePath(path);
 
@@ -138,10 +136,8 @@ static int virChrdevLockFileCreate(const char *dev)
 
     /* ensure correct format according to filesystem hierarchy standard */
     /* http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLOCKLOCKFILES */
-    if (virAsprintf(&pidStr, "%10lld\n", (long long) getpid()) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&pidStr, "%10lld\n", (long long) getpid()) < 0)
         goto cleanup;
-    }
 
     /* create the lock file */
     if ((lockfd = open(path, O_WRONLY | O_CREAT | O_EXCL, 00644)) < 0) {
@@ -274,6 +270,8 @@ virChrdevsPtr virChrdevAlloc(void)
         return NULL;
 
     if (virMutexInit(&devs->lock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to init device stream mutex"));
         VIR_FREE(devs);
         return NULL;
     }
@@ -396,10 +394,8 @@ int virChrdevOpen(virChrdevsPtr devs,
         return -1;
     }
 
-    if (VIR_ALLOC(cbdata) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cbdata) < 0)
         goto error;
-    }
 
     if (virHashAddEntry(devs->hash, path, st) < 0)
         goto error;

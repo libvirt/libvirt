@@ -120,10 +120,8 @@ virNetDevBandwidthParse(xmlNodePtr node,
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
 
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (!node || !xmlStrEqual(node->name, BAD_CAST "bandwidth")) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -158,10 +156,8 @@ virNetDevBandwidthParse(xmlNodePtr node,
     }
 
     if (in) {
-        if (VIR_ALLOC(def->in) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(def->in) < 0)
             goto error;
-        }
 
         if (virNetDevBandwidthParseRate(in, def->in) < 0) {
             /* helper reported error for us */
@@ -184,10 +180,8 @@ virNetDevBandwidthParse(xmlNodePtr node,
     }
 
     if (out) {
-        if (VIR_ALLOC(def->out) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(def->out) < 0)
             goto error;
-        }
 
         if (virNetDevBandwidthParseRate(out, def->out) < 0) {
             /* helper reported error for us */
