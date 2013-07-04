@@ -182,6 +182,13 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        dnl gl_WARN_ADD([-fstack-protector])
        gl_WARN_ADD([-fstack-protector-all])
        gl_WARN_ADD([--param=ssp-buffer-size=4])
+       dnl Even though it supports it, clang complains about
+       dnl use of --param=ssp-buffer-size=4 unless used with
+       dnl the -c arg. It doesn't like it when used with args
+       dnl that just link together .o files. Unfortunately
+       dnl we can't avoid that with automake, so we must turn
+       dnl off the following clang specific warning
+       gl_WARN_ADD([-Wno-unused-command-line-argument])
        ;;
        *-*-freebsd*)
        dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
