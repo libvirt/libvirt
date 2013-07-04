@@ -57,10 +57,8 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
     }
 
     if (virAsprintf(&bridgeLink, "%s/%s/brport/bridge",
-                    SYSFS_NET_DIR, ifname) < 0) {
-        virReportOOMError();
+                    SYSFS_NET_DIR, ifname) < 0)
         goto cleanup;
-    }
 
     if (virFileResolveLink(bridgeLink, &bridgePath) < 0) {
         virReportSystemError(errno, _("cannot read link '%s'"), bridgeLink);
@@ -71,10 +69,8 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
         goto cleanup;
 
     if (virAsprintf(&bridgeAddressPath, "%s/%s/brport/bridge/address",
-                    SYSFS_NET_DIR, ifname) < 0) {
-        virReportOOMError();
+                    SYSFS_NET_DIR, ifname) < 0)
         goto cleanup;
-    }
 
     if ((len = virFileReadAll(bridgeAddressPath, 18, &bridgeAddress)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -112,10 +108,8 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
     virJSONValuePtr jobj = NULL, jobj2;
     int ret = -1;
 
-    if (VIR_EXPAND_N(def->ips, def->nips, 1) < 0) {
-        virReportOOMError();
+    if (VIR_EXPAND_N(def->ips, def->nips, 1) < 0)
         goto cleanup;
-    }
 
     jobj = parallelsParseOutput("prlsrvctl", "net", "info", "-j", name, NULL);
 
@@ -157,10 +151,8 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
         goto cleanup;
     }
 
-    if (VIR_EXPAND_N(def->ips[0].ranges, def->ips[0].nranges, 1) < 0) {
-        virReportOOMError();
+    if (VIR_EXPAND_N(def->ips[0].ranges, def->ips[0].nranges, 1) < 0)
         goto cleanup;
-    }
 
     if (!(tmp = virJSONValueObjectGetString(jobj2, "IP scope start address"))) {
         parallelsParseError();
@@ -198,7 +190,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     unsigned char md5[MD5_DIGEST_SIZE];
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (!(tmp = virJSONValueObjectGetString(jobj, "Network ID"))) {
         parallelsParseError();
@@ -244,8 +236,6 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     virNetworkObjUnlock(net);
     return net;
 
-no_memory:
-    virReportOOMError();
 cleanup:
     virNetworkDefFree(def);
     return NULL;
@@ -258,7 +248,7 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
     virNetworkDefPtr def;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto cleanup;
 
     def->forward.type = VIR_NETWORK_FORWARD_ROUTE;
 
@@ -283,8 +273,6 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
 
     return net;
 
-no_memory:
-    virReportOOMError();
 cleanup:
     virNetworkDefFree(def);
     return NULL;

@@ -118,35 +118,34 @@ parallelsBuildCapabilities(void)
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
-        goto no_memory;
+        return NULL;
 
     if (nodeCapsInitNUMA(caps) < 0)
-        goto no_memory;
+        goto error;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm",
                                          VIR_ARCH_X86_64,
                                          "parallels",
                                          NULL, 0, NULL)) == NULL)
-        goto no_memory;
+        goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
-        goto no_memory;
+        goto error;
 
     if ((guest = virCapabilitiesAddGuest(caps, "exe",
                                          VIR_ARCH_X86_64,
                                          "parallels",
                                          NULL, 0, NULL)) == NULL)
-        goto no_memory;
+        goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
-        goto no_memory;
+        goto error;
 
     return caps;
 
-  no_memory:
-    virReportOOMError();
+  error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -227,20 +226,18 @@ parallelsAddSerialInfo(virDomainChrDefPtr **serials, size_t *nserials,
     virDomainChrDefPtr chr = NULL;
 
     if (!(chr = virDomainChrDefNew()))
-        goto no_memory;
+        goto cleanup;
 
     if (parallelsGetSerialInfo(chr, key, value))
         goto cleanup;
 
     if (VIR_REALLOC_N(*serials, *nserials + 1) < 0)
-        goto no_memory;
+        goto cleanup;
 
     (*serials)[(*nserials)++] = chr;
 
     return 0;
 
-  no_memory:
-    virReportOOMError();
   cleanup:
     virDomainChrDefFree(chr);
     return -1;
@@ -271,13 +268,13 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
     }
 
     if (VIR_ALLOC(video) < 0)
-        goto no_memory;
+        goto error;
 
     if (VIR_ALLOC(accel) < 0)
-        goto no_memory;
+        goto error;
 
     if (VIR_REALLOC_N(def->videos, def->nvideos + 1) < 0)
-        goto no_memory;
+        goto error;
 
     def->videos[def->nvideos++] = video;
 
@@ -288,11 +285,9 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
 
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     VIR_FREE(accel);
     virDomainVideoDefFree(video);
-error:
     return -1;
 }
 
@@ -386,20 +381,18 @@ parallelsAddHddInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
     virDomainDiskDefPtr disk = NULL;
 
     if (VIR_ALLOC(disk) < 0)
-        goto no_memory;
+        goto error;
 
     if (parallelsGetHddInfo(def, disk, key, value))
         goto error;
 
     if (VIR_REALLOC_N(def->disks, def->ndisks + 1) < 0)
-        goto no_memory;
+        goto error;
 
     def->disks[def->ndisks++] = disk;
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainDiskDefFree(disk);
     return -1;
@@ -508,20 +501,18 @@ parallelsAddNetInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
     virDomainNetDefPtr net = NULL;
 
     if (VIR_ALLOC(net) < 0)
-        goto no_memory;
+        goto error;
 
     if (parallelsGetNetInfo(net, key, value))
         goto error;
 
     if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
-        goto no_memory;
+        goto error;
 
     def->nets[def->nnets - 1] = net;
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     virDomainNetDefFree(net);
     return -1;
@@ -597,7 +588,7 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
     }
 
     if (VIR_ALLOC(gr) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (STREQ(tmp, "auto")) {
         if (virJSONValueObjectGetNumberUint(jobj, "port", &port) < 0)
@@ -625,7 +616,7 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
     }
 
     if (VIR_ALLOC(gr->listens) < 0)
-        goto no_memory;
+        goto cleanup;
 
     gr->nListens = 1;
 
@@ -635,13 +626,11 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
     gr->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
     if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
-        goto no_memory;
+        goto cleanup;
 
     def->graphics[def->ngraphics++] = gr;
     return 0;
 
-  no_memory:
-    virReportOOMError();
   cleanup:
     virDomainGraphicsDefFree(gr);
     return ret;
@@ -665,7 +654,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     const char *state;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
     def->id = -1;
@@ -771,7 +760,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     def->os.arch = VIR_ARCH_X86_64;
 
     if (VIR_ALLOC(pdom) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if (virJSONValueObjectGetNumberUint(jobj, "EnvID", &x) < 0)
         goto cleanup;
@@ -833,8 +822,6 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
 
     return dom;
 
-  no_memory:
-    virReportOOMError();
   cleanup:
     virDomainDefFree(def);
     parallelsDomObjFreePrivate(pdom);
@@ -899,10 +886,8 @@ parallelsOpenDefault(virConnectPtr conn)
 {
     parallelsConnPtr privconn;
 
-    if (VIR_ALLOC(privconn) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(privconn) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize mutex"));
@@ -1800,10 +1785,8 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
 
     if (!oldnet) {
         create = true;
-        if (VIR_ALLOC(oldnet) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(oldnet) < 0)
             return -1;
-        }
     }
 
     if (!create && oldnet->type != newnet->type) {

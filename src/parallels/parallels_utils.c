@@ -130,10 +130,8 @@ parallelsAddFileExt(const char *path, const char *ext)
     char *new_path = NULL;
     size_t len = strlen(path) + strlen(ext) + 1;
 
-    if (VIR_ALLOC_N(new_path, len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(new_path, len) < 0)
         return NULL;
-    }
 
     if (!virStrcpy(new_path, path, len)) {
         VIR_FREE(new_path);

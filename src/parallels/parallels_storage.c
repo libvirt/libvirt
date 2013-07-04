@@ -106,10 +106,8 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
             continue;
 
         if (!(path = virFileBuildPath(pool->def->target.path,
-                                      ent->d_name, NULL))) {
-            virReportOOMError();
+                                      ent->d_name, NULL)))
             goto cleanup;
-        }
         if (!parallelsStorageVolDefineXML(pool, NULL, path, false))
             goto cleanup;
 
@@ -170,13 +168,13 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
     virStoragePoolObjPtr pool = NULL;
 
     if (VIR_ALLOC(def) < 0)
-        goto no_memory;
+        goto error;
 
     if (!(def->name = parallelsMakePoolName(conn, path)))
         goto error;
 
     if (VIR_ALLOC_N(def->uuid, VIR_UUID_BUFLEN))
-        goto no_memory;
+        goto error;
 
     if (virUUIDGenerate(def->uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -199,8 +197,6 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
     virStoragePoolObjUnlock(pool);
 
     return pool;
-no_memory:
-    virReportOOMError();
 error:
     virStoragePoolDefFree(def);
     if (pool)
@@ -302,10 +298,10 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
     virStorageVolDefPtr def = NULL;
 
     if (VIR_ALLOC(def))
-        goto no_memory;
+        goto error;
 
     if (virAsprintf(&def->name, "%s-%s", dom->def->name, diskName) < 0)
-        goto no_memory;
+        goto error;
 
     def->type = VIR_STORAGE_VOL_FILE;
 
@@ -319,7 +315,7 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
         goto error;
 
     if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0)
-        goto no_memory;
+        goto error;
 
     pool->volumes.objs[pool->volumes.count++] = def;
 
@@ -352,10 +348,8 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
         VIR_FREE(diskPath);
         VIR_FREE(diskDescPath);
 
-        if (!(diskPath = virFileBuildPath(pdom->home, ent->d_name, NULL))) {
-            virReportOOMError();
+        if (!(diskPath = virFileBuildPath(pdom->home, ent->d_name, NULL)))
             goto cleanup;
-        }
 
         if (lstat(diskPath, &sb) < 0) {
             virReportSystemError(errno,
@@ -368,10 +362,8 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
             continue;
 
         if (!(diskDescPath = virFileBuildPath(diskPath,
-                                              "DiskDescriptor", ".xml"))) {
-            virReportOOMError();
+                                              "DiskDescriptor", ".xml")))
             goto cleanup;
-        }
 
         if (access(diskDescPath, F_OK))
             continue;
@@ -422,11 +414,11 @@ static int parallelsLoadPools(virConnectPtr conn)
     /* Configuration path is /etc/libvirt/parallels-storage/... . */
     if (virAsprintf(&storageState->configDir,
                     "%s/parallels-storage", base) == -1)
-        goto out_of_memory;
+        goto error;
 
     if (virAsprintf(&storageState->autostartDir,
                     "%s/parallels-storage/autostart", base) == -1)
-        goto out_of_memory;
+        goto error;
 
     VIR_FREE(base);
 
@@ -459,8 +451,6 @@ static int parallelsLoadPools(virConnectPtr conn)
 
     return 0;
 
-out_of_memory:
-    virReportOOMError();
 error:
     VIR_FREE(base);
     return -1;
@@ -477,10 +467,8 @@ parallelsStorageOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
-    if (VIR_ALLOC(storageState) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(storageState) < 0)
         return VIR_DRV_OPEN_ERROR;
-    }
 
     if (virMutexInit(&storageState->lock) < 0) {
         VIR_FREE(storageState);
@@ -1244,16 +1232,12 @@ parallelsStorageVolDefineXML(virStoragePoolObjPtr pool,
         }
     }
 
-    if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0) {
-        virReportOOMError();
+    if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
-                    pool->def->target.path, privvol->name) < 0) {
-        virReportOOMError();
+                    pool->def->target.path, privvol->name) < 0)
         goto cleanup;
-    }
 
     if (VIR_STRDUP(privvol->key, privvol->target.path) < 0)
         goto cleanup;
@@ -1382,16 +1366,12 @@ parallelsStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                                 privpool->def->allocation);
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
-                      privpool->volumes.count + 1) < 0) {
-        virReportOOMError();
+                      privpool->volumes.count + 1) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
-                    privpool->def->target.path, privvol->name) == -1) {
-        virReportOOMError();
+                    privpool->def->target.path, privvol->name) == -1)
         goto cleanup;
-    }
 
     if (VIR_STRDUP(privvol->key, privvol->target.path) < 0)
         goto cleanup;

@@ -1486,8 +1486,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
                 cpus[id].core_id = c;
                 if (!(cpus[id].siblings = virBitmapNew(ncpus)))
                     goto error;
-                if (virBitmapSetBit(cpus[id].siblings, id) < 0)
-                    goto error;
+                ignore_value(virBitmapSetBit(cpus[id].siblings, id));
                 id++;
             }
         }
