@@ -173,10 +173,8 @@ replaceFile(const char *filename, void *data, size_t size)
     char *tmp_path = NULL;
     int fd = -1, ret = -1;
 
-    if (virAsprintf(&tmp_path, "%sXXXXXX", filename) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&tmp_path, "%sXXXXXX", filename) < 0)
         goto cleanup;
-    }
     fd = mkostemp(tmp_path, O_CLOEXEC);
     if (fd == -1) {
         virReportSystemError(errno, _("mkostemp('%s') failed"), tmp_path);
@@ -225,10 +223,7 @@ secretComputePath(virSecretDriverStatePtr driver,
 
     virUUIDFormat(secret->def->uuid, uuidstr);
 
-    if (virAsprintf(&ret, "%s/%s%s", driver->directory, uuidstr, suffix) < 0)
-        /* ret is NULL */
-        virReportOOMError();
-
+    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->directory, uuidstr, suffix));
     return ret;
 }
 
@@ -397,10 +392,8 @@ secretLoadValue(virSecretDriverStatePtr driver,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(contents, st.st_size) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(contents, st.st_size) < 0)
         goto cleanup;
-    }
     if (saferead(fd, contents, st.st_size) != st.st_size) {
         virReportSystemError(errno, _("cannot read '%s'"), filename);
         goto cleanup;
@@ -412,10 +405,8 @@ secretLoadValue(virSecretDriverStatePtr driver,
                        _("invalid base64 in '%s'"), filename);
         goto cleanup;
     }
-    if (value == NULL) {
-        virReportOOMError();
+    if (value == NULL)
         goto cleanup;
-    }
 
     secret->value = (unsigned char *)value;
     value = NULL;
@@ -446,10 +437,8 @@ secretLoad(virSecretDriverStatePtr driver,
     char *xml_filename;
 
     if (virAsprintf(&xml_filename, "%s/%s", driver->directory,
-                    xml_basename) < 0) {
-        virReportOOMError();
+                    xml_basename) < 0)
         goto cleanup;
-    }
     def = virSecretDefParseFile(xml_filename);
     if (def == NULL)
         goto cleanup;
@@ -458,10 +447,8 @@ secretLoad(virSecretDriverStatePtr driver,
     if (secretLoadValidateUUID(def, xml_basename) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(secret) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(secret) < 0)
         goto cleanup;
-    }
     secret->def = def;
     def = NULL;
 
@@ -598,10 +585,8 @@ secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
             continue;
         if (i == maxuuids)
             break;
-        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0)
             goto cleanup;
-        }
         virUUIDFormat(secret->def->uuid, uuidstr);
         uuids[i] = uuidstr;
         i++;
@@ -664,12 +649,8 @@ secretConnectListAllSecrets(virConnectPtr conn,
     for (entry = driver->secrets; entry != NULL; entry = entry->next)
         nsecrets++;
 
-    if (secrets) {
-        if (VIR_ALLOC_N(tmp_secrets, nsecrets + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (secrets && VIR_ALLOC_N(tmp_secrets, nsecrets + 1) < 0)
+        goto cleanup;
 
     for (entry = driver->secrets; entry != NULL; entry = entry->next) {
         if (!virConnectListAllSecretsCheckACL(conn,
@@ -825,10 +806,8 @@ secretDefineXML(virConnectPtr conn, const char *xml,
         }
 
         /* No existing secret at all, create one */
-        if (VIR_ALLOC(secret) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(secret) < 0)
             goto cleanup;
-        }
 
         listInsert(&driver->secrets, secret);
         secret->def = new_attrs;
@@ -949,10 +928,8 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
 
     virCheckFlags(0, -1);
 
-    if (VIR_ALLOC_N(new_value, value_size) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(new_value, value_size) < 0)
         return -1;
-    }
 
     secretDriverLock(driver);
 
@@ -1041,10 +1018,8 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(ret, secret->value_size) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, secret->value_size) < 0)
         goto cleanup;
-    }
     memcpy(ret, secret->value, secret->value_size);
     *value_size = secret->value_size;
 
@@ -1145,8 +1120,8 @@ secretStateInitialize(bool privileged,
         if (!base)
             goto error;
     }
-    if (virAsprintf(&driverState->directory, "%s/secrets", base) == -1)
-        goto out_of_memory;
+    if (virAsprintf(&driverState->directory, "%s/secrets", base) < 0)
+        goto error;
     VIR_FREE(base);
 
     if (loadSecrets(driverState, &driverState->secrets) < 0)
@@ -1155,8 +1130,6 @@ secretStateInitialize(bool privileged,
     secretDriverUnlock(driverState);
     return 0;
 
- out_of_memory:
-    VIR_ERROR(_("Out of memory initializing secrets"));
  error:
     VIR_FREE(base);
     secretDriverUnlock(driverState);
