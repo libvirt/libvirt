@@ -495,7 +495,7 @@ doRemoteOpen(virConnectPtr conn,
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
         if (virAsprintf(&port, "%d", conn->uri->port) < 0)
-            goto no_memory;
+            goto failed;
     } else if (transport == trans_tls) {
         if (VIR_STRDUP(port, LIBVIRTD_TLS_PORT) < 0)
             goto failed;
@@ -677,7 +677,7 @@ doRemoteOpen(virConnectPtr conn,
 
                 if (virAsprintf(&sockname, "%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
                     VIR_FREE(userdir);
-                    goto no_memory;
+                    goto failed;
                 }
                 VIR_FREE(userdir);
             } else {
@@ -878,9 +878,6 @@ doRemoteOpen(virConnectPtr conn,
 
     return retcode;
 
-no_memory:
-    virReportOOMError();
-
  failed:
     virObjectUnref(priv->remoteProgram);
     virObjectUnref(priv->lxcProgram);
@@ -899,10 +896,8 @@ static struct private_data *
 remoteAllocPrivateData(void)
 {
     struct private_data *priv;
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(priv) < 0)
         return NULL;
-    }
 
     if (virMutexInit(&priv->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1429,17 +1424,13 @@ remoteConnectListAllDomains(virConnectPtr conn,
         goto done;
 
     if (domains) {
-        if (VIR_ALLOC_N(doms, ret.domains.domains_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(doms, ret.domains.domains_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.domains.domains_len; i++) {
             doms[i] = get_nonnull_domain(conn, ret.domains.domains_val[i]);
-            if (!doms[i]) {
-                virReportOOMError();
+            if (!doms[i])
                 goto cleanup;
-            }
         }
         *domains = doms;
         doms = NULL;
@@ -1493,10 +1484,8 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
     remote_typed_param *val;
 
     *args_params_len = nparams;
-    if (VIR_ALLOC_N(val, nparams) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(val, nparams) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < nparams; ++i) {
         /* call() will free this: */
@@ -1563,10 +1552,8 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
             goto cleanup;
         }
     } else {
-        if (VIR_ALLOC_N(*params, ret_params_len) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(*params, ret_params_len) < 0)
             goto cleanup;
-        }
     }
     *nparams = ret_params_len;
 
@@ -2850,17 +2837,13 @@ remoteConnectListAllNetworks(virConnectPtr conn,
         goto done;
 
     if (nets) {
-        if (VIR_ALLOC_N(tmp_nets, ret.nets.nets_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_nets, ret.nets.nets_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.nets.nets_len; i++) {
             tmp_nets[i] = get_nonnull_network(conn, ret.nets.nets_val[i]);
-            if (!tmp_nets[i]) {
-                virReportOOMError();
+            if (!tmp_nets[i])
                 goto cleanup;
-            }
         }
         *nets = tmp_nets;
         tmp_nets = NULL;
@@ -2913,17 +2896,13 @@ remoteConnectListAllInterfaces(virConnectPtr conn,
         goto done;
 
     if (ifaces) {
-        if (VIR_ALLOC_N(tmp_ifaces, ret.ifaces.ifaces_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_ifaces, ret.ifaces.ifaces_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.ifaces.ifaces_len; i++) {
             tmp_ifaces[i] = get_nonnull_interface(conn, ret.ifaces.ifaces_val[i]);
-            if (!tmp_ifaces[i]) {
-                virReportOOMError();
+            if (!tmp_ifaces[i])
                 goto cleanup;
-            }
         }
         *ifaces = tmp_ifaces;
         tmp_ifaces = NULL;
@@ -2976,17 +2955,13 @@ remoteConnectListAllNodeDevices(virConnectPtr conn,
         goto done;
 
     if (devices) {
-        if (VIR_ALLOC_N(tmp_devices, ret.devices.devices_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_devices, ret.devices.devices_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.devices.devices_len; i++) {
             tmp_devices[i] = get_nonnull_node_device(conn, ret.devices.devices_val[i]);
-            if (!tmp_devices[i]) {
-                virReportOOMError();
+            if (!tmp_devices[i])
                 goto cleanup;
-            }
         }
         *devices = tmp_devices;
         tmp_devices = NULL;
@@ -3039,17 +3014,13 @@ remoteConnectListAllNWFilters(virConnectPtr conn,
         goto done;
 
     if (filters) {
-        if (VIR_ALLOC_N(tmp_filters, ret.filters.filters_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_filters, ret.filters.filters_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.filters.filters_len; i++) {
             tmp_filters[i] = get_nonnull_nwfilter(conn, ret.filters.filters_val[i]);
-            if (!tmp_filters[i]) {
-                virReportOOMError();
+            if (!tmp_filters[i])
                 goto cleanup;
-            }
         }
         *filters = tmp_filters;
         tmp_filters = NULL;
@@ -3102,17 +3073,13 @@ remoteConnectListAllSecrets(virConnectPtr conn,
         goto done;
 
     if (secrets) {
-        if (VIR_ALLOC_N(tmp_secrets, ret.secrets.secrets_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_secrets, ret.secrets.secrets_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.secrets.secrets_len; i++) {
             tmp_secrets[i] = get_nonnull_secret(conn, ret.secrets.secrets_val[i]);
-            if (!tmp_secrets[i]) {
-                virReportOOMError();
+            if (!tmp_secrets[i])
                 goto cleanup;
-            }
         }
         *secrets = tmp_secrets;
         tmp_secrets = NULL;
@@ -3303,17 +3270,13 @@ remoteConnectListAllStoragePools(virConnectPtr conn,
         goto done;
 
     if (pools) {
-        if (VIR_ALLOC_N(tmp_pools, ret.pools.pools_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_pools, ret.pools.pools_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.pools.pools_len; i++) {
             tmp_pools[i] = get_nonnull_storage_pool(conn, ret.pools.pools_val[i]);
-            if (!tmp_pools[i]) {
-                virReportOOMError();
+            if (!tmp_pools[i])
                 goto cleanup;
-            }
         }
         *pools = tmp_pools;
         tmp_pools = NULL;
@@ -3367,17 +3330,13 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
         goto done;
 
     if (vols) {
-        if (VIR_ALLOC_N(tmp_vols, ret.vols.vols_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(tmp_vols, ret.vols.vols_len + 1) < 0)
             goto cleanup;
-        }
 
         for (i = 0; i < ret.vols.vols_len; i++) {
             tmp_vols[i] = get_nonnull_storage_vol(pool->conn, ret.vols.vols_val[i]);
-            if (!tmp_vols[i]) {
-                virReportOOMError();
+            if (!tmp_vols[i])
                 goto cleanup;
-            }
         }
         *vols = tmp_vols;
         tmp_vols = NULL;
@@ -4881,10 +4840,8 @@ remoteStreamEventAddCallback(virStreamPtr st,
     int ret = -1;
     struct remoteStreamCallbackData *cbdata;
 
-    if (VIR_ALLOC(cbdata) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(cbdata) < 0)
         return -1;
-    }
     cbdata->cb = cb;
     cbdata->opaque = opaque;
     cbdata->ff = ff;
@@ -5778,16 +5735,12 @@ remoteDomainListAllSnapshots(virDomainPtr dom,
         goto done;
 
     if (snapshots) {
-        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0)
             goto cleanup;
-        }
         for (i = 0; i < ret.snapshots.snapshots_len; i++) {
             snaps[i] = get_nonnull_domain_snapshot(dom, ret.snapshots.snapshots_val[i]);
-            if (!snaps[i]) {
-                virReportOOMError();
+            if (!snaps[i])
                 goto cleanup;
-            }
         }
         *snapshots = snaps;
         snaps = NULL;
@@ -5841,16 +5794,12 @@ remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
         goto done;
 
     if (snapshots) {
-        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0)
             goto cleanup;
-        }
         for (i = 0; i < ret.snapshots.snapshots_len; i++) {
             snaps[i] = get_nonnull_domain_snapshot(parent->domain, ret.snapshots.snapshots_val[i]);
-            if (!snaps[i]) {
-                virReportOOMError();
+            if (!snaps[i])
                 goto cleanup;
-            }
         }
         *snapshots = snaps;
         snaps = NULL;
@@ -5950,10 +5899,8 @@ remoteNodeGetCPUMap(virConnectPtr conn,
         goto cleanup;
 
     if (cpumap) {
-        if (VIR_ALLOC_N(*cpumap, ret.cpumap.cpumap_len) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(*cpumap, ret.cpumap.cpumap_len) < 0)
             goto cleanup;
-        }
         memcpy(*cpumap, ret.cpumap.cpumap_val, ret.cpumap.cpumap_len);
     }
 
