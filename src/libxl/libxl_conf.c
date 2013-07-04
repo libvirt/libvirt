@@ -278,12 +278,11 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
                                        host_pae,
                                        guest_archs,
                                        nr_guest_archs)) == NULL)
-        goto no_memory;
+        goto error;
 
     return caps;
 
- no_memory:
-    virReportOOMError();
+ error:
     virObjectUnref(caps);
     return NULL;
 }
@@ -576,10 +575,8 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     libxl_device_disk *x_disks;
     int i;
 
-    if (VIR_ALLOC_N(x_disks, ndisks) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(x_disks, ndisks) < 0)
         return -1;
-    }
 
     for (i = 0; i < ndisks; i++) {
         if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
@@ -648,10 +645,8 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     libxl_device_nic *x_nics;
     int i;
 
-    if (VIR_ALLOC_N(x_nics, nnics) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(x_nics, nnics) < 0)
         return -1;
-    }
 
     for (i = 0; i < nnics; i++) {
         if (libxlMakeNic(l_nics[i], &x_nics[i]))
@@ -734,12 +729,9 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     if (nvfbs == 0)
         return 0;
 
-    if (VIR_ALLOC_N(x_vfbs, nvfbs) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(x_vfbs, nvfbs) < 0)
         return -1;
-    }
     if (VIR_ALLOC_N(x_vkbs, nvfbs) < 0) {
-        virReportOOMError();
         VIR_FREE(x_vfbs);
         return -1;
     }

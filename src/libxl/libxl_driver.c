@@ -183,10 +183,8 @@ libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
     int vir_events = VIR_EVENT_HANDLE_ERROR;
     libxlEventHookInfoPtr info;
 
-    if (VIR_ALLOC(info) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(info) < 0)
         return -1;
-    }
 
     info->priv = priv;
     /*
@@ -287,10 +285,8 @@ libxlTimeoutRegisterEventHook(void *priv,
     static struct timeval zero;
     int timeout;
 
-    if (VIR_ALLOC(info) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(info) < 0)
         return -1;
-    }
 
     info->priv = priv;
     /*
@@ -548,11 +544,7 @@ static char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm) {
     char *ret;
 
-    if (virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name));
     return ret;
 }
 
@@ -597,10 +589,8 @@ libxlSaveImageOpen(libxlDriverPrivatePtr driver, const char *from,
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, hdr.xmlLen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(xml, hdr.xmlLen) < 0)
         goto error;
-    }
 
     if (saferead(fd, xml, hdr.xmlLen) != hdr.xmlLen) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("failed to read XML"));
@@ -845,10 +835,8 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
         if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
             continue;
 
-        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
             goto cleanup;
-        }
 
         cpumask = (uint8_t*) def->cputune.vcpupin[vcpu]->cpumask;
 
@@ -1273,9 +1261,8 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
 
-    if (virAsprintf(&log_file, "%s/libxl.log", libxl_driver->logDir) < 0) {
-        goto out_of_memory;
-    }
+    if (virAsprintf(&log_file, "%s/libxl.log", libxl_driver->logDir) < 0)
+        goto error;
 
     if ((libxl_driver->logger_file = fopen(log_file, "a")) == NULL)  {
         virReportSystemError(errno,
@@ -1369,8 +1356,6 @@ libxlStateInitialize(bool privileged,
 
     return 0;
 
-out_of_memory:
-    virReportOOMError();
 error:
     ret = -1;
 fail:
@@ -2803,10 +2788,8 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto cleanup;
 
     maplen = VIR_CPU_MAPLEN(nvcpus);
-    if (VIR_ALLOC_N(bitmask, maplen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(bitmask, maplen) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < nvcpus; ++i) {
         pos = i / 8;
@@ -2967,10 +2950,8 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
     }
 
     if (!vm->def->cputune.vcpupin) {
-        if (VIR_ALLOC(vm->def->cputune.vcpupin) < 0) {
-            virReportOOMError();
+        if (VIR_ALLOC(vm->def->cputune.vcpupin) < 0)
             goto cleanup;
-        }
         vm->def->cputune.nvcpupin = 0;
     }
     if (virDomainVcpuPinAdd(&vm->def->cputune.vcpupin,
@@ -3176,10 +3157,8 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     if (!(conf = xenFormatXM(conn, def, ver_info->xen_version_major)))
         goto cleanup;
 
-    if (VIR_ALLOC_N(ret, len) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ret, len) < 0)
         goto cleanup;
-    }
 
     if (virConfWriteMem(ret, &len, conf) < 0) {
         VIR_FREE(ret);
@@ -3492,10 +3471,8 @@ libxlDomainAttachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
                     goto cleanup;
                 }
 
-                if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-                    virReportOOMError();
+                if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
                     goto cleanup;
-                }
 
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
@@ -3617,10 +3594,8 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                                _("target %s already exists."), disk->dst);
                 return -1;
             }
-            if (virDomainDiskInsert(vmdef, disk)) {
-                virReportOOMError();
+            if (virDomainDiskInsert(vmdef, disk))
                 return -1;
-            }
             /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
             dev->data.disk = NULL;
             break;
