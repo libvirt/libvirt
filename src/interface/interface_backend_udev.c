@@ -73,10 +73,8 @@ udevGetMinimalDefForDevice(struct udev_device *dev)
     virInterfaceDef *def;
 
     /* Allocate our interface definition structure */
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (VIR_STRDUP(def->name, udev_device_get_sysname(dev)) < 0)
         goto cleanup;
@@ -141,10 +139,8 @@ udevInterfaceOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (VIR_ALLOC(driverState) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(driverState) < 0)
         goto cleanup;
-    }
 
     driverState->udev = udev_new();
     if (!driverState->udev) {
@@ -403,12 +399,9 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     }
 
     /* If we're asked for the ifaces then alloc up memory */
-    if (ifaces) {
-        if (VIR_ALLOC_N(ifaces_list, count + 1) < 0) {
-            virReportOOMError();
-            ret = -1;
-            goto cleanup;
-        }
+    if (ifaces && VIR_ALLOC_N(ifaces_list, count + 1) < 0) {
+        ret = -1;
+        goto cleanup;
     }
 
     /* Get a list we can walk */
@@ -815,10 +808,8 @@ udevGetIfaceDefBond(struct udev *udev,
     }
 
     /* Allocate our list of slave devices */
-    if (VIR_ALLOC_N(ifacedef->data.bond.itf, slave_count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ifacedef->data.bond.itf, slave_count) < 0)
         goto error;
-    }
     ifacedef->data.bond.nbItf = slave_count;
 
     for (i = 0; i < slave_count; i++) {
@@ -918,10 +909,8 @@ udevGetIfaceDefBridge(struct udev *udev,
 
     /* Members of the bridge */
     if (virAsprintf(&member_path, "%s/%s",
-                udev_device_get_syspath(dev), "brif") < 0) {
-        virReportOOMError();
+                udev_device_get_syspath(dev), "brif") < 0)
         goto error;
-    }
 
     /* Get each member of the bridge */
     member_count = scandir(member_path, &member_list,
@@ -938,10 +927,8 @@ udevGetIfaceDefBridge(struct udev *udev,
     }
 
     /* Allocate our list of member devices */
-    if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0)
         goto error;
-    }
     ifacedef->data.bridge.nbItf = member_count;
 
     /* Get the interface defintions for each member of the bridge */
@@ -1016,10 +1003,8 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     const char *devtype;
 
     /* Allocate our interface definition structure */
-    if (VIR_ALLOC(ifacedef) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(ifacedef) < 0)
         return NULL;
-    }
 
     /* Clear our structure and set safe defaults */
     ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;

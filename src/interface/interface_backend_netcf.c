@@ -65,10 +65,8 @@ netcfGetMinimalDefForDevice(struct netcf_if *iface)
     virInterfaceDef *def;
 
     /* Allocate our interface definition structure */
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
 
     if (VIR_STRDUP(def->name, ncf_if_name(iface)) < 0)
         goto cleanup;
@@ -157,10 +155,7 @@ static virDrvOpenStatus netcfInterfaceOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (VIR_ALLOC(driverState) < 0)
-    {
-        virReportOOMError();
         goto alloc_error;
-    }
 
     /* initialize non-0 stuff in driverState */
     if (virMutexInit(&driverState->lock) < 0)
@@ -239,10 +234,8 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(names, count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(names, count) < 0)
         goto cleanup;
-    }
 
     if ((count = ncf_list_interfaces(driver->netcf, count, names, status)) < 0) {
         const char *errmsg, *details;
@@ -332,10 +325,8 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(allnames, count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(allnames, count) < 0)
         goto cleanup;
-    }
 
     if ((count = ncf_list_interfaces(driver->netcf, count, allnames, status)) < 0) {
         const char *errmsg, *details;
@@ -519,10 +510,8 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(names, count) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(names, count) < 0)
         goto cleanup;
-    }
 
     if ((count = ncf_list_interfaces(driver->netcf, count, names,
                                      NETCF_IFACE_ACTIVE |
@@ -536,12 +525,8 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (ifaces) {
-        if (VIR_ALLOC_N(tmp_iface_objs, count + 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (ifaces && VIR_ALLOC_N(tmp_iface_objs, count + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < count; i++) {
         virInterfaceDefPtr def;
