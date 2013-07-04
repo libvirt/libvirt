@@ -57,10 +57,8 @@ virAccessDriverPolkitFormatAction(const char *typename,
 
     if (virAsprintf(&actionid, "%s.%s.%s",
                     VIR_ACCESS_DRIVER_POLKIT_ACTION_PREFIX,
-                    typename, permname) < 0) {
-        virReportOOMError();
+                    typename, permname) < 0)
         return NULL;
-    }
 
     for (i = 0; actionid[i]; i++)
         if (actionid[i] == '_')
