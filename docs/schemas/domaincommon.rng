@@ -4054,9 +4054,11 @@
         <optional>
           <element name="spinlocks">
             <ref name="hypervtristate"/>
-            <attribute name="retries">
-              <data type="integer"/>
-            </attribute>
+            <optional>
+              <attribute name="retries">
+                <data type="unsignedInt"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
       </interleave>

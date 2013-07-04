@@ -11211,27 +11211,21 @@ virDomainDefParseXML(xmlDocPtr xml,
                     }
 
                     VIR_FREE(tmp);
-                    if (!(tmp = virXPathString("string(./@retries)", ctxt))) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("missing HyperV spinlock retry count"));
-                        goto error;
-                    }
+                    if (value == VIR_DOMAIN_FEATURE_STATE_ON) {
+                        if (virXPathUInt("string(./@retries)", ctxt,
+                                     &def->hyperv_spinlocks) < 0) {
+                            virReportError(VIR_ERR_XML_ERROR, "%s",
+                                           _("invalid HyperV spinlock retry count"));
+                            goto error;
+                        }
 
-                    if (virStrToLong_ui(tmp, NULL, 0,
-                                        &def->hyperv_spinlocks) < 0) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("Cannot parse HyperV spinlock retry "
-                                         "count"));
-                        goto error;
+                        if (def->hyperv_spinlocks < 0xFFF) {
+                            virReportError(VIR_ERR_XML_ERROR, "%s",
+                                           _("HyperV spinlock retry count must be "
+                                             "at least 4095"));
+                            goto error;
+                        }
                     }
-
-                    if (def->hyperv_spinlocks < 0xFFF) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("HyperV spinlock retry count must be "
-                                         "at least 4095"));
-                        goto error;
-                    }
-                    VIR_FREE(tmp);
                     def->hyperv_features[feature] = value;
                     break;
 

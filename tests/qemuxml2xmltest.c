@@ -156,6 +156,7 @@ mymain(void)
     DO_TEST("eoi-enabled");
 
     DO_TEST("hyperv");
+    DO_TEST("hyperv-off");
 
     DO_TEST("hugepages");
     DO_TEST("nosharepages");
