@@ -1345,10 +1345,8 @@ static int udevAddOneDevice(struct udev_device *device)
     virNodeDeviceObjPtr dev = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(def) != 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) != 0)
         goto out;
-    }
 
     if (VIR_STRDUP(def->sysfs_path, udev_device_get_syspath(device)) < 0)
         goto out;
@@ -1359,10 +1357,8 @@ static int udevAddOneDevice(struct udev_device *device)
         goto out;
     }
 
-    if (VIR_ALLOC(def->caps) != 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def->caps) != 0)
         goto out;
-    }
 
     if (udevGetDeviceType(device, &def->caps->type) != 0) {
         goto out;
@@ -1625,18 +1621,14 @@ static int udevSetupSystemDev(void)
     virNodeDeviceObjPtr dev = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(def) != 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def) != 0)
         goto out;
-    }
 
     if (VIR_STRDUP(def->name, "computer") < 0)
         goto out;
 
-    if (VIR_ALLOC(def->caps) != 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(def->caps) != 0)
         goto out;
-    }
 
 #if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
     udevGetDMIData(&def->caps->data);
@@ -1689,7 +1681,6 @@ static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 #endif
 
     if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError();
         ret = -1;
         goto out;
     }
@@ -1697,7 +1688,6 @@ static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     priv->watch = -1;
 
     if (VIR_ALLOC(driverState) < 0) {
-        virReportOOMError();
         VIR_FREE(priv);
         ret = -1;
         goto out;

@@ -78,10 +78,8 @@ static int update_driver_name(virNodeDeviceObjPtr dev)
 
     VIR_FREE(dev->def->driver);
 
-    if (virAsprintf(&driver_link, "%s/driver", dev->def->sysfs_path) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&driver_link, "%s/driver", dev->def->sysfs_path) < 0)
         goto cleanup;
-    }
 
     /* Some devices don't have an explicit driver, so just return
        without a name */
