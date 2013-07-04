@@ -192,17 +192,17 @@ networkRemoveInactive(struct network_driver *driver,
         goto cleanup;
 
     if (!(radvdconfigfile = networkRadvdConfigFileName(def->name)))
-        goto no_memory;
+        goto cleanup;
 
     if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
-        goto no_memory;
+        goto cleanup;
 
     if (!(configfile = networkDnsmasqConfigFileName(def->name)))
-        goto no_memory;
+        goto cleanup;
 
     if (!(statusfile
           = virNetworkConfigFile(driverState->stateDir, def->name)))
-        goto no_memory;
+        goto cleanup;
 
     /* dnsmasq */
     dnsmasqDelete(dctx);
@@ -229,10 +229,6 @@ cleanup:
     VIR_FREE(statusfile);
     dnsmasqContextFree(dctx);
     return ret;
-
-no_memory:
-    virReportOOMError();
-    goto cleanup;
 }
 
 static char *
@@ -282,10 +278,8 @@ networkFindActiveConfigs(struct network_driver *driver)
                                                    &obj->dnsmasqPid,
                                                    dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
 
-                if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name))) {
-                    virReportOOMError();
+                if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name)))
                     goto cleanup;
-                }
                 ignore_value(virPidFileReadIfAlive(driverState->pidDir, radvdpidbase,
                                                    &obj->radvdPid, RADVD));
                 VIR_FREE(radvdpidbase);
@@ -415,7 +409,7 @@ networkStateInitialize(bool privileged,
                          "%s/dnsmasq/lib", rundir) < 0) ||
             (virAsprintf(&driverState->radvdStateDir,
                          "%s/radvd/lib", rundir) < 0)) {
-            goto out_of_memory;
+            goto error;
         }
     }
 
@@ -470,8 +464,6 @@ cleanup:
     VIR_FREE(rundir);
     return ret;
 
-out_of_memory:
-    virReportOOMError();
 error:
     if (driverState)
         networkDriverUnlock(driverState);
@@ -784,24 +776,15 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     for (ii = 0; ii < dns->nsrvs; ii++) {
         if (dns->srvs[ii].service && dns->srvs[ii].protocol) {
-            if (dns->srvs[ii].port) {
-                if (virAsprintf(&recordPort, "%d", dns->srvs[ii].port) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            }
-            if (dns->srvs[ii].priority) {
-                if (virAsprintf(&recordPriority, "%d", dns->srvs[ii].priority) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            }
-            if (dns->srvs[ii].weight) {
-                if (virAsprintf(&recordWeight, "%d", dns->srvs[ii].weight) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            }
+            if (dns->srvs[ii].port &&
+                virAsprintf(&recordPort, "%d", dns->srvs[ii].port) < 0)
+                goto cleanup;
+            if (dns->srvs[ii].priority &&
+                virAsprintf(&recordPriority, "%d", dns->srvs[ii].priority) < 0)
+                goto cleanup;
+            if (dns->srvs[ii].weight &&
+                virAsprintf(&recordWeight, "%d", dns->srvs[ii].weight) < 0)
+                goto cleanup;
 
             if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
                             dns->srvs[ii].service,
@@ -810,10 +793,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                             dns->srvs[ii].target ? dns->srvs[ii].target : "",
                             recordPort           ? recordPort           : "",
                             recordPriority       ? recordPriority       : "",
-                            recordWeight         ? recordWeight         : "") < 0) {
-                virReportOOMError();
+                            recordWeight         ? recordWeight         : "") < 0)
                 goto cleanup;
-            }
 
             virBufferAsprintf(&configbuf, "srv-host=%s\n", record);
             VIR_FREE(record);
@@ -929,10 +910,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                 if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
                     char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
 
-                    if (!bootserver) {
-                        virReportOOMError();
+                    if (!bootserver)
                         goto cleanup;
-                    }
                     virBufferAsprintf(&configbuf, "dhcp-boot=%s%s%s\n",
                                       ipdef->bootfile, ",,", bootserver);
                     VIR_FREE(bootserver);
@@ -946,10 +925,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     if (nbleases > 0) {
         char *leasefile = networkDnsmasqLeaseFileName(network->def->name);
-        if (!leasefile) {
-            virReportOOMError();
+        if (!leasefile)
             goto cleanup;
-        }
         virBufferAsprintf(&configbuf, "dhcp-leasefile=%s\n", leasefile);
         VIR_FREE(leasefile);
         virBufferAsprintf(&configbuf, "dhcp-lease-max=%d\n", nbleases);
@@ -1027,10 +1004,8 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
         goto cleanup;
 
     /* construct the filename */
-    if (!(configfile = networkDnsmasqConfigFileName(network->def->name))) {
-        virReportOOMError();
+    if (!(configfile = networkDnsmasqConfigFileName(network->def->name)))
         goto cleanup;
-    }
 
     /* Write the file */
     if (virFileWriteStr(configfile, configstr, 0600) < 0) {
@@ -1077,10 +1052,8 @@ networkStartDhcpDaemon(struct network_driver *driver,
     }
 
     if (!(pidfile = virPidFileBuildPath(driverState->pidDir,
-                                        network->def->name))) {
-        virReportOOMError();
+                                        network->def->name)))
         goto cleanup;
-    }
 
     if (virFileMakePath(driverState->dnsmasqStateDir) < 0) {
         virReportSystemError(errno,
@@ -1330,10 +1303,8 @@ networkRadvdConfWrite(virNetworkObjPtr network, char **configFile)
     }
 
     /* construct the filename */
-    if (!(*configFile = networkRadvdConfigFileName(network->def->name))) {
-        virReportOOMError();
+    if (!(*configFile = networkRadvdConfigFileName(network->def->name)))
         goto cleanup;
-    }
     /* write the file */
     if (virFileWriteStr(*configFile, configStr, 0600) < 0) {
         virReportSystemError(errno,
@@ -1395,14 +1366,10 @@ networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
     }
 
     /* construct pidfile name */
-    if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
-        virReportOOMError();
+    if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name)))
         goto cleanup;
-    }
-    if (!(pidfile = virPidFileBuildPath(driverState->pidDir, radvdpidbase))) {
-        virReportOOMError();
+    if (!(pidfile = virPidFileBuildPath(driverState->pidDir, radvdpidbase)))
         goto cleanup;
-    }
 
     if (networkRadvdConfWrite(network, &configfile) < 0)
         goto cleanup;
@@ -2178,10 +2145,8 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
          * the network.
          */
         if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6",
-                        network->def->bridge) < 0) {
-            virReportOOMError();
+                        network->def->bridge) < 0)
             goto cleanup;
-        }
 
         if (access(field, W_OK) < 0 && errno == ENOENT) {
             VIR_DEBUG("ipv6 appears to already be disabled on %s",
@@ -2207,10 +2172,8 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
      * their own router advertisements.
      */
     if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/accept_ra",
-                    network->def->bridge) < 0) {
-        virReportOOMError();
+                    network->def->bridge) < 0)
         goto cleanup;
-    }
 
     if (virFileWriteStr(field, "0", 0) < 0) {
         virReportSystemError(errno,
@@ -2223,10 +2186,8 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
      * definition), must always have autoconf=0.
      */
     if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/autoconf",
-                    network->def->bridge) < 0) {
-        virReportOOMError();
+                    network->def->bridge) < 0)
         goto cleanup;
-    }
 
     if (virFileWriteStr(field, "0", 0) < 0) {
         virReportSystemError(errno,
@@ -2435,10 +2396,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
          * address.
          */
         macTapIfName = networkBridgeDummyNicName(network->def->bridge);
-        if (!macTapIfName) {
-            virReportOOMError();
+        if (!macTapIfName)
             goto err0;
-        }
         /* Keep tun fd open and interface up to allow for IPv6 DAD to happen */
         if (virNetDevTapCreateInBridgePort(network->def->bridge,
                                            &macTapIfName, &network->def->mac,
@@ -2599,9 +2558,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver ATTRIBUTE
 
         kill(network->radvdPid, SIGTERM);
         /* attempt to delete the pidfile we created */
-        if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
-            virReportOOMError();
-        } else {
+        if ((radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
             virPidFileDelete(driverState->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
@@ -2612,9 +2569,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver ATTRIBUTE
 
     if (network->def->mac_specified) {
         char *macTapIfName = networkBridgeDummyNicName(network->def->bridge);
-        if (!macTapIfName) {
-            virReportOOMError();
-        } else {
+        if (macTapIfName) {
             ignore_value(virNetDevTapDelete(macTapIfName));
             VIR_FREE(macTapIfName);
         }
@@ -3774,10 +3729,8 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
        goto finish;
     }
 
-    if ((VIR_ALLOC_N(netdef->forward.ifs, num_virt_fns)) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(netdef->forward.ifs, num_virt_fns) < 0)
         goto finish;
-    }
 
     netdef->forward.nifs = num_virt_fns;
 
@@ -3877,12 +3830,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         bandwidth = portgroup->bandwidth;
 
     if (bandwidth) {
-        if (!iface->data.network.actual
-            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
-            virReportOOMError();
+        if (!iface->data.network.actual &&
+            VIR_ALLOC(iface->data.network.actual) < 0)
             goto error;
-        }
-
         if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
                                    bandwidth) < 0)
             goto error;
@@ -3897,11 +3847,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         vlan = &netdef->vlan;
 
     if (vlan) {
-        if (!iface->data.network.actual
-            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
-            virReportOOMError();
+        if (!iface->data.network.actual &&
+            VIR_ALLOC(iface->data.network.actual) < 0)
             goto error;
-        }
         if (virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
            goto error;
     }
@@ -3926,11 +3874,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
          * is VIR_DOMAIN_NET_TYPE_BRIDGE
          */
 
-        if (!iface->data.network.actual
-            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
-            virReportOOMError();
+        if (!iface->data.network.actual &&
+            VIR_ALLOC(iface->data.network.actual) < 0)
             goto error;
-        }
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_BRIDGE;
         if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
@@ -3964,11 +3910,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
 
         virDomainHostdevSubsysPciBackendType backend;
 
-        if (!iface->data.network.actual
-            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
-            virReportOOMError();
+        if (!iface->data.network.actual &&
+            VIR_ALLOC(iface->data.network.actual) < 0)
             goto error;
-        }
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
         if (netdef->forward.npfs > 0 && netdef->forward.nifs <= 0 &&
@@ -4053,11 +3997,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
          * VIR_DOMAIN_NET_TYPE_DIRECT.
          */
 
-        if (!iface->data.network.actual
-            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
-            virReportOOMError();
+        if (!iface->data.network.actual &&
+            VIR_ALLOC(iface->data.network.actual) < 0)
             goto error;
-        }
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_DIRECT;
