@@ -713,10 +713,8 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
-            virReportOOMError();
+            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0))
             goto done;
-        }
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecurityDACSetOwnership(in, user, group) < 0) ||
                 (virSecurityDACSetOwnership(out, user, group) < 0)) {
@@ -755,10 +753,8 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
-            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0)) {
-            virReportOOMError();
+            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0))
             goto done;
-        }
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
                 (virSecurityDACRestoreSecurityFileLabel(in) < 0)) {
@@ -1084,10 +1080,8 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
         if (virAsprintf(&seclabel->label, "%u:%u",
                         (unsigned int) priv->user,
-                        (unsigned int) priv->group) < 0) {
-            virReportOOMError();
+                        (unsigned int) priv->group) < 0)
             return rc;
-        }
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot generate dac user and group id "

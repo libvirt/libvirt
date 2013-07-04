@@ -77,16 +77,13 @@ profile_status(const char *str, const int check_enforcing)
     int rc = -1;
 
     /* create string that is '<str> \0' for accurate matching */
-    if (virAsprintf(&tmp, "%s ", str) == -1) {
-        virReportOOMError();
+    if (virAsprintf(&tmp, "%s ", str) == -1)
         return rc;
-    }
 
     if (check_enforcing != 0) {
         /* create string that is '<str> (enforce)\0' for accurate matching */
         if (virAsprintf(&etmp, "%s (enforce)", str) == -1) {
             VIR_FREE(tmp);
-            virReportOOMError();
             return rc;
         }
     }
@@ -132,10 +129,8 @@ profile_status_file(const char *str)
     int rc = -1;
     int len;
 
-    if (virAsprintf(&profile, "%s/%s", APPARMOR_DIR "/libvirt", str) == -1) {
-        virReportOOMError();
+    if (virAsprintf(&profile, "%s/%s", APPARMOR_DIR "/libvirt", str) == -1)
         return rc;
-    }
 
     if (!virFileExists(profile))
         goto failed;
@@ -147,10 +142,8 @@ profile_status_file(const char *str)
     }
 
     /* create string that is ' <str> flags=(complain)\0' */
-    if (virAsprintf(&tmp, " %s flags=(complain)", str) == -1) {
-        virReportOOMError();
+    if (virAsprintf(&tmp, " %s flags=(complain)", str) == -1)
         goto failed;
-    }
 
     if (strstr(content, tmp) != NULL)
         rc = 0;
@@ -231,10 +224,8 @@ get_profile_name(virDomainDefPtr def)
     char *name = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
-    if (virAsprintf(&name, "%s%s", AA_PREFIX, uuidstr) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&name, "%s%s", AA_PREFIX, uuidstr) < 0)
         return NULL;
-    }
 
     return name;
 }
@@ -363,10 +354,8 @@ AppArmorSecurityManagerProbe(const char *virtDriver)
 
     /* see if template file exists */
     if (virAsprintf(&template, "%s/TEMPLATE",
-                               APPARMOR_DIR "/libvirt") == -1) {
-        virReportOOMError();
+                               APPARMOR_DIR "/libvirt") == -1)
         return rc;
-    }
 
     if (!virFileExists(template)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -920,10 +909,8 @@ AppArmorSetFDLabel(virSecurityManagerPtr mgr,
     if (secdef->imagelabel == NULL)
         return 0;
 
-    if (virAsprintf(&proc, "/proc/self/fd/%d", fd) == -1) {
-        virReportOOMError();
+    if (virAsprintf(&proc, "/proc/self/fd/%d", fd) == -1)
         return rc;
-    }
 
     if (virFileResolveLink(proc, &fd_path) < 0) {
         /* it's a deleted file, presumably.  Ignore? */

@@ -80,10 +80,8 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
               allowDiskFormatProbing, defaultConfined,
               requireConfined);
 
-    if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
         return NULL;
-    }
 
     if (!(mgr = virObjectLockableNew(virSecurityManagerClass))) {
         VIR_FREE(privateData);
@@ -487,10 +485,8 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
             if (generated &&
-                VIR_APPEND_ELEMENT_QUIET(vm->seclabels, vm->nseclabels, seclabel) < 0) {
-                virReportOOMError();
+                VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel) < 0)
                 goto cleanup;
-            }
 
             if (sec_managers[i]->drv->domainGenSecurityLabel(sec_managers[i], vm) < 0) {
                 if (VIR_DELETE_ELEMENT(vm->seclabels,
@@ -703,10 +699,8 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
         return virSecurityStackGetNested(mgr);
     }
 
-    if (VIR_ALLOC_N(list, 2) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(list, 2) < 0)
         return NULL;
-    }
 
     list[0] = mgr;
     list[1] = NULL;

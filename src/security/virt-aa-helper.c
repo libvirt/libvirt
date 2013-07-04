@@ -160,7 +160,7 @@ replace_string(char *orig, const size_t len, const char *oldstr,
         return -1;
     }
 
-    if (VIR_ALLOC_N(tmp, len) < 0) {
+    if (VIR_ALLOC_N_QUIET(tmp, len) < 0) {
         vah_error(NULL, 0, _("could not allocate memory for string"));
         return -1;
     }
@@ -217,8 +217,8 @@ parserCommand(const char *profile_name, const char cmd)
 
     snprintf(flag, 3, "-%c", cmd);
 
-    if (virAsprintf(&profile, "%s/%s",
-                    APPARMOR_DIR "/libvirt", profile_name) < 0) {
+    if (virAsprintfQuiet(&profile, "%s/%s",
+                         APPARMOR_DIR "/libvirt", profile_name) < 0) {
         vah_error(NULL, 0, _("profile name exceeds maximum length"));
         return -1;
     }
@@ -275,12 +275,12 @@ update_include_file(const char *include_file, const char *included_files,
     }
 
     if (append && virFileExists(include_file)) {
-        if (virAsprintf(&pcontent, "%s%s", existing, included_files) == -1) {
+        if (virAsprintfQuiet(&pcontent, "%s%s", existing, included_files) == -1) {
             vah_error(NULL, 0, _("could not allocate memory for profile"));
             goto cleanup;
         }
     } else {
-        if (virAsprintf(&pcontent, "%s%s", warning, included_files) == -1) {
+        if (virAsprintfQuiet(&pcontent, "%s%s", warning, included_files) == -1) {
             vah_error(NULL, 0, _("could not allocate memory for profile"));
             goto cleanup;
         }
@@ -346,7 +346,7 @@ create_profile(const char *profile, const char *profile_name,
         goto end;
     }
 
-    if (virAsprintf(&template, "%s/TEMPLATE", APPARMOR_DIR "/libvirt") < 0) {
+    if (virAsprintfQuiet(&template, "%s/TEMPLATE", APPARMOR_DIR "/libvirt") < 0) {
         vah_error(NULL, 0, _("template name exceeds maximum length"));
         goto end;
     }
@@ -372,13 +372,13 @@ create_profile(const char *profile, const char *profile_name,
     }
 
     /* '\nprofile <profile_name>\0' */
-    if (virAsprintf(&replace_name, "\nprofile %s", profile_name) == -1) {
+    if (virAsprintfQuiet(&replace_name, "\nprofile %s", profile_name) == -1) {
         vah_error(NULL, 0, _("could not allocate memory for profile name"));
         goto clean_tcontent;
     }
 
     /* '\n<profile_files>\n}\0' */
-    if (virAsprintf(&replace_files, "\n%s\n}", profile_files) == -1) {
+    if (virAsprintfQuiet(&replace_files, "\n%s\n}", profile_files) == -1) {
         vah_error(NULL, 0, _("could not allocate memory for profile files"));
         VIR_FREE(replace_name);
         goto clean_tcontent;
@@ -391,7 +391,7 @@ create_profile(const char *profile, const char *profile_name,
         goto clean_replace;
     }
 
-    if (VIR_ALLOC_N(pcontent, plen) < 0) {
+    if (VIR_ALLOC_N_QUIET(pcontent, plen) < 0) {
         vah_error(NULL, 0, _("could not allocate memory for profile"));
         goto clean_replace;
     }
@@ -812,7 +812,7 @@ vah_add_file_chardev(virBufferPtr buf,
 
     if (type == VIR_DOMAIN_CHR_TYPE_PIPE) {
         /* add the pipe input */
-        if (virAsprintf(&pipe_in, "%s.in", path) == -1) {
+        if (virAsprintfQuiet(&pipe_in, "%s.in", path) == -1) {
             vah_error(NULL, 0, _("could not allocate memory"));
             goto cleanup;
         }
@@ -821,7 +821,7 @@ vah_add_file_chardev(virBufferPtr buf,
             goto clean_pipe_in;
 
         /* add the pipe output */
-        if (virAsprintf(&pipe_out, "%s.out", path) == -1) {
+        if (virAsprintfQuiet(&pipe_out, "%s.out", path) == -1) {
             vah_error(NULL, 0, _("could not allocate memory"));
             goto clean_pipe_in;
         }
@@ -896,7 +896,7 @@ get_files(vahControl * ctl)
 
     /* verify uuid is same as what we were given on the command line */
     virUUIDFormat(ctl->def->uuid, uuidstr);
-    if (virAsprintf(&uuid, "%s%s", AA_PREFIX, uuidstr) == -1) {
+    if (virAsprintfQuiet(&uuid, "%s%s", AA_PREFIX, uuidstr) == -1) {
         vah_error(ctl, 0, _("could not allocate memory"));
         return rc;
     }
@@ -1207,12 +1207,12 @@ main(int argc, char **argv)
     if (vahParseArgv(ctl, argc, argv) != 0)
         vah_error(ctl, 1, _("could not parse arguments"));
 
-    if (virAsprintf(&profile, "%s/%s",
-                    APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
+    if (virAsprintfQuiet(&profile, "%s/%s",
+                         APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
         vah_error(ctl, 0, _("could not allocate memory"));
 
-    if (virAsprintf(&include_file, "%s/%s.files",
-                    APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
+    if (virAsprintfQuiet(&include_file, "%s/%s.files",
+                         APPARMOR_DIR "/libvirt", ctl->uuid) < 0)
         vah_error(ctl, 0, _("could not allocate memory"));
 
     if (ctl->cmd == 'a')
@@ -1271,8 +1271,8 @@ main(int argc, char **argv)
         /* create the profile from TEMPLATE */
         if (ctl->cmd == 'c') {
             char *tmp = NULL;
-            if (virAsprintf(&tmp, "  #include <libvirt/%s.files>\n",
-                            ctl->uuid) == -1) {
+            if (virAsprintfQuiet(&tmp, "  #include <libvirt/%s.files>\n",
+                                 ctl->uuid) == -1) {
                 vah_error(ctl, 0, _("could not allocate memory"));
                 goto cleanup;
             }
