@@ -275,7 +275,7 @@ static int virTLSMutexInit(void **priv)
 {
     virMutexPtr lock = NULL;
 
-    if (VIR_ALLOC(lock) < 0)
+    if (VIR_ALLOC_QUIET(lock) < 0)
         return ENOMEM;
 
     if (virMutexInit(lock) < 0) {
@@ -947,26 +947,21 @@ virConnectGetConfigFilePath(void)
     if (geteuid() == 0) {
         if (virAsprintf(&path, "%s/libvirt/libvirt.conf",
                         SYSCONFDIR) < 0)
-            goto no_memory;
+            return NULL;
     } else {
         char *userdir = virGetUserConfigDirectory();
         if (!userdir)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&path, "%s/libvirt.conf",
                         userdir) < 0) {
             VIR_FREE(userdir);
-            goto no_memory;
+            return NULL;
         }
         VIR_FREE(userdir);
     }
 
     return path;
-
-no_memory:
-    virReportOOMError();
-error:
-    return NULL;
 }
 
 static int
@@ -16978,10 +16973,8 @@ int virStreamSendAll(virStreamPtr stream,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(bytes, want) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(bytes, want) < 0)
         goto cleanup;
-    }
 
     for (;;) {
         int got, offset = 0;
@@ -17078,10 +17071,8 @@ int virStreamRecvAll(virStreamPtr stream,
     }
 
 
-    if (VIR_ALLOC_N(bytes, want) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(bytes, want) < 0)
         goto cleanup;
-    }
 
     for (;;) {
         int got, offset = 0;

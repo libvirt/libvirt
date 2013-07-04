@@ -118,10 +118,8 @@ virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
     char value_str[INT_BUFSIZE_BOUND(value)];
     char *tmp;
 
-    if (virAsprintf(&path, "%s/cpu%u/%s", dir, cpu, file) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&path, "%s/cpu%u/%s", dir, cpu, file) < 0)
         return -1;
-    }
 
     pathfp = fopen(path, "r");
     if (pathfp == NULL) {
@@ -160,10 +158,8 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
     int i;
 
     if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings",
-                    dir, cpu) < 0) {
-        virReportOOMError();
+                    dir, cpu) < 0)
         return 0;
-    }
 
     pathfp = fopen(path, "r");
     if (pathfp == NULL) {
@@ -297,10 +293,8 @@ virNodeParseNode(const char *node,
     sock_max++;
 
     /* allocate cpu maps for each socket */
-    if (VIR_ALLOC_N(core_maps, sock_max) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(core_maps, sock_max) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < sock_max; i++)
         CPU_ZERO(&core_maps[i]);
@@ -481,10 +475,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
      * core, node, socket, thread and topology information from /sys
      */
-    if (virAsprintf(&sysfs_nodedir, "%s/node", sysfs_dir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&sysfs_nodedir, "%s/node", sysfs_dir) < 0)
         goto cleanup;
-    }
 
     if (!(nodedir = opendir(sysfs_nodedir))) {
         /* the host isn't probably running a NUMA architecture */
@@ -499,10 +491,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         nodeinfo->nodes++;
 
         if (virAsprintf(&sysfs_cpudir, "%s/node/%s",
-                        sysfs_dir, nodedirent->d_name) < 0) {
-            virReportOOMError();
+                        sysfs_dir, nodedirent->d_name) < 0)
             goto cleanup;
-        }
 
         if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
                                      &threads, &offline)) < 0)
@@ -535,10 +525,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 fallback:
     VIR_FREE(sysfs_cpudir);
 
-    if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_dir) < 0) {
-        virReportOOMError();
+    if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_dir) < 0)
         goto cleanup;
-    }
 
     if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
                                  &threads, &offline)) < 0)
@@ -848,10 +836,8 @@ linuxParseCPUmap(int max_cpuid, const char *path)
     virBitmapPtr map = NULL;
     char *str = NULL;
 
-    if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0) {
-        virReportOOMError();
+    if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0)
         goto error;
-    }
 
     if (virBitmapParse(str, 0, &map, max_cpuid) < 0)
         goto error;
@@ -1005,10 +991,8 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
 # endif
 
             if (virAsprintf(&meminfo_path, "%s/node/node%d/meminfo",
-                            SYSFS_SYSTEM_PATH, cellNum) < 0) {
-                virReportOOMError();
+                            SYSFS_SYSTEM_PATH, cellNum) < 0)
                 return -1;
-            }
         }
         meminfo = fopen(meminfo_path, "r");
 
@@ -1050,10 +1034,8 @@ nodeGetCPUCount(void)
             i++;
             VIR_FREE(cpupath);
             if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
-                            SYSFS_SYSTEM_PATH, i) < 0) {
-                virReportOOMError();
+                            SYSFS_SYSTEM_PATH, i) < 0)
                 return -1;
-            }
         } while (virFileExists(cpupath));
     } else {
         /* no cpu/cpu0: we give up */
@@ -1090,10 +1072,8 @@ nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
         int i;
 
         cpumap = virBitmapNew(present);
-        if (!cpumap) {
-            virReportOOMError();
+        if (!cpumap)
             return NULL;
-        }
         for (i = 0; i < present; i++) {
             int online = virNodeGetCpuValue(SYSFS_SYSTEM_PATH, i, "online", 1);
             if (online < 0) {
@@ -1128,13 +1108,11 @@ nodeSetMemoryParameterValue(virTypedParameterPtr param)
     field++;
     if (virAsprintf(&path, "%s/%s",
                     SYSFS_MEMORY_SHARED_PATH, field) < 0) {
-        virReportOOMError();
         ret = -2;
         goto cleanup;
     }
 
     if (virAsprintf(&strval, "%u", param->value.ui) == -1) {
-        virReportOOMError();
         ret = -2;
         goto cleanup;
     }
@@ -1165,10 +1143,8 @@ nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
         sa_assert(field);
         field++;
         if (virAsprintf(&path, "%s/%s",
-                        SYSFS_MEMORY_SHARED_PATH, field) < 0) {
-            virReportOOMError();
+                        SYSFS_MEMORY_SHARED_PATH, field) < 0)
             return false;
-        }
 
         if (!virFileExists(path)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1238,10 +1214,8 @@ nodeGetMemoryParameterValue(const char *field,
     int rc = -1;
 
     if (virAsprintf(&path, "%s/%s",
-                    SYSFS_MEMORY_SHARED_PATH, field) < 0) {
-        virReportOOMError();
+                    SYSFS_MEMORY_SHARED_PATH, field) < 0)
         goto cleanup;
-    }
 
     if (!virFileExists(path)) {
         ret = -2;
@@ -1472,10 +1446,8 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
 
-    if (VIR_ALLOC_N(cpus, ncpus) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC_N(cpus, ncpus) < 0)
         return -1;
-    }
 
     id = 0;
     for (s = 0; s < nodeinfo.sockets; s++) {
@@ -1568,10 +1540,8 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
     virBitmapPtr ret = NULL;
 
     if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings_list",
-                    dir, cpu_id) < 0) {
-        virReportOOMError();
+                    dir, cpu_id) < 0)
         goto cleanup;
-    }
 
     if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
         goto cleanup;

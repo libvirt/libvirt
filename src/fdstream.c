@@ -488,10 +488,8 @@ static int virFDStreamOpenInternal(virStreamPtr st,
         virSetNonBlock(fd) < 0)
         return -1;
 
-    if (VIR_ALLOC(fdst) < 0) {
-        virReportOOMError();
+    if (VIR_ALLOC(fdst) < 0)
         return -1;
-    }
 
     fdst->fd = fd;
     fdst->cmd = cmd;
