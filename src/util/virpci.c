@@ -80,7 +80,7 @@ struct _virPCIDevice {
 struct _virPCIDeviceList {
     virObjectLockable parent;
 
-    unsigned int count;
+    size_t count;
     virPCIDevicePtr *devs;
 };
 
@@ -1669,13 +1669,7 @@ virPCIDeviceListAdd(virPCIDeviceListPtr list,
                        _("Device %s is already in use"), dev->name);
         return -1;
     }
-
-    if (VIR_REALLOC_N(list->devs, list->count+1) < 0)
-        return -1;
-
-    list->devs[list->count++] = dev;
-
-    return 0;
+    return VIR_APPEND_ELEMENT(list->devs, list->count, dev, true);
 }
 
 
@@ -1723,17 +1717,7 @@ virPCIDeviceListStealIndex(virPCIDeviceListPtr list,
         return NULL;
 
     ret = list->devs[idx];
-
-    if (idx != --list->count) {
-        memmove(&list->devs[idx],
-                &list->devs[idx + 1],
-                sizeof(*list->devs) * (list->count - idx));
-    }
-
-    if (VIR_REALLOC_N(list->devs, list->count) < 0) {
-        ; /* not fatal */
-    }
-
+    VIR_DELETE_ELEMENT(list->devs, idx, list->count);
     return ret;
 }
 
