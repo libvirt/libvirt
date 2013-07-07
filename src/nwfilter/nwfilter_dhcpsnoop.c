@@ -74,8 +74,9 @@
 
 #ifdef HAVE_LIBPCAP
 
-# define LEASEFILE LOCALSTATEDIR "/run/libvirt/network/nwfilter.leases"
-# define TMPLEASEFILE LOCALSTATEDIR "/run/libvirt/network/nwfilter.ltmp"
+# define LEASEFILE_DIR LOCALSTATEDIR "/run/libvirt/network/"
+# define LEASEFILE LEASEFILE_DIR "nwfilter.leases"
+# define TMPLEASEFILE LEASEFILE_DIR "nwfilter.ltmp"
 
 struct virNWFilterSnoopState {
     /* lease file */
@@ -1880,6 +1881,11 @@ static void
 virNWFilterSnoopLeaseFileRefresh(void)
 {
     int tfd;
+
+    if (virFileMakePathWithMode(LEASEFILE_DIR, 0700) < 0) {
+        virReportError(errno, _("mkdir(\"%s\")"), LEASEFILE_DIR);
+        return;
+    }
 
     if (unlink(TMPLEASEFILE) < 0 && errno != ENOENT)
         virReportSystemError(errno, _("unlink(\"%s\")"), TMPLEASEFILE);
