@@ -833,6 +833,12 @@ struct remote_domain_set_memory_flags_args {
     unsigned int flags;
 };
 
+struct remote_domain_set_memory_stats_period_args {
+    remote_nonnull_domain dom;
+    int period;
+    unsigned int flags;
+};
+
 struct remote_domain_get_info_args {
     remote_nonnull_domain dom;
 };
@@ -4944,6 +4950,13 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:migrate
      */
-    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3_PARAMS = 307
+    REMOTE_PROC_DOMAIN_MIGRATE_CONFIRM3_PARAMS = 307,
 
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_MEMORY_STATS_PERIOD = 308
 };
