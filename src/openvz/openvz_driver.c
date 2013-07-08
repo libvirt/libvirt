@@ -907,7 +907,7 @@ static int
 openvzDomainSetNetworkConfig(virConnectPtr conn,
                              virDomainDefPtr def)
 {
-    unsigned int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *param;
     int first = 1;
@@ -1789,7 +1789,8 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
                                 int *nparams,
                                 unsigned int flags)
 {
-    int i, result = -1;
+    size_t i;
+    int result = -1;
     const char *name;
     long kb_per_pages;
     unsigned long long barrier, limit, val;
@@ -1859,7 +1860,8 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
                                 int nparams,
                                 unsigned int flags)
 {
-    int i, result = -1;
+    size_t i;
+    int result = -1;
     long kb_per_pages;
 
     kb_per_pages = openvzKBPerPages();
@@ -1959,7 +1961,7 @@ openvzDomainInterfaceStats(virDomainPtr dom,
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    int i;
+    size_t i;
     int ret = -1;
 
     openvzDriverLock(driver);
