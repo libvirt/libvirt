@@ -185,7 +185,7 @@ x86DataCpuid(const union cpuData *data,
 {
     struct cpuX86cpuid *cpuids;
     int len;
-    unsigned int i;
+    size_t i;
 
     if (function < CPUX86_EXTENDED) {
         cpuids = data->x86.basic;
@@ -221,7 +221,7 @@ static union cpuData *
 x86DataCopy(const union cpuData *data)
 {
     union cpuData *copy = NULL;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC(copy) < 0
         || VIR_ALLOC_N(copy->x86.basic, data->x86.basic_len) < 0
@@ -303,7 +303,7 @@ static int
 x86DataAdd(union cpuData *data1,
            const union cpuData *data2)
 {
-    unsigned int i;
+    size_t i;
 
     if (x86DataExpand(data1,
                       data2->x86.basic_len - data1->x86.basic_len,
@@ -328,7 +328,7 @@ static void
 x86DataSubtract(union cpuData *data1,
                 const union cpuData *data2)
 {
-    unsigned int i;
+    size_t i;
     unsigned int len;
 
     len = MIN(data1->x86.basic_len, data2->x86.basic_len);
@@ -649,7 +649,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     xmlNodePtr ctxt_node = ctxt->node;
     struct x86_feature *feature;
     int ret = 0;
-    int i;
+    size_t i;
     int n;
 
     if (!(feature = x86FeatureNew()))
@@ -688,7 +688,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         if (ret_fun < 0 || ret_eax == -2 || ret_ebx == -2
             || ret_ecx == -2 || ret_edx == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid cpuid[%d] in %s feature"), i, feature->name);
+                           _("Invalid cpuid[%zu] in %s feature"), i, feature->name);
             goto ignore;
         }
 
@@ -795,7 +795,7 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
                 int policy)
 {
     struct x86_model *model = NULL;
-    int i;
+    size_t i;
 
     if (policy == VIR_CPU_FEATURE_REQUIRE) {
         if ((model = x86ModelFind(map, cpu->model)) == NULL) {
@@ -843,7 +843,7 @@ x86ModelSubtractCPU(struct x86_model *model,
                     const struct x86_map *map)
 {
     const struct x86_model *cpu_model;
-    unsigned int i;
+    size_t i;
 
     if (!(cpu_model = x86ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -925,7 +925,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
     struct x86_model *model;
     char *vendor = NULL;
     int ret = 0;
-    int i;
+    size_t i;
     int n;
 
     if (!(model = x86ModelNew()))
@@ -1142,7 +1142,7 @@ x86Compute(virCPUDefPtr host,
     struct x86_model *guest_model = NULL;
     virCPUCompareResult ret;
     enum compare_result result;
-    unsigned int i;
+    size_t i;
 
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
@@ -1294,7 +1294,7 @@ x86Decode(virCPUDefPtr cpu,
     const struct x86_model *candidate;
     virCPUDefPtr cpuCandidate;
     virCPUDefPtr cpuModel = NULL;
-    unsigned int i;
+    size_t i;
 
     if (data == NULL || (map = x86LoadMap()) == NULL)
         return -1;
@@ -1595,7 +1595,7 @@ x86Baseline(virCPUDefPtr *cpus,
     struct x86_map *map = NULL;
     struct x86_model *base_model = NULL;
     virCPUDefPtr cpu = NULL;
-    unsigned int i;
+    size_t i;
     const struct x86_vendor *vendor = NULL;
     struct x86_model *model = NULL;
     bool outputVendor = true;
@@ -1698,7 +1698,7 @@ x86UpdateCustom(virCPUDefPtr guest,
                 const virCPUDefPtr host)
 {
     int ret = -1;
-    unsigned int i;
+    size_t i;
     struct x86_map *map;
     struct x86_model *host_model = NULL;
 

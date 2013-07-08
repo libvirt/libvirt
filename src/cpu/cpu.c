@@ -50,8 +50,8 @@ static struct cpuArchDriver *drivers[] = {
 static struct cpuArchDriver *
 cpuGetSubDriver(virArch arch)
 {
-    unsigned int i;
-    unsigned int j;
+    size_t i;
+    size_t j;
 
     if (arch == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -140,9 +140,9 @@ cpuDecode(virCPUDefPtr cpu,
     VIR_DEBUG("cpu=%p, data=%p, nmodels=%u, preferred=%s",
               cpu, data, nmodels, NULLSTR(preferred));
     if (models) {
-        unsigned int i;
+        size_t i;
         for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
     }
 
     if (models == NULL && nmodels != 0) {
@@ -284,16 +284,16 @@ cpuBaselineXML(const char **xmlCPUs,
     virCPUDefPtr *cpus = NULL;
     virCPUDefPtr cpu = NULL;
     char *cpustr;
-    unsigned int i;
+    size_t i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
     if (xmlCPUs) {
         for (i = 0; i < ncpus; i++)
-            VIR_DEBUG("xmlCPUs[%u]=%s", i, NULLSTR(xmlCPUs[i]));
+            VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
     }
     if (models) {
         for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
     }
 
     if (xmlCPUs == NULL && ncpus != 0) {
@@ -354,16 +354,16 @@ cpuBaseline(virCPUDefPtr *cpus,
             unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
-    unsigned int i;
+    size_t i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
     if (cpus) {
         for (i = 0; i < ncpus; i++)
-            VIR_DEBUG("cpus[%u]=%p", i, cpus[i]);
+            VIR_DEBUG("cpus[%zu]=%p", i, cpus[i]);
     }
     if (models) {
         for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
     }
 
     if (cpus == NULL && ncpus != 0) {
@@ -446,7 +446,7 @@ cpuModelIsAllowed(const char *model,
                   const char **models,
                   unsigned int nmodels)
 {
-    unsigned int i;
+    size_t i;
 
     if (!models || !nmodels)
         return true;

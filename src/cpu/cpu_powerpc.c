@@ -383,7 +383,7 @@ ppcBaseline(virCPUDefPtr *cpus,
     const struct ppc_model *model;
     const struct ppc_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
-    unsigned int i;
+    size_t i;
 
     if (!(map = ppcLoadMap()))
         goto error;

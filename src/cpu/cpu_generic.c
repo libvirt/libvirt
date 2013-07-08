@@ -37,7 +37,7 @@ static virHashTablePtr
 genericHashFeatures(virCPUDefPtr cpu)
 {
     virHashTablePtr hash;
-    unsigned int i;
+    size_t i;
 
     if ((hash = virHashCreate(cpu->nfeatures, NULL)) == NULL)
         return NULL;
@@ -61,7 +61,7 @@ genericCompare(virCPUDefPtr host,
 {
     virHashTablePtr hash;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
-    unsigned int i;
+    size_t i;
     unsigned int reqfeatures;
 
     if (((cpu->arch != VIR_ARCH_NONE) &&
@@ -119,7 +119,7 @@ genericBaseline(virCPUDefPtr *cpus,
     virCPUFeatureDefPtr features = NULL;
     unsigned int nfeatures;
     unsigned int count;
-    unsigned int i, j;
+    size_t i, j;
 
     if (!cpuModelIsAllowed(cpus[0]->model, models, nmodels)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
