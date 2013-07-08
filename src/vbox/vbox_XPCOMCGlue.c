@@ -184,7 +184,7 @@ cleanup:
 int
 VBoxCGlueInit(unsigned int *version)
 {
-    int i;
+    size_t i;
     static const char *knownDirs[] = {
         "/usr/lib/virtualbox",
         "/usr/lib/virtualbox-ose",
@@ -334,7 +334,7 @@ vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRUint32 arg
 void
 vboxArrayRelease(vboxArray *array)
 {
-    int i;
+    size_t i;
     nsISupports *supports;
 
     if (array->items == NULL) {
@@ -361,7 +361,7 @@ vboxArrayRelease(vboxArray *array)
 void
 vboxArrayUnalloc(vboxArray *array)
 {
-    int i;
+    size_t i;
     void *item;
 
     if (array->items == NULL) {
