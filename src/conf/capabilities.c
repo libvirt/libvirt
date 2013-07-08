@@ -123,7 +123,7 @@ virCapabilitiesFreeGuestMachine(virCapsGuestMachinePtr machine)
 static void
 virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 {
-    int i;
+    size_t i;
     if (dom == NULL)
         return;
 
@@ -149,7 +149,7 @@ virCapabilitiesFreeGuestFeature(virCapsGuestFeaturePtr feature)
 static void
 virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 {
-    int i;
+    size_t i;
     if (guest == NULL)
         return;
 
@@ -175,7 +175,7 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < caps->host.nnumaCell; i++)
         virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
@@ -187,7 +187,7 @@ static void
 virCapabilitiesDispose(void *object)
 {
     virCapsPtr caps = object;
-    int i;
+    size_t i;
 
     for (i = 0; i < caps->nguests; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
@@ -327,7 +327,7 @@ virCapsGuestMachinePtr *
 virCapabilitiesAllocMachines(const char *const *names, int nnames)
 {
     virCapsGuestMachinePtr *machines;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC_N(machines, nnames) < 0)
         return NULL;
@@ -353,7 +353,7 @@ void
 virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
                             int nmachines)
 {
-    int i;
+    size_t i;
     if (!machines)
         return;
     for (i = 0; i < nmachines && machines[i]; i++) {
@@ -518,7 +518,7 @@ extern int
 virCapabilitiesSupportsGuestArch(virCapsPtr caps,
                                  virArch arch)
 {
-    int i;
+    size_t i;
     for (i = 0; i < caps->nguests; i++) {
         if (caps->guests[i]->arch.id == arch)
             return 1;
@@ -539,7 +539,7 @@ extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
                                    const char *ostype)
 {
-    int i;
+    size_t i;
     for (i = 0; i < caps->nguests; i++) {
         if (STREQ(caps->guests[i]->ostype, ostype))
             return 1;
@@ -562,7 +562,7 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
                                        const char *ostype,
                                        virArch arch)
 {
-    int i;
+    size_t i;
     for (i = 0; i < caps->nguests; i++) {
         if (STREQ(caps->guests[i]->ostype, ostype) &&
             caps->guests[i]->arch.id == arch)
@@ -585,7 +585,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 const char *ostype,
                                 const char *domain)
 {
-    int i, j;
+    size_t i, j;
 
     /* First try to find one matching host arch */
     for (i = 0; i < caps->nguests; i++) {
@@ -628,11 +628,11 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    virArch arch,
                                    const char *domain)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < caps->nguests; i++) {
         virCapsGuestPtr guest = caps->guests[i];
-        int j;
+        size_t j;
 
         if (!STREQ(guest->ostype, ostype) ||
             guest->arch.id != arch)
@@ -674,7 +674,7 @@ virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     virArch arch,
                                     const char *domain)
 {
-    int i, j;
+    size_t i, j;
     for (i = 0; i < caps->nguests; i++) {
         char *emulator;
         if (STREQ(caps->guests[i]->ostype, ostype) &&
@@ -697,8 +697,8 @@ virCapabilitiesFormatNUMATopology(virBufferPtr xml,
                                   size_t ncells,
                                   virCapsHostNUMACellPtr *cells)
 {
-    int i;
-    int j;
+    size_t i;
+    size_t j;
     char *siblings;
 
     virBufferAddLit(xml, "    <topology>\n");
@@ -754,7 +754,7 @@ char *
 virCapabilitiesFormatXML(virCapsPtr caps)
 {
     virBuffer xml = VIR_BUFFER_INITIALIZER;
-    int i, j, k;
+    size_t i, j, k;
     char host_uuid[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(&xml, "<capabilities>\n\n");

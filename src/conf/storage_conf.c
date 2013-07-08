@@ -264,7 +264,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
 static virStoragePoolTypeInfoPtr
 virStoragePoolTypeInfoLookup(int type)
 {
-    unsigned int i;
+    size_t i;
     for (i = 0; i < ARRAY_CARDINALITY(poolTypeInfo); i++)
         if (poolTypeInfo[i].poolType == type)
             return &poolTypeInfo[i];
@@ -296,7 +296,7 @@ virStorageVolOptionsForPoolType(int type)
 void
 virStorageVolDefFree(virStorageVolDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (!def)
         return;
@@ -338,7 +338,7 @@ virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapter adapter)
 void
 virStoragePoolSourceClear(virStoragePoolSourcePtr source)
 {
-    int i;
+    size_t i;
 
     if (!source)
         return;
@@ -416,7 +416,7 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj)
 void
 virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
 {
-    unsigned int i;
+    size_t i;
     for (i = 0; i < pools->count; i++)
         virStoragePoolObjFree(pools->objs[i]);
     VIR_FREE(pools->objs);
@@ -427,7 +427,7 @@ void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr pool)
 {
-    unsigned int i;
+    size_t i;
 
     virStoragePoolObjUnlock(pool);
 
@@ -527,7 +527,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     int ret = -1;
     xmlNodePtr relnode, *nodeset = NULL;
     char *authType = NULL;
-    int nsource, i;
+    int nsource;
+    size_t i;
     virStoragePoolOptionsPtr options;
     char *name = NULL;
     char *port = NULL;
@@ -1039,7 +1040,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                            virStoragePoolOptionsPtr options,
                            virStoragePoolSourcePtr src)
 {
-    int i, j;
+    size_t i, j;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(buf,"  <source>\n");
@@ -1254,7 +1255,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     char *unit = NULL;
     xmlNodePtr node;
     xmlNodePtr *nodes = NULL;
-    int i, n;
+    size_t i;
+    int n;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1524,7 +1526,7 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
     virBufferEscapeString(buf, "    <compat>%s</compat>\n", def->compat);
 
     if (options->featureToString && def->features) {
-        int i;
+        size_t i;
         bool b;
         bool empty = virBitmapIsAllClear(def->features);
 
@@ -1565,7 +1567,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     virBufferAddLit(&buf, "  <source>\n");
 
     if (def->source.nextent) {
-        int i;
+        size_t i;
         const char *thispath = NULL;
         for (i = 0; i < def->source.nextent; i++) {
             if (thispath == NULL ||
@@ -1621,7 +1623,7 @@ virStoragePoolObjPtr
 virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                             const unsigned char *uuid)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < pools->count; i++) {
         virStoragePoolObjLock(pools->objs[i]);
@@ -1637,7 +1639,7 @@ virStoragePoolObjPtr
 virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < pools->count; i++) {
         virStoragePoolObjLock(pools->objs[i]);
@@ -1653,7 +1655,7 @@ virStoragePoolObjPtr
 virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
                                          virStoragePoolDefPtr def)
 {
-    unsigned int i, j;
+    size_t i, j;
 
     for (i = 0; i < pool->def->source.ndevice; i++) {
         for (j = 0; j < def->source.ndevice; j++) {
@@ -1668,7 +1670,7 @@ virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr pool)
 {
-    unsigned int i;
+    size_t i;
     for (i = 0; i < pool->volumes.count; i++)
         virStorageVolDefFree(pool->volumes.objs[i]);
 
@@ -1680,7 +1682,7 @@ virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
                           const char *key)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < pool->volumes.count; i++)
         if (STREQ(pool->volumes.objs[i]->key, key))
@@ -1693,7 +1695,7 @@ virStorageVolDefPtr
 virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
                            const char *path)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < pool->volumes.count; i++)
         if (STREQ(pool->volumes.objs[i]->target.path, path))
@@ -1706,7 +1708,7 @@ virStorageVolDefPtr
 virStorageVolDefFindByName(virStoragePoolObjPtr pool,
                            const char *name)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < pool->volumes.count; i++)
         if (STREQ(pool->volumes.objs[i]->name, name))
@@ -1934,7 +1936,7 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     virStoragePoolOptionsPtr options;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type;
-    int i;
+    size_t i;
 
     options = virStoragePoolOptionsForPoolType(def->type);
     if (options == NULL)
@@ -2034,7 +2036,7 @@ int
 virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                                   virStoragePoolDefPtr def)
 {
-    int i;
+    size_t i;
     int ret = 1;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolObjPtr matchpool = NULL;
@@ -2197,7 +2199,7 @@ virStoragePoolObjListExport(virConnectPtr conn,
     virStoragePoolPtr pool = NULL;
     int npools = 0;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (pools && VIR_ALLOC_N(tmp_pools, poolobjs.count + 1) < 0)
         goto cleanup;

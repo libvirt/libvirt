@@ -225,7 +225,7 @@ static const char ipsetflags_str[]   = "ipsetflags";
 static int
 intMapGetByInt(const struct int_map *intmap, int32_t attr, const char **res)
 {
-    int i = 0;
+    size_t i = 0;
     bool found = false;
 
     while (intmap[i].val && !found) {
@@ -255,7 +255,7 @@ static int
 intMapGetByString(const struct int_map *intmap, const char *str, int casecmp,
                   int32_t *result)
 {
-    int i = 0;
+    size_t i = 0;
     bool found = false;
 
     while (intmap[i].val && !found) {
@@ -272,7 +272,7 @@ intMapGetByString(const struct int_map *intmap, const char *str, int casecmp,
 
 void
 virNWFilterRuleDefFree(virNWFilterRuleDefPtr def) {
-    int i;
+    size_t i;
     if (!def)
         return;
 
@@ -312,7 +312,7 @@ virNWFilterEntryFree(virNWFilterEntryPtr entry) {
 
 void
 virNWFilterDefFree(virNWFilterDefPtr def) {
-    int i;
+    size_t i;
     if (!def)
         return;
 
@@ -348,7 +348,7 @@ virNWFilterObjFree(virNWFilterObjPtr obj)
 void
 virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
 {
-    unsigned int i;
+    size_t i;
     for (i = 0; i < nwfilters->count; i++)
         virNWFilterObjFree(nwfilters->objs[i]);
     VIR_FREE(nwfilters->objs);
@@ -361,7 +361,7 @@ virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
                          nwItemDesc *item,
                          const char *var)
 {
-    int i = 0;
+    size_t i = 0;
     virNWFilterVarAccessPtr varAccess;
 
     varAccess = virNWFilterVarAccessParse(var);
@@ -410,7 +410,7 @@ void
 virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
                      virNWFilterObjPtr nwfilter)
 {
-    unsigned int i;
+    size_t i;
 
     virNWFilterObjUnlock(nwfilter);
 
@@ -786,7 +786,7 @@ parseStringItems(const struct int_map *int_map,
                  const char *input, int32_t *flags, char sep)
 {
     int rc = 0;
-    unsigned int i, j;
+    size_t i, j;
     bool found;
 
     i = 0;
@@ -818,7 +818,8 @@ static int
 printStringItems(virBufferPtr buf, const struct int_map *int_map,
                  int32_t flags, const char *sep)
 {
-    unsigned int i, c = 0;
+    size_t i;
+    unsigned int c = 0;
     int32_t mask = 0x1;
 
     while (mask) {
@@ -2354,7 +2355,7 @@ virNWFilterRuleParse(xmlNodePtr node)
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            int i = 0;
+            size_t i = 0;
             while (1) {
                 if (found)
                     i = found_i;
@@ -2667,7 +2668,7 @@ virNWFilterObjPtr
 virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
                          const unsigned char *uuid)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
@@ -2683,7 +2684,7 @@ virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
 virNWFilterObjPtr
 virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters, const char *name)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < nwfilters->count; i++) {
         virNWFilterObjLock(nwfilters->objs[i]);
@@ -2751,7 +2752,7 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
                           const char *filtername)
 {
     int rc = 0;
-    int i;
+    size_t i;
     virNWFilterEntryPtr entry;
     virNWFilterObjPtr obj;
 
@@ -2818,7 +2819,7 @@ virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 void
 virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 {
-    int i = 0;
+    size_t i = 0;
 
     while (i < nCallbackDriver && callbackDrvArray[i] != cbd)
         i++;
@@ -2834,7 +2835,7 @@ virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 void
 virNWFilterCallbackDriversLock(void)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < nCallbackDriver; i++)
         callbackDrvArray[i]->vmDriverLock();
@@ -2843,7 +2844,7 @@ virNWFilterCallbackDriversLock(void)
 void
 virNWFilterCallbackDriversUnlock(void)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < nCallbackDriver; i++)
         callbackDrvArray[i]->vmDriverUnlock();
@@ -2860,7 +2861,7 @@ static virDomainObjListIterator virNWFilterDomainFWUpdateCB;
 int
 virNWFilterInstFiltersOnAllVMs(virConnectPtr conn)
 {
-    int i;
+    size_t i;
     struct domUpdateCBStruct cb = {
         .conn = conn,
         .step = STEP_APPLY_CURRENT,
@@ -2878,7 +2879,7 @@ virNWFilterInstFiltersOnAllVMs(virConnectPtr conn)
 static int
 virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
 {
-    int i;
+    size_t i;
     int ret = 0;
     struct domUpdateCBStruct cb = {
         .conn = conn,
@@ -3201,7 +3202,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                                 const virXMLAttr2Struct *att,
                                 virNWFilterRuleDefPtr def)
 {
-    int i = 0, j;
+    size_t i = 0, j;
     bool typeShown = false;
     bool neverShown = true;
     bool asHex;
@@ -3340,7 +3341,7 @@ err_exit:
 static char *
 virNWFilterRuleDefFormat(virNWFilterRuleDefPtr def)
 {
-    int i;
+    size_t i;
     virBuffer buf  = VIR_BUFFER_INITIALIZER;
     virBuffer buf2 = VIR_BUFFER_INITIALIZER;
     char *data;
@@ -3427,7 +3428,7 @@ virNWFilterDefFormat(virNWFilterDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    int i;
+    size_t i;
     char *xml;
 
     virBufferAsprintf(&buf, "<filter name='%s' chain='%s'",

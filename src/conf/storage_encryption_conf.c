@@ -130,7 +130,8 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr *nodes = NULL;
     virStorageEncryptionPtr ret;
     char *format_str;
-    int format, i, n;
+    int format, n;
+    size_t i;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;

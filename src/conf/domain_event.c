@@ -134,7 +134,7 @@ struct _virDomainEvent {
 static void
 virDomainEventCallbackListFree(virDomainEventCallbackListPtr list)
 {
-    int i;
+    size_t i;
     if (!list)
         return;
 
@@ -162,7 +162,7 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
                                  virConnectDomainEventCallback callback)
 {
     int ret = 0;
-    int i;
+    size_t i;
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
@@ -213,7 +213,7 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
                                    int callbackID)
 {
     int ret = 0;
-    int i;
+    size_t i;
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
             cbList->callbacks[i]->conn == conn) {
@@ -255,7 +255,7 @@ virDomainEventCallbackListMarkDelete(virConnectPtr conn,
                                      virConnectDomainEventCallback callback)
 {
     int ret = 0;
-    int i;
+    size_t i;
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
@@ -281,7 +281,7 @@ virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
                                        int callbackID)
 {
     int ret = 0;
-    int i;
+    size_t i;
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
             cbList->callbacks[i]->conn == conn) {
@@ -304,22 +304,22 @@ static int
 virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList)
 {
     int old_count = cbList->count;
-    int i;
-    for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->deleted) {
-            virFreeCallback freecb = cbList->callbacks[i]->freecb;
+    int n;
+    for (n = 0; n < cbList->count; n++) {
+        if (cbList->callbacks[n]->deleted) {
+            virFreeCallback freecb = cbList->callbacks[n]->freecb;
             if (freecb)
-                (*freecb)(cbList->callbacks[i]->opaque);
-            virObjectUnref(cbList->callbacks[i]->conn);
-            VIR_FREE(cbList->callbacks[i]);
+                (*freecb)(cbList->callbacks[n]->opaque);
+            virObjectUnref(cbList->callbacks[n]->conn);
+            VIR_FREE(cbList->callbacks[n]);
 
-            if (i < (cbList->count - 1))
-                memmove(cbList->callbacks + i,
-                        cbList->callbacks + i + 1,
+            if (n < (cbList->count - 1))
+                memmove(cbList->callbacks + n,
+                        cbList->callbacks + n + 1,
                         sizeof(*(cbList->callbacks)) *
-                                (cbList->count - (i + 1)));
+                                (cbList->count - (n + 1)));
             cbList->count--;
-            i--;
+            n--;
         }
     }
     if (cbList->count < old_count &&
@@ -352,7 +352,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
                                 int *callbackID)
 {
     virDomainEventCallbackPtr event;
-    int i;
+    size_t i;
     int ret = 0;
 
     /* Check incoming */
@@ -455,7 +455,7 @@ virDomainEventCallbackListEventID(virConnectPtr conn,
                                   virDomainEventCallbackListPtr cbList,
                                   int callbackID)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->deleted)
@@ -496,7 +496,7 @@ void virDomainEventFree(virDomainEventPtr event)
         }
         VIR_FREE(event->data.graphics.authScheme);
         if (event->data.graphics.subject) {
-            int i;
+            size_t i;
             for (i = 0; i < event->data.graphics.subject->nidentity; i++) {
                 VIR_FREE(event->data.graphics.subject->identities[i].type);
                 VIR_FREE(event->data.graphics.subject->identities[i].name);
@@ -532,7 +532,7 @@ void virDomainEventFree(virDomainEventPtr event)
 static void
 virDomainEventQueueClear(virDomainEventQueuePtr queue)
 {
-    int i;
+    size_t i;
     if (!queue)
         return;
 
@@ -1345,7 +1345,7 @@ virDomainEventDispatch(virDomainEventPtr event,
                        virDomainEventDispatchFunc dispatch,
                        void *opaque)
 {
-    int i;
+    size_t i;
     /* Cache this now, since we may be dropping the lock,
        and have more callbacks added. We're guaranteed not
        to have any removed */
@@ -1370,7 +1370,7 @@ virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
                             virDomainEventDispatchFunc dispatch,
                             void *opaque)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < queue->count; i++) {
         virDomainEventDispatch(queue->events[i], callbacks, dispatch, opaque);

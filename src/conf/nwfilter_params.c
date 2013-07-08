@@ -44,7 +44,7 @@ static unsigned int virNWFilterVarAccessGetIntIterId(
 void
 virNWFilterVarValueFree(virNWFilterVarValuePtr val)
 {
-    unsigned i;
+    size_t i;
 
     if (!val)
         return;
@@ -68,7 +68,7 @@ virNWFilterVarValuePtr
 virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
 {
     virNWFilterVarValuePtr res;
-    unsigned i;
+    size_t i;
     char *str;
 
     if (VIR_ALLOC(res) < 0)
@@ -183,7 +183,8 @@ bool
 virNWFilterVarValueEqual(const virNWFilterVarValuePtr a,
                          const virNWFilterVarValuePtr b)
 {
-    unsigned int card, i, j;
+    unsigned int card;
+    size_t i, j;
     const char *s;
 
     if (!a || !b)
@@ -277,7 +278,7 @@ virNWFilterVarValueDelNthValue(virNWFilterVarValuePtr val, unsigned int pos)
 int
 virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value)
 {
-    unsigned int i;
+    size_t i;
 
     switch (val->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
@@ -299,7 +300,7 @@ virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value)
 void
 virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci)
 {
-    unsigned int i;
+    size_t i;
 
     if (!ci)
         return;
@@ -314,7 +315,7 @@ static int
 virNWFilterVarCombIterGetIndexByIterId(virNWFilterVarCombIterPtr ci,
                                        unsigned int iterId)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < ci->nIter; i++)
         if (ci->iter[i].iterId == iterId)
@@ -402,7 +403,7 @@ static bool
 virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
                                             virNWFilterHashTablePtr hash)
 {
-    unsigned int i, j;
+    size_t i, j;
     virNWFilterVarValuePtr varValue, tmp;
     const char *value;
 
@@ -463,7 +464,8 @@ virNWFilterVarCombIterCreate(virNWFilterHashTablePtr hash,
                              size_t nVarAccess)
 {
     virNWFilterVarCombIterPtr res;
-    unsigned int i, iterId;
+    size_t i;
+    unsigned int iterId;
     int iterIndex = -1;
     unsigned int nextIntIterId = VIR_NWFILTER_MAX_ITERID + 1;
 
@@ -516,7 +518,7 @@ err_exit:
 virNWFilterVarCombIterPtr
 virNWFilterVarCombIterNext(virNWFilterVarCombIterPtr ci)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < ci->nIter; i++) {
 next:
@@ -543,7 +545,8 @@ const char *
 virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
                                   const virNWFilterVarAccessPtr vap)
 {
-    unsigned int i, iterId;
+    size_t i;
+    unsigned int iterId;
     bool found = false;
     const char *res = NULL;
     virNWFilterVarValuePtr value;
@@ -675,7 +678,7 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
 void
 virNWFilterHashTableFree(virNWFilterHashTablePtr table)
 {
-    int i;
+    size_t i;
     if (!table)
         return;
     virHashFree(table->hashTable);
@@ -706,7 +709,7 @@ void *
 virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
                                 const char *entry)
 {
-    int i;
+    size_t i;
     void *value = virHashSteal(ht->hashTable, entry);
 
     if (value) {
@@ -886,7 +889,8 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
                                  const char *filterref)
 {
     virHashKeyValuePairPtr items;
-    int i, j, card, numKeys;
+    size_t i, j;
+    int card, numKeys;
 
     numKeys = virHashSize(table->hashTable);
 

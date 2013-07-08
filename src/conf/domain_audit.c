@@ -793,7 +793,7 @@ virDomainAuditLifecycle(virDomainObjPtr vm, const char *op,
 void
 virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -874,7 +874,7 @@ virDomainAuditSecurityLabel(virDomainObjPtr vm, bool success)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
     const char *virt;
-    int i;
+    size_t i;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {

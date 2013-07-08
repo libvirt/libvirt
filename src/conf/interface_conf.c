@@ -54,12 +54,12 @@ void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
 
 static
 void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def) {
-    int ii;
+    size_t i;
 
     if (def == NULL)
         return;
-    for (ii = 0; ii < def->nips; ii++) {
-        virInterfaceIpDefFree(def->ips[ii]);
+    for (i = 0; i < def->nips; i++) {
+        virInterfaceIpDefFree(def->ips[i]);
     }
     VIR_FREE(def->ips);
     VIR_FREE(def->family);
@@ -69,7 +69,8 @@ void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def) {
 
 void virInterfaceDefFree(virInterfaceDefPtr def)
 {
-    int i, pp;
+    size_t i;
+    int pp;
 
     if (def == NULL)
         return;
@@ -299,7 +300,8 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
                               xmlXPathContextPtr ctxt) {
     xmlNodePtr dhcp;
     xmlNodePtr *ipNodes = NULL;
-    int nIpNodes, ii, ret = -1;
+    int nIpNodes, ret = -1;
+    size_t i;
     char *tmp;
 
     tmp = virXPathString("string(./route[1]/@gateway)", ctxt);
@@ -322,14 +324,14 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
         goto error;
 
     def->nips = 0;
-    for (ii = 0; ii < nIpNodes; ii++) {
+    for (i = 0; i < nIpNodes; i++) {
 
         virInterfaceIpDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0)
             goto error;
 
-        ctxt->node = ipNodes[ii];
+        ctxt->node = ipNodes[i];
         ret = virInterfaceDefParseIp(ip, ctxt);
         if (ret != 0) {
             virInterfaceIpDefFree(ip);
@@ -350,7 +352,8 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
                               xmlXPathContextPtr ctxt) {
     xmlNodePtr dhcp, autoconf;
     xmlNodePtr *ipNodes = NULL;
-    int nIpNodes, ii, ret = -1;
+    int nIpNodes, ret = -1;
+    size_t i;
     char *tmp;
 
     tmp = virXPathString("string(./route[1]/@gateway)", ctxt);
@@ -377,14 +380,14 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
         goto error;
 
     def->nips = 0;
-    for (ii = 0; ii < nIpNodes; ii++) {
+    for (i = 0; i < nIpNodes; i++) {
 
         virInterfaceIpDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0)
             goto error;
 
-        ctxt->node = ipNodes[ii];
+        ctxt->node = ipNodes[i];
         ret = virInterfaceDefParseIp(ip, ctxt);
         if (ret != 0) {
             virInterfaceIpDefFree(ip);
@@ -475,7 +478,8 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bridge;
     virInterfaceDefPtr itf;
-    int nbItf, i;
+    int nbItf;
+    size_t i;
     int ret = 0;
 
     bridge = ctxt->node;
@@ -515,7 +519,8 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bond = ctxt->node;
     virInterfaceDefPtr itf;
-    int nbItf, i;
+    int nbItf;
+    size_t i;
     int ret = 0;
 
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
@@ -858,7 +863,7 @@ virInterfaceDefPtr virInterfaceDefParseFile(const char *filename)
 static int
 virInterfaceBridgeDefFormat(virBufferPtr buf,
                             const virInterfaceDefPtr def, int level) {
-    int i;
+    size_t i;
     int ret = 0;
 
     virBufferAsprintf(buf, "%*s  <bridge", level*2, "");
@@ -883,7 +888,7 @@ virInterfaceBridgeDefFormat(virBufferPtr buf,
 static int
 virInterfaceBondDefFormat(virBufferPtr buf,
                           const virInterfaceDefPtr def, int level) {
-    int i;
+    size_t i;
     int ret = 0;
 
     virBufferAsprintf(buf, "%*s  <bond", level*2, "");
@@ -965,43 +970,43 @@ virInterfaceVlanDefFormat(virBufferPtr buf,
 static int
 virInterfaceProtocolDefFormat(virBufferPtr buf, const virInterfaceDefPtr def,
                               int level) {
-    int pp, ii;
+    size_t i, j;
 
-    for (pp = 0; pp < def->nprotos; pp++) {
+    for (i = 0; i < def->nprotos; i++) {
 
         virBufferAsprintf(buf, "%*s  <protocol family='%s'>\n",
-                          level*2, "", def->protos[pp]->family);
+                          level*2, "", def->protos[i]->family);
 
-        if (def->protos[pp]->autoconf) {
+        if (def->protos[i]->autoconf) {
             virBufferAsprintf(buf, "%*s    <autoconf/>\n", level*2, "");
         }
 
-        if (def->protos[pp]->dhcp) {
-            if (def->protos[pp]->peerdns == 0)
+        if (def->protos[i]->dhcp) {
+            if (def->protos[i]->peerdns == 0)
                 virBufferAsprintf(buf, "%*s    <dhcp peerdns='no'/>\n",
                                   level*2, "");
-            else if (def->protos[pp]->peerdns == 1)
+            else if (def->protos[i]->peerdns == 1)
                 virBufferAsprintf(buf, "%*s    <dhcp peerdns='yes'/>\n",
                                   level*2, "");
             else
                 virBufferAsprintf(buf, "%*s    <dhcp/>\n", level*2, "");
         }
 
-        for (ii = 0; ii < def->protos[pp]->nips; ii++) {
-            if (def->protos[pp]->ips[ii]->address != NULL) {
+        for (j = 0; j < def->protos[i]->nips; j++) {
+            if (def->protos[i]->ips[j]->address != NULL) {
 
                 virBufferAsprintf(buf, "%*s    <ip address='%s'", level*2, "",
-                                  def->protos[pp]->ips[ii]->address);
-                if (def->protos[pp]->ips[ii]->prefix != 0) {
+                                  def->protos[i]->ips[j]->address);
+                if (def->protos[i]->ips[j]->prefix != 0) {
                     virBufferAsprintf(buf, " prefix='%d'",
-                                      def->protos[pp]->ips[ii]->prefix);
+                                      def->protos[i]->ips[j]->prefix);
                 }
                 virBufferAddLit(buf, "/>\n");
             }
         }
-        if (def->protos[pp]->gateway != NULL) {
+        if (def->protos[i]->gateway != NULL) {
             virBufferAsprintf(buf, "%*s    <route gateway='%s'/>\n",
-                              level*2, "", def->protos[pp]->gateway);
+                              level*2, "", def->protos[i]->gateway);
         }
 
         virBufferAsprintf(buf, "%*s  </protocol>\n", level*2, "");
@@ -1153,7 +1158,8 @@ int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
                                 const char *mac,
                                 virInterfaceObjPtr *matches, int maxmatches)
 {
-    unsigned int i, matchct = 0;
+    size_t i;
+    unsigned int matchct = 0;
 
     for (i = 0; i < interfaces->count; i++) {
 
@@ -1177,7 +1183,7 @@ virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
                                           interfaces,
                                           const char *name)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjLock(interfaces->objs[i]);
@@ -1191,7 +1197,7 @@ virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
 
 void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < interfaces->count; i++)
         virInterfaceObjFree(interfaces->objs[i]);
@@ -1204,7 +1210,8 @@ int virInterfaceObjListClone(virInterfaceObjListPtr src,
                              virInterfaceObjListPtr dest)
 {
     int ret = -1;
-    unsigned int i, cnt;
+    size_t i;
+    unsigned int cnt;
 
     if (!src || !dest)
         goto cleanup;
@@ -1276,7 +1283,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
 void virInterfaceRemove(virInterfaceObjListPtr interfaces,
                         const virInterfaceObjPtr iface)
 {
-    unsigned int i;
+    size_t i;
 
     virInterfaceObjUnlock(iface);
     for (i = 0; i < interfaces->count; i++) {

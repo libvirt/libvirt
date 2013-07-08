@@ -869,7 +869,7 @@ void
 virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                int ndevices)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < ndevices; i++)
         VIR_FREE(deviceWeights[i].path);
@@ -1101,7 +1101,7 @@ virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def)
 
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
-    int ii;
+    size_t i;
 
     if (!def)
         return;
@@ -1131,8 +1131,8 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
         break;
     }
 
-    for (ii = 0; ii < def->nListens; ii++)
-        virDomainGraphicsListenDefClear(&def->listens[ii]);
+    for (i = 0; i < def->nListens; i++)
+        virDomainGraphicsListenDefClear(&def->listens[i]);
     VIR_FREE(def->listens);
 
     VIR_FREE(def);
@@ -1173,7 +1173,7 @@ virDomainDiskSourcePoolDefFree(virDomainDiskSourcePoolDefPtr def)
 
 void virDomainDiskDefFree(virDomainDiskDefPtr def)
 {
-    unsigned int i;
+    size_t i;
 
     if (!def)
         return;
@@ -1550,7 +1550,7 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
 
-    int i;
+    size_t i;
     for (i = 0; i < def->ncodecs; i++)
         virDomainSoundCodecDefFree(def->codecs[i]);
     VIR_FREE(def->codecs);
@@ -1775,7 +1775,7 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     if (def->offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE)
         VIR_FREE(def->data.timezone);
 
-    int i;
+    size_t i;
     for (i = 0; i < def->ntimers; i++)
         VIR_FREE(def->timers[i]);
     VIR_FREE(def->timers);
@@ -1784,7 +1784,7 @@ virDomainClockDefClear(virDomainClockDefPtr def)
 virDomainVcpuPinDefPtr *
 virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 {
-    int i = 0;
+    size_t i;
     virDomainVcpuPinDefPtr *ret = NULL;
 
     if (VIR_ALLOC_N(ret, nvcpupin) < 0)
@@ -1802,7 +1802,7 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 
 error:
     if (ret) {
-        for (; i >= 0; --i) {
+        for (i = 0; i < nvcpupin; i++) {
             if (ret[i]) {
                 virBitmapFree(ret[i]->cpumask);
                 VIR_FREE(ret[i]);
@@ -1827,7 +1827,7 @@ void
 virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
                              int nvcpupin)
 {
-    int i;
+    size_t i;
 
     if (!def || !nvcpupin)
         return;
@@ -1853,7 +1853,7 @@ virDomainResourceDefFree(virDomainResourceDefPtr resource)
 
 void virDomainDefFree(virDomainDefPtr def)
 {
-    unsigned int i;
+    size_t i;
 
     if (!def)
         return;
@@ -2470,7 +2470,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    bool all,
                                    void *opaque)
 {
-    int i;
+    size_t i;
     virDomainDeviceDef device;
 
     device.type = VIR_DOMAIN_DEVICE_DISK;
@@ -2637,7 +2637,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
     size_t nbitmaps = 0;
     int ret = -1;
     bool b;
-    int i;
+    size_t i;
 
     memset(max_idx, -1, sizeof(max_idx));
 
@@ -2685,7 +2685,7 @@ static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
                               virCapsPtr caps ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
 
     /* verify init path for container based domains */
     if (STREQ(def->os.type, "exe") && !def->os.init) {
@@ -3800,7 +3800,7 @@ virDomainDriveAddressIsUsedByDisk(virDomainDefPtr def,
                                   unsigned int unit)
 {
     virDomainDiskDefPtr disk;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
         disk = def->disks[i];
@@ -3829,7 +3829,7 @@ virDomainDriveAddressIsUsedByHostdev(virDomainDefPtr def,
                                      unsigned int unit)
 {
     virDomainHostdevDefPtr hostdev;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nhostdevs; i++) {
         hostdev = def->hostdevs[i];
@@ -3873,7 +3873,7 @@ virDomainControllerSCSINextUnit(virDomainDefPtr def,
                                 unsigned int max_unit,
                                 unsigned int controller)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < max_unit; i++) {
         if (!virDomainSCSIDriveAddressIsUsed(def, controller, i))
@@ -3893,7 +3893,7 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
 {
     int next_unit = 0;
     unsigned controller = 0;
-    int i;
+    size_t i;
     int ret;
 
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
@@ -4125,7 +4125,7 @@ virDomainDeviceFindControllerModel(virDomainDefPtr def,
                                    int controllerType)
 {
     int model = -1;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == controllerType &&
@@ -4141,7 +4141,7 @@ virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                              int bus,
                              char *dst)
 {
-    int i;
+    size_t i;
 
     if (!dst)
         return NULL;
@@ -4345,7 +4345,8 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
                             virCapsPtr caps,
                             unsigned int flags)
 {
-    int i = 0, n;
+    size_t i = 0;
+    int n;
     xmlNodePtr *list = NULL, saved_node;
     virCapsHostPtr host = &caps->host;
 
@@ -4434,7 +4435,8 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
 {
     virSecurityDeviceLabelDefPtr *seclabels;
     size_t nseclabels = 0;
-    int n, i, j;
+    int n;
+    size_t i, j;
     xmlNodePtr *list = NULL;
     virSecurityLabelDefPtr vmDef = NULL;
     char *model, *relabel, *label;
@@ -5318,6 +5320,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (ioeventfd) {
+        int val;
+
         if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk ioeventfd mode supported "
@@ -5325,14 +5329,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        int i;
-        if ((i = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
+        if ((val = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk ioeventfd mode '%s'"),
                            ioeventfd);
             goto error;
         }
-        def->ioeventfd=i;
+        def->ioeventfd = val;
     }
 
     if (event_idx) {
@@ -5388,9 +5391,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (startupPolicy) {
-        int i;
+        int val;
 
-        if ((i = virDomainStartupPolicyTypeFromString(startupPolicy)) <= 0) {
+        if ((val = virDomainStartupPolicyTypeFromString(startupPolicy)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown startupPolicy value '%s'"),
                            startupPolicy);
@@ -5405,7 +5408,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            startupPolicy);
             goto error;
         }
-        def->startupPolicy = i;
+        def->startupPolicy = val;
     }
 
     def->src = source;
@@ -6469,14 +6472,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->driver.virtio.txmode = m;
         }
         if (ioeventfd) {
-            int i;
-            if ((i = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
+            int val;
+            if ((val = virDomainIoEventFdTypeFromString(ioeventfd)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown interface ioeventfd mode '%s'"),
                                ioeventfd);
                 goto error;
             }
-            def->driver.virtio.ioeventfd = i;
+            def->driver.virtio.ioeventfd = val;
         }
         if (event_idx) {
             int idx;
@@ -7092,7 +7095,7 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
     char *mode = NULL;
     char *type = NULL;
     virDomainSmartcardDefPtr def;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -7762,14 +7765,14 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             goto error;
 
         if (nListens > 0) {
-            int ii;
+            size_t i;
 
             if (VIR_ALLOC_N(def->listens, nListens) < 0)
                 goto error;
 
-            for (ii = 0; ii < nListens; ii++) {
-                int ret = virDomainGraphicsListenDefParseXML(&def->listens[ii],
-                                                             listenNodes[ii],
+            for (i = 0; i < nListens; i++) {
+                int ret = virDomainGraphicsListenDefParseXML(&def->listens[i],
+                                                             listenNodes[i],
                                                              flags);
                 if (ret < 0)
                     goto error;
@@ -7799,12 +7802,12 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                  * graphics. */
                 bool matched = false;
                 const char *found = NULL;
-                int ii;
+                size_t i;
 
-                for (ii = 0; ii < nListens; ii++) {
-                    if (virDomainGraphicsListenGetType(def, ii)
+                for (i = 0; i < nListens; i++) {
+                    if (virDomainGraphicsListenGetType(def, i)
                         == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
-                        found = virDomainGraphicsListenGetAddress(def, ii);
+                        found = virDomainGraphicsListenGetAddress(def, i);
                         if (STREQ_NULLABLE(found, listenAddr)) {
                             matched = true;
                         }
@@ -8306,15 +8309,15 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
             goto error;
 
         if (ncodecs > 0) {
-            int ii;
+            size_t i;
 
             if (VIR_ALLOC_N(def->codecs, ncodecs) < 0) {
                 VIR_FREE(codecNodes);
                 goto error;
             }
 
-            for (ii = 0; ii < ncodecs; ii++) {
-                virDomainSoundCodecDefPtr codec = virDomainSoundCodecDefParseXML(codecNodes[ii]);
+            for (i = 0; i < ncodecs; i++) {
+                virDomainSoundCodecDefPtr codec = virDomainSoundCodecDefParseXML(codecNodes[i]);
                 if (codec == NULL)
                     goto error;
 
@@ -9592,7 +9595,7 @@ virDomainHostdevFind(virDomainDefPtr def,
                      virDomainHostdevDefPtr *found)
 {
     virDomainHostdevDefPtr local_found;
-    int i;
+    size_t i;
 
     if (!found)
         found = &local_found;
@@ -9612,7 +9615,7 @@ virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                          bool allow_ambiguous)
 {
     virDomainDiskDefPtr vdisk;
-    int i;
+    size_t i;
     int candidate = -1;
 
     /* We prefer the <target dev='name'/> name (it's shorter, required
@@ -9642,9 +9645,9 @@ virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
 const char *
 virDomainDiskPathByName(virDomainDefPtr def, const char *name)
 {
-    int i = virDomainDiskIndexByName(def, name, true);
+    int idx = virDomainDiskIndexByName(def, name, true);
 
-    return i < 0 ? NULL : def->disks[i]->src;
+    return idx < 0 ? NULL : def->disks[idx]->src;
 }
 
 int virDomainDiskInsert(virDomainDefPtr def,
@@ -9662,7 +9665,7 @@ int virDomainDiskInsert(virDomainDefPtr def,
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk)
 {
-    int i;
+    int idx;
     /* Tenatively plan to insert disk at the end. */
     int insertAt = -1;
 
@@ -9671,19 +9674,19 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
      * index greater than the new one, insert at
      * that position
      */
-    for (i = (def->ndisks - 1); i >= 0; i--) {
+    for (idx = (def->ndisks - 1); idx >= 0; idx--) {
         /* If bus matches and current disk is after
          * new disk, then new disk should go here */
-        if (def->disks[i]->bus == disk->bus &&
-            (virDiskNameToIndex(def->disks[i]->dst) >
+        if (def->disks[idx]->bus == disk->bus &&
+            (virDiskNameToIndex(def->disks[idx]->dst) >
              virDiskNameToIndex(disk->dst))) {
-            insertAt = i;
-        } else if (def->disks[i]->bus == disk->bus &&
+            insertAt = idx;
+        } else if (def->disks[idx]->bus == disk->bus &&
                    insertAt == -1) {
             /* Last disk with match bus is before the
              * new disk, then put new disk just after
              */
-            insertAt = i + 1;
+            insertAt = idx + 1;
         }
     }
 
@@ -9725,10 +9728,10 @@ virDomainDiskRemove(virDomainDefPtr def, size_t i)
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
 {
-    int i = virDomainDiskIndexByName(def, name, false);
-    if (i < 0)
+    int idx = virDomainDiskIndexByName(def, name, false);
+    if (idx < 0)
         return NULL;
-    return virDomainDiskRemove(def, i);
+    return virDomainDiskRemove(def, idx);
 }
 
 /* Return true if VM has at least one disk involved in a current block
@@ -9736,7 +9739,7 @@ virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
 bool
 virDomainHasDiskMirror(virDomainObjPtr vm)
 {
-    int i;
+    size_t i;
     for (i = 0; i < vm->def->ndisks; i++)
         if (vm->def->disks[i]->mirror)
             return true;
@@ -9766,12 +9769,13 @@ int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
 int
 virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
 {
-    int ii, matchidx = -1;
+    size_t i;
+    int matchidx = -1;
     bool PCIAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
 
-    for (ii = 0; ii < def->nnets; ii++) {
-        if (virMacAddrCmp(&def->nets[ii]->mac, &net->mac))
+    for (i = 0; i < def->nnets; i++) {
+        if (virMacAddrCmp(&def->nets[i]->mac, &net->mac))
             continue;
 
         if ((matchidx >= 0) && !PCIAddrSpecified) {
@@ -9785,17 +9789,17 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
             break;
         }
         if (PCIAddrSpecified) {
-            if (virDevicePCIAddressEqual(&def->nets[ii]->info.addr.pci,
+            if (virDevicePCIAddressEqual(&def->nets[i]->info.addr.pci,
                                          &net->info.addr.pci)) {
                 /* exit early if the pci address was specified and
                  * it matches, as this guarantees no duplicates.
                  */
-                matchidx = ii;
+                matchidx = i;
                 break;
             }
         } else {
             /* no PCI address given, so there may be multiple matches */
-            matchidx = ii;
+            matchidx = i;
         }
     }
     return matchidx;
@@ -9851,7 +9855,7 @@ int virDomainControllerInsert(virDomainDefPtr def,
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller)
 {
-    int i;
+    int idx;
     /* Tenatively plan to insert controller at the end. */
     int insertAt = -1;
 
@@ -9860,18 +9864,18 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
      * index greater than the new one, insert at
      * that position
      */
-    for (i = (def->ncontrollers - 1); i >= 0; i--) {
+    for (idx = (def->ncontrollers - 1); idx >= 0; idx--) {
         /* If bus matches and current controller is after
          * new controller, then new controller should go here */
-        if (def->controllers[i]->type == controller->type &&
-            def->controllers[i]->idx > controller->idx) {
-            insertAt = i;
-        } else if (def->controllers[i]->type == controller->type &&
+        if (def->controllers[idx]->type == controller->type &&
+            def->controllers[idx]->idx > controller->idx) {
+            insertAt = idx;
+        } else if (def->controllers[idx]->type == controller->type &&
                    insertAt == -1) {
             /* Last controller with match bus is before the
              * new controller, then put new controller just after
              */
-            insertAt = i + 1;
+            insertAt = idx + 1;
         }
     }
 
@@ -9892,7 +9896,7 @@ int
 virDomainControllerFind(virDomainDefPtr def,
                         int type, int idx)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type == type) &&
@@ -9930,7 +9934,7 @@ int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease)
 {
     virDomainLeaseDefPtr vlease;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nleases; i++) {
         vlease = def->leases[i];
@@ -9998,10 +10002,10 @@ virDomainLeaseDefPtr
 virDomainLeaseRemove(virDomainDefPtr def,
                      virDomainLeaseDefPtr lease)
 {
-    int i = virDomainLeaseIndex(def, lease);
-    if (i < 0)
+    int idx = virDomainLeaseIndex(def, lease);
+    if (idx < 0)
         return NULL;
-    return virDomainLeaseRemoveAt(def, i);
+    return virDomainLeaseRemoveAt(def, idx);
 }
 
 
@@ -10042,7 +10046,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
                          virDomainDefPtr def)
 {
     xmlNodePtr *nodes = NULL;
-    int i, n;
+    size_t i;
+    int n;
     char *tmp = NULL;
     int ret = -1;
     unsigned long deviceBoot, serialPorts;
@@ -10288,7 +10293,7 @@ virDomainVcpuPinDefPtr
 virDomainLookupVcpuPin(virDomainDefPtr def,
                        int vcpuid)
 {
-    int i;
+    size_t i;
 
     if (!def->cputune.vcpupin)
         return NULL;
@@ -10307,7 +10312,7 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
                                int idx,
                                int model)
 {
-    int i;
+    size_t i;
     virDomainControllerDefPtr cont;
 
     for (i = 0; i < def->ncontrollers; i++) {
@@ -10399,7 +10404,7 @@ static int
 virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
 {
     /* Look for any hostdev scsi dev */
-    int i;
+    size_t i;
     int maxController = -1;
     virDomainHostdevDefPtr hostdev;
 
@@ -10411,6 +10416,9 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
             maxController = hostdev->info->addr.drive.controller;
         }
     }
+
+    if (maxController == -1)
+        return 0;
 
     for (i = 0; i <= maxController; i++) {
         if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI, i, -1) < 0)
@@ -10431,7 +10439,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
-    int i, n;
+    size_t i;
+    int n;
     long id = -1;
     virDomainDefPtr def;
     unsigned long count;
@@ -10607,7 +10616,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        int j;
+        size_t j;
         if (virDomainBlkioDeviceWeightParseXML(nodes[i],
                                                &def->blkio.devices[i]) < 0)
             goto error;
@@ -11558,7 +11567,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (chr->target.port == -1) {
             int maxport = -1;
-            int j;
+            size_t j;
             for (j = 0; j < i; j++) {
                 if (def->parallels[j]->target.port > maxport)
                     maxport = def->parallels[j]->target.port;
@@ -11586,7 +11595,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (chr->target.port == -1) {
             int maxport = -1;
-            int j;
+            size_t j;
             for (j = 0; j < i; j++) {
                 if (def->serials[j]->target.port > maxport)
                     maxport = def->serials[j]->target.port;
@@ -11644,7 +11653,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
             chr->info.addr.vioserial.port == 0) {
             int maxport = 0;
-            int j;
+            size_t j;
             for (j = 0; j < i; j++) {
                 virDomainChrDefPtr thischr = def->channels[j];
                 if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
@@ -11764,8 +11773,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        size_t ii = def->nvideos;
-        virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[i],
+        size_t j = def->nvideos;
+        virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[j],
                                                                def,
                                                                flags);
         if (!video)
@@ -11779,11 +11788,11 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
 
-            ii = 0;
+            j = 0;
             primaryVideo = true;
         }
         if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
-                                       ii,
+                                       j,
                                        def->nvideos,
                                        video) < 0) {
             virDomainVideoDefFree(video);
@@ -12142,7 +12151,8 @@ virDomainObjParseXML(xmlDocPtr xml,
     xmlNodePtr oldnode;
     virDomainObjPtr obj;
     xmlNodePtr *nodes = NULL;
-    int i, n;
+    size_t i;
+    int n;
     int state;
     int reason = 0;
 
@@ -12969,7 +12979,7 @@ static bool
 virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
                                          virDomainRedirFilterDefPtr dst)
 {
-    int i;
+    size_t i;
 
     if (src->nusbdevs != dst->nusbdevs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -13026,7 +13036,7 @@ bool
 virDomainDefCheckABIStability(virDomainDefPtr src,
                               virDomainDefPtr dst)
 {
-    int i;
+    size_t i;
 
     if (src->virtType != dst->virtType) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -13371,7 +13381,7 @@ virDomainDefAddDiskControllersForType(virDomainDefPtr def,
                                       int controllerType,
                                       int diskBus)
 {
-    int i;
+    size_t i;
     int maxController = -1;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -13384,6 +13394,9 @@ virDomainDefAddDiskControllersForType(virDomainDefPtr def,
         if ((int)def->disks[i]->info.addr.drive.controller > maxController)
             maxController = def->disks[i]->info.addr.drive.controller;
     }
+
+    if (maxController == -1)
+        return 0;
 
     for (i = 0; i <= maxController; i++) {
         if (virDomainDefMaybeAddController(def, controllerType, i, -1) < 0)
@@ -13398,7 +13411,7 @@ static int
 virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
 {
     /* Look for any virtio serial or virtio console devs */
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
@@ -13437,7 +13450,7 @@ static int
 virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
 {
     /* Look for any smartcard devs */
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nsmartcards; i++) {
         virDomainSmartcardDefPtr smartcard = def->smartcards[i];
@@ -13447,7 +13460,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
             idx = smartcard->info.addr.ccid.controller;
         } else if (smartcard->info.type
                    == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            int j;
+            size_t j;
             int max = -1;
 
             for (j = 0; j < def->nsmartcards; j++) {
@@ -13519,7 +13532,7 @@ virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
                             int nvcpupin,
                             int vcpu)
 {
-    int i;
+    size_t i;
 
     if (!def || !nvcpupin)
         return 0;
@@ -13537,7 +13550,7 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                            int nvcpupin,
                            int vcpu)
 {
-    int i;
+    size_t i;
 
     if (!def || !nvcpupin)
         return NULL;
@@ -13883,7 +13896,7 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
             if (def->nhosts == 0) {
                 virBufferAddLit(buf, "/>\n");
             } else {
-                int i;
+                size_t i;
 
                 virBufferAddLit(buf, ">\n");
                 for (i = 0; i < def->nhosts; i++) {
@@ -14237,7 +14250,7 @@ int
 virDomainFSIndexByName(virDomainDefPtr def, const char *name)
 {
     virDomainFSDefPtr fs;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nfss; i++) {
         fs = def->fss[i];
@@ -15024,7 +15037,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
     bool children = false;
-    int i;
+    size_t i;
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15460,7 +15473,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     const char *type = virDomainGraphicsTypeToString(def->type);
     const char *listenAddr = NULL;
     bool children = false;
-    int i;
+    size_t i;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15830,7 +15843,7 @@ virDomainHubDefFormat(virBufferPtr buf,
 static bool
 virDomainIsAllVcpupinInherited(virDomainDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (!def->cpumask) {
         if (def->cputune.nvcpupin)
@@ -15884,7 +15897,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *type = NULL;
     int n;
-    int i;
+    size_t i;
     bool blkio = false;
 
     virCheckFlags(DUMPXML_FLAGS |
@@ -16259,7 +16272,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 const char *name = virDomainFeatureTypeToString(i);
                 if (!name) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("unexpected feature %d"), i);
+                                   _("unexpected feature %zu"), i);
                     goto error;
                 }
                 virBufferAsprintf(buf, "    <%s", name);
@@ -16562,7 +16575,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int state;
     int reason;
-    int i;
+    size_t i;
 
     state = virDomainObjGetState(obj, &reason);
     virBufferAsprintf(&buf, "<domstatus state='%s' reason='%s' pid='%lld'>\n",
@@ -16602,7 +16615,7 @@ error:
 static bool
 virDomainDefHasUSB(virDomainDefPtr def)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
@@ -16979,7 +16992,7 @@ virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
 virDomainFSDefPtr
 virDomainGetRootFilesystem(virDomainDefPtr def)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nfss; i++) {
         if (STREQ(def->fss[i]->dst, "/"))
@@ -17116,7 +17129,7 @@ virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
 {
     struct virDomainNameData data = { filter, conn,
                                       0, 0, maxnames, names };
-    int i;
+    size_t i;
     virObjectLock(doms);
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
     virObjectUnlock(doms);
@@ -17168,7 +17181,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
                        virDomainChrDefIterator iter,
                        void *opaque)
 {
-    int i;
+    size_t i;
     int rc = 0;
 
     for (i = 0; i < def->nserials; i++) {
@@ -17221,7 +17234,7 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
                              virDomainSmartcardDefIterator iter,
                              void *opaque)
 {
-    int i;
+    size_t i;
     int rc = 0;
 
     for (i = 0; i < def->nsmartcards; i++) {
@@ -17546,26 +17559,26 @@ virDomainNetGetActualVlan(virDomainNetDefPtr iface)
     return 0;
 }
 
-/* Return listens[ii] from the appropriate union for the graphics
+/* Return listens[i] from the appropriate union for the graphics
  * type, or NULL if this is an unsuitable type, or the index is out of
- * bounds. If force0 is TRUE, ii == 0, and there is no listen array,
+ * bounds. If force0 is TRUE, i == 0, and there is no listen array,
  * allocate one with a single item. */
 static virDomainGraphicsListenDefPtr
-virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t ii, bool force0)
+virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t i, bool force0)
 {
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
         def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP ||
         def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
 
-        if (!def->listens && (ii == 0) && force0) {
+        if (!def->listens && (i == 0) && force0) {
             if (VIR_ALLOC(def->listens) >= 0)
                 def->nListens = 1;
         }
 
-        if (!def->listens || (def->nListens <= ii))
+        if (!def->listens || (def->nListens <= i))
             return NULL;
 
-        return &def->listens[ii];
+        return &def->listens[i];
     }
 
     /* it's a type that has no listens array */
@@ -17587,10 +17600,10 @@ virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t ii, bool force0)
  * return 0 on success, -1 on failure. */
 
 int
-virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t ii)
+virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, false);
+        = virDomainGraphicsGetListen(def, i, false);
 
     if (!listenInfo)
         return VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE;
@@ -17602,10 +17615,10 @@ virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t ii)
  * *will not* free any existing address or network based on a change
  * in value of type. */
 int
-virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t ii, int val)
+virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t i, int val)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, true);
+        = virDomainGraphicsGetListen(def, i, true);
 
     if (!listenInfo)
         return -1;
@@ -17615,10 +17628,10 @@ virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t ii, int val)
 
 
 const char *
-virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t ii)
+virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, false);
+        = virDomainGraphicsGetListen(def, i, false);
 
     /* even a network can have a listen address */
     if (!listenInfo ||
@@ -17630,15 +17643,15 @@ virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t ii)
 
 
 /* Make a copy of up to len characters of address, and store it in
- * listens[ii].address. If setType is true, set the listen's type
+ * listens[i].address. If setType is true, set the listen's type
  * to 'address', otherwise leave type alone. */
 int
 virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
-                                  size_t ii, const char *address,
+                                  size_t i, const char *address,
                                   int len, bool setType)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, true);
+        = virDomainGraphicsGetListen(def, i, true);
 
     if (!listenInfo)
         return -1;
@@ -17658,10 +17671,10 @@ virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
 
 
 const char *
-virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t ii)
+virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, false);
+        = virDomainGraphicsGetListen(def, i, false);
 
     if (!listenInfo ||
         (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
@@ -17671,13 +17684,13 @@ virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t ii)
 
 
 /* Make a copy of up to len characters of address, and store it in
- * listens[ii].network */
+ * listens[i].network */
 int
 virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
-                                  size_t ii, const char *network, int len)
+                                  size_t i, const char *network, int len)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, ii, true);
+        = virDomainGraphicsGetListen(def, i, true);
 
     if (!listenInfo)
         return -1;
@@ -17709,7 +17722,7 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
     bool isMac = false;
     virDomainNetDefPtr net = NULL;
     virMacAddr mac;
-    int i;
+    size_t i;
 
     if (virMacAddrParse(device, &mac) == 0)
         isMac = true;
@@ -17939,7 +17952,7 @@ virDomainObjListExport(virDomainObjListPtr doms,
                        unsigned int flags)
 {
     int ret = -1;
-    int i;
+    size_t i;
 
     struct virDomainListData data = {
         conn, NULL,
@@ -17981,7 +17994,7 @@ cleanup:
 virSecurityLabelDefPtr
 virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
 {
-    int i;
+    size_t i;
     virSecurityLabelDefPtr seclabel = NULL;
 
     if (def == NULL || model == NULL)
@@ -18000,7 +18013,7 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
 virSecurityDeviceLabelDefPtr
 virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
 {
-    int i;
+    size_t i;
 
     if (def == NULL)
         return NULL;
@@ -18015,7 +18028,7 @@ virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
 virSecurityDeviceLabelDefPtr
 virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model)
 {
-    int i;
+    size_t i;
 
     if (def == NULL)
         return NULL;

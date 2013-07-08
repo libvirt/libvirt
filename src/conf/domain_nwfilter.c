@@ -53,7 +53,7 @@ virDomainConfNWFilterTeardown(virDomainNetDefPtr net) {
 
 void
 virDomainConfVMNWFilterTeardown(virDomainObjPtr vm) {
-    int i;
+    size_t i;
 
     if (nwfilterDriver != NULL) {
         for (i = 0; i < vm->def->nnets; i++)

@@ -2342,22 +2342,22 @@ virDomainHostdevRemove(virDomainDefPtr def, size_t i);
 int virDomainHostdevFind(virDomainDefPtr def, virDomainHostdevDefPtr match,
                          virDomainHostdevDefPtr *found);
 
-int virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t ii)
+int virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
             ATTRIBUTE_NONNULL(1);
-int virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t ii, int val)
+int virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t i, int val)
             ATTRIBUTE_NONNULL(1);
 const char *virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def,
-                                              size_t ii)
+                                              size_t i)
             ATTRIBUTE_NONNULL(1);
 int virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
-                                      size_t ii, const char *address,
+                                      size_t i, const char *address,
                                       int len, bool setType)
             ATTRIBUTE_NONNULL(1);
 const char *virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def,
-                                              size_t ii)
+                                              size_t i)
             ATTRIBUTE_NONNULL(1);
 int virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
-                                      size_t ii, const char *network, int len)
+                                      size_t i, const char *network, int len)
             ATTRIBUTE_NONNULL(1);
 
 int virDomainNetGetActualType(virDomainNetDefPtr iface);

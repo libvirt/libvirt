@@ -60,7 +60,7 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def)
 {
-    unsigned int i;
+    size_t i;
 
     VIR_FREE(def->model);
     VIR_FREE(def->vendor);
@@ -74,7 +74,7 @@ virCPUDefFreeModel(virCPUDefPtr def)
 void
 virCPUDefFree(virCPUDefPtr def)
 {
-    unsigned int i;
+    size_t i;
 
     if (!def)
         return;
@@ -97,7 +97,7 @@ virCPUDefCopyModel(virCPUDefPtr dst,
                    const virCPUDefPtr src,
                    bool resetPolicy)
 {
-    unsigned int i;
+    size_t i;
 
     if (VIR_STRDUP(dst->model, src->model) < 0 ||
         VIR_STRDUP(dst->vendor, src->vendor) < 0 ||
@@ -129,7 +129,7 @@ virCPUDefPtr
 virCPUDefCopy(const virCPUDefPtr cpu)
 {
     virCPUDefPtr copy;
-    unsigned int i;
+    size_t i;
 
     if (!cpu || VIR_ALLOC(copy) < 0)
         return NULL;
@@ -181,7 +181,7 @@ virCPUDefParseXML(const xmlNodePtr node,
     virCPUDefPtr def;
     xmlNodePtr *nodes = NULL;
     int n;
-    unsigned int i;
+    size_t i;
     char *cpuMode;
     char *fallback = NULL;
     char *vendor_id = NULL;
@@ -379,7 +379,7 @@ virCPUDefParseXML(const xmlNodePtr node,
     for (i = 0; i < n; i++) {
         char *name;
         int policy; /* enum virDomainCPUFeaturePolicy */
-        unsigned int j;
+        size_t j;
 
         if (def->type == VIR_CPU_TYPE_GUEST) {
             char *strpolicy;
@@ -562,7 +562,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
                    unsigned int flags)
 {
-    unsigned int i;
+    size_t i;
     bool formatModel;
     bool formatFallback;
 
@@ -663,7 +663,7 @@ virCPUDefAddFeature(virCPUDefPtr def,
                     const char *name,
                     int policy)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nfeatures; i++) {
         if (STREQ(name, def->features[i].name)) {
@@ -694,7 +694,7 @@ virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst)
 {
     bool identical = false;
-    int i;
+    size_t i;
 
     if (!src && !dst)
         return true;

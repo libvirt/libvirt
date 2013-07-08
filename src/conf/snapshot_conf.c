@@ -86,7 +86,7 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
 
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (!def)
         return;
@@ -178,7 +178,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotDefPtr ret = NULL;
     xmlNodePtr *nodes = NULL;
-    int i;
+    size_t i;
+    int n;
     char *creation = NULL, *state = NULL;
     struct timeval tv;
     int active;
@@ -313,10 +314,10 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     def->file = memoryFile;
     memoryFile = NULL;
 
-    if ((i = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
+    if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         goto cleanup;
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS) {
-        def->ndisks = i;
+        def->ndisks = n;
         if (def->ndisks && VIR_ALLOC_N(def->disks, def->ndisks) < 0)
             goto cleanup;
         for (i = 0; i < def->ndisks; i++) {
@@ -324,7 +325,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                 goto cleanup;
         }
         VIR_FREE(nodes);
-    } else if (i) {
+    } else if (n) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("unable to handle disk requests in snapshot"));
         goto cleanup;
@@ -379,7 +380,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 {
     int ret = -1;
     virBitmapPtr map = NULL;
-    int i;
+    size_t i;
     int ndisks;
     bool inuse;
 
@@ -568,7 +569,7 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  int internal)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int i;
+    size_t i;
 
     virCheckFlags(VIR_DOMAIN_XML_SECURE |
                   VIR_DOMAIN_XML_UPDATE_CPU, NULL);
@@ -767,7 +768,7 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
 {
     struct virDomainSnapshotNameData data = { names, maxnames, flags, 0,
                                               false };
-    int i;
+    size_t i;
 
     if (!from) {
         /* LIST_ROOTS and LIST_DESCENDANTS have the same bit value,
@@ -1009,7 +1010,7 @@ virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
     virDomainSnapshotPtr *list = NULL;
     char **names;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (!snaps || count < 0)
         return count;
@@ -1043,7 +1044,7 @@ cleanup:
 bool
 virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
         return true;

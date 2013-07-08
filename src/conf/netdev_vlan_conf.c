@@ -39,7 +39,8 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
     const char *trunk = NULL;
     const char *nativeMode = NULL;
     xmlNodePtr *tagNodes = NULL;
-    int nTags, ii;
+    int nTags;
+    size_t i;
 
     ctxt->node = node;
 
@@ -59,10 +60,10 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
 
     def->nativeMode = 0;
     def->nativeTag = 0;
-    for (ii = 0; ii < nTags; ii++) {
+    for (i = 0; i < nTags; i++) {
         unsigned long id;
 
-        ctxt->node = tagNodes[ii];
+        ctxt->node = tagNodes[i];
         if (virXPathULong("string(./@id)", ctxt, &id) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing or invalid vlan tag id attribute"));
@@ -90,7 +91,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
             VIR_FREE(nativeMode);
             def->nativeTag = id;
         }
-        def->tag[ii] = id;
+        def->tag[i] = id;
     }
 
     def->nTags = nTags;
@@ -141,7 +142,7 @@ cleanup:
 int
 virNetDevVlanFormat(virNetDevVlanPtr def, virBufferPtr buf)
 {
-    int ii;
+    size_t i;
 
     if (def->nTags == 0)
         return 0;
@@ -153,9 +154,9 @@ virNetDevVlanFormat(virNetDevVlanPtr def, virBufferPtr buf)
     }
 
     virBufferAsprintf(buf, "<vlan%s>\n", def->trunk ? " trunk='yes'" : "");
-    for (ii = 0; ii < def->nTags; ii++) {
+    for (i = 0; i < def->nTags; i++) {
         if (def->nativeMode != VIR_NATIVE_VLAN_MODE_DEFAULT &&
-            def->nativeTag == def->tag[ii]) {
+            def->nativeTag == def->tag[i]) {
             /* check the nativeMode in case we get <tag id='0'/>*/
             const char *mode = virNativeVlanModeTypeToString(def->nativeMode);
             if (!mode) {
@@ -163,9 +164,9 @@ virNetDevVlanFormat(virNetDevVlanPtr def, virBufferPtr buf)
                                _("Bad value for nativeMode"));
             }
             virBufferAsprintf(buf, "  <tag id='%u' nativeMode='%s'/>\n",
-                              def->tag[ii], mode);
+                              def->tag[i], mode);
         } else {
-            virBufferAsprintf(buf, "  <tag id='%u'/>\n", def->tag[ii]);
+            virBufferAsprintf(buf, "  <tag id='%u'/>\n", def->tag[i]);
         }
     }
     virBufferAddLit(buf, "</vlan>\n");
