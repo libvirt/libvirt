@@ -636,7 +636,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool b;
-    int i;
+    size_t i;
 
     if (backingType)
         virBufferAsprintf(&buf, "backing_fmt=%s,", backingType);
@@ -1069,7 +1069,7 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
 virStorageBackendPtr
 virStorageBackendForType(int type)
 {
-    unsigned int i;
+    size_t i;
     for (i = 0; backends[i]; i++)
         if (backends[i]->type == type)
             return backends[i];
@@ -1362,7 +1362,7 @@ int
 virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
                                         int fd)
 {
-    int i;
+    size_t i;
     off_t start;
     unsigned char buffer[1024];
     ssize_t bytes;
@@ -1527,7 +1527,8 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
     regex_t *reg;
     regmatch_t *vars = NULL;
     char line[1024];
-    int maxReg = 0, i, j;
+    int maxReg = 0;
+    size_t i, j;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
 
@@ -1657,7 +1658,7 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     FILE *fp = NULL;
     char **v;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (n_columns == 0)
         return -1;

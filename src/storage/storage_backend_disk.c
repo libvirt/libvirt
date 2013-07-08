@@ -432,7 +432,7 @@ virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
         /* count primary and extended paritions,
            can't be more than 3 to create a new primary partition */
-        int i;
+        size_t i;
         int count = 0;
         for (i = 0; i < pool->volumes.count; i++) {
              if (pool->volumes.objs[i]->target.type == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
@@ -454,7 +454,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol,
                                 char** partFormat)
 {
-    int i;
+    size_t i;
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
         const char *partedFormat;
         partedFormat = virStoragePartedFsTypeTypeToString(vol->target.format);
@@ -527,7 +527,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
                                    unsigned long long *end,
                                    unsigned long long allocation)
 {
-    int i;
+    size_t i;
     int smallestExtent = -1;
     unsigned long long smallestSize = 0;
     unsigned long long extraBytes = 0;

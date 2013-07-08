@@ -253,7 +253,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     };
     virStoragePoolSourcePtr source = NULL;
     char *retval = NULL;
-    unsigned int i;
+    size_t i;
     virCommandPtr cmd = NULL;
 
     virCheckFlags(0, NULL);

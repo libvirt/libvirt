@@ -548,7 +548,7 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     size_t ntargets = 0;
     char **targets = NULL;
     char *ret = NULL;
-    int i;
+    size_t i;
     virStoragePoolSourceList list = {
         .type = VIR_STORAGE_POOL_ISCSI,
         .nsources = 0,

@@ -56,7 +56,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
     virBuffer mon_host = VIR_BUFFER_INITIALIZER;
     virSecretPtr secret = NULL;
     char secretUuid[VIR_UUID_STRING_BUFLEN];
-    int i;
+    size_t i;
     char *mon_buff = NULL;
 
     VIR_DEBUG("Found Cephx username: %s",
@@ -260,7 +260,6 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     size_t max_size = 1024;
     int ret = -1;
     int len = -1;
-    int i;
     char *name, *names = NULL;
     virStorageBackendRBDStatePtr ptr;
     ptr.cluster = NULL;
@@ -316,7 +315,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         VIR_FREE(names);
     }
 
-    for (i = 0, name = names; name < names + max_size; i++) {
+    for (name = names; name < names + max_size;) {
         virStorageVolDefPtr vol;
 
         if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0) {

@@ -77,7 +77,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     regex_t *reg = NULL;
     regmatch_t *vars = NULL;
     char *p = NULL;
-    int i, err, nextents, nvars, ret = -1;
+    size_t i;
+    int err, nextents, nvars, ret = -1;
     const char *attrs = groups[9];
 
     /* Skip inactive volume */
@@ -213,7 +214,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
 
     /* vars[0] is skipped */
     for (i = 0; i < nextents; i++) {
-        int j, len;
+        size_t j;
+        int len;
         char *offset_str = NULL;
 
         j = (i * 2) + 1;
@@ -339,7 +341,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
     virStoragePoolSourceListPtr sourceList = data;
     char *pvname = NULL;
     char *vgname = NULL;
-    int i;
+    size_t i;
     virStoragePoolSourceDevicePtr dev;
     virStoragePoolSource *thisSource;
 
@@ -402,7 +404,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandPtr cmd;
     char *retval = NULL;
     virStoragePoolSourceList sourceList;
-    int i;
+    size_t i;
 
     virCheckFlags(0, NULL);
 
