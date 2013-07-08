@@ -314,6 +314,23 @@ static const vshCmdOptDef opts_dommemstat[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
+    {.name = "period",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("period in seconds to set collection")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
+    },
     {.name = NULL}
 };
 
@@ -325,15 +342,56 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     struct _virDomainMemoryStat stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats;
     size_t i;
+    int ret = false;
+    int rv = 0;
+    int period = -1;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
+    /* If none of the options were specified and we're active
+     * then be sure to allow active modification */
+    if (!current && !live && !config && virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    /* Providing a period will adjust the balloon driver collection period.
+     * This is not really an unsigned long, but it
+     */
+    if ((rv = vshCommandOptInt(cmd, "period", &period)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter."));
+        goto cleanup;
+    }
+    if (rv > 0) {
+        if (period < 0) {
+            vshError(ctl, _("Invalid collection period value '%d'"), period);
+            goto cleanup;
+        }
+
+        if (virDomainSetMemoryStatsPeriod(dom, period, flags) < 0) {
+            vshError(ctl, "%s",
+                     _("Unable to change balloon collection period."));
+        } else {
+            ret = true;
+        }
+        goto cleanup;
+    }
+
     nr_stats = virDomainMemoryStats(dom, stats, VIR_DOMAIN_MEMORY_STAT_NR, 0);
     if (nr_stats == -1) {
         vshError(ctl, _("Failed to get memory statistics for domain %s"), name);
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
 
     for (i = 0; i < nr_stats; i++) {
@@ -355,8 +413,10 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "rss %llu\n", stats[i].val);
     }
 
+    ret = true;
+cleanup:
     virDomainFree(dom);
-    return true;
+    return ret;
 }
 
 /*
