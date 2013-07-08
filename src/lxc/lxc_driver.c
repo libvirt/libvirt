@@ -815,7 +815,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
                              unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    size_t i;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     int rc;
@@ -889,7 +889,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                              unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    size_t i;
     virDomainObjPtr vm = NULL;
     unsigned long long val;
     int ret = -1;
@@ -1846,7 +1846,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                      unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
     int ret = -1;
@@ -2101,7 +2101,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                             unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
@@ -2200,7 +2200,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                             unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     unsigned int val;
@@ -2305,7 +2305,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    int i;
+    size_t i;
     int ret = -1;
 
     lxcDriverLock(driver);
@@ -3857,7 +3857,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainDiskDefPtr def = NULL;
-    int i, ret = -1;
+    int idx, ret = -1;
     char *dst = NULL;
 
     if (!priv->initpid) {
@@ -3866,15 +3866,15 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if ((i = virDomainDiskIndexByName(vm->def,
-                                      dev->data.disk->dst,
-                                      false)) < 0) {
+    if ((idx = virDomainDiskIndexByName(vm->def,
+                                        dev->data.disk->dst,
+                                        false)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("disk %s not found"), dev->data.disk->dst);
         goto cleanup;
     }
 
-    def = vm->def->disks[i];
+    def = vm->def->disks[idx];
 
     if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
                     (unsigned long long)priv->initpid, def->dst) < 0)
@@ -3899,7 +3899,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
         VIR_WARN("cannot deny device %s for domain %s",
                  def->src, vm->def->name);
 
-    virDomainDiskRemove(vm->def, i);
+    virDomainDiskRemove(vm->def, idx);
     virDomainDiskDefFree(def);
 
     ret = 0;
@@ -4051,7 +4051,7 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = NULL;
-    int i, ret = -1;
+    int idx, ret = -1;
     char *dst = NULL;
 
     if (!priv->initpid) {
@@ -4060,9 +4060,9 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if ((i = virDomainHostdevFind(vm->def,
-                                  dev->data.hostdev,
-                                  &def)) < 0) {
+    if ((idx = virDomainHostdevFind(vm->def,
+                                    dev->data.hostdev,
+                                    &def)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("hostdev %s not found"),
                        dev->data.hostdev->source.caps.u.storage.block);
@@ -4093,7 +4093,7 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
         VIR_WARN("cannot deny device %s for domain %s",
                  def->source.caps.u.storage.block, vm->def->name);
 
-    virDomainHostdevRemove(vm->def, i);
+    virDomainHostdevRemove(vm->def, idx);
     virDomainHostdevDefFree(def);
 
     ret = 0;
@@ -4110,7 +4110,7 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = NULL;
-    int i, ret = -1;
+    int idx, ret = -1;
     char *dst = NULL;
 
     if (!priv->initpid) {
@@ -4119,9 +4119,9 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if ((i = virDomainHostdevFind(vm->def,
-                                  dev->data.hostdev,
-                                  &def)) < 0) {
+    if ((idx = virDomainHostdevFind(vm->def,
+                                    dev->data.hostdev,
+                                    &def)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("hostdev %s not found"),
                        dev->data.hostdev->source.caps.u.misc.chardev);
@@ -4152,7 +4152,7 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
         VIR_WARN("cannot deny device %s for domain %s",
                  def->source.caps.u.misc.chardev, vm->def->name);
 
-    virDomainHostdevRemove(vm->def, i);
+    virDomainHostdevRemove(vm->def, idx);
     virDomainHostdevDefFree(def);
 
     ret = 0;

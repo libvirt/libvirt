@@ -1141,7 +1141,8 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
                                char *path)
 {
     virBuffer map_value = VIR_BUFFER_INITIALIZER;
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
 
     for (i = 0; i < num; i++)
         virBufferAsprintf(&map_value, "%u %u %u\n",

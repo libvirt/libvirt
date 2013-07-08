@@ -229,7 +229,8 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
 static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
 {
     int rc = -1;
-    int open_max, i;
+    int open_max;
+    int fd;
 
     if (setsid() < 0) {
         virReportSystemError(errno, "%s",
@@ -246,9 +247,9 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
     /* Just in case someone forget to set FD_CLOEXEC, explicitly
      * close all FDs before executing the container */
     open_max = sysconf(_SC_OPEN_MAX);
-    for (i = 0; i < open_max; i++)
-        if (i != ttyfd && i != control && i != handshakefd) {
-            int tmpfd = i;
+    for (fd = 0; fd < open_max; fd++)
+        if (fd != ttyfd && fd != control && fd != handshakefd) {
+            int tmpfd = fd;
             VIR_MASS_CLOSE(tmpfd);
         }
 
@@ -701,7 +702,8 @@ static int lxcContainerMountBasicFS(void)
         { SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
 #endif
     };
-    int i, rc = -1;
+    size_t i;
+    int rc = -1;
 
     VIR_DEBUG("Mounting basic filesystems");
 

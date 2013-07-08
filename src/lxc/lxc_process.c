@@ -221,7 +221,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainShutoffReason reason)
 {
-    int i;
+    size_t i;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virNetDevVPortProfilePtr vport = NULL;
 

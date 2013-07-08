@@ -123,7 +123,8 @@ cleanup:
 static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
-    int i, rc;
+    size_t i;
+    int rc;
 
     if (def->blkio.weight) {
         rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
