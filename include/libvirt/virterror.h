@@ -125,6 +125,7 @@ typedef enum {
     VIR_FROM_FIREWALL = 59,     /* Error from firewall */
 
     VIR_FROM_POLKIT = 60,       /* Error from polkit code */
+    VIR_FROM_THREAD = 61,       /* Error from thread utils */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

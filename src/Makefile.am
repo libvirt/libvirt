@@ -160,6 +160,7 @@ UTIL_SOURCES =							\
 		util/virsysinfo.c util/virsysinfo.h		\
 		util/virsystemd.c util/virsystemd.h		\
 		util/virthread.c util/virthread.h		\
+		util/virthreadjob.c utils/virthreadjob.h	\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtime.h util/virtime.c			\
 		util/virtpm.h util/virtpm.c			\
@@ -2147,6 +2148,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virstring.c		\
 		util/virtime.c			\
 		util/virthread.c		\
+		util/virthreadjob.c		\
 		util/virtypedparam.c		\
 		util/viruri.c			\
 		util/virutil.c			\

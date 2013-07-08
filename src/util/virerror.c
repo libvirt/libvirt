@@ -132,6 +132,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Firewall",
 
               "Polkit", /* 60 */
+              "Thread jobs",
     )
 
 

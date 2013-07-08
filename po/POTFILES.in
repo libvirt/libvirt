@@ -220,6 +220,7 @@ src/util/virstorageencryption.c
 src/util/virstoragefile.c
 src/util/virstring.c
 src/util/virsysinfo.c
+src/util/virthreadjob.c
 src/util/virtime.c
 src/util/virtpm.c
 src/util/virtypedparam.c

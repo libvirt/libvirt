@@ -2190,6 +2190,13 @@ virThreadSelf;
 virThreadSelfID;
 
 
+# util/virthreadjob.h
+virThreadJobClear;
+virThreadJobGet;
+virThreadJobSet;
+virThreadJobSetWorker;
+
+
 # util/virthreadpool.h
 virThreadPoolFree;
 virThreadPoolGetMaxWorkers;
