@@ -545,6 +545,17 @@ sc_avoid_attribute_unused_in_header:
 	halt='use ATTRIBUTE_UNUSED in .c rather than .h files'		\
 	  $(_sc_search_regexp)
 
+sc_prohibit_int_ijk:
+	@prohibit='\<(int|unsigned) ([^(]* )*(i|j|k)(\s|,|;)'			\
+	halt='use size_t, not int/unsigned int for loop vars i, j, k'	\
+	  $(_sc_search_regexp)
+
+sc_prohibit_loop_iijjkk:
+	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)(\s|,|;)'				\
+	halt='use i, j, k for loop iterators, not ii, jj, kk' 			\
+	  $(_sc_search_regexp)
+
+
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
 # |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \
@@ -972,3 +983,6 @@ exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
   ^(python/|tools/|examples/|include/libvirt/(virterror|libvirt-(qemu|lxc))\.h$$)
+
+exclude_file_name_regexp--sc_prohibit_int_ijk = \
+  ^(src/remote_protocol-structs|src/remote/remote_protocol.x|cfg.mk|include/)$
