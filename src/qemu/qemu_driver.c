@@ -2270,6 +2270,70 @@ static int qemuDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
     return qemuDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_MAXIMUM);
 }
 
+static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
+                                          unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    virDomainDefPtr persistentDef = NULL;
+    int ret = -1, r;
+    virQEMUDriverConfigPtr cfg = NULL;
+    virCapsPtr caps = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainSetMemoryStatsPeriodEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto endjob;
+    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        goto endjob;
+
+    /* Set the balloon driver collection interval */
+    priv = vm->privateData;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        r = qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
+        qemuDomainObjExitMonitor(driver, vm);
+        if (r < 0)
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("unable to set balloon driver collection period"));
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        sa_assert(persistentDef);
+        persistentDef->memballoon->period = period;
+        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        goto endjob;
+    }
+
+    ret = 0;
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
 static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
 {
     virQEMUDriverPtr driver = domain->conn->privateData;
@@ -16092,6 +16156,7 @@ static virDriver qemuDriver = {
     .domainSetMemoryFlags = qemuDomainSetMemoryFlags, /* 0.9.0 */
     .domainSetMemoryParameters = qemuDomainSetMemoryParameters, /* 0.8.5 */
     .domainGetMemoryParameters = qemuDomainGetMemoryParameters, /* 0.8.5 */
+    .domainSetMemoryStatsPeriod = qemuDomainSetMemoryStatsPeriod, /* 1.1.1 */
     .domainSetBlkioParameters = qemuDomainSetBlkioParameters, /* 0.9.0 */
     .domainGetBlkioParameters = qemuDomainGetBlkioParameters, /* 0.9.0 */
     .domainGetInfo = qemuDomainGetInfo, /* 0.2.0 */
