@@ -544,7 +544,7 @@ static int
 secretConnectNumOfSecrets(virConnectPtr conn)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
-    int i;
+    size_t i;
     virSecretEntryPtr secret;
 
     if (virConnectNumOfSecretsEnsureACL(conn) < 0)
@@ -567,7 +567,7 @@ static int
 secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
-    int i;
+    size_t i;
     virSecretEntryPtr secret;
 
     memset(uuids, 0, maxuuids * sizeof(*uuids));
@@ -636,7 +636,7 @@ secretConnectListAllSecrets(virConnectPtr conn,
     int ret_nsecrets = 0;
     virSecretPtr secret = NULL;
     virSecretEntryPtr entry = NULL;
-    int i = 0;
+    size_t i = 0;
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_SECRETS_FILTERS_ALL, -1);
