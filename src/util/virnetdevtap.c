@@ -156,7 +156,7 @@ int virNetDevTapCreate(char **ifname,
                        int tapfdSize,
                        unsigned int flags)
 {
-    int i;
+    size_t i;
     struct ifreq ifr;
     int ret = -1;
     int fd;
@@ -311,7 +311,7 @@ int virNetDevTapCreate(char **ifname,
      * matches this pattern
      */
     if (strstr(*ifname, "%d") != NULL) {
-        int i;
+        size_t i;
         for (i = 0; i <= IF_MAXUNIT; i++) {
             char *newname;
             if (virAsprintf(&newname, *ifname, i) < 0)

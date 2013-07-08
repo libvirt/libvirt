@@ -51,7 +51,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                    virNetDevVlanPtr virtVlan)
 {
     int ret = -1;
-    int i = 0;
+    size_t i = 0;
     virCommandPtr cmd = NULL;
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];

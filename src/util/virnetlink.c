@@ -326,7 +326,8 @@ virNetlinkEventCallback(int watch,
     struct nlmsghdr *msg;
     struct sockaddr_nl peer;
     struct ucred *creds = NULL;
-    int i, length;
+    size_t i;
+    int length;
     bool handled = false;
 
     length = nl_recv(srv->netlinknh, &peer,
@@ -349,7 +350,7 @@ virNetlinkEventCallback(int watch,
         if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
             continue;
 
-        VIR_DEBUG("dispatching client %d.", i);
+        VIR_DEBUG("dispatching client %zu.", i);
 
         (srv->handles[i].handleCB)(msg, length, &peer, &handled,
                                    srv->handles[i].opaque);
@@ -378,7 +379,7 @@ virNetlinkEventServiceStop(unsigned int protocol)
         return -EINVAL;
 
     virNetlinkEventSrvPrivatePtr srv = server[protocol];
-    int i;
+    size_t i;
 
     VIR_INFO("stopping netlink event service");
 
@@ -414,7 +415,7 @@ virNetlinkEventServiceStop(unsigned int protocol)
 int
 virNetlinkEventServiceStopAll(void)
 {
-    unsigned int i, j;
+    size_t i, j;
     virNetlinkEventSrvPrivatePtr srv = NULL;
 
     VIR_INFO("stopping all netlink event services");
@@ -612,7 +613,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                          void *opaque, const virMacAddrPtr macaddr,
                          unsigned int protocol)
 {
-    int i, r, ret = -1;
+    size_t i;
+    int r, ret = -1;
     virNetlinkEventSrvPrivatePtr srv = NULL;
 
     if (protocol >= MAX_LINKS)
@@ -685,7 +687,7 @@ int
 virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr,
                             unsigned int protocol)
 {
-    int i;
+    size_t i;
     int ret = -1;
     virNetlinkEventSrvPrivatePtr srv = NULL;
 

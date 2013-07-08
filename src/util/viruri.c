@@ -274,7 +274,7 @@ cleanup:
 char *virURIFormatParams(virURIPtr uri)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int i;
+    size_t i;
     bool amp = false;
 
     for (i = 0; i < uri->paramsCount; ++i) {

@@ -630,7 +630,8 @@ virStorageFileMatchesVersion(int format,
                              unsigned char *buf,
                              size_t buflen)
 {
-    int version, i;
+    int version;
+    size_t i;
 
     /* Validate version number info */
     if (fileTypeInfo[format].versionOffset == -1)
@@ -675,7 +676,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
                                  size_t buflen)
 {
     int format = VIR_STORAGE_FILE_RAW;
-    int i;
+    size_t i;
     int possibleFormat = VIR_STORAGE_FILE_RAW;
     VIR_DEBUG("path=%s", path);
 
@@ -719,7 +720,7 @@ qcow2GetFeatures(virBitmapPtr *features,
     int version = -1;
     virBitmapPtr feat = NULL;
     uint64_t bits;
-    int i;
+    size_t i;
 
     version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
 

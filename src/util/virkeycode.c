@@ -90,7 +90,7 @@ VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
 int virKeycodeValueFromString(virKeycodeSet codeset,
                               const char *keyname)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < VIR_KEYMAP_ENTRY_MAX; i++) {
         if (!virKeymapNames[codeset] ||
@@ -111,7 +111,7 @@ int virKeycodeValueTranslate(virKeycodeSet from_codeset,
                              virKeycodeSet to_codeset,
                              int key_value)
 {
-    int i;
+    size_t i;
 
     if (key_value <= 0)
         return -1;

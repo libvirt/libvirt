@@ -64,7 +64,7 @@ struct _virJSONParser {
 
 void virJSONValueFree(virJSONValuePtr value)
 {
-    int i;
+    size_t i;
     if (!value || value->protect)
         return;
 
@@ -401,7 +401,7 @@ int virJSONValueArrayAppend(virJSONValuePtr array, virJSONValuePtr value)
 
 int virJSONValueObjectHasKey(virJSONValuePtr object, const char *key)
 {
-    int i;
+    size_t i;
 
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return -1;
@@ -416,7 +416,7 @@ int virJSONValueObjectHasKey(virJSONValuePtr object, const char *key)
 
 virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key)
 {
-    int i;
+    size_t i;
 
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return NULL;
@@ -455,7 +455,7 @@ int
 virJSONValueObjectRemoveKey(virJSONValuePtr object, const char *key,
                             virJSONValuePtr *value)
 {
-    int i;
+    size_t i;
 
     if (value)
         *value = NULL;
@@ -1011,7 +1011,7 @@ cleanup:
     yajl_free(hand);
 
     if (parser.nstate) {
-        int i;
+        size_t i;
         for (i = 0; i < parser.nstate; i++) {
             VIR_FREE(parser.state[i].key);
         }
@@ -1026,7 +1026,7 @@ cleanup:
 static int virJSONValueToStringOne(virJSONValuePtr object,
                                    yajl_gen g)
 {
-    int i;
+    size_t i;
 
     VIR_DEBUG("object=%p type=%d gen=%p", object, object->type, g);
 

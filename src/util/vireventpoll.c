@@ -140,7 +140,7 @@ int virEventPollAddHandle(int fd, int events,
 }
 
 void virEventPollUpdateHandle(int watch, int events) {
-    int i;
+    size_t i;
     bool found = false;
     PROBE(EVENT_POLL_UPDATE_HANDLE,
           "watch=%d events=%d",
@@ -174,7 +174,7 @@ void virEventPollUpdateHandle(int watch, int events) {
  * Actual deletion will be done out-of-band
  */
 int virEventPollRemoveHandle(int watch) {
-    int i;
+    size_t i;
     PROBE(EVENT_POLL_REMOVE_HANDLE,
           "watch=%d",
           watch);
@@ -190,7 +190,7 @@ int virEventPollRemoveHandle(int watch) {
             continue;
 
         if (eventLoop.handles[i].watch == watch) {
-            EVENT_DEBUG("mark delete %d %d", i, eventLoop.handles[i].fd);
+            EVENT_DEBUG("mark delete %zu %d", i, eventLoop.handles[i].fd);
             eventLoop.handles[i].deleted = 1;
             virEventPollInterruptLocked();
             virMutexUnlock(&eventLoop.lock);
@@ -253,7 +253,7 @@ int virEventPollAddTimeout(int frequency,
 void virEventPollUpdateTimeout(int timer, int frequency)
 {
     unsigned long long now;
-    int i;
+    size_t i;
     bool found = false;
     PROBE(EVENT_POLL_UPDATE_TIMEOUT,
           "timer=%d frequency=%d",
@@ -294,7 +294,7 @@ void virEventPollUpdateTimeout(int timer, int frequency)
  * Actual deletion will be done out-of-band
  */
 int virEventPollRemoveTimeout(int timer) {
-    int i;
+    size_t i;
     PROBE(EVENT_POLL_REMOVE_TIMEOUT,
           "timer=%d",
           timer);
@@ -328,7 +328,7 @@ int virEventPollRemoveTimeout(int timer) {
  */
 static int virEventPollCalculateTimeout(int *timeout) {
     unsigned long long then = 0;
-    int i;
+    size_t i;
     EVENT_DEBUG("Calculate expiry of %zu timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
     for (i = 0; i < eventLoop.timeoutsCount; i++) {
@@ -370,7 +370,7 @@ static int virEventPollCalculateTimeout(int *timeout) {
  */
 static struct pollfd *virEventPollMakePollFDs(int *nfds) {
     struct pollfd *fds;
-    int i;
+    size_t i;
 
     *nfds = 0;
     for (i = 0; i < eventLoop.handlesCount; i++) {
@@ -384,7 +384,7 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
 
     *nfds = 0;
     for (i = 0; i < eventLoop.handlesCount; i++) {
-        EVENT_DEBUG("Prepare n=%d w=%d, f=%d e=%d d=%d", i,
+        EVENT_DEBUG("Prepare n=%zu w=%d, f=%d e=%d d=%d", i,
                     eventLoop.handles[i].watch,
                     eventLoop.handles[i].fd,
                     eventLoop.handles[i].events,
@@ -417,7 +417,7 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
 static int virEventPollDispatchTimeouts(void)
 {
     unsigned long long now;
-    int i;
+    size_t i;
     /* Save this now - it may be changed during dispatch */
     int ntimeouts = eventLoop.timeoutsCount;
     VIR_DEBUG("Dispatch %d", ntimeouts);
@@ -464,7 +464,7 @@ static int virEventPollDispatchTimeouts(void)
  * Returns 0 upon success, -1 if an error occurred
  */
 static int virEventPollDispatchHandles(int nfds, struct pollfd *fds) {
-    int i, n;
+    size_t i, n;
     VIR_DEBUG("Dispatch %d", nfds);
 
     /* NB, use nfds not eventLoop.handlesCount, because new
@@ -479,9 +479,9 @@ static int virEventPollDispatchHandles(int nfds, struct pollfd *fds) {
         if (i == eventLoop.handlesCount)
             break;
 
-        VIR_DEBUG("i=%d w=%d", i, eventLoop.handles[i].watch);
+        VIR_DEBUG("i=%zu w=%d", i, eventLoop.handles[i].watch);
         if (eventLoop.handles[i].deleted) {
-            EVENT_DEBUG("Skip deleted n=%d w=%d f=%d", i,
+            EVENT_DEBUG("Skip deleted n=%zu w=%d f=%d", i,
                         eventLoop.handles[i].watch, eventLoop.handles[i].fd);
             continue;
         }
@@ -509,7 +509,7 @@ static int virEventPollDispatchHandles(int nfds, struct pollfd *fds) {
  * cleanup is needed to make dispatch re-entrant safe.
  */
 static void virEventPollCleanupTimeouts(void) {
-    int i;
+    size_t i;
     size_t gap;
     VIR_DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
 
@@ -557,7 +557,7 @@ static void virEventPollCleanupTimeouts(void) {
  * cleanup is needed to make dispatch re-entrant safe.
  */
 static void virEventPollCleanupHandles(void) {
-    int i;
+    size_t i;
     size_t gap;
     VIR_DEBUG("Cleanup %zu", eventLoop.handlesCount);
 

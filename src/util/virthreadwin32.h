@@ -32,7 +32,7 @@ struct virMutex {
 
 struct virCond {
     virMutex lock;
-    unsigned int nwaiters;
+    size_t nwaiters;
     HANDLE *waiters;
 };
 

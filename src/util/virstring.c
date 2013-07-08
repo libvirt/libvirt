@@ -494,7 +494,8 @@ virSkipSpacesBackwards(const char *str, char **endp)
 char *
 virArgvToString(const char *const *argv)
 {
-    int len, i;
+    int len;
+    size_t i;
     char *ret, *p;
 
     for (len = 1, i = 0; argv[i]; i++)

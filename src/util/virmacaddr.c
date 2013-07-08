@@ -146,7 +146,7 @@ virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN])
 int
 virMacAddrParse(const char* str, virMacAddrPtr addr)
 {
-    int i;
+    size_t i;
 
     errno = 0;
     for (i = 0; i < VIR_MAC_BUFLEN; i++) {

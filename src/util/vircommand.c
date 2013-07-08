@@ -139,7 +139,7 @@ virCommandFDIsSet(int fd,
                   const int *set,
                   int set_size)
 {
-    int i = 0;
+    size_t i = 0;
 
     while (i < set_size)
         if (set[i++] == fd)
@@ -259,7 +259,7 @@ virFork(pid_t *pid)
         /* child process */
 
         int logprio;
-        int i;
+        size_t i;
 
         /* Remove any error callback so errors in child now
            get sent to stderr where they stand a fighting chance
@@ -392,7 +392,7 @@ static int
 virExec(virCommandPtr cmd)
 {
     pid_t pid;
-    int null = -1, i, openmax;
+    int null = -1, fd, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
     int childin = cmd->infd;
@@ -511,15 +511,15 @@ virExec(virCommandPtr cmd)
     }
 
     openmax = sysconf(_SC_OPEN_MAX);
-    for (i = 3; i < openmax; i++) {
-        if (i == childin || i == childout || i == childerr)
+    for (fd = 3; fd < openmax; fd++) {
+        if (fd == childin || fd == childout || fd == childerr)
             continue;
         if (!cmd->preserve ||
-            !virCommandFDIsSet(i, cmd->preserve, cmd->preserve_size)) {
-            tmpfd = i;
+            !virCommandFDIsSet(fd, cmd->preserve, cmd->preserve_size)) {
+            tmpfd = fd;
             VIR_MASS_CLOSE(tmpfd);
-        } else if (virSetInherit(i, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %d"), i);
+        } else if (virSetInherit(fd, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
             goto fork_error;
         }
     }
@@ -1853,7 +1853,7 @@ virCommandProcessIO(virCommandPtr cmd)
     ret = -1;
 
     for (;;) {
-        int i;
+        size_t i;
         struct pollfd fds[3];
         int nfds = 0;
 
@@ -2170,7 +2170,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 {
     int ret = -1;
     char *str;
-    int i;
+    size_t i;
     bool synchronous = false;
     int infd[2] = {-1, -1};
 
@@ -2538,7 +2538,7 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
 void
 virCommandFree(virCommandPtr cmd)
 {
-    int i;
+    size_t i;
     if (!cmd)
         return;
 

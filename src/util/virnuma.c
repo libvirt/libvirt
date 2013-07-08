@@ -87,7 +87,8 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
     int mode = -1;
     int node = -1;
     int ret = -1;
-    int i = 0;
+    int bit = 0;
+    size_t i;
     int maxnode = 0;
     virBitmapPtr tmp_nodemask = NULL;
 
@@ -115,15 +116,15 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
 
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
-    i = -1;
-    while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
-        if (i > maxnode || i > NUMA_NUM_NODES) {
+    bit = -1;
+    while ((bit = virBitmapNextSetBit(tmp_nodemask, bit)) >= 0) {
+        if (bit > maxnode || bit > NUMA_NUM_NODES) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Nodeset is out of range, host cannot support "
-                             "NUMA node bigger than %d"), i);
+                             "NUMA node bigger than %d"), bit);
             return -1;
         }
-        nodemask_set(&mask, i);
+        nodemask_set(&mask, bit);
     }
 
     mode = numatune.memory.mode;

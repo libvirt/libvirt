@@ -97,7 +97,7 @@ static inline void virLogEatParams(virLogSource unused, ...)
 struct _virLogMetadata {
     const char *key;
     const char *s;              /* String value, or NULL to use "i" */
-    int i;
+    int iv;
 };
 
 typedef struct _virLogMetadata virLogMetadata;

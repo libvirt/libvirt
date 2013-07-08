@@ -139,7 +139,8 @@ virHookCheck(int no, const char *driver) {
  */
 int
 virHookInitialize(void) {
-    int i, res, ret = 0;
+    size_t i;
+    int res, ret = 0;
 
     virHooksFound = 0;
     for (i = 0; i < VIR_HOOK_DRIVER_LAST; i++) {

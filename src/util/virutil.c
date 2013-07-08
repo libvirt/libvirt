@@ -135,7 +135,7 @@ virPipeReadUntilEOF(int outfd, int errfd,
                     char **outbuf, char **errbuf) {
 
     struct pollfd fds[2];
-    int i;
+    size_t i;
     bool finished[2];
 
     fds[0].fd = outfd;
@@ -380,7 +380,7 @@ int virEnumFromString(const char *const*types,
                       unsigned int ntypes,
                       const char *type)
 {
-    unsigned int i;
+    size_t i;
     if (!type)
         return -1;
 
@@ -503,7 +503,7 @@ int virDiskNameToIndex(const char *name) {
     const char *ptr = NULL;
     int idx = 0;
     static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
         if (STRPREFIX(name, drive_prefix[i])) {
@@ -535,7 +535,9 @@ int virDiskNameToIndex(const char *name) {
 char *virIndexToDiskName(int idx, const char *prefix)
 {
     char *name = NULL;
-    int i, k, offset;
+    size_t i;
+    int ctr;
+    int offset;
 
     if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -543,7 +545,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
         return NULL;
     }
 
-    for (i = 0, k = idx; k >= 0; ++i, k = k / 26 - 1) { }
+    for (i = 0, ctr = idx; ctr >= 0; ++i, ctr = ctr / 26 - 1) { }
 
     offset = strlen(prefix);
 
@@ -553,8 +555,8 @@ char *virIndexToDiskName(int idx, const char *prefix)
     strcpy(name, prefix);
     name[offset + i] = '\0';
 
-    for (i = i - 1, k = idx; k >= 0; --i, k = k / 26 - 1) {
-        name[offset + i] = 'a' + (k % 26);
+    for (i = i - 1, ctr = idx; ctr >= 0; --i, ctr = ctr / 26 - 1) {
+        name[offset + i] = 'a' + (ctr % 26);
     }
 
     return name;
@@ -1261,7 +1263,8 @@ int
 virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
                      bool clearExistingCaps)
 {
-    int ii, capng_ret, ret = -1;
+    size_t i;
+    int capng_ret, ret = -1;
     bool need_setgid = false, need_setuid = false;
     bool need_setpcap = false;
 
@@ -1274,12 +1277,12 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
     if (clearExistingCaps || (uid != (uid_t)-1 && uid != 0))
        capng_clear(CAPNG_SELECT_BOTH);
 
-    for (ii = 0; ii <= CAP_LAST_CAP; ii++) {
-        if (capBits & (1ULL << ii)) {
+    for (i = 0; i <= CAP_LAST_CAP; i++) {
+        if (capBits & (1ULL << i)) {
             capng_update(CAPNG_ADD,
                          CAPNG_EFFECTIVE|CAPNG_INHERITABLE|
                          CAPNG_PERMITTED|CAPNG_BOUNDING_SET,
-                         ii);
+                         i);
         }
     }
 
@@ -1430,7 +1433,7 @@ bool virIsDevMapperDevice(const char *dev_name ATTRIBUTE_UNUSED)
 
 bool
 virValidateWWN(const char *wwn) {
-    int i;
+    size_t i;
     const char *p = wwn;
 
     if (STRPREFIX(wwn, "0x")) {
@@ -1454,7 +1457,7 @@ virValidateWWN(const char *wwn) {
 bool
 virStrIsPrint(const char *str)
 {
-    int i;
+    size_t i;
 
     for (i = 0; str[i]; i++)
         if (!c_isprint(str[i]))

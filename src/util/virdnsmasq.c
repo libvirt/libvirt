@@ -64,7 +64,7 @@ dhcphostFree(dnsmasqDhcpHost *host)
 static void
 addnhostFree(dnsmasqAddnHost *host)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < host->nhostnames; i++)
         VIR_FREE(host->hostnames[i]);
@@ -75,7 +75,7 @@ addnhostFree(dnsmasqAddnHost *host)
 static void
 addnhostsFree(dnsmasqAddnHostsfile *addnhostsfile)
 {
-    unsigned int i;
+    size_t i;
 
     if (addnhostsfile->hosts) {
         for (i = 0; i < addnhostsfile->nhosts; i++)
@@ -98,7 +98,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
 {
     char *ipstr = NULL;
     int idx = -1;
-    int i;
+    size_t i;
 
     if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;
@@ -174,7 +174,7 @@ addnhostsWrite(const char *path,
     char *tmp;
     FILE *f;
     bool istmp = true;
-    unsigned int i, ii;
+    size_t i, j;
     int rc = 0;
 
     /* even if there are 0 hosts, create a 0 length file, to allow
@@ -203,8 +203,8 @@ addnhostsWrite(const char *path,
             goto cleanup;
         }
 
-        for (ii = 0; ii < hosts[i].nhostnames; ii++) {
-            if (fputs(hosts[i].hostnames[ii], f) == EOF || fputc('\t', f) == EOF) {
+        for (j = 0; j < hosts[i].nhostnames; j++) {
+            if (fputs(hosts[i].hostnames[j], f) == EOF || fputc('\t', f) == EOF) {
                 rc = -errno;
                 VIR_FORCE_FCLOSE(f);
 
@@ -276,7 +276,7 @@ genericFileDelete(char *path)
 static void
 hostsfileFree(dnsmasqHostsfile *hostsfile)
 {
-    unsigned int i;
+    size_t i;
 
     if (hostsfile->hosts) {
         for (i = 0; i < hostsfile->nhosts; i++)
@@ -380,7 +380,7 @@ hostsfileWrite(const char *path,
     char *tmp;
     FILE *f;
     bool istmp = true;
-    unsigned int i;
+    size_t i;
     int rc = 0;
 
     /* even if there are 0 hosts, create a 0 length file, to allow

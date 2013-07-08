@@ -106,7 +106,7 @@ ebtRuleFree(ebtRule *rule)
     VIR_FREE(rule->rule);
 
     if (rule->argv) {
-        int i = 0;
+        size_t i = 0;
         while (rule->argv[i])
             VIR_FREE(rule->argv[i++]);
         VIR_FREE(rule->argv);
@@ -120,7 +120,7 @@ ebtRulesAppend(ebtRules *rules,
                int command_idx)
 {
     if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
-        int i = 0;
+        size_t i = 0;
         while (argv[i])
             VIR_FREE(argv[i++]);
         VIR_FREE(argv);
@@ -140,7 +140,7 @@ static int
 ebtRulesRemove(ebtRules *rules,
                char *rule)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < rules->nrules; i++)
         if (STREQ(rules->rules[i].rule, rule))
@@ -163,7 +163,7 @@ ebtRulesRemove(ebtRules *rules,
 static void
 ebtRulesFree(ebtRules *rules)
 {
-    int i;
+    size_t i;
 
     VIR_FREE(rules->table);
     VIR_FREE(rules->chain);

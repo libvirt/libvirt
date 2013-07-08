@@ -149,7 +149,7 @@ virUUIDGenerate(unsigned char *uuid)
 int
 virUUIDParse(const char *uuidstr, unsigned char *uuid) {
     const char *cur;
-    int i;
+    size_t i;
 
     /*
      * do a liberal scan allowing '-' and ' ' anywhere between character
@@ -233,7 +233,8 @@ virUUIDFormat(const unsigned char *uuid, char *uuidstr)
 int
 virUUIDIsValid(unsigned char *uuid)
 {
-    unsigned int i, ctr = 1;
+    size_t i;
+    unsigned int ctr = 1;
     unsigned char c;
 
     if (!uuid)
@@ -251,7 +252,7 @@ virUUIDIsValid(unsigned char *uuid)
 static int
 getDMISystemUUID(char *uuid, int len)
 {
-    unsigned int i = 0;
+    size_t i = 0;
     const char *paths[] = {
         "/sys/devices/virtual/dmi/id/product_uuid",
         "/sys/class/dmi/id/product_uuid",

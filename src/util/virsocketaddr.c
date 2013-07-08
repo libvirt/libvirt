@@ -42,7 +42,7 @@ typedef virSocketAddrIPv6 *virSocketAddrIPv6Ptr;
 
 static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr tab) {
     unsigned long val;
-    int i;
+    size_t i;
 
     if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET))
         return -1;
@@ -58,7 +58,7 @@ static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr 
 }
 
 static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr tab) {
-    int i;
+    size_t i;
 
     if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET6))
         return -1;
@@ -418,11 +418,11 @@ virSocketAddrMask(const virSocketAddrPtr addr,
         return 0;
     }
     if (addr->data.stor.ss_family == AF_INET6) {
-        int ii;
-        for (ii = 0; ii < 16; ii++) {
-            network->data.inet6.sin6_addr.s6_addr[ii]
-                = (addr->data.inet6.sin6_addr.s6_addr[ii]
-                   & netmask->data.inet6.sin6_addr.s6_addr[ii]);
+        size_t i;
+        for (i = 0; i < 16; i++) {
+            network->data.inet6.sin6_addr.s6_addr[i]
+                = (addr->data.inet6.sin6_addr.s6_addr[i]
+                   & netmask->data.inet6.sin6_addr.s6_addr[i]);
         }
         network->data.inet6.sin6_port = 0;
         network->data.stor.ss_family = AF_INET6;
@@ -529,7 +529,7 @@ virSocketAddrBroadcastByPrefix(const virSocketAddrPtr addr,
  */
 int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
                               virSocketAddrPtr netmask) {
-    int i;
+    size_t i;
 
     if ((addr1 == NULL) || (addr2 == NULL) || (netmask == NULL))
         return -1;
@@ -585,7 +585,8 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
  * Returns the size of the range or -1 in case of failure
  */
 int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
-    int ret = 0, i;
+    int ret = 0;
+    size_t i;
 
     if ((start == NULL) || (end == NULL))
         return -1;
@@ -640,7 +641,7 @@ int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
  */
 int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask)
 {
-    int i, j;
+    size_t i, j;
     int c = 0;
 
     if (netmask->data.stor.ss_family == AF_INET) {
@@ -748,24 +749,24 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
         result = 0;
 
     } else if (family == AF_INET6) {
-        int ii = 0;
+        size_t i = 0;
 
         if (prefix > 128)
             goto error;
 
         while (prefix >= 8) {
             /* do as much as possible an entire byte at a time */
-            netmask->data.inet6.sin6_addr.s6_addr[ii++] = 0xff;
+            netmask->data.inet6.sin6_addr.s6_addr[i++] = 0xff;
             prefix -= 8;
         }
         if (prefix > 0) {
             /* final partial byte */
-            netmask->data.inet6.sin6_addr.s6_addr[ii++]
+            netmask->data.inet6.sin6_addr.s6_addr[i++]
                 = ~((1 << (8 - prefix)) -1);
         }
-        while (ii < 16) {
+        while (i < 16) {
             /* zerofill remainder in case it wasn't initialized */
-            netmask->data.inet6.sin6_addr.s6_addr[ii++] = 0;
+            netmask->data.inet6.sin6_addr.s6_addr[i++] = 0;
         }
         netmask->data.stor.ss_family = AF_INET6;
         result = 0;

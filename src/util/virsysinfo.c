@@ -73,7 +73,7 @@ void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
 
 void virSysinfoDefFree(virSysinfoDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (def == NULL)
         return;
@@ -920,7 +920,7 @@ virSysinfoSystemFormat(virBufferPtr buf, virSysinfoDefPtr def)
 static void
 virSysinfoProcessorFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    int i;
+    size_t i;
     virSysinfoProcessorDefPtr processor;
 
     for (i = 0; i < def->nprocessor; i++) {
@@ -972,7 +972,7 @@ virSysinfoProcessorFormat(virBufferPtr buf, virSysinfoDefPtr def)
 static void
 virSysinfoMemoryFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    int i;
+    size_t i;
     virSysinfoMemoryDefPtr memory;
 
     for (i = 0; i < def->nmemory; i++) {

@@ -511,14 +511,14 @@ int virNetDevBridgeGetSTPDelay(const char *brname,
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
-    unsigned long i;
+    unsigned long val;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = virNetDevBridgeGet(brname, "forward_delay", &i,
+    ret = virNetDevBridgeGet(brname, "forward_delay", &val,
                              fd, &ifr);
-    *delayms = JIFFIES_TO_MS(i);
+    *delayms = JIFFIES_TO_MS(val);
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
@@ -571,14 +571,14 @@ int virNetDevBridgeGetSTP(const char *brname,
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
-    unsigned long i;
+    unsigned long val;
 
     if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
         goto cleanup;
 
-    ret = virNetDevBridgeGet(brname, "stp_state", &i,
+    ret = virNetDevBridgeGet(brname, "stp_state", &val,
                              fd, &ifr);
-    *enabled = i ? true : false;
+    *enabled = val ? true : false;
 
 cleanup:
     VIR_FORCE_CLOSE(fd);

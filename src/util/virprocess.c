@@ -262,7 +262,8 @@ int virProcessKill(pid_t pid, int sig)
 int
 virProcessKillPainfully(pid_t pid, bool force)
 {
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     const char *signame = "TERM";
 
     VIR_DEBUG("vpid=%lld force=%d", (long long)pid, force);
@@ -322,7 +323,7 @@ cleanup:
 
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
-    int i;
+    size_t i;
     bool set = false;
 # ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
@@ -392,7 +393,7 @@ int virProcessGetAffinity(pid_t pid,
                           virBitmapPtr *map,
                           int maxcpu)
 {
-    int i;
+    size_t i;
 # ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
     int numcpus = 1024;

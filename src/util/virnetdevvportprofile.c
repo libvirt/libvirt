@@ -781,7 +781,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
     int rc;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
     bool end = false;
-    unsigned int i = 0;
+    size_t i = 0;
 
     *nth = 0;
 

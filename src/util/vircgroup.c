@@ -74,7 +74,7 @@ typedef enum {
  */
 void virCgroupFree(virCgroupPtr *group)
 {
-    int i;
+    size_t i;
 
     if (*group == NULL)
         return;
@@ -111,7 +111,7 @@ bool virCgroupHasController(virCgroupPtr cgroup, int controller)
 static int virCgroupCopyMounts(virCgroupPtr group,
                                virCgroupPtr parent)
 {
-    int i;
+    size_t i;
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!parent->controllers[i].mountPoint)
             continue;
@@ -133,7 +133,7 @@ static int virCgroupCopyMounts(virCgroupPtr group,
  */
 static int virCgroupDetectMounts(virCgroupPtr group)
 {
-    int i;
+    size_t i;
     FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
@@ -226,7 +226,7 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
                                   const char *path,
                                   virCgroupPtr parent)
 {
-    int i;
+    size_t i;
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!group->controllers[i].mountPoint)
             continue;
@@ -279,7 +279,7 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
 static int virCgroupDetectPlacement(virCgroupPtr group,
                                     const char *path)
 {
-    int i;
+    size_t i;
     FILE *mapping  = NULL;
     char line[1024];
 
@@ -353,8 +353,8 @@ static int virCgroupDetect(virCgroupPtr group,
                            virCgroupPtr parent)
 {
     int rc;
-    int i;
-    int j;
+    size_t i;
+    size_t j;
     VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
               group, controllers, path, parent);
 
@@ -439,7 +439,7 @@ static int virCgroupDetect(virCgroupPtr group,
                 break;
             }
 
-            VIR_DEBUG("Detected mount/mapping %i:%s at %s in %s", i,
+            VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s", i,
                       virCgroupControllerTypeToString(i),
                       group->controllers[i].mountPoint,
                       group->controllers[i].placement);
@@ -459,7 +459,7 @@ int virCgroupPathOfController(virCgroupPtr group,
                               char **path)
 {
     if (controller == -1) {
-        int i;
+        size_t i;
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             if (group->controllers[i].mountPoint &&
                 group->controllers[i].placement) {
@@ -630,7 +630,7 @@ out:
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
 {
-    int i;
+    size_t i;
     int rc = 0;
     const char *inherit_values[] = {
         "cpuset.cpus",
@@ -702,7 +702,7 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
                               bool create,
                               unsigned int flags)
 {
-    int i;
+    size_t i;
     int rc = 0;
 
     VIR_DEBUG("Make group %s", group->path);
@@ -938,7 +938,7 @@ int virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
 int virCgroupRemove(virCgroupPtr group)
 {
     int rc = 0;
-    int i;
+    size_t i;
     char *grppath = NULL;
 
     VIR_DEBUG("Removing cgroup %s", group->path);
@@ -974,7 +974,7 @@ int virCgroupRemove(virCgroupPtr group)
 int virCgroupAddTask(virCgroupPtr group, pid_t pid)
 {
     int rc = 0;
-    int i;
+    size_t i;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
@@ -1064,7 +1064,7 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
 {
     int rc = 0;
     char *content = NULL;
-    int i;
+    size_t i;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!src_group->controllers[i].mountPoint ||
@@ -2498,7 +2498,7 @@ int virCgroupKillRecursive(virCgroupPtr group, int signum)
 
 int virCgroupKillPainfully(virCgroupPtr group)
 {
-    int i;
+    size_t i;
     int rc;
     VIR_DEBUG("cgroup=%p path=%s", group, group->path);
     for (i = 0; i < 15; i++) {
@@ -2511,7 +2511,7 @@ int virCgroupKillPainfully(virCgroupPtr group)
             signum = 0; /* Just check for existence */
 
         rc = virCgroupKillRecursive(group, signum);
-        VIR_DEBUG("Iteration %d rc=%d", i, rc);
+        VIR_DEBUG("Iteration %zu rc=%d", i, rc);
         /* If rc == -1 we hit error, if 0 we ran out of PIDs */
         if (rc <= 0)
             break;

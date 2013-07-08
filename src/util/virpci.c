@@ -1649,7 +1649,7 @@ static void
 virPCIDeviceListDispose(void *obj)
 {
     virPCIDeviceListPtr list = obj;
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         virPCIDeviceFree(list->devs[i]);
@@ -1755,7 +1755,7 @@ virPCIDeviceListDel(virPCIDeviceListPtr list,
 int
 virPCIDeviceListFindIndex(virPCIDeviceListPtr list, virPCIDevicePtr dev)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++)
         if (list->devs[i]->domain   == dev->domain &&
@@ -1774,7 +1774,7 @@ virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
                           unsigned int slot,
                           unsigned int function)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         if (list->devs[i]->domain == domain &&
@@ -1790,10 +1790,10 @@ virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
 virPCIDevicePtr
 virPCIDeviceListFind(virPCIDeviceListPtr list, virPCIDevicePtr dev)
 {
-    int i;
+    int idx;
 
-    if ((i = virPCIDeviceListFindIndex(list, dev)) >= 0)
-        return list->devs[i];
+    if ((idx = virPCIDeviceListFindIndex(list, dev)) >= 0)
+        return list->devs[idx];
     else
         return NULL;
 }
@@ -2377,7 +2377,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                           unsigned int *num_virtual_functions)
 {
     int ret = -1;
-    int i;
+    size_t i;
     DIR *dir = NULL;
     struct dirent *entry = NULL;
     char *device_link = NULL;
@@ -2476,7 +2476,8 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
                               const char *vf_sysfs_device_link,
                               int *vf_index)
 {
-    int ret = -1, i;
+    int ret = -1;
+    size_t i;
     unsigned int num_virt_fns = 0;
     virPCIDeviceAddressPtr vf_bdf = NULL;
     virPCIDeviceAddressPtr *virt_fns = NULL;

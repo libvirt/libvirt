@@ -340,7 +340,7 @@ static void
 virSCSIDeviceListDispose(void *obj)
 {
     virSCSIDeviceListPtr list = obj;
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++)
         virSCSIDeviceFree(list->devs[i]);
@@ -387,7 +387,7 @@ virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
                        virSCSIDevicePtr dev)
 {
     virSCSIDevicePtr ret = NULL;
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         if (list->devs[i]->adapter != dev->adapter ||
@@ -425,7 +425,7 @@ virSCSIDevicePtr
 virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                       virSCSIDevicePtr dev)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         if (list->devs[i]->adapter == dev->adapter &&

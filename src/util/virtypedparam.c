@@ -51,7 +51,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 {
     va_list ap;
     int ret = -1;
-    int i, j;
+    size_t i, j;
     const char *name;
     int type;
 
@@ -117,7 +117,7 @@ virTypedParamsCheck(virTypedParameterPtr params,
                     const char **names,
                     int nnames)
 {
-    int i, j;
+    size_t i, j;
 
     for (i = 0; i < nparams; i++) {
         bool found = false;
@@ -388,7 +388,7 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
                    virTypedParameterPtr src,
                    int nparams)
 {
-    int i;
+    size_t i;
 
     *dst = NULL;
     if (!src || nparams <= 0)
@@ -432,7 +432,7 @@ virTypedParamsGet(virTypedParameterPtr params,
                   int nparams,
                   const char *name)
 {
-    int i;
+    size_t i;
 
     virResetLastError();
 
@@ -1133,7 +1133,7 @@ void
 virTypedParamsClear(virTypedParameterPtr params,
                     int nparams)
 {
-    int i;
+    size_t i;
 
     if (!params)
         return;

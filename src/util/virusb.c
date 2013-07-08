@@ -432,7 +432,7 @@ static void
 virUSBDeviceListDispose(void *obj)
 {
     virUSBDeviceListPtr list = obj;
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++)
         virUSBDeviceFree(list->devs[i]);
@@ -481,7 +481,7 @@ virUSBDeviceListSteal(virUSBDeviceListPtr list,
                       virUSBDevicePtr dev)
 {
     virUSBDevicePtr ret = NULL;
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         if (list->devs[i]->bus != dev->bus ||
@@ -516,7 +516,7 @@ virUSBDevicePtr
 virUSBDeviceListFind(virUSBDeviceListPtr list,
                      virUSBDevicePtr dev)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < list->count; i++) {
         if (list->devs[i]->bus == dev->bus &&

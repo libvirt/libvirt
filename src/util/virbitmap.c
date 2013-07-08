@@ -301,7 +301,8 @@ virBitmapParse(const char *str,
     bool neg = false;
     const char *cur;
     char *tmp;
-    int i, start, last;
+    size_t i;
+    int start, last;
 
     if (!str)
         return -1;
@@ -434,7 +435,7 @@ virBitmapPtr virBitmapNewCopy(virBitmapPtr src)
 virBitmapPtr virBitmapNewData(void *data, int len)
 {
     virBitmapPtr bitmap;
-    int i, j;
+    size_t i, j;
     unsigned long *p;
     unsigned char *bytes = data;
 
@@ -470,7 +471,7 @@ int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
 {
     int len;
     unsigned long *l;
-    int i, j;
+    size_t i, j;
     unsigned char *bytes;
 
     len = (bitmap->max_bit + CHAR_BIT - 1) / CHAR_BIT;
@@ -507,7 +508,7 @@ int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
 bool virBitmapEqual(virBitmapPtr b1, virBitmapPtr b2)
 {
     virBitmapPtr tmp;
-    int i;
+    size_t i;
 
     if (b1->max_bit > b2->max_bit) {
         tmp = b1;
@@ -574,7 +575,7 @@ void virBitmapClearAll(virBitmapPtr bitmap)
  */
 bool virBitmapIsAllSet(virBitmapPtr bitmap)
 {
-    int i;
+    size_t i;
     int unusedBits;
     size_t sz;
 
@@ -605,7 +606,7 @@ bool virBitmapIsAllSet(virBitmapPtr bitmap)
  */
 bool virBitmapIsAllClear(virBitmapPtr bitmap)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < bitmap->map_len; i++)
         if (bitmap->map[i] != 0)

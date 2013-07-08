@@ -596,7 +596,7 @@ virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
             if (virMacAddrCmpRaw(&calld->macaddress, mac->mac))
             {
                 /* Repeat the same check for a broadcast mac */
-                int i;
+                size_t i;
 
                 for (i = 0; i < VIR_MAC_BUFLEN; i++) {
                     if (calld->macaddress.addr[i] != 0xff) {
