@@ -320,7 +320,7 @@ static int myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                          virDomainEventGraphicsSubjectPtr subject,
                                          void *opaque ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     printf("%s EVENT: Domain %s(%d) graphics ", __func__, virDomainGetName(dom),
            virDomainGetID(dom));
 

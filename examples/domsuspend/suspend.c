@@ -107,15 +107,17 @@ int main(int argc, char **argv) {
         id = atoi(argv[1]);
     }
     if (id == 0) {
-        int i, j, ids[10];
-        i = virConnectListDomains(conn, &ids[0], 10);
-        if (i < 0) {
+        int n;
+        size_t i;
+        int ids[10];
+        n = virConnectListDomains(conn, &ids[0], 10);
+        if (n < 0) {
             fprintf(stderr, "Failed to list the domains\n");
             goto error;
         }
-        for (j = 0; j < i; j++) {
-            if (ids[j] != 0) {
-                id = ids[j];
+        for (i = 0; i < n; i++) {
+            if (ids[i] != 0) {
+                id = ids[i];
                 break;
             }
         }

@@ -90,7 +90,8 @@ out:
 static int
 showDomains(virConnectPtr conn)
 {
-    int ret = 0, i, numNames, numInactiveDomains, numActiveDomains;
+    int ret = 0, numNames, numInactiveDomains, numActiveDomains;
+    size_t i;
     char **nameList = NULL;
 
     numActiveDomains = virConnectNumOfDomains(conn);
@@ -161,7 +162,7 @@ typedef struct _AuthData AuthData;
 static int
 authCallback(virConnectCredentialPtr cred, unsigned int ncred, void *cbdata)
 {
-    int i;
+    size_t i;
     AuthData *authData = cbdata;
 
     /* libvirt might request multiple credentials in a single call.
