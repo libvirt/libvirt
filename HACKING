@@ -103,11 +103,8 @@ and run the tests:
   make syntax-check
   make -C tests valgrind
 
-
-
-  Valgrind
-  http://valgrind.org/is a test that checks for memory management issues, such as leaks or use of
-uninitialized variables.
+Valgrind <http://valgrind.org/> is a test that checks for memory management
+issues, such as leaks or use of uninitialized variables.
 
 If you encounter any failing tests, the VIR_TEST_DEBUG environment variable
 may provide extra information to debug the failures. Larger values of
@@ -186,11 +183,8 @@ In this instance, it is acceptible to modify the "tests/.valgrind.supp" file
 in order to add a suppression filter. The filter should be unique enough to
 not suppress real leaks, but it should be generic enough to cover multiple
 code paths. The format of the entry can be found in the documentation found at
-the
-
-  Valgrind home page.
-  http://valgrind.org/The following trace was added to "tests/.valgrind.supp" in order to suppress
-the warning:
+the Valgrind home page <http://valgrind.org/>. The following trace was added
+to "tests/.valgrind.supp" in order to suppress the warning:
 
 {
     dlInitMemoryLeak1
@@ -211,10 +205,8 @@ feature or changing the output of a program.
 
 
 There is more on this subject, including lots of links to background reading
-on the subject, on
-
-  Richard Jones' guide to working with open source projects
-  http://et.redhat.com/~rjones/how-to-supply-code-to-open-source-projects/
+on the subject, on Richard Jones' guide to working with open source projects
+<http://et.redhat.com/~rjones/how-to-supply-code-to-open-source-projects/>.
 
 
 Code indentation
@@ -893,9 +885,7 @@ logic would be better pulled out into a helper function.
 
 Although libvirt does not encourage the Linux kernel wind/unwind style of
 multiple labels, there's a good general discussion of the issue archived at
-
-  KernelTrap
-  http://kerneltrap.org/node/553/2131
+KernelTrap <http://kerneltrap.org/node/553/2131>
 
 When using goto, please use one of these standard labels if it makes sense:
 

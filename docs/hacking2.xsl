@@ -138,12 +138,4 @@ from docs/hacking.html.in!
 </xsl:template>
 
 
-
-<xsl:template match="html:a">
-<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
-<xsl:text>  </xsl:text><xsl:apply-templates/>
-<xsl:value-of select="$newline"/>
-<xsl:text>  </xsl:text><xsl:value-of select="@href"/>
-</xsl:template>
-
 </xsl:stylesheet>

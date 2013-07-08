@@ -27,4 +27,14 @@
 <xsl:template match="html:i">'<xsl:apply-templates/>'</xsl:template>
 <xsl:template match="html:code">"<xsl:apply-templates/>"</xsl:template>
 
+<!-- likewise, reformat a tags in first pass -->
+<xsl:template match="html:a">
+<xsl:text> </xsl:text><xsl:apply-templates/>
+<xsl:if test="@href">
+  <xsl:text> &lt;</xsl:text><xsl:value-of select="@href"/>
+  <xsl:text>&gt;</xsl:text>
+</xsl:if>
+</xsl:template>
+
+
 </xsl:stylesheet>

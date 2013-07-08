@@ -211,7 +211,7 @@
            not suppress real leaks, but it should be generic enough to
            cover multiple code paths. The format of the entry can be
            found in the documentation found at the
-           <a href="http://valgrind.org/">Valgrind home page.</a>
+           <a href="http://valgrind.org/">Valgrind home page</a>.
            The following trace was added to <code>tests/.valgrind.supp</code>
            in order to suppress the warning:
         </p>
@@ -236,7 +236,7 @@
       There is more on this subject, including lots of links to background
       reading on the subject, on
       <a href="http://et.redhat.com/~rjones/how-to-supply-code-to-open-source-projects/">
-        Richard Jones' guide to working with open source projects</a>
+        Richard Jones' guide to working with open source projects</a>.
     </p>
 
 
