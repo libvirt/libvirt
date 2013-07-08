@@ -218,7 +218,7 @@ virSCSIDeviceNew(const char *adapter,
         goto cleanup;
 
     if (virAsprintf(&dev->name, "%d:%d:%d:%d", dev->adapter,
-                    dev->bus, dev->bus, dev->unit) < 0 ||
+                    dev->bus, dev->target, dev->unit) < 0 ||
         virAsprintf(&dev->sg_path, "/dev/%s", sg) < 0) {
         virReportOOMError();
         goto cleanup;
