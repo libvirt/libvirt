@@ -1826,7 +1826,7 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
 {
     virSecurityLabelDefPtr secdef;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
-    int i;
+    size_t i;
     int rc = 0;
 
     VIR_DEBUG("Restoring security label on %s", def->name);
@@ -2227,7 +2227,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       const char *stdin_path)
 {
-    int i;
+    size_t i;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
 

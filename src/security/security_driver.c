@@ -53,7 +53,7 @@ virSecurityDriverPtr virSecurityDriverLookup(const char *name,
                                              const char *virtDriver)
 {
     virSecurityDriverPtr drv = NULL;
-    int i;
+    size_t i;
 
     VIR_DEBUG("name=%s", NULLSTR(name));
 

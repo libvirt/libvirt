@@ -834,7 +834,7 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                       int migrated)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    int i;
+    size_t i;
     int rc = 0;
 
     if (!priv->dynamicOwnership)
@@ -904,7 +904,7 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                   const char *stdin_path ATTRIBUTE_UNUSED)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    int i;
+    size_t i;
     uid_t user;
     gid_t group;
 

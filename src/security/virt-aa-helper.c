@@ -498,7 +498,7 @@ valid_name(const char *name)
 static int
 array_starts_with(const char *str, const char * const *arr, const long size)
 {
-    int i;
+    size_t i;
     for (i = 0; i < size; i++) {
         if (strlen(str) < strlen(arr[i]))
             continue;
@@ -890,7 +890,7 @@ get_files(vahControl * ctl)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
-    int i;
+    size_t i;
     char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 

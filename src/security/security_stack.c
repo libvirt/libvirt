@@ -513,7 +513,8 @@ virSecurityStackGetNested(virSecurityManagerPtr mgr)
     virSecurityManagerPtr *list = NULL;
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item;
-    int len = 0, i = 0;
+    int len = 0;
+    size_t i;
 
     for (item = priv->itemsHead; item; item = item->next)
         len++;
@@ -521,7 +522,7 @@ virSecurityStackGetNested(virSecurityManagerPtr mgr)
     if (VIR_ALLOC_N(list, len + 1) < 0)
         return NULL;
 
-    for (item = priv->itemsHead; item; item = item->next, i++)
+    for (i = 0, item = priv->itemsHead; item; item = item->next, i++)
         list[i] = item->securityManager;
     list[len] = NULL;
 
