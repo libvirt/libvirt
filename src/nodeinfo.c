@@ -1686,12 +1686,9 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
 
     for (numCells = 0, n = startCell; n <= lastCell; n++) {
         long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to query NUMA free memory for node: %d"),
-                           n);
-            goto cleanup;
-        }
+        if (numa_node_size64(n, &mem) < 0)
+            mem = 0;
+
         freeMems[numCells++] = mem;
     }
     ret = numCells;
@@ -1712,15 +1709,12 @@ nodeGetFreeMemory(void)
 
     for (n = 0; n <= numa_max_node(); n++) {
         long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Failed to query NUMA free memory"));
-            goto cleanup;
-        }
+        if (numa_node_size64(n, &mem) < 0)
+            continue;
+
         freeMem += mem;
     }
 
-cleanup:
     return freeMem;
 }
 
