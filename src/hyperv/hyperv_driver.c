@@ -931,7 +931,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
-    int i;
+    size_t i;
 
     if (maxnames == 0) {
         return 0;
@@ -1236,7 +1236,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
     virDomainPtr *doms = NULL;
     int count = 0;
     int ret = -1;
-    int i;
+    size_t i;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
