@@ -123,7 +123,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    int i;
+    size_t i;
     const char *nodeData[] = {
         "test1",
 # if !(defined(__powerpc__) ||                  \

@@ -115,7 +115,7 @@ static void
 thread_func(void *data)
 {
     int idx = (intptr_t)data;
-    int i;
+    size_t i;
     int d;
 
     for (i = 0; i < ROUNDS; i++) {
@@ -134,7 +134,7 @@ static int
 testThreads(const void *data ATTRIBUTE_UNUSED)
 {
     int sum;
-    int i;
+    size_t i;
     virThread threads[THREADS];
 
     atomic = 0;

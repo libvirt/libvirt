@@ -34,7 +34,7 @@ static struct testEscapeString escapeStrings[] = {
 
 static int testEscapeArg(const void *data ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     char *escaped = NULL;
     for (i = 0; i < ARRAY_CARDINALITY(escapeStrings); ++i) {
         escaped = qemuMonitorEscapeArg(escapeStrings[i].unescaped);
@@ -61,7 +61,7 @@ static int testEscapeArg(const void *data ATTRIBUTE_UNUSED)
 
 static int testUnescapeArg(const void *data ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     char *unescaped = NULL;
     for (i = 0; i < ARRAY_CARDINALITY(escapeStrings); ++i) {
         unescaped = qemuMonitorUnescapeArg(escapeStrings[i].escaped);

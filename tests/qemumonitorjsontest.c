@@ -236,7 +236,7 @@ testQemuMonitorJSONGetMachines(const void *data)
     qemuMonitorMachineInfoPtr *info;
     int ninfo = 0;
     const char *null = NULL;
-    int i;
+    size_t i;
 
     if (!test)
         return -1;
@@ -317,7 +317,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
     int ret = -1;
     char **cpus = NULL;
     int ncpus = 0;
-    int i;
+    size_t i;
 
     if (!test)
         return -1;
@@ -383,7 +383,7 @@ testQemuMonitorJSONGetCommands(const void *data)
     int ret = -1;
     char **commands = NULL;
     int ncommands = 0;
-    int i;
+    size_t i;
 
     if (!test)
         return -1;

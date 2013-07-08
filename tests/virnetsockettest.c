@@ -52,7 +52,7 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
     struct sockaddr_in in4;
     struct sockaddr_in6 in6;
     int s4 = -1, s6 = -1;
-    int i;
+    size_t i;
     int ret = -1;
 
     memset(&hints, 0, sizeof(hints));

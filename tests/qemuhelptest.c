@@ -24,15 +24,15 @@ struct testInfo {
 static void printMismatchedFlags(virQEMUCapsPtr got,
                                  virQEMUCapsPtr expect)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < QEMU_CAPS_LAST; i++) {
         bool gotFlag = virQEMUCapsGet(got, i);
         bool expectFlag = virQEMUCapsGet(expect, i);
         if (gotFlag && !expectFlag)
-            fprintf(stderr, "Extra flag %i\n", i);
+            fprintf(stderr, "Extra flag %zu\n", i);
         if (!gotFlag && expectFlag)
-            fprintf(stderr, "Missing flag %i\n", i);
+            fprintf(stderr, "Missing flag %zu\n", i);
     }
 }
 

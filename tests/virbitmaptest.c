@@ -65,7 +65,7 @@ testBit(virBitmapPtr bitmap,
         unsigned int end,
         bool expected)
 {
-    int i;
+    size_t i;
     bool result;
 
     for (i = start; i <= end; i++) {
@@ -145,7 +145,7 @@ static int test3(const void *data ATTRIBUTE_UNUSED)
     virBitmapPtr bitmap = NULL;
     int ret = -1;
     int size = 5;
-    int i;
+    size_t i;
 
     if ((bitmap = virBitmapNew(size)) == NULL)
         goto error;
@@ -180,7 +180,7 @@ static int test4(const void *data ATTRIBUTE_UNUSED)
         28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
     virBitmapPtr bitmap = NULL;
-    int i, j;
+    ssize_t i, j;
 
     if (ARRAY_CARDINALITY(bitsPos) + ARRAY_CARDINALITY(bitsPosInv) != size)
         goto error;
@@ -268,7 +268,8 @@ static int test5(const void *v ATTRIBUTE_UNUSED)
     int len2;
     int bits[] = {0, 9, 34};
     virBitmapPtr bitmap;
-    int i, j;
+    size_t i;
+    ssize_t j;
     int ret = -1;
 
     bitmap = virBitmapNewData(data, sizeof(data));

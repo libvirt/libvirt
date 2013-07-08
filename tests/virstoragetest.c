@@ -218,7 +218,7 @@ testStorageChain(const void *args)
     int ret = -1;
     virStorageFileMetadataPtr meta;
     virStorageFileMetadataPtr elt;
-    int i = 0;
+    size_t i = 0;
 
     meta = virStorageFileGetMetadata(data->start, data->format, -1, -1,
                                      (data->flags & ALLOW_PROBE) != 0);

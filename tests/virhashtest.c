@@ -130,7 +130,7 @@ testHashUpdate(const void *data ATTRIBUTE_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) + ARRAY_CARDINALITY(uuids_new);
     virHashTablePtr hash;
-    int i;
+    size_t i;
     int ret = -1;
 
     if (!(hash = testHashInit(0)))
@@ -172,7 +172,7 @@ testHashRemove(const void *data ATTRIBUTE_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
     virHashTablePtr hash;
-    int i;
+    size_t i;
     int ret = -1;
 
     if (!(hash = testHashInit(0)))
@@ -208,7 +208,7 @@ testHashRemoveForEachSome(void *payload ATTRIBUTE_UNUSED,
                           void *data)
 {
     virHashTablePtr hash = data;
-    int i;
+    size_t i;
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (STREQ(uuids_subset[i], name)) {
@@ -243,7 +243,7 @@ testHashRemoveForEachForbidden(void *payload ATTRIBUTE_UNUSED,
                                void *data)
 {
     virHashTablePtr hash = data;
-    int i;
+    size_t i;
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (STREQ(uuids_subset[i], name)) {
@@ -299,7 +299,7 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
     virHashTablePtr hash;
-    int i;
+    size_t i;
     int ret = -1;
 
     if (!(hash = testHashInit(0)))
@@ -404,7 +404,7 @@ testHashRemoveSetIter(const void *payload ATTRIBUTE_UNUSED,
 {
     int *count = (int *) data;
     bool rem = false;
-    int i;
+    size_t i;
 
     for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
         if (STREQ(uuids_subset[i], name)) {

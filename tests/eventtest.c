@@ -143,18 +143,18 @@ verifyFired(const char *name, int handle, int timer)
 {
     int handleFired = 0;
     int timerFired = 0;
-    int i;
+    size_t i;
     for (i = 0; i < NUM_FDS; i++) {
         if (handles[i].fired) {
             if (i != handle) {
                 virtTestResult(name, 1,
-                               "Handle %d fired, but expected %d\n", i,
+                               "Handle %zu fired, but expected %d\n", i,
                                handle);
                 return EXIT_FAILURE;
             } else {
                 if (handles[i].error != EV_ERROR_NONE) {
                     virtTestResult(name, 1,
-                                   "Handle %d fired, but had error %d\n", i,
+                                   "Handle %zu fired, but had error %d\n", i,
                                    handles[i].error);
                     return EXIT_FAILURE;
                 }
@@ -181,12 +181,12 @@ verifyFired(const char *name, int handle, int timer)
         if (timers[i].fired) {
             if (i != timer) {
                 virtTestResult(name, 1,
-                               "Timer %d fired, but expected %d\n", i, timer);
+                               "Timer %zu fired, but expected %d\n", i, timer);
                 return EXIT_FAILURE;
             } else {
                 if (timers[i].error != EV_ERROR_NONE) {
                     virtTestResult(name, 1,
-                                   "Timer %d fired, but had error %d\n", i,
+                                   "Timer %zu fired, but had error %d\n", i,
                                    timers[i].error);
                     return EXIT_FAILURE;
                 }
@@ -247,7 +247,7 @@ finishJob(const char *name, int handle, int timer)
 static void
 resetAll(void)
 {
-    int i;
+    size_t i;
     for (i = 0; i < NUM_FDS; i++) {
         handles[i].fired = 0;
         handles[i].error = EV_ERROR_NONE;
@@ -261,7 +261,7 @@ resetAll(void)
 static int
 mymain(void)
 {
-    int i;
+    size_t i;
     pthread_t eventThread;
     char one = '1';
 

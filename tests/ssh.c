@@ -28,7 +28,7 @@
 
 int main(int argc, char **argv)
 {
-    int i;
+    size_t i;
     bool failConnect = false; /* Exit -1, with no data on stdout, msg on stderr */
     bool dieEarly = false;    /* Exit -1, with partial data on stdout, msg on stderr */
 

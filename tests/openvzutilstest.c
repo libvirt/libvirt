@@ -38,7 +38,7 @@ static int
 testReadConfigParam(const void *data ATTRIBUTE_UNUSED)
 {
     int result = -1;
-    int i;
+    size_t i;
     char *conf = NULL;
     char *value = NULL;
 

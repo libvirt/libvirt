@@ -114,7 +114,7 @@ cpuTestLoadMultiXML(const char *arch,
     xmlNodePtr *nodes = NULL;
     virCPUDefPtr *cpus = NULL;
     int n;
-    int i;
+    size_t i;
 
     if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml", abs_srcdir, arch, name) < 0)
         goto cleanup;
@@ -326,7 +326,7 @@ cpuTestBaseline(const void *arg)
     virCPUDefPtr baseline = NULL;
     unsigned int ncpus = 0;
     char *result = NULL;
-    unsigned int i;
+    size_t i;
 
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
         goto cleanup;
@@ -359,7 +359,7 @@ cpuTestBaseline(const void *arg)
             cmp != VIR_CPU_COMPARE_IDENTICAL) {
             if (virTestGetVerbose()) {
                 fprintf(stderr,
-                        "\nbaseline CPU is incompatible with CPU %u\n", i);
+                        "\nbaseline CPU is incompatible with CPU %zu\n", i);
                 fprintf(stderr, "%74s", "... ");
             }
             ret = -1;

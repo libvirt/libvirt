@@ -36,7 +36,7 @@ static const char* diskNames[] = {
 static int
 testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     char *diskName = NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(diskNames); ++i) {
@@ -62,19 +62,20 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
 static int
 testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
 {
-    int i, k;
+    size_t i;
+    int idx;
     char *diskName = NULL;
 
     for (i = 0; i < 100000; ++i) {
         VIR_FREE(diskName);
 
         diskName = virIndexToDiskName(i, "sd");
-        k = virDiskNameToIndex(diskName);
+        idx = virDiskNameToIndex(diskName);
 
-        if (k != i) {
+        if (idx < 0 || idx != i) {
             if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nExpect [%d]\n", i);
-                fprintf(stderr, "Actual [%d]\n", k);
+                fprintf(stderr, "\nExpect [%zu]\n", i);
+                fprintf(stderr, "Actual [%d]\n", idx);
             }
 
             VIR_FREE(diskName);
@@ -115,7 +116,8 @@ static struct testVersionString versions[] = {
 static int
 testParseVersionString(const void *data ATTRIBUTE_UNUSED)
 {
-    int i, result;
+    int result;
+    size_t i;
     unsigned long version;
 
     for (i = 0; i < ARRAY_CARDINALITY(versions); ++i) {

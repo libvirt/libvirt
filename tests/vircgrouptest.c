@@ -41,7 +41,7 @@ static int validateCgroup(virCgroupPtr cgroup,
                           const char **expectLinkPoint,
                           const char **expectPlacement)
 {
-    int i;
+    size_t i;
 
     if (STRNEQ(cgroup->path, expectPath)) {
         fprintf(stderr, "Wrong path '%s', expected '%s'\n",

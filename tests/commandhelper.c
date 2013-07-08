@@ -57,7 +57,7 @@ static int envsort(const void *a, const void *b) {
 }
 
 int main(int argc, char **argv) {
-    int i, n;
+    size_t i, n;
     char **origenv;
     char **newenv;
     char *cwd;
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
         closed = fcntl(i, F_GETFD, &f) == -1 &&
             errno == EBADF;
         if (!closed)
-            fprintf(log, "FD:%d\n", i);
+            fprintf(log, "FD:%zu\n", i);
     }
 
     fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");

@@ -77,7 +77,7 @@ double
 virtTestCountAverage(double *items, int nitems)
 {
     long double sum = 0;
-    int i;
+    size_t i;
 
     for (i=1; i < nitems; i++)
         sum += items[i];
@@ -132,7 +132,8 @@ void virtTestResult(const char *name, int ret, const char *msg, ...)
 int
 virtTestRun(const char *title, int nloops, int (*body)(const void *data), const void *data)
 {
-    int i, ret = 0;
+    int ret = 0;
+    size_t i;
     double *ts = NULL;
 
     if (testCounter == 0 && !virTestGetVerbose())
@@ -265,7 +266,7 @@ virtTestLoadFile(const char *file, char **buf)
 static
 void virtTestCaptureProgramExecChild(const char *const argv[],
                                      int pipefd) {
-    int i;
+    size_t i;
     int open_max;
     int stdinfd = -1;
     const char *const env[] = {
@@ -283,7 +284,8 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     for (i = 0; i < open_max; i++) {
         if (i != stdinfd &&
             i != pipefd) {
-            int tmpfd = i;
+            int tmpfd;
+            tmpfd = i;
             VIR_FORCE_CLOSE(tmpfd);
         }
     }
@@ -523,7 +525,7 @@ virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
 {
     void *trace[30];
     int ntrace = ARRAY_CARDINALITY(trace);
-    int i;
+    size_t i;
     char **symbols = NULL;
 
     ntrace = backtrace(trace, ntrace);
@@ -665,7 +667,7 @@ int virtTestMain(int argc,
             fprintf(stderr, "%d) OOM of %d allocs ", testCounter, approxAlloc);
 
         if (mp) {
-            int i;
+            size_t i;
             for (i = 0; i < mp; i++) {
                 workers[i] = fork();
                 if (workers[i] == 0) {
@@ -700,7 +702,7 @@ int virtTestMain(int argc,
             if (worker) {
                 _exit(ret);
             } else {
-                int i;
+                size_t i;
                 for (i = 0; i < mp; i++) {
                     if (virProcessWait(workers[i], NULL) < 0)
                         ret = EXIT_FAILURE;
