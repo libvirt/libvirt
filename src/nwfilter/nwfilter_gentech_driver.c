@@ -57,7 +57,7 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 
 
 void virNWFilterTechDriversInit(bool privileged) {
-    int i = 0;
+    size_t i = 0;
     VIR_DEBUG("Initializing NWFilter technology drivers");
     while (filter_tech_drivers[i]) {
         if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
@@ -68,7 +68,7 @@ void virNWFilterTechDriversInit(bool privileged) {
 
 
 void virNWFilterTechDriversShutdown(void) {
-    int i = 0;
+    size_t i = 0;
     while (filter_tech_drivers[i]) {
         if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->shutdown();
@@ -79,7 +79,7 @@ void virNWFilterTechDriversShutdown(void) {
 
 virNWFilterTechDriverPtr
 virNWFilterTechDriverForName(const char *name) {
-    int i = 0;
+    size_t i = 0;
     while (filter_tech_drivers[i]) {
        if (STREQ(filter_tech_drivers[i]->name, name)) {
            if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED) == 0)
@@ -120,7 +120,7 @@ virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
 static void
 virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 {
-    int i;
+    size_t i;
     if (!inst)
         return;
 
@@ -296,7 +296,7 @@ virNWFilterRuleInstantiate(virNWFilterTechDriverPtr techdriver,
                            virNWFilterHashTablePtr vars)
 {
     int rc;
-    int i;
+    size_t i;
     virNWFilterRuleInstPtr ret;
 
     if (VIR_ALLOC(ret) < 0)
@@ -387,7 +387,7 @@ _virNWFilterInstantiateRec(virNWFilterTechDriverPtr techdriver,
 {
     virNWFilterObjPtr obj;
     int rc = 0;
-    int i;
+    size_t i;
     virNWFilterRuleInstPtr inst;
     virNWFilterDefPtr next_filter;
 
@@ -487,7 +487,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
 {
     virNWFilterObjPtr obj;
     int rc = 0;
-    int i, j;
+    size_t i, j;
     virNWFilterDefPtr next_filter;
     virNWFilterVarValuePtr val;
 
@@ -590,7 +590,7 @@ virNWFilterRuleInstancesToArray(int nEntries,
                                 void ***ptrs,
                                 int *nptrs)
 {
-    int i,j;
+    size_t i,j;
 
     *nptrs = 0;
 
@@ -649,7 +649,8 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                        bool forceWithPendingReq)
 {
     int rc;
-    int j, nptrs;
+    size_t j;
+    int nptrs;
     int nEntries = 0;
     virNWFilterRuleInstPtr *insts = NULL;
     void **ptrs = NULL;
@@ -1141,7 +1142,7 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
 {
     virDomainDefPtr vm = obj->def;
     struct domUpdateCBStruct *cb = data;
-    int i;
+    size_t i;
     bool skipIface;
     int ret = 0;
 

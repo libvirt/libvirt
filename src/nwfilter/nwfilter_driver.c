@@ -436,7 +436,8 @@ nwfilterClose(virConnectPtr conn) {
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
-    int i, n;
+    size_t i;
+    int n;
 
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
@@ -459,7 +460,8 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
                              char **const names,
                              int nnames) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
-    int got = 0, i;
+    int got = 0;
+    size_t i;
 
     if (virConnectListNWFiltersEnsureACL(conn) < 0)
         return -1;
@@ -498,7 +500,7 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
     int nfilters = 0;
     virNWFilterPtr filter = NULL;
     virNWFilterObjPtr obj = NULL;
-    int i;
+    size_t i;
     int ret = -1;
 
     virCheckFlags(0, -1);

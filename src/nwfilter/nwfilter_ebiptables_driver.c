@@ -3067,7 +3067,7 @@ _ebtablesRemoveSubChains(virBufferPtr buf,
                          const char *chains)
 {
     char rootchain[MAX_CHAINNAME_LENGTH];
-    unsigned i;
+    size_t i;
 
     NWFILTER_SET_EBTABLES_SHELLVAR(buf);
 
@@ -3159,7 +3159,7 @@ ebtablesRenameTmpSubAndRootChains(virBufferPtr buf,
                                   const char *ifname)
 {
     char rootchain[MAX_CHAINNAME_LENGTH];
-    unsigned i;
+    size_t i;
     char chains[3] = {
         CHAINPREFIX_HOST_IN_TEMP,
         CHAINPREFIX_HOST_OUT_TEMP,
@@ -3664,7 +3664,8 @@ ebtablesCreateTmpRootAndSubChains(virBufferPtr buf,
                                   ebiptablesRuleInstPtr *inst,
                                   int *nRuleInstances)
 {
-    int rc = 0, i;
+    int rc = 0;
+    size_t i;
     virHashKeyValuePairPtr filter_names;
     const virNWFilterChainPriority *priority;
 
@@ -3699,7 +3700,7 @@ ebiptablesApplyNewRules(const char *ifname,
                         int nruleInstances,
                         void **_inst)
 {
-    int i, j;
+    size_t i, j;
     int cli_status;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4066,7 +4067,7 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
 {
     int rc = 0;
     int cli_status;
-    int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
 

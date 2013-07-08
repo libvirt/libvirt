@@ -1335,7 +1335,8 @@ virNWFilterDHCPSnoopThread(void *req0)
     virNWFilterSnoopEthHdrPtr packet;
     int ifindex = 0;
     int errcount = 0;
-    int tmp = -1, i, rv, n, pollTo;
+    int tmp = -1, rv, n, pollTo;
+    size_t i;
     char *threadkey = NULL;
     virThreadPoolPtr worker = NULL;
     time_t last_displayed = 0, last_displayed_queue = 0;
