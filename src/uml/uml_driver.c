@@ -273,7 +273,7 @@ static int
 umlIdentifyChrPTY(struct uml_driver *driver,
                   virDomainObjPtr dom)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < dom->def->nconsoles; i++)
         if (dom->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
@@ -995,7 +995,7 @@ error:
 
 
 static void umlCleanupTapDevices(virDomainObjPtr vm) {
-    int i;
+    size_t i;
 
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr def = vm->def->nets[i];
@@ -2115,7 +2115,7 @@ static int umlDomainAttachUmlDisk(struct uml_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk)
 {
-    int i;
+    size_t i;
     char *cmd = NULL;
     char *reply = NULL;
 
@@ -2239,7 +2239,8 @@ static int umlDomainDetachUmlDisk(struct uml_driver *driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev)
 {
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     virDomainDiskDefPtr detach = NULL;
     char *cmd;
     char *reply;

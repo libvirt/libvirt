@@ -384,7 +384,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
                                   struct uml_driver *driver,
                                   virDomainObjPtr vm)
 {
-    int i, j;
+    size_t i, j;
     virCommandPtr cmd;
 
     cmd = virCommandNew(vm->def->os.kernel);
@@ -428,7 +428,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         if (chr)
             ret = umlBuildCommandLineChr(chr, "con", cmd);
         if (!ret)
-            if (virAsprintf(&ret, "con%d=none", i) < 0)
+            if (virAsprintf(&ret, "con%zu=none", i) < 0)
                 goto error;
         virCommandAddArg(cmd, ret);
         VIR_FREE(ret);
@@ -443,7 +443,7 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
         if (chr)
             ret = umlBuildCommandLineChr(chr, "ssl", cmd);
         if (!ret)
-            if (virAsprintf(&ret, "ssl%d=none", i) < 0)
+            if (virAsprintf(&ret, "ssl%zu=none", i) < 0)
                 goto error;
 
         virCommandAddArg(cmd, ret);
