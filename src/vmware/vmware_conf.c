@@ -259,7 +259,7 @@ cleanup:
 int
 vmwareDomainConfigDisplay(vmwareDomainPtr pDomain, virDomainDefPtr def)
 {
-    int i = 0;
+    size_t i;
 
     if (def->ngraphics == 0) {
         pDomain->gui = true;
@@ -325,7 +325,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
     char *directoryName = NULL;
     char *fileName = NULL;
     int ret = -1;
-    int i = 0;
+    size_t i;
 
     /*
      * Build VMX URL. Use the source of the first file-based harddisk

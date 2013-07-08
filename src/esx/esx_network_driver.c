@@ -109,7 +109,7 @@ esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     int count = 0;
-    int i;
+    size_t i;
 
     if (maxnames == 0) {
         return 0;
@@ -330,7 +330,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *physicalNic = NULL;
     esxVI_HostPortGroupSpec *hostPortGroupSpec = NULL;
-    int i;
+    size_t i;
 
     unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
 

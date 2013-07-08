@@ -44,7 +44,7 @@ int
 esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
 {
     int result = -1;
-    int i;
+    size_t i;
     int noVerify;
     int autoAnswer;
     char *tmp;

@@ -487,7 +487,7 @@ static void
 esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
                       curl_lock_access access_ ATTRIBUTE_UNUSED, void *userptr)
 {
-    int i;
+    size_t i;
     esxVI_SharedCURL *shared = userptr;
 
     switch (data) {
@@ -515,7 +515,7 @@ static void
 esxVI_SharedCURL_Unlock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
                         void *userptr)
 {
-    int i;
+    size_t i;
     esxVI_SharedCURL *shared = userptr;
 
     switch (data) {
@@ -545,7 +545,7 @@ ESX_VI__TEMPLATE__ALLOC(SharedCURL)
 /* esxVI_SharedCURL_Free */
 ESX_VI__TEMPLATE__FREE(SharedCURL,
 {
-    int i;
+    size_t i;
 
     if (item->count > 0) {
         /* Better leak than crash */
@@ -565,7 +565,7 @@ ESX_VI__TEMPLATE__FREE(SharedCURL,
 int
 esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl)
 {
-    int i;
+    size_t i;
 
     if (curl->handle == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1431,7 +1431,7 @@ int
 esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
                                   esxVI_AnyType *anyType, int *value)
 {
-    int i;
+    size_t i;
 
     if (anyType == NULL || value == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1466,7 +1466,7 @@ int
 esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
                             int value, const char *element, virBufferPtr output)
 {
-    int i;
+    size_t i;
     const char *name = NULL;
 
     if (element == NULL || output == NULL) {
@@ -1504,7 +1504,7 @@ int
 esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
                               xmlNodePtr node, int *value)
 {
-    int i;
+    size_t i;
     int result = -1;
     char *name = NULL;
 
@@ -2569,7 +2569,7 @@ esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
 {
     int count = 0;
     int result;
-    int i;
+    size_t i;
     esxVI_VirtualMachineSnapshotTree *snapshotTree;
 
     for (snapshotTree = snapshotTreeList;
@@ -4524,7 +4524,7 @@ esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
     char *output[4] = { parsedHostCpuIdInfo->eax, parsedHostCpuIdInfo->ebx,
                         parsedHostCpuIdInfo->ecx, parsedHostCpuIdInfo->edx };
     const char *name[4] = { "eax", "ebx", "ecx", "edx" };
-    int r, i, o;
+    size_t r, i, o;
 
     memset(parsedHostCpuIdInfo, 0, sizeof(*parsedHostCpuIdInfo));
 

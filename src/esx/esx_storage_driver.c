@@ -87,7 +87,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
 {
     int count = 0;
     esxPrivate *priv = conn->storagePrivateData;
-    int i;
+    size_t i;
     int tmp;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
@@ -115,7 +115,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names, int maxnames)
     bool success = false;
     esxPrivate *priv = conn->storagePrivateData;
     int count = 0;
-    int i;
+    size_t i;
     int tmp;
 
     if (maxnames == 0) {
@@ -176,7 +176,7 @@ static virStoragePoolPtr
 esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
 {
     esxPrivate *priv = conn->storagePrivateData;
-    int i;
+    size_t i;
     virStoragePoolPtr pool;
 
     virCheckNonNullArgReturn(name, NULL);
@@ -205,7 +205,7 @@ static virStoragePoolPtr
 esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     esxPrivate *priv = conn->storagePrivateData;
-    int i;
+    size_t i;
     virStoragePoolPtr pool;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
@@ -411,7 +411,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     virStorageVolPtr volume;
     esxPrivate *priv = conn->storagePrivateData;
-    int i;
+    size_t i;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;

@@ -2871,7 +2871,7 @@ esxConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxname
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int count = 0;
-    int i;
+    size_t i;
 
     if (maxnames == 0) {
         return 0;
@@ -3026,7 +3026,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
-    int i;
+    size_t i;
     virDomainDiskDefPtr disk = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     int virtualHW_version;
@@ -3559,7 +3559,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_SharesInfo *sharesInfo = NULL;
     unsigned int mask = 0;
-    int i = 0;
+    size_t i = 0;
 
     virCheckFlags(0, -1);
 
@@ -3683,7 +3683,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
-    int i;
+    size_t i;
 
     virCheckFlags(0, -1);
     if (virTypedParamsValidate(params, nparams,
@@ -4845,7 +4845,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
-    int i;
+    size_t i;
 
     virCheckFlags(0, -1);
     if (virTypedParamsValidate(params, nparams,

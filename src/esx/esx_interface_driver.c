@@ -102,7 +102,7 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *physicalNic = NULL;
     int count = 0;
-    int i;
+    size_t i;
 
     if (maxnames == 0) {
         return 0;

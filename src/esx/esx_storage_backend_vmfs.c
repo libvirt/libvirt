@@ -146,7 +146,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
     esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *datastore = NULL;
     int count = 0;
-    int i;
+    size_t i;
 
     if (maxnames == 0) {
         return 0;
@@ -571,7 +571,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     char *directoryAndFileName = NULL;
     size_t length;
     int count = 0;
-    int i;
+    size_t i;
 
     if (names == NULL || maxnames < 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));

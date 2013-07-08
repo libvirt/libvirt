@@ -1056,7 +1056,8 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
                                      virDomainDiskDefPtr disk)
 {
     char *tmp;
-    int model, i;
+    int model;
+    size_t i;
     virDomainControllerDefPtr controller = NULL;
 
     if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI || disk->driverName == NULL) {
@@ -1112,7 +1113,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
                             int virtualDev[4], bool present[4])
 {
     int result = -1;
-    int i, k;
+    size_t i, k;
     virDomainDiskDefPtr disk;
     virDomainControllerDefPtr controller;
     bool controllerHasDisksAttached;
@@ -2975,7 +2976,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
                    int virtualHW_version)
 {
     char *vmx = NULL;
-    int i;
+    size_t i;
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
@@ -3114,12 +3115,13 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:cpumask -> vmx:sched.cpu.affinity */
     if (def->cpumask && virBitmapSize(def->cpumask) > 0) {
+        int bit;
         virBufferAddLit(&buffer, "sched.cpu.affinity = \"");
 
         sched_cpu_affinity_length = 0;
 
-        i = -1;
-        while ((i = virBitmapNextSetBit(def->cpumask, i)) >= 0) {
+        bit = -1;
+        while ((bit = virBitmapNextSetBit(def->cpumask, bit)) >= 0) {
             ++sched_cpu_affinity_length;
         }
 
@@ -3131,9 +3133,9 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
             goto cleanup;
         }
 
-        i = -1;
-        while ((i = virBitmapNextSetBit(def->cpumask, i)) >= 0) {
-            virBufferAsprintf(&buffer, "%d", i);
+        bit = -1;
+        while ((bit = virBitmapNextSetBit(def->cpumask, bit)) >= 0) {
+            virBufferAsprintf(&buffer, "%d", bit);
 
             if (sched_cpu_affinity_length > 1) {
                 virBufferAddChar(&buffer, ',');
@@ -3193,10 +3195,10 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     for (i = 0; i < 4; ++i) {
         if (scsi_present[i]) {
-            virBufferAsprintf(&buffer, "scsi%d.present = \"true\"\n", i);
+            virBufferAsprintf(&buffer, "scsi%zu.present = \"true\"\n", i);
 
             if (scsi_virtualDev[i] != -1) {
-                virBufferAsprintf(&buffer, "scsi%d.virtualDev = \"%s\"\n", i,
+                virBufferAsprintf(&buffer, "scsi%zu.virtualDev = \"%s\"\n", i,
                                   virVMXControllerModelSCSITypeToString
                                     (scsi_virtualDev[i]));
             }
@@ -3238,7 +3240,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     for (i = 0; i < 2; ++i) {
         /* floppy[0..1].present defaults to true, disable it explicitly */
         if (! floppy_present[i]) {
-            virBufferAsprintf(&buffer, "floppy%d.present = \"false\"\n", i);
+            virBufferAsprintf(&buffer, "floppy%zu.present = \"false\"\n", i);
         }
     }
 
