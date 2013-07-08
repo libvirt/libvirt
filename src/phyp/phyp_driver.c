@@ -423,7 +423,7 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
-    unsigned int i = 0;
+    size_t i = 0;
     int fd = -1;
     char local_file[] = "./uuid_table";
 
@@ -545,7 +545,7 @@ phypUUIDTable_RemLpar(virConnectPtr conn, int id)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
-    unsigned int i = 0;
+    size_t i = 0;
 
     for (i = 0; i <= uuid_table->nlpars; i++) {
         if (uuid_table->lpars[i]->id == id) {
@@ -573,7 +573,7 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
 
     uuid_table->nlpars++;
-    unsigned int i = uuid_table->nlpars;
+    size_t i = uuid_table->nlpars;
     i--;
 
     if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0)
@@ -602,7 +602,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
-    unsigned int i = 0;
+    size_t i = 0;
     int fd = -1;
     char local_file[] = "./uuid_table";
     int rc = 0;
@@ -751,7 +751,7 @@ phypUUIDTable_Init(virConnectPtr conn)
     int nids_numdomains = 0;
     int nids_listdomains = 0;
     int *ids = NULL;
-    unsigned int i = 0;
+    size_t i = 0;
     int ret = -1;
     bool table_created = false;
 
@@ -822,7 +822,7 @@ cleanup:
 static void
 phypUUIDTable_Free(uuid_tablePtr uuid_table)
 {
-    int i;
+    size_t i;
 
     if (uuid_table == NULL)
         return;
@@ -1286,7 +1286,7 @@ phypGetLparUUID(unsigned char *uuid, int lpar_id, virConnectPtr conn)
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
     lparPtr *lpars = uuid_table->lpars;
-    unsigned int i = 0;
+    size_t i = 0;
 
     for (i = 0; i < uuid_table->nlpars; i++) {
         if (lpars[i]->id == lpar_id) {
@@ -2297,7 +2297,7 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
     int got = 0;
-    int i;
+    size_t i;
     char *ret = NULL;
     char *volumes_list = NULL;
     char *char_ptr = NULL;
@@ -2498,7 +2498,7 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
     int got = 0;
-    int i;
+    size_t i;
     char *ret = NULL;
     char *storage_pools = NULL;
     char *char_ptr = NULL;
@@ -2555,7 +2555,7 @@ phypStoragePoolLookupByUUID(virConnectPtr conn,
     int npools = 0;
     int gotpools = 0;
     char **pools = NULL;
-    unsigned int i = 0;
+    size_t i = 0;
     unsigned char *local_uuid = NULL;
 
     if (VIR_ALLOC_N(local_uuid, VIR_UUID_BUFLEN) < 0)
@@ -2955,7 +2955,7 @@ phypConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
     int vios_id = phyp_driver->vios_id;
     int exit_status = 0;
     int got = 0;
-    int i;
+    size_t i;
     char *ret = NULL;
     char *networks = NULL;
     char *char_ptr = NULL;
@@ -3123,7 +3123,7 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
     char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
     int got = 0;
-    int i;
+    size_t i;
     char *ret = NULL;
     char *domains = NULL;
     char *char_ptr = NULL;
@@ -3534,7 +3534,7 @@ phypDomainCreateXML(virConnectPtr conn,
     phyp_driverPtr phyp_driver = conn->privateData;
     uuid_tablePtr uuid_table = phyp_driver->uuid_table;
     lparPtr *lpars = uuid_table->lpars;
-    unsigned int i = 0;
+    size_t i = 0;
     char *managed_system = phyp_driver->managed_system;
 
     virCheckFlags(0, NULL);
