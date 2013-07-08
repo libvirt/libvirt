@@ -258,7 +258,7 @@ networkBridgeDummyNicName(const char *brname)
 static void
 networkFindActiveConfigs(struct network_driver *driver)
 {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
@@ -309,7 +309,7 @@ networkFindActiveConfigs(struct network_driver *driver)
 
 static void
 networkAutostartConfigs(struct network_driver *driver) {
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
@@ -536,7 +536,8 @@ networkStateCleanup(void) {
 static int
 networkKillDaemon(pid_t pid, const char *daemonName, const char *networkName)
 {
-    int ii, ret = -1;
+    size_t i;
+    int ret = -1;
     const char *signame = "TERM";
 
     /* send SIGTERM, then wait up to 3 seconds for the process to
@@ -544,11 +545,11 @@ networkKillDaemon(pid_t pid, const char *daemonName, const char *networkName)
      * seconds. If that fails, log a warning and continue, hoping
      * for the best.
      */
-    for (ii = 0; ii < 25; ii++) {
+    for (i = 0; i < 25; i++) {
         int signum = 0;
-        if (ii == 0)
+        if (i == 0)
             signum = SIGTERM;
-        else if (ii == 15) {
+        else if (i == 15) {
             signum = SIGKILL;
             signame = "KILL";
         }
@@ -596,7 +597,7 @@ static int
 networkBuildDnsmasqDhcpHostsList(dnsmasqContext *dctx,
                                  virNetworkIpDefPtr ipdef)
 {
-    unsigned int i;
+    size_t i;
     bool ipv6 = false;
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
@@ -616,7 +617,7 @@ static int
 networkBuildDnsmasqHostsList(dnsmasqContext *dctx,
                              virNetworkDNSDefPtr dnsdef)
 {
-    unsigned int i, j;
+    size_t i, j;
 
     if (dnsdef) {
         for (i = 0; i < dnsdef->nhosts; i++) {
@@ -643,7 +644,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int r, ret = -1;
     int nbleases = 0;
-    int ii;
+    size_t i;
     char *record = NULL;
     char *recordPort = NULL;
     char *recordWeight = NULL;
@@ -720,9 +721,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
          *
          * So listen on all defined IPv[46] addresses
          */
-        for (ii = 0;
-             (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-             ii++) {
+        for (i = 0;
+             (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+             i++) {
             char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
 
             if (!ipaddr)
@@ -768,29 +769,29 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                         "no-resolv\n");
     }
 
-    for (ii = 0; ii < dns->ntxts; ii++) {
+    for (i = 0; i < dns->ntxts; i++) {
         virBufferAsprintf(&configbuf, "txt-record=%s,%s\n",
-                          dns->txts[ii].name,
-                          dns->txts[ii].value);
+                          dns->txts[i].name,
+                          dns->txts[i].value);
     }
 
-    for (ii = 0; ii < dns->nsrvs; ii++) {
-        if (dns->srvs[ii].service && dns->srvs[ii].protocol) {
-            if (dns->srvs[ii].port &&
-                virAsprintf(&recordPort, "%d", dns->srvs[ii].port) < 0)
+    for (i = 0; i < dns->nsrvs; i++) {
+        if (dns->srvs[i].service && dns->srvs[i].protocol) {
+            if (dns->srvs[i].port &&
+                virAsprintf(&recordPort, "%d", dns->srvs[i].port) < 0)
                 goto cleanup;
-            if (dns->srvs[ii].priority &&
-                virAsprintf(&recordPriority, "%d", dns->srvs[ii].priority) < 0)
+            if (dns->srvs[i].priority &&
+                virAsprintf(&recordPriority, "%d", dns->srvs[i].priority) < 0)
                 goto cleanup;
-            if (dns->srvs[ii].weight &&
-                virAsprintf(&recordWeight, "%d", dns->srvs[ii].weight) < 0)
+            if (dns->srvs[i].weight &&
+                virAsprintf(&recordWeight, "%d", dns->srvs[i].weight) < 0)
                 goto cleanup;
 
             if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
-                            dns->srvs[ii].service,
-                            dns->srvs[ii].protocol,
-                            dns->srvs[ii].domain ? dns->srvs[ii].domain : "",
-                            dns->srvs[ii].target ? dns->srvs[ii].target : "",
+                            dns->srvs[i].service,
+                            dns->srvs[i].protocol,
+                            dns->srvs[i].domain ? dns->srvs[i].domain : "",
+                            dns->srvs[i].target ? dns->srvs[i].target : "",
                             recordPort           ? recordPort           : "",
                             recordPriority       ? recordPriority       : "",
                             recordWeight         ? recordWeight         : "") < 0)
@@ -805,9 +806,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     }
 
     /* Find the first dhcp for both IPv4 and IPv6 */
-    for (ii = 0, ipv4def = NULL, ipv6def = NULL, ipv6SLAAC = false;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
+    for (i = 0, ipv4def = NULL, ipv6def = NULL, ipv6SLAAC = false;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
@@ -955,9 +956,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
         if (ipv6def)
             virBufferAddLit(&configbuf, "enable-ra\n");
         else {
-            for (ii = 0;
-                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
-                 ii++) {
+            for (i = 0;
+                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+                 i++) {
                 if (!(ipdef->nranges || ipdef->nhosts)) {
                     char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
                     if (!bridgeaddr)
@@ -1114,7 +1115,8 @@ static int
 networkRefreshDhcpDaemon(struct network_driver *driver,
                          virNetworkObjPtr network)
 {
-    int ret = -1, ii;
+    int ret = -1;
+    size_t i;
     virNetworkIpDefPtr ipdef, ipv4def, ipv6def;
     dnsmasqContext *dctx = NULL;
 
@@ -1137,17 +1139,17 @@ networkRefreshDhcpDaemon(struct network_driver *driver,
      * and on one IPv6 subnetwork.
      */
     ipv4def = NULL;
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         i++) {
         if (!ipv4def && (ipdef->nranges || ipdef->nhosts))
             ipv4def = ipdef;
     }
 
     ipv6def = NULL;
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         i++) {
         if (!ipv6def && (ipdef->nranges || ipdef->nhosts))
             ipv6def = ipdef;
     }
@@ -1201,16 +1203,17 @@ static int
 networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 {
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1, ii;
+    int ret = -1;
+    size_t i;
     virNetworkIpDefPtr ipdef;
     bool v6present = false, dhcp6 = false;
 
     *configstr = NULL;
 
     /* Check if DHCPv6 is needed */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         i++) {
         v6present = true;
         if (ipdef->nranges || ipdef->nhosts) {
             dhcp6 = true;
@@ -1238,9 +1241,9 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
                       dhcp6 ? "\n" : radvd1);
 
     /* add a section for each IPv6 address in the config */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         i++) {
         int prefix;
         char *netaddr;
 
@@ -1477,7 +1480,7 @@ networkRestartRadvd(struct network_driver *driver,
 static void
 networkRefreshDaemons(struct network_driver *driver)
 {
-    unsigned int i;
+    size_t i;
 
     VIR_INFO("Refreshing network daemons");
 
@@ -1854,14 +1857,14 @@ networkRemoveGeneralIp6tablesRules(virNetworkObjPtr network)
 static int
 networkAddGeneralIptablesRules(virNetworkObjPtr network)
 {
-    int ii;
+    size_t i;
     virNetworkIpDefPtr ipv4def;
 
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
-    for (ii = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-         ii++) {
+    for (i = 0;
+         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         i++) {
         if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
             break;
     }
@@ -1976,14 +1979,14 @@ err1:
 static void
 networkRemoveGeneralIptablesRules(virNetworkObjPtr network)
 {
-    int ii;
+    size_t i;
     virNetworkIpDefPtr ipv4def;
 
     networkRemoveGeneralIp6tablesRules(network);
 
-    for (ii = 0;
-         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-         ii++) {
+    for (i = 0;
+         (ipv4def = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         i++) {
         if (ipv4def->nranges || ipv4def->nhosts || ipv4def->tftproot)
             break;
     }
@@ -2040,7 +2043,7 @@ networkRemoveIpSpecificIptablesRules(virNetworkObjPtr network,
 static int
 networkAddIptablesRules(virNetworkObjPtr network)
 {
-    int ii;
+    size_t i, j;
     virNetworkIpDefPtr ipdef;
     virErrorPtr orig_error;
 
@@ -2048,9 +2051,9 @@ networkAddIptablesRules(virNetworkObjPtr network)
     if (networkAddGeneralIptablesRules(network) < 0)
         return -1;
 
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         i++) {
         /* Add address-specific iptables rules */
         if (networkAddIpSpecificIptablesRules(network, ipdef) < 0) {
             goto err;
@@ -2066,9 +2069,9 @@ err:
      * have removed any rules it created, but we need to remove those
      * added for previous IP addresses.
      */
-    while ((--ii >= 0) &&
-           (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii))) {
-        networkRemoveIpSpecificIptablesRules(network, ipdef);
+    for (j = 0; j < i; j++) {
+        if ((ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, j)))
+            networkRemoveIpSpecificIptablesRules(network, ipdef);
     }
     networkRemoveGeneralIptablesRules(network);
 
@@ -2082,12 +2085,12 @@ err:
 static void
 networkRemoveIptablesRules(virNetworkObjPtr network)
 {
-    int ii;
+    size_t i;
     virNetworkIpDefPtr ipdef;
 
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         i++) {
         networkRemoveIpSpecificIptablesRules(network, ipdef);
     }
     networkRemoveGeneralIptablesRules(network);
@@ -2096,7 +2099,7 @@ networkRemoveIptablesRules(virNetworkObjPtr network)
 static void
 networkReloadIptablesRules(struct network_driver *driver)
 {
-    unsigned int i;
+    size_t i;
 
     VIR_INFO("Reloading iptables rules");
 
@@ -2237,7 +2240,8 @@ networkCheckRouteCollision(virNetworkObjPtr network)
         char iface[17], dest[128], mask[128];
         unsigned int addr_val, mask_val;
         virNetworkIpDefPtr ipdef;
-        int num, ii;
+        int num;
+        size_t i;
 
         /* NUL-terminate the line, so sscanf doesn't go beyond a newline.  */
         char *nl = strchr(cur, '\n');
@@ -2266,9 +2270,9 @@ networkCheckRouteCollision(virNetworkObjPtr network)
 
         addr_val &= mask_val;
 
-        for (ii = 0;
-             (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-             ii++) {
+        for (i = 0;
+             (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+             i++) {
 
             unsigned int net_dest;
             virSocketAddr netmask;
@@ -2372,7 +2376,7 @@ static int
 networkStartNetworkVirtual(struct network_driver *driver,
                           virNetworkObjPtr network)
 {
-    int ii;
+    size_t i;
     bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
@@ -2433,9 +2437,9 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (networkAddIptablesRules(network) < 0)
         goto err1;
 
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             v4present = true;
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
@@ -2451,8 +2455,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (virNetDevSetOnline(network->def->bridge, 1) < 0)
         goto err2;
 
-    for (ii = 0; ii < network->def->nroutes; ii++) {
-        routedef = &network->def->routes[ii];
+    for (i = 0; i < network->def->nroutes; i++) {
+        routedef = &network->def->routes[i];
         /* Add the IP route to the bridge */
         /* ignore errors, error msg will be generated */
         /* but libvirt will not know and net-destroy will work. */
@@ -2791,7 +2795,8 @@ static int networkClose(virConnectPtr conn) {
 }
 
 static int networkConnectNumOfNetworks(virConnectPtr conn) {
-    int nactive = 0, i;
+    int nactive = 0;
+    size_t i;
     struct network_driver *driver = conn->networkPrivateData;
 
     if (virConnectNumOfNetworksEnsureACL(conn) < 0)
@@ -2813,7 +2818,8 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
 
 static int networkConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
-    int got = 0, i;
+    int got = 0;
+    size_t i;
 
     if (virConnectListNetworksEnsureACL(conn) < 0)
         return -1;
@@ -2844,7 +2850,8 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
 }
 
 static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
-    int ninactive = 0, i;
+    int ninactive = 0;
+    size_t i;
     struct network_driver *driver = conn->networkPrivateData;
 
     if (virConnectNumOfDefinedNetworksEnsureACL(conn) < 0)
@@ -2866,7 +2873,8 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
 
 static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
-    int got = 0, i;
+    int got = 0;
+    size_t i;
 
     if (virConnectListDefinedNetworksEnsureACL(conn) < 0)
         return -1;
@@ -2974,7 +2982,7 @@ networkValidate(struct network_driver *driver,
                 virNetworkDefPtr def,
                 bool check_active)
 {
-    int ii;
+    size_t i;
     bool vlanUsed, vlanAllowed, badVlanUse = false;
     virPortGroupDefPtr defaultPortGroup = NULL;
     virNetworkIpDefPtr ipdef;
@@ -3028,9 +3036,9 @@ networkValidate(struct network_driver *driver,
     /* We only support dhcp on one IPv4 address and
      * on one IPv6 address per defined network
      */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
+         i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
@@ -3071,16 +3079,16 @@ networkValidate(struct network_driver *driver,
                    def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV);
 
     vlanUsed = def->vlan.nTags > 0;
-    for (ii = 0; ii < def->nPortGroups; ii++) {
-        if (vlanUsed || def->portGroups[ii].vlan.nTags > 0) {
+    for (i = 0; i < def->nPortGroups; i++) {
+        if (vlanUsed || def->portGroups[i].vlan.nTags > 0) {
             /* anyone using this portgroup will get a vlan tag. Verify
              * that they will also be using an openvswitch connection,
              * as that is the only type of network that currently
              * supports a vlan tag.
              */
-            if (def->portGroups[ii].virtPortProfile) {
+            if (def->portGroups[i].virtPortProfile) {
                 if (def->forward.type != VIR_NETWORK_FORWARD_BRIDGE ||
-                    def->portGroups[ii].virtPortProfile->virtPortType
+                    def->portGroups[i].virtPortProfile->virtPortType
                     != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
                     badVlanUse = true;
                 }
@@ -3089,17 +3097,17 @@ networkValidate(struct network_driver *driver,
                 badVlanUse = true;
             }
         }
-        if (def->portGroups[ii].isDefault) {
+        if (def->portGroups[i].isDefault) {
             if (defaultPortGroup) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("network '%s' has multiple default "
                                  "<portgroup> elements (%s and %s), "
                                  "but only one default is allowed"),
                                def->name, defaultPortGroup->name,
-                               def->portGroups[ii].name);
+                               def->portGroups[i].name);
                 return -1;
             }
-            defaultPortGroup = &def->portGroups[ii];
+            defaultPortGroup = &def->portGroups[i];
         }
     }
     if (badVlanUse ||
@@ -3278,7 +3286,8 @@ networkUpdate(virNetworkPtr net,
 {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network = NULL;
-    int isActive, ret = -1, ii;
+    int isActive, ret = -1;
+    size_t i;
     virNetworkIpDefPtr ipdef;
     bool oldDhcpActive = false;
 
@@ -3300,9 +3309,9 @@ networkUpdate(virNetworkPtr net,
         goto cleanup;
 
     /* see if we are listening for dhcp pre-modification */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-         ii++) {
+    for (i = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         i++) {
         if (ipdef->nranges || ipdef->nhosts) {
             oldDhcpActive = true;
             break;
@@ -3358,9 +3367,9 @@ networkUpdate(virNetworkPtr net,
              */
             bool newDhcpActive = false;
 
-            for (ii = 0;
-                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-                 ii++) {
+            for (i = 0;
+                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+                 i++) {
                 if (ipdef->nranges || ipdef->nhosts) {
                     newDhcpActive = true;
                     break;
@@ -3712,7 +3721,8 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
     unsigned int num_virt_fns = 0;
     char **vfname = NULL;
     virPCIDeviceAddressPtr *virt_fns;
-    int ret = -1, ii = 0;
+    int ret = -1;
+    size_t i;
 
     if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,
                                       &vfname, &virt_fns, &num_virt_fns)) < 0) {
@@ -3734,14 +3744,14 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
 
     netdef->forward.nifs = num_virt_fns;
 
-    for (ii = 0; ii < netdef->forward.nifs; ii++) {
+    for (i = 0; i < netdef->forward.nifs; i++) {
         if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
             (netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
             (netdef->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
             (netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
-            netdef->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-            if (vfname[ii]) {
-                if (VIR_STRDUP(netdef->forward.ifs[ii].device.dev, vfname[ii]) < 0)
+            netdef->forward.ifs[i].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+            if (vfname[i]) {
+                if (VIR_STRDUP(netdef->forward.ifs[i].device.dev, vfname[i]) < 0)
                     goto finish;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3751,19 +3761,19 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
         }
         else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
             /* VF's are always PCI devices */
-            netdef->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
-            netdef->forward.ifs[ii].device.pci.domain = virt_fns[ii]->domain;
-            netdef->forward.ifs[ii].device.pci.bus = virt_fns[ii]->bus;
-            netdef->forward.ifs[ii].device.pci.slot = virt_fns[ii]->slot;
-            netdef->forward.ifs[ii].device.pci.function = virt_fns[ii]->function;
+            netdef->forward.ifs[i].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
+            netdef->forward.ifs[i].device.pci.domain = virt_fns[i]->domain;
+            netdef->forward.ifs[i].device.pci.bus = virt_fns[i]->bus;
+            netdef->forward.ifs[i].device.pci.slot = virt_fns[i]->slot;
+            netdef->forward.ifs[i].device.pci.function = virt_fns[i]->function;
         }
     }
 
     ret = 0;
 finish:
-    for (ii = 0; ii < num_virt_fns; ii++) {
-        VIR_FREE(vfname[ii]);
-        VIR_FREE(virt_fns[ii]);
+    for (i = 0; i < num_virt_fns; i++) {
+        VIR_FREE(vfname[i]);
+        VIR_FREE(virt_fns[i]);
     }
     VIR_FREE(vfname);
     VIR_FREE(virt_fns);
@@ -3793,7 +3803,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     virNetDevVPortProfilePtr virtport = iface->virtPortProfile;
     virNetDevVlanPtr vlan = NULL;
     virNetworkForwardIfDefPtr dev = NULL;
-    int ii;
+    size_t i;
     int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
@@ -3921,9 +3931,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         /* pick first dev with 0 connections */
-        for (ii = 0; ii < netdef->forward.nifs; ii++) {
-            if (netdef->forward.ifs[ii].connections == 0) {
-                dev = &netdef->forward.ifs[ii];
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].connections == 0) {
+                dev = &netdef->forward.ifs[i];
                 break;
             }
         }
@@ -4072,18 +4082,18 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                   == VIR_NETDEV_VPORT_PROFILE_8021QBH))) {
 
                 /* pick first dev with 0 connections */
-                for (ii = 0; ii < netdef->forward.nifs; ii++) {
-                    if (netdef->forward.ifs[ii].connections == 0) {
-                        dev = &netdef->forward.ifs[ii];
+                for (i = 0; i < netdef->forward.nifs; i++) {
+                    if (netdef->forward.ifs[i].connections == 0) {
+                        dev = &netdef->forward.ifs[i];
                         break;
                     }
                 }
             } else {
                 /* pick least used dev */
                 dev = &netdef->forward.ifs[0];
-                for (ii = 1; ii < netdef->forward.nifs; ii++) {
-                    if (netdef->forward.ifs[ii].connections < dev->connections)
-                        dev = &netdef->forward.ifs[ii];
+                for (i = 1; i < netdef->forward.nifs; i++) {
+                    if (netdef->forward.ifs[i].connections < dev->connections)
+                        dev = &netdef->forward.ifs[i];
                 }
             }
             /* dev points at the physical device we want to use */
@@ -4187,7 +4197,8 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
-    int ii, ret = -1;
+    size_t i;
+    int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
@@ -4234,11 +4245,11 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         }
 
         /* find the matching interface and increment its connections */
-        for (ii = 0; ii < netdef->forward.nifs; ii++) {
-            if (netdef->forward.ifs[ii].type
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
-                STREQ(actualDev, netdef->forward.ifs[ii].device.dev)) {
-                dev = &netdef->forward.ifs[ii];
+                STREQ(actualDev, netdef->forward.ifs[i].device.dev)) {
+                dev = &netdef->forward.ifs[i];
                 break;
             }
         }
@@ -4285,12 +4296,12 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         }
 
         /* find the matching interface and increment its connections */
-        for (ii = 0; ii < netdef->forward.nifs; ii++) {
-            if (netdef->forward.ifs[ii].type
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
                 virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci.addr,
-                                         &netdef->forward.ifs[ii].device.pci)) {
-                dev = &netdef->forward.ifs[ii];
+                                         &netdef->forward.ifs[i].device.pci)) {
+                dev = &netdef->forward.ifs[i];
                 break;
             }
         }
@@ -4364,7 +4375,8 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
-    int ii, ret = -1;
+    size_t i;
+    int ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
@@ -4412,11 +4424,11 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             goto error;
         }
 
-        for (ii = 0; ii < netdef->forward.nifs; ii++) {
-            if (netdef->forward.ifs[ii].type
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
-                STREQ(actualDev, netdef->forward.ifs[ii].device.dev)) {
-                dev = &netdef->forward.ifs[ii];
+                STREQ(actualDev, netdef->forward.ifs[i].device.dev)) {
+                dev = &netdef->forward.ifs[i];
                 break;
             }
         }
@@ -4443,12 +4455,12 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             goto error;
         }
 
-        for (ii = 0; ii < netdef->forward.nifs; ii++) {
-            if (netdef->forward.ifs[ii].type
+        for (i = 0; i < netdef->forward.nifs; i++) {
+            if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
                 virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci.addr,
-                                         &netdef->forward.ifs[ii].device.pci)) {
-                dev = &netdef->forward.ifs[ii];
+                                         &netdef->forward.ifs[i].device.pci)) {
+                dev = &netdef->forward.ifs[i];
                 break;
             }
         }
