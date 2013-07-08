@@ -71,7 +71,7 @@ libxlBuildCapabilities(virArch hostarch,
                        int nr_guest_archs)
 {
     virCapsPtr caps;
-    int i;
+    size_t i;
 
     if ((caps = virCapabilitiesNew(hostarch, 1, 1)) == NULL)
         goto no_memory;
@@ -168,7 +168,7 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
     char *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
-    int i;
+    size_t i;
 
     int host_pae = 0;
     struct guest_arch guest_archs[32];
@@ -335,7 +335,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = STREQ(def->os.type, "hvm");
-    int i;
+    size_t i;
 
     libxl_domain_build_info_init(b_info);
 
@@ -573,7 +573,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     virDomainDiskDefPtr *l_disks = def->disks;
     int ndisks = def->ndisks;
     libxl_device_disk *x_disks;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC_N(x_disks, ndisks) < 0)
         return -1;
@@ -643,7 +643,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     virDomainNetDefPtr *l_nics = def->nets;
     int nnics = def->nnets;
     libxl_device_nic *x_nics;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC_N(x_nics, nnics) < 0)
         return -1;
@@ -724,7 +724,7 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     int nvfbs = def->ngraphics;
     libxl_device_vfb *x_vfbs;
     libxl_device_vkb *x_vkbs;
-    int i;
+    size_t i;
 
     if (nvfbs == 0)
         return 0;

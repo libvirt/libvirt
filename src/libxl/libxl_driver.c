@@ -629,7 +629,7 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
     libxlDomainObjPrivatePtr priv = vm->privateData;
     int vnc_port;
     char *file;
-    int i;
+    size_t i;
 
     if (priv->deathW) {
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
@@ -823,7 +823,8 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     uint8_t *cpumap = NULL;
     virNodeInfo nodeinfo;
     size_t cpumaplen;
-    int vcpu, i;
+    int vcpu;
+    size_t i;
     int ret = -1;
 
     if (libxlDoNodeGetInfo(driver, &nodeinfo) < 0)
@@ -869,7 +870,7 @@ libxlFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
 {
     uint32_t needed_mem;
     uint32_t free_mem;
-    int i;
+    size_t i;
     int ret = -1;
     int tries = 3;
     int wait_secs = 10;
@@ -2718,7 +2719,8 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     libxl_bitmap map;
     uint8_t *bitmask = NULL;
     unsigned int maplen;
-    unsigned int i, pos;
+    size_t i;
+    unsigned int pos;
     int max;
     int ret = -1;
 
@@ -2986,7 +2988,7 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
     int ret = -1;
     libxl_vcpuinfo *vcpuinfo;
     int maxcpu, hostcpus;
-    unsigned int i;
+    size_t i;
     unsigned char *cpumap;
 
     libxlDriverLock(driver);
@@ -3396,7 +3398,7 @@ libxlDomainChangeEjectableMedia(libxlDomainObjPrivatePtr priv,
 {
     virDomainDiskDefPtr origdisk = NULL;
     libxl_device_disk x_disk;
-    int i;
+    size_t i;
     int ret = -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -3510,22 +3512,22 @@ libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
 {
     virDomainDiskDefPtr l_disk = NULL;
     libxl_device_disk x_disk;
-    int i;
+    int idx;
     int ret = -1;
 
     switch (dev->data.disk->device)  {
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_XEN) {
 
-                if ((i = virDomainDiskIndexByName(vm->def,
-                                                  dev->data.disk->dst,
-                                                  false)) < 0) {
+                if ((idx = virDomainDiskIndexByName(vm->def,
+                                                    dev->data.disk->dst,
+                                                    false)) < 0) {
                     virReportError(VIR_ERR_OPERATION_FAILED,
                                    _("disk %s not found"), dev->data.disk->dst);
                     goto cleanup;
                 }
 
-                l_disk = vm->def->disks[i];
+                l_disk = vm->def->disks[idx];
 
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
@@ -3538,7 +3540,7 @@ libxlDomainDetachDeviceDiskLive(libxlDomainObjPrivatePtr priv,
                     goto cleanup;
                 }
 
-                virDomainDiskRemove(vm->def, i);
+                virDomainDiskRemove(vm->def, idx);
                 virDomainDiskDefFree(l_disk);
 
             } else {
@@ -3693,18 +3695,18 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr orig;
     virDomainDiskDefPtr disk;
-    int i;
+    int idx;
     int ret = -1;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
             disk = dev->data.disk;
-            if ((i = virDomainDiskIndexByName(vmdef, disk->dst, false)) < 0) {
+            if ((idx = virDomainDiskIndexByName(vmdef, disk->dst, false)) < 0) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("target %s doesn't exist."), disk->dst);
                 goto cleanup;
             }
-            orig = vmdef->disks[i];
+            orig = vmdef->disks[idx];
             if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM)) {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("this disk doesn't support update"));
@@ -4416,7 +4418,7 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     libxl_domain_sched_params sc_info;
     int sched_id;
-    int i;
+    size_t i;
     int ret = -1;
 
     virCheckFlags(0, -1);
