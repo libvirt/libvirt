@@ -149,7 +149,7 @@ cleanup:
 static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                                          unsigned int ncred,
                                          void *cbdata ATTRIBUTE_UNUSED) {
-    int i;
+    size_t i;
 
     for (i = 0; i < ncred; i++) {
         char buf[1024];
@@ -816,7 +816,7 @@ int virStateInitialize(bool privileged,
                        virStateInhibitCallback callback,
                        void *opaque)
 {
-    int i;
+    size_t i;
 
     if (virInitialize() < 0)
         return -1;
@@ -847,7 +847,8 @@ int virStateInitialize(bool privileged,
  * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateCleanup(void) {
-    int i, ret = 0;
+    size_t i;
+    int ret = 0;
 
     for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateCleanup &&
@@ -865,7 +866,8 @@ int virStateCleanup(void) {
  * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateReload(void) {
-    int i, ret = 0;
+    size_t i;
+    int ret = 0;
 
     for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateReload &&
@@ -883,7 +885,8 @@ int virStateReload(void) {
  * Returns 0 if successful, -1 on failure
  */
 int virStateStop(void) {
-    int i, ret = 0;
+    size_t i;
+    int ret = 0;
 
     for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateStop &&
@@ -1095,7 +1098,8 @@ do_open(const char *name,
         virConnectAuthPtr auth,
         unsigned int flags)
 {
-    int i, res;
+    size_t i;
+    int res;
     virConnectPtr ret;
     virConfPtr conf = NULL;
 
@@ -1196,10 +1200,10 @@ do_open(const char *name,
             goto failed;
         }
 
-        VIR_DEBUG("trying driver %d (%s) ...", i, virDriverTab[i]->name);
+        VIR_DEBUG("trying driver %zu (%s) ...", i, virDriverTab[i]->name);
         ret->driver = virDriverTab[i];
         res = virDriverTab[i]->connectOpen(ret, auth, flags);
-        VIR_DEBUG("driver %d %s returned %s",
+        VIR_DEBUG("driver %zu %s returned %s",
                   i, virDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1225,7 +1229,7 @@ do_open(const char *name,
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
         res = virNetworkDriverTab[i]->networkOpen(ret, auth, flags);
-        VIR_DEBUG("network driver %d %s returned %s",
+        VIR_DEBUG("network driver %zu %s returned %s",
                   i, virNetworkDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1241,7 +1245,7 @@ do_open(const char *name,
 
     for (i = 0; i < virInterfaceDriverTabCount; i++) {
         res = virInterfaceDriverTab[i]->interfaceOpen(ret, auth, flags);
-        VIR_DEBUG("interface driver %d %s returned %s",
+        VIR_DEBUG("interface driver %zu %s returned %s",
                   i, virInterfaceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1258,7 +1262,7 @@ do_open(const char *name,
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
         res = virStorageDriverTab[i]->storageOpen(ret, auth, flags);
-        VIR_DEBUG("storage driver %d %s returned %s",
+        VIR_DEBUG("storage driver %zu %s returned %s",
                   i, virStorageDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1275,7 +1279,7 @@ do_open(const char *name,
     /* Node driver (optional) */
     for (i = 0; i < virNodeDeviceDriverTabCount; i++) {
         res = virNodeDeviceDriverTab[i]->nodeDeviceOpen(ret, auth, flags);
-        VIR_DEBUG("node driver %d %s returned %s",
+        VIR_DEBUG("node driver %zu %s returned %s",
                   i, virNodeDeviceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1292,7 +1296,7 @@ do_open(const char *name,
     /* Secret manipulation driver. Optional */
     for (i = 0; i < virSecretDriverTabCount; i++) {
         res = virSecretDriverTab[i]->secretOpen(ret, auth, flags);
-        VIR_DEBUG("secret driver %d %s returned %s",
+        VIR_DEBUG("secret driver %zu %s returned %s",
                   i, virSecretDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -1309,7 +1313,7 @@ do_open(const char *name,
     /* Network filter driver. Optional */
     for (i = 0; i < virNWFilterDriverTabCount; i++) {
         res = virNWFilterDriverTab[i]->nwfilterOpen(ret, auth, flags);
-        VIR_DEBUG("nwfilter driver %d %s returned %s",
+        VIR_DEBUG("nwfilter driver %zu %s returned %s",
                   i, virNWFilterDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
@@ -3785,7 +3789,7 @@ virTypedParameterValidateSet(virConnectPtr conn,
                              int nparams)
 {
     bool string_okay;
-    int i;
+    size_t i;
 
     string_okay = VIR_DRV_SUPPORTS_FEATURE(conn->driver,
                                            conn,
@@ -9193,7 +9197,7 @@ error:
  *
  * Example of usage:
  * virDomainPtr *domains;
- * int i;
+ * size_t i;
  * int ret;
  * unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
  *                      VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
@@ -18285,13 +18289,13 @@ virConnectBaselineCPU(virConnectPtr conn,
                       unsigned int ncpus,
                       unsigned int flags)
 {
-    unsigned int i;
+    size_t i;
 
     VIR_DEBUG("conn=%p, xmlCPUs=%p, ncpus=%u, flags=%x",
               conn, xmlCPUs, ncpus, flags);
     if (xmlCPUs) {
         for (i = 0; i < ncpus; i++)
-            VIR_DEBUG("xmlCPUs[%u]=%s", i, NULLSTR(xmlCPUs[i]));
+            VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
     }
 
     virResetLastError();

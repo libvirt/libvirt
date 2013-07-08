@@ -522,7 +522,7 @@ int virFDStreamConnectUNIX(virStreamPtr st,
                            bool abstract)
 {
     struct sockaddr_un sa;
-    int i = 0;
+    size_t i = 0;
     int timeout = 3;
     int ret;
 

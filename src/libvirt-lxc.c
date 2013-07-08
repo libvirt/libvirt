@@ -136,7 +136,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
                            int **oldfdlist,
                            unsigned int flags)
 {
-    int i;
+    size_t i;
 
     virCheckFlagsGoto(0, error);
 
