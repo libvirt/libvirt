@@ -133,7 +133,7 @@ VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
 char *qemuMonitorEscapeArg(const char *in)
 {
     int len = 0;
-    int i, j;
+    size_t i, j;
     char *out;
 
     /* To pass through the QEMU monitor, we need to use escape
@@ -184,7 +184,7 @@ char *qemuMonitorEscapeArg(const char *in)
 
 char *qemuMonitorUnescapeArg(const char *in)
 {
-    int i, j;
+    size_t i, j;
     char *out;
     int len = strlen(in);
     char next;
@@ -224,7 +224,7 @@ char *qemuMonitorUnescapeArg(const char *in)
 # include <c-ctype.h>
 static char * qemuMonitorEscapeNonPrintable(const char *text)
 {
-    int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     for (i = 0; text[i] != '\0'; i++) {
         if (c_isprint(text[i]) ||
@@ -257,7 +257,8 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
     struct sockaddr_un addr;
     int monfd;
     int timeout = 3; /* In seconds */
-    int ret, i = 0;
+    int ret;
+    size_t i = 0;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno,
@@ -2474,7 +2475,7 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
                               int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
-    int i = 0, j = 0;
+    size_t i = 0, j = 0;
 
     VIR_DEBUG("mon=%p netstr=%s tapfd=%p tapfdName=%p tapfdSize=%d "
               "vhostfd=%p vhostfdName=%p vhostfdSize=%d",
@@ -2547,7 +2548,7 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
-    int i = 0, j = 0;
+    size_t i = 0, j = 0;
 
     VIR_DEBUG("mon=%p netdevstr=%s tapfd=%p tapfdName=%p tapfdSize=%d"
               "vhostfd=%p vhostfdName=%p vhostfdSize=%d",

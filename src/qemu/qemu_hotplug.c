@@ -182,7 +182,7 @@ qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr table = NULL;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
         table = qemuMonitorGetBlockInfo(priv->mon);
@@ -221,7 +221,8 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk)
 {
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
@@ -421,7 +422,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          int controller)
 {
-    int i;
+    size_t i;
     virDomainControllerDefPtr cont;
 
     for (i = 0; i < vm->def->ncontrollers; i++) {
@@ -466,7 +467,7 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 {
-    int i;
+    size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainControllerDefPtr cont = NULL;
     char *drivestr = NULL;
@@ -590,7 +591,8 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                          virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     char *drivestr = NULL;
     char *devstr = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -698,7 +700,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     bool iface_connected = false;
     int actualType;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int i;
+    size_t i;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
@@ -812,12 +814,12 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         goto cleanup;
 
     for (i = 0; i < tapfdSize; i++) {
-        if (virAsprintf(&tapfdName[i], "fd-%s%d", net->info.alias, i) < 0)
+        if (virAsprintf(&tapfdName[i], "fd-%s%zu", net->info.alias, i) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vhostfdSize; i++) {
-        if (virAsprintf(&vhostfdName[i], "vhostfd-%s%d", net->info.alias, i) < 0)
+        if (virAsprintf(&vhostfdName[i], "vhostfd-%s%zu", net->info.alias, i) < 0)
             goto cleanup;
     }
 
@@ -1353,7 +1355,7 @@ cleanup:
 static virDomainNetDefPtr *qemuDomainFindNet(virDomainObjPtr vm,
                                              virDomainNetDefPtr dev)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < vm->def->nnets; i++) {
         if (virMacAddrCmp(&vm->def->nets[i]->mac, &dev->mac) == 0)
@@ -1907,7 +1909,7 @@ cleanup:
 static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
                                                       virDomainGraphicsDefPtr dev)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < vm->def->ngraphics; i++) {
         if (vm->def->graphics[i]->type == dev->type)
@@ -2089,7 +2091,7 @@ cleanup:
 
 static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
         if (STREQ(def->disks[i]->dst, dst)) {
@@ -2132,20 +2134,21 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDeviceDefPtr dev)
 {
-    int i, ret = -1;
+    int idx;
+    int ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
 
-    i = qemuFindDisk(vm->def, dev->data.disk->dst);
+    idx = qemuFindDisk(vm->def, dev->data.disk->dst);
 
-    if (i < 0) {
+    if (idx < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("disk %s not found"), dev->data.disk->dst);
         goto cleanup;
     }
 
-    detach = vm->def->disks[i];
+    detach = vm->def->disks[idx];
 
     if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -2211,7 +2214,7 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                                &detach->info.addr.pci) < 0)
         VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
 
-    virDomainDiskRemove(vm->def, i);
+    virDomainDiskRemove(vm->def, idx);
 
     dev->data.disk->backingChain = detach->backingChain;
     detach->backingChain = NULL;
@@ -2239,14 +2242,15 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
-    int i, ret = -1;
+    int idx;
+    int ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
 
-    i = qemuFindDisk(vm->def, dev->data.disk->dst);
+    idx = qemuFindDisk(vm->def, dev->data.disk->dst);
 
-    if (i < 0) {
+    if (idx < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("disk %s not found"), dev->data.disk->dst);
         goto cleanup;
@@ -2259,7 +2263,7 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    detach = vm->def->disks[i];
+    detach = vm->def->disks[idx];
 
     if (detach->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
@@ -2288,7 +2292,7 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
 
     virDomainAuditDisk(vm, detach->src, NULL, "detach", true);
 
-    virDomainDiskRemove(vm->def, i);
+    virDomainDiskRemove(vm->def, idx);
 
     dev->data.disk->backingChain = detach->backingChain;
     detach->backingChain = NULL;
@@ -2315,7 +2319,7 @@ cleanup:
 static bool qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
                                            virDomainControllerDefPtr detach)
 {
-    int i;
+    size_t i;
     virDomainDiskDefPtr disk;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -2976,9 +2980,9 @@ int qemuDomainDetachLease(virQEMUDriverPtr driver,
                           virDomainLeaseDefPtr lease)
 {
     virDomainLeaseDefPtr det_lease;
-    int i;
+    int idx;
 
-    if ((i = virDomainLeaseIndex(vm->def, lease)) < 0) {
+    if ((idx = virDomainLeaseIndex(vm->def, lease)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Lease %s in lockspace %s does not exist"),
                        lease->key, NULLSTR(lease->lockspace));
@@ -2988,7 +2992,7 @@ int qemuDomainDetachLease(virQEMUDriverPtr driver,
     if (virDomainLockLeaseDetach(driver->lockManager, vm, lease) < 0)
         return -1;
 
-    det_lease = virDomainLeaseRemoveAt(vm->def, i);
+    det_lease = virDomainLeaseRemoveAt(vm->def, idx);
     virDomainLeaseDefFree(det_lease);
     return 0;
 }

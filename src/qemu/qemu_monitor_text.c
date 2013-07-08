@@ -157,7 +157,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                 VIR_DEBUG("Seen a password prompt [%s]", data + used);
 #endif
                 if (msg->passwordHandler) {
-                    int i;
+                    size_t i;
                     /* Try and handle the prompt. The handler is required
                      * to report a normal libvirt error */
                     if (msg->passwordHandler(mon, msg,
@@ -2865,7 +2865,7 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
                            unsigned int *keycodes,
                            unsigned int nkeycodes)
 {
-    int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cmd, *reply = NULL;
     int ret = -1;
@@ -2877,7 +2877,7 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
     for (i = 0; i < nkeycodes; i++) {
         if (keycodes[i] > 0xffff) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("keycode %d is invalid: 0x%X"),
+                           _("keycode %zu is invalid: 0x%X"),
                            i, keycodes[i]);
             virBufferFreeAndReset(&buf);
             return -1;

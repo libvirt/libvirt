@@ -292,7 +292,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 
 
     if (priv->nvcpupids) {
-        int i;
+        size_t i;
         virBufferAddLit(buf, "  <vcpus>\n");
         for (i = 0; i < priv->nvcpupids; i++) {
             virBufferAsprintf(buf, "    <vcpu pid='%d'/>\n", priv->vcpupids[i]);
@@ -301,7 +301,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     }
 
     if (priv->qemuCaps) {
-        int i;
+        size_t i;
         virBufferAddLit(buf, "  <qemuCaps>\n");
         for (i = 0; i < QEMU_CAPS_LAST; i++) {
             if (virQEMUCapsGet(priv->qemuCaps, i)) {
@@ -344,7 +344,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     qemuDomainObjPrivatePtr priv = data;
     char *monitorpath;
     char *tmp;
-    int n, i;
+    int n;
+    size_t i;
     xmlNodePtr *nodes = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
 
@@ -497,7 +498,7 @@ static void
 qemuDomainDefNamespaceFree(void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
-    unsigned int i;
+    size_t i;
 
     if (!cmd)
         return;
@@ -523,7 +524,8 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     qemuDomainCmdlineDefPtr cmd = NULL;
     bool uses_qemu_ns = false;
     xmlNodePtr *nodes = NULL;
-    int n, i;
+    int n;
+    size_t i;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -620,7 +622,7 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
                                 void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
-    unsigned int i;
+    size_t i;
 
     if (!cmd->num_args && !cmd->num_env)
         return 0;
@@ -1330,7 +1332,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
     }
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
-        int i;
+        size_t i;
         int toremove = 0;
         virDomainControllerDefPtr usb = NULL, pci = NULL;
 
@@ -1498,7 +1500,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
                              int logFD)
 {
-    int i;
+    size_t i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (cfg->privileged &&
@@ -1759,7 +1761,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
                                   int ndisks)
 {
     const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
-    int i;
+    size_t i;
     bool skipped = false;
 
     qemuimgarg[0] = qemuFindQemuImgBinary(driver);
@@ -1993,7 +1995,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                             bool cold_boot)
 {
     int ret = -1;
-    int i;
+    size_t i;
     virDomainDiskDefPtr disk;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virDomainEventPtr event = NULL;
@@ -2068,7 +2070,7 @@ qemuDomainCleanupAdd(virDomainObjPtr vm,
                      qemuDomainCleanupCallback cb)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int i;
+    size_t i;
 
     VIR_DEBUG("vm=%s, cb=%p", vm->def->name, cb);
 
@@ -2091,7 +2093,7 @@ qemuDomainCleanupRemove(virDomainObjPtr vm,
                         qemuDomainCleanupCallback cb)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int i;
+    size_t i;
 
     VIR_DEBUG("vm=%s, cb=%p", vm->def->name, cb);
 
@@ -2114,13 +2116,13 @@ qemuDomainCleanupRun(virQEMUDriverPtr driver,
                      virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int i;
+    size_t i;
 
     VIR_DEBUG("driver=%p, vm=%s", driver, vm->def->name);
 
     /* run cleanup callbacks in reverse order */
-    for (i = priv->ncleanupCallbacks - 1; i >= 0; i--) {
-        if (priv->cleanupCallbacks[i])
+    for (i = 0; i < priv->ncleanupCallbacks; i++) {
+        if (priv->cleanupCallbacks[priv->ncleanupCallbacks - (i + 1)])
             priv->cleanupCallbacks[i](driver, vm);
     }
 
@@ -2166,7 +2168,7 @@ unsigned long long
 qemuDomainMemoryLimit(virDomainDefPtr def)
 {
     unsigned long long mem;
-    int i;
+    size_t i;
 
     if (def->mem.hard_limit) {
         mem = def->mem.hard_limit;

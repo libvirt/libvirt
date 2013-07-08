@@ -308,7 +308,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virConfPtr conf = NULL;
     virConfValuePtr p;
     int ret = -1;
-    int i;
+    size_t i;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.

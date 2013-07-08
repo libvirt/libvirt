@@ -183,7 +183,7 @@ static void qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
 static void
 qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
 {
-    int i;
+    size_t i;
 
     if (!network)
         return;
@@ -334,7 +334,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 virDomainDefPtr def)
 {
     qemuMigrationCookieNetworkPtr mig;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC(mig) < 0)
         goto error;
@@ -557,7 +557,7 @@ static void
 qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
                                     qemuMigrationCookieNetworkPtr optr)
 {
-    int i;
+    size_t i;
     bool empty = true;
 
     for (i = 0; i < optr->nnets; i++) {
@@ -567,7 +567,7 @@ qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
                 virBufferAddLit(buf, "  <network>\n");
                 empty = false;
             }
-            virBufferAsprintf(buf, "    <interface index='%d' vporttype='%s'",
+            virBufferAsprintf(buf, "    <interface index='%zu' vporttype='%s'",
                               i, virNetDevVPortTypeToString(optr->net[i].vporttype));
             if (optr->net[i].portdata) {
                 virBufferAddLit(buf, ">\n");
@@ -591,7 +591,7 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char hostuuidstr[VIR_UUID_STRING_BUFLEN];
-    int i;
+    size_t i;
 
     virUUIDFormat(mig->uuid, uuidstr);
     virUUIDFormat(mig->localHostuuid, hostuuidstr);
@@ -722,7 +722,7 @@ static qemuMigrationCookieNetworkPtr
 qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
 {
     qemuMigrationCookieNetworkPtr optr;
-    int i;
+    size_t i;
     int n;
     xmlNodePtr *interfaces = NULL;
     char *vporttype;
@@ -778,7 +778,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *tmp = NULL;
     xmlNodePtr *nodes = NULL;
-    int i, n;
+    size_t i;
+    int n;
     virCapsPtr caps = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -1404,7 +1405,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
     int nsnapshots;
     int pauseReason;
     bool forbid;
-    int i;
+    size_t i;
 
     if (vm) {
         if (qemuProcessAutoDestroyActive(driver, vm)) {
@@ -1470,7 +1471,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
 static bool
 qemuMigrationIsSafe(virDomainDefPtr def)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
@@ -1802,7 +1803,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
     }
 
     if (uri) {
-        int i;
+        size_t i;
 
         if ((type = virDomainGraphicsTypeFromString(uri->scheme)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -1859,7 +1860,7 @@ qemuDomainMigrateOPDRelocate(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 {
     virDomainNetDefPtr netptr;
     int ret = -1;
-    int i;
+    size_t i;
 
     for (i = 0; i < cookie->network->nnets; i++) {
         netptr = vm->def->nets[i];
@@ -4240,7 +4241,7 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
 
 static int
 qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
-    int i;
+    size_t i;
     int last_good_net = -1;
     virDomainNetDefPtr net;
 
@@ -4274,7 +4275,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def) {
     return 0;
 
 err_exit:
-    for (i = 0; i < last_good_net; i++) {
+    for (i = 0; last_good_net != -1 && i < last_good_net; i++) {
         net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             ignore_value(virNetDevVPortProfileDisassociate(net->ifname,

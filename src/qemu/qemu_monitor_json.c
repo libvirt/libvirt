@@ -510,7 +510,7 @@ error:
 static void
 qemuFreeKeywords(int nkeywords, char **keywords, char **values)
 {
-    int i;
+    size_t i;
     for (i = 0; i < nkeywords; i++) {
         VIR_FREE(keywords[i]);
         VIR_FREE(values[i]);
@@ -526,7 +526,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     char **keywords = NULL;
     char **values = NULL;
     int nkeywords = 0;
-    int i;
+    size_t i;
 
     if (!(ret = virJSONValueNewObject()))
         goto error;
@@ -998,7 +998,8 @@ qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("cont", NULL);
     virJSONValuePtr reply = NULL;
-    int i = 0, timeout = 3;
+    size_t i = 0;
+    int timeout = 3;
     if (!cmd)
         return -1;
 
@@ -1174,7 +1175,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
 {
     virJSONValuePtr data;
     int ret = -1;
-    int i;
+    size_t i;
     int *threads = NULL;
     int ncpus;
 
@@ -1491,7 +1492,7 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
     int ret;
-    int i;
+    size_t i;
 
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-block",
                                                      NULL);
@@ -1595,7 +1596,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *errs)
 {
     int ret;
-    int i;
+    size_t i;
     bool found = false;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
                                                      NULL);
@@ -1745,7 +1746,8 @@ cleanup:
 int qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams)
 {
-    int ret, i, num = 0;
+    int ret, num = 0;
+    size_t i;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1819,7 +1821,7 @@ int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
                                   unsigned long long *extent)
 {
     int ret = -1;
-    int i;
+    size_t i;
     bool found = false;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-blockstats",
                                                      NULL);
@@ -2929,7 +2931,7 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
 {
     virJSONValuePtr data;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3390,7 +3392,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr keys = NULL;
     virJSONValuePtr key = NULL;
-    unsigned int i;
+    size_t i;
 
     /* create the key data array */
     if (!(keys = virJSONValueNewArray()))
@@ -3399,7 +3401,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     for (i = 0; i < nkeycodes; i++) {
         if (keycodes[i] > 0xffff) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("keycode %d is invalid: 0x%X"), i, keycodes[i]);
+                           _("keycode %zu is invalid: 0x%X"), i, keycodes[i]);
             goto cleanup;
         }
 
@@ -3531,7 +3533,8 @@ static int qemuMonitorJSONGetBlockJobInfo(virJSONValuePtr reply,
                                            virDomainBlockJobInfoPtr info)
 {
     virJSONValuePtr data;
-    int nr_results, i;
+    int nr_results;
+    size_t i;
 
     if (!info)
         return -1;
@@ -3707,7 +3710,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 {
     virJSONValuePtr io_throttle;
     int ret = -1;
-    int i;
+    size_t i;
     bool found = false;
 
     io_throttle = virJSONValueObjectGet(result, "return");
@@ -4630,7 +4633,7 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr caps;
-    int i;
+    size_t i;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate-capabilities",
                                            NULL)))

@@ -195,7 +195,7 @@ static virDomainChrSourceDefPtr
 qemuFindAgentConfig(virDomainDefPtr def)
 {
     virDomainChrSourceDefPtr config = NULL;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
@@ -363,10 +363,10 @@ static virDomainDiskDefPtr
 qemuProcessFindDomainDiskByPath(virDomainObjPtr vm,
                                 const char *path)
 {
-    int i = virDomainDiskIndexByName(vm->def, path, true);
+    int idx = virDomainDiskIndexByName(vm->def, path, true);
 
-    if (i >= 0)
-        return vm->def->disks[i];
+    if (idx >= 0)
+        return vm->def->disks[idx];
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("no disk found with path %s"),
@@ -378,7 +378,7 @@ static virDomainDiskDefPtr
 qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
                                  const char *alias)
 {
-    int i;
+    size_t i;
 
     if (STRPREFIX(alias, QEMU_DRIVE_HOST_PREFIX))
         alias += strlen(QEMU_DRIVE_HOST_PREFIX);
@@ -1015,7 +1015,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventGraphicsAddressPtr localAddr = NULL;
     virDomainEventGraphicsAddressPtr remoteAddr = NULL;
     virDomainEventGraphicsSubjectPtr subject = NULL;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC(localAddr) < 0)
         goto error;
@@ -1556,7 +1556,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       virHashTablePtr paths,
                       bool chardevfmt)
 {
-    int i;
+    size_t i;
     const char *prefix = chardevfmt ? "char" : "";
 
     for (i = 0; i < count; i++) {
@@ -1601,7 +1601,7 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
                                      virHashTablePtr paths)
 {
     bool chardevfmt = virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV);
-    int i = 0;
+    size_t i = 0;
 
     if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials,
                               paths, chardevfmt) < 0)
@@ -1643,7 +1643,8 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
                               int fd ATTRIBUTE_UNUSED)
 {
     size_t offset = 0;
-    int ret, i;
+    int ret;
+    size_t i;
 
     /* The order in which QEMU prints out the PTY paths is
        the order in which it procsses its serial and parallel
@@ -1837,7 +1838,8 @@ virBitmapPtr
 qemuPrepareCpumap(virQEMUDriverPtr driver,
                   virBitmapPtr nodemask)
 {
-    int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
+    size_t i;
+    int hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virBitmapPtr cpumap = NULL;
     virCapsPtr caps = NULL;
 
@@ -1860,7 +1862,7 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < caps->host.nnumaCell; i++) {
-            int j;
+            size_t j;
             int cur_ncpus = caps->host.numaCell[i]->ncpus;
             bool result;
             if (virBitmapGetBit(nodemask, i, &result) < 0) {
@@ -1935,7 +1937,7 @@ qemuProcessSetLinkStates(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    int i;
+    size_t i;
     int ret = 0;
 
     for (i = 0; i < def->nnets; i++) {
@@ -2023,7 +2025,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int i;
+    size_t i;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -2114,7 +2116,7 @@ qemuProcessAssignNextPCIAddress(virDomainDeviceInfo *info,
                                 int naddrs)
 {
     bool found = false;
-    int i;
+    size_t i;
 
     VIR_DEBUG("Look for %x:%x out of %d", vendor, product, naddrs);
 
@@ -2122,7 +2124,7 @@ qemuProcessAssignNextPCIAddress(virDomainDeviceInfo *info,
         VIR_DEBUG("Maybe %x:%x", addrs[i].vendor, addrs[i].product);
         if (addrs[i].vendor == vendor &&
             addrs[i].product == product) {
-            VIR_DEBUG("Match %d", i);
+            VIR_DEBUG("Match %zu", i);
             found = true;
             break;
         }
@@ -2328,7 +2330,7 @@ qemuProcessDetectPCIAddresses(virDomainObjPtr vm,
                               int naddrs)
 {
     unsigned int vendor = 0, product = 0;
-    int i;
+    size_t i;
 
     /* XXX should all these vendor/product IDs be kept in the
      * actual device data structure instead ?
@@ -2639,10 +2641,10 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
 static int
 qemuProcessNotifyNets(virDomainDefPtr def)
 {
-    int ii;
+    size_t i;
 
-    for (ii = 0; ii < def->nnets; ii++) {
-        virDomainNetDefPtr net = def->nets[ii];
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
         if (networkNotifyActualDevice(net) < 0)
             return -1;
     }
@@ -2653,7 +2655,7 @@ static int
 qemuProcessFiltersInstantiate(virConnectPtr conn,
                               virDomainDefPtr def)
 {
-    int i;
+    size_t i;
 
     if (!conn)
         return 1;
@@ -3258,7 +3260,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 {
     unsigned short port = 0;
     unsigned short tlsPort;
-    int i;
+    size_t i;
     int defaultMode = graphics->data.spice.defaultMode;
 
     bool needTLSPort = false;
@@ -3386,7 +3388,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
-    int i;
+    size_t i;
     char *nodeset = NULL;
     virBitmapPtr nodemask = NULL;
     unsigned int stop_flags;
@@ -3993,7 +3995,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virErrorPtr orig_err;
     virDomainDefPtr def;
     virNetDevVPortProfilePtr vport = NULL;
-    int i;
+    size_t i;
     int logfile = -1;
     char *timestamp;
     char ebuf[1024];

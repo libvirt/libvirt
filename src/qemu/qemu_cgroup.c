@@ -413,7 +413,7 @@ qemuSetupBlkioCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc = -1;
-    int i;
+    size_t i;
 
     if (!virCgroupHasController(priv->cgroup,
                                 VIR_CGROUP_CONTROLLER_BLKIO)) {
@@ -516,7 +516,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
     const char *const *deviceACL = NULL;
     int rc = -1;
     int ret = -1;
-    int i;
+    size_t i;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
@@ -882,7 +882,7 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            int nvcpupin,
                            int vcpuid)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < nvcpupin; i++) {
         if (vcpuid == vcpupin[i]->vcpuid) {
@@ -926,7 +926,7 @@ int qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     int rc;
-    unsigned int i, j;
+    size_t i, j;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
 
@@ -957,7 +957,7 @@ int qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         if (rc < 0) {
             virReportSystemError(-rc,
                                  _("Unable to create vcpu cgroup for %s(vcpu:"
-                                   " %d)"),
+                                   " %zu)"),
                                  vm->def->name, i);
             goto cleanup;
         }
@@ -966,7 +966,7 @@ int qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         rc = virCgroupAddTask(cgroup_vcpu, priv->vcpupids[i]);
         if (rc < 0) {
             virReportSystemError(-rc,
-                                 _("unable to add vcpu %d task %d to cgroup"),
+                                 _("unable to add vcpu %zu task %d to cgroup"),
                                  i, priv->vcpupids[i]);
             goto cleanup;
         }

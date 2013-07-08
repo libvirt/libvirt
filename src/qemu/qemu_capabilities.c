@@ -663,7 +663,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
                      virArch guestarch)
 {
     virCapsGuestPtr guest;
-    int i;
+    size_t i;
     bool haskvm = false;
     bool haskqemu = false;
     char *kvmbin = NULL;
@@ -869,7 +869,7 @@ error:
 virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 {
     virCapsPtr caps;
-    int i;
+    size_t i;
     virArch hostarch = virArchFromHost();
 
     if ((caps = virCapabilitiesNew(hostarch,
@@ -2160,7 +2160,8 @@ static int
 virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
                        qemuMonitorPtr mon)
 {
-    int nentries, i;
+    int nentries;
+    size_t i;
     char **entries = NULL;
 
     if ((nentries = qemuMonitorGetTPMModels(mon, &entries)) < 0)

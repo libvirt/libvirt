@@ -137,7 +137,7 @@ VIR_ONCE_GLOBAL_INIT(qemuAgent)
 static char *
 qemuAgentEscapeNonPrintable(const char *text)
 {
-    int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\')
@@ -169,7 +169,8 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
     struct sockaddr_un addr;
     int monfd;
     int timeout = 3; /* In seconds */
-    int ret, i = 0;
+    int ret;
+    size_t i = 0;
 
     *inProgress = false;
 
@@ -359,7 +360,7 @@ static int qemuAgentIOProcessData(qemuAgentPtr mon,
                                   qemuAgentMessagePtr msg)
 {
     int used = 0;
-    int i = 0;
+    size_t i = 0;
 #if DEBUG_IO
 # if DEBUG_RAW_IO
     char *str1 = qemuAgentEscapeNonPrintable(data);
@@ -1461,7 +1462,7 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
                   qemuAgentCPUInfoPtr *info)
 {
     int ret = -1;
-    int i;
+    size_t i;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data = NULL;
