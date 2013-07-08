@@ -258,7 +258,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     virDomainNetDefPtr net = NULL;
     virDomainGraphicsDefPtr graphics = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
-    int i;
+    size_t i;
     const char *defaultMachine;
     int vmlocaltime = 0;
     unsigned long count;
@@ -1416,7 +1416,7 @@ xenFormatXMPCI(virConfPtr conf,
 
     virConfValuePtr pciVal = NULL;
     int hasPCI = 0;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nhostdevs; i++)
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -1485,7 +1485,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                                    virDomainDefPtr def,
                                    int xendConfigVersion) {
     virConfPtr conf = NULL;
-    int hvm = 0, i, vmlocaltime = 0;
+    int hvm = 0, vmlocaltime = 0;
+    size_t i;
     char *cpus = NULL;
     const char *lifecycle;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -1935,8 +1936,8 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                 if (ret < 0)
                     goto cleanup;
             } else {
-                int j = 0;
-                int maxport = -1;
+                size_t j = 0;
+                int maxport = -1, port;
                 virConfValuePtr serialVal = NULL;
 
                 if (VIR_ALLOC(serialVal) < 0)
@@ -1948,10 +1949,10 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                     if (def->serials[i]->target.port > maxport)
                         maxport = def->serials[i]->target.port;
 
-                for (i = 0; i <= maxport; i++) {
+                for (port = 0; port <= maxport; port++) {
                     virDomainChrDefPtr chr = NULL;
                     for (j = 0; j < def->nserials; j++) {
-                        if (def->serials[j]->target.port == i) {
+                        if (def->serials[j]->target.port == port) {
                             chr = def->serials[j];
                             break;
                         }

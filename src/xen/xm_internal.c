@@ -1146,7 +1146,8 @@ xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     struct xenXMListIteratorContext ctx;
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
 
     xenUnifiedLock(priv);
 
@@ -1313,7 +1314,7 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def;
     int ret = -1;
-    int i;
+    size_t i;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);

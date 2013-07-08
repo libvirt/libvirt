@@ -744,7 +744,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
     struct sexpr *root = NULL;
     char **ret = NULL;
     int count = 0;
-    int i;
+    size_t i;
     struct sexpr *_for_i, *node;
 
     root = sexpr_get(xend, "/xend/domain");
@@ -1843,7 +1843,8 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
                        int maplen)
 {
     char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64];
-    int i, j, ret;
+    size_t i, j;
+    int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr def = NULL;
 
@@ -1862,7 +1863,7 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
      if (cpumap[i] & (1 << j)) {
-        snprintf(buf, sizeof(buf), "%d,", (8 * i) + j);
+        snprintf(buf, sizeof(buf), "%zu,", (8 * i) + j);
         strcat(mapstr, buf);
     }
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
@@ -2895,7 +2896,8 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
                             int maxnames)
 {
     struct sexpr *root = NULL;
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     struct sexpr *_for_i, *node;
 
     if (maxnames == 0)
@@ -2904,8 +2906,6 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
     root = sexpr_get(conn, "/xend/domain?state=halted");
     if (root == NULL)
         goto error;
-
-    ret = 0;
 
     /* coverity[copy_paste_error] */
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
@@ -2920,15 +2920,15 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
             break;
     }
 
+    ret = 0;
+
 cleanup:
     sexpr_free(root);
     return ret;
 
 error:
-    for (i = 0; i < ret; ++i)
+    for (i = 0; ret != -1 && i < ret; ++i)
         VIR_FREE(names[i]);
-
-    ret = -1;
 
     goto cleanup;
 }
@@ -3117,7 +3117,7 @@ xenDaemonSetSchedulerParameters(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root;
     char *sched_type = NULL;
-    int i;
+    size_t i;
     int sched_nparam = 0;
     int ret = -1;
 

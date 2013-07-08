@@ -1267,7 +1267,7 @@ xenHypervisorSetSchedulerParameters(virConnectPtr conn,
                                     virTypedParameterPtr params,
                                     int nparams)
 {
-    int i;
+    size_t i;
     unsigned int val;
     xenUnifiedPrivatePtr priv = conn->privateData;
     char buf[256];
@@ -2039,7 +2039,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn, virArch hostarch,
                                int nr_guest_archs)
 {
     virCapsPtr caps;
-    int i;
+    size_t i;
     int hv_major = hv_versions.hv >> 16;
     int hv_minor = hv_versions.hv & 0xFFFF;
 
@@ -2219,7 +2219,7 @@ static virCapsPtr
 xenHypervisorMakeCapabilitiesSunOS(virConnectPtr conn)
 {
     struct guest_arch guest_arches[32];
-    int i = 0;
+    size_t i = 0;
     virCapsPtr caps = NULL;
     int pae, longmode;
     const char *hvm;
@@ -2288,7 +2288,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
     char line[1024], *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
-    int i;
+    size_t i;
 
     char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
     int host_pae = 0;
@@ -2592,7 +2592,8 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr ret;
     char *name;
-    int maxids = 100, nids, i, id;
+    int maxids = 100, nids, id;
+    size_t i;
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
@@ -2840,7 +2841,9 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
                                     int maxCells)
 {
     xen_op_v2_sys op_sys;
-    int i, j, ret;
+    size_t i;
+    int cell;
+    int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     if (priv->nbNodeCells < 0) {
@@ -2867,22 +2870,22 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
     memset(&op_sys, 0, sizeof(op_sys));
     op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
 
-    for (i = startCell, j = 0;
-         i < priv->nbNodeCells && j < maxCells; i++, j++) {
+    for (cell = startCell, i = 0;
+         cell < priv->nbNodeCells && i < maxCells; cell++, i++) {
         if (hv_versions.sys_interface >= 5)
-            op_sys.u.availheap5.node = i;
+            op_sys.u.availheap5.node = cell;
         else
-            op_sys.u.availheap.node = i;
+            op_sys.u.availheap.node = cell;
         ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
         if (ret < 0) {
             return -1;
         }
         if (hv_versions.sys_interface >= 5)
-            freeMems[j] = op_sys.u.availheap5.avail_bytes;
+            freeMems[i] = op_sys.u.availheap5.avail_bytes;
         else
-            freeMems[j] = op_sys.u.availheap.avail_bytes;
+            freeMems[i] = op_sys.u.availheap.avail_bytes;
     }
-    return j;
+    return i;
 }
 
 
@@ -2970,7 +2973,8 @@ xenHypervisorGetVcpus(virConnectPtr conn,
     int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
     virVcpuInfoPtr ipt;
-    int nbinfo, i;
+    int nbinfo;
+    size_t i;
 
     if (sizeof(cpumap_t) & 7) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

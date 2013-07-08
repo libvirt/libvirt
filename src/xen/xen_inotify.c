@@ -72,7 +72,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
                                char **name,
                                unsigned char *uuid)
 {
-    int i;
+    size_t i;
     virDomainDefPtr def;
     const char *uuid_str;
     unsigned char rawuuid[VIR_UUID_BUFLEN];
@@ -159,7 +159,7 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn, const char *fname)
     xenUnifiedPrivatePtr priv = conn->privateData;
     const char *uuidstr = fname + strlen(XEND_DOMAINS_DIR) + 1;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    int i;
+    size_t i;
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

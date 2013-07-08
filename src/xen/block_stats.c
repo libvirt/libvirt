@@ -78,7 +78,7 @@ read_stat(const char *path)
 {
     char str[64];
     int64_t r;
-    int i;
+    size_t i;
     FILE *fp;
 
     fp = fopen(path, "r");
@@ -109,7 +109,7 @@ read_bd_stat(int device, int domid, const char *str)
         "/sys/devices/xen-backend/tap-%d-%d/statistics/%s"
     };
 
-    int i;
+    size_t i;
     char *path;
     int64_t r;
 

@@ -2445,7 +2445,8 @@ static int
 xenUnifiedNodeDeviceAssignedDomainId(virNodeDevicePtr dev)
 {
     int numdomains;
-    int ret = -1, i;
+    int ret = -1;
+    size_t i;
     int *ids = NULL;
     char *bdf = NULL;
     char *xref = NULL;
@@ -2768,7 +2769,7 @@ xenRegister(void)
 void
 xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list == NULL)
         return;
@@ -2841,7 +2842,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
                            int id, char *name,
                            unsigned char *uuid)
 {
-    int i;
+    size_t i;
     for (i = 0; i < list->count; i++) {
         if (list->doms[i]->id == id &&
             STREQ(list->doms[i]->name, name) &&

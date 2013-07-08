@@ -41,7 +41,7 @@
 void
 xenSessionFree(xen_session *session)
 {
-    int i;
+    size_t i;
     if (session->error_description != NULL) {
         for (i = 0; i < session->error_description_count; i++)
             VIR_FREE(session->error_description[i]);
@@ -95,7 +95,7 @@ int
 xenapiUtil_ParseQuery(virConnectPtr conn, virURIPtr uri, int *noVerify)
 {
     int result = 0;
-    int i;
+    size_t i;
 
     for (i = 0; i < uri->paramsCount; i++) {
         virURIParamPtr queryParam = &uri->params[i];
@@ -161,7 +161,7 @@ createXenAPIBootOrderString(int nboot, int *bootDevs)
 {
     virBuffer ret = VIR_BUFFER_INITIALIZER;
     char *val = NULL;
-    int i;
+    size_t i;
     for (i = 0; i < nboot; i++) {
         if (bootDevs[i] == VIR_DOMAIN_BOOT_FLOPPY)
             val = (char *)"a";
@@ -253,7 +253,7 @@ getStorageVolumeType(char *type)
 char *
 returnErrorFromSession(xen_session *session)
 {
-    int i;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     for (i = 0; i < session->error_description_count; i++) {
         if (!i)
@@ -273,11 +273,11 @@ mapDomainPinVcpu(unsigned char *cpumap, int maplen)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t len;
     char *ret = NULL;
-    int i, j;
+    size_t i, j;
     for (i = 0; i < maplen; i++) {
         for (j = 0; j < 8; j++) {
             if (cpumap[i] & (1 << j)) {
-                virBufferAsprintf(&buf, "%d,", (8*i)+j);
+                virBufferAsprintf(&buf, "%zu,", (8*i)+j);
             }
         }
     }
@@ -450,7 +450,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     char uuidStr[VIR_UUID_STRING_BUFLEN];
     xen_string_string_map *strings = NULL;
     int device_number = 0;
-    int i;
+    size_t i;
 
     *record = xen_vm_record_alloc();
     if (VIR_STRDUP((*record)->name_label, def->name) < 0)

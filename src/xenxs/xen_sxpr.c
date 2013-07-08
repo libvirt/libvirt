@@ -628,7 +628,7 @@ xenParseSxprSound(virDomainDefPtr def,
                   const char *str)
 {
     if (STREQ(str, "all")) {
-        int i;
+        size_t i;
 
         /*
          * Special compatibility code for Xen with a bogus
@@ -1338,7 +1338,7 @@ xenParseSxpr(const struct sexpr *root,
     /* Floppy disk config */
     if (hvm) {
         const char *const fds[] = { "fda", "fdb" };
-        int i;
+        size_t i;
         for (i = 0; i < ARRAY_CARDINALITY(fds); i++) {
             tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
             if ((tmp != NULL) && (tmp[0] != 0)) {
@@ -2049,7 +2049,7 @@ xenFormatSxprAllPCI(virDomainDefPtr def,
                     virBufferPtr buf)
 {
     int hasPCI = 0;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nhostdevs; i++)
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -2106,7 +2106,7 @@ xenFormatSxprSound(virDomainDefPtr def,
                    virBufferPtr buf)
 {
     const char *str;
-    int i;
+    size_t i;
 
     for (i = 0; i < def->nsounds; i++) {
         if (!(str = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
@@ -2184,7 +2184,8 @@ xenFormatSxpr(virConnectPtr conn,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *tmp;
     char *bufout;
-    int hvm = 0, i, vmlocaltime = -1;
+    int hvm = 0, vmlocaltime = -1;
+    size_t i;
     bool in_image = false;
 
     VIR_DEBUG("Formatting domain sexpr");
@@ -2361,21 +2362,21 @@ xenFormatSxpr(virConnectPtr conn,
             }
             if (def->serials) {
                 if ((def->nserials > 1) || (def->serials[0]->target.port != 0)) {
-                    int maxport = -1;
-                    int j = 0;
+                    int maxport = -1, port;
+                    size_t j = 0;
 
                     virBufferAddLit(&buf, "(serial (");
                     for (i = 0; i < def->nserials; i++)
                         if (def->serials[i]->target.port > maxport)
                             maxport = def->serials[i]->target.port;
 
-                    for (i = 0; i <= maxport; i++) {
+                    for (port = 0; port <= maxport; port++) {
                         virDomainChrDefPtr chr = NULL;
 
-                        if (i)
+                        if (port)
                             virBufferAddLit(&buf, " ");
                         for (j = 0; j < def->nserials; j++) {
-                            if (def->serials[j]->target.port == i) {
+                            if (def->serials[j]->target.port == port) {
                                 chr = def->serials[j];
                                 break;
                             }

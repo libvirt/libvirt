@@ -223,7 +223,8 @@ xenStoreNumOfDomains(virConnectPtr conn)
 {
     unsigned int num;
     char **idlist = NULL, *endptr;
-    int i, ret = -1, realnum = 0;
+    size_t i;
+    int ret = -1, realnum = 0;
     long id;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -264,7 +265,8 @@ xenStoreDoListDomains(virConnectPtr conn,
                       int maxids)
 {
     char **idlist = NULL, *endptr;
-    unsigned int num, i;
+    unsigned int num;
+    size_t i;
     int ret = -1;
     long id;
 
@@ -404,7 +406,8 @@ char *
 xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac)
 {
     char dir[80], path[128], **list = NULL, *val = NULL;
-    unsigned int len, i, num;
+    unsigned int len, num;
+    size_t i;
     char *ret = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -453,7 +456,8 @@ char *
 xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev)
 {
     char dir[80], path[128], **list = NULL, *val = NULL;
-    unsigned int devlen, len, i, num;
+    unsigned int devlen, len, num;
+    size_t i;
     char *ret = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -525,7 +529,8 @@ char *
 xenStoreDomainGetPCIID(virConnectPtr conn, int id, const char *bdf)
 {
     char dir[80], path[128], **list = NULL, *val = NULL;
-    unsigned int len, i, num;
+    unsigned int len, num;
+    size_t i;
     char *ret = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -610,7 +615,7 @@ xenStoreDomainGetUUID(virConnectPtr conn, int id, unsigned char *uuid)
 static void
 xenStoreWatchListFree(xenStoreWatchListPtr list)
 {
-    int i;
+    size_t i;
     for (i=0; i<list->count; i++) {
         VIR_FREE(list->watches[i]->path);
         VIR_FREE(list->watches[i]->token);
@@ -687,7 +692,7 @@ xenStoreAddWatch(virConnectPtr conn,
 int
 xenStoreRemoveWatch(virConnectPtr conn, const char *path, const char *token)
 {
-    int i;
+    size_t i;
     xenStoreWatchListPtr list;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -736,7 +741,7 @@ xenStoreFindWatch(xenStoreWatchListPtr list,
                   const char *path,
                   const char *token)
 {
-    int i;
+    size_t i;
     for (i = 0; i < list->count; i++)
         if (STREQ(path, list->watches[i]->path) &&
             STREQ(token, list->watches[i]->token))
@@ -797,7 +802,8 @@ xenStoreDomainIntroduced(virConnectPtr conn,
                          const char *token ATTRIBUTE_UNUSED,
                          void *opaque)
 {
-    int i, j, found, missing = 0, retries = 20;
+    size_t i, j;
+    int found, missing = 0, retries = 20;
     int new_domain_cnt;
     int *new_domids;
     int nread;
@@ -877,7 +883,8 @@ xenStoreDomainReleased(virConnectPtr conn,
                        const char *token ATTRIBUTE_UNUSED,
                        void *opaque)
 {
-    int i, j, found, removed, retries = 20;
+    size_t i, j;
+    int found, removed, retries = 20;
     int new_domain_cnt;
     int *new_domids;
     int nread;
