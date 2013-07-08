@@ -186,7 +186,7 @@ remoteFindDaemonPath(void)
         SBINDIR "/libvirtd_dbg",
         NULL
     };
-    int i;
+    size_t i;
     const char *customDaemon = getenv("LIBVIRTD_PATH");
 
     if (customDaemon)
@@ -517,7 +517,7 @@ doRemoteOpen(virConnectPtr conn,
      * feasibly it might contain variables needed by the real driver,
      * although that won't be the case for now).
      */
-    int i;
+    size_t i;
 
     if (conn->uri) {
         for (i = 0; i < conn->uri->paramsCount; i++) {
@@ -1187,7 +1187,7 @@ remoteNodeGetCPUStats(virConnectPtr conn,
     int rv = -1;
     remote_node_get_cpu_stats_args args;
     remote_node_get_cpu_stats_ret ret;
-    int i = -1;
+    size_t i;
     struct private_data *priv = conn->privateData;
 
     remoteDriverLock(priv);
@@ -1253,7 +1253,7 @@ remoteNodeGetMemoryStats(virConnectPtr conn,
     int rv = -1;
     remote_node_get_memory_stats_args args;
     remote_node_get_memory_stats_ret ret;
-    int i = -1;
+    size_t i;
     struct private_data *priv = conn->privateData;
 
     remoteDriverLock(priv);
@@ -1316,7 +1316,7 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
     int rv = -1;
     remote_node_get_cells_free_memory_args args;
     remote_node_get_cells_free_memory_ret ret;
-    int i;
+    size_t i;
     struct private_data *priv = conn->privateData;
 
     remoteDriverLock(priv);
@@ -1353,7 +1353,7 @@ static int
 remoteConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     int rv = -1;
-    int i;
+    size_t i;
     remote_connect_list_domains_args args;
     remote_connect_list_domains_ret ret;
     struct private_data *priv = conn->privateData;
@@ -1400,7 +1400,7 @@ remoteConnectListAllDomains(virConnectPtr conn,
                             unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virDomainPtr *doms = NULL;
     remote_connect_list_all_domains_args args;
     remote_connect_list_all_domains_ret ret;
@@ -1458,7 +1458,7 @@ static void
 remoteFreeTypedParameters(remote_typed_param *args_params_val,
                           u_int args_params_len)
 {
-    u_int i;
+    size_t i;
 
     if (args_params_val == NULL)
         return;
@@ -1479,7 +1479,7 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
                                remote_typed_param **args_params_val,
                                u_int *args_params_len)
 {
-    int i;
+    size_t i;
     int rv = -1;
     remote_typed_param *val;
 
@@ -1540,7 +1540,7 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
                                  virTypedParameterPtr *params,
                                  int *nparams)
 {
-    int i = 0;
+    size_t i = 0;
     int rv = -1;
     bool userAllocated = *params != NULL;
 
@@ -1629,8 +1629,8 @@ remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
                                   virDomainDiskErrorPtr errors,
                                   int maxerrors)
 {
-    int i = 0;
-    int j;
+    size_t i = 0;
+    size_t j;
 
     if (ret_errors_len > limit || ret_errors_len > maxerrors) {
         virReportError(VIR_ERR_RPC, "%s",
@@ -1868,7 +1868,7 @@ remoteDomainGetVcpuPinInfo(virDomainPtr domain,
                            unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     remote_domain_get_vcpu_pin_info_args args;
     remote_domain_get_vcpu_pin_info_ret ret;
     struct private_data *priv = domain->conn->privateData;
@@ -1979,7 +1979,7 @@ remoteDomainGetEmulatorPinInfo(virDomainPtr domain,
                                unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     remote_domain_get_emulator_pin_info_args args;
     remote_domain_get_emulator_pin_info_ret ret;
     struct private_data *priv = domain->conn->privateData;
@@ -2038,7 +2038,7 @@ remoteDomainGetVcpus(virDomainPtr domain,
                      int maplen)
 {
     int rv = -1;
-    int i;
+    size_t i;
     remote_domain_get_vcpus_args args;
     remote_domain_get_vcpus_ret ret;
     struct private_data *priv = domain->conn->privateData;
@@ -2151,7 +2151,8 @@ remoteDomainGetSecurityLabelList(virDomainPtr domain, virSecurityLabelPtr* secla
     remote_domain_get_security_label_list_args args;
     remote_domain_get_security_label_list_ret ret;
     struct private_data *priv = domain->conn->privateData;
-    int i, rv = -1;
+    size_t i;
+    int rv = -1;
 
     remoteDriverLock(priv);
 
@@ -2485,7 +2486,7 @@ remoteDomainMemoryStats(virDomainPtr domain,
     remote_domain_memory_stats_args args;
     remote_domain_memory_stats_ret ret;
     struct private_data *priv = domain->conn->privateData;
-    unsigned int i;
+    size_t i;
 
     remoteDriverLock(priv);
 
@@ -2813,7 +2814,7 @@ remoteConnectListAllNetworks(virConnectPtr conn,
                              unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virNetworkPtr *tmp_nets = NULL;
     remote_connect_list_all_networks_args args;
     remote_connect_list_all_networks_ret ret;
@@ -2872,7 +2873,7 @@ remoteConnectListAllInterfaces(virConnectPtr conn,
                                unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virInterfacePtr *tmp_ifaces = NULL;
     remote_connect_list_all_interfaces_args args;
     remote_connect_list_all_interfaces_ret ret;
@@ -2931,7 +2932,7 @@ remoteConnectListAllNodeDevices(virConnectPtr conn,
                                 unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virNodeDevicePtr *tmp_devices = NULL;
     remote_connect_list_all_node_devices_args args;
     remote_connect_list_all_node_devices_ret ret;
@@ -2990,7 +2991,7 @@ remoteConnectListAllNWFilters(virConnectPtr conn,
                               unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virNWFilterPtr *tmp_filters = NULL;
     remote_connect_list_all_nwfilters_args args;
     remote_connect_list_all_nwfilters_ret ret;
@@ -3049,7 +3050,7 @@ remoteConnectListAllSecrets(virConnectPtr conn,
                             unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virSecretPtr *tmp_secrets = NULL;
     remote_connect_list_all_secrets_args args;
     remote_connect_list_all_secrets_ret ret;
@@ -3246,7 +3247,7 @@ remoteConnectListAllStoragePools(virConnectPtr conn,
                                  unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virStoragePoolPtr *tmp_pools = NULL;
     remote_connect_list_all_storage_pools_args args;
     remote_connect_list_all_storage_pools_ret ret;
@@ -3305,7 +3306,7 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
                                 unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virStorageVolPtr *tmp_vols = NULL;
     remote_storage_pool_list_all_volumes_args args;
     remote_storage_pool_list_all_volumes_ret ret;
@@ -3525,7 +3526,8 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
         return 0;
 
     if (authtype) {
-        int want, i;
+        int want;
+        size_t i;
         if (STRCASEEQ(authtype, "sasl") ||
             STRCASEEQLEN(authtype, "sasl.", 5)) {
             want = REMOTE_AUTH_SASL;
@@ -3674,7 +3676,8 @@ static int remoteAuthCredSASL2Vir(int vircred)
 static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
 {
     sasl_callback_t *cbs;
-    int i, n;
+    size_t i;
+    int n;
     if (VIR_ALLOC_N(cbs, ncredtype+1) < 0) {
         return NULL;
     }
@@ -4164,7 +4167,8 @@ remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
                  virConnectAuthPtr auth)
 {
     remote_auth_polkit_ret ret;
-    int i, allowcb = 0;
+    size_t i;
+    int allowcb = 0;
     virConnectCredential cred = {
         VIR_CRED_EXTERNAL,
         conn->flags & VIR_CONNECT_RO ? "org.libvirt.unix.monitor" : "org.libvirt.unix.manage",
@@ -4459,7 +4463,7 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     virDomainEventGraphicsAddressPtr localAddr = NULL;
     virDomainEventGraphicsAddressPtr remoteAddr = NULL;
     virDomainEventGraphicsSubjectPtr subject = NULL;
-    int i;
+    size_t i;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -5710,7 +5714,7 @@ remoteDomainListAllSnapshots(virDomainPtr dom,
                              unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virDomainSnapshotPtr *snaps = NULL;
     remote_domain_list_all_snapshots_args args;
     remote_domain_list_all_snapshots_ret ret;
@@ -5769,7 +5773,7 @@ remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
                                     unsigned int flags)
 {
     int rv = -1;
-    int i;
+    size_t i;
     virDomainSnapshotPtr *snaps = NULL;
     remote_domain_snapshot_list_all_children_args args;
     remote_domain_snapshot_list_all_children_ret ret;
