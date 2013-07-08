@@ -304,7 +304,7 @@ static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_graphics_msg data;
-    int i;
+    size_t i;
 
     if (!client)
         return -1;
@@ -634,11 +634,11 @@ void remoteClientFreeFunc(void *data)
 
     /* Deregister event delivery callback */
     if (priv->conn) {
-        int i;
+        size_t i;
 
         for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
             if (priv->domainEventCallbackID[i] != -1) {
-                VIR_DEBUG("Deregistering to relay remote events %d", i);
+                VIR_DEBUG("Deregistering to relay remote events %zu", i);
                 virConnectDomainEventDeregisterAny(priv->conn,
                                                    priv->domainEventCallbackID[i]);
             }
@@ -664,7 +664,7 @@ void *remoteClientInitHook(virNetServerClientPtr client,
                            void *opaque ATTRIBUTE_UNUSED)
 {
     struct daemonClientPrivate *priv;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC(priv) < 0)
         return NULL;
@@ -795,8 +795,8 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
                                u_int *ret_params_len,
                                unsigned int flags)
 {
-    int i;
-    int j;
+    size_t i;
+    size_t j;
     int rv = -1;
     remote_typed_param *val;
 
@@ -872,7 +872,7 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
                                  int limit,
                                  int *nparams)
 {
-    int i = 0;
+    size_t i = 0;
     int rv = -1;
     virTypedParameterPtr params = NULL;
 
@@ -1004,7 +1004,7 @@ remoteDispatchConnectListAllDomains(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr *doms = NULL;
     int ndomains = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -1108,7 +1108,8 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     struct _virDomainMemoryStat *stats;
-    int nr_stats, i;
+    int nr_stats;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
@@ -1383,7 +1384,8 @@ remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server ATTRIBUTE_UNUSED
 {
     virDomainPtr dom = NULL;
     virSecurityLabelPtr seclabels = NULL;
-    int i, len, rv = -1;
+    int len, rv = -1;
+    size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
@@ -1635,7 +1637,8 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     virVcpuInfoPtr info = NULL;
     unsigned char *cpumaps = NULL;
-    int info_len, i;
+    int info_len;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
@@ -2008,7 +2011,7 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                               remote_node_get_cpu_stats_ret *ret)
 {
     virNodeCPUStatsPtr params = NULL;
-    int i;
+    size_t i;
     int cpuNum = args->cpuNum;
     int nparams = 0;
     unsigned int flags;
@@ -2080,7 +2083,7 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                                  remote_node_get_memory_stats_ret *ret)
 {
     virNodeMemoryStatsPtr params = NULL;
-    int i;
+    size_t i;
     int cellNum = args->cellNum;
     int nparams = 0;
     unsigned int flags;
@@ -3793,7 +3796,7 @@ success:
     rv = 0;
     ret->nparams = percpu_len;
     if (args->nparams && !(args->flags & VIR_TYPED_PARAM_STRING_OKAY)) {
-        int i;
+        size_t i;
 
         for (i = 0; i < percpu_len; i++) {
             if (params[i].type == VIR_TYPED_PARAM_STRING)
@@ -3863,7 +3866,7 @@ cleanup:
     if (dom)
         virDomainFree(dom);
     if (errors) {
-        int i;
+        size_t i;
         for (i = 0; i < len; i++)
             VIR_FREE(errors[i].disk);
     }
@@ -3881,7 +3884,7 @@ remoteDispatchDomainListAllSnapshots(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainSnapshotPtr *snaps = NULL;
     int nsnaps = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virDomainPtr dom = NULL;
@@ -3939,7 +3942,7 @@ remoteDispatchDomainSnapshotListAllChildren(virNetServerPtr server ATTRIBUTE_UNU
 {
     virDomainSnapshotPtr *snaps = NULL;
     int nsnaps = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virDomainPtr dom = NULL;
@@ -4003,7 +4006,7 @@ remoteDispatchConnectListAllStoragePools(virNetServerPtr server ATTRIBUTE_UNUSED
 {
     virStoragePoolPtr *pools = NULL;
     int npools = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4056,7 +4059,7 @@ remoteDispatchStoragePoolListAllVolumes(virNetServerPtr server ATTRIBUTE_UNUSED,
     virStorageVolPtr *vols = NULL;
     virStoragePoolPtr pool = NULL;
     int nvols = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4113,7 +4116,7 @@ remoteDispatchConnectListAllNetworks(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virNetworkPtr *nets = NULL;
     int nnets = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4165,7 +4168,7 @@ remoteDispatchConnectListAllInterfaces(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virInterfacePtr *ifaces = NULL;
     int nifaces = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4217,7 +4220,7 @@ remoteDispatchConnectListAllNodeDevices(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virNodeDevicePtr *devices = NULL;
     int ndevices = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4269,7 +4272,7 @@ remoteDispatchConnectListAllNWFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virNWFilterPtr *filters = NULL;
     int nfilters = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -4321,7 +4324,7 @@ remoteDispatchConnectListAllSecrets(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virSecretPtr *secrets = NULL;
     int nsecrets = 0;
-    int i;
+    size_t i;
     int rv = -1;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
@@ -5028,7 +5031,7 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
                                 u_int *ret_errors_len)
 {
     remote_domain_disk_error *val = NULL;
-    int i = 0;
+    size_t i = 0;
 
     if (VIR_ALLOC_N(val, nerrors) < 0)
         goto error;
@@ -5046,7 +5049,7 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
 
 error:
     if (val) {
-        int j;
+        size_t j;
         for (j = 0; j < i; j++)
             VIR_FREE(val[j].disk);
         VIR_FREE(val);
