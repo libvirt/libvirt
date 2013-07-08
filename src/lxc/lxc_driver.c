@@ -562,7 +562,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
                             virDomainInfoPtr info)
 {
     virDomainObjPtr vm;
-    int ret = -1, rc;
+    int ret = -1;
     virLXCDomainObjPrivatePtr priv;
 
     if (!(vm = lxcDomObjFromDomain(dom)))
@@ -584,15 +584,15 @@ static int lxcDomainGetInfo(virDomainPtr dom,
                            "%s", _("Cannot read cputime for domain"));
             goto cleanup;
         }
-        if ((rc = virCgroupGetMemoryUsage(priv->cgroup, &(info->memory))) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("Cannot read memory usage for domain"));
-            if (rc == -ENOENT) {
-                /* Don't fail if we can't read memory usage due to a lack of
-                 * kernel support */
+        if (virCgroupGetMemoryUsage(priv->cgroup, &(info->memory)) < 0) {
+            /* Don't fail if we can't read memory usage due to a lack of
+             * kernel support */
+            if (virLastErrorIsSystemErrno(ENOENT)) {
+                virResetLastError();
                 info->memory = 0;
-            } else
+            } else {
                 goto cleanup;
+            }
         }
     }
 
@@ -746,7 +746,6 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     size_t i;
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    int rc;
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
@@ -773,26 +772,14 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
-            rc = virCgroupSetMemoryHardLimit(priv->cgroup, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory hard_limit tunable"));
+            if (virCgroupSetMemoryHardLimit(priv->cgroup, params[i].value.ul) < 0)
                 ret = -1;
-            }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
-            rc = virCgroupSetMemorySoftLimit(priv->cgroup, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory soft_limit tunable"));
+            if (virCgroupSetMemorySoftLimit(priv->cgroup, params[i].value.ul) < 0)
                 ret = -1;
-            }
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
-            rc = virCgroupSetMemSwapHardLimit(priv->cgroup, params[i].value.ul);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set swap_hard_limit tunable"));
+            if (virCgroupSetMemSwapHardLimit(priv->cgroup, params[i].value.ul) < 0)
                 ret = -1;
-            }
         }
     }
 
@@ -812,7 +799,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     unsigned long long val;
     int ret = -1;
-    int rc;
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
@@ -838,34 +824,22 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
         switch (i) {
         case 0: /* fill memory hard limit here */
-            rc = virCgroupGetMemoryHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get memory hard limit"));
+            if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0)
                 goto cleanup;
-            }
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
                 goto cleanup;
             break;
         case 1: /* fill memory soft limit here */
-            rc = virCgroupGetMemorySoftLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get memory soft limit"));
+            if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0)
                 goto cleanup;
-            }
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
                 goto cleanup;
             break;
         case 2: /* fill swap hard limit here */
-            rc = virCgroupGetMemSwapHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get swap hard limit"));
+            if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0)
                 goto cleanup;
-            }
             if (virTypedParameterAssign(param,
                                         VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
@@ -1676,21 +1650,11 @@ static int
 lxcGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
                  long long *quota)
 {
-    int rc;
-
-    rc = virCgroupGetCpuCfsPeriod(cgroup, period);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth period tunable"));
+    if (virCgroupGetCpuCfsPeriod(cgroup, period) < 0)
         return -1;
-    }
 
-    rc = virCgroupGetCpuCfsQuota(cgroup, quota);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth tunable"));
+    if (virCgroupGetCpuCfsQuota(cgroup, quota) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -1699,7 +1663,6 @@ lxcGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
 static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
                             long long quota)
 {
-    int rc;
     unsigned long long old_period;
 
     if (period == 0 && quota == 0)
@@ -1707,38 +1670,28 @@ static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
 
     if (period) {
         /* get old period, and we can rollback if set quota failed */
-        rc = virCgroupGetCpuCfsPeriod(cgroup, &old_period);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to get cpu bandwidth period"));
+        if (virCgroupGetCpuCfsPeriod(cgroup, &old_period) < 0)
             return -1;
-        }
 
-        rc = virCgroupSetCpuCfsPeriod(cgroup, period);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to set cpu bandwidth period"));
+        if (virCgroupSetCpuCfsPeriod(cgroup, period) < 0)
             return -1;
-        }
     }
 
     if (quota) {
-        rc = virCgroupSetCpuCfsQuota(cgroup, quota);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to set cpu bandwidth quota"));
-            goto cleanup;
-        }
+        if (virCgroupSetCpuCfsQuota(cgroup, quota) < 0)
+            goto error;
     }
 
     return 0;
 
-cleanup:
+error:
     if (period) {
-        rc = virCgroupSetCpuCfsPeriod(cgroup, old_period);
-        if (rc < 0)
-            virReportSystemError(-rc, "%s",
-                                 _("Unable to rollback cpu bandwidth period"));
+        virErrorPtr saved = virSaveLastError();
+        virCgroupSetCpuCfsPeriod(cgroup, old_period);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
     }
 
     return -1;
@@ -1808,12 +1761,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = virCgroupSetCpuShares(priv->cgroup, params[i].value.ul);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set cpu shares tunable"));
+                if (virCgroupSetCpuShares(priv->cgroup, params[i].value.ul) < 0)
                     goto cleanup;
-                }
 
                 vm->def->cputune.shares = params[i].value.ul;
             }
@@ -1942,12 +1891,8 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    rc = virCgroupGetCpuShares(priv->cgroup, &shares);
-    if (rc != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu shares tunable"));
+    if (virCgroupGetCpuShares(priv->cgroup, &shares) < 0)
         goto cleanup;
-    }
 
     if (*nparams > 1 && cpu_bw_status) {
         rc = lxcGetVcpuBWLive(priv->cgroup, &period, &quota);
@@ -2047,20 +1992,14 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                int rc;
-
                 if (params[i].value.ui > 1000 || params[i].value.ui < 100) {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
                                    _("out of blkio weight range."));
                     goto cleanup;
                 }
 
-                rc = virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set blkio weight tunable"));
+                if (virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui) < 0)
                     goto cleanup;
-                }
             }
         }
     }
@@ -2110,7 +2049,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     unsigned int val;
     int ret = -1;
-    int rc;
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2151,12 +2089,8 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 
             switch (i) {
             case 0: /* fill blkio weight here */
-                rc = virCgroupGetBlkioWeight(priv->cgroup, &val);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to get blkio weight"));
+                if (virCgroupGetBlkioWeight(priv->cgroup, &val) < 0)
                     goto cleanup;
-                }
                 if (virTypedParameterAssign(param, VIR_DOMAIN_BLKIO_WEIGHT,
                                             VIR_TYPED_PARAM_UINT, val) < 0)
                     goto cleanup;

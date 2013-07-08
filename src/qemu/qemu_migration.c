@@ -4522,8 +4522,8 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     int rc;
+    int ret = -1;
     bool restoreLabel = false;
     virCommandPtr cmd = NULL;
     int pipeFD[2] = { -1, -1 };
@@ -4557,15 +4557,12 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
          * that botches pclose.  */
         if (virCgroupHasController(priv->cgroup,
                                    VIR_CGROUP_CONTROLLER_DEVICES)) {
-            rc = virCgroupAllowDevicePath(priv->cgroup, path,
-                                          VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rc);
-            if (rc == 1) {
+            int rv = virCgroupAllowDevicePath(priv->cgroup, path,
+                                              VIR_CGROUP_DEVICE_RW);
+            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rv == 0);
+            if (rv == 1) {
                 /* path was not a device, no further need for cgroup */
-            } else if (rc < 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to allow device %s for %s"),
-                                     path, vm->def->name);
+            } else if (rv < 0) {
                 goto cleanup;
             }
         }
@@ -4664,12 +4661,9 @@ cleanup:
 
     if (virCgroupHasController(priv->cgroup,
                                VIR_CGROUP_CONTROLLER_DEVICES)) {
-        rc = virCgroupDenyDevicePath(priv->cgroup, path,
-                                     VIR_CGROUP_DEVICE_RWM);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rc);
-        if (rc < 0)
-            VIR_WARN("Unable to deny device %s for %s %d",
-                     path, vm->def->name, rc);
+        int rv = virCgroupDenyDevicePath(priv->cgroup, path,
+                                         VIR_CGROUP_DEVICE_RWM);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rv == 0);
     }
     return ret;
 }

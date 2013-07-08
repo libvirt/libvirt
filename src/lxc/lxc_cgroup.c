@@ -36,33 +36,18 @@ static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {
     int ret = -1;
-    if (def->cputune.shares != 0) {
-        int rc = virCgroupSetCpuShares(cgroup, def->cputune.shares);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu shares for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
-    if (def->cputune.quota != 0) {
-        int rc = virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu quota for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
-    if (def->cputune.period != 0) {
-        int rc = virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu period for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
+    if (def->cputune.shares != 0 &&
+        virCgroupSetCpuShares(cgroup, def->cputune.shares) < 0)
+        goto cleanup;
+
+    if (def->cputune.quota != 0 &&
+        virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota) < 0)
+        goto cleanup;
+
+    if (def->cputune.period != 0 &&
+        virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period) < 0)
+        goto cleanup;
+
     ret = 0;
 cleanup:
     return ret;
@@ -73,7 +58,7 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
                                        virCgroupPtr cgroup,
                                        virBitmapPtr nodemask)
 {
-    int rc = 0;
+    int ret = -1;
     char *mask = NULL;
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
@@ -85,12 +70,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
             return -1;
         }
 
-        rc = virCgroupSetCpusetCpus(cgroup, mask);
-        if (rc < 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("Unable to set cpuset.cpus"));
+        if (virCgroupSetCpusetCpus(cgroup, mask) < 0)
             goto cleanup;
-        }
     }
 
     if ((def->numatune.memory.nodemask ||
@@ -109,14 +90,14 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
             return -1;
         }
 
-        rc = virCgroupSetCpusetMems(cgroup, mask);
-        if (rc < 0)
-            virReportSystemError(-rc, "%s", _("Unable to set cpuset.mems"));
+        if (virCgroupSetCpusetMems(cgroup, mask) < 0)
+            goto cleanup;
     }
 
+    ret = 0;
 cleanup:
     VIR_FREE(mask);
-    return rc;
+    return ret;
 }
 
 
@@ -124,31 +105,18 @@ static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
     size_t i;
-    int rc;
 
-    if (def->blkio.weight) {
-        rc = virCgroupSetBlkioWeight(cgroup, def->blkio.weight);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set Blkio weight for domain %s"),
-                                 def->name);
-            return -1;
-        }
-    }
+    if (def->blkio.weight &&
+        virCgroupSetBlkioWeight(cgroup, def->blkio.weight) < 0)
+        return -1;
 
     if (def->blkio.ndevices) {
         for (i = 0; i < def->blkio.ndevices; i++) {
             virBlkioDeviceWeightPtr dw = &def->blkio.devices[i];
             if (!dw->weight)
                 continue;
-            rc = virCgroupSetBlkioDeviceWeight(cgroup, dw->path, dw->weight);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set io device weight "
-                                       "for domain %s"),
-                                     def->name);
+            if (virCgroupSetBlkioDeviceWeight(cgroup, dw->path, dw->weight) < 0)
                 return -1;
-            }
         }
     }
 
@@ -160,45 +128,21 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {
     int ret = -1;
-    int rc;
 
-    rc = virCgroupSetMemory(cgroup, def->mem.max_balloon);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to set memory limit for domain %s"),
-                             def->name);
+    if (virCgroupSetMemory(cgroup, def->mem.max_balloon) < 0)
         goto cleanup;
-    }
 
-    if (def->mem.hard_limit) {
-        rc = virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set memory hard limit for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
+    if (def->mem.hard_limit &&
+        virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit) < 0)
+        goto cleanup;
 
-    if (def->mem.soft_limit) {
-        rc = virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set memory soft limit for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
+    if (def->mem.soft_limit &&
+        virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit) < 0)
+        goto cleanup;
 
-    if (def->mem.swap_hard_limit) {
-        rc = virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set swap hard limit for domain %s"),
-                                 def->name);
-            goto cleanup;
-        }
-    }
+    if (def->mem.swap_hard_limit &&
+        virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit) < 0)
+        goto cleanup;
 
     ret = 0;
 cleanup:
@@ -306,32 +250,20 @@ cleanup:
 
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
 {
-    int ret = -1, rc;
+    int ret = -1;
     virCgroupPtr cgroup;
 
     if (virCgroupNewSelf(&cgroup) < 0)
         return -1;
 
-    rc = virLXCCgroupGetMemStat(cgroup, meminfo);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get memory cgroup stat info"));
+    if (virLXCCgroupGetMemStat(cgroup, meminfo) < 0)
         goto cleanup;
-    }
 
-    rc = virLXCCgroupGetMemTotal(cgroup, meminfo);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get memory cgroup total"));
+    if (virLXCCgroupGetMemTotal(cgroup, meminfo) < 0)
         goto cleanup;
-    }
 
-    rc = virLXCCgroupGetMemUsage(cgroup, meminfo);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get memory cgroup stat usage"));
+    if (virLXCCgroupGetMemUsage(cgroup, meminfo) < 0)
         goto cleanup;
-    }
 
     virLXCCgroupGetMemSwapTotal(cgroup, meminfo);
     virLXCCgroupGetMemSwapUsage(cgroup, meminfo);
@@ -360,17 +292,11 @@ virLXCSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                void *opaque)
 {
     virCgroupPtr cgroup = opaque;
-    int rc;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
-    rc = virCgroupAllowDevicePath(cgroup, path,
-                                  VIR_CGROUP_DEVICE_RW);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow device %s"),
-                             path);
+    if (virCgroupAllowDevicePath(cgroup, path,
+                                 VIR_CGROUP_DEVICE_RW) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -382,17 +308,11 @@ virLXCTeardownHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                   void *opaque)
 {
     virCgroupPtr cgroup = opaque;
-    int rc;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
-    rc = virCgroupDenyDevicePath(cgroup, path,
-                                 VIR_CGROUP_DEVICE_RW);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to deny device %s"),
-                             path);
+    if (virCgroupDenyDevicePath(cgroup, path,
+                                VIR_CGROUP_DEVICE_RW) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -402,7 +322,6 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
     int ret = -1;
-    int rc;
     size_t i;
     static virLXCCgroupDevicePolicy devices[] = {
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
@@ -415,62 +334,42 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         {'c', LXC_DEV_MAJ_FUSE, LXC_DEV_MIN_FUSE},
         {0,   0, 0}};
 
-    rc = virCgroupDenyAllDevices(cgroup);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to deny devices for domain %s"),
-                             def->name);
+    if (virCgroupDenyAllDevices(cgroup) < 0)
         goto cleanup;
-    }
 
     for (i = 0; devices[i].type != 0; i++) {
         virLXCCgroupDevicePolicyPtr dev = &devices[i];
-        rc = virCgroupAllowDevice(cgroup,
-                                  dev->type,
-                                  dev->major,
-                                  dev->minor,
-                                  VIR_CGROUP_DEVICE_RWM);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %c:%d:%d for domain %s"),
-                                 dev->type, dev->major, dev->minor, def->name);
+        if (virCgroupAllowDevice(cgroup,
+                                 dev->type,
+                                 dev->major,
+                                 dev->minor,
+                                 VIR_CGROUP_DEVICE_RWM) < 0)
             goto cleanup;
-        }
     }
 
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK)
             continue;
 
-        rc = virCgroupAllowDevicePath(cgroup,
-                                      def->disks[i]->src,
-                                      (def->disks[i]->readonly ?
-                                       VIR_CGROUP_DEVICE_READ :
-                                       VIR_CGROUP_DEVICE_RW) |
-                                      VIR_CGROUP_DEVICE_MKNOD);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %s for domain %s"),
-                                 def->disks[i]->src, def->name);
+        if (virCgroupAllowDevicePath(cgroup,
+                                     def->disks[i]->src,
+                                     (def->disks[i]->readonly ?
+                                      VIR_CGROUP_DEVICE_READ :
+                                      VIR_CGROUP_DEVICE_RW) |
+                                     VIR_CGROUP_DEVICE_MKNOD) < 0)
             goto cleanup;
-        }
     }
 
     for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
             continue;
 
-        rc = virCgroupAllowDevicePath(cgroup,
-                                      def->fss[i]->src,
-                                      def->fss[i]->readonly ?
-                                      VIR_CGROUP_DEVICE_READ :
-                                      VIR_CGROUP_DEVICE_RW);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to allow device %s for domain %s"),
-                                 def->fss[i]->src, def->name);
+        if (virCgroupAllowDevicePath(cgroup,
+                                     def->fss[i]->src,
+                                     def->fss[i]->readonly ?
+                                     VIR_CGROUP_DEVICE_READ :
+                                     VIR_CGROUP_DEVICE_RW) < 0)
             goto cleanup;
-        }
     }
 
     for (i = 0; i < def->nhostdevs; i++) {
@@ -520,14 +419,9 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         }
     }
 
-    rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
-                                   VIR_CGROUP_DEVICE_RWM);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow PTY devices for domain %s"),
-                             def->name);
+    if (virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
+                                  VIR_CGROUP_DEVICE_RWM) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 cleanup:
@@ -600,18 +494,12 @@ virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def)
 {
     virCgroupPtr cgroup = NULL;
     int ret = -1;
-    int rc;
 
     if (!(cgroup = virLXCCgroupCreate(def, true)))
         return NULL;
 
-    rc = virCgroupAddTask(cgroup, getpid());
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to add task %d to cgroup for domain %s"),
-                             getpid(), def->name);
+    if (virCgroupAddTask(cgroup, getpid()) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 

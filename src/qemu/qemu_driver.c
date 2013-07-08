@@ -7755,7 +7755,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     ret = 0;
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         for (i = 0; i < nparams; i++) {
-            int rc;
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
@@ -7766,12 +7765,8 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                     continue;
                 }
 
-                rc = virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set blkio weight tunable"));
+                if (virCgroupSetBlkioWeight(priv->cgroup, params[i].value.ui) < 0)
                     ret = -1;
-                }
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                 size_t ndevices;
                 virBlkioDeviceWeightPtr devices = NULL;
@@ -7784,14 +7779,10 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                     continue;
                 }
                 for (j = 0; j < ndevices; j++) {
-                    rc = virCgroupSetBlkioDeviceWeight(priv->cgroup,
-                                                       devices[j].path,
-                                                       devices[j].weight);
-                    if (rc < 0) {
-                        virReportSystemError(-rc,
-                                             _("Unable to set io device weight "
-                                               "for path %s"),
-                                             devices[j].path);
+                    if (virCgroupSetBlkioDeviceWeight(priv->cgroup,
+                                                      devices[j].path,
+                                                      devices[j].weight) < 0) {
+                        ret = -1;
                         break;
                     }
                 }
@@ -7866,7 +7857,6 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     unsigned int val;
     int ret = -1;
-    int rc;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
@@ -7916,12 +7906,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
 
             switch (i) {
             case 0: /* fill blkio weight here */
-                rc = virCgroupGetBlkioWeight(priv->cgroup, &val);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to get blkio weight"));
+                if (virCgroupGetBlkioWeight(priv->cgroup, &val) < 0)
                     goto cleanup;
-                }
                 if (virTypedParameterAssign(param, VIR_DOMAIN_BLKIO_WEIGHT,
                                             VIR_TYPED_PARAM_UINT, val) < 0)
                     goto cleanup;
@@ -8046,8 +8032,8 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     bool set_hard_limit = false;
     bool set_soft_limit = false;
     virQEMUDriverConfigPtr cfg = NULL;
-    int ret = -1;
     int rc;
+    int ret = -1;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
@@ -8179,7 +8165,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
-    int rc;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
@@ -8263,12 +8248,8 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
         switch (i) {
         case 0: /* fill memory hard limit here */
-            rc = virCgroupGetMemoryHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get memory hard limit"));
+            if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0)
                 goto cleanup;
-            }
             if (virTypedParameterAssign(param,
                                         VIR_DOMAIN_MEMORY_HARD_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
@@ -8276,12 +8257,8 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
             break;
 
         case 1: /* fill memory soft limit here */
-            rc = virCgroupGetMemorySoftLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to get memory soft limit"));
+            if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0)
                 goto cleanup;
-            }
             if (virTypedParameterAssign(param,
                                         VIR_DOMAIN_MEMORY_SOFT_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
@@ -8289,13 +8266,10 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
             break;
 
         case 2: /* fill swap hard limit here */
-            rc = virCgroupGetMemSwapHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
-                if (rc != -ENOENT) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to get swap hard limit"));
+            if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0) {
+                if (!virLastErrorIsSystemErrno(ENOENT) &&
+                    !virLastErrorIsSystemErrno(EOPNOTSUPP))
                     goto cleanup;
-                }
                 val = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
             }
             if (virTypedParameterAssign(param,
@@ -8388,7 +8362,6 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                 persistentDef->numatune.memory.mode = params[i].value.i;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
-            int rc;
             virBitmapPtr nodeset = NULL;
             char *nodeset_str = NULL;
 
@@ -8421,9 +8394,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                     continue;
                 }
 
-                if ((rc = virCgroupSetCpusetMems(priv->cgroup, nodeset_str)) != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set numa tunable"));
+                if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0) {
                     virBitmapFree(nodeset);
                     VIR_FREE(nodeset_str);
                     ret = -1;
@@ -8480,7 +8451,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     char *nodeset = NULL;
     int ret = -1;
-    int rc;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
@@ -8542,12 +8512,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                 if (!nodeset && VIR_STRDUP(nodeset, "") < 0)
                     goto cleanup;
             } else {
-                rc = virCgroupGetCpusetMems(priv->cgroup, &nodeset);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to get numa nodeset"));
+                if (virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0)
                     goto cleanup;
-                }
             }
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
@@ -8718,11 +8684,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                if ((rc = virCgroupSetCpuShares(priv->cgroup, value_ul))) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set cpu shares tunable"));
+                if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
                     goto cleanup;
-                }
                 vm->def->cputune.shares = value_ul;
             }
 
@@ -8829,21 +8792,11 @@ static int
 qemuGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
                   long long *quota)
 {
-    int rc;
-
-    rc = virCgroupGetCpuCfsPeriod(cgroup, period);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth period tunable"));
+    if (virCgroupGetCpuCfsPeriod(cgroup, period) < 0)
         return -1;
-    }
 
-    rc = virCgroupGetCpuCfsQuota(cgroup, quota);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth tunable"));
+    if (virCgroupGetCpuCfsQuota(cgroup, quota) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -8985,12 +8938,8 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    rc = virCgroupGetCpuShares(priv->cgroup, &shares);
-    if (rc != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu shares tunable"));
+    if (virCgroupGetCpuShares(priv->cgroup, &shares) < 0)
         goto cleanup;
-    }
 
     if (*nparams > 1 && cpu_bw_status) {
         rc = qemuGetVcpusBWLive(vm, &period, &quota);

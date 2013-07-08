@@ -54,25 +54,23 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
+    int ret;
 
     VIR_DEBUG("Process path %s for disk", path);
-    rc = virCgroupAllowDevicePath(priv->cgroup, path,
-                                  (disk->readonly ? VIR_CGROUP_DEVICE_READ
-                                   : VIR_CGROUP_DEVICE_RW));
+    ret = virCgroupAllowDevicePath(priv->cgroup, path,
+                                   (disk->readonly ? VIR_CGROUP_DEVICE_READ
+                                    : VIR_CGROUP_DEVICE_RW));
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             disk->readonly ? "r" : "rw", rc);
-    if (rc < 0) {
-        if (rc == -EACCES) { /* Get this for root squash NFS */
-            VIR_DEBUG("Ignoring EACCES for %s", path);
-        } else {
-            virReportSystemError(-rc,
-                                 _("Unable to allow access for disk path %s"),
-                                 path);
-            return -1;
-        }
+                             disk->readonly ? "r" : "rw", ret == 0);
+
+    /* Get this for root squash NFS */
+    if (ret < 0 &&
+        virLastErrorIsSystemErrno(EACCES)) {
+        VIR_DEBUG("Ignoring EACCES for %s", path);
+        virResetLastError();
+        ret = 0;
     }
-    return 0;
+    return ret;
 }
 
 
@@ -98,23 +96,21 @@ qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
+    int ret;
 
     VIR_DEBUG("Process path %s for disk", path);
-    rc = virCgroupDenyDevicePath(priv->cgroup, path,
-                                 VIR_CGROUP_DEVICE_RWM);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rc);
-    if (rc < 0) {
-        if (rc == -EACCES) { /* Get this for root squash NFS */
-            VIR_DEBUG("Ignoring EACCES for %s", path);
-        } else {
-            virReportSystemError(-rc,
-                                 _("Unable to deny access for disk path %s"),
-                                 path);
-            return -1;
-        }
+    ret = virCgroupDenyDevicePath(priv->cgroup, path,
+                                  VIR_CGROUP_DEVICE_RWM);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", ret == 0);
+
+    /* Get this for root squash NFS */
+    if (ret < 0 &&
+        virLastErrorIsSystemErrno(EACCES)) {
+        VIR_DEBUG("Ignoring EACCES for %s", path);
+        virResetLastError();
+        ret = 0;
     }
-    return 0;
+    return ret;
 }
 
 
@@ -135,31 +131,25 @@ qemuTeardownDiskCgroup(virDomainObjPtr vm,
 }
 
 static int
-qemuSetupChrSourceCgroup(virDomainDefPtr def,
+qemuSetupChrSourceCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
                          virDomainChrSourceDefPtr dev,
                          void *opaque)
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
+    int ret;
 
     if (dev->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
     VIR_DEBUG("Process path '%s' for device", dev->data.file.path);
 
-    rc = virCgroupAllowDevicePath(priv->cgroup, dev->data.file.path,
-                                  VIR_CGROUP_DEVICE_RW);
+    ret = virCgroupAllowDevicePath(priv->cgroup, dev->data.file.path,
+                                   VIR_CGROUP_DEVICE_RW);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
-                             dev->data.file.path, "rw", rc);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow device %s for %s"),
-                             dev->data.file.path, def->name);
-        return -1;
-    }
+                             dev->data.file.path, "rw", ret == 0);
 
-    return 0;
+    return ret;
 }
 
 static int
@@ -176,18 +166,18 @@ qemuSetupTPMCgroup(virDomainDefPtr def,
                    virDomainTPMDefPtr dev,
                    void *opaque)
 {
-    int rc = 0;
+    int ret = 0;
 
     switch (dev->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        rc = qemuSetupChrSourceCgroup(def, &dev->data.passthrough.source,
-                                      opaque);
+        ret = qemuSetupChrSourceCgroup(def, &dev->data.passthrough.source,
+                                       opaque);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    return rc;
+    return ret;
 }
 
 
@@ -198,20 +188,14 @@ qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
+    int ret;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
-    rc = virCgroupAllowDevicePath(priv->cgroup, path,
-                                  VIR_CGROUP_DEVICE_RW);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rc);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow device %s"),
-                             path);
-        return -1;
-    }
+    ret = virCgroupAllowDevicePath(priv->cgroup, path,
+                                   VIR_CGROUP_DEVICE_RW);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", ret == 0);
 
-    return 0;
+    return ret;
 }
 
 static int
@@ -221,25 +205,19 @@ qemuSetupHostScsiDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
+    int ret;
 
     VIR_DEBUG("Process path '%s' for SCSI device", path);
 
-    rc = virCgroupAllowDevicePath(priv->cgroup, path,
-                                  virSCSIDeviceGetReadonly(dev) ?
-                                  VIR_CGROUP_DEVICE_READ :
-                                  VIR_CGROUP_DEVICE_RW);
+    ret = virCgroupAllowDevicePath(priv->cgroup, path,
+                                   virSCSIDeviceGetReadonly(dev) ?
+                                   VIR_CGROUP_DEVICE_READ :
+                                   VIR_CGROUP_DEVICE_RW);
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             virSCSIDeviceGetReadonly(dev) ? "r" : "rw", rc);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow device %s"),
-                             path);
-        return -1;
-    }
+                             virSCSIDeviceGetReadonly(dev) ? "r" : "rw", ret == 0);
 
-    return 0;
+    return ret;
 }
 
 int
@@ -267,7 +245,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (dev->source.subsys.u.pci.backend
                 == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                int rc;
+                int rv;
 
                 pci = virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
                                       dev->source.subsys.u.pci.addr.bus,
@@ -280,17 +258,12 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                     goto cleanup;
 
                 VIR_DEBUG("Cgroup allow %s for PCI device assignment", path);
-                rc = virCgroupAllowDevicePath(priv->cgroup, path,
+                rv = virCgroupAllowDevicePath(priv->cgroup, path,
                                               VIR_CGROUP_DEVICE_RW);
                 virDomainAuditCgroupPath(vm, priv->cgroup,
-                                         "allow", path, "rw", rc);
-                if (rc < 0) {
-                    virReportSystemError(-rc,
-                                         _("Unable to allow access "
-                                           "for device path %s"),
-                                         path);
+                                         "allow", path, "rw", rv == 0);
+                if (rv < 0)
                     goto cleanup;
-                }
             }
             break;
 
@@ -366,7 +339,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (dev->source.subsys.u.pci.backend
                 == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                int rc;
+                int rv;
 
                 pci = virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
                                       dev->source.subsys.u.pci.addr.bus,
@@ -379,17 +352,12 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                     goto cleanup;
 
                 VIR_DEBUG("Cgroup deny %s for PCI device assignment", path);
-                rc = virCgroupDenyDevicePath(priv->cgroup, path,
+                rv = virCgroupDenyDevicePath(priv->cgroup, path,
                                              VIR_CGROUP_DEVICE_RWM);
                 virDomainAuditCgroupPath(vm, priv->cgroup,
-                                         "deny", path, "rwm", rc);
-                if (rc < 0) {
-                    virReportSystemError(-rc,
-                                         _("Unable to deny access "
-                                           "for device path %s"),
-                                         path);
+                                         "deny", path, "rwm", rv == 0);
+                if (rv < 0)
                     goto cleanup;
-                }
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
@@ -411,7 +379,6 @@ static int
 qemuSetupBlkioCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc = -1;
     size_t i;
 
     if (!virCgroupHasController(priv->cgroup,
@@ -425,30 +392,18 @@ qemuSetupBlkioCgroup(virDomainObjPtr vm)
         }
     }
 
-    if (vm->def->blkio.weight != 0) {
-        rc = virCgroupSetBlkioWeight(priv->cgroup, vm->def->blkio.weight);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io weight for domain %s"),
-                                 vm->def->name);
-            return -1;
-        }
-    }
+    if (vm->def->blkio.weight != 0 &&
+        virCgroupSetBlkioWeight(priv->cgroup, vm->def->blkio.weight) < 0)
+        return -1;
 
     if (vm->def->blkio.ndevices) {
         for (i = 0; i < vm->def->blkio.ndevices; i++) {
             virBlkioDeviceWeightPtr dw = &vm->def->blkio.devices[i];
             if (!dw->weight)
                 continue;
-            rc = virCgroupSetBlkioDeviceWeight(priv->cgroup, dw->path,
-                                               dw->weight);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to set io device weight "
-                                       "for domain %s"),
-                                     vm->def->name);
+            if (virCgroupSetBlkioDeviceWeight(priv->cgroup, dw->path,
+                                              dw->weight) < 0)
                 return -1;
-            }
         }
     }
 
@@ -460,7 +415,6 @@ static int
 qemuSetupMemoryCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
 
     if (!virCgroupHasController(priv->cgroup,VIR_CGROUP_CONTROLLER_MEMORY)) {
         if (vm->def->mem.hard_limit != 0 ||
@@ -474,33 +428,17 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
         }
     }
 
-    rc = virCgroupSetMemoryHardLimit(priv->cgroup,
-                                     qemuDomainMemoryLimit(vm->def));
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to set memory hard limit for domain %s"),
-                             vm->def->name);
+    if (virCgroupSetMemoryHardLimit(priv->cgroup,
+                                    qemuDomainMemoryLimit(vm->def)) < 0)
         return -1;
-    }
-    if (vm->def->mem.soft_limit != 0) {
-        rc = virCgroupSetMemorySoftLimit(priv->cgroup, vm->def->mem.soft_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set memory soft limit for domain %s"),
-                                 vm->def->name);
-            return -1;
-        }
-    }
 
-    if (vm->def->mem.swap_hard_limit != 0) {
-        rc = virCgroupSetMemSwapHardLimit(priv->cgroup, vm->def->mem.swap_hard_limit);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set swap hard limit for domain %s"),
-                                 vm->def->name);
-            return -1;
-        }
-    }
+    if (vm->def->mem.soft_limit != 0 &&
+        virCgroupSetMemorySoftLimit(priv->cgroup, vm->def->mem.soft_limit) < 0)
+        return -1;
+
+    if (vm->def->mem.swap_hard_limit != 0 &&
+        virCgroupSetMemSwapHardLimit(priv->cgroup, vm->def->mem.swap_hard_limit) < 0)
+        return -1;
 
     return 0;
 }
@@ -513,23 +451,22 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = NULL;
     const char *const *deviceACL = NULL;
-    int rc = -1;
+    int rv = -1;
     int ret = -1;
     size_t i;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    rc = virCgroupDenyAllDevices(priv->cgroup);
-    virDomainAuditCgroup(vm, priv->cgroup, "deny", "all", rc == 0);
-    if (rc != 0) {
-        if (rc == -EPERM) {
+    rv = virCgroupDenyAllDevices(priv->cgroup);
+    virDomainAuditCgroup(vm, priv->cgroup, "deny", "all", rv == 0);
+    if (rv < 0) {
+        if (virLastErrorIsSystemErrno(EPERM)) {
+            virResetLastError();
             VIR_WARN("Group devices ACL is not accessible, disabling whitelisting");
             return 0;
         }
 
-        virReportSystemError(-rc,
-                             _("Unable to deny all devices for %s"), vm->def->name);
         goto cleanup;
     }
 
@@ -538,15 +475,12 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_PTY_MAJOR,
+    rv = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_PTY_MAJOR,
                                    VIR_CGROUP_DEVICE_RW);
     virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_PTY_MAJOR,
-                              "pty", "rw", rc == 0);
-    if (rc != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to allow /dev/pts/ devices"));
+                              "pty", "rw", rv == 0);
+    if (rv < 0)
         goto cleanup;
-    }
 
     cfg = virQEMUDriverGetConfig(driver);
     deviceACL = cfg->cgroupDeviceACL ?
@@ -558,15 +492,12 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
          ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
            cfg->vncAllowHostAudio) ||
            (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
-        rc = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_SND_MAJOR,
+        rv = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_SND_MAJOR,
                                        VIR_CGROUP_DEVICE_RW);
         virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_SND_MAJOR,
-                                  "sound", "rw", rc == 0);
-        if (rc != 0) {
-            virReportSystemError(-rc, "%s",
-                                     _("unable to allow /dev/snd/ devices"));
+                                  "sound", "rw", rv == 0);
+        if (rv < 0)
             goto cleanup;
-        }
     }
 
     for (i = 0; deviceACL[i] != NULL; i++) {
@@ -576,16 +507,12 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
             continue;
         }
 
-        rc = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
+        rv = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
                                       VIR_CGROUP_DEVICE_RW);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rc);
-        if (rc < 0 &&
-            rc != -ENOENT) {
-            virReportSystemError(-rc,
-                                 _("unable to allow device %s"),
-                                 deviceACL[i]);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rv == 0);
+        if (rv < 0 &&
+            !virLastErrorIsSystemErrno(ENOENT))
             goto cleanup;
-        }
     }
 
     if (virDomainChrDefForeach(vm->def,
@@ -620,7 +547,6 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *mem_mask = NULL;
     char *cpu_mask = NULL;
-    int rc;
     int ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
@@ -643,14 +569,8 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        rc = virCgroupSetCpusetMems(priv->cgroup, mem_mask);
-
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set cpuset.mems for domain %s"),
-                                 vm->def->name);
+        if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
             goto cleanup;
-        }
     }
 
     if (vm->def->cpumask ||
@@ -672,12 +592,8 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        if ((rc = virCgroupSetCpusetCpus(priv->cgroup, cpu_mask)) != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set cpuset.cpus for domain %s"),
-                                 vm->def->name);
+        if (virCgroupSetCpusetCpus(priv->cgroup, cpu_mask) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -692,7 +608,6 @@ static int
 qemuSetupCpuCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
        if (vm->def->cputune.shares) {
@@ -704,15 +619,9 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
        }
     }
 
-    if (vm->def->cputune.shares) {
-        rc = virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to set io cpu shares for domain %s"),
-                                 vm->def->name);
-            return -1;
-        }
-    }
+    if (vm->def->cputune.shares &&
+        virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
+        return -1;
 
     return 0;
 }
@@ -723,7 +632,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
                virDomainObjPtr vm,
                bool startup)
 {
-    int rc = -1;
+    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr parent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -795,11 +704,11 @@ qemuInitCgroup(virQEMUDriverPtr driver,
     }
 
 done:
-    rc = 0;
+    ret = 0;
 cleanup:
     virCgroupFree(&parent);
     virObjectUnref(cfg);
-    return rc;
+    return ret;
 }
 
 
@@ -847,7 +756,6 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                       unsigned long long period,
                       long long quota)
 {
-    int rc;
     unsigned long long old_period;
 
     if (period == 0 && quota == 0)
@@ -855,38 +763,27 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
 
     if (period) {
         /* get old period, and we can rollback if set quota failed */
-        rc = virCgroupGetCpuCfsPeriod(cgroup, &old_period);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to get cpu bandwidth period"));
+        if (virCgroupGetCpuCfsPeriod(cgroup, &old_period) < 0)
             return -1;
-        }
 
-        rc = virCgroupSetCpuCfsPeriod(cgroup, period);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to set cpu bandwidth period"));
+        if (virCgroupSetCpuCfsPeriod(cgroup, period) < 0)
             return -1;
-        }
     }
 
-    if (quota) {
-        rc = virCgroupSetCpuCfsQuota(cgroup, quota);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 "%s", _("Unable to set cpu bandwidth quota"));
-            goto cleanup;
-        }
-    }
+    if (quota &&
+        virCgroupSetCpuCfsQuota(cgroup, quota) < 0)
+        goto error;
 
     return 0;
 
-cleanup:
+error:
     if (period) {
-        rc = virCgroupSetCpuCfsPeriod(cgroup, old_period);
-        if (rc < 0)
-            virReportSystemError(-rc, "%s",
-                                 _("Unable to rollback cpu bandwidth period"));
+        virErrorPtr saved = virSaveLastError();
+        ignore_value(virCgroupSetCpuCfsPeriod(cgroup, old_period));
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
     }
 
     return -1;
@@ -913,28 +810,23 @@ int
 qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
                            virBitmapPtr cpumask)
 {
-    int rc = 0;
+    int ret = -1;
     char *new_cpus = NULL;
 
     new_cpus = virBitmapFormat(cpumask);
     if (!new_cpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to convert cpu mask"));
-        rc = -1;
         goto cleanup;
     }
 
-    rc = virCgroupSetCpusetCpus(cgroup, new_cpus);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             "%s",
-                             _("Unable to set cpuset.cpus"));
+    if (virCgroupSetCpusetCpus(cgroup, new_cpus) < 0)
         goto cleanup;
-    }
 
+    ret = 0;
 cleanup:
     VIR_FREE(new_cpus);
-    return rc;
+    return ret;
 }
 
 int
@@ -943,7 +835,6 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     virCgroupPtr cgroup_vcpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    int rc;
     size_t i, j;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
@@ -975,13 +866,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             goto cleanup;
 
         /* move the thread for vcpu to sub dir */
-        rc = virCgroupAddTask(cgroup_vcpu, priv->vcpupids[i]);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 _("unable to add vcpu %zu task %d to cgroup"),
-                                 i, priv->vcpupids[i]);
+        if (virCgroupAddTask(cgroup_vcpu, priv->vcpupids[i]) < 0)
             goto cleanup;
-        }
 
         if (period || quota) {
             if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
@@ -1032,7 +918,6 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long period = vm->def->cputune.emulator_period;
     long long quota = vm->def->cputune.emulator_quota;
-    int rc = -1;
 
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -1047,14 +932,8 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     if (virCgroupNewEmulator(priv->cgroup, true, &cgroup_emulator) < 0)
         goto cleanup;
 
-    rc = virCgroupMoveTask(priv->cgroup, cgroup_emulator);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to move tasks from domain cgroup to "
-                               "emulator cgroup for %s"),
-                             vm->def->name);
+    if (virCgroupMoveTask(priv->cgroup, cgroup_emulator) < 0)
         goto cleanup;
-    }
 
     if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         if (!(cpumap = qemuPrepareCpumap(driver, nodemask)))
@@ -1067,20 +946,16 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     }
 
     if (cpumask) {
-        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            rc = qemuSetupCgroupEmulatorPin(cgroup_emulator, cpumask);
-            if (rc < 0)
-                goto cleanup;
-        }
-        cpumask = NULL; /* sanity */
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
+            qemuSetupCgroupEmulatorPin(cgroup_emulator, cpumask) < 0)
+            goto cleanup;
     }
 
     if (period || quota) {
-        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-            if ((rc = qemuSetupCgroupVcpuBW(cgroup_emulator, period,
-                                            quota)) < 0)
-                goto cleanup;
-        }
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+            qemuSetupCgroupVcpuBW(cgroup_emulator, period,
+                                  quota) < 0)
+            goto cleanup;
     }
 
     virCgroupFree(&cgroup_emulator);
@@ -1095,7 +970,7 @@ cleanup:
         virCgroupFree(&cgroup_emulator);
     }
 
-    return rc;
+    return -1;
 }
 
 int
@@ -1113,18 +988,12 @@ int
 qemuAddToCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    rc = virCgroupAddTask(priv->cgroup, getpid());
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("unable to add domain %s task %d to cgroup"),
-                             vm->def->name, getpid());
+    if (virCgroupAddTask(priv->cgroup, getpid()) < 0)
         return -1;
-    }
 
     return 0;
 }
