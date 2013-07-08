@@ -114,7 +114,7 @@ struct _virNetSSHSession {
 static void
 virNetSSHSessionAuthMethodsFree(virNetSSHSessionPtr sess)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < sess->nauths; i++) {
         VIR_FREE(sess->auths[i]->username);
@@ -205,7 +205,7 @@ virNetSSHKbIntCb(const char *name ATTRIBUTE_UNUSED,
 {
     virNetSSHSessionPtr priv = *opaque;
     virConnectCredentialPtr askcred = NULL;
-    int i;
+    size_t i;
     int credtype_echo = -1;
     int credtype_noecho = -1;
     char *tmp;
@@ -294,7 +294,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
     virBuffer buff = VIR_BUFFER_INITIALIZER;
     virConnectCredential askKey;
     struct libssh2_knownhost *knownHostEntry = NULL;
-    int i;
+    size_t i;
     char *hostnameStr = NULL;
 
     if (sess->hostKeyVerify == VIR_NET_SSH_HOSTKEY_VERIFY_IGNORE)
@@ -584,7 +584,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
                              virNetSSHAuthMethodPtr priv)
 {
     virConnectCredential retr_passphrase;
-    int i;
+    size_t i;
     char *errmsg;
     int ret;
 
@@ -780,7 +780,7 @@ virNetSSHAuthenticate(virNetSSHSessionPtr sess)
     bool auth_failed = false;
     char *auth_list;
     char *errmsg;
-    int i;
+    size_t i;
     int ret;
 
     if (!sess->nauths) {

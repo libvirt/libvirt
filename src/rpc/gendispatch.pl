@@ -1471,7 +1471,7 @@ elsif ($mode eq "client") {
         }
 
         if ($single_ret_as_list) {
-            print "    int i;\n";
+            print "    size_t i;\n";
         }
 
         if ($call->{streamflag} ne "none") {
@@ -1590,8 +1590,9 @@ elsif ($mode eq "client") {
             print "    for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; ++i) {\n";
             print "        if (VIR_STRDUP(${single_ret_list_name}[i],\n";
             print "                       ret.$single_ret_list_name.${single_ret_list_name}_val[i]) < 0) {\n";
-            print "            for (--i; i >= 0; --i)\n";
-            print "                VIR_FREE(${single_ret_list_name}[i]);\n";
+            print "            size_t j;\n";
+            print "            for (j = 0; j < i; j++)\n";
+            print "                VIR_FREE(${single_ret_list_name}[j]);\n";
             print "\n";
             print "            goto cleanup;\n";
             print "        }\n";

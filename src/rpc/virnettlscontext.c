@@ -287,7 +287,7 @@ static int virNetTLSContextCheckCertKeyPurpose(gnutls_x509_crt_t cert,
                                                bool isServer)
 {
     int status;
-    int i;
+    size_t i;
     unsigned int purposeCritical;
     unsigned int critical;
     char *buffer = NULL;
@@ -300,7 +300,7 @@ static int virNetTLSContextCheckCertKeyPurpose(gnutls_x509_crt_t cert,
         status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, NULL);
 
         if (status == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
-            VIR_DEBUG("No key purpose data available at slot %d", i);
+            VIR_DEBUG("No key purpose data available at slot %zu", i);
 
             /* If there is no data at all, then we must allow client/server to pass */
             if (i == 0)
@@ -950,7 +950,8 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
     int ret;
     unsigned int status;
     const gnutls_datum_t *certs;
-    unsigned int nCerts, i;
+    unsigned int nCerts;
+    size_t i;
     char dname[256];
     char *dnameptr = dname;
     size_t dnamesize = sizeof(dname);

@@ -158,7 +158,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
-    int i;
+    size_t i;
 
     if (virNetServerServiceInitialize() < 0)
         return NULL;
@@ -218,7 +218,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
-    int i;
+    size_t i;
 
     if (virNetServerServiceInitialize() < 0)
         return NULL;
@@ -429,7 +429,7 @@ void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
 void virNetServerServiceDispose(void *obj)
 {
     virNetServerServicePtr svc = obj;
-    int i;
+    size_t i;
 
     for (i = 0; i < svc->nsocks; i++)
         virObjectUnref(svc->socks[i]);
@@ -443,7 +443,7 @@ void virNetServerServiceDispose(void *obj)
 void virNetServerServiceToggle(virNetServerServicePtr svc,
                                bool enabled)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < svc->nsocks; i++)
         virNetSocketUpdateIOCallback(svc->socks[i],
@@ -454,7 +454,7 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
 
 void virNetServerServiceClose(virNetServerServicePtr svc)
 {
-    int i;
+    size_t i;
 
     if (!svc)
         return;

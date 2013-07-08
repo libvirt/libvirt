@@ -592,7 +592,7 @@ bool virNetClientHasPassFD(virNetClientPtr client)
 void virNetClientDispose(void *obj)
 {
     virNetClientPtr client = obj;
-    int i;
+    size_t i;
 
     PROBE(RPC_CLIENT_DISPOSE,
           "client=%p", client);

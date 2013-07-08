@@ -223,7 +223,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     struct addrinfo *ai = NULL;
     struct addrinfo hints;
     int fd = -1;
-    int i;
+    size_t i;
     int addrInUse = false;
 
     *retsocks = NULL;

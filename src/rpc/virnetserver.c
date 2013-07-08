@@ -852,7 +852,7 @@ virNetServerSignalEvent(int watch,
                         void *opaque) {
     virNetServerPtr srv = opaque;
     siginfo_t siginfo;
-    int i;
+    size_t i;
 
     virObjectLock(srv);
 
@@ -1037,7 +1037,7 @@ static void virNetServerAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,
 void virNetServerUpdateServices(virNetServerPtr srv,
                                 bool enabled)
 {
-    int i;
+    size_t i;
 
     virObjectLock(srv);
     for (i = 0; i < srv->nservices; i++)
@@ -1051,7 +1051,7 @@ void virNetServerRun(virNetServerPtr srv)
 {
     int timerid = -1;
     bool timerActive = false;
-    int i;
+    size_t i;
 
     virObjectLock(srv);
 
@@ -1147,7 +1147,7 @@ void virNetServerQuit(virNetServerPtr srv)
 void virNetServerDispose(void *obj)
 {
     virNetServerPtr srv = obj;
-    int i;
+    size_t i;
 
     VIR_FORCE_CLOSE(srv->autoShutdownInhibitFd);
 
@@ -1186,7 +1186,7 @@ void virNetServerDispose(void *obj)
 
 void virNetServerClose(virNetServerPtr srv)
 {
-    int i;
+    size_t i;
 
     if (!srv)
         return;

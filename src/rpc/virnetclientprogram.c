@@ -195,7 +195,7 @@ cleanup:
 static virNetClientProgramEventPtr virNetClientProgramGetEvent(virNetClientProgramPtr prog,
                                                                int procedure)
 {
-    int i;
+    size_t i;
 
     for (i = 0; i < prog->nevents; i++) {
         if (prog->events[i].proc == procedure)
