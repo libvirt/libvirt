@@ -3781,6 +3781,70 @@ error:
     return -1;
 }
 
+/**
+ * virDomainSetMemoryStatsPeriod:
+ * @domain: a domain object or NULL
+ * @period: the period in seconds for stats collection
+ * @flags: bitwise-OR of virDomainMemoryModFlags
+ *
+ * Dynamically change the domain memory balloon driver statistics collection
+ * period. Use 0 to disable and a positive value to enable.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set. If VIR_DOMAIN_AFFECT_LIVE is set, the change affects
+ * a running domain and will fail if domain is not active.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified
+ * (that is, @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain
+ * modifies persistent setup, while an active domain is hypervisor-dependent
+ * on whether just live or both live and persistent state is changed.
+ *
+ * Not all hypervisors can support all flag combinations.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int
+virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "peroid=%d, flags=%x", period, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    /* This must be positive to set the balloon collection period */
+    virCheckNonNegativeArgGoto(period, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSetMemoryStatsPeriod) {
+        int ret;
+        ret = conn->driver->domainSetMemoryStatsPeriod(domain, period, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
 /* Helper function called to validate incoming client array on any
  * interface that sets typed parameters in the hypervisor.  */
 static int

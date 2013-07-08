@@ -1909,6 +1909,9 @@ int                     virDomainSetMemory      (virDomainPtr domain,
 int                     virDomainSetMemoryFlags (virDomainPtr domain,
                                                  unsigned long memory,
                                                  unsigned int flags);
+int                     virDomainSetMemoryStatsPeriod (virDomainPtr domain,
+                                                       int period,
+                                                       unsigned int flags);
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);

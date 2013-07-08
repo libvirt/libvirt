@@ -207,6 +207,11 @@ typedef int
                               unsigned int flags);
 
 typedef int
+(*virDrvDomainSetMemoryStatsPeriod)(virDomainPtr domain,
+                                    int period,
+                                    unsigned int flags);
+
+typedef int
 (*virDrvDomainSetMemoryParameters)(virDomainPtr domain,
                                    virTypedParameterPtr params,
                                    int nparams,
@@ -1158,6 +1163,7 @@ struct _virDriver {
     virDrvDomainSetMaxMemory domainSetMaxMemory;
     virDrvDomainSetMemory domainSetMemory;
     virDrvDomainSetMemoryFlags domainSetMemoryFlags;
+    virDrvDomainSetMemoryStatsPeriod domainSetMemoryStatsPeriod;
     virDrvDomainSetMemoryParameters domainSetMemoryParameters;
     virDrvDomainGetMemoryParameters domainGetMemoryParameters;
     virDrvDomainSetNumaParameters domainSetNumaParameters;

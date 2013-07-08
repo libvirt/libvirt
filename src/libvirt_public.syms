@@ -627,4 +627,9 @@ LIBVIRT_1.1.0 {
         virDomainMigrateToURI3;
 } LIBVIRT_1.0.6;
 
+LIBVIRT_1.1.1 {
+    global:
+        virDomainSetMemoryStatsPeriod;
+} LIBVIRT_1.1.0;
+
 # .... define new API here using predicted next version number ....
