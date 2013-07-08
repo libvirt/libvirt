@@ -76,7 +76,7 @@ static PyObject *
 getPyVirTypedParameter(const virTypedParameterPtr params, int nparams)
 {
     PyObject *key, *val, *info;
-    int i;
+    size_t i;
 
     if ((info = PyDict_New()) == NULL)
         return NULL;
@@ -159,7 +159,7 @@ setPyVirTypedParameter(PyObject *info,
 #endif
     virTypedParameterPtr temp = NULL, ret = NULL;
     Py_ssize_t size;
-    int i;
+    size_t i;
 
     if ((size = PyDict_Size(info)) < 0)
         return NULL;
@@ -287,7 +287,7 @@ virPyDictToTypedParams(PyObject *dict,
     Py_ssize_t pos = 0;
 #endif
     virTypedParameterPtr params = NULL;
-    int i;
+    size_t i;
     int n = 0;
     int max = 0;
     int ret = -1;
@@ -540,7 +540,8 @@ libvirt_virDomainGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     PyObject *error = NULL;
     int ncpus = -1, start_cpu = 0;
     int sumparams = 0, nparams = -1;
-    int i, i_retval;
+    size_t i;
+    int i_retval;
     unsigned int flags;
     bool totalflag;
     virTypedParameterPtr params = NULL, cpuparams;
@@ -704,7 +705,8 @@ static PyObject *
 libvirt_virDomainMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     virDomainPtr domain;
     PyObject *pyobj_domain;
-    unsigned int nr_stats, i;
+    unsigned int nr_stats;
+    size_t i;
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     PyObject *info;
 
@@ -1597,7 +1599,7 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     }
     for (i = 0; i < dominfo.nrVirtCpu; i++) {
         PyObject *info = PyTuple_New(cpunum);
-        int j;
+        size_t j;
         if (info == NULL)
             goto cleanup;
         for (j = 0; j < cpunum; j++) {
@@ -1641,7 +1643,8 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *pyobj_domain, *pycpumap;
     PyObject *ret = NULL;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu, tuple_size, cpunum;
+    int cpumaplen, vcpu, tuple_size, cpunum;
+    size_t i;
     int i_retval;
 
     if (!PyArg_ParseTuple(args, (char *)"OiO:virDomainPinVcpu",
@@ -1704,7 +1707,8 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *pyobj_domain, *pycpumap;
     PyObject *ret = NULL;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu, tuple_size, cpunum;
+    int cpumaplen, vcpu, tuple_size, cpunum;
+    size_t i;
     unsigned int flags;
     int i_retval;
 
@@ -1831,7 +1835,8 @@ libvirt_virDomainPinEmulator(PyObject *self ATTRIBUTE_UNUSED,
     virDomainPtr domain;
     PyObject *pyobj_domain, *pycpumap;
     unsigned char *cpumap = NULL;
-    int cpumaplen, i, tuple_size, cpunum;
+    int cpumaplen, tuple_size, cpunum;
+    size_t i;
     int i_retval;
     unsigned int flags;
 
@@ -2095,7 +2100,8 @@ static int virConnectCredCallbackWrapper(virConnectCredentialPtr cred,
     PyObject *pycbdata;
     PyObject *pycb;
     PyObject *pyret;
-    int ret = -1, i;
+    int ret = -1;
+    size_t i;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
@@ -2187,7 +2193,7 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 
     auth.ncredtype = PyList_Size(pycredtype);
     if (auth.ncredtype) {
-        int i;
+        size_t i;
         if (VIR_ALLOC_N_QUIET(auth.credtype, auth.ncredtype) < 0)
             return VIR_PY_NONE;
         for (i = 0; i < auth.ncredtype; i++) {
@@ -2300,7 +2306,8 @@ static PyObject *
 libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
                                 PyObject *args) {
     PyObject *py_retval;
-    int *ids = NULL, c_retval, i;
+    int *ids = NULL, c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -2349,7 +2356,7 @@ libvirt_virConnectListAllDomains(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virDomainPtr *doms = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllDomains",
@@ -2391,7 +2398,8 @@ libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
                                      PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -2436,7 +2444,8 @@ libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
 {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virDomainPtr dom;
     PyObject *pyobj_dom;
     PyObject *pyobj_snap;
@@ -2492,7 +2501,8 @@ libvirt_virDomainListAllSnapshots(PyObject *self ATTRIBUTE_UNUSED,
 {
     PyObject *py_retval = NULL;
     virDomainSnapshotPtr *snaps = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virDomainPtr dom;
     PyObject *pyobj_dom;
     unsigned int flags;
@@ -2537,7 +2547,8 @@ libvirt_virDomainSnapshotListChildrenNames(PyObject *self ATTRIBUTE_UNUSED,
 {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virDomainSnapshotPtr snap;
     PyObject *pyobj_snap;
     unsigned int flags;
@@ -2591,7 +2602,8 @@ libvirt_virDomainSnapshotListAllChildren(PyObject *self ATTRIBUTE_UNUSED,
 {
     PyObject *py_retval = NULL;
     virDomainSnapshotPtr *snaps = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virDomainSnapshotPtr parent;
     PyObject *pyobj_parent;
     unsigned int flags;
@@ -2870,7 +2882,8 @@ libvirt_virConnectListNetworks(PyObject *self ATTRIBUTE_UNUSED,
                                PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -2915,7 +2928,8 @@ libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
                                       PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -2964,7 +2978,7 @@ libvirt_virConnectListAllNetworks(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virNetworkPtr *nets = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllNetworks",
@@ -3128,7 +3142,8 @@ libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *arg
 {
     PyObject *py_retval;
     PyObject *pyobj_conn;
-    int startCell, maxCells, c_retval, i;
+    int startCell, maxCells, c_retval;
+    size_t i;
     virConnectPtr conn;
     unsigned long long *freeMems;
 
@@ -3168,7 +3183,8 @@ libvirt_virNodeGetCPUStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     PyObject *pyobj_conn;
     virConnectPtr conn;
     unsigned int flags;
-    int cpuNum, c_retval, i;
+    int cpuNum, c_retval;
+    size_t i;
     int nparams = 0;
     virNodeCPUStatsPtr stats = NULL;
 
@@ -3231,7 +3247,8 @@ libvirt_virNodeGetMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     PyObject *pyobj_conn;
     virConnectPtr conn;
     unsigned int flags;
-    int cellNum, c_retval, i;
+    int cellNum, c_retval;
+    size_t i;
     int nparams = 0;
     virNodeMemoryStatsPtr stats = NULL;
 
@@ -3290,7 +3307,8 @@ libvirt_virConnectListStoragePools(PyObject *self ATTRIBUTE_UNUSED,
                                    PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -3343,7 +3361,8 @@ libvirt_virConnectListDefinedStoragePools(PyObject *self ATTRIBUTE_UNUSED,
                                           PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -3400,7 +3419,7 @@ libvirt_virConnectListAllStoragePools(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virStoragePoolPtr *pools = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllStoragePools",
@@ -3442,7 +3461,8 @@ libvirt_virStoragePoolListVolumes(PyObject *self ATTRIBUTE_UNUSED,
                                   PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virStoragePoolPtr pool;
     PyObject *pyobj_pool;
 
@@ -3498,7 +3518,7 @@ libvirt_virStoragePoolListAllVolumes(PyObject *self ATTRIBUTE_UNUSED,
     virStoragePoolPtr pool;
     virStorageVolPtr *vols = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
     PyObject *pyobj_pool;
 
@@ -3701,7 +3721,8 @@ libvirt_virNodeListDevices(PyObject *self ATTRIBUTE_UNUSED,
                            PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
     char *cap;
@@ -3752,7 +3773,7 @@ libvirt_virConnectListAllNodeDevices(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virNodeDevicePtr *devices = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllNodeDevices",
@@ -3794,7 +3815,8 @@ libvirt_virNodeDeviceListCaps(PyObject *self ATTRIBUTE_UNUSED,
                               PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virNodeDevicePtr dev;
     PyObject *pyobj_dev;
 
@@ -3914,7 +3936,8 @@ libvirt_virConnectListSecrets(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *py_retval;
     char **uuids = NULL;
     virConnectPtr conn;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     PyObject *pyobj_conn;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virConnectListSecrets", &pyobj_conn))
@@ -3961,7 +3984,7 @@ libvirt_virConnectListAllSecrets(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virSecretPtr *secrets = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllSecrets",
@@ -4133,7 +4156,8 @@ libvirt_virConnectListNWFilters(PyObject *self ATTRIBUTE_UNUSED,
     PyObject *py_retval;
     char **uuids = NULL;
     virConnectPtr conn;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     PyObject *pyobj_conn;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virConnectListNWFilters", &pyobj_conn))
@@ -4180,7 +4204,7 @@ libvirt_virConnectListAllNWFilters(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virNWFilterPtr *filters = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllNWFilters",
@@ -4222,7 +4246,8 @@ libvirt_virConnectListInterfaces(PyObject *self ATTRIBUTE_UNUSED,
                                  PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -4275,7 +4300,8 @@ libvirt_virConnectListDefinedInterfaces(PyObject *self ATTRIBUTE_UNUSED,
                                         PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
-    int c_retval, i;
+    int c_retval;
+    size_t i;
     virConnectPtr conn;
     PyObject *pyobj_conn;
 
@@ -4334,7 +4360,7 @@ libvirt_virConnectListAllInterfaces(PyObject *self ATTRIBUTE_UNUSED,
     virConnectPtr conn;
     virInterfacePtr *ifaces = NULL;
     int c_retval = 0;
-    int i;
+    size_t i;
     unsigned int flags;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllInterfaces",
@@ -4389,7 +4415,7 @@ libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
     if (PyList_Check(list)) {
-        int i;
+        size_t i;
 
         ncpus = PyList_Size(list);
         if (VIR_ALLOC_N_QUIET(xmlcpus, ncpus) < 0)
@@ -4669,7 +4695,7 @@ libvirt_virDomainGetDiskErrors(PyObject *self ATTRIBUTE_UNUSED,
     virDomainDiskErrorPtr disks = NULL;
     unsigned int ndisks;
     int count;
-    int i;
+    size_t i;
 
     if (!PyArg_ParseTuple(args, (char *) "Oi:virDomainGetDiskErrors",
                           &pyobj_domain, &flags))
@@ -5773,7 +5799,7 @@ libvirt_virConnectDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSE
     PyObject *pyobj_remote;
     PyObject *pyobj_subject;
     int ret = -1;
-    int i;
+    size_t i;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
@@ -6561,7 +6587,7 @@ libvirt_virDomainSendKey(PyObject *self ATTRIBUTE_UNUSED,
     int holdtime;
     unsigned int flags;
     int ret;
-    int i;
+    size_t i;
     unsigned int keycodes[VIR_DOMAIN_SEND_KEY_MAX_KEYS];
     unsigned int nkeycodes;
 
@@ -6920,7 +6946,7 @@ libvirt_virNodeGetCPUMap(PyObject *self ATTRIBUTE_UNUSED,
     unsigned char *cpumap = NULL;
     unsigned int online = 0;
     unsigned int flags;
-    int i;
+    size_t i;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virNodeGetCPUMap",
                           &pyobj_conn, &flags))
