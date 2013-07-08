@@ -102,7 +102,7 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
                                                  bool withResources)
 {
     virLockManagerPtr lock;
-    int i;
+    size_t i;
     virLockManagerParam params[] = {
         { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UUID,
           .key = "uuid",
@@ -113,11 +113,11 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
         },
         { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
           .key = "id",
-          .value = { .i = dom->def->id },
+          .value = { .iv = dom->def->id },
         },
         { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
           .key = "pid",
-          .value = { .i = dom->pid },
+          .value = { .iv = dom->pid },
         },
         { .type = VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING,
           .key = "uri",

@@ -461,9 +461,9 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
                     return -1;
             } else if (STREQ(params[i].key, "id")) {
-                priv->id = params[i].value.i;
+                priv->id = params[i].value.iv;
             } else if (STREQ(params[i].key, "pid")) {
-                priv->pid = params[i].value.i;
+                priv->pid = params[i].value.iv;
             } else if (STREQ(params[i].key, "uri")) {
                 /* ignored */
             } else {
@@ -512,7 +512,7 @@ static char *virLockManagerLockDaemonDiskLeaseName(const char *path)
 {
     unsigned char buf[SHA256_DIGEST_SIZE];
     char *ret;
-    int i;
+    size_t i;
 
     if (!(sha256_buffer(path, strlen(path), buf))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

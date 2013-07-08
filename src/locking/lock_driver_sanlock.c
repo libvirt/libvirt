@@ -447,7 +447,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
 {
     virLockManagerParamPtr param;
     virLockManagerSanlockPrivatePtr priv;
-    int i;
+    size_t i;
 
     virCheckFlags(0, -1);
 
@@ -500,7 +500,7 @@ error:
 static void virLockManagerSanlockFree(virLockManagerPtr lock)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
-    int i;
+    size_t i;
 
     if (!priv)
         return;
@@ -520,7 +520,7 @@ static int virLockManagerSanlockDiskLeaseName(const char *path,
                                               size_t strbuflen)
 {
     unsigned char buf[MD5_DIGEST_SIZE];
-    int i;
+    size_t i;
 
     if (strbuflen < ((MD5_DIGEST_SIZE * 2) + 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -551,7 +551,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
     int ret = -1;
     struct sanlk_resource *res = NULL;
-    int i;
+    size_t i;
 
     if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
         goto cleanup;
@@ -893,7 +893,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     bool res_free = false;
     int sock = -1;
     int rv;
-    int i;
+    size_t i;
 
     virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_RESTRICT |
                   VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY, -1);

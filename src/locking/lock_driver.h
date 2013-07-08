@@ -80,7 +80,7 @@ struct _virLockManagerParam {
     int type;
     const char *key;
     union {
-        int i;
+        int iv;
         long long l;
         unsigned int ui;
         unsigned long long ul;
