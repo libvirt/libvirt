@@ -212,7 +212,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
     int count;
     int want = 0;
     int ret = -1;
-    int i;
+    size_t i;
     char **names = NULL;
 
     /* List all interfaces, in case we might support new filter flags
@@ -289,7 +289,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
     ret = want;
 
 cleanup:
-    if (names)
+    if (names && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(names[i]);
     VIR_FREE(names);
@@ -306,7 +306,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
     int count = 0;
     int want = 0;
     int ret = -1;
-    int i;
+    size_t i;
     char **allnames = NULL;
 
     count = ncf_num_of_interfaces(driver->netcf, status);
@@ -386,7 +386,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
     ret = want;
 
 cleanup:
-    if (allnames)
+    if (allnames && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(allnames[i]);
     VIR_FREE(allnames);
@@ -474,7 +474,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int count;
-    int i;
+    size_t i;
     struct netcf_if *iface = NULL;
     virInterfacePtr *tmp_iface_objs = NULL;
     virInterfacePtr iface_obj = NULL;
@@ -606,7 +606,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 cleanup:
     ncf_if_free(iface);
 
-    if (names)
+    if (names && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(names[i]);
     VIR_FREE(names);

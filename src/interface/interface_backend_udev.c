@@ -634,7 +634,7 @@ udevGetIfaceDefBond(struct udev *udev,
 {
     struct dirent **slave_list = NULL;
     int slave_count = 0;
-    int i;
+    size_t i;
     const char *tmp_str;
     int tmp_int;
 
@@ -842,7 +842,7 @@ udevGetIfaceDefBond(struct udev *udev,
     return 0;
 
 error:
-    for (i = 0; i < slave_count; i++) {
+    for (i = 0; slave_count != -1 && i < slave_count; i++) {
         VIR_FREE(slave_list[i]);
     }
     VIR_FREE(slave_list);
@@ -863,7 +863,7 @@ udevGetIfaceDefBridge(struct udev *udev,
     char *member_path;
     const char *tmp_str;
     int stp;
-    int i;
+    size_t i;
 
     /* Set our type to Bridge  */
     ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
@@ -949,7 +949,7 @@ udevGetIfaceDefBridge(struct udev *udev,
     return 0;
 
 error:
-    for (i = 0; i < member_count; i++) {
+    for (i = 0; member_count != -1 && i < member_count; i++) {
         VIR_FREE(member_list[i]);
     }
     VIR_FREE(member_list);
