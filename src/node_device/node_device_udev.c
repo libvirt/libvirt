@@ -317,7 +317,8 @@ static int udevGenerateDeviceName(struct udev_device *device,
                                   virNodeDeviceDefPtr def,
                                   const char *s)
 {
-    int ret = 0, i = 0;
+    int ret = 0;
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, "%s_%s",

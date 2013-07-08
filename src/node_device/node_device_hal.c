@@ -408,7 +408,8 @@ gather_capabilities(LibHalContext *ctx, const char *udi,
     char *bus_name = NULL;
     virNodeDevCapsDefPtr caps = NULL;
     char **hal_cap_names = NULL;
-    int rv, i;
+    int rv;
+    size_t i;
 
     if (STREQ(udi, "/org/freedesktop/Hal/devices/computer")) {
         rv = gather_capability(ctx, udi, "system", &caps);
@@ -632,7 +633,8 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 {
     LibHalContext *hal_ctx = NULL;
     char **udi = NULL;
-    int num_devs, i;
+    int num_devs;
+    size_t i;
     int ret = -1;
     DBusConnection *sysbus;
     DBusError err;
@@ -750,7 +752,8 @@ nodeStateReload(void)
 {
     DBusError err;
     char **udi = NULL;
-    int num_devs, i;
+    int num_devs;
+    size_t i;
     LibHalContext *hal_ctx;
 
     VIR_INFO("Reloading HAL device state");

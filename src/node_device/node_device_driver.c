@@ -129,7 +129,7 @@ nodeNumOfDevices(virConnectPtr conn,
 {
     virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ndevs = 0;
-    unsigned int i;
+    size_t i;
 
     if (virNodeNumOfDevicesEnsureACL(conn) < 0)
         return -1;
@@ -159,7 +159,7 @@ nodeListDevices(virConnectPtr conn,
 {
     virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ndevs = 0;
-    unsigned int i;
+    size_t i;
 
     if (virNodeListDevicesEnsureACL(conn) < 0)
         return -1;
@@ -247,7 +247,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                               const char *wwpn,
                               unsigned int flags)
 {
-    unsigned int i;
+    size_t i;
     virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     virNodeDeviceObjListPtr devs = &driver->devs;
     virNodeDevCapsDefPtr cap = NULL;

@@ -155,7 +155,7 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
     char *path;
     FILE *pathfp;
     char str[1024];
-    int i;
+    size_t i;
 
     if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings",
                     dir, cpu) < 0)
@@ -217,7 +217,7 @@ virNodeParseSocket(const char *dir, unsigned int cpu)
 static int
 CPU_COUNT(cpu_set_t *set)
 {
-    int i, count = 0;
+    size_t i, count = 0;
 
     for (i = 0; i < CPU_SETSIZE; i++)
         if (CPU_ISSET(i, set))
@@ -247,7 +247,7 @@ virNodeParseNode(const char *node,
     int sock;
     cpu_set_t *core_maps = NULL;
     int core;
-    int i;
+    size_t i;
     int siblings;
     unsigned int cpu;
     int online;
@@ -623,7 +623,7 @@ int linuxNodeGetCPUStats(FILE *procstat,
         char *buf = line;
 
         if (STRPREFIX(buf, cpu_header)) { /* aka logical CPU time */
-            int i;
+            size_t i;
 
             if (sscanf(buf,
                        "%*s %llu %llu %llu %llu %llu" // user ~ iowait
@@ -697,7 +697,7 @@ int linuxNodeGetMemoryStats(FILE *meminfo,
                             int *nparams)
 {
     int ret = -1;
-    int i = 0, j = 0, k = 0;
+    size_t i = 0, j = 0, k = 0;
     int found = 0;
     int nr_param;
     char line[1024];
@@ -1025,16 +1025,17 @@ nodeGetCPUCount(void)
      * will be consecutive.
      */
     char *cpupath = NULL;
-    int i = 0;
+    int ncpu;
 
     if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/present")) {
-        i = linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
+        ncpu = linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
     } else if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/cpu0")) {
+        ncpu = 0;
         do {
-            i++;
+            ncpu++;
             VIR_FREE(cpupath);
             if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
-                            SYSFS_SYSTEM_PATH, i) < 0)
+                            SYSFS_SYSTEM_PATH, ncpu) < 0)
                 return -1;
         } while (virFileExists(cpupath));
     } else {
@@ -1045,7 +1046,7 @@ nodeGetCPUCount(void)
     }
 
     VIR_FREE(cpupath);
-    return i;
+    return ncpu;
 #elif defined(__FreeBSD__)
     return freebsdNodeGetCPUCount();
 #else
@@ -1069,7 +1070,7 @@ nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
     if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/online")) {
         cpumap = linuxParseCPUmap(present, SYSFS_SYSTEM_PATH "/cpu/online");
     } else {
-        int i;
+        size_t i;
 
         cpumap = virBitmapNew(present);
         if (!cpumap)
@@ -1134,7 +1135,7 @@ nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
                                    int nparams)
 {
     char *path = NULL;
-    int i;
+    size_t i;
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -1169,7 +1170,7 @@ nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
     virCheckFlags(0, -1);
 
 #ifdef __linux__
-    int i;
+    size_t i;
     int rc;
 
     if (virTypedParamsValidate(params, nparams,
@@ -1270,7 +1271,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
     unsigned long long pages_unshared;
     unsigned long long pages_volatile;
     unsigned long long full_scans = 0;
-    int i;
+    size_t i;
     int ret;
 
     if ((*nparams) == 0) {
@@ -1607,7 +1608,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     memset(allonesmask, 0xff, mask_n_bytes);
 
     for (n = 0; n <= numa_max_node(); n++) {
-        int i;
+        size_t i;
         /* The first time this returns -1, ENOENT if node doesn't exist... */
         if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
             VIR_WARN("NUMA topology for cell %d of %d not available, ignoring",
