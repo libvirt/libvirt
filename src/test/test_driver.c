@@ -167,7 +167,7 @@ testBuildCapabilities(virConnectPtr conn) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
     const char *const guest_types[] = { "hvm", "xen" };
-    int i;
+    size_t i;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686, 0, 0)) == NULL)
         goto error;
@@ -329,7 +329,8 @@ static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *
 testDomainGenerateIfname(virDomainDefPtr domdef) {
     int maxif = 1024;
-    int ifctr, i;
+    int ifctr;
+    size_t i;
 
     for (ifctr = 0; ifctr < maxif; ++ifctr) {
         char *ifname;
@@ -359,7 +360,7 @@ testDomainGenerateIfname(virDomainDefPtr domdef) {
 static int
 testDomainGenerateIfnames(virDomainDefPtr domdef)
 {
-    int i = 0;
+    size_t i = 0;
 
     for (i = 0; i < domdef->nnets; i++) {
         char *ifname;
@@ -387,7 +388,7 @@ testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
     testDomainObjPrivatePtr privdata = dom->privateData;
     virVcpuInfoPtr info = &privdata->vcpu_infos[vcpu];
     unsigned char *cpumap = VIR_GET_CPUMAP(privdata->cpumaps, maplen, vcpu);
-    int j;
+    size_t j;
     bool cpu;
 
     memset(info, 0, sizeof(virVcpuInfo));
@@ -436,7 +437,8 @@ testDomainUpdateVCPUs(virConnectPtr conn,
 {
     testConnPtr privconn = conn->privateData;
     testDomainObjPrivatePtr privdata = dom->privateData;
-    int i, ret = -1;
+    size_t i;
+    int ret = -1;
     int cpumaplen, maxcpu;
 
     maxcpu  = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
@@ -693,7 +695,8 @@ static int testOpenVolumesForPool(xmlDocPtr xml,
                                   virStoragePoolObjPtr pool,
                                   int poolidx) {
     char *vol_xpath;
-    int i, ret, func_ret = -1;
+    size_t i;
+    int ret, func_ret = -1;
     xmlNodePtr *vols = NULL;
     virStorageVolDefPtr def = NULL;
 
@@ -760,7 +763,8 @@ error:
 
 static int testOpenFromFile(virConnectPtr conn,
                             const char *file) {
-    int i, ret;
+    size_t i;
+    int ret;
     long l;
     char *str;
     xmlDocPtr xml = NULL;
@@ -2281,7 +2285,8 @@ static int testDomainGetVcpus(virDomainPtr domain,
     testConnPtr privconn = domain->conn->privateData;
     testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
-    int i, v, maxcpu, hostcpus;
+    size_t i;
+    int v, maxcpu, hostcpus;
     int ret = -1;
     struct timeval tv;
     unsigned long long statbase;
@@ -2369,7 +2374,8 @@ static int testDomainPinVcpu(virDomainPtr domain,
     testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
     unsigned char *privcpumap;
-    int i, maxcpu, hostcpus, privmaplen;
+    size_t i;
+    int maxcpu, hostcpus, privmaplen;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -2526,7 +2532,8 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       unsigned long long *freemems,
                                       int startCell, int maxCells) {
     testConnPtr privconn = conn->privateData;
-    int i, j;
+    int cell;
+    size_t i;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -2536,12 +2543,12 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
         goto cleanup;
     }
 
-    for (i = startCell, j = 0;
-         (i < privconn->numCells && j < maxCells);
-         ++i, ++j) {
-        freemems[j] = privconn->cells[i].mem;
+    for (cell = startCell, i = 0;
+         (cell < privconn->numCells && i < maxCells);
+         ++cell, ++i) {
+        freemems[i] = privconn->cells[cell].mem;
     }
-    ret = j;
+    ret = i;
 
 cleanup:
     testDriverUnlock(privconn);
@@ -2760,7 +2767,8 @@ testDomainSetSchedulerParametersFlags(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    int ret = -1, i;
+    int ret = -1;
+    size_t i;
 
     virCheckFlags(0, -1);
     if (virTypedParamsValidate(params, nparams,
@@ -2857,7 +2865,8 @@ static int testDomainInterfaceStats(virDomainPtr domain,
     virDomainObjPtr privdom;
     struct timeval tv;
     unsigned long long statbase;
-    int i, found = 0, ret = -1;
+    size_t i;
+    int found = 0, ret = -1;
 
     testDriverLock(privconn);
     privdom = virDomainObjListFindByName(privconn->domains,
@@ -2977,7 +2986,8 @@ cleanup:
 
 static int testConnectNumOfNetworks(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
-    int numActive = 0, i;
+    int numActive = 0;
+    size_t i;
 
     testDriverLock(privconn);
     for (i = 0; i < privconn->networks.count; i++) {
@@ -2993,7 +3003,8 @@ static int testConnectNumOfNetworks(virConnectPtr conn) {
 
 static int testConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -3019,7 +3030,8 @@ error:
 
 static int testConnectNumOfDefinedNetworks(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
-    int numInactive = 0, i;
+    int numInactive = 0;
+    size_t i;
 
     testDriverLock(privconn);
     for (i = 0; i < privconn->networks.count; i++) {
@@ -3035,7 +3047,8 @@ static int testConnectNumOfDefinedNetworks(virConnectPtr conn) {
 
 static int testConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -3445,7 +3458,8 @@ static int testInterfaceClose(virConnectPtr conn)
 static int testConnectNumOfInterfaces(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-    int i, count = 0;
+    size_t i;
+    int count = 0;
 
     testDriverLock(privconn);
     for (i = 0; (i < privconn->ifaces.count); i++) {
@@ -3462,7 +3476,8 @@ static int testConnectNumOfInterfaces(virConnectPtr conn)
 static int testConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -3490,7 +3505,8 @@ error:
 static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-    int i, count = 0;
+    size_t i;
+    int count = 0;
 
     testDriverLock(privconn);
     for (i = 0; i < privconn->ifaces.count; i++) {
@@ -3507,7 +3523,8 @@ static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -3933,7 +3950,8 @@ testStoragePoolLookupByVolume(virStorageVolPtr vol) {
 static int
 testConnectNumOfStoragePools(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
-    int numActive = 0, i;
+    int numActive = 0;
+    size_t i;
 
     testDriverLock(privconn);
     for (i = 0; i < privconn->pools.count; i++)
@@ -3949,7 +3967,8 @@ testConnectListStoragePools(virConnectPtr conn,
                             char **const names,
                             int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -3976,7 +3995,8 @@ error:
 static int
 testConnectNumOfDefinedStoragePools(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
-    int numInactive = 0, i;
+    int numInactive = 0;
+    size_t i;
 
     testDriverLock(privconn);
     for (i = 0; i < privconn->pools.count; i++) {
@@ -3995,7 +4015,8 @@ testConnectListDefinedStoragePools(virConnectPtr conn,
                                    char **const names,
                                    int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0, i;
+    int n = 0;
+    size_t i;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*nnames);
@@ -4589,7 +4610,8 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
                            int maxnames) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
-    int i = 0, n = 0;
+    size_t i = 0;
+    int n = 0;
 
     memset(names, 0, maxnames * sizeof(*names));
 
@@ -4634,7 +4656,7 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
                               unsigned int flags) {
     testConnPtr privconn = obj->conn->privateData;
     virStoragePoolObjPtr pool;
-    int i;
+    size_t i;
     virStorageVolPtr *tmp_vols = NULL;
     virStorageVolPtr vol = NULL;
     int nvols = 0;
@@ -4743,7 +4765,7 @@ static virStorageVolPtr
 testStorageVolLookupByKey(virConnectPtr conn,
                           const char *key) {
     testConnPtr privconn = conn->privateData;
-    unsigned int i;
+    size_t i;
     virStorageVolPtr ret = NULL;
 
     testDriverLock(privconn);
@@ -4778,7 +4800,7 @@ static virStorageVolPtr
 testStorageVolLookupByPath(virConnectPtr conn,
                            const char *path) {
     testConnPtr privconn = conn->privateData;
-    unsigned int i;
+    size_t i;
     virStorageVolPtr ret = NULL;
 
     testDriverLock(privconn);
@@ -4981,7 +5003,7 @@ testStorageVolDelete(virStorageVolPtr vol,
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
-    int i;
+    size_t i;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -5213,7 +5235,7 @@ testNodeNumOfDevices(virConnectPtr conn,
 {
     testConnPtr driver = conn->privateData;
     int ndevs = 0;
-    unsigned int i;
+    size_t i;
 
     virCheckFlags(0, -1);
 
@@ -5236,7 +5258,7 @@ testNodeListDevices(virConnectPtr conn,
 {
     testConnPtr driver = conn->privateData;
     int ndevs = 0;
-    unsigned int i;
+    size_t i;
 
     virCheckFlags(0, -1);
 
