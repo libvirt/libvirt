@@ -323,7 +323,8 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name;
     struct _virDomainMemoryStat stats[VIR_DOMAIN_MEMORY_STAT_NR];
-    unsigned int nr_stats, i;
+    unsigned int nr_stats;
+    size_t i;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -454,7 +455,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     int ndisks;
     xmlNodePtr *disks = NULL;
-    int i;
+    size_t i;
     bool details = false;
 
     if (vshCommandOptBool(cmd, "inactive"))
@@ -564,7 +565,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     int ninterfaces;
     xmlNodePtr *interfaces = NULL;
-    int i;
+    size_t i;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -880,7 +881,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     char *value = NULL;
     const char *field = NULL;
     int rc, nparams = 0;
-    int i = 0;
+    size_t i;
     bool ret = false;
     bool human = vshCommandOptBool(cmd, "human"); /* human readable output */
 
@@ -1088,7 +1089,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     virDomainDiskErrorPtr disks = NULL;
     unsigned int ndisks;
-    int i;
+    size_t i;
     int count;
     bool ret = false;
 
@@ -1380,7 +1381,7 @@ typedef struct vshDomainList *vshDomainListPtr;
 static void
 vshDomainListFree(vshDomainListPtr domlist)
 {
-    int i;
+    size_t i;
 
     if (domlist && domlist->domains) {
         for (i = 0; i < domlist->ndomains; i++) {
@@ -1396,7 +1397,7 @@ static vshDomainListPtr
 vshDomainListCollect(vshControl *ctl, unsigned int flags)
 {
     vshDomainListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     int *ids = NULL;
     int nids = 0;
@@ -1702,7 +1703,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     bool optTable = vshCommandOptBool(cmd, "table");
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     bool optName = vshCommandOptBool(cmd, "name");
-    int i;
+    size_t i;
     char *title;
     char uuid[VIR_UUID_STRING_BUFLEN];
     int state;

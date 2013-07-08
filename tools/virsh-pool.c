@@ -691,7 +691,7 @@ typedef struct vshStoragePoolList *vshStoragePoolListPtr;
 static void
 vshStoragePoolListFree(vshStoragePoolListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->pools) {
         for (i = 0; i < list->npools; i++) {
@@ -708,7 +708,7 @@ vshStoragePoolListCollect(vshControl *ctl,
                           unsigned int flags)
 {
     vshStoragePoolListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     char **names = NULL;
     virStoragePoolPtr pool;
@@ -943,7 +943,8 @@ static bool
 cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStoragePoolInfo info;
-    int i, ret;
+    int ret;
+    size_t i;
     bool functionReturn = false;
     size_t stringLength = 0, nameStrLength = 0;
     size_t autostartStrLength = 0, persistStrLength = 0;

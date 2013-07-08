@@ -233,7 +233,7 @@ vshParseSnapshotMemspec(vshControl *ctl, virBufferPtr buf, const char *str)
     const char *file = NULL;
     char **array = NULL;
     int narray;
-    int i;
+    size_t i;
 
     if (!str)
         return 0;
@@ -278,7 +278,7 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
     const char *file = NULL;
     char **array = NULL;
     int narray;
-    int i;
+    size_t i;
 
     narray = vshStringToArray(str, &array);
     if (narray <= 0)
@@ -1056,7 +1056,7 @@ typedef struct vshSnapshotList *vshSnapshotListPtr;
 static void
 vshSnapshotListFree(vshSnapshotListPtr snaplist)
 {
-    int i;
+    size_t i;
 
     if (!snaplist)
         return;
@@ -1095,7 +1095,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                        virDomainSnapshotPtr from,
                        unsigned int orig_flags, bool tree)
 {
-    int i;
+    size_t i;
     char **names = NULL;
     int count = -1;
     bool descendants = false;
@@ -1347,7 +1347,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             changed = remaining = false;
             for (i = 0; i < count; i++) {
                 bool found_parent = false;
-                int j;
+                size_t j;
 
                 if (!names[i] || !snaplist->snaps[i].parent)
                     continue;
@@ -1408,7 +1408,7 @@ success:
 
 cleanup:
     vshSnapshotListFree(snaplist);
-    if (names)
+    if (names && count > 0)
         for (i = 0; i < count; i++)
             VIR_FREE(names[i]);
     VIR_FREE(names);
@@ -1517,7 +1517,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    int i;
+    size_t i;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     char *doc = NULL;

@@ -240,7 +240,7 @@ typedef struct vshNWFilterList *vshNWFilterListPtr;
 static void
 vshNWFilterListFree(vshNWFilterListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->nfilters) {
         for (i = 0; i < list->nfilters; i++) {
@@ -257,7 +257,7 @@ vshNWFilterListCollect(vshControl *ctl,
                        unsigned int flags)
 {
     vshNWFilterListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     virNWFilterPtr filter;
     bool success = false;
@@ -331,7 +331,7 @@ finished:
     success = true;
 
 cleanup:
-    for (i = 0; i < nfilters; i++)
+    for (i = 0; nfilters != -1 && i < nfilters; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
 
@@ -363,7 +363,7 @@ static const vshCmdOptDef opts_nwfilter_list[] = {
 static bool
 cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     vshNWFilterListPtr list = NULL;
 

@@ -367,7 +367,7 @@ typedef struct vshSecretList *vshSecretListPtr;
 static void
 vshSecretListFree(vshSecretListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->nsecrets) {
         for (i = 0; i < list->nsecrets; i++) {
@@ -384,7 +384,7 @@ vshSecretListCollect(vshControl *ctl,
                      unsigned int flags)
 {
     vshSecretListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     virSecretPtr secret;
     bool success = false;
@@ -461,9 +461,11 @@ finished:
     success = true;
 
 cleanup:
-    for (i = 0; i < nsecrets; i++)
-        VIR_FREE(uuids[i]);
-    VIR_FREE(uuids);
+    if (nsecrets > 0) {
+        for (i = 0; i < nsecrets; i++)
+            VIR_FREE(uuids[i]);
+        VIR_FREE(uuids);
+    }
 
     if (!success) {
         vshSecretListFree(list);
@@ -509,7 +511,7 @@ static const vshCmdOptDef opts_secret_list[] = {
 static bool
 cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int i;
+    size_t i;
     vshSecretListPtr list = NULL;
     bool ret = false;
     unsigned int flags = 0;

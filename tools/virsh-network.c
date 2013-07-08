@@ -421,7 +421,7 @@ typedef struct vshNetworkList *vshNetworkListPtr;
 static void
 vshNetworkListFree(vshNetworkListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->nnets) {
         for (i = 0; i < list->nnets; i++) {
@@ -438,7 +438,7 @@ vshNetworkListCollect(vshControl *ctl,
                       unsigned int flags)
 {
     vshNetworkListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     char **names = NULL;
     virNetworkPtr net;
@@ -658,7 +658,7 @@ static bool
 cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     vshNetworkListPtr list = NULL;
-    int i;
+    size_t i;
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
     bool persistent = vshCommandOptBool(cmd, "persistent");

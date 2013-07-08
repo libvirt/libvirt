@@ -172,7 +172,7 @@ typedef struct vshInterfaceList *vshInterfaceListPtr;
 static void
 vshInterfaceListFree(vshInterfaceListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->nifaces) {
         for (i = 0; i < list->nifaces; i++) {
@@ -189,7 +189,7 @@ vshInterfaceListCollect(vshControl *ctl,
                         unsigned int flags)
 {
     vshInterfaceListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     char **activeNames = NULL;
     char **inactiveNames = NULL;
@@ -349,7 +349,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool all = vshCommandOptBool(cmd, "all");
     unsigned int flags = VIR_CONNECT_LIST_INTERFACES_ACTIVE;
     vshInterfaceListPtr list = NULL;
-    int i;
+    size_t i;
 
     if (inactive)
         flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE;

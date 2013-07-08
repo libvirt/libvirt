@@ -104,7 +104,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     unsigned long long *nodes_free = NULL;
     bool all = vshCommandOptBool(cmd, "all");
     bool cellno = vshCommandOptBool(cmd, "cellno");
-    int i;
+    size_t i;
     char *cap_xml = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -297,7 +297,7 @@ static const vshCmdOptDef opts_node_cpustats[] = {
 static bool
 cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 {
-    int i, j;
+    size_t i, j;
     bool flag_utilization = false;
     bool flag_percent = vshCommandOptBool(cmd, "percent");
     int cpuNum = VIR_NODE_CPU_STATS_ALL_CPUS;
@@ -429,7 +429,7 @@ static bool
 cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 {
     int nparams = 0;
-    unsigned int i = 0;
+    size_t i;
     int cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
     virNodeMemoryStatsPtr params = NULL;
     bool ret = false;
@@ -765,7 +765,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     unsigned int value;
     bool ret = false;
     int rc = -1;
-    int i = 0;
+    size_t i;
 
     if ((rc = vshCommandOptUInt(cmd, "shm-pages-to-scan", &value)) < 0) {
         vshError(ctl, "%s", _("invalid shm-pages-to-scan number"));

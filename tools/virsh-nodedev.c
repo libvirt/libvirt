@@ -208,7 +208,7 @@ typedef struct vshNodeDeviceList *vshNodeDeviceListPtr;
 static void
 vshNodeDeviceListFree(vshNodeDeviceListPtr list)
 {
-    int i;
+    size_t i;
 
     if (list && list->ndevices) {
         for (i = 0; i < list->ndevices; i++) {
@@ -227,7 +227,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
                          unsigned int flags)
 {
     vshNodeDeviceListPtr list = vshMalloc(ctl, sizeof(*list));
-    int i;
+    size_t i;
     int ret;
     virNodeDevicePtr device;
     bool success = false;
@@ -314,7 +314,7 @@ fallback:
         /* Check if the device's capability matches with provied
          * capabilities.
          */
-        int j, k;
+        size_t j, k;
         for (j = 0; j < ncaps; j++) {
             for (k = 0; k < ncapnames; k++) {
                 if (STREQ(caps[j], capnames[k])) {
@@ -393,7 +393,7 @@ static bool
 cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     const char *cap_str = NULL;
-    int i;
+    size_t i;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool ret = true;
     unsigned int flags = 0;
