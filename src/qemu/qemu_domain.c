@@ -2178,7 +2178,7 @@ qemuDomainMemoryLimit(virDomainDefPtr def)
          * limit' has been chosen:
          *     (1 + k) * (domain memory + total video memory) + (32MB for
          *     cache per each disk) + F
-         * where k = 0.5 and F = 200MB.  The cache for disks is important as
+         * where k = 0.5 and F = 400MB.  The cache for disks is important as
          * kernel cache on the host side counts into the RSS limit.
          * Moreover, VFIO requires some amount for IO space. Alex Williamson
          * suggested adding 1GiB for IO space just to be safe (some finer
@@ -2193,7 +2193,7 @@ qemuDomainMemoryLimit(virDomainDefPtr def)
             mem += def->videos[i]->vram;
         mem *= 1.5;
         mem += def->ndisks * 32768;
-        mem += 204800;
+        mem += 409600;
 
         for (i = 0; i < def->nhostdevs; i++) {
             virDomainHostdevDefPtr hostdev = def->hostdevs[i];
