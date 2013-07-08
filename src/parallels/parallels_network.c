@@ -283,7 +283,8 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
     virJSONValuePtr jobj, jobj2;
     virNetworkObjPtr net;
     int ret = -1;
-    int count, i;
+    int count;
+    size_t i;
 
     jobj = parallelsParseOutput("prlsrvctl", "net", "list", "-j", NULL);
 
@@ -350,7 +351,8 @@ static int parallelsNetworkClose(virConnectPtr conn)
 
 static int parallelsConnectNumOfNetworks(virConnectPtr conn)
 {
-    int nactive = 0, i;
+    int nactive = 0;
+    size_t i;
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
@@ -370,7 +372,8 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
                                         int nnames)
 {
     parallelsConnPtr privconn = conn->privateData;
-    int got = 0, i;
+    int got = 0;
+    size_t i;
 
     parallelsDriverLock(privconn);
     for (i = 0; i < privconn->networks.count && got < nnames; i++) {
@@ -397,7 +400,8 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
 
 static int parallelsConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
-    int ninactive = 0, i;
+    int ninactive = 0;
+    size_t i;
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
@@ -417,7 +421,8 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
                                                int nnames)
 {
     parallelsConnPtr privconn = conn->privateData;
-    int got = 0, i;
+    int got = 0;
+    size_t i;
 
     parallelsDriverLock(privconn);
     for (i = 0; i < privconn->networks.count && got < nnames; i++) {

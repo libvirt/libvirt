@@ -129,14 +129,14 @@ static char *parallelsMakePoolName(virConnectPtr conn, const char *path)
 {
     parallelsConnPtr privconn = conn->privateData;
     char *name;
-    unsigned int i;
+    size_t i;
 
     for (i = 0; i < UINT_MAX; i++) {
         bool found = false;
-        int j;
+        size_t j;
 
         if ((!i && VIR_STRDUP(name, path) < 0) ||
-            (i && virAsprintf(&name, "%s-%u", path, i) < 0))
+            (i && virAsprintf(&name, "%s-%zu", path, i) < 0))
             return NULL;
 
         for (j = 0; j < strlen(name); j++)
@@ -216,7 +216,7 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
     virStoragePoolObjListPtr pools = &privconn->pools;
     char *poolPath;
     virStoragePoolObjPtr pool = NULL;
-    int j;
+    size_t j;
 
     poolPath = mdir_name(pdom->home);
     if (!poolPath) {

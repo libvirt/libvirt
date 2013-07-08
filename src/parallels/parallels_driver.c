@@ -412,7 +412,7 @@ static inline unsigned char hex2int(char c)
 static int
 parallelsMacAddrParse(const char *str, virMacAddrPtr addr)
 {
-    int i;
+    size_t i;
 
     if (strlen(str) != 12)
         goto error;
@@ -837,7 +837,8 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
 static int
 parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
 {
-    int count, i;
+    int count;
+    size_t i;
     virJSONValuePtr jobj;
     virJSONValuePtr jobj2;
     virDomainObjPtr dom = NULL;
@@ -1504,7 +1505,7 @@ static int
 parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
                            virDomainChrDefPtr *newserials, int nnew)
 {
-    int i, j;
+    size_t i, j;
 
     if (nold != nnew)
         goto error;
@@ -1704,7 +1705,7 @@ parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
                           virDomainDiskDefPtr *olddisks, int nold,
                           virDomainDiskDefPtr *newdisks, int nnew)
 {
-    int i, j;
+    size_t i, j;
 
     for (i = 0; i < nold; i++) {
         virDomainDiskDefPtr newdisk = NULL;
@@ -1780,7 +1781,7 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
     bool is_changed = false;
     virCommandPtr cmd = NULL;
     char strmac[VIR_MAC_STRING_BUFLEN];
-    int i;
+    size_t i;
     int ret = -1;
 
     if (!oldnet) {
@@ -1908,7 +1909,7 @@ parallelsApplyIfacesParams(parallelsDomObjPtr pdom,
                             virDomainNetDefPtr *oldnets, int nold,
                             virDomainNetDefPtr *newnets, int nnew)
 {
-    int i, j;
+    size_t i, j;
     virDomainNetDefPtr newnet;
     virDomainNetDefPtr oldnet;
     bool found;
@@ -2200,7 +2201,7 @@ static int
 parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
 {
     parallelsConnPtr privconn = conn->privateData;
-    int i;
+    size_t i;
     virStorageVolDefPtr privvol = NULL;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolPtr vol = NULL;
