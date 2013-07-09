@@ -618,6 +618,8 @@ static int lxcContainerPrepareRoot(virDomainDefPtr def,
     char *dst;
     char *tmp;
 
+    VIR_DEBUG("Prepare root %d", root->type);
+
     if (root->type == VIR_DOMAIN_FS_TYPE_MOUNT)
         return 0;
 
@@ -1286,7 +1288,8 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         goto cleanup;
 
     if (format) {
-        VIR_DEBUG("Mount %s with detected format %s", src, format);
+        VIR_DEBUG("Mount '%s' on '%s' with detected format '%s'",
+                  src, fs->dst, format);
         if (mount(src, fs->dst, format, fsflags, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount device %s to %s as %s"),
@@ -1391,12 +1394,12 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected filesystem type %s"),
                        virDomainFSTypeToString(fs->type));
-        break;
+        return -1;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Cannot mount filesystem type %s"),
                        virDomainFSTypeToString(fs->type));
-        break;
+        return -1;
     }
     return 0;
 }
@@ -1570,8 +1573,9 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
         virDomainFSDefPtr fs = vmDef->fss[i];
         if (!fs->src)
             continue;
+        VIR_DEBUG("Resolving '%s'", fs->src);
         if (virFileResolveAllLinks(fs->src, &newroot) < 0) {
-            VIR_DEBUG("Fail to resolve link %s", fs->src);
+            VIR_DEBUG("Failed to resolve symlink at %s", fs->src);
             return -1;
         }
 
@@ -1580,6 +1584,7 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
         VIR_FREE(fs->src);
         fs->src = newroot;
     }
+    VIR_DEBUG("Resolved all filesystem symlinks");
 
     return 0;
 }
@@ -1708,6 +1713,7 @@ static int lxcContainerChild(void *data)
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up pivot");
     if (lxcContainerSetupPivotRoot(vmDef, root,
                                    argv->ttyPaths, argv->nttyPaths,
                                    argv->securityDriver) < 0)

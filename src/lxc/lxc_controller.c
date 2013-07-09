@@ -453,6 +453,8 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
     size_t i;
     int ret = -1;
 
+    VIR_DEBUG("Setting up loop devices for filesystems");
+
     for (i = 0; i < ctrl->def->nfss; i++) {
         virDomainFSDefPtr fs = ctrl->def->fss[i];
         int fd;
@@ -486,8 +488,11 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("fs driver %s is not supported"),
                            virDomainFSDriverTypeTypeToString(fs->fsdriver));
+            goto cleanup;
         }
     }
+
+    VIR_DEBUG("Setting up loop devices for disks");
 
     for (i = 0; i < ctrl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctrl->def->disks[i];
@@ -541,6 +546,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk driver %s is not supported"),
                            disk->driverName);
+            goto cleanup;
         }
     }
 
