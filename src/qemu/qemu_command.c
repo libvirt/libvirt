@@ -1180,8 +1180,9 @@ qemuDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return qemuDomainCCWAddressAssign(info, data, false);
 }
 
-int qemuDomainCCWAddressReleaseAddr(qemuDomainCCWAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev)
+static int
+qemuDomainCCWAddressReleaseAddr(qemuDomainCCWAddressSetPtr addrs,
+                                virDomainDeviceInfoPtr dev)
 {
     char *addr;
     int ret;
@@ -1820,8 +1821,9 @@ int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
     return 0;
 }
 
-int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
-                                    virDevicePCIAddressPtr addr)
+static int
+qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
+                                virDevicePCIAddressPtr addr)
 {
     if (!qemuPCIAddressValidate(addrs, addr))
         return -1;
@@ -1911,6 +1913,31 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
 
     addrs->lastaddr = addr;
     return 0;
+}
+
+
+void
+qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
+                               virDomainDeviceInfoPtr info,
+                               const char *devstr)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!devstr)
+        devstr = info->alias;
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+        STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
+        qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, info) < 0)
+        VIR_WARN("Unable to release CCW address on %s",
+                 NULLSTR(devstr));
+    else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+             qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                             &info->addr.pci) < 0)
+        VIR_WARN("Unable to release PCI address on %s",
+                 NULLSTR(devstr));
 }
 
 

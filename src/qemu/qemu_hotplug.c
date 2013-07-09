@@ -327,16 +327,8 @@ cleanup:
     return ret;
 
 error:
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) && releaseaddr) {
-        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                            &disk->info.addr.pci) < 0)
-            VIR_WARN("Unable to release PCI address on %s", disk->src);
-        else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-                 qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs,
-                                                 &disk->info) < 0)
-            VIR_WARN("Unable to release CCW address on %s", disk->src);
-    }
+    if (releaseaddr)
+        qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->src);
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
                                             vm->def, disk) < 0)
@@ -405,13 +397,8 @@ int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
     }
 
 cleanup:
-    if ((ret != 0) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
-        releaseaddr &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &controller->info.addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on controller");
+    if (ret != 0 && releaseaddr)
+        qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
 
     VIR_FREE(devstr);
     return ret;
@@ -930,19 +917,8 @@ cleanup:
     if (!ret) {
         vm->def->nets[vm->def->nnets++] = net;
     } else {
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-            net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            releaseaddr &&
-            qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                            &net->info.addr.pci) < 0)
-            VIR_WARN("Unable to release PCI address on NIC");
-        else if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
-                 virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
-                 net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-                 releaseaddr &&
-                 qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs,
-                                                 &net->info) < 0)
-            VIR_WARN("Unable to release CCW address on NIC");
+        if (releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
 
         if (iface_connected) {
             virDomainConfNWFilterTeardown(net);
@@ -1113,12 +1089,8 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     return 0;
 
 error:
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
-        releaseaddr &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &hostdev->info->addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on host device");
+    if (releaseaddr)
+        qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
 
     qemuDomainReAttachHostdevDevices(driver, vm->def->name, &hostdev, 1);
 
@@ -2341,16 +2313,7 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
 
     virDomainAuditDisk(vm, detach->src, NULL, "detach", true);
 
-    if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
-        qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, &detach->info) < 0) {
-        VIR_WARN("Unable to release CCW address on %s", dev->data.disk->src);
-    } else if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-               virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-               qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                               &detach->info.addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
+    qemuDomainReleaseDeviceAddress(vm, &detach->info, dev->data.disk->src);
 
     virDomainDiskRemove(vm->def, idx);
 
@@ -2565,12 +2528,8 @@ int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
 
     virDomainControllerRemove(vm->def, idx);
+    qemuDomainReleaseDeviceAddress(vm, &detach->info, NULL);
     virDomainControllerDefFree(detach);
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &detach->info.addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on controller");
 
     ret = 0;
 
@@ -2643,10 +2602,7 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
     virObjectUnlock(driver->activePciHostdevs);
     virObjectUnlock(driver->inactivePciHostdevs);
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &detach->info->addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on host device");
+    qemuDomainReleaseDeviceAddress(vm, detach->info, NULL);
 
 cleanup:
     virObjectUnref(cfg);
@@ -2969,14 +2925,7 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
 
     virDomainAuditNet(vm, detach, NULL, "detach", true);
 
-    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
-        if (qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, &detach->info) < 0)
-            VIR_WARN("Unable to release CCW address on NIC");
-    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &detach->info.addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on NIC");
+    qemuDomainReleaseDeviceAddress(vm, &detach->info, NULL);
 
     virDomainConfNWFilterTeardown(detach);
 

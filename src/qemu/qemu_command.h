@@ -221,6 +221,10 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
                                       virQEMUCapsPtr qemuCaps);
 
+void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
+                                    virDomainDeviceInfoPtr info,
+                                    const char *devstr);
+
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps,
                                  virDomainObjPtr obj);
@@ -237,16 +241,12 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev);
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr);
-int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
-                                    virDevicePCIAddressPtr addr);
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               qemuDomainPCIAddressSetPtr addrs);
 
-int qemuDomainCCWAddressReleaseAddr(qemuDomainCCWAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev);
 int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev, qemuDomainCCWAddressSetPtr addrs,
                                bool autoassign);
 void qemuDomainCCWAddressSetFree(qemuDomainCCWAddressSetPtr addrs);
