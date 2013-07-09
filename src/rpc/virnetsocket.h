@@ -34,6 +34,7 @@
 #  include "virnetsaslcontext.h"
 # endif
 # include "virjson.h"
+# include "viruri.h"
 
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;
@@ -84,13 +85,13 @@ int virNetSocketNewConnectSSH(const char *nodename,
 int virNetSocketNewConnectLibSSH2(const char *host,
                                   const char *port,
                                   const char *username,
-                                  const char *password,
                                   const char *privkey,
                                   const char *knownHosts,
                                   const char *knownHostsVerify,
                                   const char *authMethods,
                                   const char *command,
                                   virConnectAuthPtr auth,
+                                  virURIPtr uri,
                                   virNetSocketPtr *retsock);
 
 int virNetSocketNewConnectExternal(const char **cmdargv,

@@ -991,31 +991,34 @@ virNetSSHSessionAuthReset(virNetSSHSessionPtr sess)
 
 int
 virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
-                                    const char *username,
-                                    const char *password)
+                                    virURIPtr uri,
+                                    const char *username)
 {
     virNetSSHAuthMethodPtr auth;
     char *user = NULL;
-    char *pass = NULL;
 
-    if (!username || !password) {
-        virReportError(VIR_ERR_SSH, "%s",
-                       _("Username and password must be provided "
-                         "for password authentication"));
-        return -1;
+    if (uri) {
+        VIR_FREE(sess->authPath);
+
+        if (virAuthGetConfigFilePathURI(uri, &sess->authPath) < 0)
+            goto error;
+    }
+
+    if (!username) {
+        if (!(user = virAuthGetUsernamePath(sess->authPath, sess->cred,
+                                            "ssh", NULL, sess->hostname)))
+            goto error;
+    } else {
+        if (VIR_STRDUP(user, username) < 0)
+            goto error;
     }
 
     virObjectLock(sess);
-
-    if (VIR_STRDUP(user, username) < 0 ||
-        VIR_STRDUP(pass, password) < 0)
-        goto error;
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
 
     auth->username = user;
-    auth->password = pass;
     auth->method = VIR_NET_SSH_AUTH_PASSWORD;
 
     virObjectUnlock(sess);
@@ -1023,7 +1026,6 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
 
 error:
     VIR_FREE(user);
-    VIR_FREE(pass);
     virObjectUnlock(sess);
     return -1;
 }

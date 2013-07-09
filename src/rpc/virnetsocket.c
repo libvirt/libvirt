@@ -740,13 +740,13 @@ int
 virNetSocketNewConnectLibSSH2(const char *host,
                               const char *port,
                               const char *username,
-                              const char *password,
                               const char *privkey,
                               const char *knownHosts,
                               const char *knownHostsVerify,
                               const char *authMethods,
                               const char *command,
                               virConnectAuthPtr auth,
+                              virURIPtr uri,
                               virNetSocketPtr *retsock)
 {
     virNetSocketPtr sock = NULL;
@@ -808,8 +808,8 @@ virNetSocketNewConnectLibSSH2(const char *host,
             ret = virNetSSHSessionAuthAddKeyboardAuth(sess, username, -1);
         else if (STRCASEEQ(authMethod, "password"))
             ret = virNetSSHSessionAuthAddPasswordAuth(sess,
-                                                      username,
-                                                      password);
+                                                      uri,
+                                                      username);
         else if (STRCASEEQ(authMethod, "privkey"))
             ret = virNetSSHSessionAuthAddPrivKeyAuth(sess,
                                                      username,
@@ -854,13 +854,13 @@ int
 virNetSocketNewConnectLibSSH2(const char *host ATTRIBUTE_UNUSED,
                               const char *port ATTRIBUTE_UNUSED,
                               const char *username ATTRIBUTE_UNUSED,
-                              const char *password ATTRIBUTE_UNUSED,
                               const char *privkey ATTRIBUTE_UNUSED,
                               const char *knownHosts ATTRIBUTE_UNUSED,
                               const char *knownHostsVerify ATTRIBUTE_UNUSED,
                               const char *authMethods ATTRIBUTE_UNUSED,
                               const char *command ATTRIBUTE_UNUSED,
                               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                              virURIPtr uri ATTRIBUTE_UNUSED,
                               virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

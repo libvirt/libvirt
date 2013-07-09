@@ -659,7 +659,8 @@ doRemoteOpen(virConnectPtr conn,
                                               sshauth,
                                               netcat,
                                               sockname,
-                                              auth);
+                                              auth,
+                                              conn->uri);
         if (!priv->client)
             goto failed;
 

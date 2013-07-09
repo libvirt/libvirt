@@ -33,6 +33,7 @@
 # include "virnetclientprogram.h"
 # include "virnetclientstream.h"
 # include "virobject.h"
+# include "viruri.h"
 
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
@@ -61,7 +62,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *authMethods,
                                        const char *netcatPath,
                                        const char *socketPath,
-                                       virConnectAuthPtr authPtr);
+                                       virConnectAuthPtr authPtr,
+                                       virURIPtr uri);
 
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 

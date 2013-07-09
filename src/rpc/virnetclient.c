@@ -389,7 +389,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *authMethods,
                                        const char *netcatPath,
                                        const char *socketPath,
-                                       virConnectAuthPtr authPtr)
+                                       virConnectAuthPtr authPtr,
+                                       virURIPtr uri)
 {
     virNetSocketPtr sock = NULL;
     virNetClientPtr ret = NULL;
@@ -443,9 +444,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 
     if (!authMethods) {
         if (privkey)
-            authMethods = "agent,privkey,keyboard-interactive";
+            authMethods = "agent,privkey,password,keyboard-interactive";
         else
-            authMethods = "agent,keyboard-interactive";
+            authMethods = "agent,password,keyboard-interactive";
     }
 
     DEFAULT_VALUE(host, "localhost");
@@ -471,9 +472,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     if (!(command = virBufferContentAndReset(&buf)))
         goto no_memory;
 
-    if (virNetSocketNewConnectLibSSH2(host, port, username, NULL, privkey,
+    if (virNetSocketNewConnectLibSSH2(host, port, username, privkey,
                                       knownhosts, knownHostsVerify, authMethods,
-                                      command, authPtr, &sock) != 0)
+                                      command, authPtr, uri, &sock) != 0)
         goto cleanup;
 
     if (!(ret = virNetClientNew(sock, NULL)))

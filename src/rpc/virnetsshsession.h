@@ -23,6 +23,7 @@
 # define __VIR_NET_SSH_SESSION_H__
 
 # include "internal.h"
+# include "viruri.h"
 
 typedef struct _virNetSSHSession virNetSSHSession;
 typedef virNetSSHSession *virNetSSHSessionPtr;
@@ -50,8 +51,8 @@ int virNetSSHSessionAuthSetCallback(virNetSSHSessionPtr sess,
                                     virConnectAuthPtr auth);
 
 int virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
-                                        const char *username,
-                                        const char *password);
+                                        virURIPtr uri,
+                                        const char *username);
 
 int virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
                                      const char *username);
