@@ -4133,7 +4133,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("chainging of maximum vCPU count isn't supported "
+                           _("changing of maximum vCPU count isn't supported "
                              "via guest agent"));
             goto endjob;
         }
