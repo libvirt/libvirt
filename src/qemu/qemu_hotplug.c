@@ -2289,6 +2289,62 @@ qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 
+static void
+qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainNetDefPtr net)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virNetDevVPortProfilePtr vport;
+    size_t i;
+
+    VIR_DEBUG("Removing network interface %s from domain %p %s",
+              net->info.alias, vm, vm->def->name);
+
+    virDomainAuditNet(vm, net, NULL, "detach", true);
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (vm->def->nets[i] == net) {
+            virDomainNetRemove(vm->def, i);
+            break;
+        }
+    }
+
+    qemuDomainReleaseDeviceAddress(vm, &net->info, NULL);
+    virDomainConfNWFilterTeardown(net);
+
+    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
+                         net->ifname, &net->mac,
+                         virDomainNetGetActualDirectDev(net),
+                         virDomainNetGetActualDirectMode(net),
+                         virDomainNetGetActualVirtPortProfile(net),
+                         cfg->stateDir));
+        VIR_FREE(net->ifname);
+    }
+
+    if (cfg->macFilter && (net->ifname != NULL)) {
+        if ((errno = networkDisallowMacOnPort(driver,
+                                              net->ifname,
+                                              &net->mac))) {
+            virReportSystemError(errno,
+             _("failed to remove ebtables rule on '%s'"),
+                                 net->ifname);
+        }
+    }
+
+    vport = virDomainNetGetActualVirtPortProfile(net);
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+        ignore_value(virNetDevOpenvswitchRemovePort(
+                        virDomainNetGetActualBridgeName(net),
+                        net->ifname));
+
+    networkReleaseActualDevice(net);
+    virDomainNetDefFree(net);
+    virObjectUnref(cfg);
+}
+
+
 int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr detach)
@@ -2818,8 +2874,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     int vlan;
     char *hostnet_name = NULL;
     char mac[VIR_MAC_STRING_BUFLEN];
-    virNetDevVPortProfilePtr vport = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     detachidx = virDomainNetFindIdx(vm->def, dev->data.net);
     if (detachidx == -2) {
@@ -2841,6 +2895,11 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
         ret = qemuDomainDetachThisHostDevice(driver, vm,
                                              virDomainNetGetActualHostdev(detach),
                                              -1);
+        if (!ret) {
+            networkReleaseActualDevice(detach);
+            virDomainNetRemove(vm->def, detachidx);
+            virDomainNetDefFree(detach);
+        }
         goto cleanup;
     }
     if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
@@ -2908,46 +2967,10 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditNet(vm, detach, NULL, "detach", true);
-
-    qemuDomainReleaseDeviceAddress(vm, &detach->info, NULL);
-
-    virDomainConfNWFilterTeardown(detach);
-
-    if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
-                         detach->ifname, &detach->mac,
-                         virDomainNetGetActualDirectDev(detach),
-                         virDomainNetGetActualDirectMode(detach),
-                         virDomainNetGetActualVirtPortProfile(detach),
-                         cfg->stateDir));
-        VIR_FREE(detach->ifname);
-    }
-
-    if (cfg->macFilter && (detach->ifname != NULL)) {
-        if ((errno = networkDisallowMacOnPort(driver,
-                                              detach->ifname,
-                                              &detach->mac))) {
-            virReportSystemError(errno,
-             _("failed to remove ebtables rule on '%s'"),
-                                 detach->ifname);
-        }
-    }
-
-    vport = virDomainNetGetActualVirtPortProfile(detach);
-    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ignore_value(virNetDevOpenvswitchRemovePort(
-                        virDomainNetGetActualBridgeName(detach),
-                        detach->ifname));
+    qemuDomainRemoveNetDevice(driver, vm, detach);
     ret = 0;
 cleanup:
-    if (!ret) {
-        networkReleaseActualDevice(detach);
-        virDomainNetRemove(vm->def, detachidx);
-        virDomainNetDefFree(detach);
-    }
     VIR_FREE(hostnet_name);
-    virObjectUnref(cfg);
     return ret;
 }
 
