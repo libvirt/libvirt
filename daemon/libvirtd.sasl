@@ -27,5 +27,5 @@ mech_list: digest-md5
 
 # If using digest-md5 for username/passwds, then this is the file
 # containing the passwds. Use 'saslpasswd2 -a libvirt [username]'
-# to add entries, and 'sasldblistusers2 -a libvirt' to browse it
+# to add entries, and 'sasldblistusers2 -f [sasldb_path]' to browse it
 sasldb_path: /etc/libvirt/passwd.db
