@@ -462,6 +462,14 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         if (fs->type != VIR_DOMAIN_FS_TYPE_FILE)
             continue;
 
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) {
+            if (fs->format == VIR_STORAGE_FILE_RAW ||
+                fs->format == VIR_STORAGE_FILE_NONE)
+                fs->fsdriver = VIR_DOMAIN_FS_DRIVER_TYPE_LOOP;
+            else
+                fs->fsdriver = VIR_DOMAIN_FS_DRIVER_TYPE_NBD;
+        }
+
         if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_LOOP) {
             if (fs->format != VIR_STORAGE_FILE_RAW &&
                 fs->format != VIR_STORAGE_FILE_NONE) {
