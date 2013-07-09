@@ -2199,19 +2199,6 @@ cleanup:
 }
 
 
-static inline int qemuFindDisk(virDomainDefPtr def, const char *dst)
-{
-    size_t i;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (STREQ(def->disks[i]->dst, dst)) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                 virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                 virDomainDeviceInfoPtr info1,
@@ -2240,30 +2227,58 @@ static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
 }
 
 
-int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr dev)
+static void
+qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virDomainDiskDefPtr disk)
 {
-    int idx;
-    int ret = -1;
-    virDomainDiskDefPtr detach = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *drivestr = NULL;
+    virDomainDeviceDef dev;
+    size_t i;
 
-    idx = qemuFindDisk(vm->def, dev->data.disk->dst);
+    VIR_DEBUG("Removing disk %s from domain %p %s",
+              disk->info.alias, vm, vm->def->name);
 
-    if (idx < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("disk %s not found"), dev->data.disk->dst);
-        goto cleanup;
+    virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i] == disk) {
+            virDomainDiskRemove(vm->def, i);
+            break;
+        }
     }
 
-    detach = vm->def->disks[idx];
+    qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->src);
+
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm->def, disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", disk->src);
+
+    if (qemuTeardownDiskCgroup(vm, disk) < 0)
+        VIR_WARN("Failed to tear down cgroup for disk path %s", disk->src);
+
+    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+        VIR_WARN("Unable to release lock on %s", disk->src);
+
+    dev.type = VIR_DOMAIN_DEVICE_DISK;
+    dev.data.disk = disk;
+    ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
+
+    virDomainDiskDefFree(disk);
+}
+
+
+int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDiskDefPtr detach)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *drivestr = NULL;
 
     if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
-                       dev->data.disk->dst);
+                       detach->dst);
         goto cleanup;
     }
 
@@ -2311,27 +2326,7 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditDisk(vm, detach->src, NULL, "detach", true);
-
-    qemuDomainReleaseDeviceAddress(vm, &detach->info, dev->data.disk->src);
-
-    virDomainDiskRemove(vm->def, idx);
-
-    dev->data.disk->backingChain = detach->backingChain;
-    detach->backingChain = NULL;
-    virDomainDiskDefFree(detach);
-
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, dev->data.disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
-
-    if (qemuTeardownDiskCgroup(vm, dev->data.disk) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(dev->data.disk->src));
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, dev->data.disk) < 0)
-        VIR_WARN("Unable to release lock on %s", dev->data.disk->src);
-
+    qemuDomainRemoveDiskDevice(driver, vm, detach);
     ret = 0;
 
 cleanup:
@@ -2341,30 +2336,18 @@ cleanup:
 
 int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev)
+                               virDomainDiskDefPtr detach)
 {
-    int idx;
     int ret = -1;
-    virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
-
-    idx = qemuFindDisk(vm->def, dev->data.disk->dst);
-
-    if (idx < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("disk %s not found"), dev->data.disk->dst);
-        goto cleanup;
-    }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Underlying qemu does not support %s disk removal"),
-                       virDomainDiskBusTypeToString(dev->data.disk->bus));
+                       virDomainDiskBusTypeToString(detach->bus));
         goto cleanup;
     }
-
-    detach = vm->def->disks[idx];
 
     if (detach->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
@@ -2391,25 +2374,7 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainAuditDisk(vm, detach->src, NULL, "detach", true);
-
-    virDomainDiskRemove(vm->def, idx);
-
-    dev->data.disk->backingChain = detach->backingChain;
-    detach->backingChain = NULL;
-    virDomainDiskDefFree(detach);
-
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, dev->data.disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
-
-    if (qemuTeardownDiskCgroup(vm, dev->data.disk) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(dev->data.disk->src));
-
-    if (virDomainLockDiskDetach(driver->lockManager, vm, dev->data.disk) < 0)
-        VIR_WARN("Unable to release lock on disk %s", dev->data.disk->src);
-
+    qemuDomainRemoveDiskDevice(driver, vm, detach);
     ret = 0;
 
 cleanup:
