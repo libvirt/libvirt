@@ -36,6 +36,7 @@
 #include "virfile.h"
 #include "virobject.h"
 #include "virstring.h"
+#include "virauth.h"
 
 #define VIR_FROM_THIS VIR_FROM_SSH
 
@@ -97,6 +98,7 @@ struct _virNetSSHSession {
 
     /* authentication stuff */
     virConnectAuthPtr cred;
+    char *authPath;
     virNetSSHAuthCallbackError authCbErr;
     size_t nauths;
     virNetSSHAuthMethodPtr *auths;
@@ -156,6 +158,7 @@ virNetSSHSessionDispose(void *obj)
     VIR_FREE(sess->channelCommand);
     VIR_FREE(sess->hostname);
     VIR_FREE(sess->knownHostsFile);
+    VIR_FREE(sess->authPath);
 }
 
 static virClassPtr virNetSSHSessionClass;
@@ -672,7 +675,8 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
     return 0;
 }
 
-/* perform tunelled password authentication
+
+/* perform password authentication, either directly or request the password
  *
  * Returns: 0 on success
  *          1 on authentication failure
@@ -682,26 +686,70 @@ static int
 virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                               virNetSSHAuthMethodPtr priv)
 {
+    char *password = NULL;
     char *errmsg;
-    int ret;
+    int ret = -1;
+    int rc;
 
-    /* tunelled password authentication */
-    if ((ret = libssh2_userauth_password(sess->session,
-                                         priv->username,
-                                         priv->password)) < 0) {
-        libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
-        virReportError(VIR_ERR_AUTH_FAILED,
-                       _("tunelled password authentication failed: %s"),
-                       errmsg);
+    if (priv->password) {
+        /* tunelled password authentication */
+        if ((ret = libssh2_userauth_password(sess->session,
+                                             priv->username,
+                                             priv->password)) == 0) {
+            ret = 0;
+            goto cleanup;
+        }
+    } else {
+        /* password authentication with interactive password request */
+        if (!sess->cred || !sess->cred->cb) {
+            virReportError(VIR_ERR_SSH, "%s",
+                           _("Can't perform authentication: "
+                             "Authentication callback not provided"));
+            goto cleanup;
+        }
 
-        if (ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
-            return 1;
-        else
-            return -1;
+        /* Try the authenticating the set amount of times. The server breaks the
+         * connection if maximum number of bad auth tries is exceeded */
+        while (true) {
+            if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
+                                                    "ssh", priv->username,
+                                                    sess->hostname))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to retrieve password"));
+                goto cleanup;
+            }
+
+            /* tunelled password authentication */
+            if ((rc = libssh2_userauth_password(sess->session,
+                                                priv->username,
+                                                password)) == 0) {
+                ret = 0;
+                goto cleanup;
+            }
+
+            if (ret != LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+                break;
+
+            VIR_FREE(password);
+        }
     }
-    /* auth success */
-    return 0;
+
+    /* error path */
+    libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
+    virReportError(VIR_ERR_AUTH_FAILED,
+                   _("authentication failed: %s"), errmsg);
+
+    /* determine exist status */
+    if (ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
+        return 1;
+    else
+        return -1;
+
+cleanup:
+    VIR_FREE(password);
+    return ret;
 }
+
 
 /* perform keyboard interactive authentication
  *
