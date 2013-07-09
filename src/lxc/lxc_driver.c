@@ -3693,6 +3693,13 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
+    if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create directroy for device %s"),
+                             dst);
+        goto cleanup;
+    }
+
     mode = 0700 | S_IFBLK;
 
     VIR_DEBUG("Creating dev %s (%d,%d)",
@@ -3794,6 +3801,13 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
+        goto cleanup;
+    }
+
+    if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create directroy for device %s"),
+                             dst);
         goto cleanup;
     }
 

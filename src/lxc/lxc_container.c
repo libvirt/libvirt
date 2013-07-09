@@ -1566,14 +1566,15 @@ static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_U
     int ret = -1;
     struct stat sb;
     mode_t mode;
+    char *dev = def->source.caps.u.storage.block;
 
-    if (def->source.caps.u.storage.block == NULL) {
+    if (dev == NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Missing storage host block path"));
         goto cleanup;
     }
 
-    if (virAsprintf(&src, "/.oldroot/%s", def->source.caps.u.storage.block) < 0) {
+    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1588,19 +1589,25 @@ static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_U
     if (!S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Storage source %s must be a block device"),
-                       def->source.caps.u.storage.block);
+                       dev);
+        goto cleanup;
+    }
+
+    if (lxcContainerSetupHostdevCapsMakePath(dev) < 0) {
+        virReportError(errno,
+                       _("Failed to create directory for device %s"),
+                       dev);
         goto cleanup;
     }
 
     mode = 0700 | S_IFBLK;
 
-    VIR_DEBUG("Creating dev %s (%d,%d)",
-              def->source.caps.u.storage.block,
+    VIR_DEBUG("Creating dev %s (%d,%d)", dev,
               major(sb.st_rdev), minor(sb.st_rdev));
-    if (mknod(def->source.caps.u.storage.block, mode, sb.st_rdev) < 0) {
+    if (mknod(dev, mode, sb.st_rdev) < 0) {
         virReportSystemError(errno,
                              _("Unable to create device %s"),
-                             def->source.caps.u.storage.block);
+                             dev);
         goto cleanup;
     }
 
@@ -1623,14 +1630,15 @@ static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef ATTRIBUTE_UNUS
     int ret = -1;
     struct stat sb;
     mode_t mode;
+    char *dev = def->source.caps.u.misc.chardev;
 
-    if (def->source.caps.u.misc.chardev == NULL) {
+    if (dev == NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Missing storage host block path"));
         goto cleanup;
     }
 
-    if (virAsprintf(&src, "/.oldroot/%s", def->source.caps.u.misc.chardev) < 0) {
+    if (virAsprintf(&src, "/.oldroot/%s", dev) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1645,19 +1653,25 @@ static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef ATTRIBUTE_UNUS
     if (!S_ISCHR(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Storage source %s must be a character device"),
-                       def->source.caps.u.misc.chardev);
+                       dev);
+        goto cleanup;
+    }
+
+    if (lxcContainerSetupHostdevCapsMakePath(dev) < 0) {
+        virReportError(errno,
+                       _("Failed to create directory for device %s"),
+                       dev);
         goto cleanup;
     }
 
     mode = 0700 | S_IFCHR;
 
-    VIR_DEBUG("Creating dev %s (%d,%d)",
-              def->source.caps.u.misc.chardev,
+    VIR_DEBUG("Creating dev %s (%d,%d)", dev,
               major(sb.st_rdev), minor(sb.st_rdev));
-    if (mknod(def->source.caps.u.misc.chardev, mode, sb.st_rdev) < 0) {
+    if (mknod(dev, mode, sb.st_rdev) < 0) {
         virReportSystemError(errno,
                              _("Unable to create device %s"),
-                             def->source.caps.u.misc.chardev);
+                             dev);
         goto cleanup;
     }
 
