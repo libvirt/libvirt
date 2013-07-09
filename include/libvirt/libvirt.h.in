@@ -1575,6 +1575,11 @@ virConnectPtr           virDomainGetConnect     (virDomainPtr domain);
 virDomainPtr            virDomainCreateXML      (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
+virDomainPtr            virDomainCreateXMLWithFiles(virConnectPtr conn,
+                                                    const char *xmlDesc,
+                                                    unsigned int nfiles,
+                                                    int *files,
+                                                    unsigned int flags);
 virDomainPtr            virDomainLookupByName   (virConnectPtr conn,
                                                  const char *name);
 virDomainPtr            virDomainLookupByID     (virConnectPtr conn,
@@ -2176,6 +2181,11 @@ int                     virConnectListAllDomains (virConnectPtr conn,
                                                   unsigned int flags);
 int                     virDomainCreate         (virDomainPtr domain);
 int                     virDomainCreateWithFlags (virDomainPtr domain,
+                                                  unsigned int flags);
+
+int                     virDomainCreateWithFiles (virDomainPtr domain,
+                                                  unsigned int nfiles,
+                                                  int *files,
                                                   unsigned int flags);
 
 int                     virDomainGetAutostart   (virDomainPtr domain,

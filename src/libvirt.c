@@ -2004,6 +2004,79 @@ error:
 }
 
 /**
+ * virDomainCreateXMLWithFiles:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: string containing an XML description of the domain
+ * @nfiles: number of file descriptors passed
+ * @files: list of file descriptors passed
+ * @flags: bitwise-OR of supported virDomainCreateFlags
+ *
+ * Launch a new guest domain, based on an XML description similar
+ * to the one returned by virDomainGetXMLDesc()
+ * This function may require privileged access to the hypervisor.
+ * The domain is not persistent, so its definition will disappear when it
+ * is destroyed, or if the host is restarted (see virDomainDefineXML() to
+ * define persistent domains).
+ *
+ * @files provides an array of file descriptors which will be
+ * made available to the 'init' process of the guest. The file
+ * handles exposed to the guest will be renumbered to start
+ * from 3 (ie immediately following stderr). This is only
+ * supported for guests which use container based virtualization
+ * technology.
+ *
+ * If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+ * will be started, but its CPUs will remain paused. The CPUs
+ * can later be manually started using virDomainResume.
+ *
+ * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+ * domain will be automatically destroyed when the virConnectPtr
+ * object is finally released. This will also happen if the
+ * client application crashes / loses its connection to the
+ * libvirtd daemon. Any domains marked for auto destroy will
+ * block attempts at migration, save-to-file, or snapshots.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+virDomainPtr
+virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
+                            unsigned int nfiles,
+                            int *files,
+                            unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s, nfiles=%u, files=%p, flags=%x",
+              conn, xmlDesc, nfiles, files, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    virCheckNonNullArgGoto(xmlDesc, error);
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainCreateXMLWithFiles) {
+        virDomainPtr ret;
+        ret = conn->driver->domainCreateXMLWithFiles(conn, xmlDesc,
+                                                     nfiles, files,
+                                                     flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: string containing an XML description of the domain
@@ -9412,6 +9485,87 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
     if (conn->driver->domainCreateWithFlags) {
         int ret;
         ret = conn->driver->domainCreateWithFlags(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainCreateWithFiles:
+ * @domain: pointer to a defined domain
+ * @nfiles: number of file descriptors passed
+ * @files: list of file descriptors passed
+ * @flags: bitwise-OR of supported virDomainCreateFlags
+ *
+ * Launch a defined domain. If the call succeeds the domain moves from the
+ * defined to the running domains pools.
+ *
+ * @files provides an array of file descriptors which will be
+ * made available to the 'init' process of the guest. The file
+ * handles exposed to the guest will be renumbered to start
+ * from 3 (ie immediately following stderr). This is only
+ * supported for guests which use container based virtualization
+ * technology.
+ *
+ * If the VIR_DOMAIN_START_PAUSED flag is set, or if the guest domain
+ * has a managed save image that requested paused state (see
+ * virDomainManagedSave()) the guest domain will be started, but its
+ * CPUs will remain paused. The CPUs can later be manually started
+ * using virDomainResume().  In all other cases, the guest domain will
+ * be running.
+ *
+ * If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+ * domain will be automatically destroyed when the virConnectPtr
+ * object is finally released. This will also happen if the
+ * client application crashes / loses its connection to the
+ * libvirtd daemon. Any domains marked for auto destroy will
+ * block attempts at migration, save-to-file, or snapshots.
+ *
+ * If the VIR_DOMAIN_START_BYPASS_CACHE flag is set, and there is a
+ * managed save file for this domain (created by virDomainManagedSave()),
+ * then libvirt will attempt to bypass the file system cache while restoring
+ * the file, or fail if it cannot do so for the given system; this can allow
+ * less pressure on file system cache, but also risks slowing loads from NFS.
+ *
+ * If the VIR_DOMAIN_START_FORCE_BOOT flag is set, then any managed save
+ * file for this domain is discarded, and the domain boots from scratch.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
+                         int *files, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "nfiles=%u, files=%p, flags=%x",
+                     nfiles, files, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainCreateWithFiles) {
+        int ret;
+        ret = conn->driver->domainCreateWithFiles(domain,
+                                                  nfiles, files,
+                                                  flags);
         if (ret < 0)
             goto error;
         return ret;

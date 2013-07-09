@@ -629,6 +629,8 @@ LIBVIRT_1.1.0 {
 
 LIBVIRT_1.1.1 {
     global:
+        virDomainCreateWithFiles;
+        virDomainCreateXMLWithFiles;
         virDomainSetMemoryStatsPeriod;
 } LIBVIRT_1.1.0;
 

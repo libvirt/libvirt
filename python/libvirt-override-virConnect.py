@@ -310,3 +310,33 @@
         if ret == -1:
             raise libvirtError ('virConnectRegisterCloseCallback() failed', conn=self)
         return ret
+
+    def createXMLWithFiles(self, xmlDesc, files, flags=0):
+        """Launch a new guest domain, based on an XML description similar
+        to the one returned by virDomainGetXMLDesc()
+        This function may require privileged access to the hypervisor.
+        The domain is not persistent, so its definition will disappear when it
+        is destroyed, or if the host is restarted (see virDomainDefineXML() to
+        define persistent domains).
+
+        @files provides an array of file descriptors which will be
+        made available to the 'init' process of the guest. The file
+        handles exposed to the guest will be renumbered to start
+        from 3 (ie immediately following stderr). This is only
+        supported for guests which use container based virtualization
+        technology.
+
+        If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+        will be started, but its CPUs will remain paused. The CPUs
+        can later be manually started using virDomainResume.
+
+        If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+        domain will be automatically destroyed when the virConnectPtr
+        object is finally released. This will also happen if the
+        client application crashes / loses its connection to the
+        libvirtd daemon. Any domains marked for auto destroy will
+        block attempts at migration, save-to-file, or snapshots. """
+        ret = libvirtmod.virDomainCreateXMLWithFiles(self._o, xmlDesc, files, flags)
+        if ret is None:raise libvirtError('virDomainCreateXMLWithFiles() failed', conn=self)
+        __tmp = virDomain(self,_obj=ret)
+        return __tmp

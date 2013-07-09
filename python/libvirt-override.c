@@ -7025,6 +7025,93 @@ error:
 }
 
 
+static PyObject *
+libvirt_virDomainCreateWithFiles(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval = NULL;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    PyObject *pyobj_files;
+    unsigned int flags;
+    unsigned int nfiles;
+    int *files = NULL;
+    size_t i;
+
+    if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainCreateWithFiles",
+                          &pyobj_domain, &pyobj_files, &flags))
+        return NULL;
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    nfiles = PyList_Size(pyobj_files);
+
+    if (VIR_ALLOC_N_QUIET(files, nfiles) < 0)
+        return PyErr_NoMemory();
+
+    for (i = 0; i < nfiles; i++) {
+        PyObject *pyfd;
+        int fd;
+
+        pyfd = PyList_GetItem(pyobj_files, i);
+
+        if (libvirt_intUnwrap(pyfd, &fd) < 0)
+            goto cleanup;
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainCreateWithFiles(domain, nfiles, files, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_intWrap((int) c_retval);
+
+cleanup:
+    VIR_FREE(files);
+    return py_retval;
+}
+
+
+static PyObject *
+libvirt_virDomainCreateXMLWithFiles(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval = NULL;
+    virDomainPtr c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    char * xmlDesc;
+    PyObject *pyobj_files;
+    unsigned int flags;
+    unsigned int nfiles;
+    int *files = NULL;
+    size_t i;
+
+    if (!PyArg_ParseTuple(args, (char *)"OzOi:virDomainCreateXMLWithFiles",
+                          &pyobj_conn, &xmlDesc, &pyobj_files, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    nfiles = PyList_Size(pyobj_files);
+
+    if (VIR_ALLOC_N_QUIET(files, nfiles) < 0)
+        return PyErr_NoMemory();
+
+    for (i = 0; i < nfiles; i++) {
+        PyObject *pyfd;
+        int fd;
+
+        pyfd = PyList_GetItem(pyobj_files, i);
+
+        if (libvirt_intUnwrap(pyfd, &fd) < 0)
+            goto cleanup;
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainCreateXMLWithFiles(conn, xmlDesc, nfiles, files, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_virDomainPtrWrap((virDomainPtr) c_retval);
+
+cleanup:
+    VIR_FREE(files);
+    return py_retval;
+}
+
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -7150,6 +7237,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNodeGetMemoryParameters", libvirt_virNodeGetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virNodeSetMemoryParameters", libvirt_virNodeSetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virNodeGetCPUMap", libvirt_virNodeGetCPUMap, METH_VARARGS, NULL},
+    {(char *) "virDomainCreateXMLWithFiles", libvirt_virDomainCreateXMLWithFiles, METH_VARARGS, NULL},
+    {(char *) "virDomainCreateWithFiles", libvirt_virDomainCreateWithFiles, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

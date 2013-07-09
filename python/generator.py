@@ -513,6 +513,9 @@ skip_function = (
     'virConnectUnregisterCloseCallback', # overriden in virConnect.py
     'virConnectRegisterCloseCallback', # overriden in virConnect.py
 
+    'virDomainCreateXMLWithFiles', # overriden in virConnect.py
+    'virDomainCreateWithFiles', # overriden in virDomain.py
+
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",
     "virDomainRef",

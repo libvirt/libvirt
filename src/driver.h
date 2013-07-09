@@ -136,6 +136,12 @@ typedef virDomainPtr
 (*virDrvDomainCreateXML)(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);
+typedef virDomainPtr
+(*virDrvDomainCreateXMLWithFiles)(virConnectPtr conn,
+                                  const char *xmlDesc,
+                                  unsigned int nfiles,
+                                  int *files,
+                                  unsigned int flags);
 
 typedef virDomainPtr
 (*virDrvDomainLookupByID)(virConnectPtr conn,
@@ -338,6 +344,11 @@ typedef int
 
 typedef int
 (*virDrvDomainCreateWithFlags)(virDomainPtr dom,
+                               unsigned int flags);
+typedef int
+(*virDrvDomainCreateWithFiles)(virDomainPtr dom,
+                               unsigned int nfiles,
+                               int *files,
                                unsigned int flags);
 
 typedef virDomainPtr
@@ -1144,6 +1155,7 @@ struct _virDriver {
     virDrvConnectNumOfDomains connectNumOfDomains;
     virDrvConnectListAllDomains connectListAllDomains;
     virDrvDomainCreateXML domainCreateXML;
+    virDrvDomainCreateXMLWithFiles domainCreateXMLWithFiles;
     virDrvDomainLookupByID domainLookupByID;
     virDrvDomainLookupByUUID domainLookupByUUID;
     virDrvDomainLookupByName domainLookupByName;
@@ -1201,6 +1213,7 @@ struct _virDriver {
     virDrvConnectNumOfDefinedDomains connectNumOfDefinedDomains;
     virDrvDomainCreate domainCreate;
     virDrvDomainCreateWithFlags domainCreateWithFlags;
+    virDrvDomainCreateWithFiles domainCreateWithFiles;
     virDrvDomainDefineXML domainDefineXML;
     virDrvDomainUndefine domainUndefine;
     virDrvDomainUndefineFlags domainUndefineFlags;
