@@ -651,21 +651,23 @@ cleanup:
 }
 
 #ifdef HAVE_GETPWUID_R
-enum {
-    VIR_USER_ENT_DIRECTORY,
-    VIR_USER_ENT_NAME,
-};
-
-static char *virGetUserEnt(uid_t uid,
-                           int field)
+/* Look up fields from the user database for the given user.  On
+ * error, set errno, report the error, and return -1.  */
+static int
+virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir)
 {
     char *strbuf;
-    char *ret;
     struct passwd pwbuf;
     struct passwd *pw = NULL;
     long val = sysconf(_SC_GETPW_R_SIZE_MAX);
     size_t strbuflen = val;
     int rc;
+    int ret = -1;
+
+    if (name)
+        *name = NULL;
+    if (dir)
+        *dir = NULL;
 
     /* sysconf is a hint; if it fails, fall back to a reasonable size */
     if (val < 0)
@@ -673,7 +675,7 @@ static char *virGetUserEnt(uid_t uid,
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
-        return NULL;
+        return -1;
     }
 
     /*
@@ -686,20 +688,28 @@ static char *virGetUserEnt(uid_t uid,
     while ((rc = getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
             virReportOOMError();
-            VIR_FREE(strbuf);
-            return NULL;
+            goto cleanup;
         }
     }
     if (rc != 0 || pw == NULL) {
         virReportSystemError(rc,
                              _("Failed to find user record for uid '%u'"),
                              (unsigned int) uid);
-        VIR_FREE(strbuf);
-        return NULL;
+        goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, field == VIR_USER_ENT_DIRECTORY ?
-                            pw->pw_dir : pw->pw_name));
+    if (name && VIR_STRDUP(*name, pw->pw_name) < 0)
+        goto cleanup;
+    if (group)
+        *group = pw->pw_gid;
+    if (dir && VIR_STRDUP(*dir, pw->pw_dir) < 0) {
+        if (name)
+            VIR_FREE(*name);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
     VIR_FREE(strbuf);
     return ret;
 }
@@ -752,7 +762,9 @@ static char *virGetGroupEnt(gid_t gid)
 
 char *virGetUserDirectory(void)
 {
-    return virGetUserEnt(geteuid(), VIR_USER_ENT_DIRECTORY);
+    char *ret;
+    virGetUserEnt(geteuid(), NULL, NULL, &ret);
+    return ret;
 }
 
 static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
@@ -765,8 +777,9 @@ static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
         if (virAsprintf(&ret, "%s/libvirt", path) < 0)
             goto no_memory;
     } else {
-        home = virGetUserEnt(geteuid(), VIR_USER_ENT_DIRECTORY);
-        if (virAsprintf(&ret, "%s/%s/libvirt", home, xdgdefdir) < 0)
+        home = virGetUserDirectory();
+        if (home &&
+            virAsprintf(&ret, "%s/%s/libvirt", home, xdgdefdir) < 0)
             goto no_memory;
     }
 
@@ -808,7 +821,9 @@ char *virGetUserRuntimeDirectory(void)
 
 char *virGetUserName(uid_t uid)
 {
-    return virGetUserEnt(uid, VIR_USER_ENT_NAME);
+    char *ret;
+    virGetUserEnt(uid, &ret, NULL, NULL);
+    return ret;
 }
 
 char *virGetGroupName(gid_t gid)
