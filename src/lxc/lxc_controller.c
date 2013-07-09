@@ -1286,6 +1286,7 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/full" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/random" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/urandom" },
+        { LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY, 0666, "/tty" },
     };
 
     if (virLXCControllerSetupDev(ctrl) < 0)
