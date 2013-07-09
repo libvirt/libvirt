@@ -4891,6 +4891,110 @@ cleanup:
 }
 
 
+static int remoteDispatchDomainCreateXMLWithFiles(
+    virNetServerPtr server ATTRIBUTE_UNUSED,
+    virNetServerClientPtr client,
+    virNetMessagePtr msg ATTRIBUTE_UNUSED,
+    virNetMessageErrorPtr rerr,
+    remote_domain_create_xml_with_files_args *args,
+    remote_domain_create_xml_with_files_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    int *files = NULL;
+    unsigned int nfiles = 0;
+    size_t i;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(files, msg->nfds) < 0)
+        goto cleanup;
+    for (i = 0; i < msg->nfds; i++) {
+        if ((files[i] = virNetMessageDupFD(msg, i)) < 0)
+            goto cleanup;
+        nfiles++;
+    }
+
+    if ((dom = virDomainCreateXMLWithFiles(priv->conn, args->xml_desc,
+                                           nfiles, files,
+                                           args->flags)) == NULL)
+        goto cleanup;
+
+    make_nonnull_domain(&ret->dom, dom);
+    rv = 0;
+
+cleanup:
+    for (i = 0; i < nfiles; i++) {
+        VIR_FORCE_CLOSE(files[i]);
+    }
+    VIR_FREE(files);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int remoteDispatchDomainCreateWithFiles(
+    virNetServerPtr server ATTRIBUTE_UNUSED,
+    virNetServerClientPtr client,
+    virNetMessagePtr msg ATTRIBUTE_UNUSED,
+    virNetMessageErrorPtr rerr,
+    remote_domain_create_with_files_args *args,
+    remote_domain_create_with_files_ret *ret)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    int *files = NULL;
+    unsigned int nfiles = 0;
+    size_t i;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(files, msg->nfds) < 0)
+        goto cleanup;
+    for (i = 0; i < msg->nfds; i++) {
+        if ((files[i] = virNetMessageDupFD(msg, i)) < 0)
+            goto cleanup;
+        nfiles++;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainCreateWithFiles(dom,
+                                 nfiles, files,
+                                 args->flags) < 0)
+        goto cleanup;
+
+    make_nonnull_domain(&ret->dom, dom);
+    rv = 0;
+
+cleanup:
+    for (i = 0; i < nfiles; i++) {
+        VIR_FORCE_CLOSE(files[i]);
+    }
+    VIR_FREE(files);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

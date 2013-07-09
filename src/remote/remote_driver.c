@@ -6387,6 +6387,75 @@ cleanup:
 }
 
 
+static virDomainPtr
+remoteDomainCreateXMLWithFiles(virConnectPtr conn, const char *xml_desc,
+                               unsigned int nfiles, int *files, unsigned int flags)
+{
+    virDomainPtr rv = NULL;
+    struct private_data *priv = conn->privateData;
+    remote_domain_create_xml_with_files_args args;
+    remote_domain_create_xml_with_files_ret ret;
+
+    remoteDriverLock(priv);
+
+    args.xml_desc = (char *)xml_desc;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (callFull(conn, priv, 0,
+                 files, nfiles,
+                 NULL, NULL,
+                 REMOTE_PROC_DOMAIN_CREATE_XML_WITH_FILES,
+                 (xdrproc_t)xdr_remote_domain_create_xml_with_files_args, (char *)&args,
+                 (xdrproc_t)xdr_remote_domain_create_xml_with_files_ret, (char *)&ret) == -1) {
+        goto done;
+    }
+
+    rv = get_nonnull_domain(conn, ret.dom);
+    xdr_free((xdrproc_t)xdr_remote_domain_create_xml_with_files_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteDomainCreateWithFiles(virDomainPtr dom,
+                            unsigned int nfiles, int *files,
+                            unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_create_with_files_args args;
+    remote_domain_create_with_files_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (callFull(dom->conn, priv, 0,
+                 files, nfiles,
+                 NULL, NULL,
+                 REMOTE_PROC_DOMAIN_CREATE_WITH_FILES,
+                 (xdrproc_t)xdr_remote_domain_create_with_files_args, (char *)&args,
+                 (xdrproc_t)xdr_remote_domain_create_with_files_ret, (char *)&ret) == -1) {
+        goto done;
+    }
+
+    dom->id = ret.dom.id;
+    xdr_free((xdrproc_t) &xdr_remote_domain_create_with_files_ret, (char *) &ret);
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -6544,6 +6613,7 @@ static virDriver remote_driver = {
     .connectNumOfDomains = remoteConnectNumOfDomains, /* 0.3.0 */
     .connectListAllDomains = remoteConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = remoteDomainCreateXML, /* 0.3.0 */
+    .domainCreateXMLWithFiles = remoteDomainCreateXMLWithFiles, /* 1.1.1 */
     .domainLookupByID = remoteDomainLookupByID, /* 0.3.0 */
     .domainLookupByUUID = remoteDomainLookupByUUID, /* 0.3.0 */
     .domainLookupByName = remoteDomainLookupByName, /* 0.3.0 */
@@ -6598,6 +6668,7 @@ static virDriver remote_driver = {
     .connectNumOfDefinedDomains = remoteConnectNumOfDefinedDomains, /* 0.3.0 */
     .domainCreate = remoteDomainCreate, /* 0.3.0 */
     .domainCreateWithFlags = remoteDomainCreateWithFlags, /* 0.8.2 */
+    .domainCreateWithFiles = remoteDomainCreateWithFiles, /* 1.1.1 */
     .domainDefineXML = remoteDomainDefineXML, /* 0.3.0 */
     .domainUndefine = remoteDomainUndefine, /* 0.3.0 */
     .domainUndefineFlags = remoteDomainUndefineFlags, /* 0.9.4 */

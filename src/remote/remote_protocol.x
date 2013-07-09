@@ -734,6 +734,15 @@ struct remote_domain_create_xml_ret {
     remote_nonnull_domain dom;
 };
 
+struct remote_domain_create_xml_with_files_args {
+    remote_nonnull_string xml_desc;
+    unsigned int flags;
+};
+
+struct remote_domain_create_xml_with_files_ret {
+    remote_nonnull_domain dom;
+};
+
 struct remote_domain_lookup_by_id_args {
     int id;
 };
@@ -992,6 +1001,15 @@ struct remote_domain_create_with_flags_args {
 };
 
 struct remote_domain_create_with_flags_ret {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_create_with_files_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_create_with_files_ret {
     remote_nonnull_domain dom;
 };
 
@@ -4958,5 +4976,18 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_SET_MEMORY_STATS_PERIOD = 308
+    REMOTE_PROC_DOMAIN_SET_MEMORY_STATS_PERIOD = 308,
+
+    /**
+     * @generate: none
+     * @acl: domain:write
+     * @acl: domain:start
+     */
+    REMOTE_PROC_DOMAIN_CREATE_XML_WITH_FILES = 309,
+
+    /**
+     * @generate: none
+     * @acl: domain:start
+     */
+    REMOTE_PROC_DOMAIN_CREATE_WITH_FILES = 310
 };
