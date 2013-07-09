@@ -1543,6 +1543,32 @@ cleanup:
 }
 
 
+int lxcContainerSetupHostdevCapsMakePath(const char *dev)
+{
+    int ret = -1;
+    char *dir, *tmp;
+
+    if (VIR_STRDUP(dir, dev) < 0)
+        return -1;
+
+    if ((tmp = strrchr(dir, '/'))) {
+        *tmp = '\0';
+        if (virFileMakePath(dir) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to create directory for '%s' dev '%s'"),
+                                 dir, dev);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(dir);
+    return ret;
+}
+
+
 static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
                                                virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
                                                virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
