@@ -839,6 +839,7 @@ static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/dev/full" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/dev/random" },
         { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/dev/urandom" },
+        { LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY, 0666, "/tty" },
     };
     const struct {
         const char *src;
