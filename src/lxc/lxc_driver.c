@@ -1021,7 +1021,10 @@ cleanup:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
+static int lxcDomainCreateWithFiles(virDomainPtr dom,
+                                    unsigned int nfiles,
+                                    int *files,
+                                    unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -1040,7 +1043,7 @@ static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainCreateWithFilesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if ((vm->def->nets != NULL) && !(driver->have_netns)) {
@@ -1056,6 +1059,7 @@ static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     }
 
     ret = virLXCProcessStart(dom->conn, driver, vm,
+                             nfiles, files,
                              (flags & VIR_DOMAIN_START_AUTODESTROY),
                              VIR_DOMAIN_RUNNING_BOOTED);
 
@@ -1087,7 +1091,21 @@ cleanup:
  */
 static int lxcDomainCreate(virDomainPtr dom)
 {
-    return lxcDomainCreateWithFlags(dom, 0);
+    return lxcDomainCreateWithFiles(dom, 0, NULL, 0);
+}
+
+/**
+ * lxcDomainCreateWithFlags:
+ * @dom: domain to start
+ *
+ * Looks up domain and starts it.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcDomainCreateWithFlags(virDomainPtr dom,
+                                    unsigned int flags)
+{
+    return lxcDomainCreateWithFiles(dom, 0, NULL, flags);
 }
 
 /**
@@ -1101,9 +1119,11 @@ static int lxcDomainCreate(virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static virDomainPtr
-lxcDomainCreateXML(virConnectPtr conn,
-                   const char *xml,
-                   unsigned int flags) {
+lxcDomainCreateXMLWithFiles(virConnectPtr conn,
+                            const char *xml,
+                            unsigned int nfiles,
+                            int *files,
+                            unsigned int flags) {
     virLXCDriverPtr driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
@@ -1118,7 +1138,7 @@ lxcDomainCreateXML(virConnectPtr conn,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+    if (virDomainCreateXMLWithFilesEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
@@ -1139,6 +1159,7 @@ lxcDomainCreateXML(virConnectPtr conn,
     def = NULL;
 
     if (virLXCProcessStart(conn, driver, vm,
+                           nfiles, files,
                            (flags & VIR_DOMAIN_START_AUTODESTROY),
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
@@ -1164,6 +1185,14 @@ cleanup:
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
     return dom;
+}
+
+
+static virDomainPtr
+lxcDomainCreateXML(virConnectPtr conn,
+                   const char *xml,
+                   unsigned int flags) {
+    return lxcDomainCreateXMLWithFiles(conn, xml, 0, NULL,  flags);
 }
 
 
@@ -4849,6 +4878,7 @@ static virDriver lxcDriver = {
     .connectNumOfDomains = lxcConnectNumOfDomains, /* 0.4.2 */
     .connectListAllDomains = lxcConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = lxcDomainCreateXML, /* 0.4.4 */
+    .domainCreateXMLWithFiles = lxcDomainCreateXMLWithFiles, /* 1.1.1 */
     .domainLookupByID = lxcDomainLookupByID, /* 0.4.2 */
     .domainLookupByUUID = lxcDomainLookupByUUID, /* 0.4.2 */
     .domainLookupByName = lxcDomainLookupByName, /* 0.4.2 */
@@ -4873,6 +4903,7 @@ static virDriver lxcDriver = {
     .connectNumOfDefinedDomains = lxcConnectNumOfDefinedDomains, /* 0.4.2 */
     .domainCreate = lxcDomainCreate, /* 0.4.4 */
     .domainCreateWithFlags = lxcDomainCreateWithFlags, /* 0.8.2 */
+    .domainCreateWithFiles = lxcDomainCreateWithFiles, /* 1.1.1 */
     .domainDefineXML = lxcDomainDefineXML, /* 0.4.2 */
     .domainUndefine = lxcDomainUndefine, /* 0.4.2 */
     .domainUndefineFlags = lxcDomainUndefineFlags, /* 0.9.4 */

@@ -108,6 +108,9 @@ struct _virLXCController {
     size_t nveths;
     char **veths;
 
+    size_t npassFDs;
+    int *passFDs;
+
     size_t nconsoles;
     virLXCControllerConsolePtr consoles;
     char *devptmx;
@@ -252,6 +255,10 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     for (i = 0; i < ctrl->nveths; i++)
         VIR_FREE(ctrl->veths[i]);
     VIR_FREE(ctrl->veths);
+
+    for (i = 0; i < ctrl->npassFDs; i++)
+        VIR_FORCE_CLOSE(ctrl->passFDs[i]);
+    VIR_FREE(ctrl->passFDs);
 
     for (i = 0; i < ctrl->nconsoles; i++)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
@@ -2135,13 +2142,18 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
                                            ctrl->securityManager,
                                            ctrl->nveths,
                                            ctrl->veths,
+                                           ctrl->npassFDs,
+                                           ctrl->passFDs,
                                            control[1],
                                            containerhandshake[1],
-                                           containerTTYPaths,
-                                           ctrl->nconsoles)) < 0)
+                                           ctrl->nconsoles,
+                                           containerTTYPaths)) < 0)
         goto cleanup;
     VIR_FORCE_CLOSE(control[1]);
     VIR_FORCE_CLOSE(containerhandshake[1]);
+
+    for (i = 0; i < ctrl->npassFDs; i++)
+        VIR_FORCE_CLOSE(ctrl->passFDs[i]);
 
     if (virLXCControllerSetupUserns(ctrl) < 0)
         goto cleanup;
@@ -2209,6 +2221,7 @@ int main(int argc, char *argv[])
         { "name",   1, NULL, 'n' },
         { "veth",   1, NULL, 'v' },
         { "console", 1, NULL, 'c' },
+        { "passfd", 1, NULL, 'p' },
         { "handshakefd", 1, NULL, 's' },
         { "security", 1, NULL, 'S' },
         { "help", 0, NULL, 'h' },
@@ -2216,6 +2229,8 @@ int main(int argc, char *argv[])
     };
     int *ttyFDs = NULL;
     size_t nttyFDs = 0;
+    int *passFDs = NULL;
+    size_t npassFDs = 0;
     virLXCControllerPtr ctrl = NULL;
     size_t i;
     const char *securityDriver = "none";
@@ -2233,7 +2248,7 @@ int main(int argc, char *argv[])
     while (1) {
         int c;
 
-        c = getopt_long(argc, argv, "dn:v:m:c:s:h:S:",
+        c = getopt_long(argc, argv, "dn:v:p:m:c:s:h:S:",
                        options, NULL);
 
         if (c == -1)
@@ -2261,6 +2276,15 @@ int main(int argc, char *argv[])
                 goto cleanup;
             if (virStrToLong_i(optarg, NULL, 10, &ttyFDs[nttyFDs++]) < 0) {
                 fprintf(stderr, "malformed --console argument '%s'", optarg);
+                goto cleanup;
+            }
+            break;
+
+        case 'p':
+            if (VIR_REALLOC_N(passFDs, npassFDs + 1) < 0)
+                goto cleanup;
+            if (virStrToLong_i(optarg, NULL, 10, &passFDs[npassFDs++]) < 0) {
+                fprintf(stderr, "malformed --passfd argument '%s'", optarg);
                 goto cleanup;
             }
             break;
@@ -2337,6 +2361,9 @@ int main(int argc, char *argv[])
     ctrl->veths = veths;
     ctrl->nveths = nveths;
 
+    ctrl->passFDs = passFDs;
+    ctrl->npassFDs = npassFDs;
+
     for (i = 0; i < nttyFDs; i++) {
         if (virLXCControllerAddConsole(ctrl, ttyFDs[i]) < 0)
             goto cleanup;
@@ -2402,6 +2429,9 @@ cleanup:
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
+    for (i = 0; i < npassFDs; i++)
+        VIR_FORCE_CLOSE(passFDs[i]);
+    VIR_FREE(passFDs);
 
     virLXCControllerFree(ctrl);
 

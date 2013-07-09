@@ -103,8 +103,10 @@ struct __lxc_child_argv {
     size_t nveths;
     char **veths;
     int monitor;
-    char **ttyPaths;
+    size_t npassFDs;
+    int *passFDs;
     size_t nttyPaths;
+    char **ttyPaths;
     int handshakefd;
 };
 
@@ -217,20 +219,28 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
 }
 
 /**
- * lxcContainerSetStdio:
+ * lxcContainerSetupFDs:
  * @control: control FD from parent
  * @ttyfd: FD of tty to set as the container console
+ * @npassFDs: number of extra FDs
+ * @passFDs: list of extra FDs
  *
- * Sets the given tty as the primary conosole for the container as well as
- * stdout, stdin and stderr.
+ * Setup file descriptors in the container. @ttyfd is set to be
+ * the container's stdin, stdout & stderr. Any FDs included in
+ * @passFDs, will be dup()'d such that they start from stderr+1
+ * with no gaps.
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
+static int lxcContainerSetupFDs(int *ttyfd,
+                                size_t npassFDs, int *passFDs)
 {
     int rc = -1;
     int open_max;
     int fd;
+    int last_fd;
+    size_t i;
+    size_t j;
 
     if (setsid() < 0) {
         virReportSystemError(errno, "%s",
@@ -238,42 +248,97 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
         goto cleanup;
     }
 
-    if (ioctl(ttyfd, TIOCSCTTY, NULL) < 0) {
+    if (ioctl(*ttyfd, TIOCSCTTY, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("ioctl(TIOCSTTY) failed"));
         goto cleanup;
     }
 
+    if (dup2(*ttyfd, STDIN_FILENO) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("dup2(stdin) failed"));
+        goto cleanup;
+    }
+
+    if (dup2(*ttyfd, STDOUT_FILENO) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("dup2(stdout) failed"));
+        goto cleanup;
+    }
+
+    if (dup2(*ttyfd, STDERR_FILENO) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("dup2(stderr) failed"));
+        goto cleanup;
+    }
+
+    VIR_FORCE_CLOSE(*ttyfd);
+
+    /* Any FDs in @passFDs need to be moved around so that
+     * they are numbered, without gaps, starting from
+     * STDERR_FILENO + 1
+     */
+    for (i = 0; i < npassFDs; i++) {
+        int wantfd;
+
+        wantfd = STDERR_FILENO + i + 1;
+        VIR_DEBUG("Pass %d onto %d", passFDs[i], wantfd);
+
+        /* If we already have desired FD number, life
+         * is easy. Nothing needs renumbering */
+        if (passFDs[i] == wantfd)
+            continue;
+
+        /*
+         * Lets check to see if any later FDs are occupying
+         * our desired FD number. If so, we must move them
+         * out of the way
+         */
+        for (j = i + 1; j < npassFDs; j++) {
+            if (passFDs[j] == wantfd) {
+                VIR_DEBUG("Clash %zu", j);
+                int newfd = dup(passFDs[j]);
+                if (newfd < 0) {
+                    virReportSystemError(errno,
+                                         _("Cannot move fd %d out of the way"),
+                                         passFDs[j]);
+                    goto cleanup;
+                }
+                /* We're intentionally not closing the
+                 * old value of passFDs[j], because we
+                 * don't want later iterations of the
+                 * loop to take it back. dup2() will
+                 * cause it to be closed shortly anyway
+                 */
+                VIR_DEBUG("Moved clash onto %d", newfd);
+                passFDs[j] = newfd;
+            }
+        }
+
+        /* Finally we can move into our desired FD number */
+        if (dup2(passFDs[i], wantfd) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot duplicate fd %d onto fd %d"),
+                                 passFDs[i], wantfd);
+            goto cleanup;
+        }
+        VIR_FORCE_CLOSE(passFDs[i]);
+    }
+
+    last_fd = STDERR_FILENO + npassFDs;
+
     /* Just in case someone forget to set FD_CLOEXEC, explicitly
-     * close all FDs before executing the container */
+     * close all remaining FDs before executing the container */
     open_max = sysconf(_SC_OPEN_MAX);
     if (open_max < 0) {
         virReportSystemError(errno, "%s",
                              _("sysconf(_SC_OPEN_MAX) failed"));
         goto cleanup;
     }
-    for (fd = 0; fd < open_max; fd++)
-        if (fd != ttyfd && fd != control && fd != handshakefd) {
-            int tmpfd = fd;
-            VIR_MASS_CLOSE(tmpfd);
-        }
 
-    if (dup2(ttyfd, 0) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("dup2(stdin) failed"));
-        goto cleanup;
-    }
-
-    if (dup2(ttyfd, 1) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("dup2(stdout) failed"));
-        goto cleanup;
-    }
-
-    if (dup2(ttyfd, 2) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("dup2(stderr) failed"));
-        goto cleanup;
+    for (fd = last_fd + 1; fd < open_max; fd++) {
+        int tmpfd = fd;
+        VIR_MASS_CLOSE(tmpfd);
     }
 
     rc = 0;
@@ -1677,9 +1742,11 @@ static int lxcContainerChild(void *data)
     if (virSecurityManagerSetProcessLabel(argv->securityDriver, vmDef) < 0)
         goto cleanup;
 
-    if (lxcContainerSetStdio(argv->monitor, ttyfd, argv->handshakefd) < 0) {
+    VIR_FORCE_CLOSE(argv->handshakefd);
+    VIR_FORCE_CLOSE(argv->monitor);
+    if (lxcContainerSetupFDs(&ttyfd,
+                             argv->npassFDs, argv->passFDs) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 cleanup:
@@ -1762,18 +1829,29 @@ int lxcContainerStart(virDomainDefPtr def,
                       virSecurityManagerPtr securityDriver,
                       size_t nveths,
                       char **veths,
+                      size_t npassFDs,
+                      int *passFDs,
                       int control,
                       int handshakefd,
-                      char **ttyPaths,
-                      size_t nttyPaths)
+                      size_t nttyPaths,
+                      char **ttyPaths)
 {
     pid_t pid;
     int cflags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
-    lxc_child_argv_t args = { def, securityDriver,
-                              nveths, veths, control,
-                              ttyPaths, nttyPaths, handshakefd};
+    lxc_child_argv_t args = {
+        .config = def,
+        .securityDriver = securityDriver,
+        .nveths = nveths,
+        .veths = veths,
+        .npassFDs = npassFDs,
+        .passFDs = passFDs,
+        .monitor = control,
+        .nttyPaths = nttyPaths,
+        .ttyPaths = ttyPaths,
+        .handshakefd = handshakefd
+    };
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0)

@@ -192,7 +192,8 @@ virLXCProcessReboot(virLXCDriverPtr driver,
     vm->newDef = NULL;
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     vm->newDef = savedDef;
-    if (virLXCProcessStart(conn, driver, vm, autodestroy, reason) < 0) {
+    if (virLXCProcessStart(conn, driver, vm,
+                           0, NULL, autodestroy, reason) < 0) {
         VIR_WARN("Unable to handle reboot of vm %s",
                  vm->def->name);
         goto cleanup;
@@ -803,6 +804,8 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 char **veths,
                                 int *ttyFDs,
                                 size_t nttyFDs,
+                                int *files,
+                                size_t nfiles,
                                 int handshakefd)
 {
     size_t i;
@@ -851,6 +854,12 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         virCommandAddArg(cmd, "--console");
         virCommandAddArgFormat(cmd, "%d", ttyFDs[i]);
         virCommandPreserveFD(cmd, ttyFDs[i]);
+    }
+
+    for (i = 0; i < nfiles; i++) {
+        virCommandAddArg(cmd, "--passfd");
+        virCommandAddArgFormat(cmd, "%d", files[i]);
+        virCommandPreserveFD(cmd, files[i]);
     }
 
     virCommandAddArgPair(cmd, "--security",
@@ -1024,6 +1033,7 @@ error:
 int virLXCProcessStart(virConnectPtr conn,
                        virLXCDriverPtr  driver,
                        virDomainObjPtr vm,
+                       unsigned int nfiles, int *files,
                        bool autoDestroy,
                        virDomainRunningReason reason)
 {
@@ -1189,6 +1199,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                                 vm,
                                                 nveths, veths,
                                                 ttyFDs, nttyFDs,
+                                                files, nfiles,
                                                 handshakefds[1])))
         goto cleanup;
     virCommandSetOutputFD(cmd, &logfd);
@@ -1382,7 +1393,8 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
     virObjectLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        ret = virLXCProcessStart(data->conn, data->driver, vm, false,
+        ret = virLXCProcessStart(data->conn, data->driver, vm,
+                                 0, NULL, false,
                                  VIR_DOMAIN_RUNNING_BOOTED);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {

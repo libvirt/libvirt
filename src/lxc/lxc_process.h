@@ -27,6 +27,7 @@
 int virLXCProcessStart(virConnectPtr conn,
                        virLXCDriverPtr  driver,
                        virDomainObjPtr vm,
+                       unsigned int nfiles, int *files,
                        bool autoDestroy,
                        virDomainRunningReason reason);
 int virLXCProcessStop(virLXCDriverPtr driver,
