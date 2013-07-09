@@ -2267,6 +2267,28 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                                 virDomainObjPtr vm,
+                                 virDomainControllerDefPtr controller)
+{
+    size_t i;
+
+    VIR_DEBUG("Removing controller %s from domain %p %s",
+              controller->info.alias, vm, vm->def->name);
+
+    for (i = 0; i < vm->def->ncontrollers; i++) {
+        if (vm->def->controllers[i] == controller) {
+            virDomainControllerRemove(vm->def, i);
+            break;
+        }
+    }
+
+    qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
+    virDomainControllerDefFree(controller);
+}
+
+
 int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr detach)
@@ -2492,9 +2514,7 @@ int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    virDomainControllerRemove(vm->def, idx);
-    qemuDomainReleaseDeviceAddress(vm, &detach->info, NULL);
-    virDomainControllerDefFree(detach);
+    qemuDomainRemoveControllerDevice(driver, vm, detach);
 
     ret = 0;
 
