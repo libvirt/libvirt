@@ -310,6 +310,7 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
 
 VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pci-root",
+              "pcie-root",
               "pci-bridge")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
@@ -5714,16 +5715,17 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         switch (def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
             if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("pci-root controller should not "
+                               _("pci-root and pcie-root controllers should not "
                                  "have an address"));
                 goto error;
             }
             if (def->idx != 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("pci-root controller should have "
-                                 "index 0"));
+                               _("pci-root and pcie-root controllers "
+                                 "should have index 0"));
                 goto error;
             }
 

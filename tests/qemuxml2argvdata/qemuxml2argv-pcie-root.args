@@ -1,0 +1,4 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/libexec/qemu-kvm \
+-S -M q35 -m 2048 -smp 2 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.1,addr=0x1 -usb

@@ -1453,6 +1453,12 @@ qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
                                  "device. Device requires a standard PCI slot, "
                                  "which is not provided by this bus"),
                                addr->domain, addr->bus);
+            } else if (devFlags & QEMU_PCI_CONNECT_TYPE_PCIE) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("PCI bus %.4x:%.2x is not compatible with the "
+                                 "device. Device requires a PCI Express slot, "
+                                 "which is not provided by this bus"),
+                               addr->domain, addr->bus);
             } else {
                 /* this should never happen. If it does, there is a
                  * bug in the code that sets the flag bits for devices.
@@ -1546,6 +1552,12 @@ qemuDomainPCIAddressBusSetModel(qemuDomainPCIAddressBusPtr bus,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         bus->flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
                       QEMU_PCI_CONNECT_TYPE_PCI);
+        bus->minSlot = 1;
+        bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        /* slots 1 - 31, PCIe devices only, no hotplug */
+        bus->flags = QEMU_PCI_CONNECT_TYPE_PCIE;
         bus->minSlot = 1;
         bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -2350,7 +2362,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                 continue;
             switch (def->controllers[i]->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-                /* pci-root is implicit in the machine,
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+                /* pci-root and pcie-root are implicit in the machine,
                  * and needs no address */
                 continue;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
@@ -4339,8 +4352,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
                               def->idx, def->idx);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("wrong function called for pci-root"));
+                           _("wrong function called for pci-root/pcie-root"));
             return NULL;
         }
         break;
@@ -7618,9 +7632,10 @@ qemuBuildCommandLine(virConnectPtr conn,
                     continue;
                 }
 
-                /* Skip pci-root */
+                /* Skip pci-root/pcie-root */
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                    (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
                     continue;
                 }
 

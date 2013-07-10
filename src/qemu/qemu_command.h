@@ -233,13 +233,15 @@ typedef enum {
 
    QEMU_PCI_CONNECT_TYPE_PCI     = 1 << 2,
    /* PCI devices can connect to this bus */
+   QEMU_PCI_CONNECT_TYPE_PCIE    = 1 << 3,
+   /* PCI Express devices can connect to this bus */
 } qemuDomainPCIConnectFlags;
 
 /* a combination of all bit that describe the type of connections
  * allowed, e.g. PCI, PCIe, switch
  */
 # define QEMU_PCI_CONNECT_TYPES_MASK \
-    QEMU_PCI_CONNECT_TYPE_PCI
+   (QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE)
 
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def,

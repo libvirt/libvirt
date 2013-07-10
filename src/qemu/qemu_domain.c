@@ -701,6 +701,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 {
     bool addDefaultUSB = true;
     bool addPCIRoot = false;
+    bool addPCIeRoot = false;
 
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
@@ -713,11 +714,15 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     case VIR_ARCH_X86_64:
         if (!def->os.machine)
             break;
-        if (STRPREFIX(def->os.machine, "pc-q35") ||
-            STREQ(def->os.machine, "q35") ||
-            STREQ(def->os.machine, "isapc")) {
+        if (STREQ(def->os.machine, "isapc")) {
             addDefaultUSB = false;
             break;
+        }
+        if (STRPREFIX(def->os.machine, "pc-q35") ||
+            STREQ(def->os.machine, "q35")) {
+           addPCIeRoot = true;
+           addDefaultUSB = false;
+           break;
         }
         if (!STRPREFIX(def->os.machine, "pc-0.") &&
             !STRPREFIX(def->os.machine, "pc-1.") &&
@@ -753,6 +758,12 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
             VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
+        return -1;
+
+    if (addPCIeRoot &&
+        virDomainDefMaybeAddController(
+            def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+            VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) < 0)
         return -1;
 
     return 0;
@@ -1421,7 +1432,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
         if (pci && pci->idx == 0 &&
             pci->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-            VIR_DEBUG("Removing default 'pci-root' from domain '%s'"
+            VIR_DEBUG("Removing default pci-root from domain '%s'"
                       " for migration compatibility", def->name);
             toremove++;
         } else {

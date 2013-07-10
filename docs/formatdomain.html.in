@@ -2338,26 +2338,39 @@
 
     <p>
       PCI controllers have an optional <code>model</code> attribute with
-      possible values <code>pci-root</code> or <code>pci-bridge</code>.
-      For machine types which provide an implicit pci bus, the pci-root
+      possible values <code>pci-root</code>, <code>pcie-root</code>
+      or <code>pci-bridge</code>.
+      For machine types which provide an implicit PCI bus, the pci-root
       controller with index=0 is auto-added and required to use PCI devices.
-      PCI root has no address.
-      PCI bridges are auto-added if there are too many devices to fit on
-      the one bus provided by pci-root, or a PCI bus number greater than zero
-      was specified.
+      pci-root has no address.
       PCI bridges can also be specified manually, but their addresses should
       only refer to PCI buses provided by already specified PCI controllers.
       Leaving gaps in the PCI controller indexes might lead to an invalid
       configuration.
-      (<span class="since">since 1.0.5</span>)
+      (pci-root and pci-bridge <span class="since">since 1.0.5</span>)
     </p>
 <pre>
   ...
   &lt;devices&gt;
     &lt;controller type='pci' index='0' model='pci-root'/&gt;
     &lt;controller type='pci' index='1' model='pci-bridge'&gt;
-      &lt;address type='pci' domain='0' bus='0' slot='5' function='0' multifunction=off'/&gt;
+      &lt;address type='pci' domain='0' bus='0' slot='5' function='0' multifunction='off'/&gt;
     &lt;/controller&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      For machine types which provide an implicit PCI Express (PCIe)
+      bus (for example, the machine types based on the Q35 chipset),
+      the pcie-root controller with index=0 is auto-added to the
+      domain's configuration. pcie-root has also no address, provides
+      31 slots (numbered 1-31) and can only be used to attach PCIe
+      devices.  (<span class="since">since 1.1.2</span>).
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;controller type='pci' index='0' model='pcie-root'/&gt;
   &lt;/devices&gt;
   ...</pre>
 
