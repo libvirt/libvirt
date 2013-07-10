@@ -2596,8 +2596,6 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_INVALID_ARG, _("missing host in migration"
                                                   " URI: %s"), uri_in);
             goto cleanup;
-        } else {
-            hostname = uri->server;
         }
 
         if (uri->port == 0) {
