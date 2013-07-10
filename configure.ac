@@ -2405,7 +2405,8 @@ AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
                           [1],
                           [whether BSD style bridge management is available])],
                [],
-               [#include <net/if.h>
+               [#include <stdint.h>
+                #include <net/if.h>
                 #include <net/ethernet.h>
                 #include <net/if_bridgevar.h>
                ])
