@@ -9336,94 +9336,108 @@ virDomainDeviceDefParse(const char *xmlStr,
     if (VIR_ALLOC(dev) < 0)
         goto error;
 
-    if (xmlStrEqual(node->name, BAD_CAST "disk")) {
-        dev->type = VIR_DOMAIN_DEVICE_DISK;
+    if ((dev->type = virDomainDeviceTypeFromString((const char *) node->name)) < 0) {
+        /* Some crazy mapping of serial, parallel, console and channel to
+         * VIR_DOMAIN_DEVICE_CHR. */
+        if (xmlStrEqual(node->name, BAD_CAST "channel") ||
+            xmlStrEqual(node->name, BAD_CAST "console") ||
+            xmlStrEqual(node->name, BAD_CAST "parallel") ||
+            xmlStrEqual(node->name, BAD_CAST "serial")) {
+            dev->type = VIR_DOMAIN_DEVICE_CHR;
+        } else {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown device type '%s'"),
+                           node->name);
+            goto error;
+        }
+    }
+
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
         if (!(dev->data.disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
                                                         NULL, def->seclabels,
                                                         def->nseclabels,
                                                         flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "lease")) {
-        dev->type = VIR_DOMAIN_DEVICE_LEASE;
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
         if (!(dev->data.lease = virDomainLeaseDefParseXML(node)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
-        dev->type = VIR_DOMAIN_DEVICE_FS;
+        break;
+    case VIR_DOMAIN_DEVICE_FS:
         if (!(dev->data.fs = virDomainFSDefParseXML(node, ctxt, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
-        dev->type = VIR_DOMAIN_DEVICE_NET;
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
         if (!(dev->data.net = virDomainNetDefParseXML(xmlopt, node, ctxt,
                                                       NULL, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
-        dev->type = VIR_DOMAIN_DEVICE_INPUT;
+        break;
+    case VIR_DOMAIN_DEVICE_INPUT:
         if (!(dev->data.input = virDomainInputDefParseXML(def->os.type,
                                                           node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
-        dev->type = VIR_DOMAIN_DEVICE_SOUND;
+        break;
+    case VIR_DOMAIN_DEVICE_SOUND:
         if (!(dev->data.sound = virDomainSoundDefParseXML(node, ctxt, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "watchdog")) {
-        dev->type = VIR_DOMAIN_DEVICE_WATCHDOG;
+        break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
         if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "video")) {
-        dev->type = VIR_DOMAIN_DEVICE_VIDEO;
+        break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
         if (!(dev->data.video = virDomainVideoDefParseXML(node, def, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
-        dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
         if (!(dev->data.hostdev = virDomainHostdevDefParseXML(xmlopt, def, node,
                                                               ctxt, NULL, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "controller")) {
-        dev->type = VIR_DOMAIN_DEVICE_CONTROLLER;
+        break;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
         if (!(dev->data.controller = virDomainControllerDefParseXML(node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "graphics")) {
-        dev->type = VIR_DOMAIN_DEVICE_GRAPHICS;
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
         if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, ctxt, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "hub")) {
-        dev->type = VIR_DOMAIN_DEVICE_HUB;
+        break;
+    case VIR_DOMAIN_DEVICE_HUB:
         if (!(dev->data.hub = virDomainHubDefParseXML(node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "redirdev")) {
-        dev->type = VIR_DOMAIN_DEVICE_REDIRDEV;
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
         if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, NULL, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "rng")) {
-        dev->type = VIR_DOMAIN_DEVICE_RNG;
+        break;
+    case VIR_DOMAIN_DEVICE_RNG:
         if (!(dev->data.rng = virDomainRNGDefParseXML(node, ctxt, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "channel") ||
-               xmlStrEqual(node->name, BAD_CAST "console") ||
-               xmlStrEqual(node->name, BAD_CAST "parallel") ||
-               xmlStrEqual(node->name, BAD_CAST "serial")) {
-        dev->type = VIR_DOMAIN_DEVICE_CHR;
+        break;
+    case VIR_DOMAIN_DEVICE_CHR:
         if (!(dev->data.chr = virDomainChrDefParseXML(ctxt,
                                                       node,
                                                       def->seclabels,
                                                       def->nseclabels,
                                                       flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "smartcard")) {
-        dev->type = VIR_DOMAIN_DEVICE_SMARTCARD;
+        break;
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
         if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "memballoon")) {
-        dev->type = VIR_DOMAIN_DEVICE_MEMBALLOON;
+        break;
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
         if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(node, flags)))
             goto error;
-    } else if (xmlStrEqual(node->name, BAD_CAST "nvram")) {
-        dev->type = VIR_DOMAIN_DEVICE_NVRAM;
+        break;
+    case VIR_DOMAIN_DEVICE_NVRAM:
         if (!(dev->data.nvram = virDomainNVRAMDefParseXML(node, flags)))
             goto error;
-    } else {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("unknown device type"));
-        goto error;
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
     }
 
     /* callback to fill driver specific device aspects */
