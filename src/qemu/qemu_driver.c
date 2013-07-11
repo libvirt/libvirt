@@ -6292,13 +6292,13 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             ret = qemuDomainAttachSCSIDisk(conn, driver, vm, disk);
         } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("disk bus '%s' cannot be hotplugged."),
                            virDomainDiskBusTypeToString(disk->bus));
         }
         break;
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk device type '%s' cannot be hotplugged"),
                        virDomainDiskDeviceTypeToString(disk->device));
         break;
@@ -6331,8 +6331,8 @@ qemuDomainAttachDeviceControllerLive(virQEMUDriverPtr driver,
         ret = qemuDomainAttachPciControllerDevice(driver, vm, cont);
         break;
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("'%s' controller cannot be hotplugged."),
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("'%s' controller cannot be hot plugged."),
                        virDomainControllerTypeToString(cont->type));
         break;
     }
@@ -6391,8 +6391,8 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("device type '%s' cannot be attached"),
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live attach of device '%s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -6417,11 +6417,11 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                  disk->bus == VIR_DOMAIN_DISK_BUS_USB)
             ret = qemuDomainDetachDiskDevice(driver, vm, dev);
         else
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
         break;
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk device type '%s' cannot be detached"),
                        virDomainDiskDeviceTypeToString(disk->device));
         break;
@@ -6446,8 +6446,8 @@ qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
         ret = qemuDomainDetachPciControllerDevice(driver, vm, dev);
         break;
     default :
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("'%s' controller cannot be hotunplugged."),
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("'%s' controller cannot be hot unplugged."),
                        virDomainControllerTypeToString(cont->type));
     }
     return ret;
@@ -6478,8 +6478,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         ret = qemuDomainDetachHostDevice(driver, vm, dev);
         break;
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("This type of device cannot be hot unplugged"));
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live detach of device '%s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
         break;
     }
 
@@ -6592,7 +6593,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("device type '%s' cannot be updated"),
+                       _("live update of device '%s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -6686,8 +6687,9 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         break;
 
     default:
-         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("persistent attach of device is not supported"));
+         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                        _("persistent attach of device '%s' is not supported"),
+                        virDomainDeviceTypeToString(dev->type));
          return -1;
     }
     return 0;
@@ -6771,8 +6773,9 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("persistent detach of device is not supported"));
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("persistent detach of device '%s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
         return -1;
     }
     return 0;
@@ -6850,8 +6853,9 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
         break;
 
     default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("persistent update of device is not supported"));
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("persistent update of device '%s' is not supported"),
+                       virDomainDeviceTypeToString(dev->type));
         return -1;
     }
     return 0;
