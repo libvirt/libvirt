@@ -281,6 +281,9 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
         goto cleanup;
 
     open_max = sysconf(_SC_OPEN_MAX);
+    if (open_max < 0)
+        goto cleanup;
+
     for (i = 0; i < open_max; i++) {
         if (i != stdinfd &&
             i != pipefd) {

@@ -58,6 +58,7 @@ static int envsort(const void *a, const void *b) {
 
 int main(int argc, char **argv) {
     size_t i, n;
+    int open_max;
     char **origenv;
     char **newenv;
     char *cwd;
@@ -96,7 +97,10 @@ int main(int argc, char **argv) {
             fprintf(log, "ENV:%s\n", newenv[i]);
     }
 
-    for (i = 0; i < sysconf(_SC_OPEN_MAX); i++) {
+    open_max = sysconf(_SC_OPEN_MAX);
+    if (open_max < 0)
+        return EXIT_FAILURE;
+    for (i = 0; i < open_max; i++) {
         int f;
         int closed;
         if (i == fileno(log))

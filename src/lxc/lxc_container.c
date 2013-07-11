@@ -247,6 +247,11 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
     /* Just in case someone forget to set FD_CLOEXEC, explicitly
      * close all FDs before executing the container */
     open_max = sysconf(_SC_OPEN_MAX);
+    if (open_max < 0) {
+        virReportSystemError(errno, "%s",
+                             _("sysconf(_SC_OPEN_MAX) failed"));
+        goto cleanup;
+    }
     for (fd = 0; fd < open_max; fd++)
         if (fd != ttyfd && fd != control && fd != handshakefd) {
             int tmpfd = fd;

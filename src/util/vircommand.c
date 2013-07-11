@@ -511,6 +511,11 @@ virExec(virCommandPtr cmd)
     }
 
     openmax = sysconf(_SC_OPEN_MAX);
+    if (openmax < 0) {
+        virReportSystemError(errno,  "%s",
+                             _("sysconf(_SC_OPEN_MAX) failed"));
+        goto fork_error;
+    }
     for (fd = 3; fd < openmax; fd++) {
         if (fd == childin || fd == childout || fd == childerr)
             continue;
