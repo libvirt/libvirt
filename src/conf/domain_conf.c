@@ -1756,13 +1756,23 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_RNG:
         virDomainRNGDefFree(def->data.rng);
         break;
-    case VIR_DOMAIN_DEVICE_NONE:
-    case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_CHR:
+        virDomainChrDefFree(def->data.chr);
+        break;
+    case VIR_DOMAIN_DEVICE_FS:
+        virDomainFSDefFree(def->data.fs);
+        break;
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        virDomainSmartcardDefFree(def->data.smartcard);
+        break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        virDomainMemballoonDefFree(def->data.memballoon);
+        break;
     case VIR_DOMAIN_DEVICE_NVRAM:
+        virDomainNVRAMDefFree(def->data.nvram);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_NONE:
         break;
     }
 
@@ -9387,6 +9397,29 @@ virDomainDeviceDefParse(const char *xmlStr,
     } else if (xmlStrEqual(node->name, BAD_CAST "rng")) {
         dev->type = VIR_DOMAIN_DEVICE_RNG;
         if (!(dev->data.rng = virDomainRNGDefParseXML(node, ctxt, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "channel") ||
+               xmlStrEqual(node->name, BAD_CAST "console") ||
+               xmlStrEqual(node->name, BAD_CAST "parallel") ||
+               xmlStrEqual(node->name, BAD_CAST "serial")) {
+        dev->type = VIR_DOMAIN_DEVICE_CHR;
+        if (!(dev->data.chr = virDomainChrDefParseXML(ctxt,
+                                                      node,
+                                                      def->seclabels,
+                                                      def->nseclabels,
+                                                      flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "smartcard")) {
+        dev->type = VIR_DOMAIN_DEVICE_SMARTCARD;
+        if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "memballoon")) {
+        dev->type = VIR_DOMAIN_DEVICE_MEMBALLOON;
+        if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "nvram")) {
+        dev->type = VIR_DOMAIN_DEVICE_NVRAM;
+        if (!(dev->data.nvram = virDomainNVRAMDefParseXML(node, flags)))
             goto error;
     } else {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("unknown device type"));
