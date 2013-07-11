@@ -3256,8 +3256,60 @@ static const vshCmdOptDef opts_start[] = {
      .type = VSH_OT_BOOL,
      .help = N_("force fresh boot by discarding any managed save")
     },
+    {.name = "pass-fds",
+     .type = VSH_OT_STRING,
+     .help = N_("pass file descriptors N,M,... to the guest")
+    },
     {.name = NULL}
 };
+
+static int
+cmdStartGetFDs(vshControl *ctl,
+               const vshCmd *cmd,
+               size_t *nfdsret,
+               int **fdsret)
+{
+    const char *fdopt;
+    char **fdlist = NULL;
+    int *fds = NULL;
+    size_t nfds = 0;
+    size_t i;
+
+    *nfdsret = 0;
+    *fdsret = NULL;
+
+    if (vshCommandOptString(cmd, "pass-fds", &fdopt) <= 0)
+        return 0;
+
+    if (!(fdlist = virStringSplit(fdopt, ",", -1))) {
+        vshError(ctl, _("Unable to split FD list '%s'"), fdopt);
+        return -1;
+    }
+
+    for (i = 0; fdlist[i] != NULL; i++) {
+        int fd;
+        if (virStrToLong_i(fdlist[i], NULL, 10, &fd) < 0) {
+            vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
+            goto error;
+        }
+        if (VIR_EXPAND_N(fds, nfds, 1) < 0) {
+            vshError(ctl, "%s", _("Unable to allocate FD list"));
+            goto error;
+        }
+        fds[nfds - 1] = fd;
+    }
+
+    virStringFreeList(fdlist);
+
+    *fdsret = fds;
+    *nfdsret = nfds;
+    return 0;
+
+error:
+    virStringFreeList(fdlist);
+    VIR_FREE(fds);
+    return -1;
+}
 
 static bool
 cmdStart(vshControl *ctl, const vshCmd *cmd)
@@ -3269,6 +3321,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
     int rc;
+    size_t nfds = 0;
+    int *fds = NULL;
 
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME | VSH_BYUUID)))
@@ -3279,6 +3333,9 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
         return false;
     }
+
+    if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
+        return false;
 
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
@@ -3291,7 +3348,9 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 
     /* We can emulate force boot, even for older servers that reject it.  */
     if (flags & VIR_DOMAIN_START_FORCE_BOOT) {
-        if (virDomainCreateWithFlags(dom, flags) == 0)
+        if ((nfds ?
+             virDomainCreateWithFiles(dom, nfds, fds, flags) :
+             virDomainCreateWithFlags(dom, flags)) == 0)
             goto started;
         if (last_error->code != VIR_ERR_NO_SUPPORT &&
             last_error->code != VIR_ERR_INVALID_ARG) {
@@ -3313,8 +3372,9 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Prefer older API unless we have to pass a flag.  */
-    if ((flags ? virDomainCreateWithFlags(dom, flags)
-         : virDomainCreate(dom)) < 0) {
+    if ((nfds ? virDomainCreateWithFiles(dom, nfds, fds, flags) :
+         (flags ? virDomainCreateWithFlags(dom, flags)
+          : virDomainCreate(dom))) < 0) {
         vshError(ctl, _("Failed to start domain %s"), virDomainGetName(dom));
         goto cleanup;
     }
@@ -3331,6 +3391,7 @@ started:
 
 cleanup:
     virDomainFree(dom);
+    VIR_FREE(fds);
     return ret;
 }
 
@@ -6397,6 +6458,10 @@ static const vshCmdOptDef opts_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("automatically destroy the guest when virsh disconnects")
     },
+    {.name = "pass-fds",
+     .type = VSH_OT_STRING,
+     .help = N_("pass file descriptors N,M,... to the guest")
+    },
     {.name = NULL}
 };
 
@@ -6411,6 +6476,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     bool console = vshCommandOptBool(cmd, "console");
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
+    size_t nfds = 0;
+    int *fds = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -6418,12 +6485,18 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
+    if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
+        return false;
+
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
     if (vshCommandOptBool(cmd, "autodestroy"))
         flags |= VIR_DOMAIN_START_AUTODESTROY;
 
-    dom = virDomainCreateXML(ctl->conn, buffer, flags);
+    if (nfds)
+        dom = virDomainCreateXMLWithFiles(ctl->conn, buffer, nfds, fds, flags);
+    else
+        dom = virDomainCreateXML(ctl->conn, buffer, flags);
     VIR_FREE(buffer);
 
     if (dom != NULL) {
@@ -6438,6 +6511,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to create domain from %s"), from);
         ret = false;
     }
+    VIR_FREE(fds);
     return ret;
 }
 

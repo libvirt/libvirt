@@ -539,6 +539,7 @@ the I<--force> flag may be specified, requesting to disconnect any existing
 sessions, such as in a case of a broken connection.
 
 =item B<create> I<FILE> [I<--console>] [I<--paused>] [I<--autodestroy>]
+[I<--pass-fds N,M,...>]
 
 Create a domain from an XML <file>. An easy way to create the XML
 <file> is to use the B<dumpxml> command to obtain the definition of a
@@ -548,6 +549,11 @@ If I<--console> is requested, attach to the console after creation.
 If I<--autodestroy> is requested, then the guest will be automatically
 destroyed when virsh closes its connection to libvirt, or otherwise
 exits.
+
+If I<--pass-fds> is specified, the argument is a comma separated list
+of open file descriptors which should be pass on into the guest. The
+file descriptors will be re-numered in the guest, starting from 3. This
+is only supported with container based virtualization.
 
 B<Example>
 
@@ -1681,7 +1687,7 @@ For strict control over ordering, use a single mode at a time and
 repeat the command.
 
 =item B<start> I<domain-name-or-uuid> [I<--console>] [I<--paused>]
-[I<--autodestroy>] [I<--bypass-cache>] [I<--force-boot>]
+[I<--autodestroy>] [I<--bypass-cache>] [I<--force-boot>] [I<--pass-fds N,M,...>]
 
 Start a (previously defined) inactive domain, either from the last
 B<managedsave> state, or via a fresh boot if no managedsave state is
@@ -1694,6 +1700,11 @@ exits.  If I<--bypass-cache> is specified, and managedsave state exists,
 the restore will avoid the file system cache, although this may slow
 down the operation.  If I<--force-boot> is specified, then any
 managedsave state is discarded and a fresh boot occurs.
+
+If I<--pass-fds> is specified, the argument is a comma separated list
+of open file descriptors which should be pass on into the guest. The
+file descriptors will be re-numered in the guest, starting from 3. This
+is only supported with container based virtualization.
 
 =item B<suspend> I<domain>
 
