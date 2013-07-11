@@ -300,10 +300,10 @@ finished:
     success = true;
 
 cleanup:
-    for (i = 0; i < nActiveIfaces; i++)
+    for (i = 0; nActiveIfaces != -1 && i < nActiveIfaces; i++)
         VIR_FREE(activeNames[i]);
 
-    for (i = 0; i < nInactiveIfaces; i++)
+    for (i = 0; nInactiveIfaces != -1 && i < nInactiveIfaces; i++)
         VIR_FREE(inactiveNames[i]);
 
     VIR_FREE(activeNames);
