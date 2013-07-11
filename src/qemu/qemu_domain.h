@@ -168,6 +168,9 @@ struct _qemuDomainObjPrivate {
     size_t ncleanupCallbacks_max;
 
     virCgroupPtr cgroup;
+
+    virCond unplugFinished; /* signals that unpluggingDevice was unplugged */
+    const char *unpluggingDevice; /* alias of the device that is being unplugged */
 };
 
 typedef enum {

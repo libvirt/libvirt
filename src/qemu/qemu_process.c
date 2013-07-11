@@ -1313,6 +1313,37 @@ cleanup:
 }
 
 
+static int
+qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                               virDomainObjPtr vm,
+                               const char *devAlias)
+{
+    virQEMUDriverPtr driver = qemu_driver;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virDomainDeviceDef dev;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("Device %s removed from domain %p %s",
+              devAlias, vm, vm->def->name);
+
+    qemuDomainSignalDeviceRemoval(vm, devAlias);
+
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev) < 0)
+        goto cleanup;
+
+    qemuDomainRemoveDevice(driver, vm, &dev);
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        VIR_WARN("unable to save domain status with balloon change");
+
+cleanup:
+    virObjectUnlock(vm);
+    virObjectUnref(cfg);
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
@@ -1333,6 +1364,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainBalloonChange = qemuProcessHandleBalloonChange,
     .domainPMSuspendDisk = qemuProcessHandlePMSuspendDisk,
     .domainGuestPanic = qemuProcessHandleGuestPanic,
+    .domainDeviceDeleted = qemuProcessHandleDeviceDeleted,
 };
 
 static int

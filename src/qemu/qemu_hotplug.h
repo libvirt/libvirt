@@ -119,4 +119,11 @@ virDomainChrDefPtr
 qemuDomainChrRemove(virDomainDefPtr vmdef,
                     virDomainChrDefPtr chr);
 
+void qemuDomainRemoveDevice(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDeviceDefPtr dev);
+
+void qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
+                                   const char *devAlias);
+
 #endif /* __QEMU_HOTPLUG_H__ */
