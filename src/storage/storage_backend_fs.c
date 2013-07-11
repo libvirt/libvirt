@@ -351,6 +351,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
                       pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
     virCommandPtr cmd = NULL;
     int ret = -1;
+    int rc;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.nhost != 1) {
@@ -377,10 +378,12 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     }
 
     /* Short-circuit if already mounted */
-    if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Target '%s' is already mounted"),
-                       pool->def->target.path);
+    if ((rc = virStorageBackendFileSystemIsMounted(pool)) != 0) {
+        if (rc == 1) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Target '%s' is already mounted"),
+                           pool->def->target.path);
+        }
         return -1;
     }
 
