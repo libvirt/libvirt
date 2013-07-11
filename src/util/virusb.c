@@ -450,7 +450,7 @@ virUSBDeviceListAdd(virUSBDeviceListPtr list,
                        dev->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev, true);
+    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
 }
 
 virUSBDevicePtr

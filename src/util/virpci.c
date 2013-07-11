@@ -1669,7 +1669,7 @@ virPCIDeviceListAdd(virPCIDeviceListPtr list,
                        _("Device %s is already in use"), dev->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev, true);
+    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
 }
 
 
