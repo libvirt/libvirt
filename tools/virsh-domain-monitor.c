@@ -1599,7 +1599,7 @@ finished:
     success = true;
 
 cleanup:
-    for (i = 0; i < nnames; i++)
+    for (i = 0; nnames != -1 && i < nnames; i++)
         VIR_FREE(names[i]);
 
     if (!success) {
