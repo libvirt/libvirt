@@ -352,7 +352,7 @@ finished:
     success = true;
 
 cleanup:
-    for (i = 0; i < ndevices; i++)
+    for (i = 0; ndevices != -1 && i < ndevices; i++)
         VIR_FREE(names[i]);
     VIR_FREE(names);
 
