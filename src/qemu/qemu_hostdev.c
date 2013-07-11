@@ -644,7 +644,8 @@ inactivedevs:
     }
 
 resetvfnetconfig:
-    for (i = 0; i < last_processed_hostdev_vf; i++) {
+    for (i = 0; last_processed_hostdev_vf != -1 &&
+                i < last_processed_hostdev_vf; i++) {
          virDomainHostdevDefPtr hostdev = hostdevs[i];
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
