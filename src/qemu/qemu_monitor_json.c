@@ -75,6 +75,7 @@ static void qemuMonitorJSONHandleBlockJobReady(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -87,6 +88,7 @@ static qemuEventHandler eventHandlers[] = {
     { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
     { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
     { "BLOCK_JOB_READY", qemuMonitorJSONHandleBlockJobReady, },
+    { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
@@ -918,6 +920,19 @@ qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon,
                                    virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitPMSuspendDisk(mon);
+}
+
+static void
+qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    const char *device;
+
+    if (!(device = virJSONValueObjectGetString(data, "device"))) {
+        VIR_WARN("missing device in device deleted event");
+        return;
+    }
+
+    qemuMonitorEmitDeviceDeleted(mon, device);
 }
 
 int

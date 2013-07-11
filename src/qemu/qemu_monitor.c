@@ -1274,6 +1274,19 @@ int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorEmitDeviceDeleted(qemuMonitorPtr mon,
+                             const char *devAlias)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainDeviceDeleted, mon->vm, devAlias);
+
+    return ret;
+}
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

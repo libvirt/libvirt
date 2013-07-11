@@ -142,6 +142,9 @@ struct _qemuMonitorCallbacks {
                                virDomainObjPtr vm);
     int (*domainGuestPanic)(qemuMonitorPtr mon,
                             virDomainObjPtr vm);
+    int (*domainDeviceDeleted)(qemuMonitorPtr mon,
+                               virDomainObjPtr vm,
+                               const char *devAlias);
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -223,6 +226,8 @@ int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
 int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);
 int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon);
+int qemuMonitorEmitDeviceDeleted(qemuMonitorPtr mon,
+                                 const char *devAlias);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);

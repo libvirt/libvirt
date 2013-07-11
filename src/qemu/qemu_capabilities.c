@@ -233,6 +233,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "mlock",
 
               "vnc-share-policy", /* 150 */
+              "device-del-event",
     );
 
 struct _virQEMUCaps {
@@ -1335,6 +1336,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "BALLOON_CHANGE", QEMU_CAPS_BALLOON_EVENT },
     { "SPICE_MIGRATE_COMPLETED", QEMU_CAPS_SEAMLESS_MIGRATION },
+    { "DEVICE_DELETED", QEMU_CAPS_DEVICE_DEL_EVENT },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {

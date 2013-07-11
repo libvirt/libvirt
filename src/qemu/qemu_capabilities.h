@@ -189,6 +189,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DRIVE_DISCARD      = 148, /* -drive discard=off(ignore)|on(unmap) */
     QEMU_CAPS_MLOCK              = 149, /* -realtime mlock=on|off */
     QEMU_CAPS_VNC_SHARE_POLICY   = 150, /* set display sharing policy */
+    QEMU_CAPS_DEVICE_DEL_EVENT   = 151, /* DEVICE_DELETED event */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
