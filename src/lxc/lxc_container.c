@@ -1449,9 +1449,9 @@ static int lxcContainerSetupAllDisks(virDomainDefPtr vmDef,
 }
 
 
-static int lxcContainerSetupHostdevSubsysUSB(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
-                                             virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
-                                             virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+static int lxcContainerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
+                                             virDomainHostdevDefPtr def,
+                                             virSecurityManagerPtr securityDriver)
 {
     int ret = -1;
     char *src = NULL;
@@ -1541,9 +1541,9 @@ cleanup:
 }
 
 
-static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
-                                               virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
-                                               virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef,
+                                               virDomainHostdevDefPtr def,
+                                               virSecurityManagerPtr securityDriver)
 {
     char *src = NULL;
     int ret = -1;
@@ -1603,9 +1603,9 @@ cleanup:
 }
 
 
-static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
-                                            virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
-                                            virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef,
+                                            virDomainHostdevDefPtr def,
+                                            virSecurityManagerPtr securityDriver)
 {
     char *src = NULL;
     int ret = -1;
@@ -1873,9 +1873,9 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
  * It removes some capabilities that could be dangerous to
  * host system, since they are not currently "containerized"
  */
-static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
-{
 #if WITH_CAPNG
+static int lxcContainerDropCapabilities(bool keepReboot)
+{
     int ret;
 
     capng_get_caps_process();
@@ -1907,11 +1907,15 @@ static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
      * container it is fine for SECURE_NOROOT / SECURE_NO_SETUID_FIXUP to
      * be unmasked  - they can never escape the bounding set. */
 
-#else
-    VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
-#endif
     return 0;
 }
+#else
+static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
+{
+    VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
+    return 0;
+}
+#endif
 
 
 /**
