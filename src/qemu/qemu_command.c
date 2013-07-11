@@ -1408,12 +1408,12 @@ cleanup:
     return ret;
 }
 
-#define QEMU_PCI_ADDRESS_SLOT_LAST 32
-#define QEMU_PCI_ADDRESS_FUNCTION_LAST 8
+#define QEMU_PCI_ADDRESS_SLOT_LAST 31
+#define QEMU_PCI_ADDRESS_FUNCTION_LAST 7
 
 typedef struct {
     /* Each bit in a slot represents one function on that slot */
-    uint8_t slots[QEMU_PCI_ADDRESS_SLOT_LAST];
+    uint8_t slots[QEMU_PCI_ADDRESS_SLOT_LAST + 1];
 } qemuDomainPCIAddressBus;
 typedef qemuDomainPCIAddressBus *qemuDomainPCIAddressBusPtr;
 
@@ -1448,15 +1448,15 @@ static bool qemuPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs ATTRIBUTE_UN
                        addrs->nbuses - 1);
         return false;
     }
-    if (addr->function >= QEMU_PCI_ADDRESS_FUNCTION_LAST) {
+    if (addr->function > QEMU_PCI_ADDRESS_FUNCTION_LAST) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid PCI address: function must be < %u"),
+                       _("Invalid PCI address: function must be <= %u"),
                        QEMU_PCI_ADDRESS_FUNCTION_LAST);
         return false;
     }
-    if (addr->slot >= QEMU_PCI_ADDRESS_SLOT_LAST) {
+    if (addr->slot > QEMU_PCI_ADDRESS_SLOT_LAST) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid PCI address: slot must be < %u"),
+                       _("Invalid PCI address: slot must be <= %u"),
                        QEMU_PCI_ADDRESS_SLOT_LAST);
         return false;
     }
@@ -1859,7 +1859,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 
     /* Start the search at the last used bus and slot */
     for (a.slot++; a.bus < addrs->nbuses; a.bus++) {
-        for (; a.slot < QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
+        for (; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
             if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                 goto success;
 
@@ -1878,7 +1878,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
     } else {
         /* Check the buses from 0 up to the last used one */
         for (a.bus = 0; a.bus <= addrs->lastaddr.bus; a.bus++) {
-            for (a.slot = 1; a.slot < QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
+            for (a.slot = 1; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
                 if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                     goto success;
 
