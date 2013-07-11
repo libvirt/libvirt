@@ -269,6 +269,9 @@ mymain(void)
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
 
+    if (!(driver.domainEventState = virDomainEventStateNew()))
+        return EXIT_FAILURE;
+
     /* some dummy values from 'config file' */
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;

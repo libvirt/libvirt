@@ -2234,12 +2234,17 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainDiskDefPtr disk)
 {
     virDomainDeviceDef dev;
+    virDomainEventPtr event;
     size_t i;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
 
     virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, disk->info.alias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (vm->def->disks[i] == disk) {
@@ -2269,14 +2274,19 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
 
 static void
-qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainControllerDefPtr controller)
 {
+    virDomainEventPtr event;
     size_t i;
 
     VIR_DEBUG("Removing controller %s from domain %p %s",
               controller->info.alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, controller->info.alias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     for (i = 0; i < vm->def->ncontrollers; i++) {
         if (vm->def->controllers[i] == controller) {
@@ -2297,12 +2307,17 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virNetDevVPortProfilePtr vport;
+    virDomainEventPtr event;
     size_t i;
 
     VIR_DEBUG("Removing network interface %s from domain %p %s",
               net->info.alias, vm, vm->def->name);
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, net->info.alias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i] == net) {
@@ -2420,10 +2435,15 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainHostdevDefPtr hostdev)
 {
     virDomainNetDefPtr net = NULL;
+    virDomainEventPtr event;
     size_t i;
 
     VIR_DEBUG("Removing host device %s from domain %p %s",
               hostdev->info->alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, hostdev->info->alias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET) {
         net = hostdev->parent.data.net;
@@ -2477,12 +2497,18 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
 
 static void
-qemuDomainRemoveChrDevice(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainChrDefPtr chr)
 {
+    virDomainEventPtr event;
+
     VIR_DEBUG("Removing character device %s from domain %p %s",
               chr->info.alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     qemuDomainChrRemove(vm->def, chr);
     virDomainChrDefFree(chr);
