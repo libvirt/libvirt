@@ -1411,15 +1411,16 @@ cleanup:
 #define QEMU_PCI_ADDRESS_SLOT_LAST 32
 #define QEMU_PCI_ADDRESS_FUNCTION_LAST 8
 
-/*
- * Each bit represents a function
- * Each byte represents a slot
- */
-typedef uint8_t qemuDomainPCIAddressBus[QEMU_PCI_ADDRESS_SLOT_LAST];
+typedef struct {
+    /* Each bit in a slot represents one function on that slot */
+    uint8_t slots[QEMU_PCI_ADDRESS_SLOT_LAST];
+} qemuDomainPCIAddressBus;
+typedef qemuDomainPCIAddressBus *qemuDomainPCIAddressBusPtr;
+
 struct _qemuDomainPCIAddressSet {
-    qemuDomainPCIAddressBus *used;
+    qemuDomainPCIAddressBus *buses;
+    size_t nbuses;
     virDevicePCIAddress lastaddr;
-    size_t nbuses;        /* allocation of 'used' */
     bool dryRun;          /* on a dry run, new buses are auto-added
                              and addresses aren't saved in device infos */
 };
@@ -1489,11 +1490,11 @@ qemuDomainPCIAddressSetGrow(qemuDomainPCIAddressSetPtr addrs,
     i = addrs->nbuses;
     if (add <= 0)
         return 0;
-    if (VIR_EXPAND_N(addrs->used, addrs->nbuses, add) < 0)
+    if (VIR_EXPAND_N(addrs->buses, addrs->nbuses, add) < 0)
         return -1;
     /* reserve slot 0 on the new buses */
     for (; i < addrs->nbuses; i++)
-        addrs->used[i][0] = 0xFF;
+        addrs->buses[i].slots[0] = 0xFF;
     return add;
 }
 
@@ -1559,7 +1560,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if (!(str = qemuPCIAddressAsString(addr)))
         goto cleanup;
 
-    if (addrs->used[addr->bus][addr->slot] & (1 << addr->function)) {
+    if (addrs->buses[addr->bus].slots[addr->slot] & (1 << addr->function)) {
         if (info->addr.pci.function != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Attempted double use of PCI Address '%s' "
@@ -1575,7 +1576,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if ((info->addr.pci.function == 0) &&
         (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
-        if (addrs->used[addr->bus][addr->slot]) {
+        if (addrs->buses[addr->bus].slots[addr->slot]) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Attempted double use of PCI Address on slot '%s' "
                              "(need \"multifunction='off'\" for device "
@@ -1583,11 +1584,11 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                            str);
             goto cleanup;
         }
-        addrs->used[addr->bus][addr->slot] = 0xFF;
+        addrs->buses[addr->bus].slots[addr->slot] = 0xFF;
         VIR_DEBUG("Remembering PCI slot: %s (multifunction=off)", str);
     } else {
         VIR_DEBUG("Remembering PCI addr: %s", str);
-        addrs->used[addr->bus][addr->slot] |= 1 << addr->function;
+        addrs->buses[addr->bus].slots[addr->slot] |= 1 << addr->function;
     }
     ret = 0;
 cleanup:
@@ -1707,7 +1708,7 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     if (VIR_ALLOC(addrs) < 0)
         goto error;
 
-    if (VIR_ALLOC_N(addrs->used, nbuses) < 0)
+    if (VIR_ALLOC_N(addrs->buses, nbuses) < 0)
         goto error;
 
     addrs->nbuses = nbuses;
@@ -1716,7 +1717,7 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     /* reserve slot 0 in every bus - it's used by the host bridge on bus 0
      * and unusable on PCI bridges */
     for (i = 0; i < nbuses; i++)
-        addrs->used[i][0] = 0xFF;
+        addrs->buses[i].slots[0] = 0xFF;
 
     if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
         goto error;
@@ -1734,7 +1735,7 @@ error:
 static bool qemuDomainPCIAddressSlotInUse(qemuDomainPCIAddressSetPtr addrs,
                                           virDevicePCIAddressPtr addr)
 {
-    return !!addrs->used[addr->bus][addr->slot];
+    return !!addrs->buses[addr->bus].slots[addr->slot];
 }
 
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
@@ -1750,7 +1751,7 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
 
     VIR_DEBUG("Reserving PCI addr %s", str);
 
-    if (addrs->used[addr->bus][addr->slot] & (1 << addr->function)) {
+    if (addrs->buses[addr->bus].slots[addr->slot] & (1 << addr->function)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to reserve PCI address %s"), str);
         VIR_FREE(str);
@@ -1762,7 +1763,7 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
     addrs->lastaddr = *addr;
     addrs->lastaddr.function = 0;
     addrs->lastaddr.multi = 0;
-    addrs->used[addr->bus][addr->slot] |= 1 << addr->function;
+    addrs->buses[addr->bus].slots[addr->slot] |= 1 << addr->function;
     return 0;
 }
 
@@ -1779,7 +1780,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
 
     VIR_DEBUG("Reserving PCI slot %s", str);
 
-    if (addrs->used[addr->bus][addr->slot]) {
+    if (addrs->buses[addr->bus].slots[addr->slot]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to reserve PCI slot %s"), str);
         VIR_FREE(str);
@@ -1787,7 +1788,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
     }
 
     VIR_FREE(str);
-    addrs->used[addr->bus][addr->slot] = 0xFF;
+    addrs->buses[addr->bus].slots[addr->slot] = 0xFF;
     return 0;
 }
 
@@ -1820,7 +1821,7 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr)
 {
-    addrs->used[addr->bus][addr->slot] &= ~(1 << addr->function);
+    addrs->buses[addr->bus].slots[addr->slot] &= ~(1 << addr->function);
     return 0;
 }
 
@@ -1831,7 +1832,7 @@ qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
     if (!qemuPCIAddressValidate(addrs, addr))
         return -1;
 
-    addrs->used[addr->bus][addr->slot] = 0;
+    addrs->buses[addr->bus].slots[addr->slot] = 0;
     return 0;
 }
 
@@ -1840,7 +1841,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
     if (!addrs)
         return;
 
-    VIR_FREE(addrs->used);
+    VIR_FREE(addrs->buses);
     VIR_FREE(addrs);
 }
 
