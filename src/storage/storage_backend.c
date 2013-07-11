@@ -663,6 +663,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
                     }
                     break;
 
+                /* coverity[dead_error_begin] */
                 case VIR_STORAGE_FILE_FEATURE_LAST:
                     ;
                 }
