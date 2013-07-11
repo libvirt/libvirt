@@ -853,13 +853,13 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     for (i = 0; i < nttyFDs; i++) {
         virCommandAddArg(cmd, "--console");
         virCommandAddArgFormat(cmd, "%d", ttyFDs[i]);
-        virCommandPreserveFD(cmd, ttyFDs[i]);
+        virCommandPassFD(cmd, ttyFDs[i], 0);
     }
 
     for (i = 0; i < nfiles; i++) {
         virCommandAddArg(cmd, "--passfd");
         virCommandAddArgFormat(cmd, "%d", files[i]);
-        virCommandPreserveFD(cmd, files[i]);
+        virCommandPassFD(cmd, files[i], 0);
     }
 
     virCommandAddArgPair(cmd, "--security",
@@ -873,7 +873,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         virCommandAddArgList(cmd, "--veth", veths[i], NULL);
     }
 
-    virCommandPreserveFD(cmd, handshakefd);
+    virCommandPassFD(cmd, handshakefd, 0);
 
     return cmd;
 cleanup:

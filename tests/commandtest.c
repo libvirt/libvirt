@@ -194,8 +194,9 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
     int newfd3 = dup(STDERR_FILENO);
     int ret = -1;
 
-    virCommandPreserveFD(cmd, newfd1);
-    virCommandTransferFD(cmd, newfd3);
+    virCommandPassFD(cmd, newfd1, 0);
+    virCommandPassFD(cmd, newfd3,
+                     VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();

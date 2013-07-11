@@ -245,7 +245,8 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         virCommandAddArgFormat(cmd, "--use-vnet");
     virCommandAddArgFormat(cmd, "--br=%s", brname);
     virCommandAddArgFormat(cmd, "--fd=%d", pair[1]);
-    virCommandTransferFD(cmd, pair[1]);
+    virCommandPassFD(cmd, pair[1],
+                     VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     virCommandClearCaps(cmd);
 #ifdef CAP_NET_ADMIN
     virCommandAllowCap(cmd, CAP_NET_ADMIN);
@@ -6587,13 +6588,15 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     }
 
     for (i = 0; i < tapfdSize; i++) {
-        virCommandTransferFD(cmd, tapfd[i]);
+        virCommandPassFD(cmd, tapfd[i],
+                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         if (virAsprintf(&tapfdName[i], "%d", tapfd[i]) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vhostfdSize; i++) {
-        virCommandTransferFD(cmd, vhostfd[i]);
+        virCommandPassFD(cmd, vhostfd[i],
+                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0)
             goto cleanup;
     }
@@ -8365,7 +8368,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                             goto error;
                         }
 
-                        virCommandTransferFD(cmd, configfd);
+                        virCommandPassFD(cmd, configfd,
+                                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
                     }
                 }
                 virCommandAddArg(cmd, "-device");
@@ -8431,7 +8435,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         } else if (STREQ(migrateFrom, "stdio")) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
                 virCommandAddArgFormat(cmd, "fd:%d", migrateFd);
-                virCommandPreserveFD(cmd, migrateFd);
+                virCommandPassFD(cmd, migrateFd, 0);
             } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
                 virCommandAddArg(cmd, "exec:cat");
                 virCommandSetInputFD(cmd, migrateFd);
@@ -8460,7 +8464,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
             virCommandAddArg(cmd, migrateFrom);
-            virCommandPreserveFD(cmd, migrateFd);
+            virCommandPassFD(cmd, migrateFd, 0);
         } else if (STRPREFIX(migrateFrom, "unix")) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

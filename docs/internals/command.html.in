@@ -258,8 +258,9 @@
 <pre>
   int sharedfd = open("cmd.log", "w+");
   int childfd = open("conf.txt", "r");
-  virCommandPreserveFD(cmd, sharedfd);
-  virCommandTransferFD(cmd, childfd);
+  virCommandPassFD(cmd, sharedfd, 0);
+  virCommandPassFD(cmd, childfd,
+                   VIR_COMMAND_PASS_FD_CLOSE_PARENT);
   if (VIR_CLOSE(sharedfd) &lt; 0)
       goto cleanup;
 </pre>

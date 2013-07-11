@@ -51,11 +51,14 @@ virCommandPtr virCommandNewVAList(const char *binary, va_list list)
  * delayed until the Run/RunAsync methods
  */
 
-void virCommandPreserveFD(virCommandPtr cmd,
-                          int fd);
+enum {
+    /* Close the FD in the parent */
+    VIR_COMMAND_PASS_FD_CLOSE_PARENT = (1 << 0),
+};
 
-void virCommandTransferFD(virCommandPtr cmd,
-                          int fd);
+void virCommandPassFD(virCommandPtr cmd,
+                      int fd,
+                      unsigned int flags);
 
 void virCommandSetPidFile(virCommandPtr cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);

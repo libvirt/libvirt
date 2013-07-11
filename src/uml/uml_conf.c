@@ -332,7 +332,8 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
                 VIR_FORCE_CLOSE(fd_out);
                 return NULL;
             }
-            virCommandTransferFD(cmd, fd_out);
+            virCommandPassFD(cmd, fd_out,
+                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         }
         break;
    case VIR_DOMAIN_CHR_TYPE_PIPE:
