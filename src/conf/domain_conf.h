@@ -2688,4 +2688,8 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
 
 char *virDomainDefGetDefaultEmulator(virDomainDefPtr def, virCapsPtr caps);
 
+int virDomainDefFindDevice(virDomainDefPtr def,
+                           const char *devAlias,
+                           virDomainDeviceDefPtr dev);
+
 #endif /* __DOMAIN_CONF_H */

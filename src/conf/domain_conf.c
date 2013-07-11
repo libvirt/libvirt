@@ -18314,3 +18314,44 @@ virDomainDiskDefGenSecurityLabelDef(const char *model)
 
     return seclabel;
 }
+
+
+typedef struct {
+    const char *devAlias;
+    virDomainDeviceDefPtr dev;
+} virDomainDefFindDeviceCallbackData;
+
+static int
+virDomainDefFindDeviceCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               virDomainDeviceDefPtr dev,
+                               virDomainDeviceInfoPtr info,
+                               void *opaque)
+{
+    virDomainDefFindDeviceCallbackData *data = opaque;
+
+    if (STREQ_NULLABLE(info->alias, data->devAlias)) {
+        *data->dev = *dev;
+        return -1;
+    }
+    return 0;
+}
+
+int
+virDomainDefFindDevice(virDomainDefPtr def,
+                       const char *devAlias,
+                       virDomainDeviceDefPtr dev)
+{
+    virDomainDefFindDeviceCallbackData data = { devAlias, dev };
+
+    dev->type = VIR_DOMAIN_DEVICE_NONE;
+    virDomainDeviceInfoIterateInternal(def, virDomainDefFindDeviceCallback,
+                                       true, &data);
+
+    if (dev->type == VIR_DOMAIN_DEVICE_NONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no device found with alias %s"), devAlias);
+        return -1;
+    }
+
+    return 0;
+}
