@@ -1361,131 +1361,115 @@ cleanup:
 }
 
 
+/* Process the balloon driver statistics.  The request and data returned
+ * will be as follows (although the 'child[#]' entry will differ based on
+ * where it's run).
+ *
+ * { "execute": "qom-get","arguments": \
+ *    { "path": "/machine/i440fx/pci.0/child[7]","property": "guest-stats"} }
+ *
+ * {"return": {"stats": \
+ *               {"stat-swap-out": 0,
+ *                "stat-free-memory": 686350336,
+ *                "stat-minor-faults": 697283,
+ *                "stat-major-faults": 951,
+ *                "stat-total-memory": 1019924480,
+ *                "stat-swap-in": 0},
+ *            "last-update": 1371221540}}
+ *
+ * A value in "stats" can be -1 indicating it's never been collected/stored.
+ * The 'last-update' value could be used in the future in order to determine
+ * rates and/or whether data has been collected since a previous cycle.
+ * It's currently unused.
+ */
+#define GET_BALLOON_STATS(FIELD, TAG, DIVISOR)                                \
+    if (virJSONValueObjectHasKey(statsdata, FIELD) &&                         \
+       (got < nr_stats)) {                                                    \
+        if (virJSONValueObjectGetNumberUlong(statsdata, FIELD, &mem) < 0) {   \
+            VIR_DEBUG("Failed to get '%s' value", FIELD);                     \
+        } else {                                                              \
+            /* Not being collected? No point in providing bad data */         \
+            if (mem != -1UL) {                                                \
+                stats[got].tag = TAG;                                         \
+                stats[got].val = mem / DIVISOR;                               \
+                got++;                                                        \
+            }                                                                 \
+        }                                                                     \
+    }
+
+
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
+                                  char *balloonpath,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats)
 {
     int ret;
-    int got = 0;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-balloon",
-                                                     NULL);
+    virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    virJSONValuePtr statsdata;
+    unsigned long long mem;
+    int got = 0;
 
-    if (!cmd)
-        return -1;
+    ret = qemuMonitorJSONGetBalloonInfo(mon, &mem);
+    if (ret == 1 && (got < nr_stats)) {
+        stats[got].tag = VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON;
+        stats[got].val = mem;
+        got++;
+    }
+
+    if (!balloonpath)
+        goto cleanup;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", balloonpath,
+                                           "s:property", "guest-stats",
+                                           NULL)))
+        goto cleanup;
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
-    if (ret == 0) {
-        /* See if balloon soft-failed */
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
-            qemuMonitorJSONHasError(reply, "KVMMissingCap"))
-            goto cleanup;
-
-        /* See if any other fatal error occurred */
+    if (ret == 0)
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
-        /* Success */
-        if (ret == 0) {
-            virJSONValuePtr data;
-            unsigned long long mem;
+    if (ret < 0)
+        goto cleanup;
 
-            if (!(data = virJSONValueObjectGet(reply, "return"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("info balloon reply was missing return data"));
-                ret = -1;
-                goto cleanup;
-            }
-
-            if (virJSONValueObjectHasKey(data, "actual") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon actual"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON;
-                stats[got].val = (mem/1024);
-                got++;
-            }
-
-            if (virJSONValueObjectHasKey(data, "mem_swapped_in") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "mem_swapped_in", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon mem_swapped_in"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_SWAP_IN;
-                stats[got].val = (mem/1024);
-                got++;
-            }
-            if (virJSONValueObjectHasKey(data, "mem_swapped_out") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "mem_swapped_out", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon mem_swapped_out"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_SWAP_OUT;
-                stats[got].val = (mem/1024);
-                got++;
-            }
-            if (virJSONValueObjectHasKey(data, "major_page_faults") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "major_page_faults", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon major_page_faults"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT;
-                stats[got].val = mem;
-                got++;
-            }
-            if (virJSONValueObjectHasKey(data, "minor_page_faults") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "minor_page_faults", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon minor_page_faults"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT;
-                stats[got].val = mem;
-                got++;
-            }
-            if (virJSONValueObjectHasKey(data, "free_mem") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "free_mem", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon free_mem"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_UNUSED;
-                stats[got].val = (mem/1024);
-                got++;
-            }
-            if (virJSONValueObjectHasKey(data, "total_mem") && (got < nr_stats)) {
-                if (virJSONValueObjectGetNumberUlong(data, "total_mem", &mem) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("info balloon reply was missing balloon total_mem"));
-                    ret = -1;
-                    goto cleanup;
-                }
-                stats[got].tag = VIR_DOMAIN_MEMORY_STAT_AVAILABLE;
-                stats[got].val = (mem/1024);
-                got++;
-            }
-        }
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-get reply was missing return data"));
+        goto cleanup;
     }
 
-    if (got > 0)
-        ret = got;
+    if (!(statsdata = virJSONValueObjectGet(data, "stats"))) {
+        VIR_DEBUG("data does not include 'stats'");
+        goto cleanup;
+    }
+
+    GET_BALLOON_STATS("stat-swap-in",
+                      VIR_DOMAIN_MEMORY_STAT_SWAP_IN, 1024);
+    GET_BALLOON_STATS("stat-swap-out",
+                      VIR_DOMAIN_MEMORY_STAT_SWAP_OUT, 1024);
+    GET_BALLOON_STATS("stat-major-faults",
+                      VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT, 1);
+    GET_BALLOON_STATS("stat-minor-faults",
+                      VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT, 1);
+    GET_BALLOON_STATS("stat-free-memory",
+                      VIR_DOMAIN_MEMORY_STAT_UNUSED, 1024);
+    GET_BALLOON_STATS("stat-total-memory",
+                      VIR_DOMAIN_MEMORY_STAT_AVAILABLE, 1024);
+
 
 cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
+
+    if (got > 0)
+        ret = got;
+
     return ret;
 }
+#undef GET_BALLOON_STATS
 
 
 /*

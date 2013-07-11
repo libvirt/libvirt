@@ -59,6 +59,7 @@ int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long long *currmem);
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
+                                  char *balloonpath,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats);
 int qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,

@@ -1491,10 +1491,14 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (mon->json)
-        ret = qemuMonitorJSONGetMemoryStats(mon, stats, nr_stats);
-    else
+    if (mon->json) {
+        ignore_value(qemuMonitorFindBalloonObjectPath(mon, mon->vm, "/"));
+        mon->ballooninit = true;
+        ret = qemuMonitorJSONGetMemoryStats(mon, mon->balloonpath,
+                                            stats, nr_stats);
+    } else {
         ret = qemuMonitorTextGetMemoryStats(mon, stats, nr_stats);
+    }
     return ret;
 }
 
