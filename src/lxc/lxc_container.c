@@ -1762,6 +1762,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     char *sec_mount_options;
     char *stateDir = NULL;
 
+    VIR_DEBUG("Setup pivot root");
+
     if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
         return -1;
 
@@ -1864,12 +1866,16 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
     char *newroot;
     size_t i;
 
+    VIR_DEBUG("Resolving symlinks");
+
     for (i = 0; i < vmDef->nfss; i++) {
         virDomainFSDefPtr fs = vmDef->fss[i];
         if (!fs->src)
             continue;
-        if (virFileResolveAllLinks(fs->src, &newroot) < 0)
+        if (virFileResolveAllLinks(fs->src, &newroot) < 0) {
+            VIR_DEBUG("Fail to resolve link %s", fs->src);
             return -1;
+        }
 
         VIR_DEBUG("Resolved '%s' to %s", fs->src, newroot);
 
