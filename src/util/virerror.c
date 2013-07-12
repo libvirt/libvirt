@@ -1243,6 +1243,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("access denied: %s");
             break;
+        case VIR_ERR_DBUS_SERVICE:
+            if (info == NULL)
+                errmsg = _("error from service");
+            else
+                errmsg = _("error from service: %s");
+            break;
     }
     return errmsg;
 }

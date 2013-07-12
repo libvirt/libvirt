@@ -128,6 +128,11 @@ test_programs = virshtest sockettest \
         fchosttest \
 	$(NULL)
 
+if WITH_DBUS
+test_programs += virdbustest
+endif
+
+
 if WITH_GNUTLS
 test_programs += virnettlscontexttest
 endif
@@ -640,6 +645,14 @@ vircgroupmock_la_CFLAGS = $(AM_CFLAGS)
 vircgroupmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
+if WITH_DBUS
+virdbustest_SOURCES = \
+	virdbustest.c testutils.h testutils.c
+virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virdbustest_LDADD = $(LDADDS)
+else
+EXTRA_DIST += virdbustest.c
+endif
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c

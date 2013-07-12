@@ -191,6 +191,7 @@
 /tests/virbitmaptest
 /tests/virbuftest
 /tests/vircgrouptest
+/tests/virdbustest
 /tests/virdrivermoduletest
 /tests/virendiantest
 /tests/virhashtest

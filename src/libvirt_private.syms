@@ -1282,8 +1282,12 @@ virConfWriteMem;
 
 
 # util/virdbus.h
+virDBusCallMethod;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
+virDBusMessageDecode;
+virDBusMessageEncode;
+virDBusMessageRead;
 
 
 # util/virdnsmasq.h

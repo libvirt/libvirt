@@ -27,10 +27,21 @@
 #  include <dbus/dbus.h>
 # else
 #  define DBusConnection void
+#  define DBusMessage void
 # endif
 # include "internal.h"
 
 DBusConnection *virDBusGetSystemBus(void);
 DBusConnection *virDBusGetSessionBus(void);
+
+int virDBusCallMethod(DBusConnection *conn,
+                      DBusMessage **reply,
+                      const char *destination,
+                      const char *path,
+                      const char *interface,
+                      const char *member,
+                      const char *types, ...);
+int virDBusMessageRead(DBusMessage *msg,
+                       const char *types, ...);
 
 #endif /* __VIR_DBUS_H__ */

@@ -294,6 +294,7 @@ typedef enum {
     VIR_ERR_RESOURCE_BUSY = 87,         /* resource is already in use */
     VIR_ERR_ACCESS_DENIED = 88,         /* operation on the object/resource
                                            was denied */
+    VIR_ERR_DBUS_SERVICE = 89,          /* error from a dbus service */
 } virErrorNumber;
 
 /**
