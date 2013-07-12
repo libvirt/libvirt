@@ -2415,8 +2415,7 @@ remoteDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     int rv = -1;
     struct private_data *priv = dom->conn->privateData;
     remote_domain_create_with_flags_args args;
-    remote_domain_lookup_by_uuid_args args2;
-    remote_domain_lookup_by_uuid_ret ret2;
+    remote_domain_create_with_flags_args ret;
 
     remoteDriverLock(priv);
 
@@ -2425,23 +2424,12 @@ remoteDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS,
              (xdrproc_t)xdr_remote_domain_create_with_flags_args, (char *)&args,
-             (xdrproc_t)xdr_void, (char *)NULL) == -1) {
+             (xdrproc_t)xdr_remote_domain_create_with_flags_ret, (char *)&ret) == -1) {
         goto done;
     }
 
-    /* Need to do a lookup figure out ID of newly started guest, because
-     * bug in design of REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS means we aren't getting
-     * it returned.
-     */
-    memcpy(args2.uuid, dom->uuid, VIR_UUID_BUFLEN);
-    memset(&ret2, 0, sizeof(ret2));
-    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_LOOKUP_BY_UUID,
-             (xdrproc_t) xdr_remote_domain_lookup_by_uuid_args, (char *) &args2,
-             (xdrproc_t) xdr_remote_domain_lookup_by_uuid_ret, (char *) &ret2) == -1)
-        goto done;
-
-    dom->id = ret2.dom.id;
-    xdr_free((xdrproc_t) &xdr_remote_domain_lookup_by_uuid_ret, (char *) &ret2);
+    dom->id = ret.dom.id;
+    xdr_free((xdrproc_t) &xdr_remote_domain_create_with_flags_ret, (char *) &ret);
     rv = 0;
 
 done:
