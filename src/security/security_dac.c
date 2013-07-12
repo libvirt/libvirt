@@ -41,6 +41,8 @@ typedef virSecurityDACData *virSecurityDACDataPtr;
 struct _virSecurityDACData {
     uid_t user;
     gid_t group;
+    gid_t *groups;
+    int ngroups;
     bool dynamicOwnership;
 };
 
@@ -122,9 +124,10 @@ int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
     return 0;
 }
 
-static
-int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
-                         uid_t *uidPtr, gid_t *gidPtr)
+static int
+virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
+                     uid_t *uidPtr, gid_t *gidPtr,
+                     gid_t **groups, int *ngroups)
 {
     int ret;
 
@@ -135,8 +138,13 @@ int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         return -1;
     }
 
-    if ((ret = virSecurityDACParseIds(def, uidPtr, gidPtr)) <= 0)
+    if ((ret = virSecurityDACParseIds(def, uidPtr, gidPtr)) <= 0) {
+        if (groups)
+            *groups = NULL;
+        if (ngroups)
+            *ngroups = 0;
         return ret;
+    }
 
     if (!priv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -149,6 +157,10 @@ int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         *uidPtr = priv->user;
     if (gidPtr)
         *gidPtr = priv->group;
+    if (groups)
+        *groups = priv->groups;
+    if (ngroups)
+        *ngroups = priv->ngroups;
 
     return 0;
 }
@@ -233,8 +245,10 @@ virSecurityDACOpen(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 static int
-virSecurityDACClose(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityDACClose(virSecurityManagerPtr mgr)
 {
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    VIR_FREE(priv->groups);
     return 0;
 }
 
@@ -247,6 +261,21 @@ static const char * virSecurityDACGetModel(virSecurityManagerPtr mgr ATTRIBUTE_U
 static const char * virSecurityDACGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
     return "0";
+}
+
+static int
+virSecurityDACPreFork(virSecurityManagerPtr mgr)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    int ngroups;
+
+    VIR_FREE(priv->groups);
+    priv->ngroups = 0;
+    if ((ngroups = virGetGroupList(priv->user, priv->group,
+                                   &priv->groups)) < 0)
+        return -1;
+    priv->ngroups = ngroups;
+    return 0;
 }
 
 static int
@@ -437,7 +466,7 @@ virSecurityDACSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
     uid_t user;
     gid_t group;
 
-    if (virSecurityDACGetIds(def, priv, &user, &group))
+    if (virSecurityDACGetIds(def, priv, &user, &group, NULL, NULL))
         return -1;
 
     return virSecurityDACSetOwnership(file, user, group);
@@ -456,7 +485,7 @@ virSecurityDACSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
     uid_t user;
     gid_t group;
 
-    if (virSecurityDACGetIds(def, priv, &user, &group))
+    if (virSecurityDACGetIds(def, priv, &user, &group, NULL, NULL))
         return -1;
 
     return virSecurityDACSetOwnership(file, user, group);
@@ -602,7 +631,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     uid_t user;
     gid_t group;
 
-    if (virSecurityDACGetIds(def, priv, &user, &group))
+    if (virSecurityDACGetIds(def, priv, &user, &group, NULL, NULL))
         return -1;
 
     switch (dev->type) {
@@ -838,25 +867,20 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
 {
     uid_t user;
     gid_t group;
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     gid_t *groups;
     int ngroups;
-    int ret = -1;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
 
-    if (virSecurityDACGetIds(def, priv, &user, &group))
-        return -1;
-    ngroups = virGetGroupList(user, group, &groups);
-    if (ngroups < 0)
+    if (virSecurityDACGetIds(def, priv, &user, &group, &groups, &ngroups))
         return -1;
 
-    VIR_DEBUG("Dropping privileges of DEF to %u:%u", user, group);
+    VIR_DEBUG("Dropping privileges of DEF to %u:%u, %d supplemental groups",
+              (unsigned int) user, (unsigned int) group, ngroups);
 
     if (virSetUIDGID(user, group, groups, ngroups) < 0)
-        goto cleanup;
-    ret = 0;
-cleanup:
-    VIR_FREE(groups);
-    return ret;
+        return -1;
+
+    return 0;
 }
 
 
@@ -1036,6 +1060,8 @@ virSecurityDriver virSecurityDriverDAC = {
 
     .getModel                           = virSecurityDACGetModel,
     .getDOI                             = virSecurityDACGetDOI,
+
+    .preFork                            = virSecurityDACPreFork,
 
     .domainSecurityVerify               = virSecurityDACVerify,
 
