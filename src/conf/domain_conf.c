@@ -2780,13 +2780,49 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 
 static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
-                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virDomainDefPtr def,
                                     virCapsPtr caps ATTRIBUTE_UNUSED)
 {
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
-        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
-        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
+        virDomainChrDefPtr chr = dev->data.chr;
+        virDomainChrDefPtr **arrPtr;
+        size_t i, *cnt;
+
+        virDomainChrGetDomainPtrs(def, chr, &arrPtr, &cnt);
+
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
+            chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+
+        if (chr->target.port == -1 &&
+            (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL ||
+             chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL ||
+             chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)) {
+            int maxport = -1;
+
+            for (i = 0; i < *cnt; i++) {
+                if ((*arrPtr)[i]->target.port > maxport)
+                    maxport = (*arrPtr)[i]->target.port;
+            }
+
+            chr->target.port = maxport + 1;
+        }
+
+        if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
+            chr->info.addr.vioserial.port == 0) {
+            int maxport = 0;
+
+            for (i = 0; i < *cnt; i++) {
+                virDomainChrDefPtr thischr = (*arrPtr)[i];
+                if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
+                    thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
+                    thischr->info.addr.vioserial.bus == chr->info.addr.vioserial.bus &&
+                    (int)thischr->info.addr.vioserial.port > maxport)
+                    maxport = thischr->info.addr.vioserial.port;
+            }
+            chr->info.addr.vioserial.port = maxport + 1;
+        }
+    }
 
     return 0;
 }
