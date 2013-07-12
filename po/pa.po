@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-07-11 18:12-0400\n"
+"POT-Creation-Date: 2013-07-12 08:54-0400\n"
 "PO-Revision-Date: 2013-01-28 14:11+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1051,7 +1051,7 @@ msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌ�
 #: src/qemu/qemu_driver.c:14410 src/qemu/qemu_driver.c:14458
 #: src/qemu/qemu_driver.c:14495 src/qemu/qemu_driver.c:14558
 #: src/qemu/qemu_driver.c:14580 src/qemu/qemu_driver.c:14631
-#: src/qemu/qemu_driver.c:14653 src/qemu/qemu_migration.c:3616
+#: src/qemu/qemu_driver.c:14653 src/qemu/qemu_migration.c:3614
 #: src/uml/uml_driver.c:2449 src/xen/xen_driver.c:2304
 #: src/xen/xen_hypervisor.c:1175 src/xen/xen_hypervisor.c:1250
 #: src/xen/xen_hypervisor.c:1363 src/xen/xm_internal.c:697
@@ -7610,11 +7610,11 @@ msgstr "ਸੁਰੱਖਿਅਤ ਫਲੈਗ ਨਾਲ virDomainGetXMLDesc"
 msgid "domainMigratePrepare did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3215
+#: src/libvirt.c:4699 src/qemu/qemu_migration.c:3213
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare2 ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3360
+#: src/libvirt.c:4845 src/qemu/qemu_migration.c:3358
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "uri ਨੂੰ domainMigratePrepare3 ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
@@ -7641,7 +7641,7 @@ msgstr ""
 msgid "offline migration is not supported by the source host"
 msgstr ""
 
-#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3544
+#: src/libvirt.c:5259 src/libvirt.c:5499 src/qemu/qemu_migration.c:3542
 msgid "offline migration is not supported by the destination host"
 msgstr ""
 
@@ -10517,7 +10517,7 @@ msgstr "libhal_get_all_devices ਫੇਲ ਹੋਇਆ"
 
 #: src/node_device/node_device_hal.c:681 src/qemu/qemu_migration.c:1278
 #: src/qemu/qemu_migration.c:1640 src/qemu/qemu_migration.c:1672
-#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2841
+#: src/qemu/qemu_migration.c:1678 src/qemu/qemu_migration.c:2839
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -12329,7 +12329,7 @@ msgstr "ਡਿਸਕ ਮਾਰਗ %s ਵਰਤਣ ਦੀ ਮਨਜੂਰੀ ਤ�
 msgid "Unable to deny access for disk path %s"
 msgstr "ਡੋਮੇਨ %s ਤੋਂ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4248
+#: src/qemu/qemu_cgroup.c:157 src/qemu/qemu_migration.c:4246
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ %s ਲਈ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇਲ"
@@ -14005,8 +14005,8 @@ msgstr "ਕੋਈ ਡੋਮੇਨ id %d ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾ�
 msgid "domain is pmsuspended"
 msgstr "ਡੋਮੇਨ ਮੁਅੱਤਲ ਕੀਤੀ ਗਈ ਹੈ"
 
-#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4027
-#: src/qemu/qemu_migration.c:4172 src/qemu/qemu_process.c:580
+#: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4025
+#: src/qemu/qemu_migration.c:4170 src/qemu/qemu_process.c:580
 #: src/qemu/qemu_process.c:3886
 msgid "resume operation failed"
 msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
@@ -14116,9 +14116,9 @@ msgstr "%s ਵਿੱਚ ਲਿਖਣ ਤੋਂ ਅਸਮਰਥ"
 #: src/qemu/qemu_driver.c:10674 src/qemu/qemu_driver.c:11180
 #: src/qemu/qemu_driver.c:12175 src/qemu/qemu_driver.c:12227
 #: src/qemu/qemu_driver.c:12883 src/qemu/qemu_hotplug.c:459
-#: src/qemu/qemu_hotplug.c:843 src/qemu/qemu_migration.c:2899
-#: src/qemu/qemu_migration.c:3208 src/qemu/qemu_migration.c:3552
-#: src/qemu/qemu_migration.c:3947 src/qemu/qemu_process.c:558
+#: src/qemu/qemu_hotplug.c:843 src/qemu/qemu_migration.c:2897
+#: src/qemu/qemu_migration.c:3206 src/qemu/qemu_migration.c:3550
+#: src/qemu/qemu_migration.c:3945 src/qemu/qemu_process.c:558
 #: src/qemu/qemu_process.c:571
 msgid "guest unexpectedly quit"
 msgstr "ਗਿਸਟ ਅਚਾਨਕ ਬੰਦ ਹੋ ਗਿਆ"
@@ -15538,7 +15538,7 @@ msgid "Source host lock driver %s different from target %s"
 msgstr ""
 
 #: src/qemu/qemu_migration.c:1280 src/qemu/qemu_migration.c:1678
-#: src/qemu/qemu_migration.c:2843
+#: src/qemu/qemu_migration.c:2841
 msgid "canceled by client"
 msgstr "ਕਲਾਂਈਟ ਦੁਆਰਾ ਰੱਦ ਕੀਤੀ ਸੀ"
 
@@ -15577,7 +15577,7 @@ msgstr "ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 msgid "unexpectedly failed"
 msgstr "ਅਚਾਨਕ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_migration.c:1696 src/qemu/qemu_migration.c:2911
+#: src/qemu/qemu_migration.c:1696 src/qemu/qemu_migration.c:2909
 msgid "migration job"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਜੌਬ"
 
@@ -15623,7 +15623,7 @@ msgstr ""
 msgid "target domain name doesn't match source name"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2190 src/qemu/qemu_migration.c:3099
+#: src/qemu/qemu_migration.c:2190 src/qemu/qemu_migration.c:3097
 msgid "cannot create pipe for tunnelled migration"
 msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
 
@@ -15650,94 +15650,94 @@ msgstr "URI %s ਪਾਰਸ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 msgid "missing host in migration URI: %s"
 msgstr "ਡੋਮੇਨ ਨਾਂ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/qemu/qemu_migration.c:2563
+#: src/qemu/qemu_migration.c:2561
 msgid "poll failed in migration tunnel"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2581
+#: src/qemu/qemu_migration.c:2579
 msgid "failed to read from wakeup fd"
 msgstr "wakeup fd ਤੋਂ ਪੜ੍ਹਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ ਹੈ"
 
-#: src/qemu/qemu_migration.c:2603
+#: src/qemu/qemu_migration.c:2601
 msgid "tunnelled migration failed to read from qemu"
 msgstr "tunnelled ਮਾਈਗਰੇਸ਼ਨ qemu ਤੋਂ ਪੜਨ ਵਿੱਚ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_migration.c:2647
+#: src/qemu/qemu_migration.c:2645
 msgid "Unable to make pipe"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/qemu/qemu_migration.c:2663
+#: src/qemu/qemu_migration.c:2661
 msgid "Unable to create migration thread"
 msgstr "ਮਾਈਗਰੇਸ਼ ਥਰਿੱਡ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:2687
+#: src/qemu/qemu_migration.c:2685
 msgid "failed to wakeup migration tunnel"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਟੰਨਲ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_migration.c:2743
+#: src/qemu/qemu_migration.c:2741
 #, fuzzy, c-format
 msgid "Unable to set FD %d blocking"
 msgstr "cloexec ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:2799
+#: src/qemu/qemu_migration.c:2797
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2919
+#: src/qemu/qemu_migration.c:2917
 msgid "failed to accept connection from qemu"
 msgstr "ਡਰਾਈਵਰ ਤੋਂ ਕੁਨੈਕਸ਼ਨ ਸਵੀਕਾਰ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_migration.c:3076
+#: src/qemu/qemu_migration.c:3074
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "tunnelled ਮਾਈਗਰੇਸ਼ ਦੇ ਸਹਿਯੋਗ ਲਈ ਸਰੋਤ qemu ਬਹੁਤ ਪੁਰਾਣਾ ਹੈ"
 
-#: src/qemu/qemu_migration.c:3512
+#: src/qemu/qemu_migration.c:3510
 #, fuzzy, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "ਰਿਮੋਟ libvirt URI %s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_migration.c:3538
+#: src/qemu/qemu_migration.c:3536
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "ਨੀਯਤ libvirt ਪੀਅਰ-ਤੋਂ-ਪੀਅਰ ਮਾਈਗਰੇਸ਼ਨ ਪਰੋਟੋਕਾਲ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/qemu/qemu_migration.c:3668 src/qemu/qemu_migration.c:3749
+#: src/qemu/qemu_migration.c:3666 src/qemu/qemu_migration.c:3747
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "ਫੇਲ ਹੋਣ ਤੋਂ ਬਾਅਦ ਗਿਸਟ %s ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_migration.c:3814
+#: src/qemu/qemu_migration.c:3812
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3825
+#: src/qemu/qemu_migration.c:3823
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr " ਮਾਈਗਰੇਟ: ਪੀਅਰਟੂਪੀਅਰ/ਸਿੱਧੀ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਅਚਾਨਕ migrateuri"
 
-#: src/qemu/qemu_migration.c:3861
+#: src/qemu/qemu_migration.c:3859
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr "%s ਲਈ ਪੋਰਟ ਪਰੋਫਾਈਲ ਸੰਜੋਗ ਫੇਲ ਹੋਇਆ ਹੈ"
 
-#: src/qemu/qemu_migration.c:4003
+#: src/qemu/qemu_migration.c:4001
 msgid "can't get vmdef"
 msgstr "vmdef ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_migration.c:4291
+#: src/qemu/qemu_migration.c:4289
 msgid "Unable to set cloexec flag"
 msgstr "cloexec ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_migration.c:4389
+#: src/qemu/qemu_migration.c:4387
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:4424
+#: src/qemu/qemu_migration.c:4422
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ਡੋਮੇਨ '%s' ਆਉਣ ਵਾਲੀ ਮਾਈਗਰੇਸ਼ਨ ਨੂੰ ਵਰਤ ਨਹੀਂ ਰਿਹਾ ਹੈ"
 
-#: src/qemu/qemu_migration.c:4426
+#: src/qemu/qemu_migration.c:4424
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ਡੋਮੇਨ '%s' ਮਾਈਗਰੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਰਿਹਾ"
