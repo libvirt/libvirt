@@ -6608,6 +6608,7 @@ qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
         return -1;
 
     virCommandAddArgList(cmd, "-device", devstr, NULL);
+    VIR_FREE(devstr);
     return 0;
 }
 
