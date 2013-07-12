@@ -1015,6 +1015,9 @@ mymain(void)
     DO_TEST("mlock-off", QEMU_CAPS_MLOCK);
     DO_TEST("mlock-unsupported", NONE);
 
+    DO_TEST_PARSE_ERROR("pci-bridge-negative-index-invalid",
+                        QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

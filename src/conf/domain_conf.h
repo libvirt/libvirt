@@ -790,7 +790,7 @@ struct _virDomainVirtioSerialOpts {
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
     int type;
-    int idx;
+    unsigned int idx;
     int model; /* -1 == undef */
     unsigned int queues;
     union {

@@ -2653,7 +2653,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
 
     for (i = 0; i < def->ncontrollers; i++) {
         cont = def->controllers[i];
-        if (cont->idx > max_idx[cont->type])
+        if ((int) cont->idx > max_idx[cont->type])
             max_idx[cont->type] = cont->idx;
     }
 
@@ -5567,7 +5567,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     idx = virXMLPropString(node, "index");
     if (idx) {
-        if (virStrToLong_i(idx, NULL, 10, &def->idx) < 0) {
+        if (virStrToLong_ui(idx, NULL, 10, &def->idx) < 0 ||
+            def->idx > INT_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot parse controller index %s"), idx);
             goto error;
@@ -14381,7 +14382,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf,
-                      "    <controller type='%s' index='%d'",
+                      "    <controller type='%s' index='%u'",
                       type, def->idx);
 
     if (model) {

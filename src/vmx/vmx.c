@@ -1653,8 +1653,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     for (controller = 0; controller < def->ncontrollers; ++controller) {
         if (def->controllers[controller]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            if (def->controllers[controller]->idx < 0 ||
-                def->controllers[controller]->idx > 3) {
+            if (def->controllers[controller]->idx > 3) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("SCSI controller index %d out of [0..3] range"),
                                def->controllers[controller]->idx);
