@@ -5668,6 +5668,13 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  "have an address"));
                 goto error;
             }
+            if (def->idx != 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("pci-root controller should have "
+                                 "index 0"));
+                goto error;
+            }
+
         }
 
     default:
