@@ -823,16 +823,8 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
         }
     }
 
-    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-        if (virAsprintf(&hostdev->info->alias, "hostdev-%s-%d-%d-%d",
-                        hostdev->source.subsys.u.scsi.adapter,
-                        hostdev->source.subsys.u.scsi.bus,
-                        hostdev->source.subsys.u.scsi.target,
-                        hostdev->source.subsys.u.scsi.unit) < 0)
-            return -1;
-    } else if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0) {
+    if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0)
         return -1;
-    }
 
     return 0;
 }
