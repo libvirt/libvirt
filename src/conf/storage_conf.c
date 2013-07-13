@@ -456,73 +456,35 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
     }
 }
 
-
 static int
-virStoragePoolDefParseAuthChap(xmlXPathContextPtr ctxt,
-                               virStoragePoolAuthChapPtr auth)
+virStoragePoolDefParseAuthSecret(xmlXPathContextPtr ctxt,
+                                 virStoragePoolAuthSecretPtr secret)
 {
     char *uuid = NULL;
     int ret = -1;
 
     uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
-    auth->secret.usage = virXPathString("string(./auth/secret/@usage)", ctxt);
-    if (uuid == NULL && auth->secret.usage == NULL) {
+    secret->usage = virXPathString("string(./auth/secret/@usage)", ctxt);
+    if (uuid == NULL && secret->usage == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing auth secret uuid or usage attribute"));
         return -1;
     }
 
     if (uuid != NULL) {
-        if (auth->secret.usage != NULL) {
+        if (secret->usage != NULL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("either auth secret uuid or usage expected"));
             goto cleanup;
         }
-        if (virUUIDParse(uuid, auth->secret.uuid) < 0) {
+        if (virUUIDParse(uuid, secret->uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid auth secret uuid"));
             goto cleanup;
         }
-        auth->secret.uuidUsable = true;
+        secret->uuidUsable = true;
     } else {
-        auth->secret.uuidUsable = false;
-    }
-
-    ret = 0;
-cleanup:
-    VIR_FREE(uuid);
-    return ret;
-}
-
-static int
-virStoragePoolDefParseAuthCephx(xmlXPathContextPtr ctxt,
-                                virStoragePoolAuthCephxPtr auth)
-{
-    char *uuid = NULL;
-    int ret = -1;
-
-    uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
-    auth->secret.usage = virXPathString("string(./auth/secret/@usage)", ctxt);
-    if (uuid == NULL && auth->secret.usage == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth secret uuid or usage attribute"));
-        return -1;
-    }
-
-    if (uuid != NULL) {
-        if (auth->secret.usage != NULL) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("either auth secret uuid or usage expected"));
-            goto cleanup;
-        }
-        if (virUUIDParse(uuid, auth->secret.uuid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid auth secret uuid"));
-            goto cleanup;
-        }
-        auth->secret.uuidUsable = true;
-    } else {
-        auth->secret.uuidUsable = false;
+        secret->uuidUsable = false;
     }
 
     ret = 0;
@@ -564,13 +526,15 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
     if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
         source->auth.chap.username = username;
         username = NULL;
-        if (virStoragePoolDefParseAuthChap(ctxt, &source->auth.chap) < 0)
+        if (virStoragePoolDefParseAuthSecret(ctxt,
+                                             &source->auth.chap.secret) < 0)
             goto cleanup;
     }
     else if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
         source->auth.cephx.username = username;
         username = NULL;
-        if (virStoragePoolDefParseAuthCephx(ctxt, &source->auth.cephx) < 0)
+        if (virStoragePoolDefParseAuthSecret(ctxt,
+                                             &source->auth.cephx.secret) < 0)
             goto cleanup;
     }
 
