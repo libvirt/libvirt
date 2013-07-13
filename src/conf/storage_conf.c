@@ -523,6 +523,45 @@ cleanup:
 }
 
 static int
+virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
+                           virStoragePoolSourcePtr source)
+{
+    int ret = -1;
+    char *authType = NULL;
+
+    authType = virXPathString("string(./auth/@type)", ctxt);
+    if (authType == NULL) {
+        source->authType = VIR_STORAGE_POOL_AUTH_NONE;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((source->authType =
+         virStoragePoolAuthTypeTypeFromString(authType)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown auth type '%s'"),
+                       authType);
+        goto cleanup;
+    }
+
+    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
+        if (virStoragePoolDefParseAuthChap(ctxt, &source->auth.chap) < 0)
+            goto cleanup;
+    }
+
+    if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
+        if (virStoragePoolDefParseAuthCephx(ctxt, &source->auth.cephx) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(authType);
+    return ret;
+}
+
+static int
 virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                              virStoragePoolSourcePtr source,
                              int pool_type,
@@ -530,7 +569,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 {
     int ret = -1;
     xmlNodePtr relnode, *nodeset = NULL;
-    char *authType = NULL;
     int nsource;
     size_t i;
     virStoragePoolOptionsPtr options;
@@ -676,28 +714,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST;
     }
 
-    authType = virXPathString("string(./auth/@type)", ctxt);
-    if (authType == NULL) {
-        source->authType = VIR_STORAGE_POOL_AUTH_NONE;
-    } else {
-        if ((source->authType =
-             virStoragePoolAuthTypeTypeFromString(authType)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown auth type '%s'"),
-                           authType);
-            goto cleanup;
-        }
-    }
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        if (virStoragePoolDefParseAuthChap(ctxt, &source->auth.chap) < 0)
-            goto cleanup;
-    }
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        if (virStoragePoolDefParseAuthCephx(ctxt, &source->auth.cephx) < 0)
-            goto cleanup;
-    }
+    if (virStoragePoolDefParseAuth(ctxt, source) < 0)
+        goto cleanup;
 
     source->vendor = virXPathString("string(./vendor/@name)", ctxt);
     source->product = virXPathString("string(./product/@name)", ctxt);
@@ -707,7 +725,6 @@ cleanup:
     ctxt->node = relnode;
 
     VIR_FREE(port);
-    VIR_FREE(authType);
     VIR_FREE(nodeset);
     VIR_FREE(adapter_type);
     return ret;
