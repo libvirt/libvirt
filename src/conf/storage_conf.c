@@ -365,8 +365,8 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     VIR_FREE(source->product);
 
     if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        VIR_FREE(source->auth.chap.login);
-        VIR_FREE(source->auth.chap.passwd);
+        VIR_FREE(source->auth.chap.username);
+        VIR_FREE(source->auth.chap.secret.usage);
     }
 
     if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
@@ -461,21 +461,44 @@ static int
 virStoragePoolDefParseAuthChap(xmlXPathContextPtr ctxt,
                                virStoragePoolAuthChapPtr auth)
 {
-    auth->login = virXPathString("string(./auth/@login)", ctxt);
-    if (auth->login == NULL) {
+    char *uuid = NULL;
+    int ret = -1;
+
+    auth->username = virXPathString("string(./auth/@username)", ctxt);
+    if (auth->username == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth login attribute"));
+                       _("missing auth username attribute"));
         return -1;
     }
 
-    auth->passwd = virXPathString("string(./auth/@passwd)", ctxt);
-    if (auth->passwd == NULL) {
+    uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
+    auth->secret.usage = virXPathString("string(./auth/secret/@usage)", ctxt);
+    if (uuid == NULL && auth->secret.usage == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth passwd attribute"));
+                       _("missing auth secret uuid or usage attribute"));
         return -1;
     }
 
-    return 0;
+    if (uuid != NULL) {
+        if (auth->secret.usage != NULL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("either auth secret uuid or usage expected"));
+            goto cleanup;
+        }
+        if (virUUIDParse(uuid, auth->secret.uuid) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid auth secret uuid"));
+            goto cleanup;
+        }
+        auth->secret.uuidUsable = true;
+    } else {
+        auth->secret.uuidUsable = false;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(uuid);
+    return ret;
 }
 
 static int
@@ -1134,16 +1157,13 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferAsprintf(buf,"    <format type='%s'/>\n", format);
     }
 
-    if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP)
-        virBufferAsprintf(buf,"    <auth type='%s' login='%s' passwd='%s'/>\n",
+    if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ||
+        src->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
+        virBufferAsprintf(buf,"    <auth type='%s' username='%s'>\n",
                           virStoragePoolAuthTypeTypeToString(src->authType),
-                          src->auth.chap.login,
-                          src->auth.chap.passwd);
-
-    if (src->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        virBufferAsprintf(buf,"    <auth username='%s' type='%s'>\n",
-                          src->auth.cephx.username,
-                          virStoragePoolAuthTypeTypeToString(src->authType));
+                          (src->authType == VIR_STORAGE_POOL_AUTH_CHAP ?
+                           src->auth.chap.username :
+                           src->auth.cephx.username));
 
         virBufferAddLit(buf,"      <secret");
         if (src->auth.cephx.secret.uuidUsable) {

@@ -286,22 +286,10 @@
           <value>ceph</value>
         </choice>
       </attribute>
-      <choice>
-        <attribute name='login'>
-          <text/>
-        </attribute>
-        <attribute name='username'>
-          <text/>
-        </attribute>
-      </choice>
-      <optional>
-        <attribute name='passwd'>
-          <text/>
-        </attribute>
-      </optional>
-      <optional>
-        <ref name='sourceinfoauthsecret'/>
-      </optional>
+      <attribute name='username'>
+        <text/>
+      </attribute>
+      <ref name='sourceinfoauthsecret'/>
     </element>
   </define>
 

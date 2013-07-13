@@ -162,8 +162,8 @@ struct _virStoragePoolAuthSecret {
 typedef struct _virStoragePoolAuthChap virStoragePoolAuthChap;
 typedef virStoragePoolAuthChap *virStoragePoolAuthChapPtr;
 struct _virStoragePoolAuthChap {
-    char *login;
-    char *passwd;
+    char *username;
+    virStoragePoolAuthSecret secret;
 };
 
 typedef struct _virStoragePoolAuthCephx virStoragePoolAuthCephx;
