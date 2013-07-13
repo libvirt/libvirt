@@ -4342,7 +4342,10 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
     libxl_scheduler sched_id;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    /* We don't return strings, and thus trivially support this flag.  */
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     libxlDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
@@ -4643,6 +4646,20 @@ libxlConnectListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+/* Which features are supported by this driver? */
+static int
+libxlConnectSupportsFeature(virConnectPtr conn, int feature)
+{
+    if (virConnectSupportsFeatureEnsureACL(conn) < 0)
+        return -1;
+
+    switch (feature) {
+    case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 
 static virDriver libxlDriver = {
@@ -4723,6 +4740,7 @@ static virDriver libxlDriver = {
     .connectDomainEventRegisterAny = libxlConnectDomainEventRegisterAny, /* 0.9.0 */
     .connectDomainEventDeregisterAny = libxlConnectDomainEventDeregisterAny, /* 0.9.0 */
     .connectIsAlive = libxlConnectIsAlive, /* 0.9.8 */
+    .connectSupportsFeature = libxlConnectSupportsFeature, /* 1.1.1 */
 };
 
 static virStateDriver libxlStateDriver = {
