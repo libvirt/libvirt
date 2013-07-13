@@ -464,13 +464,6 @@ virStoragePoolDefParseAuthChap(xmlXPathContextPtr ctxt,
     char *uuid = NULL;
     int ret = -1;
 
-    auth->username = virXPathString("string(./auth/@username)", ctxt);
-    if (auth->username == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth username attribute"));
-        return -1;
-    }
-
     uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
     auth->secret.usage = virXPathString("string(./auth/secret/@usage)", ctxt);
     if (uuid == NULL && auth->secret.usage == NULL) {
@@ -508,13 +501,6 @@ virStoragePoolDefParseAuthCephx(xmlXPathContextPtr ctxt,
     char *uuid = NULL;
     int ret = -1;
 
-    auth->username = virXPathString("string(./auth/@username)", ctxt);
-    if (auth->username == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth username attribute"));
-        return -1;
-    }
-
     uuid = virXPathString("string(./auth/secret/@uuid)", ctxt);
     auth->secret.usage = virXPathString("string(./auth/secret/@usage)", ctxt);
     if (uuid == NULL && auth->secret.usage == NULL) {
@@ -551,6 +537,7 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
 {
     int ret = -1;
     char *authType = NULL;
+    char *username = NULL;
 
     authType = virXPathString("string(./auth/@type)", ctxt);
     if (authType == NULL) {
@@ -567,12 +554,22 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
+    username = virXPathString("string(./auth/@username)", ctxt);
+    if (username == NULL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing auth username attribute"));
+        goto cleanup;
+    }
+
     if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
+        source->auth.chap.username = username;
+        username = NULL;
         if (virStoragePoolDefParseAuthChap(ctxt, &source->auth.chap) < 0)
             goto cleanup;
     }
-
-    if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
+    else if (source->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
+        source->auth.cephx.username = username;
+        username = NULL;
         if (virStoragePoolDefParseAuthCephx(ctxt, &source->auth.cephx) < 0)
             goto cleanup;
     }
@@ -581,6 +578,7 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
 
 cleanup:
     VIR_FREE(authType);
+    VIR_FREE(username);
     return ret;
 }
 
