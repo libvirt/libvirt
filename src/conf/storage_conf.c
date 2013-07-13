@@ -95,6 +95,10 @@ VIR_ENUM_IMPL(virStoragePoolSourceAdapterType,
               VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
               "default", "scsi_host", "fc_host")
 
+VIR_ENUM_IMPL(virStoragePoolAuthType,
+              VIR_STORAGE_POOL_AUTH_LAST,
+              "none", "chap", "ceph")
+
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);
 typedef const char *(*virStorageVolFeatureToString)(int feature);
@@ -676,11 +680,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     if (authType == NULL) {
         source->authType = VIR_STORAGE_POOL_AUTH_NONE;
     } else {
-        if (STREQ(authType, "chap")) {
-            source->authType = VIR_STORAGE_POOL_AUTH_CHAP;
-        } else if (STREQ(authType, "ceph")) {
-            source->authType = VIR_STORAGE_POOL_AUTH_CEPHX;
-        } else {
+        if ((source->authType =
+             virStoragePoolAuthTypeTypeFromString(authType)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown auth type '%s'"),
                            authType);
@@ -1117,13 +1118,15 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     }
 
     if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP)
-        virBufferAsprintf(buf,"    <auth type='chap' login='%s' passwd='%s'/>\n",
+        virBufferAsprintf(buf,"    <auth type='%s' login='%s' passwd='%s'/>\n",
+                          virStoragePoolAuthTypeTypeToString(src->authType),
                           src->auth.chap.login,
                           src->auth.chap.passwd);
 
     if (src->authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
-        virBufferAsprintf(buf,"    <auth username='%s' type='ceph'>\n",
-                          src->auth.cephx.username);
+        virBufferAsprintf(buf,"    <auth username='%s' type='%s'>\n",
+                          src->auth.cephx.username,
+                          virStoragePoolAuthTypeTypeToString(src->authType));
 
         virBufferAddLit(buf,"      <secret");
         if (src->auth.cephx.secret.uuidUsable) {

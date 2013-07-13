@@ -146,7 +146,10 @@ enum virStoragePoolAuthType {
     VIR_STORAGE_POOL_AUTH_NONE,
     VIR_STORAGE_POOL_AUTH_CHAP,
     VIR_STORAGE_POOL_AUTH_CEPHX,
+
+    VIR_STORAGE_POOL_AUTH_LAST,
 };
+VIR_ENUM_DECL(virStoragePoolAuthType)
 
 typedef struct _virStoragePoolAuthChap virStoragePoolAuthChap;
 typedef virStoragePoolAuthChap *virStoragePoolAuthChapPtr;
