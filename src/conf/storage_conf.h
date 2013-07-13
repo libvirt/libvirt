@@ -151,6 +151,14 @@ enum virStoragePoolAuthType {
 };
 VIR_ENUM_DECL(virStoragePoolAuthType)
 
+typedef struct _virStoragePoolAuthSecret virStoragePoolAuthSecret;
+typedef virStoragePoolAuthSecret *virStoragePoolAuthSecretPtr;
+struct _virStoragePoolAuthSecret {
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *usage;
+    bool uuidUsable;
+};
+
 typedef struct _virStoragePoolAuthChap virStoragePoolAuthChap;
 typedef virStoragePoolAuthChap *virStoragePoolAuthChapPtr;
 struct _virStoragePoolAuthChap {
@@ -162,11 +170,7 @@ typedef struct _virStoragePoolAuthCephx virStoragePoolAuthCephx;
 typedef virStoragePoolAuthCephx *virStoragePoolAuthCephxPtr;
 struct _virStoragePoolAuthCephx {
     char *username;
-    struct {
-            unsigned char uuid[VIR_UUID_BUFLEN];
-            char *usage;
-            bool uuidUsable;
-    } secret;
+    virStoragePoolAuthSecret secret;
 };
 
 /*
