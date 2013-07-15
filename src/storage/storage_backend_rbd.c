@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "datatypes.h"
 #include "virerror.h"
 #include "storage_backend_rbd.h"
 #include "storage_conf.h"
@@ -71,6 +72,13 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
             goto cleanup;
         }
 
+        if (!conn) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'ceph' authentication not supported "
+                             "for autostarted pools"));
+            return -1;
+        }
+
         if (pool->def->source.auth.cephx.secret.uuidUsable) {
             virUUIDFormat(pool->def->source.auth.cephx.secret.uuid, secretUuid);
             VIR_DEBUG("Looking up secret by UUID: %s", secretUuid);
@@ -88,7 +96,17 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
             goto cleanup;
         }
 
-        secret_value = virSecretGetValue(secret, &secret_value_size, 0);
+        secret_value = conn->secretDriver->secretGetValue(secret, &secret_value_size, 0,
+                                                          VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+
+        if (!secret_value) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get the value of the secret "
+                             "for username %s"),
+                           pool->def->source.auth.cephx.username);
+            goto cleanup;
+        }
+
         base64_encode_alloc((char *)secret_value,
                             secret_value_size, &rados_key);
         memset(secret_value, 0, secret_value_size);
@@ -257,7 +275,7 @@ cleanup:
     return ret;
 }
 
-static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
                                            virStoragePoolObjPtr pool)
 {
     size_t max_size = 1024;
