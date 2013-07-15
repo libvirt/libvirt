@@ -357,8 +357,7 @@ virCPUDefParseXML(const xmlNodePtr node,
         }
     }
 
-    n = virXPathNodeSet("./feature", ctxt, &nodes);
-    if (n < 0)
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
         goto error;
 
     if (n > 0) {
@@ -372,6 +371,7 @@ virCPUDefParseXML(const xmlNodePtr node,
         if (VIR_RESIZE_N(def->features, def->nfeatures_max,
                          def->nfeatures, n) < 0)
             goto error;
+
         def->nfeatures = n;
     }
 

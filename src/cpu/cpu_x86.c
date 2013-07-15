@@ -1725,9 +1725,9 @@ x86UpdateCustom(virCPUDefPtr guest,
 
     if (guest->match == VIR_CPU_MATCH_MINIMUM) {
         guest->match = VIR_CPU_MATCH_EXACT;
-        if (x86ModelSubtractCPU(host_model, guest, map)
-            || x86DataToCPUFeatures(guest, VIR_CPU_FEATURE_REQUIRE,
-                                    host_model->data, map))
+        if (x86ModelSubtractCPU(host_model, guest, map) ||
+            x86DataToCPUFeatures(guest, VIR_CPU_FEATURE_REQUIRE,
+                                 host_model->data, map))
             goto cleanup;
     }
 
