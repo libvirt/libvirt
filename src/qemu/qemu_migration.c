@@ -1896,11 +1896,12 @@ cleanup:
  * qemuDomainMigrateBegin3 and qemuDomainMigratePerform3 or
  * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
  */
-virDomainObjPtr
-qemuMigrationCleanup(virQEMUDriverPtr driver,
-                     virDomainObjPtr vm,
-                     virConnectPtr conn)
+static virDomainObjPtr
+qemuMigrationCleanup(virDomainObjPtr vm,
+                     virConnectPtr conn,
+                     void *opaque)
 {
+    virQEMUDriverPtr driver = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
@@ -2100,8 +2101,8 @@ qemuMigrationBegin(virConnectPtr conn,
          * This prevents any other APIs being invoked while migration is taking
          * place.
          */
-        if (virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                     qemuMigrationCleanup) < 0)
+        if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                                 qemuMigrationCleanup) < 0)
             goto endjob;
         if (qemuMigrationJobContinue(vm) == 0) {
             vm = NULL;
@@ -2750,8 +2751,8 @@ qemuMigrationConfirm(virConnectPtr conn,
         phase = QEMU_MIGRATION_PHASE_CONFIRM3;
 
     qemuMigrationJobStartPhase(driver, vm, phase);
-    virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
-                               qemuMigrationCleanup);
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           qemuMigrationCleanup);
 
     ret = qemuMigrationConfirmPhase(driver, conn, vm,
                                     cookiein, cookieinlen,
@@ -4123,8 +4124,8 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
     }
 
     qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
-    virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
-                               qemuMigrationCleanup);
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           qemuMigrationCleanup);
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
     ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
@@ -4155,8 +4156,8 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
 
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE);
 
-    if (virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                 qemuMigrationCleanup) < 0)
+    if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                             qemuMigrationCleanup) < 0)
         goto endjob;
 
 endjob:

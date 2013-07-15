@@ -776,7 +776,7 @@ qemuStateInitialize(bool privileged,
         cfg->hugepagePath = mempath;
     }
 
-    if (!(qemu_driver->closeCallbacks = virQEMUCloseCallbacksNew()))
+    if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
         goto error;
 
     /* Get all the running persistent or transient configs first */
@@ -1076,7 +1076,7 @@ static int qemuConnectClose(virConnectPtr conn)
     virQEMUDriverPtr driver = conn->privateData;
 
     /* Get rid of callbacks registered for this conn */
-    virQEMUCloseCallbacksRun(driver->closeCallbacks, conn, driver);
+    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains, driver);
 
     conn->privateData = NULL;
 

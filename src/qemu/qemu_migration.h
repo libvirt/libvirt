@@ -90,10 +90,6 @@ bool qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr obj)
 int qemuMigrationSetOffline(virQEMUDriverPtr driver,
                             virDomainObjPtr vm);
 
-virDomainObjPtr qemuMigrationCleanup(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virConnectPtr conn);
-
 char *qemuMigrationBegin(virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *xmlin,

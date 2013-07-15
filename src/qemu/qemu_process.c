@@ -4470,10 +4470,11 @@ cleanup:
 
 
 static virDomainObjPtr
-qemuProcessAutoDestroy(virQEMUDriverPtr driver,
-                       virDomainObjPtr dom,
-                       virConnectPtr conn)
+qemuProcessAutoDestroy(virDomainObjPtr dom,
+                       virConnectPtr conn,
+                       void *opaque)
 {
+    virQEMUDriverPtr driver = opaque;
     qemuDomainObjPrivatePtr priv = dom->privateData;
     virDomainEventPtr event = NULL;
 
@@ -4517,23 +4518,23 @@ int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,
                               virConnectPtr conn)
 {
     VIR_DEBUG("vm=%s, conn=%p", vm->def->name, conn);
-    return virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                    qemuProcessAutoDestroy);
+    return virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                                qemuProcessAutoDestroy);
 }
 
 int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm)
 {
     VIR_DEBUG("vm=%s", vm->def->name);
-    return virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
-                                      qemuProcessAutoDestroy);
+    return virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                                  qemuProcessAutoDestroy);
 }
 
 bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm)
 {
-    virQEMUCloseCallback cb;
+    virCloseCallback cb;
     VIR_DEBUG("vm=%s", vm->def->name);
-    cb = virQEMUCloseCallbacksGet(driver->closeCallbacks, vm, NULL);
+    cb = virCloseCallbacksGet(driver->closeCallbacks, vm, NULL);
     return cb == qemuProcessAutoDestroy;
 }
