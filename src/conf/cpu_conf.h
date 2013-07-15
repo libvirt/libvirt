@@ -164,4 +164,9 @@ virCPUDefAddFeature(virCPUDefPtr cpu,
                     const char *name,
                     int policy);
 
+int
+virCPUDefUpdateFeature(virCPUDefPtr cpu,
+                       const char *name,
+                       int policy);
+
 #endif /* __VIR_CPU_CONF_H__ */

@@ -656,19 +656,28 @@ virCPUDefFormatBuf(virBufferPtr buf,
     return 0;
 }
 
-
-int
-virCPUDefAddFeature(virCPUDefPtr def,
-                    const char *name,
-                    int policy)
+static int
+virCPUDefUpdateFeatureInternal(virCPUDefPtr def,
+                               const char *name,
+                               int policy,
+                               bool update)
 {
     size_t i;
 
+    if (def->type == VIR_CPU_TYPE_HOST)
+        policy = -1;
+
     for (i = 0; i < def->nfeatures; i++) {
         if (STREQ(name, def->features[i].name)) {
+            if (update) {
+                def->features[i].policy = policy;
+                return 0;
+            }
+
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("CPU feature `%s' specified more than once"),
                            name);
+
             return -1;
         }
     }
@@ -677,9 +686,6 @@ virCPUDefAddFeature(virCPUDefPtr def,
                      def->nfeatures, 1) < 0)
         return -1;
 
-    if (def->type == VIR_CPU_TYPE_HOST)
-        policy = -1;
-
     if (VIR_STRDUP(def->features[def->nfeatures].name, name) < 0)
         return -1;
 
@@ -687,6 +693,22 @@ virCPUDefAddFeature(virCPUDefPtr def,
     def->nfeatures++;
 
     return 0;
+}
+
+int
+virCPUDefUpdateFeature(virCPUDefPtr def,
+                       const char *name,
+                       int policy)
+{
+    return virCPUDefUpdateFeatureInternal(def, name, policy, true);
+}
+
+int
+virCPUDefAddFeature(virCPUDefPtr def,
+                    const char *name,
+                    int policy)
+{
+    return virCPUDefUpdateFeatureInternal(def, name, policy, false);
 }
 
 bool

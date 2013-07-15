@@ -70,6 +70,7 @@ virCPUDefFormatBuf;
 virCPUDefFree;
 virCPUDefFreeModel;
 virCPUDefParseXML;
+virCPUDefUpdateFeature;
 virCPUModeTypeToString;
 
 
