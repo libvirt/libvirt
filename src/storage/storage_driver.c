@@ -68,6 +68,14 @@ static void storageDriverUnlock(virStorageDriverStatePtr driver)
 static void
 storageDriverAutostart(virStorageDriverStatePtr driver) {
     size_t i;
+    virConnectPtr conn = NULL;
+
+    /* XXX Remove hardcoding of QEMU URI */
+    if (driverState->privileged)
+        conn = virConnectOpen("qemu:///system");
+    else
+        conn = virConnectOpen("qemu:///session");
+    /* Ignoring NULL conn - let backends decide */
 
     for (i = 0; i < driver->pools.count; i++) {
         virStoragePoolObjPtr pool = driver->pools.objs[i];
@@ -82,7 +90,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
         }
 
         if (backend->checkPool &&
-            backend->checkPool(NULL, pool, &started) < 0) {
+            backend->checkPool(conn, pool, &started) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
                       pool->def->name, err ? err->message :
@@ -95,7 +103,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
             pool->autostart &&
             !virStoragePoolObjIsActive(pool)) {
             if (backend->startPool &&
-                backend->startPool(NULL, pool) < 0) {
+                backend->startPool(conn, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
@@ -107,10 +115,10 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
         }
 
         if (started) {
-            if (backend->refreshPool(NULL, pool) < 0) {
+            if (backend->refreshPool(conn, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 if (backend->stopPool)
-                    backend->stopPool(NULL, pool);
+                    backend->stopPool(conn, pool);
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
                           _("no error message found"));
@@ -121,6 +129,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
         }
         virStoragePoolObjUnlock(pool);
     }
+
+    if (conn)
+        virConnectClose(conn);
 }
 
 /**
@@ -152,6 +163,7 @@ storageStateInitialize(bool privileged,
         if (!base)
             goto error;
     }
+    driverState->privileged = privileged;
 
     /* Configuration paths are either $USER_CONFIG_HOME/libvirt/storage/... (session) or
      * /etc/libvirt/storage/... (system).

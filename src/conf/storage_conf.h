@@ -354,6 +354,7 @@ struct _virStorageDriverState {
 
     char *configDir;
     char *autostartDir;
+    bool privileged;
 };
 
 typedef struct _virStoragePoolSourceList virStoragePoolSourceList;
