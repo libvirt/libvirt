@@ -34,7 +34,6 @@ int virLXCProcessStop(virLXCDriverPtr driver,
                       virDomainObjPtr vm,
                       virDomainShutoffReason reason);
 
-int virLXCProcessAutoDestroyInit(virLXCDriverPtr driver);
 void virLXCProcessAutoDestroyRun(virLXCDriverPtr driver,
                                  virConnectPtr conn);
 void virLXCProcessAutoDestroyShutdown(virLXCDriverPtr driver);

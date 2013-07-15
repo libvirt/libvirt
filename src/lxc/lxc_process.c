@@ -54,122 +54,45 @@
 
 #define START_POSTFIX ": starting up\n"
 
-int virLXCProcessAutoDestroyInit(virLXCDriverPtr driver)
+static virDomainObjPtr
+lxcProcessAutoDestroy(virDomainObjPtr dom,
+                      virConnectPtr conn,
+                      void *opaque)
 {
-    if (!(driver->autodestroy = virHashCreate(5, NULL)))
-        return -1;
-
-    return 0;
-}
-
-struct virLXCProcessAutoDestroyData {
-    virLXCDriverPtr driver;
-    virConnectPtr conn;
-};
-
-static void virLXCProcessAutoDestroyDom(void *payload,
-                                        const void *name,
-                                        void *opaque)
-{
-    struct virLXCProcessAutoDestroyData *data = opaque;
-    virConnectPtr conn = payload;
-    const char *uuidstr = name;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    virDomainObjPtr dom;
+    virLXCDriverPtr driver = opaque;
     virDomainEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
 
-    VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
-
-    if (data->conn != conn)
-        return;
-
-    if (virUUIDParse(uuidstr, uuid) < 0) {
-        VIR_WARN("Failed to parse %s", uuidstr);
-        return;
-    }
-
-    if (!(dom = virDomainObjListFindByUUID(data->driver->domains,
-                                           uuid))) {
-        VIR_DEBUG("No domain object to kill");
-        return;
-    }
+    VIR_DEBUG("driver=%p dom=%s conn=%p", driver, dom->def->name, conn);
 
     priv = dom->privateData;
     VIR_DEBUG("Killing domain");
-    virLXCProcessStop(data->driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    virLXCProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(dom, "destroyed");
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     priv->doneStopEvent = true;
 
-    if (dom && !dom->persistent)
-        virDomainObjListRemove(data->driver->domains, dom);
+    if (dom && !dom->persistent) {
+        virDomainObjListRemove(driver->domains, dom);
+        dom = NULL;
+    }
 
-    if (dom)
-        virObjectUnlock(dom);
     if (event)
-        virDomainEventStateQueue(data->driver->domainEventState, event);
-    virHashRemoveEntry(data->driver->autodestroy, uuidstr);
+        virDomainEventStateQueue(driver->domainEventState, event);
+
+    return dom;
 }
 
 /*
  * Precondition: driver is locked
  */
-void virLXCProcessAutoDestroyRun(virLXCDriverPtr driver, virConnectPtr conn)
-{
-    struct virLXCProcessAutoDestroyData data = {
-        driver, conn
-    };
-    VIR_DEBUG("conn=%p", conn);
-    virHashForEach(driver->autodestroy, virLXCProcessAutoDestroyDom, &data);
-}
-
-void virLXCProcessAutoDestroyShutdown(virLXCDriverPtr driver)
-{
-    virHashFree(driver->autodestroy);
-}
-
-int virLXCProcessAutoDestroyAdd(virLXCDriverPtr driver,
-                                virDomainObjPtr vm,
-                                virConnectPtr conn)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    VIR_DEBUG("vm=%s uuid=%s conn=%p", vm->def->name, uuidstr, conn);
-    if (virHashAddEntry(driver->autodestroy, uuidstr, conn) < 0)
-        return -1;
-    return 0;
-}
-
-int virLXCProcessAutoDestroyRemove(virLXCDriverPtr driver,
-                                   virDomainObjPtr vm)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
-    if (virHashRemoveEntry(driver->autodestroy, uuidstr) < 0)
-        return -1;
-    return 0;
-}
-
-static virConnectPtr
-virLXCProcessAutoDestroyGetConn(virLXCDriverPtr driver,
-                                virDomainObjPtr vm)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    VIR_DEBUG("vm=%s uuid=%s", vm->def->name, uuidstr);
-    return virHashLookup(driver->autodestroy, uuidstr);
-}
-
-
 static int
 virLXCProcessReboot(virLXCDriverPtr driver,
                     virDomainObjPtr vm)
 {
-    virConnectPtr conn = virLXCProcessAutoDestroyGetConn(driver, vm);
+    virConnectPtr conn = virCloseCallbacksGetConn(driver->closeCallbacks, vm);
     int reason = vm->state.reason;
     bool autodestroy = false;
     int ret = -1;
@@ -243,7 +166,8 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     }
 
     /* Stop autodestroy in case guest is restarted */
-    virLXCProcessAutoDestroyRemove(driver, vm);
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           lxcProcessAutoDestroy);
 
     if (priv->monitor) {
         virLXCMonitorClose(priv->monitor);
@@ -1299,7 +1223,8 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     if (autoDestroy &&
-        virLXCProcessAutoDestroyAdd(driver, vm, conn) < 0)
+        virCloseCallbacksSet(driver->closeCallbacks, vm,
+                             conn, lxcProcessAutoDestroy) < 0)
         goto error;
 
     if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt,

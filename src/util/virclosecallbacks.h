@@ -45,6 +45,9 @@ virCloseCallback
 virCloseCallbacksGet(virCloseCallbacksPtr closeCallbacks,
                      virDomainObjPtr vm,
                      virConnectPtr conn);
+virConnectPtr
+virCloseCallbacksGetConn(virCloseCallbacksPtr closeCallbacks,
+                         virDomainObjPtr vm);
 void
 virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
                      virConnectPtr conn,

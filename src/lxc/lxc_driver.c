@@ -163,7 +163,7 @@ static int lxcConnectClose(virConnectPtr conn)
     virLXCDriverPtr driver = conn->privateData;
 
     lxcDriverLock(driver);
-    virLXCProcessAutoDestroyRun(driver, conn);
+    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains, driver);
     lxcDriverUnlock(driver);
 
     conn->privateData = NULL;
@@ -1591,7 +1591,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit()))
         goto cleanup;
 
-    if (virLXCProcessAutoDestroyInit(lxc_driver) < 0)
+    if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))
         goto cleanup;
 
     /* Get all the running persistent or transient configs first */
@@ -1681,7 +1681,7 @@ static int lxcStateCleanup(void)
     virObjectUnref(lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
 
-    virLXCProcessAutoDestroyShutdown(lxc_driver);
+    virObjectUnref(lxc_driver->closeCallbacks);
 
     virSysinfoDefFree(lxc_driver->hostsysinfo);
 

@@ -35,6 +35,7 @@
 # include "vircgroup.h"
 # include "virsysinfo.h"
 # include "virusb.h"
+# include "virclosecallbacks.h"
 
 # define LXC_DRIVER_NAME "LXC"
 
@@ -101,11 +102,8 @@ struct _virLXCDriver {
     /* Immutable pointer. self-locking APIs */
     virSecurityManagerPtr securityManager;
 
-    /* Mapping of 'char *uuidstr' -> virConnectPtr
-     * of guests which will be automatically killed
-     * when the virConnectPtr is closed.
-     * Immutable pointer. Unsafe APIs. XXX */
-    virHashTablePtr autodestroy;
+    /* Immutable pointer, self-locking APIs */
+    virCloseCallbacksPtr closeCallbacks;
 };
 
 virLXCDriverConfigPtr virLXCDriverConfigNew(void);
