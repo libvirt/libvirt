@@ -704,6 +704,8 @@ qemuSetScsiControllerModel(virDomainDefPtr def,
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
+            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to determine model for scsi controller"));
