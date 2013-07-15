@@ -139,6 +139,7 @@ virDomainControllerDefFree;
 virDomainControllerFind;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
+virDomainControllerModelPCITypeToString;
 virDomainControllerModelSCSITypeFromString;
 virDomainControllerModelSCSITypeToString;
 virDomainControllerModelUSBTypeFromString;

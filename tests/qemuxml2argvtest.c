@@ -992,6 +992,8 @@ mymain(void)
 
     DO_TEST("pci-autoadd-addr", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-autoadd-idx", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST("pci-bridge-many-disks",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
 
     DO_TEST("hostdev-scsi-lsi", QEMU_CAPS_DRIVE,
             QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,

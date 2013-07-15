@@ -766,12 +766,12 @@ enum virDomainControllerType {
 };
 
 
-enum virDomainControllerModelPCI {
+typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT,
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE,
 
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST
-};
+} virDomainControllerModelPCI;
 
 enum virDomainControllerModelSCSI {
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO,
