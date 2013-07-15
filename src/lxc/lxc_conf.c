@@ -59,7 +59,7 @@ VIR_ONCE_GLOBAL_INIT(virLXCConfig)
 
 
 /* Functions */
-virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
+virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
 {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -150,6 +150,33 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
 error:
     virObjectUnref(caps);
     return NULL;
+}
+
+
+/**
+ * virLXCDriverGetCapabilities:
+ *
+ * Get a reference to the virCapsPtr instance for the
+ * driver. If @refresh is true, the capabilities will be
+ * rebuilt first
+ *
+ * The caller must release the reference with virObjetUnref
+ *
+ * Returns: a reference to a virCapsPtr instance or NULL
+ */
+virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
+                                       bool refresh)
+{
+    if (refresh) {
+        virCapsPtr caps = NULL;
+        if ((caps = virLXCDriverCapsInit(driver)) == NULL)
+            return NULL;
+
+        virObjectUnref(driver->caps);
+        driver->caps = caps;
+    }
+
+    return virObjectRef(driver->caps);
 }
 
 

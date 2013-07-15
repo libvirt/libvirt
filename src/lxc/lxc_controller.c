@@ -162,7 +162,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
     if (VIR_STRDUP(ctrl->name, name) < 0)
         goto error;
 
-    if ((caps = lxcCapsInit(NULL)) == NULL)
+    if (!(caps = virLXCDriverCapsInit(NULL)))
         goto error;
 
     if (!(xmlopt = lxcDomainXMLConfInit()))

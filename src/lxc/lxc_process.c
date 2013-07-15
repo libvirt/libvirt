@@ -986,6 +986,7 @@ int virLXCProcessStart(virConnectPtr conn,
     char *timestamp;
     virCommandPtr cmd = NULL;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virCapsPtr caps = NULL;
     virErrorPtr err = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -1027,12 +1028,15 @@ int virLXCProcessStart(virConnectPtr conn,
                     cfg->logDir, vm->def->name) < 0)
         return -1;
 
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
     /* Do this up front, so any part of the startup process can add
      * runtime state to vm->def that won't be persisted. This let's us
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm, true) < 0)
+    if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
         goto cleanup;
 
     /* Run an early hook to set-up missing devices */
@@ -1227,7 +1231,7 @@ int virLXCProcessStart(virConnectPtr conn,
                              conn, lxcProcessAutoDestroy) < 0)
         goto error;
 
-    if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt,
+    if (virDomainObjSetDefTransient(caps, driver->xmlopt,
                                     vm, false) < 0)
         goto error;
 
@@ -1301,6 +1305,7 @@ cleanup:
     VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);
     virObjectUnref(cfg);
+    virObjectUnref(caps);
 
     if (err) {
         virSetError(err);

@@ -72,7 +72,8 @@ struct _virLXCDriver {
      * then lockless thereafter */
     virLXCDriverConfigPtr config;
 
-    /* Require lock while using. Unsafe. XXX */
+    /* Require lock to get a reference on the object,
+     * lockless access thereafter */
     virCapsPtr caps;
 
 
@@ -110,7 +111,9 @@ virLXCDriverConfigPtr virLXCDriverConfigNew(void);
 virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver);
 int virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
                            const char *filename);
-virCapsPtr lxcCapsInit(virLXCDriverPtr driver);
+virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver);
+virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
+                                       bool refresh);
 virDomainXMLOptionPtr lxcDomainXMLConfInit(void);
 
 static inline void lxcDriverLock(virLXCDriverPtr driver)
