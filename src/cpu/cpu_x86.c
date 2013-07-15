@@ -1739,6 +1739,41 @@ cleanup:
     return ret;
 }
 
+
+static int
+x86UpdateHostModel(virCPUDefPtr guest,
+                   const virCPUDefPtr host)
+{
+    virCPUDefPtr oldguest;
+    size_t i;
+
+    guest->match = VIR_CPU_MATCH_EXACT;
+
+    /* no updates are required */
+    if (guest->nfeatures == 0) {
+        virCPUDefFreeModel(guest);
+        return virCPUDefCopyModel(guest, host, true);
+    }
+
+    /* update the host model according to the desired configuration */
+    if (!(oldguest = virCPUDefCopy(guest)))
+        return -1;
+
+    virCPUDefFreeModel(guest);
+    if (virCPUDefCopyModel(guest, host, true) < 0)
+        return -1;
+
+    for (i = 0; i < oldguest->nfeatures; i++) {
+        if (virCPUDefUpdateFeature(guest,
+                                   oldguest->features[i].name,
+                                   oldguest->features[i].policy) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 x86Update(virCPUDefPtr guest,
           const virCPUDefPtr host)
@@ -1748,11 +1783,10 @@ x86Update(virCPUDefPtr guest,
         return x86UpdateCustom(guest, host);
 
     case VIR_CPU_MODE_HOST_MODEL:
+        return x86UpdateHostModel(guest, host);
+
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
-        if (guest->mode == VIR_CPU_MODE_HOST_MODEL)
-            guest->match = VIR_CPU_MATCH_EXACT;
-        else
-            guest->match = VIR_CPU_MATCH_MINIMUM;
+        guest->match = VIR_CPU_MATCH_MINIMUM;
         virCPUDefFreeModel(guest);
         return virCPUDefCopyModel(guest, host, true);
 

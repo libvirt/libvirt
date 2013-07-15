@@ -901,11 +901,15 @@
           copying host CPU definition from capabilities XML into domain XML.
           Since the CPU definition is copied just before starting a domain,
           exactly the same XML can be used on different hosts while still
-          providing the best guest CPU each host supports. Neither
-          <code>match</code> attribute nor any <code>feature</code> elements
-          can be used in this mode. Specifying CPU model is not supported
-          either, but <code>model</code>'s <code>fallback</code> attribute may
-          still be used. Libvirt does not model every aspect of each CPU so
+          providing the best guest CPU each host supports. The
+          <code>match</code> attribute can't be used in this mode. Specifying
+          CPU model is not supported either, but <code>model</code>'s
+          <code>fallback</code> attribute may still be used. Using the
+          <code>feature</code> element, specific flags may be enabled or
+          disabled specifically in addition to the host model. This may be
+          used to fine tune features that can be emulated.
+          <span class="since">(Since 1.1.1)</span>.
+          Libvirt does not model every aspect of each CPU so
           the guest CPU will not match the host CPU exactly. On the other
           hand, the ABI provided to the guest is reproducible. During
           migration, complete CPU model definition is transferred to the
