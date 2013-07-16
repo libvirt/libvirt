@@ -3036,6 +3036,68 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
     return 0;
 }
 
+static int
+qemuBuildVolumeString(virConnectPtr conn,
+                      virDomainDiskDefPtr disk,
+                      virBufferPtr opt)
+{
+    int ret = -1;
+
+    switch (disk->srcpool->voltype) {
+    case VIR_STORAGE_VOL_DIR:
+        if (!disk->readonly) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot create virtual FAT disks in read-write mode"));
+            goto cleanup;
+        }
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            virBufferEscape(opt, ',', ",", "file=fat:floppy:%s,", disk->src);
+        else
+            virBufferEscape(opt, ',', ",", "file=fat:%s,", disk->src);
+        break;
+    case VIR_STORAGE_VOL_BLOCK:
+        if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("tray status 'open' is invalid for "
+                             "block type volume"));
+            goto cleanup;
+        }
+        if (disk->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI) {
+            if (disk->srcpool->mode ==
+                VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT) {
+                if (qemuBuildISCSIString(conn, disk, opt) < 0)
+                    goto cleanup;
+                virBufferAddChar(opt, ',');
+            } else if (disk->srcpool->mode ==
+                       VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST) {
+                virBufferEscape(opt, ',', ",", "file=%s,", disk->src);
+            }
+        } else {
+            virBufferEscape(opt, ',', ",", "file=%s,", disk->src);
+        }
+        break;
+    case VIR_STORAGE_VOL_FILE:
+        if (disk->auth.username) {
+            if (qemuBuildISCSIString(conn, disk, opt) < 0)
+                goto cleanup;
+            virBufferAddChar(opt, ',');
+        } else {
+            virBufferEscape(opt, ',', ",", "file=%s,", disk->src);
+        }
+        break;
+    case VIR_STORAGE_VOL_NETWORK:
+        /* Keep the compiler quite, qemuTranslateDiskSourcePool already
+         * reported the unsupported error.
+         */
+        break;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
 char *
 qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                   virDomainDiskDefPtr disk,
@@ -3190,50 +3252,8 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 break;
             }
         } else if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
-            switch (disk->srcpool->voltype) {
-            case VIR_STORAGE_VOL_DIR:
-                if (!disk->readonly) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("cannot create virtual FAT disks in read-write mode"));
-                    goto error;
-                }
-                if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                    virBufferEscape(&opt, ',', ",", "file=fat:floppy:%s,",
-                                    disk->src);
-                else
-                    virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
-                break;
-            case VIR_STORAGE_VOL_BLOCK:
-                if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("tray status 'open' is invalid for "
-                                     "block type volume"));
-                    goto error;
-                }
-
-                if (disk->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI) {
-                    if (disk->srcpool->mode ==
-                        VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT) {
-                        if (qemuBuildISCSIString(conn, disk, &opt) < 0)
-                            goto error;
-                        virBufferAddChar(&opt, ',');
-                    } else if (disk->srcpool->mode ==
-                               VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST) {
-                        virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
-                    }
-                } else {
-                    virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
-                }
-                break;
-            case VIR_STORAGE_VOL_FILE:
-                virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
-                break;
-            case VIR_STORAGE_VOL_NETWORK:
-                /* Keep the compiler quite, qemuTranslateDiskSourcePool already
-                 * reported the unsupported error.
-                 */
-                break;
-            }
+            if (qemuBuildVolumeString(conn, disk, &opt) < 0)
+                goto error;
         } else {
             if ((disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
                 (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
