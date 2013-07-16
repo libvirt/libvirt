@@ -1348,6 +1348,9 @@ virLXCControllerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
         goto cleanup;
     }
 
+    if (lxcContainerChown(vmDef, dstfile) < 0)
+        goto cleanup;
+
     if (virSecurityManagerSetHostdevLabel(securityDriver,
                                           vmDef, def, vroot) < 0)
         goto cleanup;
@@ -1425,6 +1428,9 @@ virLXCControllerSetupHostdevCapsStorage(virDomainDefPtr vmDef,
         goto cleanup;
     }
 
+    if (lxcContainerChown(vmDef, dst) < 0)
+        goto cleanup;
+
     def->source.caps.u.storage.block = dst;
     if (virSecurityManagerSetHostdevLabel(securityDriver, vmDef, def, NULL) < 0)
         goto cleanup;
@@ -1500,6 +1506,9 @@ virLXCControllerSetupHostdevCapsMisc(virDomainDefPtr vmDef,
                              dev);
         goto cleanup;
     }
+
+    if (lxcContainerChown(vmDef, dst) < 0)
+        goto cleanup;
 
     def->source.caps.u.misc.chardev = dst;
     if (virSecurityManagerSetHostdevLabel(securityDriver, vmDef, def, NULL) < 0)
