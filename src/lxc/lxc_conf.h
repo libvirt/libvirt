@@ -75,7 +75,7 @@ struct _virLXCDriver {
 
     virSysinfoDefPtr hostsysinfo;
 
-    size_t nactive;
+    unsigned int nactive;
 
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;

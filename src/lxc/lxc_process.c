@@ -48,6 +48,7 @@
 #include "lxc_hostdev.h"
 #include "virhook.h"
 #include "virstring.h"
+#include "viratomic.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -257,8 +258,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     vm->pid = -1;
     vm->def->id = -1;
 
-    driver->nactive--;
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     virLXCDomainReAttachHostDevices(driver, vm->def);
@@ -1284,9 +1284,8 @@ int virLXCProcessStart(virConnectPtr conn,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->doneStopEvent = false;
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
     if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
         char out[1024];
@@ -1470,9 +1469,8 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
-        if (!driver->nactive && driver->inhibitCallback)
+        if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
             driver->inhibitCallback(true, driver->inhibitOpaque);
-        driver->nactive++;
 
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
