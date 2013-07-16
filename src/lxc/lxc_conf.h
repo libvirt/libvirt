@@ -67,30 +67,44 @@ struct _virLXCDriverConfig {
 struct _virLXCDriver {
     virMutex lock;
 
+    /* Require lock to get reference on 'config',
+     * then lockless thereafter */
     virLXCDriverConfigPtr config;
 
+    /* Require lock while using. Unsafe. XXX */
     virCapsPtr caps;
 
+
+    /* Immutable pointer, Immutable object */
     virDomainXMLOptionPtr xmlopt;
 
+    /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 
+    /* Atomic inc/dec only */
     unsigned int nactive;
 
+    /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
 
+    /* Immutable pointer. Requires lock to be held before
+     * calling APIs. */
     virUSBDeviceListPtr activeUsbHostdevs;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainEventStatePtr domainEventState;
 
+    /* Immutable pointer. self-locking APIs */
     virSecurityManagerPtr securityManager;
 
     /* Mapping of 'char *uuidstr' -> virConnectPtr
      * of guests which will be automatically killed
-     * when the virConnectPtr is closed*/
+     * when the virConnectPtr is closed.
+     * Immutable pointer. Unsafe APIs. XXX */
     virHashTablePtr autodestroy;
 };
 
