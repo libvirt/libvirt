@@ -3513,6 +3513,9 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     }
     created = true;
 
+    if (lxcContainerChown(vm->def, dstfile) < 0)
+        goto cleanup;
+
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, def, vroot) < 0)
         goto cleanup;
@@ -3609,6 +3612,9 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
         goto cleanup;
     }
     created = true;
+
+    if (lxcContainerChown(vm->def, dst) < 0)
+        goto cleanup;
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, def, vroot) < 0)
@@ -3714,6 +3720,9 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
         goto cleanup;
     }
     created = true;
+
+    if (lxcContainerChown(vm->def, dst) < 0)
+        goto cleanup;
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, def, vroot) < 0)
