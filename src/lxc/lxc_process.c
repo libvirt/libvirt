@@ -225,6 +225,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     size_t i;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virNetDevVPortProfilePtr vport = NULL;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
               vm->def->name, (int)vm->pid, (int)reason);
@@ -249,8 +250,8 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         priv->monitor = NULL;
     }
 
-    virPidFileDelete(driver->stateDir, vm->def->name);
-    virDomainDeleteConfig(driver->stateDir, NULL, vm);
+    virPidFileDelete(cfg->stateDir, vm->def->name);
+    virDomainDeleteConfig(cfg->stateDir, NULL, vm);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;
@@ -301,6 +302,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         vm->def->id = -1;
         vm->newDef = NULL;
     }
+    virObjectUnref(cfg);
 }
 
 
@@ -367,6 +369,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     virLXCDriverPtr driver = conn->privateData;
     virNetDevBandwidthPtr bw;
     virNetDevVPortProfilePtr prof;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     /* XXX how todo bandwidth controls ?
      * Since the 'net-ifname' is about to be moved to a different
@@ -402,13 +405,14 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             virDomainNetGetActualVirtPortProfile(net),
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-            driver->stateDir,
+            cfg->stateDir,
             virDomainNetGetActualBandwidth(net)) < 0)
         goto cleanup;
 
     ret = res_ifname;
 
 cleanup:
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -673,10 +677,12 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
 {
     virLXCDriverPtr driver = lxc_driver;
     virLXCDomainObjPrivatePtr priv;
+    virLXCDriverConfigPtr cfg;
     ino_t inode;
 
     lxcDriverLock(driver);
     virObjectLock(vm);
+    cfg = virLXCDriverGetConfig(driver);
     lxcDriverUnlock(driver);
 
     priv = vm->privateData;
@@ -692,10 +698,11 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     }
     virDomainAuditInit(vm, initpid, inode);
 
-    if (virDomainSaveStatus(lxc_driver->xmlopt, lxc_driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(lxc_driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 
     virObjectUnlock(vm);
+    virObjectUnref(cfg);
 }
 
 static virLXCMonitorCallbacks monitorCallbacks = {
@@ -709,6 +716,7 @@ static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
                                                     virDomainObjPtr vm)
 {
     virLXCMonitorPtr monitor = NULL;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
@@ -717,7 +725,7 @@ static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
      * deleted while the monitor is active */
     virObjectRef(vm);
 
-    monitor = virLXCMonitorNew(vm, driver->stateDir, &monitorCallbacks);
+    monitor = virLXCMonitorNew(vm, cfg->stateDir, &monitorCallbacks);
 
     if (monitor == NULL)
         virObjectUnref(vm);
@@ -731,6 +739,7 @@ static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
     }
 
 cleanup:
+    virObjectUnref(cfg);
     return monitor;
 }
 
@@ -812,6 +821,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     char *filterstr;
     char *outputstr;
     virCommandPtr cmd;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     cmd = virCommandNew(vm->def->emulator);
 
@@ -832,7 +842,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         VIR_FREE(filterstr);
     }
 
-    if (driver->log_libvirtd) {
+    if (cfg->log_libvirtd) {
         if (virLogGetNbOutputs() > 0) {
             outputstr = virLogGetOutputs();
             if (!outputstr) {
@@ -878,6 +888,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     return cmd;
 cleanup:
     virCommandFree(cmd);
+    virObjectUnref(cfg);
     return NULL;
 }
 
@@ -1052,6 +1063,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr err = NULL;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     virCgroupFree(&priv->cgroup);
 
@@ -1080,15 +1092,15 @@ int virLXCProcessStart(virConnectPtr conn,
         return -1;
     }
 
-    if (virFileMakePath(driver->logDir) < 0) {
+    if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,
                              _("Cannot create log directory '%s'"),
-                             driver->logDir);
+                             cfg->logDir);
         return -1;
     }
 
     if (virAsprintf(&logfile, "%s/%s.log",
-                    driver->logDir, vm->def->name) < 0)
+                    cfg->logDir, vm->def->name) < 0)
         return -1;
 
     /* Do this up front, so any part of the startup process can add
@@ -1178,7 +1190,7 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
 
     /* Save the configuration for the controller */
-    if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
+    if (virDomainSaveConfig(cfg->stateDir, vm->def) < 0)
         goto cleanup;
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
@@ -1253,7 +1265,7 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
 
     /* And get its pid */
-    if ((r = virPidFileRead(driver->stateDir, vm->def->name, &vm->pid)) < 0) {
+    if ((r = virPidFileRead(cfg->stateDir, vm->def->name, &vm->pid)) < 0) {
         char out[1024];
 
         if (virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) > 0)
@@ -1262,7 +1274,7 @@ int virLXCProcessStart(virConnectPtr conn,
         else
             virReportSystemError(-r,
                                  _("Failed to read pid file %s/%s.pid"),
-                                 driver->stateDir, vm->def->name);
+                                 cfg->stateDir, vm->def->name);
         goto cleanup;
     }
 
@@ -1301,7 +1313,7 @@ int virLXCProcessStart(virConnectPtr conn,
      * location for the benefit of libvirt_lxc. We're now overwriting
      * it with the live status XML instead. This is a (currently
      * harmless) inconsistency we should fix one day */
-    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto error;
 
     /* finally we can call the 'started' hook script if any */
@@ -1364,6 +1376,7 @@ cleanup:
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
     VIR_FREE(logfile);
+    virObjectUnref(cfg);
 
     if (err) {
         virSetError(err);

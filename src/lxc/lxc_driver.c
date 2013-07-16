@@ -456,8 +456,11 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
+    virLXCDriverConfigPtr cfg = NULL;
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
@@ -469,7 +472,7 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((def->nets != NULL) && !(driver->have_netns)) {
+    if ((def->nets != NULL) && !(cfg->have_netns)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("System lacks NETNS support"));
         goto cleanup;
@@ -482,7 +485,7 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(driver->configDir,
+    if (virDomainSaveConfig(cfg->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
@@ -507,6 +510,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return dom;
 }
 
@@ -517,10 +521,13 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -539,8 +546,8 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainDeleteConfig(driver->configDir,
-                              driver->autostartDir,
+    if (virDomainDeleteConfig(cfg->configDir,
+                              cfg->autostartDir,
                               vm) < 0)
         goto cleanup;
 
@@ -563,6 +570,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1030,10 +1038,13 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1046,7 +1057,7 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     if (virDomainCreateWithFilesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if ((vm->def->nets != NULL) && !(driver->have_netns)) {
+    if ((vm->def->nets != NULL) && !(cfg->have_netns)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("System lacks NETNS support"));
         goto cleanup;
@@ -1078,6 +1089,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1129,10 +1141,13 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     virDomainDefPtr def;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
@@ -1144,7 +1159,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((def->nets != NULL) && !(driver->have_netns)) {
+    if ((def->nets != NULL) && !(cfg->have_netns)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("System lacks NETNS support"));
         goto cleanup;
@@ -1184,6 +1199,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return dom;
 }
 
@@ -1485,26 +1501,24 @@ static int lxcCheckNetNsSupport(void)
 }
 
 
-static int
-lxcSecurityInit(virLXCDriverPtr driver)
+static virSecurityManagerPtr
+lxcSecurityInit(virLXCDriverConfigPtr cfg)
 {
-    VIR_INFO("lxcSecurityInit %s", driver->securityDriverName);
-    virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
+    VIR_INFO("lxcSecurityInit %s", cfg->securityDriverName);
+    virSecurityManagerPtr mgr = virSecurityManagerNew(cfg->securityDriverName,
                                                       LXC_DRIVER_NAME,
                                                       false,
-                                                      driver->securityDefaultConfined,
-                                                      driver->securityRequireConfined);
+                                                      cfg->securityDefaultConfined,
+                                                      cfg->securityRequireConfined);
     if (!mgr)
         goto error;
 
-    driver->securityManager = mgr;
-
-    return 0;
+    return mgr;
 
 error:
     VIR_ERROR(_("Failed to initialize security drivers"));
     virObjectUnref(mgr);
-    return -1;
+    return NULL;
 }
 
 
@@ -1513,6 +1527,7 @@ static int lxcStateInitialize(bool privileged,
                               void *opaque ATTRIBUTE_UNUSED)
 {
     char *ld;
+    virLXCDriverConfigPtr cfg = NULL;
 
     /* Valgrind gets very annoyed when we clone containers, so
      * disable LXC when under valgrind
@@ -1554,14 +1569,17 @@ static int lxcStateInitialize(bool privileged,
 
     lxc_driver->hostsysinfo = virSysinfoRead();
 
-    lxc_driver->log_libvirtd = 0; /* by default log to container logfile */
-    lxc_driver->have_netns = lxcCheckNetNsSupport();
-
-    /* Call function to load lxc driver configuration information */
-    if (lxcLoadDriverConfig(lxc_driver) < 0)
+    if (!(lxc_driver->config = cfg = virLXCDriverConfigNew()))
         goto cleanup;
 
-    if (lxcSecurityInit(lxc_driver) < 0)
+    cfg->log_libvirtd = 0; /* by default log to container logfile */
+    cfg->have_netns = lxcCheckNetNsSupport();
+
+    /* Call function to load lxc driver configuration information */
+    if (virLXCLoadDriverConfig(cfg, SYSCONFDIR "/libvirt/lxc.conf") < 0)
+        goto cleanup;
+
+    if (!(lxc_driver->securityManager = lxcSecurityInit(cfg)))
         goto cleanup;
 
     if ((lxc_driver->activeUsbHostdevs = virUSBDeviceListNew()) == NULL)
@@ -1578,7 +1596,7 @@ static int lxcStateInitialize(bool privileged,
 
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
-                                       lxc_driver->stateDir,
+                                       cfg->stateDir,
                                        NULL, 1,
                                        lxc_driver->caps,
                                        lxc_driver->xmlopt,
@@ -1590,8 +1608,8 @@ static int lxcStateInitialize(bool privileged,
 
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
-                                       lxc_driver->configDir,
-                                       lxc_driver->autostartDir, 0,
+                                       cfg->configDir,
+                                       cfg->autostartDir, 0,
                                        lxc_driver->caps,
                                        lxc_driver->xmlopt,
                                        1 << VIR_DOMAIN_VIRT_LXC,
@@ -1633,19 +1651,23 @@ static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
  */
 static int
 lxcStateReload(void) {
+    virLXCDriverConfigPtr cfg = NULL;
+
     if (!lxc_driver)
         return 0;
 
     lxcDriverLock(lxc_driver);
+    cfg = virLXCDriverGetConfig(lxc_driver);
+
     virDomainObjListLoadAllConfigs(lxc_driver->domains,
-                                   lxc_driver->configDir,
-                                   lxc_driver->autostartDir, 0,
+                                   cfg->configDir,
+                                   cfg->autostartDir, 0,
                                    lxc_driver->caps,
                                    lxc_driver->xmlopt,
                                    1 << VIR_DOMAIN_VIRT_LXC,
                                    lxcNotifyLoadDomain, lxc_driver);
     lxcDriverUnlock(lxc_driver);
-
+    virObjectUnref(cfg);
     return 0;
 }
 
@@ -1667,10 +1689,7 @@ static int lxcStateCleanup(void)
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
     virObjectUnref(lxc_driver->xmlopt);
-    VIR_FREE(lxc_driver->configDir);
-    VIR_FREE(lxc_driver->autostartDir);
-    VIR_FREE(lxc_driver->stateDir);
-    VIR_FREE(lxc_driver->logDir);
+    virObjectUnref(lxc_driver->config);
     lxcDriverUnlock(lxc_driver);
     virMutexDestroy(&lxc_driver->lock);
     VIR_FREE(lxc_driver);
@@ -1881,6 +1900,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     int ret = -1;
     int rc;
     virLXCDomainObjPrivatePtr priv;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -1895,6 +1915,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         return -1;
 
     lxcDriverLock(driver);
+
+    cfg = virLXCDriverGetConfig(driver);
 
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
@@ -1974,12 +1996,12 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto cleanup;
 
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        rc = virDomainSaveConfig(driver->configDir, vmdef);
+        rc = virDomainSaveConfig(cfg->configDir, vmdef);
         if (rc < 0)
             goto cleanup;
 
@@ -1994,6 +2016,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2135,6 +2158,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -2145,6 +2169,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
         return -1;
 
     lxcDriverLock(driver);
+
+    cfg = virLXCDriverGetConfig(driver);
 
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
@@ -2208,7 +2234,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
             goto cleanup;
     }
 
@@ -2217,6 +2243,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2420,13 +2447,17 @@ cleanup:
 }
 
 static int lxcDomainSetAutostart(virDomainPtr dom,
-                                   int autostart) {
+                                   int autostart)
+{
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
+    virLXCDriverConfigPtr cfg = NULL;
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -2453,20 +2484,20 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         goto cleanup;
     }
 
-    configFile = virDomainConfigFile(driver->configDir,
+    configFile = virDomainConfigFile(cfg->configDir,
                                      vm->def->name);
     if (configFile == NULL)
         goto cleanup;
-    autostartLink = virDomainConfigFile(driver->autostartDir,
+    autostartLink = virDomainConfigFile(cfg->autostartDir,
                                         vm->def->name);
     if (autostartLink == NULL)
         goto cleanup;
 
     if (autostart) {
-        if (virFileMakePath(driver->autostartDir) < 0) {
+        if (virFileMakePath(cfg->autostartDir) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create autostart directory %s"),
-                                 driver->autostartDir);
+                                 cfg->autostartDir);
             goto cleanup;
         }
 
@@ -2494,6 +2525,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2589,8 +2621,11 @@ static int lxcDomainSuspend(virDomainPtr dom)
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+    virLXCDriverConfigPtr cfg = NULL;
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -2623,7 +2658,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -2633,6 +2668,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2643,8 +2679,11 @@ static int lxcDomainResume(virDomainPtr dom)
     virDomainEventPtr event = NULL;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
+    virLXCDriverConfigPtr cfg = NULL;
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -2680,7 +2719,7 @@ static int lxcDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -2690,6 +2729,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4313,6 +4353,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
     unsigned int affect;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4320,6 +4361,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -4395,7 +4438,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
             ret = -1;
             goto cleanup;
         }
@@ -4403,7 +4446,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -4418,6 +4461,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4440,6 +4484,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
     unsigned int affect;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -4448,6 +4493,8 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -4524,7 +4571,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -4539,6 +4586,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4553,6 +4601,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
     unsigned int affect;
+    virLXCDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4560,6 +4609,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     lxcDriverLock(driver);
+    cfg = virLXCDriverGetConfig(driver);
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -4636,7 +4687,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
             ret = -1;
             goto cleanup;
         }
@@ -4644,7 +4695,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -4659,6 +4710,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     lxcDriverUnlock(driver);
+    virObjectUnref(cfg);
     return ret;
 }
 

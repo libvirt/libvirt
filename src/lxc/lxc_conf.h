@@ -46,19 +46,12 @@
 typedef struct _virLXCDriver virLXCDriver;
 typedef virLXCDriver *virLXCDriverPtr;
 
-struct _virLXCDriver {
-    virMutex lock;
+typedef struct _virLXCDriverConfig virLXCDriverConfig;
+typedef virLXCDriverConfig *virLXCDriverConfigPtr;
 
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
+struct _virLXCDriverConfig {
+    virObject parent;
 
-    virSysinfoDefPtr hostsysinfo;
-
-    size_t nactive;
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
-
-    virDomainObjListPtr domains;
     char *configDir;
     char *autostartDir;
     char *stateDir;
@@ -66,13 +59,33 @@ struct _virLXCDriver {
     int log_libvirtd;
     int have_netns;
 
+    char *securityDriverName;
+    bool securityDefaultConfined;
+    bool securityRequireConfined;
+};
+
+struct _virLXCDriver {
+    virMutex lock;
+
+    virLXCDriverConfigPtr config;
+
+    virCapsPtr caps;
+
+    virDomainXMLOptionPtr xmlopt;
+
+    virSysinfoDefPtr hostsysinfo;
+
+    size_t nactive;
+
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
+
+    virDomainObjListPtr domains;
+
     virUSBDeviceListPtr activeUsbHostdevs;
 
     virDomainEventStatePtr domainEventState;
 
-    char *securityDriverName;
-    bool securityDefaultConfined;
-    bool securityRequireConfined;
     virSecurityManagerPtr securityManager;
 
     /* Mapping of 'char *uuidstr' -> virConnectPtr
@@ -81,7 +94,10 @@ struct _virLXCDriver {
     virHashTablePtr autodestroy;
 };
 
-int lxcLoadDriverConfig(virLXCDriverPtr driver);
+virLXCDriverConfigPtr virLXCDriverConfigNew(void);
+virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver);
+int virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
+                           const char *filename);
 virCapsPtr lxcCapsInit(virLXCDriverPtr driver);
 virDomainXMLOptionPtr lxcDomainXMLConfInit(void);
 
