@@ -3258,6 +3258,10 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
                              dst);
         goto cleanup;
     }
+
+    if (lxcContainerChown(vm->def, dst) < 0)
+        goto cleanup;
+
     created = true;
 
     /* Labelling normally operates on src, but we need
