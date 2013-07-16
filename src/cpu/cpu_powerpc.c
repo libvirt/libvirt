@@ -313,10 +313,10 @@ ppcDecode(virCPUDefPtr cpu,
     if (data == NULL || (map = ppcLoadMap()) == NULL)
         return -1;
 
-    if (!(model = ppcModelFindPVR(map, data->ppc.pvr))) {
+    if (!(model = ppcModelFindPVR(map, data->data.ppc.pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Cannot find CPU model with PVR 0x%08x"),
-                       data->ppc.pvr);
+                       data->data.ppc.pvr);
         goto cleanup;
     }
 

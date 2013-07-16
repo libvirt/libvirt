@@ -5704,7 +5704,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
         /* Only 'svm' requires --enable-nesting. The nested
          * 'vmx' patches now simply hook off the CPU features
          */
-        hasSVM = cpuHasFeature(host->arch, data, "svm");
+        hasSVM = cpuHasFeature(data, "svm");
         if (hasSVM < 0)
             goto cleanup;
         *hasHwVirt = hasSVM > 0 ? true : false;
@@ -5845,8 +5845,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FREE(compare_msg);
-    if (host)
-        cpuDataFree(host->arch, data);
+    cpuDataFree(data);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
     virObjectUnref(caps);
@@ -9900,8 +9899,8 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                           NULL, NULL, NULL, NULL) < 0)
                 goto cleanup;
 
-            is_32bit = (cpuHasFeature(VIR_ARCH_X86_64, cpuData, "lm") != 1);
-            cpuDataFree(VIR_ARCH_X86_64, cpuData);
+            is_32bit = (cpuHasFeature(cpuData, "lm") != 1);
+            cpuDataFree(cpuData);
         } else if (model) {
             is_32bit = STREQ(model, "qemu32");
         }

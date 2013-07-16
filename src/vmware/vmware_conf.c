@@ -97,9 +97,9 @@ vmwareCapsInit(void)
      *  - Host CPU is x86_64 with virtualization extensions
      */
     if (caps->host.arch == VIR_ARCH_X86_64 ||
-        (cpuHasFeature(caps->host.arch, data, "lm") &&
-         (cpuHasFeature(caps->host.arch, data, "vmx") ||
-          cpuHasFeature(caps->host.arch, data, "svm")))) {
+        (cpuHasFeature(data, "lm") &&
+         (cpuHasFeature(data, "vmx") ||
+          cpuHasFeature(data, "svm")))) {
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              "hvm",
@@ -115,8 +115,7 @@ vmwareCapsInit(void)
 
 cleanup:
     virCPUDefFree(cpu);
-    if (caps)
-        cpuDataFree(caps->host.arch, data);
+    cpuDataFree(data);
 
     return caps;
 

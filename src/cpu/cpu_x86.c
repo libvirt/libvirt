@@ -216,14 +216,15 @@ x86DataFree(struct cpuX86Data *data)
 
 
 static virCPUDataPtr
-x86MakeCPUData(struct cpuX86Data **data)
+x86MakeCPUData(virArch arch, struct cpuX86Data **data)
 {
     virCPUDataPtr cpuData;
 
     if (VIR_ALLOC(cpuData) < 0)
         return NULL;
 
-    cpuData->x86 = *data;
+    cpuData->arch = arch;
+    cpuData->data.x86 = *data;
     *data = NULL;
 
     return cpuData;
@@ -235,7 +236,7 @@ x86FreeCPUData(virCPUDataPtr data)
     if (!data)
         return;
 
-    x86DataFree(data->x86);
+    x86DataFree(data->data.x86);
     VIR_FREE(data);
 }
 
@@ -1165,6 +1166,7 @@ x86Compute(virCPUDefPtr host,
     struct x86_model *guest_model = NULL;
     virCPUCompareResult ret;
     enum compare_result result;
+    virArch arch;
     size_t i;
 
     if (cpu->arch != VIR_ARCH_NONE) {
@@ -1187,6 +1189,9 @@ x86Compute(virCPUDefPtr host,
                 goto error;
             return VIR_CPU_COMPARE_INCOMPATIBLE;
         }
+        arch = cpu->arch;
+    } else {
+        arch = host->arch;
     }
 
     if (cpu->vendor &&
@@ -1266,7 +1271,7 @@ x86Compute(virCPUDefPtr host,
         x86DataSubtract(guest_model->data, cpu_disable->data);
 
         if (!(guestData = x86DataCopy(guest_model->data)) ||
-            !(*guest = x86MakeCPUData(&guestData))) {
+            !(*guest = x86MakeCPUData(arch, &guestData))) {
             x86DataFree(guestData);
             goto error;
         }
@@ -1418,7 +1423,7 @@ x86DecodeCPUData(virCPUDefPtr cpu,
                  unsigned int nmodels,
                  const char *preferred)
 {
-    return x86Decode(cpu, data->x86, models, nmodels, preferred);
+    return x86Decode(cpu, data->data.x86, models, nmodels, preferred);
 }
 
 
@@ -1442,7 +1447,8 @@ x86EncodePolicy(const virCPUDefPtr cpu,
 
 
 static int
-x86Encode(const virCPUDefPtr cpu,
+x86Encode(virArch arch,
+          const virCPUDefPtr cpu,
           virCPUDataPtr *forced,
           virCPUDataPtr *required,
           virCPUDataPtr *optional,
@@ -1522,22 +1528,22 @@ x86Encode(const virCPUDefPtr cpu,
     }
 
     if (forced &&
-        !(*forced = x86MakeCPUData(&data_forced)))
+        !(*forced = x86MakeCPUData(arch, &data_forced)))
         goto error;
     if (required &&
-        !(*required = x86MakeCPUData(&data_required)))
+        !(*required = x86MakeCPUData(arch, &data_required)))
         goto error;
     if (optional &&
-        !(*optional = x86MakeCPUData(&data_optional)))
+        !(*optional = x86MakeCPUData(arch, &data_optional)))
         goto error;
     if (disabled &&
-        !(*disabled = x86MakeCPUData(&data_disabled)))
+        !(*disabled = x86MakeCPUData(arch, &data_disabled)))
         goto error;
     if (forbidden &&
-        !(*forbidden = x86MakeCPUData(&data_forbidden)))
+        !(*forbidden = x86MakeCPUData(arch, &data_forbidden)))
         goto error;
     if (vendor &&
-        !(*vendor = x86MakeCPUData(&data_vendor)))
+        !(*vendor = x86MakeCPUData(arch, &data_vendor)))
         goto error;
 
     ret = 0;
@@ -1646,7 +1652,7 @@ x86NodeData(void)
         goto error;
     data->extended_len = ret;
 
-    if (!(cpuData = x86MakeCPUData(&data)))
+    if (!(cpuData = x86MakeCPUData(virArchFromHost(), &data)))
         goto error;
 
     return cpuData;
@@ -1885,7 +1891,7 @@ static int x86HasFeature(const virCPUDataPtr data,
     if (!(feature = x86FeatureFind(map, name)))
         goto cleanup;
 
-    ret = x86DataIsSubset(data->x86, feature->data) ? 1 : 0;
+    ret = x86DataIsSubset(data->data.x86, feature->data) ? 1 : 0;
 
 cleanup:
     x86MapFree(map);

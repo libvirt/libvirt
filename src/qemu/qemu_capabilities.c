@@ -857,7 +857,7 @@ virQEMUCapsInitCPU(virCapsPtr caps,
     ret = 0;
 
 cleanup:
-    cpuDataFree(arch, data);
+    cpuDataFree(data);
 
     return ret;
 

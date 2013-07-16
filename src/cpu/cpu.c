@@ -198,29 +198,28 @@ cpuEncode(virArch arch,
         return -1;
     }
 
-    return driver->encode(cpu, forced, required,
+    return driver->encode(arch, cpu, forced, required,
                           optional, disabled, forbidden, vendor);
 }
 
 
 void
-cpuDataFree(virArch arch,
-            virCPUDataPtr data)
+cpuDataFree(virCPUDataPtr data)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("arch=%s, data=%p", virArchToString(arch), data);
+    VIR_DEBUG("data=%p", data);
 
     if (data == NULL)
         return;
 
-    if ((driver = cpuGetSubDriver(arch)) == NULL)
+    if ((driver = cpuGetSubDriver(data->arch)) == NULL)
         return;
 
     if (driver->free == NULL) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot free CPU data for %s architecture"),
-                       virArchToString(arch));
+                       virArchToString(data->arch));
         return;
     }
 
@@ -419,22 +418,20 @@ cpuUpdate(virCPUDefPtr guest,
 }
 
 int
-cpuHasFeature(virArch arch,
-              const virCPUDataPtr data,
+cpuHasFeature(const virCPUDataPtr data,
               const char *feature)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("arch=%s, data=%p, feature=%s",
-              virArchToString(arch), data, feature);
+    VIR_DEBUG("data=%p, feature=%s", data, feature);
 
-    if ((driver = cpuGetSubDriver(arch)) == NULL)
+    if ((driver = cpuGetSubDriver(data->arch)) == NULL)
         return -1;
 
     if (driver->hasFeature == NULL) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot check guest CPU data for %s architecture"),
-                       virArchToString(arch));
+                       virArchToString(data->arch));
         return -1;
     }
 

@@ -32,12 +32,15 @@
 # include "cpu_ppc_data.h"
 
 
-typedef union _virCPUData virCPUData;
+typedef struct _virCPUData virCPUData;
 typedef virCPUData *virCPUDataPtr;
-union _virCPUData {
-    struct cpuX86Data *x86;
-    struct cpuPPCData ppc;
-    /* generic driver needs no data */
+struct _virCPUData {
+    virArch arch;
+    union {
+        struct cpuX86Data *x86;
+        struct cpuPPCData ppc;
+        /* generic driver needs no data */
+    } data;
 };
 
 
@@ -53,7 +56,8 @@ typedef int
                      const char *preferred);
 
 typedef int
-(*cpuArchEncode)    (const virCPUDefPtr cpu,
+(*cpuArchEncode)    (virArch arch,
+                     const virCPUDefPtr cpu,
                      virCPUDataPtr *forced,
                      virCPUDataPtr *required,
                      virCPUDataPtr *optional,
@@ -130,8 +134,7 @@ cpuEncode   (virArch arch,
              virCPUDataPtr *vendor);
 
 extern void
-cpuDataFree (virArch arch,
-             virCPUDataPtr data);
+cpuDataFree (virCPUDataPtr data);
 
 extern virCPUDataPtr
 cpuNodeData (virArch arch);
@@ -159,8 +162,7 @@ cpuUpdate   (virCPUDefPtr guest,
              const virCPUDefPtr host);
 
 extern int
-cpuHasFeature(virArch arch,
-              const virCPUDataPtr data,
+cpuHasFeature(const virCPUDataPtr data,
               const char *feature);
 
 

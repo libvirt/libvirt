@@ -308,8 +308,7 @@ cpuTestGuestData(const void *arg)
 
 cleanup:
     VIR_FREE(result);
-    if (host)
-        cpuDataFree(host->arch, guestData);
+    cpuDataFree(guestData);
     virCPUDefFree(host);
     virCPUDefFree(cpu);
     virCPUDefFree(guest);
@@ -427,7 +426,7 @@ cpuTestHasFeature(const void *arg)
                   NULL, NULL, NULL, NULL) < 0)
         goto cleanup;
 
-    result = cpuHasFeature(host->arch, hostData, data->name);
+    result = cpuHasFeature(hostData, data->name);
     if (data->result == -1)
         virResetLastError();
 
@@ -445,8 +444,7 @@ cpuTestHasFeature(const void *arg)
     ret = 0;
 
 cleanup:
-    if (host)
-        cpuDataFree(host->arch, hostData);
+    cpuDataFree(hostData);
     virCPUDefFree(host);
     return ret;
 }
