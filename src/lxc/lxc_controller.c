@@ -1369,6 +1369,9 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
         goto cleanup;
     }
 
+    if (virLXCControllerChown(ctrl, dst) < 0)
+        goto cleanup;
+
     /* Labelling normally operates on src, but we need
      * to actally label the dst here, so hack the config */
     def->src = dst;
