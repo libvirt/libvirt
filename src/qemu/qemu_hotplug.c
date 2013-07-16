@@ -1254,7 +1254,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virDomainDefPtr vmdef = vm->def;
     char *devstr = NULL;
     char *charAlias = NULL;
-    bool remove = false;
+    bool need_remove = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1275,7 +1275,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 
     if (qemuDomainChrInsert(vmdef, chr) < 0)
         goto cleanup;
-    remove = true;
+    need_remove = true;
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0) {
@@ -1293,7 +1293,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
-    if (ret < 0 && remove)
+    if (ret < 0 && need_remove)
         qemuDomainChrRemove(vmdef, chr);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
