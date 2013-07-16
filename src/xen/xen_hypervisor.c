@@ -271,6 +271,24 @@ struct xen_v2d8_getdomaininfo {
 };
 typedef struct xen_v2d8_getdomaininfo xen_v2d8_getdomaininfo;
 
+struct xen_v2d9_getdomaininfo {
+    domid_t  domain;	/* the domain number */
+    uint32_t flags;	/* flags, see before */
+    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
+    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    uint64_t outstanding_pages ALIGN_64;
+    uint64_t shr_pages ALIGN_64;    /* number of shared pages */
+    uint64_t paged_pages ALIGN_64;    /* number of paged pages */
+    uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
+    uint64_t cpu_time ALIGN_64;  /* CPU time used */
+    uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
+    uint32_t max_vcpu_id; /* Maximum VCPUID in use by this domain. */
+    uint32_t ssidref;
+    xen_domain_handle_t handle;
+    uint32_t cpupool;
+};
+typedef struct xen_v2d9_getdomaininfo xen_v2d9_getdomaininfo;
+
 union xen_getdomaininfo {
     struct xen_v0_getdomaininfo v0;
     struct xen_v2_getdomaininfo v2;
@@ -278,6 +296,7 @@ union xen_getdomaininfo {
     struct xen_v2d6_getdomaininfo v2d6;
     struct xen_v2d7_getdomaininfo v2d7;
     struct xen_v2d8_getdomaininfo v2d8;
+    struct xen_v2d9_getdomaininfo v2d9;
 };
 typedef union xen_getdomaininfo xen_getdomaininfo;
 
@@ -288,6 +307,7 @@ union xen_getdomaininfolist {
     struct xen_v2d6_getdomaininfo *v2d6;
     struct xen_v2d7_getdomaininfo *v2d7;
     struct xen_v2d8_getdomaininfo *v2d8;
+    struct xen_v2d8_getdomaininfo *v2d9;
 };
 typedef union xen_getdomaininfolist xen_getdomaininfolist;
 
@@ -325,7 +345,9 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hv_versions.hypervisor < 2 ?                                       \
      (VIR_ALLOC_N(domlist.v0, (size)) == 0) :                           \
-     (hv_versions.dom_interface >= 8 ?                                  \
+     (hv_versions.dom_interface >= 9 ?                                  \
+      (VIR_ALLOC_N(domlist.v2d9, (size)) == 0) :                        \
+     (hv_versions.dom_interface == 8 ?                                  \
       (VIR_ALLOC_N(domlist.v2d8, (size)) == 0) :                        \
      (hv_versions.dom_interface == 7 ?                                  \
       (VIR_ALLOC_N(domlist.v2d7, (size)) == 0) :                        \
@@ -333,12 +355,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       (VIR_ALLOC_N(domlist.v2d6, (size)) == 0) :                        \
      (hv_versions.dom_interface == 5 ?                                  \
       (VIR_ALLOC_N(domlist.v2d5, (size)) == 0) :                        \
-      (VIR_ALLOC_N(domlist.v2, (size)) == 0))))))
+      (VIR_ALLOC_N(domlist.v2, (size)) == 0)))))))
 
 #define XEN_GETDOMAININFOLIST_FREE(domlist)            \
     (hv_versions.hypervisor < 2 ?                      \
      VIR_FREE(domlist.v0) :                            \
-     (hv_versions.dom_interface >= 8 ?                 \
+     (hv_versions.dom_interface >= 9 ?                 \
+      VIR_FREE(domlist.v2d9) :                         \
+     (hv_versions.dom_interface == 8 ?                 \
       VIR_FREE(domlist.v2d8) :                         \
      (hv_versions.dom_interface == 7 ?                 \
       VIR_FREE(domlist.v2d7) :                         \
@@ -346,12 +370,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       VIR_FREE(domlist.v2d6) :                         \
      (hv_versions.dom_interface == 5 ?                 \
       VIR_FREE(domlist.v2d5) :                         \
-      VIR_FREE(domlist.v2))))))
+      VIR_FREE(domlist.v2)))))))
 
 #define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)            \
     (hv_versions.hypervisor < 2 ?                             \
      memset(domlist.v0, 0, sizeof(*domlist.v0) * size) :      \
-     (hv_versions.dom_interface >= 8 ?                        \
+     (hv_versions.dom_interface >= 9 ?                        \
+      memset(domlist.v2d9, 0, sizeof(*domlist.v2d9) * size) : \
+     (hv_versions.dom_interface == 8 ?                        \
       memset(domlist.v2d8, 0, sizeof(*domlist.v2d8) * size) : \
      (hv_versions.dom_interface == 7 ?                        \
       memset(domlist.v2d7, 0, sizeof(*domlist.v2d7) * size) : \
@@ -359,12 +385,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       memset(domlist.v2d6, 0, sizeof(*domlist.v2d6) * size) : \
      (hv_versions.dom_interface == 5 ?                        \
       memset(domlist.v2d5, 0, sizeof(*domlist.v2d5) * size) : \
-      memset(domlist.v2, 0, sizeof(*domlist.v2) * size))))))
+      memset(domlist.v2, 0, sizeof(*domlist.v2) * size)))))))
 
 #define XEN_GETDOMAININFOLIST_DOMAIN(domlist, n)    \
     (hv_versions.hypervisor < 2 ?                   \
      domlist.v0[n].domain :                         \
-     (hv_versions.dom_interface >= 8 ?              \
+     (hv_versions.dom_interface >= 9 ?              \
+      domlist.v2d9[n].domain :                      \
+     (hv_versions.dom_interface == 8 ?              \
       domlist.v2d8[n].domain :                      \
      (hv_versions.dom_interface == 7 ?              \
       domlist.v2d7[n].domain :                      \
@@ -372,12 +400,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       domlist.v2d6[n].domain :                      \
      (hv_versions.dom_interface == 5 ?              \
       domlist.v2d5[n].domain :                      \
-      domlist.v2[n].domain)))))
+      domlist.v2[n].domain))))))
 
 #define XEN_GETDOMAININFOLIST_UUID(domlist, n)      \
     (hv_versions.hypervisor < 2 ?                   \
      domlist.v0[n].handle :                         \
-     (hv_versions.dom_interface >= 8 ?              \
+     (hv_versions.dom_interface >= 9 ?              \
+      domlist.v2d9[n].handle :                      \
+     (hv_versions.dom_interface == 8 ?              \
       domlist.v2d8[n].handle :                      \
      (hv_versions.dom_interface == 7 ?              \
       domlist.v2d7[n].handle :                      \
@@ -385,12 +415,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       domlist.v2d6[n].handle :                      \
      (hv_versions.dom_interface == 5 ?              \
       domlist.v2d5[n].handle :                      \
-      domlist.v2[n].handle)))))
+      domlist.v2[n].handle))))))
 
 #define XEN_GETDOMAININFOLIST_DATA(domlist)        \
     (hv_versions.hypervisor < 2 ?                  \
      (void*)(domlist->v0) :                        \
-     (hv_versions.dom_interface >= 8 ?             \
+     (hv_versions.dom_interface >= 9 ?             \
+      (void*)(domlist->v2d9) :                     \
+     (hv_versions.dom_interface == 8 ?             \
       (void*)(domlist->v2d8) :                     \
      (hv_versions.dom_interface == 7 ?             \
       (void*)(domlist->v2d7) :                     \
@@ -398,12 +430,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       (void*)(domlist->v2d6) :                     \
      (hv_versions.dom_interface == 5 ?             \
       (void*)(domlist->v2d5) :                     \
-      (void*)(domlist->v2))))))
+      (void*)(domlist->v2)))))))
 
 #define XEN_GETDOMAININFO_SIZE                     \
     (hv_versions.hypervisor < 2 ?                  \
      sizeof(xen_v0_getdomaininfo) :                \
-     (hv_versions.dom_interface >= 8 ?             \
+     (hv_versions.dom_interface >= 9 ?             \
+      sizeof(xen_v2d9_getdomaininfo) :             \
+     (hv_versions.dom_interface == 8 ?             \
       sizeof(xen_v2d8_getdomaininfo) :             \
      (hv_versions.dom_interface == 7 ?             \
       sizeof(xen_v2d7_getdomaininfo) :             \
@@ -411,12 +445,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       sizeof(xen_v2d6_getdomaininfo) :             \
      (hv_versions.dom_interface == 5 ?             \
       sizeof(xen_v2d5_getdomaininfo) :             \
-      sizeof(xen_v2_getdomaininfo))))))
+      sizeof(xen_v2_getdomaininfo)))))))
 
 #define XEN_GETDOMAININFO_CLEAR(dominfo)                           \
     (hv_versions.hypervisor < 2 ?                                  \
      memset(&(dominfo.v0), 0, sizeof(xen_v0_getdomaininfo)) :      \
-     (hv_versions.dom_interface >= 8 ?                             \
+     (hv_versions.dom_interface >= 9 ?                             \
+      memset(&(dominfo.v2d9), 0, sizeof(xen_v2d9_getdomaininfo)) : \
+     (hv_versions.dom_interface == 8 ?                             \
       memset(&(dominfo.v2d8), 0, sizeof(xen_v2d8_getdomaininfo)) : \
      (hv_versions.dom_interface == 7 ?                             \
       memset(&(dominfo.v2d7), 0, sizeof(xen_v2d7_getdomaininfo)) : \
@@ -424,12 +460,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       memset(&(dominfo.v2d6), 0, sizeof(xen_v2d6_getdomaininfo)) : \
      (hv_versions.dom_interface == 5 ?                             \
       memset(&(dominfo.v2d5), 0, sizeof(xen_v2d5_getdomaininfo)) : \
-      memset(&(dominfo.v2), 0, sizeof(xen_v2_getdomaininfo)))))))
+      memset(&(dominfo.v2), 0, sizeof(xen_v2_getdomaininfo))))))))
 
 #define XEN_GETDOMAININFO_DOMAIN(dominfo)       \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.domain :                        \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.domain :                     \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.domain :                     \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.domain :                     \
@@ -437,12 +475,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.domain :                     \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.domain :                     \
-      dominfo.v2.domain)))))
+      dominfo.v2.domain))))))
 
 #define XEN_GETDOMAININFO_CPUTIME(dominfo)      \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.cpu_time :                      \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.cpu_time :                   \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.cpu_time :                   \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.cpu_time :                   \
@@ -450,13 +490,15 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.cpu_time :                   \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.cpu_time :                   \
-      dominfo.v2.cpu_time)))))
+      dominfo.v2.cpu_time))))))
 
 
 #define XEN_GETDOMAININFO_CPUCOUNT(dominfo)     \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.nr_online_vcpus :               \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.nr_online_vcpus :            \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.nr_online_vcpus :            \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.nr_online_vcpus :            \
@@ -464,12 +506,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.nr_online_vcpus :            \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.nr_online_vcpus :            \
-      dominfo.v2.nr_online_vcpus)))))
+      dominfo.v2.nr_online_vcpus))))))
 
 #define XEN_GETDOMAININFO_MAXCPUID(dominfo)     \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.max_vcpu_id :                   \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.max_vcpu_id :                \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.max_vcpu_id :                \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.max_vcpu_id :                \
@@ -477,12 +521,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.max_vcpu_id :                \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.max_vcpu_id :                \
-      dominfo.v2.max_vcpu_id)))))
+      dominfo.v2.max_vcpu_id))))))
 
 #define XEN_GETDOMAININFO_FLAGS(dominfo)        \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.flags :                         \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.flags :                      \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.flags :                      \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.flags :                      \
@@ -490,12 +536,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.flags :                      \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.flags :                      \
-      dominfo.v2.flags)))))
+      dominfo.v2.flags))))))
 
 #define XEN_GETDOMAININFO_TOT_PAGES(dominfo)    \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.tot_pages :                     \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.tot_pages :                  \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.tot_pages :                  \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.tot_pages :                  \
@@ -503,12 +551,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.tot_pages :                  \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.tot_pages :                  \
-      dominfo.v2.tot_pages)))))
+      dominfo.v2.tot_pages))))))
 
 #define XEN_GETDOMAININFO_MAX_PAGES(dominfo)    \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.max_pages :                     \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.max_pages :                  \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.max_pages :                  \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.max_pages :                  \
@@ -516,12 +566,14 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.max_pages :                  \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.max_pages :                  \
-      dominfo.v2.max_pages)))))
+      dominfo.v2.max_pages))))))
 
 #define XEN_GETDOMAININFO_UUID(dominfo)         \
     (hv_versions.hypervisor < 2 ?               \
      dominfo.v0.handle :                        \
-     (hv_versions.dom_interface >= 8 ?          \
+     (hv_versions.dom_interface >= 9 ?          \
+      dominfo.v2d9.handle :                     \
+     (hv_versions.dom_interface == 8 ?          \
       dominfo.v2d8.handle :                     \
      (hv_versions.dom_interface == 7 ?          \
       dominfo.v2d7.handle :                     \
@@ -529,7 +581,7 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
       dominfo.v2d6.handle :                     \
      (hv_versions.dom_interface == 5 ?          \
       dominfo.v2d5.handle :                     \
-      dominfo.v2.handle)))))
+      dominfo.v2.handle))))))
 
 
 static int
@@ -1912,6 +1964,19 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         hv_versions.dom_interface = 8; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
             VIR_DEBUG("Using hypervisor call v2, sys ver9 dom ver8");
+            goto done;
+        }
+    }
+
+    /* Xen 4.3
+     * sysctl version 10 -> xen-unstable commit bec8f17e
+     * domctl version 9 -> xen-unstable commit 65c9792d
+     */
+    hv_versions.sys_interface = 10; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        hv_versions.dom_interface = 9; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0) {
+            VIR_DEBUG("Using hypervisor call v2, sys ver10 dom ver9");
             goto done;
         }
     }
