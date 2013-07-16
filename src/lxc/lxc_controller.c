@@ -1309,6 +1309,97 @@ cleanup:
 }
 
 
+static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
+                                     virDomainDiskDefPtr def,
+                                     virSecurityManagerPtr securityDriver)
+{
+    char *dst = NULL;
+    int ret = -1;
+    struct stat sb;
+    mode_t mode;
+    char *tmpsrc = def->src;
+
+    if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Can't setup disk for non-block device"));
+        goto cleanup;
+    }
+    if (def->src == NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Can't setup disk without media"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dst, "/%s/%s.dev/%s",
+                    LXC_STATE_DIR, ctrl->def->name, def->dst) < 0)
+        goto cleanup;
+
+    if (stat(def->src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"), def->src);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disk source %s must be a character/block device"),
+                       def->src);
+        goto cleanup;
+    }
+
+    mode = 0700;
+    if (S_ISCHR(sb.st_mode))
+        mode |= S_IFCHR;
+    else
+        mode |= S_IFBLK;
+
+    /* Yes, the device name we're creating may not
+     * actually correspond to the major:minor number
+     * we're using, but we've no other option at this
+     * time. Just have to hope that containerized apps
+     * don't get upset that the major:minor is different
+     * to that normally implied by the device name
+     */
+    VIR_DEBUG("Creating dev %s (%d,%d) from %s",
+              dst, major(sb.st_rdev), minor(sb.st_rdev), def->src);
+    if (mknod(dst, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             dst);
+        goto cleanup;
+    }
+
+    /* Labelling normally operates on src, but we need
+     * to actally label the dst here, so hack the config */
+    def->src = dst;
+    if (virSecurityManagerSetImageLabel(securityDriver, ctrl->def, def) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    def->src = tmpsrc;
+    VIR_FREE(dst);
+    return ret;
+}
+
+static int virLXCControllerSetupAllDisks(virLXCControllerPtr ctrl)
+{
+    size_t i;
+    VIR_DEBUG("Setting up disks");
+
+    for (i = 0; i < ctrl->def->ndisks; i++) {
+        if (virLXCControllerSetupDisk(ctrl, ctrl->def->disks[i],
+                                      ctrl->securityManager) < 0)
+            return -1;
+    }
+
+    VIR_DEBUG("Setup all disks");
+    return 0;
+}
+
+
+
 /**
  * virLXCControllerMoveInterfaces
  * @nveths: number of interfaces
@@ -1722,6 +1813,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
         goto cleanup;
 
     if (virLXCControllerPopulateDevices(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupAllDisks(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupFuse(ctrl) < 0)

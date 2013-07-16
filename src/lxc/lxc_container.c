@@ -1367,100 +1367,6 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
 }
 
 
-static int lxcContainerSetupDisk(virDomainDefPtr vmDef,
-                                 virDomainDiskDefPtr def,
-                                 virSecurityManagerPtr securityDriver)
-{
-    char *src = NULL;
-    char *dst = NULL;
-    int ret = -1;
-    struct stat sb;
-    mode_t mode;
-    char *tmpsrc = def->src;
-
-    if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Can't setup disk for non-block device"));
-        goto cleanup;
-    }
-    if (def->src == NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Can't setup disk without media"));
-        goto cleanup;
-    }
-
-    if (virAsprintf(&src, "/.oldroot/%s", def->src) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&dst, "/dev/%s", def->dst) < 0)
-        goto cleanup;
-
-    if (stat(src, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to access %s"), def->src);
-        goto cleanup;
-    }
-
-    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disk source %s must be a character/block device"),
-                       def->src);
-        goto cleanup;
-    }
-
-    mode = 0700;
-    if (S_ISCHR(sb.st_mode))
-        mode |= S_IFCHR;
-    else
-        mode |= S_IFBLK;
-
-    /* Yes, the device name we're creating may not
-     * actually correspond to the major:minor number
-     * we're using, but we've no other option at this
-     * time. Just have to hope that containerized apps
-     * don't get upset that the major:minor is different
-     * to that normally implied by the device name
-     */
-    VIR_DEBUG("Creating dev %s (%d,%d) from %s",
-              dst, major(sb.st_rdev), minor(sb.st_rdev), src);
-    if (mknod(dst, mode, sb.st_rdev) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create device %s"),
-                             dst);
-        goto cleanup;
-    }
-    /* Labelling normally operates on src, but we need
-     * to actally label the dst here, so hack the config */
-    def->src = dst;
-    if (virSecurityManagerSetImageLabel(securityDriver, vmDef, def) < 0)
-        goto cleanup;
-
-    ret = 0;
-
-cleanup:
-    def->src = tmpsrc;
-    VIR_FREE(src);
-    VIR_FREE(dst);
-    return ret;
-}
-
-static int lxcContainerSetupAllDisks(virDomainDefPtr vmDef,
-                                     virSecurityManagerPtr securityDriver)
-{
-    size_t i;
-    VIR_DEBUG("Setting up disks");
-
-    for (i = 0; i < vmDef->ndisks; i++) {
-        if (lxcContainerSetupDisk(vmDef, vmDef->disks[i],
-                                  securityDriver) < 0)
-            return -1;
-    }
-
-    VIR_DEBUG("Setup all disks");
-    return 0;
-}
-
-
 static int lxcContainerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
                                              virDomainHostdevDefPtr def,
                                              virSecurityManagerPtr securityDriver)
@@ -1837,10 +1743,6 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Sets up any non-root mounts from guest config */
     if (lxcContainerMountAllFS(vmDef, sec_mount_options) < 0)
-        goto cleanup;
-
-    /* Sets up any extra disks from guest config */
-    if (lxcContainerSetupAllDisks(vmDef, securityDriver) < 0)
         goto cleanup;
 
     /* Sets up any extra host devices from guest config */
