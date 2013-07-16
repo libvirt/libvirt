@@ -2475,6 +2475,19 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuDomainRemoveChrDevice(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm,
+                          virDomainChrDefPtr chr)
+{
+    VIR_DEBUG("Removing character device %s from domain %p %s",
+              chr->info.alias, vm, vm->def->name);
+
+    qemuDomainChrRemove(vm->def, chr);
+    virDomainChrDefFree(chr);
+}
+
+
 int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr detach)
@@ -3170,8 +3183,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     }
     qemuDomainObjExitMonitor(driver, vm);
 
-    qemuDomainChrRemove(vmdef, tmpChr);
-    virDomainChrDefFree(tmpChr);
+    qemuDomainRemoveChrDevice(driver, vm, tmpChr);
     ret = 0;
 
 cleanup:
