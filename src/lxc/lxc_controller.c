@@ -1113,27 +1113,6 @@ cleanup2:
     return rc;
 }
 
-static int
-virLXCControllerChown(virLXCControllerPtr ctrl, char *path)
-{
-    uid_t uid;
-    gid_t gid;
-
-    if (!ctrl->def->idmap.uidmap)
-        return 0;
-
-    uid = ctrl->def->idmap.uidmap[0].target;
-    gid = ctrl->def->idmap.gidmap[0].target;
-
-    if (chown(path, uid, gid) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to change owner of %s to %u:%u"),
-                             path, uid, gid);
-        return -1;
-    }
-
-    return 0;
-}
 
 static int
 virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
@@ -1248,7 +1227,7 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
         goto cleanup;
     }
 
-    if (virLXCControllerChown(ctrl, dev) < 0)
+    if (lxcContainerChown(ctrl->def, dev) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1296,7 +1275,7 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
             goto cleanup;
         }
 
-        if (virLXCControllerChown(ctrl, path) < 0)
+        if (lxcContainerChown(ctrl->def, path) < 0)
             goto cleanup;
 
         VIR_FREE(path);
@@ -1369,7 +1348,7 @@ static int virLXCControllerSetupDisk(virLXCControllerPtr ctrl,
         goto cleanup;
     }
 
-    if (virLXCControllerChown(ctrl, dst) < 0)
+    if (lxcContainerChown(ctrl->def, dst) < 0)
         goto cleanup;
 
     /* Labelling normally operates on src, but we need
@@ -1627,8 +1606,8 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
         goto cleanup;
     }
 
-    if ((virLXCControllerChown(ctrl, ctrl->devptmx) < 0) ||
-        (virLXCControllerChown(ctrl, devpts) < 0))
+    if ((lxcContainerChown(ctrl->def, ctrl->devptmx) < 0) ||
+        (lxcContainerChown(ctrl->def, devpts) < 0))
          goto cleanup;
 
     ret = 0;
@@ -1666,7 +1645,7 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
         }
 
         /* Change the owner of tty device to the root user of container */
-        if (virLXCControllerChown(ctrl, ttyHostPath) < 0)
+        if (lxcContainerChown(ctrl->def, ttyHostPath) < 0)
             goto cleanup;
 
         VIR_FREE(ttyHostPath);

@@ -67,4 +67,6 @@ int lxcContainerSetupHostdevCapsMakePath(const char *dev);
 
 virArch lxcContainerGetAlt32bitArch(virArch arch);
 
+int lxcContainerChown(virDomainDefPtr def, const char *path);
+
 #endif /* LXC_CONTAINER_H */

@@ -2122,3 +2122,24 @@ int lxcContainerAvailable(int features)
     VIR_DEBUG("container support is enabled");
     return 0;
 }
+
+int lxcContainerChown(virDomainDefPtr def, const char *path)
+{
+    uid_t uid;
+    gid_t gid;
+
+    if (!def->idmap.uidmap)
+        return 0;
+
+    uid = def->idmap.uidmap[0].target;
+    gid = def->idmap.gidmap[0].target;
+
+    if (chown(path, uid, gid) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to change owner of %s to %u:%u"),
+                             path, uid, gid);
+        return -1;
+    }
+
+    return 0;
+}
