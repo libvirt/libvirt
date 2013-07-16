@@ -1529,7 +1529,6 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
 cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    virJSONValueFree(data);
     return ret;
 }
 
