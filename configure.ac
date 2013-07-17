@@ -2391,13 +2391,19 @@ AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                  [#include <sys/socket.h>
                   #include <net/if.h>
                  ])
+
 # Check for BSD approach for setting MAC addr
-AC_CHECK_DECLS([link_addr],
-               [], [],
-               [#include <sys/types.h>
-                #include <sys/socket.h>
-                #include <net/if_dl.h>
-               ])
+AC_LINK_IFELSE([AC_LANG_PROGRAM(
+     [[
+        #include <sys/types.h>
+        #include <sys/socket.h>
+        #include <net/if_dl.h>
+     ]],
+     [[
+        link_addr(NULL, NULL)]])],
+     [AC_DEFINE([HAVE_DECL_LINK_ADDR],
+                [1],
+                [whether link_addr is available])])
 
 # Check for BSD approach for bridge management
 AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
