@@ -3716,7 +3716,8 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandDaemonize(cmd);
     virCommandRequireHandshake(cmd);
 
-    virSecurityManagerPreFork(driver->securityManager);
+    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        goto cleanup;
     ret = virCommandRun(cmd, NULL);
     virSecurityManagerPostFork(driver->securityManager);
 

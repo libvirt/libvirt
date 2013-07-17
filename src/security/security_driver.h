@@ -47,6 +47,8 @@ typedef int (*virSecurityDriverClose) (virSecurityManagerPtr mgr);
 typedef const char *(*virSecurityDriverGetModel) (virSecurityManagerPtr mgr);
 typedef const char *(*virSecurityDriverGetDOI) (virSecurityManagerPtr mgr);
 
+typedef int (*virSecurityDriverPreFork) (virSecurityManagerPtr mgr);
+
 typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityManagerPtr mgr,
                                                    virDomainDefPtr def,
                                                    virDomainDiskDefPtr disk);
@@ -118,6 +120,8 @@ struct _virSecurityDriver {
 
     virSecurityDriverGetModel getModel;
     virSecurityDriverGetDOI getDOI;
+
+    virSecurityDriverPreFork preFork;
 
     virSecurityDomainSecurityVerify domainSecurityVerify;
 
