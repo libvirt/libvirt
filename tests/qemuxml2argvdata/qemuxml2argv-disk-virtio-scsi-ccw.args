@@ -3,7 +3,9 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
 -device virtio-scsi-ccw,id=scsi0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 \
--device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0 \
+-device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
 -drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-scsi0-0-4-0 \
--device scsi-disk,bus=scsi0.0,channel=0,scsi-id=4,lun=0,drive=drive-scsi0-0-4-0,id=scsi0-0-4-0 \
+-device scsi-disk,bus=scsi0.0,channel=0,scsi-id=4,lun=0,\
+drive=drive-scsi0-0-4-0,id=scsi0-0-4-0 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a

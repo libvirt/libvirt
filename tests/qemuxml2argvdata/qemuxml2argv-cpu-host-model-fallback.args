@@ -6,7 +6,8 @@ LOGNAME=test \
 /usr/bin/qemu \
 -S \
 -M pc \
--cpu Penryn,+xtpr,+tm2,+est,+vmx,+ds_cpl,+monitor,+pbe,+tm,+ht,+ss,+acpi,+ds,+vme,-sse4.1 \
+-cpu Penryn,+xtpr,+tm2,+est,+vmx,+ds_cpl,+monitor,+pbe,+tm,+ht,+ss,+acpi,\
++ds,+vme,-sse4.1 \
 -m 214 \
 -smp 6 \
 -nographic \

@@ -1,1 +1,2 @@
-qemu-img convert -f raw -O qcow2 -e /var/lib/libvirt/images/sparse.img /var/lib/libvirt/images/OtherDemo.img
+qemu-img convert -f raw -O qcow2 -e /var/lib/libvirt/images/sparse.img \
+/var/lib/libvirt/images/OtherDemo.img

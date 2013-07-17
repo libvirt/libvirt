@@ -686,6 +686,15 @@ sc_spec_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
 	fi
 
+# Long lines can be harder to diff; too long, and git send-email chokes.
+# For now, only enforce line length on files where we have intentionally
+# fixed things and don't want to regress.
+sc_prohibit_long_lines:
+	@prohibit='.{90}'						\
+	in_vc_files='\.arg[sv]'						\
+	halt='Wrap long lines in expected output files'			\
+	  $(_sc_search_regexp)
+
 sc_copyright_format:
 	@require='Copyright .*Red 'Hat', Inc\.'				\
 	containing='Copyright .*Red 'Hat				\
