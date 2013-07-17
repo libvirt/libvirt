@@ -76,7 +76,6 @@ struct _virLXCDriver {
      * lockless access thereafter */
     virCapsPtr caps;
 
-
     /* Immutable pointer, Immutable object */
     virDomainXMLOptionPtr xmlopt;
 

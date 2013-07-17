@@ -167,16 +167,22 @@ error:
 virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
                                        bool refresh)
 {
+    virCapsPtr ret;
     if (refresh) {
         virCapsPtr caps = NULL;
         if ((caps = virLXCDriverCapsInit(driver)) == NULL)
             return NULL;
 
+        lxcDriverLock(driver);
         virObjectUnref(driver->caps);
         driver->caps = caps;
+    } else {
+        lxcDriverLock(driver);
     }
 
-    return virObjectRef(driver->caps);
+    ret = virObjectRef(driver->caps);
+    lxcDriverUnlock(driver);
+    return ret;
 }
 
 
@@ -273,7 +279,11 @@ done:
 
 virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver)
 {
-    return virObjectRef(driver->config);
+    virLXCDriverConfigPtr cfg;
+    lxcDriverLock(driver);
+    cfg = virObjectRef(driver->config);
+    lxcDriverUnlock(driver);
+    return cfg;
 }
 
 static void

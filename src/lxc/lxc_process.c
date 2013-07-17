@@ -487,9 +487,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
 
     VIR_DEBUG("mon=%p vm=%p", mon, vm);
 
-    lxcDriverLock(driver);
     virObjectLock(vm);
-    lxcDriverUnlock(driver);
 
     priv = vm->privateData;
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
@@ -527,9 +525,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     if (vm)
         virObjectUnlock(vm);
     if (event) {
-        lxcDriverLock(driver);
         virDomainEventStateQueue(driver->domainEventState, event);
-        lxcDriverUnlock(driver);
     }
 }
 
@@ -537,12 +533,9 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
                                            virLXCMonitorExitStatus status,
                                            virDomainObjPtr vm)
 {
-    virLXCDriverPtr driver = lxc_driver;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
 
-    lxcDriverLock(driver);
     virObjectLock(vm);
-    lxcDriverUnlock(driver);
 
     switch (status) {
     case VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN:
@@ -601,13 +594,10 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
 {
     virLXCDriverPtr driver = lxc_driver;
     virLXCDomainObjPrivatePtr priv;
-    virLXCDriverConfigPtr cfg;
+    virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     ino_t inode;
 
-    lxcDriverLock(driver);
     virObjectLock(vm);
-    cfg = virLXCDriverGetConfig(driver);
-    lxcDriverUnlock(driver);
 
     priv = vm->privateData;
     priv->initpid = initpid;
@@ -1371,11 +1361,9 @@ virLXCProcessAutostartAll(virLXCDriverPtr driver)
 
     struct virLXCProcessAutostartData data = { driver, conn };
 
-    lxcDriverLock(driver);
     virDomainObjListForEach(driver->domains,
                             virLXCProcessAutostartDomain,
                             &data);
-    lxcDriverUnlock(driver);
 
     if (conn)
         virConnectClose(conn);
