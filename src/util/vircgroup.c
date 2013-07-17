@@ -1101,7 +1101,7 @@ static int virCgroupPartitionNeedsEscaping(const char *path)
     FILE *fp = NULL;
     int ret = 0;
     char *line = NULL;
-    size_t len;
+    size_t buflen;
 
     /* If it starts with 'cgroup.' or a '_' of any
      * of the controller names from /proc/cgroups,
@@ -1133,23 +1133,22 @@ static int virCgroupPartitionNeedsEscaping(const char *path)
      * freezer 6 4  1
      * net_cls 7 1  1
      */
-    while (getline(&line, &len, fp) > 0) {
-        if (STRPREFIX(line, "#subsys_name")) {
-            VIR_FREE(line);
+    while (getline(&line, &buflen, fp) > 0) {
+        char *tmp;
+        size_t len;
+
+        if (STRPREFIX(line, "#subsys_name"))
             continue;
-        }
-        char *tmp = strchr(line, ' ');
-        if (tmp)
-            *tmp = '\0';
+
+        tmp = strchrnul(line, ' ');
+        *tmp = '\0';
         len = tmp - line;
 
         if (STRPREFIX(path, line) &&
             path[len] == '.') {
             ret = 1;
-            VIR_FREE(line);
             goto cleanup;
         }
-        VIR_FREE(line);
     }
 
     if (ferror(fp)) {
@@ -1158,6 +1157,7 @@ static int virCgroupPartitionNeedsEscaping(const char *path)
     }
 
 cleanup:
+    VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     return ret;
 }
