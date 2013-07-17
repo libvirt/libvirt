@@ -4209,9 +4209,14 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
     virDomainSnapshotPtr snapshot = NULL;
+    bool diskOnly = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) != 0;
+    bool quiesce = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) != 0;
 
-    /* ESX has no snapshot metadata, so this flag is trivial.  */
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
+    /* ESX supports disk-only and quiesced snapshots; libvirt tracks no
+     * snapshot metadata so supporting that flag is trivial.  */
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
@@ -4249,8 +4254,9 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
 
     if (esxVI_CreateSnapshot_Task(priv->primary, virtualMachine->obj,
                                   def->name, def->description,
-                                  esxVI_Boolean_True,
-                                  esxVI_Boolean_False, &task) < 0 ||
+                                  diskOnly ? esxVI_Boolean_False : esxVI_Boolean_True,
+                                  quiesce ? esxVI_Boolean_True : esxVI_Boolean_False,
+                                  &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
                                     esxVI_Occurrence_RequiredItem,
                                     priv->parsedUri->autoAnswer, &taskInfoState,
