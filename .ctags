@@ -1,0 +1,5 @@
+--recurse
+--exclude=*.orig
+--exclude=*.html
+--exclude=*.html.in
+--langmap=c:+.h.in
