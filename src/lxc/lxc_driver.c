@@ -109,6 +109,35 @@ static virNWFilterCallbackDriver lxcCallbackDriver = {
     .vmDriverUnlock = lxcVMDriverUnlock,
 };
 
+/**
+ * lxcDomObjFromDomain:
+ * @domain: Domain pointer that has to be looked up
+ *
+ * This function looks up @domain and returns the appropriate
+ * virDomainObjPtr.
+ *
+ * Returns the domain object which is locked on success, NULL
+ * otherwise.
+ */
+static virDomainObjPtr
+lxcDomObjFromDomain(virDomainPtr domain)
+{
+    virDomainObjPtr vm;
+    virLXCDriverPtr driver = domain->conn->privateData;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    if (!vm) {
+        virUUIDFormat(domain->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, domain->name);
+        return NULL;
+    }
+
+    return vm;
+}
+
 /* Functions */
 
 static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
@@ -295,18 +324,11 @@ cleanup:
 
 static int lxcDomainIsActive(virDomainPtr dom)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!obj) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(obj = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainIsActiveEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -322,18 +344,11 @@ cleanup:
 
 static int lxcDomainIsPersistent(virDomainPtr dom)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!obj) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(obj = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainIsPersistentEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -348,18 +363,11 @@ cleanup:
 
 static int lxcDomainIsUpdated(virDomainPtr dom)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!obj) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(obj = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainIsUpdatedEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -506,14 +514,8 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainUndefineFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -559,20 +561,12 @@ static int lxcDomainUndefine(virDomainPtr dom)
 static int lxcDomainGetInfo(virDomainPtr dom,
                             virDomainInfoPtr info)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1, rc;
     virLXCDomainObjPrivatePtr priv;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     priv = vm->privateData;
 
@@ -618,21 +612,13 @@ lxcDomainGetState(virDomainPtr dom,
                   int *reason,
                   unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetStateEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -648,19 +634,11 @@ cleanup:
 
 static char *lxcDomainGetOSType(virDomainPtr dom)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -678,19 +656,11 @@ cleanup:
 static unsigned long long
 lxcDomainGetMaxMemory(virDomainPtr dom)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     unsigned long long ret = 0;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -704,19 +674,11 @@ cleanup:
 }
 
 static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainSetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -737,19 +699,13 @@ cleanup:
 }
 
 static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainSetMemoryEnsureACL(dom->conn, vm->def) < 0)
@@ -787,7 +743,6 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
                              int nparams,
                              unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
     int ret = -1;
@@ -805,15 +760,9 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -859,7 +808,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                              int *nparams,
                              unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
     unsigned long long val;
@@ -869,15 +817,9 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
@@ -950,21 +892,13 @@ cleanup:
 static char *lxcDomainGetXMLDesc(virDomainPtr dom,
                                  unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
 
     /* Flags checked by virDomainDefFormat */
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -1001,14 +935,8 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainCreateWithFilesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1174,17 +1102,10 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
     virDomainObjPtr vm;
     int ret = -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
     memset(seclabel, 0, sizeof(*seclabel));
 
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetSecurityLabelEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1380,14 +1301,8 @@ lxcDomainDestroyFlags(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1711,18 +1626,14 @@ cleanup:
 static char *lxcDomainGetSchedulerType(virDomainPtr dom,
                                        int *nparams)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     char *ret = NULL;
     int rc;
     virDomainObjPtr vm;
     virLXCDomainObjPrivatePtr priv;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainGetSchedulerTypeEnsureACL(dom->conn, vm->def) < 0)
@@ -1862,13 +1773,9 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainSetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -1997,13 +1904,9 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainGetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -2118,13 +2021,9 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainSetBlkioParametersEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -2217,13 +2116,9 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainGetBlkioParametersEnsureACL(dom->conn, vm->def) < 0)
@@ -2311,20 +2206,12 @@ lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path,
                         struct _virDomainInterfaceStats *stats)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     size_t i;
     int ret = -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainInterfaceStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2368,19 +2255,11 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 
 static int lxcDomainGetAutostart(virDomainPtr dom,
                                    int *autostart) {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainGetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2403,15 +2282,8 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2567,15 +2439,8 @@ static int lxcDomainSuspend(virDomainPtr dom)
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2621,15 +2486,8 @@ static int lxcDomainResume(virDomainPtr dom)
     virLXCDomainObjPrivatePtr priv;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     priv = vm->privateData;
 
@@ -2675,22 +2533,15 @@ lxcDomainOpenConsole(virDomainPtr dom,
                       virStreamPtr st,
                       unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ret = -1;
     virDomainChrDefPtr chr = NULL;
     size_t i;
 
     virCheckFlags(0, -1);
 
-    virUUIDFormat(dom->uuid, uuidstr);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2747,10 +2598,8 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
                            unsigned int signum,
                            unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     pid_t victim;
     int ret = -1;
 
@@ -2763,13 +2612,9 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
         return -1;
     }
 
-    virUUIDFormat(dom->uuid, uuidstr);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainSendProcessSignalEnsureACL(dom->conn, vm->def) < 0)
@@ -2843,7 +2688,6 @@ static int
 lxcDomainShutdownFlags(virDomainPtr dom,
                        unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     char *vroot = NULL;
@@ -2853,15 +2697,8 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_INITCTL |
                   VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     priv = vm->privateData;
 
@@ -2931,7 +2768,6 @@ static int
 lxcDomainReboot(virDomainPtr dom,
                 unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     char *vroot = NULL;
@@ -2941,15 +2777,8 @@ lxcDomainReboot(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_REBOOT_INITCTL |
                   VIR_DOMAIN_REBOOT_SIGNAL, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     priv = vm->privateData;
 
@@ -4288,15 +4117,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
 
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -4421,15 +4243,8 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
 
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainUpdateDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -4538,15 +4353,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
 
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
 
     if (virDomainDetachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -4657,7 +4465,6 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
                                      int **fdlist,
                                      unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virLXCDomainObjPrivatePtr priv;
     int ret = -1;
@@ -4666,14 +4473,9 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
     *fdlist = NULL;
     virCheckFlags(0, -1);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainLxcOpenNamespaceEnsureACL(dom->conn, vm->def) < 0)
