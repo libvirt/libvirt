@@ -112,6 +112,27 @@ virSecurityStackGetDOI(virSecurityManagerPtr mgr)
 }
 
 static int
+virSecurityStackPreFork(virSecurityManagerPtr mgr)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    /* XXX For now, we rely on no driver having any state that requires
+     * rollback if a later driver in the stack fails; if this changes,
+     * we'd need to split this into transaction semantics by dividing
+     * the work into prepare/commit/abort.  */
+    for (; item; item = item->next) {
+        if (virSecurityManagerPreFork(item->securityManager) < 0) {
+            rc = -1;
+            break;
+        }
+    }
+
+    return rc;
+}
+
+static int
 virSecurityStackVerify(virSecurityManagerPtr mgr,
                        virDomainDefPtr def)
 {
@@ -538,6 +559,8 @@ virSecurityDriver virSecurityDriverStack = {
 
     .getModel                           = virSecurityStackGetModel,
     .getDOI                             = virSecurityStackGetDOI,
+
+    .preFork                            = virSecurityStackPreFork,
 
     .domainSecurityVerify               = virSecurityStackVerify,
 
