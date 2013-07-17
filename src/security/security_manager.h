@@ -46,7 +46,7 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                bool requireConfined,
                                                bool dynamicOwnership);
 
-void virSecurityManagerPreFork(virSecurityManagerPtr mgr);
+int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
 void virSecurityManagerPostFork(virSecurityManagerPtr mgr);
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);

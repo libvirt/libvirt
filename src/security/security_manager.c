@@ -164,11 +164,21 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
 
 /*
  * Must be called before fork()'ing to ensure mutex state
- * is sane for the child to use
+ * is sane for the child to use. A negative return means the
+ * child must not be forked; a successful return must be
+ * followed by a call to virSecurityManagerPostFork() in both
+ * parent and child.
  */
-void virSecurityManagerPreFork(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+int virSecurityManagerPreFork(virSecurityManagerPtr mgr)
 {
+    int ret = 0;
+
     /* XXX Grab our own mutex here instead of relying on caller's mutex */
+    if (mgr->drv->preFork) {
+        ret = mgr->drv->preFork(mgr);
+    }
+
+    return ret;
 }
 
 
