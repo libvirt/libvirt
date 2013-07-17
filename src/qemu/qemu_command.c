@@ -2457,6 +2457,61 @@ qemuSafeSerialParamValue(const char *value)
     return 0;
 }
 
+static char *
+qemuGetSecretString(virConnectPtr conn,
+                    const char *scheme,
+                    bool encoded,
+                    int diskSecretType,
+                    char *username,
+                    unsigned char *uuid, char *usage,
+                    virSecretUsageType secretUsageType)
+{
+    size_t secret_size;
+    virSecretPtr sec = NULL;
+    char *secret = NULL;
+
+    /* look up secret */
+    switch (diskSecretType) {
+    case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
+        sec = virSecretLookupByUUID(conn, uuid);
+        break;
+    case VIR_DOMAIN_DISK_SECRET_TYPE_USAGE:
+        sec = virSecretLookupByUsage(conn, secretUsageType, usage);
+        break;
+    }
+
+    if (!sec) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s username '%s' specified but secret not found"),
+                       scheme, username);
+        goto cleanup;
+    }
+
+    secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
+                                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    if (!secret) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("could not get value of the secret for username %s"),
+                       username);
+        goto cleanup;
+    }
+
+    if (encoded) {
+        char *base64 = NULL;
+
+        base64_encode_alloc(secret, secret_size, &base64);
+        VIR_FREE(secret);
+        if (!base64) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        secret = base64;
+    }
+
+cleanup:
+    virObjectUnref(sec);
+    return secret;
+}
 
 static int
 qemuBuildRBDString(virConnectPtr conn,
@@ -2465,9 +2520,7 @@ qemuBuildRBDString(virConnectPtr conn,
 {
     size_t i;
     int ret = 0;
-    virSecretPtr sec = NULL;
     char *secret = NULL;
-    size_t secret_size;
 
     if (strchr(disk->src, ':')) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2479,46 +2532,21 @@ qemuBuildRBDString(virConnectPtr conn,
     virBufferEscape(opt, ',', ",", "rbd:%s", disk->src);
     if (disk->auth.username) {
         virBufferEscape(opt, '\\', ":", ":id=%s", disk->auth.username);
-        /* look up secret */
-        switch (disk->auth.secretType) {
-        case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
-            sec = virSecretLookupByUUID(conn,
-                                        disk->auth.secret.uuid);
-            break;
-        case VIR_DOMAIN_DISK_SECRET_TYPE_USAGE:
-            sec = virSecretLookupByUsage(conn,
-                                         VIR_SECRET_USAGE_TYPE_CEPH,
-                                         disk->auth.secret.usage);
-            break;
-        }
-
-        if (sec) {
-            char *base64 = NULL;
-
-            secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
-                                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-            if (secret == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret for username %s"),
-                               disk->auth.username);
-                goto error;
-            }
-            /* qemu/librbd wants it base64 encoded */
-            base64_encode_alloc(secret, secret_size, &base64);
-            if (!base64) {
-                virReportOOMError();
-                goto error;
-            }
-            virBufferEscape(opt, '\\', ":",
-                            ":key=%s:auth_supported=cephx\\;none",
-                            base64);
-            VIR_FREE(base64);
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s username '%s' specified but secret not found"),
-                           "rbd", disk->auth.username);
+        /* Get the secret string using the virDomainDiskDef
+         * NOTE: qemu/librbd wants it base64 encoded
+         */
+        if (!(secret = qemuGetSecretString(conn, "rbd", true,
+                                           disk->auth.secretType,
+                                           disk->auth.username,
+                                           disk->auth.secret.uuid,
+                                           disk->auth.secret.usage,
+                                           VIR_SECRET_USAGE_TYPE_CEPH)))
             goto error;
-        }
+
+
+        virBufferEscape(opt, '\\', ":",
+                        ":key=%s:auth_supported=cephx\\;none",
+                        secret);
     } else {
         virBufferAddLit(opt, ":auth_supported=none");
     }
@@ -2544,7 +2572,6 @@ qemuBuildRBDString(virConnectPtr conn,
 
 cleanup:
     VIR_FREE(secret);
-    virObjectUnref(sec);
 
     return ret;
 
@@ -2863,13 +2890,11 @@ error:
 static int
 qemuBuildDriveURIString(virConnectPtr conn,
                         virDomainDiskDefPtr disk, virBufferPtr opt,
-                        const char *scheme, virSecretUsageType secretType)
+                        const char *scheme, virSecretUsageType secretUsageType)
 {
     int ret = -1;
     int port = 0;
-    virSecretPtr sec = NULL;
     char *secret = NULL;
-    size_t secret_size;
 
     char *tmpscheme = NULL;
     char *volimg = NULL;
@@ -2909,39 +2934,19 @@ qemuBuildDriveURIString(virConnectPtr conn,
         virAsprintf(&sock, "socket=%s", disk->hosts->socket) < 0)
         goto cleanup;
 
-    if (disk->auth.username && secretType != VIR_SECRET_USAGE_TYPE_NONE) {
-        /* look up secret */
-        switch (disk->auth.secretType) {
-        case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
-            sec = virSecretLookupByUUID(conn,
-                                        disk->auth.secret.uuid);
-            break;
-        case VIR_DOMAIN_DISK_SECRET_TYPE_USAGE:
-            sec = virSecretLookupByUsage(conn, secretType,
-                                         disk->auth.secret.usage);
-            break;
-        }
-
-        if (sec) {
-            secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
-                                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-            if (secret == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret for username %s"),
-                               disk->auth.username);
-                ret = -1;
-                goto cleanup;
-            }
-            if (virAsprintf(&user, "%s:%s", disk->auth.username, secret) < 0)
-                goto cleanup;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s username '%s' specified but secret not found"),
-                           scheme, disk->auth.username);
-            ret = -1;
+    if (disk->auth.username && secretUsageType != VIR_SECRET_USAGE_TYPE_NONE) {
+        /* Get the secret string using the virDomainDiskDef */
+        if (!(secret = qemuGetSecretString(conn, scheme, false,
+                                           disk->auth.secretType,
+                                           disk->auth.username,
+                                           disk->auth.secret.uuid,
+                                           disk->auth.secret.usage,
+                                           secretUsageType)))
             goto cleanup;
-        }
+        if (virAsprintf(&user, "%s:%s", disk->auth.username, secret) < 0)
+            goto cleanup;
     }
+
     uri.scheme = tmpscheme; /* gluster+<transport> */
     uri.server = disk->hosts->name;
     uri.user = user;
@@ -2959,7 +2964,6 @@ cleanup:
     VIR_FREE(tmpscheme);
     VIR_FREE(volimg);
     VIR_FREE(sock);
-    virObjectUnref(sec);
     VIR_FREE(secret);
     VIR_FREE(user);
 
