@@ -62,10 +62,13 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
 
         virUSBDeviceSetUsedBy(usb, def->name);
 
+        virObjectLock(driver->activeUsbHostdevs);
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
+            virObjectUnlock(driver->activeUsbHostdevs);
             virUSBDeviceFree(usb);
             return -1;
         }
+        virObjectUnlock(driver->activeUsbHostdevs);
     }
 
     return 0;
@@ -83,6 +86,7 @@ virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
 
     count = virUSBDeviceListCount(list);
 
+    virObjectLock(driver->activeUsbHostdevs);
     for (i = 0; i < count; i++) {
         virUSBDevicePtr usb = virUSBDeviceListGet(list, i);
         if ((tmp = virUSBDeviceListFind(driver->activeUsbHostdevs, usb))) {
@@ -110,6 +114,7 @@ virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0)
             goto error;
     }
+    virObjectUnlock(driver->activeUsbHostdevs);
     return 0;
 
 error:
@@ -117,6 +122,7 @@ error:
         tmp = virUSBDeviceListGet(list, i);
         virUSBDeviceListSteal(driver->activeUsbHostdevs, tmp);
     }
+    virObjectUnlock(driver->activeUsbHostdevs);
     return -1;
 }
 
@@ -341,6 +347,7 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
 {
     size_t i;
 
+    virObjectLock(driver->activeUsbHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virUSBDevicePtr usb, tmp;
@@ -392,6 +399,7 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
             virUSBDeviceListDel(driver->activeUsbHostdevs, tmp);
         }
     }
+    virObjectUnlock(driver->activeUsbHostdevs);
 }
 
 void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,
