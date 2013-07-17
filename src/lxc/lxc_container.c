@@ -351,24 +351,18 @@ int lxcContainerWaitForContinue(int control)
  */
 static int lxcContainerSetID(virDomainDefPtr def)
 {
-    gid_t *groups;
-    int ngroups;
-
     /* Only call virSetUIDGID when user namespace is enabled
      * for this container. And user namespace is only enabled
      * when nuidmap&ngidmap is not zero */
 
     VIR_DEBUG("Set UID/GID to 0/0");
     if (def->idmap.nuidmap &&
-        ((ngroups = virGetGroupList(0, 0, &groups) < 0) ||
-         virSetUIDGID(0, 0, groups, ngroups) < 0)) {
+        virSetUIDGID(0, 0, NULL, 0) < 0) {
         virReportSystemError(errno, "%s",
                              _("setuid or setgid failed"));
-        VIR_FREE(groups);
         return -1;
     }
 
-    VIR_FREE(groups);
     return 0;
 }
 
