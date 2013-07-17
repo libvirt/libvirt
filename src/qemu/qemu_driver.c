@@ -7545,18 +7545,14 @@ cleanup:
 static char *qemuDomainGetSchedulerType(virDomainPtr dom,
                                         int *nparams)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     char *ret = NULL;
     int rc;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
+    if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
-    }
+
     priv = vm->privateData;
 
     if (virDomainGetSchedulerTypeEnsureACL(dom->conn, vm->def) < 0)
