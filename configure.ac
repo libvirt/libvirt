@@ -893,13 +893,14 @@ if test "$with_libvirtd" = "no" ; then
   with_lxc=no
 fi
 if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM(
+    [[
         #include <sched.h>
         #include <linux/loop.h>
         #include <sys/epoll.h>
-    ], [
-        unshare (!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
-    ], [
+    ]], [[
+        unshare(!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
+    ]])], [
         with_lxc=yes
        AC_DEFINE([HAVE_DECL_LO_FLAGS_AUTOCLEAR], [1],
          [Define to 1 if you have the declaration of `LO_FLAGS_AUTOCLEAR',
