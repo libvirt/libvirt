@@ -694,6 +694,10 @@ sc_prohibit_long_lines:
 	in_vc_files='\.arg[sv]'						\
 	halt='Wrap long lines in expected output files'			\
 	  $(_sc_search_regexp)
+	@prohibit='.{80}'						\
+	in_vc_files='Makefile\.am'					\
+	halt='Wrap long lines in Makefiles'				\
+	  $(_sc_search_regexp)
 
 sc_copyright_format:
 	@require='Copyright .*Red 'Hat', Inc\.'				\

@@ -294,7 +294,8 @@ TESTS = $(test_programs) \
 # intermediate shell variable, but must do all the expansion in make
 
 lv_abs_top_builddir=`cd '$(top_builddir)'; pwd`
-path_add = $(lv_abs_top_builddir)/daemon$(PATH_SEPARATOR)$(lv_abs_top_builddir)/tools$(PATH_SEPARATOR)$(lv_abs_top_builddir)/tests
+path_add = $(subst :,$(PATH_SEPARATOR),\
+	$(subst !,$(lv_abs_top_builddir)/,!daemon:!tools:!tests))
 
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=$(lv_abs_top_builddir)	\
@@ -310,8 +311,10 @@ TESTS_ENVIRONMENT =				\
   $(VG)
 
 
+VALGRIND = valgrind --quiet --leak-check=full \
+	--suppressions=$(srcdir)/.valgrind.supp
 valgrind:
-	$(MAKE) check VG="libtool --mode=execute valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
+	$(MAKE) check VG="libtool --mode=execute $(VALGRIND)"
 
 sockettest_SOURCES = \
 	sockettest.c \
@@ -669,7 +672,8 @@ libsecurityselinuxhelper_la_LDFLAGS = -module -avoid-version \
 securityselinuxtest_SOURCES = \
 	securityselinuxtest.c testutils.h testutils.c
 securityselinuxtest_LDADD = $(LDADDS)
-securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la ../src/libvirt.la
+securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la \
+	../src/libvirt.la
 
 if WITH_QEMU
 if WITH_ATTR
@@ -677,11 +681,13 @@ securityselinuxlabeltest_SOURCES = \
 	securityselinuxlabeltest.c testutils.h testutils.c \
         testutilsqemu.h testutilsqemu.c
 securityselinuxlabeltest_LDADD = $(qemu_LDADDS)
-securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la ../src/libvirt.la
+securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la \
+	../src/libvirt.la
 endif
 endif
 endif
-EXTRA_DIST += securityselinuxtest.c securityselinuxlabeltest.c securityselinuxhelper.c
+EXTRA_DIST += securityselinuxtest.c securityselinuxlabeltest.c \
+	securityselinuxhelper.c
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
@@ -725,7 +731,8 @@ endif
 
 libshunload_la_SOURCES = shunloadhelper.c
 libshunload_la_LIBADD = ../src/libvirt.la
-libshunload_la_LDFLAGS = -module -avoid-version -rpath /evil/libtool/hack/to/force/shared/lib/creation
+libshunload_la_LDFLAGS = -module -avoid-version \
+	-rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 shunloadtest_SOURCES = \
 	shunloadtest.c
@@ -756,7 +763,8 @@ object_locking_SOURCES = object-locking.ml
 	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) -c $<
 
 object-locking: object-locking.cmx object-locking-files.txt
-	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) $(CILOPTLIBS) $< -o $@
+	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) \
+	  $(CILOPTLIBS) $< -o $@
 
 object-locking-files.txt:
 	find $(top_builddir)/src/ -name '*.i' > $@
@@ -765,4 +773,5 @@ else
 EXTRA_DIST += object-locking.ml
 endif
 
-CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.cmi *.cmx object-locking-files.txt
+CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.cmi *.cmx \
+	object-locking-files.txt

@@ -162,17 +162,23 @@ todo.html.in: todo.pl
 		|| { rm $@ && exit 1; }; \
 	else \
 		echo "Stubbing $@"; \
-		echo "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><h1>Todo list unavailable: no config file</h1></body></html>" > $@ ; \
+		printf "%s\n" \
+		  "<html xmlns=\"http://www.w3.org/1999/xhtml\">" \
+		  "<body>" \
+		  "<h1>Todo list unavailable: no config file</h1>" \
+		  "</body></html>" > $@ ; \
 	fi
 
 todo:
 	rm -f todo.html.in
 	$(MAKE) todo.html
 
-hvsupport.html.in: $(srcdir)/hvsupport.pl $(srcdir)/../src/libvirt_public.syms \
+hvsupport.html.in: $(srcdir)/hvsupport.pl \
+		$(srcdir)/../src/libvirt_public.syms \
 	$(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/libvirt_lxc.syms \
 	$(srcdir)/../src/driver.h
-	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(srcdir)/../src > $@ || { rm $@ && exit 1; }
+	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(srcdir)/../src > $@ \
+		|| { rm $@ && exit 1; }
 
 .PHONY: todo
 
@@ -277,7 +283,8 @@ clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
 
 maintainer-clean-local: clean-local
-	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in hvsupport.html.in
+	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml \
+		todo.html.in hvsupport.html.in
 	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 	rm -rf $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 	rm -rf $(APIBUILD_STAMP)

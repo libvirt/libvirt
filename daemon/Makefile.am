@@ -217,14 +217,16 @@ libvirtd.policy: libvirtd.policy.in $(top_builddir)/config.status
 	mv $@-t $@
 BUILT_SOURCES += libvirtd.policy
 
-install-data-local: install-init-redhat install-init-systemd install-init-upstart \
+install-data-local: install-init-redhat install-init-systemd \
+		install-init-upstart \
 		install-data-sasl install-data-polkit \
 		install-logrotate install-sysctl
 	$(MKDIR_P) $(DESTDIR)$(localstatedir)/log/libvirt \
 		   $(DESTDIR)$(localstatedir)/run/libvirt \
 		   $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init-redhat uninstall-init-systemd uninstall-init-upstart \
+uninstall-local:: uninstall-init-redhat uninstall-init-systemd \
+		uninstall-init-upstart \
 		uninstall-data-sasl uninstall-data-polkit \
 		uninstall-logrotate uninstall-sysctl
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
@@ -280,10 +282,14 @@ install-logrotate: $(LOGROTATE_CONFS)
 		   $(DESTDIR)$(localstatedir)/log/libvirt/lxc/ \
 		   $(DESTDIR)$(localstatedir)/log/libvirt/uml/ \
 		   $(DESTDIR)$(sysconfdir)/logrotate.d/
-	$(INSTALL_DATA) libvirtd.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
-	$(INSTALL_DATA) libvirtd.qemu.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
-	$(INSTALL_DATA) libvirtd.lxc.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
-	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
+	$(INSTALL_DATA) libvirtd.logrotate \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
+	$(INSTALL_DATA) libvirtd.qemu.logrotate \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
+	$(INSTALL_DATA) libvirtd.lxc.logrotate \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
+	$(INSTALL_DATA) libvirtd.uml.logrotate \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
 uninstall-logrotate:
 	rm -f $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd \
@@ -423,7 +429,8 @@ $(srcdir)/libvirtd.8.in: libvirtd.pod.in $(top_srcdir)/configure.ac
 if WITH_SASL
 install-data-sasl:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
-	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl \
+		$(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
 
 uninstall-data-sasl:
 	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
