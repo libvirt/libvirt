@@ -1039,6 +1039,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pci-root-address",
                         QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
 
+    DO_TEST("hotplug-base",
+            QEMU_CAPS_KVM, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_VIRTIO_SCSI);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/libexec/qemu-kvm -S -M pc -m 4096 -smp 4 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-boot c \
+-device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x4 \
+-usb
