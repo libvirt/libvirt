@@ -89,6 +89,10 @@ testQemuHotplugAttach(virDomainObjPtr vm,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
+        if (!ret) {
+            /* vm->def stolen dev->data.chr so we ought to avoid freeing it */
+            dev->data.chr = NULL;
+        }
         break;
     default:
         if (virTestGetVerbose())
@@ -214,11 +218,6 @@ testQemuHotplug(const void *data)
     switch (test->action) {
     case ATTACH:
         ret = testQemuHotplugAttach(vm, dev);
-        if (!ret) {
-            /* avoid @dev double free on success,
-             * as @dev is part of vm->def now */
-            dev = NULL;
-        }
         break;
 
     case DETACH:
@@ -323,6 +322,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virObjectUnref(driver.config);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
