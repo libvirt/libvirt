@@ -76,8 +76,9 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
 }
 
 
-int qemuSetupDiskCgroup(virDomainObjPtr vm,
-                        virDomainDiskDefPtr disk)
+int
+qemuSetupDiskCgroup(virDomainObjPtr vm,
+                    virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -85,10 +86,7 @@ int qemuSetupDiskCgroup(virDomainObjPtr vm,
                                 VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    return virDomainDiskDefForeachPath(disk,
-                                       true,
-                                       qemuSetupDiskPathAllow,
-                                       vm);
+    return virDomainDiskDefForeachPath(disk, true, qemuSetupDiskPathAllow, vm);
 }
 
 
@@ -120,8 +118,9 @@ qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 }
 
 
-int qemuTeardownDiskCgroup(virDomainObjPtr vm,
-                           virDomainDiskDefPtr disk)
+int
+qemuTeardownDiskCgroup(virDomainObjPtr vm,
+                       virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -673,9 +672,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        rc = virCgroupSetCpusetCpus(priv->cgroup, cpu_mask);
-
-        if (rc != 0) {
+        if ((rc = virCgroupSetCpusetCpus(priv->cgroup, cpu_mask)) != 0) {
             virReportSystemError(-rc,
                                  _("Unable to set cpuset.cpus for domain %s"),
                                  vm->def->name);
@@ -721,9 +718,10 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
 }
 
 
-int qemuInitCgroup(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm,
-                   bool startup)
+int
+qemuInitCgroup(virQEMUDriverPtr driver,
+               virDomainObjPtr vm,
+               bool startup)
 {
     int rc = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -828,9 +826,10 @@ cleanup:
 }
 
 
-int qemuSetupCgroup(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
-                    virBitmapPtr nodemask)
+int
+qemuSetupCgroup(virQEMUDriverPtr driver,
+                virDomainObjPtr vm,
+                virBitmapPtr nodemask)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
@@ -866,8 +865,10 @@ cleanup:
     return ret;
 }
 
-int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup, unsigned long long period,
-                          long long quota)
+int
+qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
+                      unsigned long long period,
+                      long long quota)
 {
     int rc;
     unsigned long long old_period;
@@ -914,10 +915,11 @@ cleanup:
     return -1;
 }
 
-int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
-                           virDomainVcpuPinDefPtr *vcpupin,
-                           int nvcpupin,
-                           int vcpuid)
+int
+qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
+                       virDomainVcpuPinDefPtr *vcpupin,
+                       int nvcpupin,
+                       int vcpuid)
 {
     size_t i;
 
@@ -930,8 +932,9 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
     return -1;
 }
 
-int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
-                               virBitmapPtr cpumask)
+int
+qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
+                           virBitmapPtr cpumask)
 {
     int rc = 0;
     char *new_cpus = NULL;
@@ -957,7 +960,8 @@ cleanup:
     return rc;
 }
 
-int qemuSetupCgroupForVcpu(virDomainObjPtr vm)
+int
+qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 {
     virCgroupPtr cgroup_vcpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1045,9 +1049,10 @@ cleanup:
     return -1;
 }
 
-int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virBitmapPtr nodemask)
+int
+qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virBitmapPtr nodemask)
 {
     virBitmapPtr cpumask = NULL;
     virBitmapPtr cpumap = NULL;
@@ -1127,7 +1132,8 @@ cleanup:
     return rc;
 }
 
-int qemuRemoveCgroup(virDomainObjPtr vm)
+int
+qemuRemoveCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -1137,7 +1143,8 @@ int qemuRemoveCgroup(virDomainObjPtr vm)
     return virCgroupRemove(priv->cgroup);
 }
 
-int qemuAddToCgroup(virDomainObjPtr vm)
+int
+qemuAddToCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
