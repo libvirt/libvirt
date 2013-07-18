@@ -2752,9 +2752,10 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
 }
 
 
-int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainDiskDefPtr detach)
+static int
+qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDiskDefPtr detach)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2823,9 +2824,10 @@ cleanup:
     return ret;
 }
 
-int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainDiskDefPtr detach)
+static int
+qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virDomainDiskDefPtr detach)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2874,6 +2876,59 @@ cleanup:
     VIR_FREE(drivestr);
     return ret;
 }
+
+static int
+qemuFindDisk(virDomainDefPtr def, const char *dst)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (STREQ(def->disks[i]->dst, dst)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int
+qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainDeviceDefPtr dev)
+{
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+    int idx;
+
+    if ((idx = qemuFindDisk(vm->def, dev->data.disk->dst)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("disk %s not found"), dev->data.disk->dst);
+        return -1;
+    }
+    disk = vm->def->disks[idx];
+
+    switch (disk->device) {
+    case VIR_DOMAIN_DISK_DEVICE_DISK:
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
+            ret = qemuDomainDetachVirtioDiskDevice(driver, vm, disk);
+        else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
+                 disk->bus == VIR_DOMAIN_DISK_BUS_USB)
+            ret = qemuDomainDetachDiskDevice(driver, vm, disk);
+        else
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("This type of disk cannot be hot unplugged"));
+        break;
+    default:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("disk device type '%s' cannot be detached"),
+                       virDomainDiskDeviceTypeToString(disk->device));
+        break;
+    }
+
+    return ret;
+}
+
 
 static bool qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
                                            virDomainControllerDefPtr detach)

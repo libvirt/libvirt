@@ -75,12 +75,9 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,
                                  int linkstate);
-int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainDiskDefPtr disk);
-int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainDiskDefPtr disk);
+int qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virDomainDeviceDefPtr dev);
 int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev);
