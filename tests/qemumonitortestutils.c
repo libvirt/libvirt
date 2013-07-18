@@ -133,17 +133,11 @@ qemuMonitorTestProcessCommandJSON(qemuMonitorTestPtr test,
                                         " { \"desc\": \"Unexpected command\", "
                                         "   \"class\": \"UnexpectedCommand\" } }");
     } else {
-        ret = qemuMonitorTestAddReponse(test,
-                                        test->items[0]->response);
+        ret = qemuMonitorTestAddReponse(test, test->items[0]->response);
         qemuMonitorTestItemFree(test->items[0]);
-        if (test->nitems == 1) {
-            VIR_FREE(test->items);
-            test->nitems = 0;
-        } else {
-            memmove(test->items,
-                    test->items + 1,
-                    sizeof(test->items[0]) * (test->nitems - 1));
-            VIR_SHRINK_N(test->items, test->nitems, 1);
+        if (VIR_DELETE_ELEMENT(test->items, 0, test->nitems) < 0) {
+            ret = -1;
+            goto cleanup;
         }
     }
 
@@ -175,17 +169,11 @@ qemuMonitorTestProcessCommandText(qemuMonitorTestPtr test,
         ret = qemuMonitorTestAddReponse(test,
                                         "unexpected command");
     } else {
-        ret = qemuMonitorTestAddReponse(test,
-                                        test->items[0]->response);
+        ret = qemuMonitorTestAddReponse(test, test->items[0]->response);
         qemuMonitorTestItemFree(test->items[0]);
-        if (test->nitems == 1) {
-            VIR_FREE(test->items);
-            test->nitems = 0;
-        } else {
-            memmove(test->items,
-                    test->items + 1,
-                    sizeof(test->items[0]) * (test->nitems - 1));
-            VIR_SHRINK_N(test->items, test->nitems, 1);
+        if (VIR_DELETE_ELEMENT(test->items, 0, test->nitems) < 0) {
+            ret = -1;
+            goto cleanup;
         }
     }
 
@@ -421,12 +409,10 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
         goto error;
 
     virMutexLock(&test->lock);
-    if (VIR_EXPAND_N(test->items, test->nitems, 1) < 0) {
+    if (VIR_APPEND_ELEMENT(test->items, test->nitems, item) < 0) {
         virMutexUnlock(&test->lock);
         goto error;
     }
-    test->items[test->nitems - 1] = item;
-
     virMutexUnlock(&test->lock);
 
     return 0;
