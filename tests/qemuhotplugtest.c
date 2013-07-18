@@ -96,7 +96,7 @@ testQemuHotplugAttach(virDomainObjPtr vm,
         break;
     default:
         if (virTestGetVerbose())
-            fprintf(stderr, "device type '%s' cannot be attached",
+            fprintf(stderr, "device type '%s' cannot be attached\n",
                     virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -116,7 +116,7 @@ testQemuHotplugDetach(virDomainObjPtr vm,
         break;
     default:
         if (virTestGetVerbose())
-            fprintf(stderr, "device type '%s' cannot be attached",
+            fprintf(stderr, "device type '%s' cannot be detached\n",
                     virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -141,7 +141,7 @@ testQemuHotplugUpdate(virDomainObjPtr vm,
         break;
     default:
         if (virTestGetVerbose())
-            fprintf(stderr, "device type '%s' cannot be updated",
+            fprintf(stderr, "device type '%s' cannot be updated\n",
                     virDomainDeviceTypeToString(dev->type));
         break;
     }
@@ -276,33 +276,28 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
 
-#define DO_TEST(file, dev, fial, kep, ...)                                  \
+#define DO_TEST(file, ACTION, dev, fial, kep, ...)                          \
+    do {                                                                    \
         const char *my_mon[] = { __VA_ARGS__, NULL};                        \
+        const char *name = file " " #ACTION " " dev;                        \
+        data.action = ACTION;                                               \
         data.domain_filename = file;                                        \
         data.device_filename = dev;                                         \
         data.fail = fial;                                                   \
         data.mon = my_mon;                                                  \
         data.keep = kep;                                                    \
-        if (virtTestRun(#file, 1, testQemuHotplug, &data) < 0)              \
+        if (virtTestRun(name, 1, testQemuHotplug, &data) < 0)               \
             ret = -1;                                                       \
+    } while (0)
 
 #define DO_TEST_ATTACH(file, dev, fial, kep, ...)                           \
-    do {                                                                    \
-        data.action = ATTACH;                                               \
-        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
-    } while (0)
+    DO_TEST(file, ATTACH, dev, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_DETACH(file, dev, fial, kep, ...)                           \
-    do {                                                                    \
-        data.action = DETACH;                                               \
-        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
-    } while (0)
+    DO_TEST(file, DETACH, dev, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_UPDATE(file, dev, fial, kep, ...)                           \
-    do {                                                                    \
-        data.action = UPDATE;                                               \
-        DO_TEST(file, dev, fial, kep, __VA_ARGS__)                          \
-    } while (0)
+    DO_TEST(file, UPDATE, dev, fial, kep, __VA_ARGS__)
 
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
