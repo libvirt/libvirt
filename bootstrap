@@ -256,12 +256,12 @@ esac
 # Extra files from gnulib, which override files from other sources.
 test -z "${gnulib_extra_files}" && \
   gnulib_extra_files="
-        $build_aux/install-sh
-        $build_aux/mdate-sh
-        $build_aux/texinfo.tex
-        $build_aux/depcomp
-        $build_aux/config.guess
-        $build_aux/config.sub
+        build-aux/install-sh
+        build-aux/mdate-sh
+        build-aux/texinfo.tex
+        build-aux/depcomp
+        build-aux/config.guess
+        build-aux/config.sub
         doc/INSTALL
 "
 
