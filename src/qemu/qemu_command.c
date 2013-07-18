@@ -1952,46 +1952,15 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
       (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2 || \
       (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3))
 
-/*
- * This assigns static PCI slots to all configured devices.
- * The ordering here is chosen to match the ordering used
- * with old QEMU < 0.12, so that if a user updates a QEMU
- * host from old QEMU to QEMU >= 0.12, their guests should
- * get PCI addresses in the same order as before.
- *
- * NB, if they previously hotplugged devices then all bets
- * are off. Hotplug for old QEMU was unfixably broken wrt
- * to stable PCI addressing.
- *
- * Order is:
- *
- *  - Host bridge (slot 0)
- *  - PIIX3 ISA bridge, IDE controller, something else unknown, USB controller (slot 1)
- *  - Video (slot 2)
- *
- * Incrementally assign slots from 3 onwards:
- *
- *  - Net
- *  - Sound
- *  - SCSI controllers
- *  - VirtIO block
- *  - VirtIO balloon
- *  - Host device passthrough
- *  - Watchdog (not IB700)
- *
- * Prior to this function being invoked, qemuCollectPCIAddress() will have
- * added all existing PCI addresses from the 'def' to 'addrs'. Thus this
- * function must only try to reserve addresses if info.type == NONE and
- * skip over info.type == PCI
- */
-int
-qemuAssignDevicePCISlots(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
-                         qemuDomainPCIAddressSetPtr addrs)
+
+static int
+qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
+                                virQEMUCapsPtr qemuCaps,
+                                qemuDomainPCIAddressSetPtr addrs)
 {
-    size_t i, j;
-    bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    size_t i;
     virDevicePCIAddress tmp_addr;
+    bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     virDevicePCIAddressPtr addrptr;
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
@@ -2099,6 +2068,61 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         } else if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr) < 0) {
             goto error;
         }
+    }
+    return 0;
+
+error:
+    return -1;
+}
+
+
+/*
+ * This assigns static PCI slots to all configured devices.
+ * The ordering here is chosen to match the ordering used
+ * with old QEMU < 0.12, so that if a user updates a QEMU
+ * host from old QEMU to QEMU >= 0.12, their guests should
+ * get PCI addresses in the same order as before.
+ *
+ * NB, if they previously hotplugged devices then all bets
+ * are off. Hotplug for old QEMU was unfixably broken wrt
+ * to stable PCI addressing.
+ *
+ * Order is:
+ *
+ *  - Host bridge (slot 0)
+ *  - PIIX3 ISA bridge, IDE controller, something else unknown, USB controller (slot 1)
+ *  - Video (slot 2)
+ *
+ * Incrementally assign slots from 3 onwards:
+ *
+ *  - Net
+ *  - Sound
+ *  - SCSI controllers
+ *  - VirtIO block
+ *  - VirtIO balloon
+ *  - Host device passthrough
+ *  - Watchdog (not IB700)
+ *
+ * Prior to this function being invoked, qemuCollectPCIAddress() will have
+ * added all existing PCI addresses from the 'def' to 'addrs'. Thus this
+ * function must only try to reserve addresses if info.type == NONE and
+ * skip over info.type == PCI
+ */
+int
+qemuAssignDevicePCISlots(virDomainDefPtr def,
+                         virQEMUCapsPtr qemuCaps,
+                         qemuDomainPCIAddressSetPtr addrs)
+{
+    size_t i, j;
+    virDevicePCIAddress tmp_addr;
+
+    if ((STRPREFIX(def->os.machine, "pc-0.") ||
+        STRPREFIX(def->os.machine, "pc-1.") ||
+        STRPREFIX(def->os.machine, "pc-i440") ||
+        STREQ(def->os.machine, "pc") ||
+        STRPREFIX(def->os.machine, "rhel")) &&
+        qemuValidateDevicePCISlotsPIIX3(def, qemuCaps, addrs) < 0) {
+        goto error;
     }
 
     /* PCI controllers */
