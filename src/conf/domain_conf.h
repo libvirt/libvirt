@@ -677,6 +677,7 @@ struct _virDomainDiskSourcePoolDef {
     char *pool; /* pool name */
     char *volume; /* volume name */
     int voltype; /* enum virStorageVolType, internal only */
+    int pooltype; /* enum virStoragePoolType, internal only */
     int mode; /* enum virDomainDiskSourcePoolMode */
 };
 typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;

@@ -3206,7 +3206,20 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      "block type volume"));
                     goto error;
                 }
-                virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+
+                if (disk->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI) {
+                    if (disk->srcpool->mode ==
+                        VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT) {
+                        if (qemuBuildISCSIString(conn, disk, &opt) < 0)
+                            goto error;
+                        virBufferAddChar(&opt, ',');
+                    } else if (disk->srcpool->mode ==
+                               VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST) {
+                        virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+                    }
+                } else {
+                    virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+                }
                 break;
             case VIR_STORAGE_VOL_FILE:
                 virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);

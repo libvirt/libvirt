@@ -1125,12 +1125,75 @@ int qemuDriverAllocateID(virQEMUDriverPtr driver)
     return virAtomicIntInc(&driver->nextvmid);
 }
 
+static int
+qemuAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
+                           virStoragePoolDefPtr pooldef)
+{
+    int ret = -1;
+    char **tokens = NULL;
+
+    /* Only support one host */
+    if (pooldef->source.nhost != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Expected exactly 1 host for the storage pool"));
+        goto cleanup;
+    }
+
+    /* iscsi pool only supports one host */
+    def->nhosts = 1;
+
+    if (VIR_ALLOC_N(def->hosts, def->nhosts) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(def->hosts[0].name, pooldef->source.hosts[0].name) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&def->hosts[0].port, "%d",
+                    pooldef->source.hosts[0].port ?
+                    pooldef->source.hosts[0].port :
+                    3260) < 0)
+        goto cleanup;
+
+    /* iscsi volume has name like "unit:0:0:1" */
+    if (!(tokens = virStringSplit(def->srcpool->volume, ":", 0)))
+        goto cleanup;
+
+    if (virStringListLength(tokens) != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected iscsi volume name '%s'"),
+                       def->srcpool->volume);
+        goto cleanup;
+    }
+
+    /* iscsi pool has only one source device path */
+    if (virAsprintf(&def->src, "%s/%s",
+                    pooldef->source.devices[0].path,
+                    tokens[3]) < 0)
+        goto cleanup;
+
+    /* Storage pool have not supported these 2 attributes yet,
+     * use the defaults.
+     */
+    def->hosts[0].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    def->hosts[0].socket = NULL;
+
+    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+
+    ret = 0;
+
+cleanup:
+    virStringFreeList(tokens);
+    return ret;
+}
+
 int
 qemuTranslateDiskSourcePool(virConnectPtr conn,
                             virDomainDiskDefPtr def)
 {
+    virStoragePoolDefPtr pooldef = NULL;
     virStoragePoolPtr pool = NULL;
     virStorageVolPtr vol = NULL;
+    char *poolxml = NULL;
     virStorageVolInfo info;
     int ret = -1;
 
@@ -1158,10 +1221,44 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 
     switch (info.type) {
     case VIR_STORAGE_VOL_FILE:
-    case VIR_STORAGE_VOL_BLOCK:
     case VIR_STORAGE_VOL_DIR:
         if (!(def->src = virStorageVolGetPath(vol)))
             goto cleanup;
+        break;
+    case VIR_STORAGE_VOL_BLOCK:
+        if (!(poolxml = virStoragePoolGetXMLDesc(pool, 0)))
+            goto cleanup;
+
+        if (!(pooldef = virStoragePoolDefParseString(poolxml)))
+            goto cleanup;
+
+        if (def->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("disk source mode is only valid when "
+                             "storage pool is of iscsi type"));
+            goto cleanup;
+        }
+
+        def->srcpool->pooltype = pooldef->type;
+        if (pooldef->type == VIR_STORAGE_POOL_ISCSI) {
+            /* Default to use the LUN's path on host */
+            if (!def->srcpool->mode)
+                def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
+
+            if (def->srcpool->mode ==
+                VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT) {
+                if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)
+                    goto cleanup;
+            } else if (def->srcpool->mode ==
+                       VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST) {
+                if (!(def->src = virStorageVolGetPath(vol)))
+                    goto cleanup;
+            }
+        } else {
+            if (!(def->src = virStorageVolGetPath(vol)))
+                goto cleanup;
+        }
+
         break;
     case VIR_STORAGE_VOL_NETWORK:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1174,5 +1271,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
 cleanup:
     virStoragePoolFree(pool);
     virStorageVolFree(vol);
+    VIR_FREE(poolxml);
+    virStoragePoolDefFree(pooldef);
     return ret;
 }

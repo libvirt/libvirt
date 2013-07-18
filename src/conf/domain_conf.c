@@ -18408,6 +18408,14 @@ virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
      */
     if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool &&
         def->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
+        /* We don't think the volume accessed by remote URI is
+         * block type source, since we can't/shouldn't manage it
+         * (e.g. set sgio=filtered|unfiltered for it) in libvirt.
+         */
+         if (def->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
+             def->srcpool->mode == VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT)
+             return false;
+
         return true;
     }
     return false;
