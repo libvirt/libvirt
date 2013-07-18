@@ -3155,10 +3155,8 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
         return ret;
 
-    if (virAsprintf(&charAlias, "char%s", tmpChr->info.alias) < 0) {
-        virReportOOMError();
-        return ret;
-    }
+    if (virAsprintf(&charAlias, "char%s", tmpChr->info.alias) < 0)
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (devstr && qemuMonitorDelDevice(priv->mon, tmpChr->info.alias) < 0) {
