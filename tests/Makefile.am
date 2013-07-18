@@ -129,9 +129,9 @@ test_programs = virshtest sockettest \
 	$(NULL)
 
 if WITH_DBUS
-test_programs += virdbustest
+test_programs += virdbustest \
+                 virsystemdtest
 endif
-
 
 if WITH_GNUTLS
 test_programs += virnettlscontexttest
@@ -279,6 +279,10 @@ test_libraries = libshunload.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
+endif
+
+if WITH_DBUS
+test_libraries += virsystemdmock.la
 endif
 
 if WITH_TESTS
@@ -650,8 +654,20 @@ virdbustest_SOURCES = \
 	virdbustest.c testutils.h testutils.c
 virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virdbustest_LDADD = $(LDADDS)
+
+virsystemdtest_SOURCES = \
+	virsystemdtest.c testutils.h testutils.c
+virsystemdtest_CFLAGS = $(AM_CFLAGS)
+virsystemdtest_LDADD = $(LDADDS)
+
+virsystemdmock_la_SOURCES = \
+	virsystemdmock.c
+virsystemdmock_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virsystemdmock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
 else
-EXTRA_DIST += virdbustest.c
+EXTRA_DIST += virdbustest.c virsystemdtest.c virsystemdmock.c
 endif
 
 viruritest_SOURCES = \

@@ -1923,6 +1923,10 @@ virSysinfoRead;
 virSysinfoSetup;
 
 
+# util/virsystemd.h
+virSystemdCreateMachine;
+
+
 # util/virthread.h
 virCondBroadcast;
 virCondDestroy;

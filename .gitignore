@@ -204,6 +204,7 @@
 /tests/virshtest
 /tests/virstoragetest
 /tests/virstringtest
+/tests/virsystemdtest
 /tests/virtimetest
 /tests/viruritest
 /tests/vmx2xmltest

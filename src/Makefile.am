@@ -132,6 +132,7 @@ UTIL_SOURCES =							\
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virstring.h util/virstring.c		\
 		util/virsysinfo.c util/virsysinfo.h		\
+		util/virsystemd.c util/virsystemd.h		\
 		util/virthread.c util/virthread.h		\
 		util/virthreadpthread.h				\
 		util/virthreadwin32.h				\

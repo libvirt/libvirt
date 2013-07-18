@@ -25,6 +25,8 @@
 
 # include <stdio.h>
 # include "viralloc.h"
+# include "virfile.h"
+# include "virstring.h"
 
 # define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 # define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */

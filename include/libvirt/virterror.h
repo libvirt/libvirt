@@ -119,6 +119,7 @@ typedef enum {
     VIR_FROM_CGROUP = 54,       /* Error from cgroups */
 
     VIR_FROM_ACCESS = 55,       /* Error from access control manager */
+    VIR_FROM_SYSTEMD = 56,      /* Error from systemd code */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

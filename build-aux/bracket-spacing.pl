@@ -92,8 +92,8 @@ foreach my $file (@ARGV) {
 
         # Require whitespace immediately after keywords,
         # but none after the opening bracket
-        while ($data =~ /(if|for|while|switch|return)\(/ ||
-               $data =~ /(if|for|while|switch|return)\s+\(\s/) {
+        while ($data =~ /\b(if|for|while|switch|return)\(/ ||
+               $data =~ /\b(if|for|while|switch|return)\s+\(\s/) {
             print "$file:$.: $line";
             $ret = 1;
             last;
