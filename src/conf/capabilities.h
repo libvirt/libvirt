@@ -257,5 +257,7 @@ virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
 extern char *
 virCapabilitiesFormatXML(virCapsPtr caps);
 
+virBitmapPtr virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
+                                               virBitmapPtr nodemask);
 
 #endif /* __VIR_CAPABILITIES_H */

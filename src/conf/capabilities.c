@@ -916,3 +916,67 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     return virBufferContentAndReset(&xml);
 }
+
+/* get the maximum ID of cpus in the host */
+static unsigned int
+virCapabilitiesGetHostMaxcpu(virCapsPtr caps)
+{
+    unsigned int maxcpu = 0;
+    size_t node;
+    size_t cpu;
+
+    for (node = 0; node < caps->host.nnumaCell; node++) {
+        virCapsHostNUMACellPtr cell = caps->host.numaCell[node];
+
+        for (cpu = 0; cpu < cell->ncpus; cpu++) {
+            if (cell->cpus[cpu].id > maxcpu)
+                maxcpu = cell->cpus[cpu].id;
+        }
+    }
+
+    return maxcpu;
+}
+
+/* set cpus of a numa node in the bitmask */
+static int
+virCapabilitiesGetCpusForNode(virCapsPtr caps,
+                              size_t node,
+                              virBitmapPtr cpumask)
+{
+    virCapsHostNUMACellPtr cell = caps->host.numaCell[node];
+    size_t cpu;
+
+    for (cpu = 0; cpu < cell->ncpus; cpu++) {
+        if (virBitmapSetBit(cpumask, cell->cpus[cpu].id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cpu '%u' in node '%zu' is out of range "
+                             "of the provided bitmap"),
+                           cell->cpus[cpu].id, node);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+virBitmapPtr
+virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
+                                  virBitmapPtr nodemask)
+{
+    virBitmapPtr ret = NULL;
+    unsigned int maxcpu = virCapabilitiesGetHostMaxcpu(caps);
+    ssize_t node = -1;
+
+    if (!(ret = virBitmapNew(maxcpu + 1)))
+        return NULL;
+
+
+    while ((node = virBitmapNextSetBit(nodemask, node)) >= 0) {
+        if (virCapabilitiesGetCpusForNode(caps, node, ret) < 0) {
+            virBitmapFree(ret);
+            return NULL;
+        }
+    }
+
+    return ret;
+}

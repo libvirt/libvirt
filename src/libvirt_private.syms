@@ -57,6 +57,7 @@ virCapabilitiesDefaultGuestMachine;
 virCapabilitiesFormatXML;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
+virCapabilitiesGetCpusForNodemask;
 virCapabilitiesNew;
 virCapabilitiesSetHostCPU;
 
