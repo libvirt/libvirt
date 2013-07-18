@@ -44,12 +44,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+#define ISCSI_DEFAULT_TARGET_PORT 3260
+
 static char *
 virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
 {
     char *portal = NULL;
-    const char *host;
-    int port = 3260;
 
     if (source->nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -57,14 +57,17 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
         return NULL;
     }
 
-    host = source->hosts[0].name;
-    if (source->hosts[0].port != 0)
-        port = source->hosts[0].port;
+    if (source->hosts[0].port == 0)
+        source->hosts[0].port = ISCSI_DEFAULT_TARGET_PORT;
 
-    if (strchr(host, ':')) {
-        ignore_value(virAsprintf(&portal, "[%s]:%d,1", host, port));
+    if (strchr(source->hosts[0].name, ':')) {
+        ignore_value(virAsprintf(&portal, "[%s]:%d,1",
+                                 source->hosts[0].name,
+                                 source->hosts[0].port));
     } else {
-        ignore_value(virAsprintf(&portal, "%s:%d,1", host, port));
+        ignore_value(virAsprintf(&portal, "%s:%d,1",
+                                 source->hosts[0].name,
+                                 source->hosts[0].port));
     }
 
     return portal;
