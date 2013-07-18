@@ -2715,4 +2715,7 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            virDomainDeviceDefPtr dev,
                            bool reportError);
 
+bool virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __DOMAIN_CONF_H */

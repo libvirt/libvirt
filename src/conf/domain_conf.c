@@ -41,6 +41,7 @@
 #include "virbuffer.h"
 #include "virlog.h"
 #include "nwfilter_conf.h"
+#include "storage_conf.h"
 #include "virstoragefile.h"
 #include "virfile.h"
 #include "virbitmap.h"
@@ -18379,4 +18380,35 @@ virDomainDefFindDevice(virDomainDefPtr def,
     }
 
     return 0;
+}
+
+/**
+ * virDomainDiskSourceIsBlockType:
+ *
+ * Check if the disk *source* is of block type. This just tries
+ * to check from the type of disk def, not to probe the underlying
+ * storage.
+ *
+ * Return true if its source is block type, or false otherwise.
+ */
+bool
+virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
+{
+    /* No reason to think the disk source is block type if
+     * the source is empty
+     */
+    if (!def->src)
+        return false;
+
+    if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK)
+        return true;
+
+    /* For volume types, check the srcpool.
+     * If it's a block type source pool, then it's possible
+     */
+    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool &&
+        def->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
+        return true;
+    }
+    return false;
 }

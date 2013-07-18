@@ -206,6 +206,7 @@ virDomainDiskProtocolTransportTypeToString;
 virDomainDiskProtocolTypeToString;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
+virDomainDiskSourceIsBlockType;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
 virDomainEmulatorPinAdd;

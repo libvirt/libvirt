@@ -52,6 +52,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "viratomic.h"
+#include "storage_conf.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -867,12 +868,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (!disk->shared ||
-            !disk->src ||
-            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-               disk->srcpool &&
-               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+        if (!disk->shared || !virDomainDiskSourceIsBlockType(disk))
             return 0;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;
@@ -978,12 +974,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (!disk->shared ||
-            !disk->src ||
-            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-               disk->srcpool &&
-               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+        if (!disk->shared || !virDomainDiskSourceIsBlockType(disk))
             return 0;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;
@@ -1073,12 +1064,8 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         disk = dev->data.disk;
 
-        if (!disk->src ||
-            disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-               disk->srcpool &&
-               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
+            virDomainDiskSourceIsBlockType(disk))
             return 0;
 
         path = disk->src;

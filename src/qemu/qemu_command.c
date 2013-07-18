@@ -42,6 +42,7 @@
 #include "domain_audit.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
+#include "storage_conf.h"
 #include "network/bridge_driver.h"
 #include "virnetdevtap.h"
 #include "base64.h"
@@ -3492,9 +3493,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                                virDomainDiskProtocolTypeToString(disk->protocol));
                 goto error;
             }
-        } else if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-                   !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-                     disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)) {
+        } else if (!virDomainDiskSourceIsBlockType(disk)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk device='lun' is only valid for block type disk source"));
             goto error;
