@@ -76,11 +76,13 @@ struct _qemuMonitorTest {
 
 static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item);
 
+
 /*
  * Appends data for a reply to the outgoing buffer
  */
-static int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
-                                     const char *response)
+static int
+qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
+                          const char *response)
 {
     size_t want = strlen(response) + 2;
     size_t have = test->outgoingCapacity - test->outgoingLength;
@@ -107,8 +109,9 @@ static int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
  * Processes a single line, looking for a matching expected
  * item to reply with, else replies with an error
  */
-static int qemuMonitorTestProcessCommandJSON(qemuMonitorTestPtr test,
-                                             const char *cmdstr)
+static int
+qemuMonitorTestProcessCommandJSON(qemuMonitorTestPtr test,
+                                  const char *cmdstr)
 {
     virJSONValuePtr val;
     const char *cmdname;
@@ -150,8 +153,9 @@ cleanup:
 }
 
 
-static int qemuMonitorTestProcessCommandText(qemuMonitorTestPtr test,
-                                             const char *cmdstr)
+static int
+qemuMonitorTestProcessCommandText(qemuMonitorTestPtr test,
+                                  const char *cmdstr)
 {
     char *tmp;
     char *cmdname;
@@ -190,8 +194,10 @@ cleanup:
     return ret;
 }
 
-static int qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
-                                         const char *cmdstr)
+
+static int
+qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
+                              const char *cmdstr)
 {
     if (test->json)
         return qemuMonitorTestProcessCommandJSON(test ,cmdstr);
@@ -199,12 +205,14 @@ static int qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
         return qemuMonitorTestProcessCommandText(test ,cmdstr);
 }
 
+
 /*
  * Handles read/write of monitor data on the monitor server side
  */
-static void qemuMonitorTestIO(virNetSocketPtr sock,
-                              int events,
-                              void *opaque)
+static void
+qemuMonitorTestIO(virNetSocketPtr sock,
+                  int events,
+                  void *opaque)
 {
     qemuMonitorTestPtr test = opaque;
     bool err = false;
@@ -298,7 +306,8 @@ cleanup:
 }
 
 
-static void qemuMonitorTestWorker(void *opaque)
+static void
+qemuMonitorTestWorker(void *opaque)
 {
     qemuMonitorTestPtr test = opaque;
 
@@ -322,7 +331,9 @@ static void qemuMonitorTestWorker(void *opaque)
     return;
 }
 
-static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
+
+static void
+qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
 {
     if (!item)
         return;
@@ -335,13 +346,15 @@ static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
 
 
 static void
-qemuMonitorTestFreeTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+qemuMonitorTestFreeTimer(int timer ATTRIBUTE_UNUSED,
+                         void *opaque ATTRIBUTE_UNUSED)
 {
     /* nothing to be done here */
 }
 
 
-void qemuMonitorTestFree(qemuMonitorTestPtr test)
+void
+qemuMonitorTestFree(qemuMonitorTestPtr test)
 {
     size_t i;
     int timer = -1;
@@ -424,13 +437,16 @@ error:
 }
 
 
-static void qemuMonitorTestEOFNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                         virDomainObjPtr vm ATTRIBUTE_UNUSED)
+static void
+qemuMonitorTestEOFNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
 }
 
-static void qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                           virDomainObjPtr vm ATTRIBUTE_UNUSED)
+
+static void
+qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                           virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
 }
 
@@ -440,12 +456,14 @@ static qemuMonitorCallbacks qemuCallbacks = {
     .errorNotify = qemuMonitorTestErrorNotify,
 };
 
+
 #define QEMU_JSON_GREETING "{\"QMP\": {\"version\": {\"qemu\": {\"micro\": 1, \"minor\": 0, \"major\": 1}, \"package\": \" (qemu-kvm-1.0.1)\"}, \"capabilities\": []}}"
 /* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
 
 #define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
 
-qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
+qemuMonitorTestPtr
+qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -541,7 +559,9 @@ error:
     goto cleanup;
 }
 
-qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test)
+
+qemuMonitorPtr
+qemuMonitorTestGetMonitor(qemuMonitorTestPtr test)
 {
     return test->mon;
 }

@@ -26,10 +26,9 @@
 typedef struct _qemuMonitorTest qemuMonitorTest;
 typedef qemuMonitorTest *qemuMonitorTestPtr;
 
-int
-qemuMonitorTestAddItem(qemuMonitorTestPtr test,
-                       const char *command_name,
-                       const char *response);
+int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
+                           const char *command_name,
+                           const char *response);
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt);
