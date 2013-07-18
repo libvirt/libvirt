@@ -1050,7 +1050,9 @@ virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
                const char *file)
 {
 
-    return virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s", ifname, file);
+    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s", ifname, file) < 0)
+        return -1;
+    return 0;
 }
 
 static int
@@ -1058,8 +1060,10 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
                      const char *file)
 {
 
-    return virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s",
-                       ifname, file);
+    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s", ifname,
+                    file) < 0)
+        return -1;
+    return 0;
 }
 
 /**

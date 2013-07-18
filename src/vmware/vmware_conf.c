@@ -313,9 +313,16 @@ error:
 int
 vmwareConstructVmxPath(char *directoryName, char *name, char **vmxPath)
 {
+    int ret;
+
     if (directoryName != NULL)
-        return virAsprintf(vmxPath, "%s/%s.vmx", directoryName, name);
-    return virAsprintf(vmxPath, "%s.vmx", name);
+        ret = virAsprintf(vmxPath, "%s/%s.vmx", directoryName, name);
+    else
+        ret = virAsprintf(vmxPath, "%s.vmx", name);
+
+    if (ret < 0)
+        return -1;
+    return 0;
 }
 
 int
@@ -414,7 +421,9 @@ vmwareMoveFile(char *srcFile, char *dstFile)
 int
 vmwareMakePath(char *srcDir, char *srcName, char *srcExt, char **outpath)
 {
-    return virAsprintf(outpath, "%s/%s.%s", srcDir, srcName, srcExt);
+    if (virAsprintf(outpath, "%s/%s.%s", srcDir, srcName, srcExt) < 0)
+        return -1;
+    return 0;
 }
 
 int

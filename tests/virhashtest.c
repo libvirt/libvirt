@@ -18,7 +18,7 @@
 #define testError(...)                                          \
     do {                                                        \
         char *str;                                              \
-        if (virAsprintfQuiet(&str, __VA_ARGS__) == 0) {         \
+        if (virAsprintfQuiet(&str, __VA_ARGS__) >= 0) {         \
             fprintf(stderr, "%s", str);                         \
             VIR_FREE(str);                                      \
         }                                                       \

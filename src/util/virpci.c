@@ -194,7 +194,9 @@ virPCIDriverDir(char **buffer, const char *driver)
 {
     VIR_FREE(*buffer);
 
-    return virAsprintf(buffer, PCI_SYSFS "drivers/%s", driver);
+    if (virAsprintf(buffer, PCI_SYSFS "drivers/%s", driver) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -203,7 +205,9 @@ virPCIDriverFile(char **buffer, const char *driver, const char *file)
 {
     VIR_FREE(*buffer);
 
-    return virAsprintf(buffer, PCI_SYSFS "drivers/%s/%s", driver, file);
+    if (virAsprintf(buffer, PCI_SYSFS "drivers/%s/%s", driver, file) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -212,7 +216,9 @@ virPCIFile(char **buffer, const char *device, const char *file)
 {
     VIR_FREE(*buffer);
 
-    return virAsprintf(buffer, PCI_SYSFS "devices/%s/%s", device, file);
+    if (virAsprintf(buffer, PCI_SYSFS "devices/%s/%s", device, file) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -2529,17 +2535,21 @@ out:
 int
 virPCIGetSysfsFile(char *virPCIDeviceName, char **pci_sysfs_device_link)
 {
-    return virAsprintf(pci_sysfs_device_link, PCI_SYSFS "devices/%s",
-                       virPCIDeviceName);
+    if (virAsprintf(pci_sysfs_device_link, PCI_SYSFS "devices/%s",
+                    virPCIDeviceName) < 0)
+        return -1;
+    return 0;
 }
 
 int
 virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev,
                                 char **pci_sysfs_device_link)
 {
-    return virAsprintf(pci_sysfs_device_link,
-                       PCI_SYSFS "devices/%04x:%02x:%02x.%x", dev->domain,
-                       dev->bus, dev->slot, dev->function);
+    if (virAsprintf(pci_sysfs_device_link,
+                    PCI_SYSFS "devices/%04x:%02x:%02x.%x", dev->domain,
+                    dev->bus, dev->slot, dev->function) < 0)
+        return -1;
+    return 0;
 }
 
 /*

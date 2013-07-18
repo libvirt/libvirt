@@ -797,7 +797,9 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
         }
     }
 
-    return virAsprintf(&net->info.alias, "net%d", idx);
+    if (virAsprintf(&net->info.alias, "net%d", idx) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -852,7 +854,9 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redir
         }
     }
 
-    return virAsprintf(&redirdev->info.alias, "redir%d", idx);
+    if (virAsprintf(&redirdev->info.alias, "redir%d", idx) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -861,7 +865,10 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
 
-    return virAsprintf(&controller->info.alias, "%s%d", prefix, controller->idx);
+    if (virAsprintf(&controller->info.alias, "%s%d", prefix,
+                    controller->idx) < 0)
+        return -1;
+    return 0;
 }
 
 static ssize_t

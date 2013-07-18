@@ -176,7 +176,8 @@ size_t virStringListLength(char **strings);
  * Like glibc's vasprintf but makes sure *strp == NULL on failure, in which
  * case the OOM error is reported too.
  *
- * Returns -1 on failure (with OOM error reported), 0 on success.
+ * Returns -1 on failure (with OOM error reported), number of bytes printed
+ * on success.
  */
 # define virVasprintf(strp, fmt, list) \
     virVasprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
@@ -187,7 +188,7 @@ size_t virStringListLength(char **strings);
  *
  * Like glibc's vasprintf but makes sure *strp == NULL on failure.
  *
- * Returns -1 on failure, 0 on success.
+ * Returns -1 on failure, number of bytes printed on success.
  */
 # define virVasprintfQuiet(strp, fmt, list) \
     virVasprintfInternal(false, 0, NULL, NULL, 0, strp, fmt, list)
@@ -200,7 +201,8 @@ size_t virStringListLength(char **strings);
  * Like glibc's_asprintf but makes sure *strp == NULL on failure, in which case
  * the OOM error is reported too.
  *
- * Returns -1 on failure (with OOM error reported), 0 on success.
+ * Returns -1 on failure (with OOM error reported), number of bytes printed
+ * on success.
  */
 
 # define virAsprintf(strp, ...) \
@@ -214,7 +216,7 @@ size_t virStringListLength(char **strings);
  *
  * Like glibc's_asprintf but makes sure *strp == NULL on failure.
  *
- * Returns -1 on failure, 0 on success.
+ * Returns -1 on failure, number of bytes printed on success.
  */
 
 # define virAsprintfQuiet(strp, ...) \

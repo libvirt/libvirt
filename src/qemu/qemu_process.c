@@ -2562,8 +2562,10 @@ qemuProcessPrepareMonitorChr(virQEMUDriverConfigPtr cfg,
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = true;
 
-    return virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
-                       cfg->libDir, vm);
+    if (virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
+                    cfg->libDir, vm) < 0)
+        return -1;
+    return 0;
 }
 
 
