@@ -761,6 +761,11 @@ VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "default",
               "unmap",
               "ignore")
+VIR_ENUM_IMPL(virDomainDiskSourcePoolMode,
+              VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST,
+              "default",
+              "host",
+              "direct")
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
@@ -4645,10 +4650,12 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 {
     char *pool = NULL;
     char *volume = NULL;
+    char *mode = NULL;
     int ret = -1;
 
     pool = virXMLPropString(node, "pool");
     volume = virXMLPropString(node, "volume");
+    mode = virXMLPropString(node, "mode");
 
     /* CD-ROM and Floppy allows no source */
     if (!pool && !volume)
@@ -4664,6 +4671,14 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
     if (VIR_ALLOC(def->srcpool) < 0)
         goto cleanup;
 
+    if (mode && (def->srcpool->mode =
+                 virDomainDiskSourcePoolModeTypeFromString(mode)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown source mode '%s' for volume type disk"),
+                       mode);
+        goto cleanup;
+    }
+
     def->srcpool->pool = pool;
     pool = NULL;
     def->srcpool->volume = volume;
@@ -4674,6 +4689,7 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 cleanup:
     VIR_FREE(pool);
     VIR_FREE(volume);
+    VIR_FREE(mode);
     return ret;
 }
 
@@ -14157,9 +14173,13 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_DISK_TYPE_VOLUME:
             virBufferAddLit(buf, "      <source");
 
-            if (def->srcpool)
+            if (def->srcpool) {
                 virBufferAsprintf(buf, " pool='%s' volume='%s'",
                                   def->srcpool->pool, def->srcpool->volume);
+                if (def->srcpool->mode)
+                    virBufferAsprintf(buf, " mode='%s'",
+                                      virDomainDiskSourcePoolModeTypeToString(def->srcpool->mode));
+            }
             if (def->startupPolicy)
                 virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 

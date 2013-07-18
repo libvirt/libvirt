@@ -1601,7 +1601,16 @@
         <code>pool</code> and <code>volume</code>. Attribute <code>pool</code>
         specifies the name of storage pool (managed by libvirt) where the disk
         source resides, and attribute <code>volume</code> specifies the name of
-        storage volume (managed by libvirt) used as the disk source.
+        storage volume (managed by libvirt) used as the disk source. For a
+        "volume" type disk, if the underlying storage pool is "iscsi", attribute
+        <code>mode</code> (<span class="since">since 1.1.1</span>) can be used
+        to indicate how to represent the LUN as the disk source. The value
+        "host" indicates to use the LUN's path as it shows up on host, e.g.
+        /dev/disk/by-path/ip-10.11.12.9:3260-iscsi-iqn.2013-06.fc:iscsi.iscsi0-lun-1).
+        The value "direct" indicates to use the storage pool's
+        <code>source</code> element <code>host</code> attribute as the
+        disk source for the libiscsi URI, e.g.
+        file=iscsi://demo.org:6000/iqn.1992-01.com.example/1.
         <span class="since">Since 0.0.3; <code>type='dir'</code> since
         0.7.5; <code>type='network'</code> since
         0.8.7; <code>protocol='iscsi'</code> since 1.0.4;

@@ -264,6 +264,7 @@ mymain(void)
 
     DO_TEST("disk-scsi-disk-vpd");
     DO_TEST("disk-source-pool");
+    DO_TEST("disk-source-pool-mode");
 
     DO_TEST("disk-drive-discard");
 
