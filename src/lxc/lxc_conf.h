@@ -52,8 +52,6 @@ struct _virLXCDriver {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
 
-    virCgroupPtr cgroup;
-
     virSysinfoDefPtr hostsysinfo;
 
     size_t nactive;
