@@ -1565,6 +1565,57 @@ int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 }
 #endif
 
+int virCgroupNewMachine(const char *name,
+                        const char *drivername,
+                        bool privileged ATTRIBUTE_UNUSED,
+                        const unsigned char *uuid ATTRIBUTE_UNUSED,
+                        const char *rootdir ATTRIBUTE_UNUSED,
+                        pid_t pidleader ATTRIBUTE_UNUSED,
+                        bool isContainer ATTRIBUTE_UNUSED,
+                        const char *partition,
+                        int controllers,
+                        virCgroupPtr *group)
+{
+    virCgroupPtr parent = NULL;
+    int ret = -1;
+
+    *group = NULL;
+
+    if (virCgroupNewPartition(partition,
+                              STREQ(partition, "/machine"),
+                              controllers,
+                              &parent) < 0) {
+        if (virCgroupNewIgnoreError())
+            goto done;
+
+        goto cleanup;
+    }
+
+    if (virCgroupNewDomainPartition(parent,
+                                    drivername,
+                                    name,
+                                    true,
+                                    group) < 0)
+        goto cleanup;
+
+    if (virCgroupAddTask(*group, pidleader) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+    }
+
+done:
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&parent);
+    return ret;
+}
+
 bool virCgroupNewIgnoreError(void)
 {
     if (virLastErrorIsSystemErrno(ENXIO) ||

@@ -83,6 +83,19 @@ int virCgroupNewEmulator(virCgroupPtr domain,
 int virCgroupNewDetect(pid_t pid,
                        virCgroupPtr *group);
 
+int virCgroupNewMachine(const char *name,
+                        const char *drivername,
+                        bool privileged,
+                        const unsigned char *uuid,
+                        const char *rootdir,
+                        pid_t pidleader,
+                        bool isContainer,
+                        const char *partition,
+                        int controllers,
+                        virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(4);
+
 bool virCgroupNewIgnoreError(void);
 
 int virCgroupPathOfController(virCgroupPtr group,
