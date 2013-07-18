@@ -73,7 +73,15 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
 
     /* for attach & detach qemu must support -device */
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NET_NAME);
+
+    if (qemuDomainAssignPCIAddresses((*vm)->def, priv->qemuCaps, *vm) < 0)
+        goto cleanup;
+
+    if (qemuAssignDeviceAliases((*vm)->def, priv->qemuCaps) < 0)
+        goto cleanup;
 
     ret = 0;
 cleanup:
@@ -87,12 +95,14 @@ testQemuHotplugAttach(virDomainObjPtr vm,
     int ret = -1;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        /* conn in only used for storage pool and secrets lookup so as long
+         * as we don't use any of them, passing NULL should be safe
+         */
+        ret = qemuDomainAttachDeviceDiskLive(NULL, &driver, vm, dev);
+        break;
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
-        if (!ret) {
-            /* vm->def stolen dev->data.chr so we ought to avoid freeing it */
-            dev->data.chr = NULL;
-        }
         break;
     default:
         if (virTestGetVerbose())
@@ -111,6 +121,9 @@ testQemuHotplugDetach(virDomainObjPtr vm,
     int ret = -1;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = qemuDomainDetachDeviceDiskLive(&driver, vm, dev);
+        break;
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainDetachChrDevice(&driver, vm, dev->data.chr);
         break;
@@ -256,6 +269,11 @@ testQemuHotplug(const void *data)
     switch (test->action) {
     case ATTACH:
         ret = testQemuHotplugAttach(vm, dev);
+        if (ret == 0) {
+            /* vm->def stolen dev->data.* so we just need to free the dev
+             * envelope */
+            VIR_FREE(dev);
+        }
         if (ret == 0 || fail)
             ret = testQemuHotplugCheckResult(vm, result_xml, fail);
         break;
@@ -297,6 +315,7 @@ mymain(void)
 {
     int ret = 0;
     struct qemuHotplugTestData data = {0};
+    virSecurityManagerPtr mgr;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -313,12 +332,22 @@ mymain(void)
     driver.config = virQEMUDriverConfigNew(false);
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
+    /* some dummy values from 'config file' */
+    if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
+        return EXIT_FAILURE;
 
     if (!(driver.domainEventState = virDomainEventStateNew()))
         return EXIT_FAILURE;
 
-    /* some dummy values from 'config file' */
-    if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
+    driver.lockManager = virLockManagerPluginNew("nop", "qemu",
+                                                 driver.config->configBaseDir,
+                                                 0);
+    if (!driver.lockManager)
+        return EXIT_FAILURE;
+
+    if (!(mgr = virSecurityManagerNew("none", "qemu", false, false, false)))
+        return EXIT_FAILURE;
+    if (!(driver.securityManager = virSecurityManagerNewStack(mgr)))
         return EXIT_FAILURE;
 
 #define DO_TEST(file, ACTION, dev, fial, kep, ...)                          \
@@ -346,6 +375,7 @@ mymain(void)
 
 
 #define QMP_OK      "{\"return\": {}}"
+#define HMP(msg)    "{\"return\": \"" msg "\"}"
 
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
@@ -365,6 +395,13 @@ mymain(void)
     DO_TEST_DETACH("console-compat-2", "console-virtio", false, false,
                    "device_del", QMP_OK,
                    "chardev-remove", QMP_OK);
+
+    DO_TEST_ATTACH("hotplug-base", "disk-virtio", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-virtio", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
