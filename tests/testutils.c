@@ -632,23 +632,23 @@ int virtTestMain(int argc,
 
     if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
         char *end = NULL;
-        unsigned int i;
-        if (virStrToLong_ui(testRange, &end, 10, &i) < 0) {
+        unsigned int iv;
+        if (virStrToLong_ui(testRange, &end, 10, &iv) < 0) {
             fprintf(stderr, "Cannot parse range %s\n", testRange);
             return EXIT_FAILURE;
         }
-        testStart = testEnd = i;
+        testStart = testEnd = iv;
         if (end && *end) {
             if (*end != '-') {
                 fprintf(stderr, "Cannot parse range %s\n", testRange);
                 return EXIT_FAILURE;
             }
             end++;
-            if (virStrToLong_ui(end, NULL, 10, &i) < 0) {
+            if (virStrToLong_ui(end, NULL, 10, &iv) < 0) {
                 fprintf(stderr, "Cannot parse range %s\n", testRange);
                 return EXIT_FAILURE;
             }
-            testEnd = i;
+            testEnd = iv;
 
             if (testEnd < testStart) {
                 fprintf(stderr, "Test range end %zu must be >= %zu\n", testEnd, testStart);
