@@ -3818,3 +3818,24 @@ int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
 
     return qemuMonitorJSONDetachCharDev(mon, chrID);
 }
+
+int
+qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
+                            char ***aliases)
+{
+    VIR_DEBUG("mon=%p, aliases=%p", mon, aliases);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetDeviceAliases(mon, aliases);
+}

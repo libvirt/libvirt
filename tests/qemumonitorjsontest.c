@@ -883,6 +883,66 @@ cleanup:
 
 
 static int
+testQemuMonitorJSONGetDeviceAliases(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    int ret = -1;
+    char **aliases = NULL;
+    char **alias;
+    const char *expected[] = {
+        "virtio-disk25", "video0", "serial0", "ide0-0-0", "usb", NULL };
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test,
+                               "qom-list",
+                               "{\"return\": ["
+                               " {\"name\": \"virtio-disk25\","
+                               "  \"type\": \"child<virtio-blk-pci>\"},"
+                               " {\"name\": \"video0\","
+                               "  \"type\": \"child<VGA>\"},"
+                               " {\"name\": \"serial0\","
+                               "  \"type\": \"child<isa-serial>\"},"
+                               " {\"name\": \"ide0-0-0\","
+                               "  \"type\": \"child<ide-cd>\"},"
+                               " {\"name\": \"usb\","
+                               "  \"type\": \"child<piix3-usb-uhci>\"},"
+                               " {\"name\": \"type\", \"type\": \"string\"}"
+                               "]}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetDeviceAliases(qemuMonitorTestGetMonitor(test),
+                                        &aliases) < 0)
+        goto cleanup;
+
+    if (!aliases) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", "no aliases returned");
+        goto cleanup;
+    }
+
+    ret = 0;
+    for (alias = aliases; *alias; alias++) {
+        if (!virStringArrayHasString((char **) expected, *alias)) {
+            fprintf(stderr, "got unexpected device alias '%s'\n", *alias);
+            ret = -1;
+        }
+    }
+    for (alias = (char **) expected; *alias; alias++) {
+        if (!virStringArrayHasString(aliases, *alias)) {
+            fprintf(stderr, "missing expected alias '%s'\n", *alias);
+            ret = -1;
+        }
+    }
+
+cleanup:
+    virStringFreeList(aliases);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -915,6 +975,7 @@ mymain(void)
     DO_TEST(GetListPaths);
     DO_TEST(GetObjectProperty);
     DO_TEST(SetObjectProperty);
+    DO_TEST(GetDeviceAliases);
 
     virObjectUnref(xmlopt);
 

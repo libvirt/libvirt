@@ -422,4 +422,8 @@ int qemuMonitorJSONAttachCharDev(qemuMonitorPtr mon,
                                  virDomainChrSourceDefPtr chr);
 int qemuMonitorJSONDetachCharDev(qemuMonitorPtr mon,
                                  const char *chrID);
+
+int qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
+                                    char ***aliases);
+
 #endif /* QEMU_MONITOR_JSON_H */

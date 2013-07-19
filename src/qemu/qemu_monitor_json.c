@@ -5415,3 +5415,41 @@ qemuMonitorJSONDetachCharDev(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int
+qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
+                                char ***aliases)
+{
+    qemuMonitorJSONListPathPtr *paths = NULL;
+    char **alias;
+    int ret = -1;
+    size_t i;
+    int n;
+
+    *aliases = NULL;
+
+    n = qemuMonitorJSONGetObjectListPaths(mon, "/machine/peripheral", &paths);
+    if (n < 0)
+        return -1;
+
+    if (VIR_ALLOC_N(*aliases, n + 1) < 0)
+        goto cleanup;
+
+    alias = *aliases;
+    for (i = 0; i < n; i++) {
+        if (STRPREFIX(paths[i]->type, "child<")) {
+            *alias = paths[i]->name;
+            paths[i]->name = NULL;
+            alias++;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    for (i = 0; i < n; i++)
+        qemuMonitorJSONListPathFree(paths[i]);
+    VIR_FREE(paths);
+    return ret;
+}
