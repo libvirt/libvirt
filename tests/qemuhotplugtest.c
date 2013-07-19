@@ -393,6 +393,19 @@ mymain(void)
 #define QMP_OK      "{\"return\": {}}"
 #define HMP(msg)    "{\"return\": \"" msg "\"}"
 
+#define QMP_DEVICE_DELETED(dev) \
+    "{"                                                     \
+    "    \"timestamp\": {"                                  \
+    "        \"seconds\": 1374137171,"                      \
+    "        \"microseconds\": 2659"                        \
+    "    },"                                                \
+    "    \"event\": \"DEVICE_DELETED\","                    \
+    "    \"data\": {"                                       \
+    "        \"device\": \"" dev "\","                      \
+    "        \"path\": \"/machine/peripheral/" dev "\""     \
+    "    }"                                                 \
+    "}\r\n"
+
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
                    "set_password", QMP_OK, "expire_password", QMP_OK);
@@ -417,6 +430,16 @@ mymain(void)
                    "device_add", QMP_OK);
     DO_TEST_DETACH("hotplug-base", "disk-virtio", false, false,
                    "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-virtio", false, true,
+                         "human-monitor-command", HMP("OK\\r\\n"),
+                         "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-virtio", true, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+    DO_TEST_DETACH("hotplug-base", "disk-virtio", false, false,
+                   "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
                    "human-monitor-command", HMP(""));
 
     virObjectUnref(driver.caps);
