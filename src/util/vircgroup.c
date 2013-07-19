@@ -306,18 +306,30 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
  * It then appends @path to each detected path.
  */
 static int virCgroupDetectPlacement(virCgroupPtr group,
+                                    pid_t pid,
                                     const char *path)
 {
     size_t i;
     FILE *mapping  = NULL;
     char line[1024];
     int ret = -1;
+    char *procfile;
 
-    mapping = fopen("/proc/self/cgroup", "r");
+    if (pid == -1) {
+        if (VIR_STRDUP(procfile, "/proc/self/cgroup") < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&procfile, "/proc/%llu/cgroup",
+                        (unsigned long long)pid) < 0)
+            goto cleanup;
+    }
+
+    mapping = fopen(procfile, "r");
     if (mapping == NULL) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to open /proc/self/cgroup"));
-        return -1;
+        virReportSystemError(errno,
+                             _("Unable to open '%s'"),
+                             procfile);
+        goto cleanup;
     }
 
     while (fgets(line, sizeof(line), mapping) != NULL) {
@@ -371,12 +383,14 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
     ret = 0;
 
 cleanup:
+    VIR_FREE(procfile);
     VIR_FORCE_FCLOSE(mapping);
 
     return ret;
 }
 
 static int virCgroupDetect(virCgroupPtr group,
+                           pid_t pid,
                            int controllers,
                            const char *path,
                            virCgroupPtr parent)
@@ -453,7 +467,7 @@ static int virCgroupDetect(virCgroupPtr group,
         if (virCgroupCopyPlacement(group, path, parent) < 0)
             return -1;
     } else {
-        if (virCgroupDetectPlacement(group, path) < 0)
+        if (virCgroupDetectPlacement(group, pid, path) < 0)
             return -1;
     }
 
@@ -470,10 +484,11 @@ static int virCgroupDetect(virCgroupPtr group,
             return -1;
         }
 
-        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s", i,
+        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %llu", i,
                   virCgroupControllerTypeToString(i),
                   group->controllers[i].mountPoint,
-                  group->controllers[i].placement);
+                  group->controllers[i].placement,
+                  (unsigned long long)pid);
     }
 
     return 0;
@@ -826,7 +841,8 @@ cleanup:
  *
  * Returns 0 on success, -1 on error
  */
-static int virCgroupNew(const char *path,
+static int virCgroupNew(pid_t pid,
+                        const char *path,
                         virCgroupPtr parent,
                         int controllers,
                         virCgroupPtr *group)
@@ -849,7 +865,7 @@ static int virCgroupNew(const char *path,
             goto error;
     }
 
-    if (virCgroupDetect(*group, controllers, path, parent) < 0)
+    if (virCgroupDetect(*group, pid, controllers, path, parent) < 0)
         goto error;
 
     return 0;
@@ -871,7 +887,7 @@ static int virCgroupAppRoot(virCgroupPtr *group,
     if (virCgroupNewSelf(&selfgrp) < 0)
         return -1;
 
-    if (virCgroupNew("libvirt", selfgrp, controllers, group) < 0)
+    if (virCgroupNew(-1, "libvirt", selfgrp, controllers, group) < 0)
         goto cleanup;
 
     if (virCgroupMakeGroup(selfgrp, *group, create, VIR_CGROUP_NONE) < 0)
@@ -1287,7 +1303,7 @@ int virCgroupNewPartition(const char *path,
     if (virCgroupSetPartitionSuffix(path, &newpath) < 0)
         goto cleanup;
 
-    if (virCgroupNew(newpath, NULL, controllers, group) < 0)
+    if (virCgroupNew(-1, newpath, NULL, controllers, group) < 0)
         goto cleanup;
 
     if (STRNEQ(newpath, "/")) {
@@ -1299,7 +1315,7 @@ int virCgroupNewPartition(const char *path,
         tmp++;
         *tmp = '\0';
 
-        if (virCgroupNew(parentPath, NULL, controllers, &parent) < 0)
+        if (virCgroupNew(-1, parentPath, NULL, controllers, &parent) < 0)
             goto cleanup;
 
         if (virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE) < 0) {
@@ -1350,7 +1366,7 @@ int virCgroupNewDriver(const char *name,
                          create, controllers) < 0)
         goto cleanup;
 
-    if (virCgroupNew(name, rootgrp, -1, group) < 0)
+    if (virCgroupNew(-1, name, rootgrp, -1, group) < 0)
         goto cleanup;
 
     if (virCgroupMakeGroup(rootgrp, *group, create, VIR_CGROUP_NONE) < 0) {
@@ -1387,19 +1403,11 @@ int virCgroupNewDriver(const char *name ATTRIBUTE_UNUSED,
 *
 * Returns 0 on success, or -1 on error
 */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupNewSelf(virCgroupPtr *group)
 {
-    return virCgroupNew("", NULL, -1, group);
+    return virCgroupNewDetect(-1, group);
 }
-#else
-int virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
+
 
 /**
  * virCgroupNewDomainDriver:
@@ -1418,7 +1426,7 @@ int virCgroupNewDomainDriver(virCgroupPtr driver,
 {
     int ret = -1;
 
-    if (virCgroupNew(name, driver, -1, group) < 0)
+    if (virCgroupNew(-1, name, driver, -1, group) < 0)
         goto cleanup;
 
     /*
@@ -1480,7 +1488,7 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
     if (virCgroupPartitionEscape(&grpname) < 0)
         goto cleanup;
 
-    if (virCgroupNew(grpname, partition, -1, group) < 0)
+    if (virCgroupNew(-1, grpname, partition, -1, group) < 0)
         goto cleanup;
 
     /*
@@ -1545,7 +1553,7 @@ int virCgroupNewVcpu(virCgroupPtr domain,
                    (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                    (1 << VIR_CGROUP_CONTROLLER_CPUSET));
 
-    if (virCgroupNew(name, domain, controllers, group) < 0)
+    if (virCgroupNew(-1, name, domain, controllers, group) < 0)
         goto cleanup;
 
     if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
@@ -1592,7 +1600,7 @@ int virCgroupNewEmulator(virCgroupPtr domain,
                    (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                    (1 << VIR_CGROUP_CONTROLLER_CPUSET));
 
-    if (virCgroupNew("emulator", domain, controllers, group) < 0)
+    if (virCgroupNew(-1, "emulator", domain, controllers, group) < 0)
         goto cleanup;
 
     if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
@@ -1615,6 +1623,23 @@ int virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
     return -1;
 }
 
+#endif
+
+
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+int virCgroupNewDetect(pid_t pid,
+                       virCgroupPtr *group)
+{
+    return virCgroupNew(pid, "", NULL, -1, group);
+}
+#else
+int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
+                       virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
 #endif
 
 bool virCgroupNewIgnoreError(void)
@@ -2573,7 +2598,7 @@ static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHas
 
         VIR_DEBUG("Process subdir %s", ent->d_name);
 
-        if (virCgroupNew(ent->d_name, group, -1, &subgroup) < 0)
+        if (virCgroupNew(-1, ent->d_name, group, -1, &subgroup) < 0)
             goto cleanup;
 
         if ((rc = virCgroupKillRecursiveInternal(subgroup, signum, pids, true)) < 0)

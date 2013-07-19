@@ -86,6 +86,9 @@ int virCgroupNewEmulator(virCgroupPtr domain,
                          virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
+int virCgroupNewDetect(pid_t pid,
+                       virCgroupPtr *group);
+
 bool virCgroupNewIgnoreError(void);
 
 int virCgroupPathOfController(virCgroupPtr group,
