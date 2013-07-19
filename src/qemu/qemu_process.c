@@ -1329,7 +1329,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     qemuDomainSignalDeviceRemoval(vm, devAlias);
 
-    if (virDomainDefFindDevice(vm->def, devAlias, &dev) < 0)
+    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
         goto cleanup;
 
     qemuDomainRemoveDevice(driver, vm, &dev);

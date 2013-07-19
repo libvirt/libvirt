@@ -2690,6 +2690,7 @@ char *virDomainDefGetDefaultEmulator(virDomainDefPtr def, virCapsPtr caps);
 
 int virDomainDefFindDevice(virDomainDefPtr def,
                            const char *devAlias,
-                           virDomainDeviceDefPtr dev);
+                           virDomainDeviceDefPtr dev,
+                           bool reportError);
 
 #endif /* __DOMAIN_CONF_H */

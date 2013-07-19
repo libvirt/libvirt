@@ -18339,7 +18339,8 @@ virDomainDefFindDeviceCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 int
 virDomainDefFindDevice(virDomainDefPtr def,
                        const char *devAlias,
-                       virDomainDeviceDefPtr dev)
+                       virDomainDeviceDefPtr dev,
+                       bool reportError)
 {
     virDomainDefFindDeviceCallbackData data = { devAlias, dev };
 
@@ -18348,8 +18349,12 @@ virDomainDefFindDevice(virDomainDefPtr def,
                                        true, &data);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NONE) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no device found with alias %s"), devAlias);
+        if (reportError) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("no device found with alias %s"), devAlias);
+        } else {
+            VIR_DEBUG("no device found with alias %s", devAlias);
+        }
         return -1;
     }
 
