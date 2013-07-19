@@ -172,6 +172,9 @@ virStringArrayHasString(char **strings, const char *needle)
 {
     size_t i = 0;
 
+    if (!strings)
+        return false;
+
     while (strings[i]) {
         if (STREQ(strings[i++], needle))
             return true;
