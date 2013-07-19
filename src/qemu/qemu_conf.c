@@ -1186,6 +1186,58 @@ cleanup:
     return ret;
 }
 
+static int
+qemuTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
+                                virStoragePoolDefPtr pooldef)
+{
+    int ret = -1;
+
+    /* Only necessary when authentication set */
+    if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_NONE) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    /* Copy the authentication information from the storage pool
+     * into the virDomainDiskDef
+     */
+    if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
+        if (VIR_STRDUP(def->auth.username,
+                       pooldef->source.auth.chap.username) < 0)
+            goto cleanup;
+        if (pooldef->source.auth.chap.secret.uuidUsable) {
+            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            memcpy(def->auth.secret.uuid,
+                   pooldef->source.auth.chap.secret.uuid,
+                   VIR_UUID_BUFLEN);
+        } else {
+            if (VIR_STRDUP(def->auth.secret.usage,
+                           pooldef->source.auth.chap.secret.usage) < 0)
+                goto cleanup;
+            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+        }
+    } else if (pooldef->source.authType == VIR_STORAGE_POOL_AUTH_CEPHX) {
+        if (VIR_STRDUP(def->auth.username,
+                       pooldef->source.auth.cephx.username) < 0)
+            goto cleanup;
+        if (pooldef->source.auth.cephx.secret.uuidUsable) {
+            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_UUID;
+            memcpy(def->auth.secret.uuid,
+                   pooldef->source.auth.cephx.secret.uuid,
+                   VIR_UUID_BUFLEN);
+        } else {
+            if (VIR_STRDUP(def->auth.secret.usage,
+                           pooldef->source.auth.cephx.secret.usage) < 0)
+                goto cleanup;
+            def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_USAGE;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
 int
 qemuTranslateDiskSourcePool(virConnectPtr conn,
                             virDomainDiskDefPtr def)
@@ -1254,6 +1306,9 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
                 if (!(def->src = virStorageVolGetPath(vol)))
                     goto cleanup;
             }
+
+            if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
+                goto cleanup;
         } else {
             if (!(def->src = virStorageVolGetPath(vol)))
                 goto cleanup;
