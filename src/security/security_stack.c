@@ -127,6 +127,11 @@ virSecurityStackPreFork(virSecurityManagerPtr mgr)
             rc = -1;
             break;
         }
+        /* Undo the unbalanced locking left behind after recursion; if
+         * PostFork ever delegates to driver callbacks, we'd instead
+         * need to recurse to an internal method that does not regrab
+         * a lock. */
+        virSecurityManagerPostFork(item->securityManager);
     }
 
     return rc;
