@@ -1404,3 +1404,51 @@ void virSetErrorLogPriorityFunc(virErrorLogPriorityFunc func)
 {
     virErrorLogPriorityFilter = func;
 }
+
+
+/**
+ * virErrorSetErrnoFromLastError:
+ *
+ * If the last error had a code of VIR_ERR_SYSTEM_ERROR
+ * then set errno to the value saved in the error object.
+ *
+ * If the last error had a code of VIR_ERR_NO_MEMORY
+ * then set errno to ENOMEM
+ *
+ * Otherwise set errno to EIO.
+ */
+void virErrorSetErrnoFromLastError(void)
+{
+    virErrorPtr err = virGetLastError();
+    if (err && err->code == VIR_ERR_SYSTEM_ERROR) {
+        errno = err->int1;
+    } else if (err && err->code == VIR_ERR_NO_MEMORY) {
+        errno = ENOMEM;
+    } else {
+        errno = EIO;
+    }
+}
+
+
+/**
+ * virLastErrorIsSystemErrno:
+ * @errnum: the errno value
+ *
+ * Check if the last error reported is a system
+ * error with the specific errno value.
+ *
+ * If @errnum is zero, any system error will pass.
+ *
+ * Returns true if the last error was a system error with errno == @errnum
+ */
+bool virLastErrorIsSystemErrno(int errnum)
+{
+    virErrorPtr err = virGetLastError();
+    if (!err)
+        return false;
+    if (err->code != VIR_ERR_SYSTEM_ERROR)
+        return false;
+    if (errnum != 0 && err->int1 != errnum)
+        return false;
+    return true;
+}

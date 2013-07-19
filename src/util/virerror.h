@@ -175,4 +175,8 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen);
 typedef int (*virErrorLogPriorityFunc)(virErrorPtr, int);
 void virSetErrorLogPriorityFunc(virErrorLogPriorityFunc func);
 
+void virErrorSetErrnoFromLastError(void);
+
+bool virLastErrorIsSystemErrno(int errnum);
+
 #endif

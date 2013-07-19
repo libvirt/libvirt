@@ -1318,6 +1318,8 @@ ebtablesRemoveForwardAllowIn;
 # util/virerror.h
 virDispatchError;
 virErrorInitialize;
+virErrorSetErrnoFromLastError;
+virLastErrorIsSystemErrno;
 virRaiseErrorFull;
 virReportErrorHelper;
 virReportOOMErrorFull;
