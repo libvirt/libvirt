@@ -6494,6 +6494,9 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
     }
 
+    if (ret == 0)
+        qemuDomainUpdateDeviceList(driver, vm);
+
     return ret;
 }
 
@@ -6602,6 +6605,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
+
+    if (ret == 0)
+        qemuDomainUpdateDeviceList(driver, vm);
 
     return ret;
 }

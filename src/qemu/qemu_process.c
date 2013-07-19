@@ -2969,6 +2969,39 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
     return 0;
 }
 
+static int
+qemuProcessUpdateDevices(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDef dev;
+    char **old;
+    char **tmp;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
+        return 0;
+
+    old = priv->qemuDevices;
+    priv->qemuDevices = NULL;
+    if (qemuDomainUpdateDeviceList(driver, vm) < 0)
+        goto cleanup;
+
+    if ((tmp = old)) {
+        while (*tmp) {
+            if (!virStringArrayHasString(priv->qemuDevices, *tmp) &&
+                virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0)
+                qemuDomainRemoveDevice(driver, vm, &dev);
+            tmp++;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    virStringFreeList(old);
+    return ret;
+}
+
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     virQEMUDriverPtr driver;
@@ -3103,6 +3136,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
+        goto error;
+
+    if (qemuProcessUpdateDevices(driver, obj) < 0)
         goto error;
 
     /* update domain state XML with possibly updated state in virDomainObj */
@@ -3905,6 +3941,10 @@ int qemuProcessStart(virConnectPtr conn,
 
     qemuDomainObjExitMonitor(driver, vm);
 
+    VIR_DEBUG("Fetching list of active devices");
+    if (qemuDomainUpdateDeviceList(driver, vm) < 0)
+        goto cleanup;
+
     /* Technically, qemuProcessStart can be called from inside
      * QEMU_ASYNC_JOB_MIGRATION_IN, but we are okay treating this like
      * a sync job since no other job can call into the domain until
@@ -4165,6 +4205,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
         VIR_FREE(vm->def->seclabels[i]->imagelabel);
     }
+
+    virStringFreeList(priv->qemuDevices);
+    priv->qemuDevices = NULL;
 
     virDomainDefClearDeviceAliases(vm->def);
     if (!priv->persistentAddrs) {

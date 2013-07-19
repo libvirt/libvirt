@@ -171,6 +171,7 @@ struct _qemuDomainObjPrivate {
 
     virCond unplugFinished; /* signals that unpluggingDevice was unplugged */
     const char *unpluggingDevice; /* alias of the device that is being unplugged */
+    char **qemuDevices; /* NULL-terminated list of devices aliases known to QEMU */
 };
 
 typedef enum {
@@ -362,5 +363,8 @@ extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 
 unsigned long long qemuDomainMemoryLimit(virDomainDefPtr def);
+
+int qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm);
 
 #endif /* __QEMU_DOMAIN_H__ */

@@ -339,6 +339,16 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     if (priv->fakeReboot)
         virBufferAddLit(buf, "  <fakereboot/>\n");
 
+    if (priv->qemuDevices && *priv->qemuDevices) {
+        char **tmp = priv->qemuDevices;
+        virBufferAddLit(buf, "  <devices>\n");
+        while (*tmp) {
+            virBufferAsprintf(buf, "    <device alias='%s'/>\n", *tmp);
+            tmp++;
+        }
+        virBufferAddLit(buf, "  </devices>\n");
+    }
+
     return 0;
 }
 
@@ -479,12 +489,35 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 
+    if ((n = virXPathNodeSet("./devices/device", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse qemu device list"));
+        goto error;
+    }
+    if (n > 0) {
+        /* NULL-terminated list */
+        if (VIR_ALLOC_N(priv->qemuDevices, n + 1) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            priv->qemuDevices[i] = virXMLPropString(nodes[i], "alias");
+            if (!priv->qemuDevices[i]) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to parse qemu device list"));
+                goto error;
+            }
+        }
+    }
+    VIR_FREE(nodes);
+
     return 0;
 
 error:
     virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
+    virStringFreeList(priv->qemuDevices);
+    priv->qemuDevices = NULL;
     virObjectUnref(qemuCaps);
     return -1;
 }
@@ -2213,4 +2246,27 @@ qemuDomainMemoryLimit(virDomainDefPtr def)
     }
 
     return mem;
+}
+
+
+int
+qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char **aliases;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
+        return 0;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorGetDeviceAliases(priv->mon, &aliases) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        return -1;
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    virStringFreeList(priv->qemuDevices);
+    priv->qemuDevices = aliases;
+    return 0;
 }
