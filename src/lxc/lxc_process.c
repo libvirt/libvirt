@@ -693,17 +693,12 @@ int virLXCProcessStop(virLXCDriverPtr driver,
 
     if (priv->cgroup) {
         rc = virCgroupKillPainfully(priv->cgroup);
-        if (rc < 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("Failed to kill container PIDs"));
-            rc = -1;
-            goto cleanup;
-        }
-        if (rc == 1) {
+        if (rc < 0)
+            return -1;
+        if (rc > 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Some container PIDs refused to die"));
-            rc = -1;
-            goto cleanup;
+                           _("Some processes refused to die"));
+            return -1;
         }
     } else {
         /* If cgroup doesn't exist, the VM pids must have already
@@ -713,10 +708,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
 
     virLXCProcessCleanup(driver, vm, reason);
 
-    rc = 0;
-
-cleanup:
-    return rc;
+    return 0;
 }
 
 

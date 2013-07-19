@@ -2355,9 +2355,12 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state)
 
 
 #if defined HAVE_KILL && defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+/*
+ * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
+ */
 static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
 {
-    int rc;
+    int ret = -1;
     bool killedAny = false;
     char *keypath = NULL;
     bool done = false;
@@ -2365,10 +2368,11 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
               group, group->path, signum, pids);
 
-    rc = virCgroupPathOfController(group, -1, "tasks", &keypath);
-    if (rc != 0) {
-        VIR_DEBUG("No path of %s, tasks", group->path);
-        return rc;
+    if (virCgroupPathOfController(group, -1, "tasks", &keypath) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No tasks file for group path '%s'"),
+                       group->path);
+        return -1;
     }
 
     /* PIDs may be forking as we kill them, so loop
@@ -2377,8 +2381,9 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
     while (!done) {
         done = true;
         if (!(fp = fopen(keypath, "r"))) {
-            rc = -errno;
-            VIR_DEBUG("Failed to read %s: %m\n", keypath);
+            virReportSystemError(errno,
+                                 _("Failed to read %s"),
+                                 keypath);
             goto cleanup;
         } else {
             while (!feof(fp)) {
@@ -2386,8 +2391,9 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
                 if (fscanf(fp, "%lu", &pid_value) != 1) {
                     if (feof(fp))
                         break;
-                    rc = -errno;
-                    VIR_DEBUG("Failed to read %s: %m\n", keypath);
+                    virReportSystemError(errno,
+                                         _("Failed to read %s"),
+                                         keypath);
                     goto cleanup;
                 }
                 if (virHashLookup(pids, (void*)pid_value))
@@ -2397,7 +2403,9 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
                 /* Cgroups is a Linux concept, so this cast is safe.  */
                 if (kill((pid_t)pid_value, signum) < 0) {
                     if (errno != ESRCH) {
-                        rc = -errno;
+                        virReportSystemError(errno,
+                                             _("Failed to kill process %lu"),
+                                             pid_value);
                         goto cleanup;
                     }
                     /* Leave RC == 0 since we didn't kill one */
@@ -2412,13 +2420,13 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
         }
     }
 
-    rc = killedAny ? 1 : 0;
+    ret = killedAny ? 1 : 0;
 
 cleanup:
     VIR_FREE(keypath);
     VIR_FORCE_FCLOSE(fp);
 
-    return rc;
+    return ret;
 }
 
 
@@ -2437,15 +2445,12 @@ static void *virCgroupPidCopy(const void *name)
 }
 
 /*
- * Returns
- *   < 0 : errno that occurred
- *     0 : no PIDs killed
- *     1 : at least one PID killed
+ * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
  */
 int virCgroupKill(virCgroupPtr group, int signum)
 {
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
-    int rc;
+    int ret;
     /* The 'tasks' file in cgroups can contain duplicated
      * pids, so we use a hash to track which we've already
      * killed.
@@ -2457,37 +2462,42 @@ int virCgroupKill(virCgroupPtr group, int signum)
                                              virCgroupPidCopy,
                                              NULL);
 
-    rc = virCgroupKillInternal(group, signum, pids);
+    ret = virCgroupKillInternal(group, signum, pids);
 
     virHashFree(pids);
 
-    return rc;
+    return ret;
 }
 
 
 static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHashTablePtr pids, bool dormdir)
 {
+    int ret = -1;
     int rc;
-    int killedAny = 0;
+    bool killedAny = false;
     char *keypath = NULL;
     DIR *dp;
     virCgroupPtr subgroup = NULL;
     struct dirent *ent;
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p", group, group->path, signum, pids);
 
-    rc = virCgroupPathOfController(group, -1, "", &keypath);
-    if (rc != 0) {
-        VIR_DEBUG("No path of %s, tasks", group->path);
-        return rc;
+    if (virCgroupPathOfController(group, -1, "", &keypath) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No tasks file for group path '%s'"),
+                       group->path);
+        return -1;
     }
 
-    if ((rc = virCgroupKillInternal(group, signum, pids)) != 0)
-        return rc;
+    if ((rc = virCgroupKillInternal(group, signum, pids)) < 0)
+        return -1;
+    if (rc == 1)
+        killedAny = true;
 
     VIR_DEBUG("Iterate over children of %s", keypath);
     if (!(dp = opendir(keypath))) {
-        rc = -errno;
-        return rc;
+        virReportSystemError(errno,
+                             _("Cannot open %s"), keypath);
+        return -1;
     }
 
     while ((ent = readdir(dp))) {
@@ -2500,16 +2510,13 @@ static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHas
 
         VIR_DEBUG("Process subdir %s", ent->d_name);
 
-        if (virCgroupNew(ent->d_name, group, -1, &subgroup) < 0) {
-            virErrorSetErrnoFromLastError();
-            rc = -errno;
+        if (virCgroupNew(ent->d_name, group, -1, &subgroup) < 0)
             goto cleanup;
-        }
 
         if ((rc = virCgroupKillRecursiveInternal(subgroup, signum, pids, true)) < 0)
             goto cleanup;
         if (rc == 1)
-            killedAny = 1;
+            killedAny = true;
 
         if (dormdir)
             virCgroupRemove(subgroup);
@@ -2517,18 +2524,18 @@ static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHas
         virCgroupFree(&subgroup);
     }
 
-    rc = killedAny;
+    ret = killedAny ? 1 : 0;
 
 cleanup:
     virCgroupFree(&subgroup);
     closedir(dp);
 
-    return rc;
+    return ret;
 }
 
 int virCgroupKillRecursive(virCgroupPtr group, int signum)
 {
-    int rc;
+    int ret;
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
     virHashTablePtr pids = virHashCreateFull(100,
                                              NULL,
@@ -2537,18 +2544,18 @@ int virCgroupKillRecursive(virCgroupPtr group, int signum)
                                              virCgroupPidCopy,
                                              NULL);
 
-    rc = virCgroupKillRecursiveInternal(group, signum, pids, false);
+    ret = virCgroupKillRecursiveInternal(group, signum, pids, false);
 
     virHashFree(pids);
 
-    return rc;
+    return ret;
 }
 
 
 int virCgroupKillPainfully(virCgroupPtr group)
 {
     size_t i;
-    int rc;
+    int ret;
     VIR_DEBUG("cgroup=%p path=%s", group, group->path);
     for (i = 0; i < 15; i++) {
         int signum;
@@ -2559,33 +2566,39 @@ int virCgroupKillPainfully(virCgroupPtr group)
         else
             signum = 0; /* Just check for existence */
 
-        rc = virCgroupKillRecursive(group, signum);
-        VIR_DEBUG("Iteration %zu rc=%d", i, rc);
-        /* If rc == -1 we hit error, if 0 we ran out of PIDs */
-        if (rc <= 0)
+        ret = virCgroupKillRecursive(group, signum);
+        VIR_DEBUG("Iteration %zu rc=%d", i, ret);
+        /* If ret == -1 we hit error, if 0 we ran out of PIDs */
+        if (ret <= 0)
             break;
 
         usleep(200 * 1000);
     }
-    VIR_DEBUG("Complete %d", rc);
-    return rc;
+    VIR_DEBUG("Complete %d", ret);
+    return ret;
 }
 
 #else /* !(HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R) */
 int virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
                   int signum ATTRIBUTE_UNUSED)
 {
-    return -ENOSYS;
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
 }
 int virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
                            int signum ATTRIBUTE_UNUSED)
 {
-    return -ENOSYS;
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
 }
 
 int virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
 {
-    return -ENOSYS;
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
 }
 #endif /* HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R */
 
