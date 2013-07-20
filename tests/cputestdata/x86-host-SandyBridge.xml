@@ -1,0 +1,6 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>SandyBridge</model>
+  <vendor>Intel</vendor>
+  <topology sockets='1' cores='2' threads='2'/>
+</cpu>

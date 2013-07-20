@@ -1223,6 +1223,11 @@ x86Compute(virCPUDefPtr host,
         goto out;
     }
 
+    /* first remove features that were inherited from the CPU model and were
+     * explicitly forced, disabled, or made optional
+     */
+    x86DataSubtract(cpu_require->data, cpu_force->data);
+    x86DataSubtract(cpu_require->data, cpu_optional->data);
     x86DataSubtract(cpu_require->data, cpu_disable->data);
     result = x86ModelCompare(host_model, cpu_require);
     if (result == SUBSET || result == UNRELATED) {

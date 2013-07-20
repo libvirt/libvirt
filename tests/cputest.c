@@ -581,6 +581,7 @@ mymain(void)
     DO_TEST_COMPARE("x86", "host", "pentium3-amd", VIR_CPU_COMPARE_INCOMPATIBLE);
     DO_TEST_COMPARE("x86", "host-amd", "pentium3-amd", VIR_CPU_COMPARE_SUPERSET);
     DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
 
     /* guest updates for migration
      * automatically compares host CPU with the result */

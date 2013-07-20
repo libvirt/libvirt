@@ -1,0 +1,15 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='allow'>Haswell</model>
+  <feature policy='force' name='pcid'/>
+  <feature policy='force' name='rtm'/>
+  <feature policy='force' name='invpcid'/>
+  <feature policy='force' name='erms'/>
+  <feature policy='force' name='bmi2'/>
+  <feature policy='optional' name='smep'/>
+  <feature policy='optional' name='avx2'/>
+  <feature policy='optional' name='hle'/>
+  <feature policy='force' name='bmi1'/>
+  <feature policy='force' name='fsgsbase'/>
+  <feature policy='disable' name='movbe'/>
+  <feature policy='disable' name='fma'/>
+</cpu>
