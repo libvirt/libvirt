@@ -442,6 +442,47 @@ cpuHasFeature(const virCPUData *data,
     return driver->hasFeature(data, feature);
 }
 
+char *
+cpuDataFormat(const virCPUData *data)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("data=%p", data);
+
+    if (!(driver = cpuGetSubDriver(data->arch)))
+        return NULL;
+
+    if (!driver->dataFormat) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot format %s CPU data"),
+                       virArchToString(data->arch));
+        return NULL;
+    }
+
+    return driver->dataFormat(data);
+}
+
+virCPUDataPtr
+cpuDataParse(virArch arch,
+             const char *xmlStr)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, xmlStr=%s", virArchToString(arch), xmlStr);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return NULL;
+
+    if (!driver->dataParse) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot parse %s CPU data"),
+                       virArchToString(arch));
+        return NULL;
+    }
+
+    return driver->dataParse(xmlStr);
+}
+
 bool
 cpuModelIsAllowed(const char *model,
                   const char **models,

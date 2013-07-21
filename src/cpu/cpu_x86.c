@@ -666,12 +666,42 @@ x86FeatureNames(const struct x86_map *map,
 
 
 static int
+x86ParseCPUID(xmlXPathContextPtr ctxt,
+              struct cpuX86cpuid *cpuid)
+{
+    unsigned long fun, eax, ebx, ecx, edx;
+    int ret_fun, ret_eax, ret_ebx, ret_ecx, ret_edx;
+
+    memset(cpuid, 0, sizeof(*cpuid));
+
+    fun = eax = ebx = ecx = edx = 0;
+    ret_fun = virXPathULongHex("string(@function)", ctxt, &fun);
+    ret_eax = virXPathULongHex("string(@eax)", ctxt, &eax);
+    ret_ebx = virXPathULongHex("string(@ebx)", ctxt, &ebx);
+    ret_ecx = virXPathULongHex("string(@ecx)", ctxt, &ecx);
+    ret_edx = virXPathULongHex("string(@edx)", ctxt, &edx);
+
+    if (ret_fun < 0 || ret_eax == -2 || ret_ebx == -2
+        || ret_ecx == -2 || ret_edx == -2)
+        return -1;
+
+    cpuid->function = fun;
+    cpuid->eax = eax;
+    cpuid->ebx = ebx;
+    cpuid->ecx = ecx;
+    cpuid->edx = edx;
+    return 0;
+}
+
+
+static int
 x86FeatureLoad(xmlXPathContextPtr ctxt,
                struct x86_map *map)
 {
     xmlNodePtr *nodes = NULL;
     xmlNodePtr ctxt_node = ctxt->node;
     struct x86_feature *feature;
+    struct cpuX86cpuid cpuid;
     int ret = 0;
     size_t i;
     int n;
@@ -697,31 +727,13 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         goto ignore;
 
     for (i = 0; i < n; i++) {
-        struct cpuX86cpuid cpuid;
-        unsigned long fun, eax, ebx, ecx, edx;
-        int ret_fun, ret_eax, ret_ebx, ret_ecx, ret_edx;
-
         ctxt->node = nodes[i];
-        fun = eax = ebx = ecx = edx = 0;
-        ret_fun = virXPathULongHex("string(@function)", ctxt, &fun);
-        ret_eax = virXPathULongHex("string(@eax)", ctxt, &eax);
-        ret_ebx = virXPathULongHex("string(@ebx)", ctxt, &ebx);
-        ret_ecx = virXPathULongHex("string(@ecx)", ctxt, &ecx);
-        ret_edx = virXPathULongHex("string(@edx)", ctxt, &edx);
-
-        if (ret_fun < 0 || ret_eax == -2 || ret_ebx == -2
-            || ret_ecx == -2 || ret_edx == -2) {
+        if (x86ParseCPUID(ctxt, &cpuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid cpuid[%zu] in %s feature"), i, feature->name);
+                           _("Invalid cpuid[%zu] in %s feature"),
+                           i, feature->name);
             goto ignore;
         }
-
-        cpuid.function = fun;
-        cpuid.eax = eax;
-        cpuid.ebx = ebx;
-        cpuid.ecx = ecx;
-        cpuid.edx = edx;
-
         if (x86DataAddCpuid(feature->data, &cpuid))
             goto error;
     }
@@ -1121,6 +1133,85 @@ x86LoadMap(void)
 error:
     x86MapFree(map);
     return NULL;
+}
+
+
+static char *
+x86CPUDataFormat(const virCPUData *data)
+{
+    struct data_iterator iter = DATA_ITERATOR_INIT(data->data.x86);
+    struct cpuX86cpuid *cpuid;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
+    while ((cpuid = x86DataCpuidNext(&iter))) {
+        virBufferAsprintf(&buf,
+                          "  <cpuid function='0x%08x'"
+                          " eax='0x%08x' ebx='0x%08x'"
+                          " ecx='0x%08x' edx='0x%08x'/>\n",
+                          cpuid->function,
+                          cpuid->eax, cpuid->ebx, cpuid->ecx, cpuid->edx);
+    }
+    virBufferAddLit(&buf, "</cpudata>\n");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+static virCPUDataPtr
+x86CPUDataParse(const char *xmlStr)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *nodes = NULL;
+    virCPUDataPtr cpuData = NULL;
+    struct cpuX86Data *data = NULL;
+    struct cpuX86cpuid cpuid;
+    size_t i;
+    int n;
+
+    if (VIR_ALLOC(data) < 0)
+        goto cleanup;
+
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("CPU data"), &ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot parse CPU data"));
+        goto cleanup;
+    }
+    ctxt->node = xmlDocGetRootElement(xml);
+
+    n = virXPathNodeSet("/cpudata[@arch='x86']/data", ctxt, &nodes);
+    if (n < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no x86 CPU data found"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        ctxt->node = nodes[i];
+        if (x86ParseCPUID(ctxt, &cpuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse cpuid[%zu]"), i);
+            goto cleanup;
+        }
+        if (x86DataAddCpuid(data, &cpuid) < 0)
+            goto cleanup;
+    }
+
+    cpuData = x86MakeCPUData(VIR_ARCH_X86_64, &data);
+
+cleanup:
+    VIR_FREE(nodes);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    x86DataFree(data);
+    return cpuData;
 }
 
 
@@ -1956,4 +2047,6 @@ struct cpuArchDriver cpuDriverX86 = {
     .baseline   = x86Baseline,
     .update     = x86Update,
     .hasFeature = x86HasFeature,
+    .dataFormat = x86CPUDataFormat,
+    .dataParse  = x86CPUDataParse,
 };
