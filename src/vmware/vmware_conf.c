@@ -80,10 +80,7 @@ vmwareCapsInit(void)
     if (VIR_ALLOC(cpu) < 0)
         goto error;
 
-    if (!(cpu->arch = caps->host.arch)) {
-        virReportOOMError();
-        goto error;
-    }
+    cpu->arch = caps->host.arch;
     cpu->type = VIR_CPU_TYPE_HOST;
 
     if (!(data = cpuNodeData(cpu->arch))
