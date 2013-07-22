@@ -1129,9 +1129,8 @@ int virDBusCallMethod(DBusConnection *conn,
                                                             call,
                                                             VIR_DBUS_METHOD_CALL_TIMEOUT_MILLIS,
                                                             &error))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot send to %s.%s on path %s with interface %s: %s"),
-                       destination, member, path, interface, NULLSTR(error.message));
+        virReportDBusServiceError(error.message ? error.message : "unknown error",
+                                  error.name);
         goto cleanup;
     }
 
