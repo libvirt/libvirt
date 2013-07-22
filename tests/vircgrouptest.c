@@ -148,112 +148,6 @@ cleanup:
     /* Asking for impossible combination since CPU is co-mounted */
 
 
-static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
-{
-    virCgroupPtr cgroup = NULL;
-    int ret = -1;
-    int rv;
-    const char *placementSmall[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/system/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/system/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
-        [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
-    };
-    const char *placementFull[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/system/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/system/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/libvirt/lxc",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/libvirt/lxc",
-    };
-
-    if ((rv = virCgroupNewDriver("lxc", false, -1, &cgroup)) != -1) {
-        fprintf(stderr, "Unexpected found LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-    ENSURE_ERRNO(ENOENT);
-
-    if ((rv = virCgroupNewDriver("lxc", true,
-                                 (1 << VIR_CGROUP_CONTROLLER_CPU),
-                                 &cgroup)) != -1) {
-        fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-    ENSURE_ERRNO(EINVAL);
-
-    /* Asking for impossible combination since devices is not mounted */
-    if ((rv = virCgroupNewDriver("lxc", true,
-                                 (1 << VIR_CGROUP_CONTROLLER_DEVICES),
-                                 &cgroup)) != -1) {
-        fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-    ENSURE_ERRNO(ENXIO);
-
-    /* Asking for small combination since devices is not mounted */
-    if ((rv = virCgroupNewDriver("lxc", true,
-                                 (1 << VIR_CGROUP_CONTROLLER_CPU) |
-                                 (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
-                                 (1 << VIR_CGROUP_CONTROLLER_MEMORY),
-                                 &cgroup)) != 0) {
-        fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-    ret = validateCgroup(cgroup, "libvirt/lxc", mountsSmall, links, placementSmall);
-    virCgroupFree(&cgroup);
-
-    if ((rv = virCgroupNewDriver("lxc", true, -1, &cgroup)) != 0) {
-        fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-    ret = validateCgroup(cgroup, "libvirt/lxc", mountsFull, links, placementFull);
-
-cleanup:
-    virCgroupFree(&cgroup);
-    return ret;
-}
-
-
-static int testCgroupNewForDriverDomain(const void *args ATTRIBUTE_UNUSED)
-{
-    virCgroupPtr drivercgroup = NULL;
-    virCgroupPtr domaincgroup = NULL;
-    int ret = -1;
-    int rv;
-    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/system/libvirt/lxc/wibble",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/system/libvirt/lxc/wibble",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/libvirt/lxc/wibble",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/libvirt/lxc/wibble",
-        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/libvirt/lxc/wibble",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/libvirt/lxc/wibble",
-    };
-
-    if ((rv = virCgroupNewDriver("lxc", false, -1, &drivercgroup)) != 0) {
-        fprintf(stderr, "Cannot find LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-
-    if ((rv = virCgroupNewDomainDriver(drivercgroup, "wibble", true, &domaincgroup)) != 0) {
-        fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
-        goto cleanup;
-    }
-
-    ret = validateCgroup(domaincgroup, "libvirt/lxc/wibble", mountsFull, links, placement);
-
-cleanup:
-    virCgroupFree(&drivercgroup);
-    virCgroupFree(&domaincgroup);
-    return ret;
-}
-
-
 static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -535,12 +429,6 @@ mymain(void)
     setenv("LIBVIRT_FAKE_SYSFS_DIR", fakesysfsdir, 1);
 
     if (virtTestRun("New cgroup for self", 1, testCgroupNewForSelf, NULL) < 0)
-        ret = -1;
-
-    if (virtTestRun("New cgroup for driver", 1, testCgroupNewForDriver, NULL) < 0)
-        ret = -1;
-
-    if (virtTestRun("New cgroup for domain driver", 1, testCgroupNewForDriverDomain, NULL) < 0)
         ret = -1;
 
     if (virtTestRun("New cgroup for partition", 1, testCgroupNewForPartition, NULL) < 0)

@@ -918,28 +918,6 @@ error:
 
     return -1;
 }
-
-static int virCgroupAppRoot(virCgroupPtr *group,
-                            bool create,
-                            int controllers)
-{
-    virCgroupPtr selfgrp = NULL;
-    int ret = -1;
-
-    if (virCgroupNewSelf(&selfgrp) < 0)
-        return -1;
-
-    if (virCgroupNew(-1, "libvirt", selfgrp, controllers, group) < 0)
-        goto cleanup;
-
-    if (virCgroupMakeGroup(selfgrp, *group, create, VIR_CGROUP_NONE) < 0)
-        goto cleanup;
-
-    ret = 0;
-cleanup:
-    virCgroupFree(&selfgrp);
-    return ret;
-}
 #endif
 
 #if defined _DIRENT_HAVE_D_TYPE
@@ -1387,53 +1365,6 @@ int virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
 }
 #endif
 
-/**
- * virCgroupNewDriver:
- *
- * @name: name of this driver (e.g., xen, qemu, lxc)
- * @group: Pointer to returned virCgroupPtr
- *
- * Returns 0 on success, or -1 on error
- */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupNewDriver(const char *name,
-                       bool create,
-                       int controllers,
-                       virCgroupPtr *group)
-{
-    int ret = -1;
-    virCgroupPtr rootgrp = NULL;
-
-    if (virCgroupAppRoot(&rootgrp,
-                         create, controllers) < 0)
-        goto cleanup;
-
-    if (virCgroupNew(-1, name, rootgrp, -1, group) < 0)
-        goto cleanup;
-
-    if (virCgroupMakeGroup(rootgrp, *group, create, VIR_CGROUP_NONE) < 0) {
-        virCgroupRemove(*group);
-        virCgroupFree(group);
-        goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    virCgroupFree(&rootgrp);
-    return ret;
-}
-#else
-int virCgroupNewDriver(const char *name ATTRIBUTE_UNUSED,
-                       bool create ATTRIBUTE_UNUSED,
-                       int controllers ATTRIBUTE_UNUSED,
-                       virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 /**
 * virCgroupNewSelf:
@@ -1450,58 +1381,6 @@ int virCgroupNewSelf(virCgroupPtr *group)
     return virCgroupNewDetect(-1, group);
 }
 
-
-/**
- * virCgroupNewDomainDriver:
- *
- * @driver: group for driver owning the domain
- * @name: name of the domain
- * @group: Pointer to returned virCgroupPtr
- *
- * Returns 0 on success, or -1 on error
- */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupNewDomainDriver(virCgroupPtr driver,
-                             const char *name,
-                             bool create,
-                             virCgroupPtr *group)
-{
-    int ret = -1;
-
-    if (virCgroupNew(-1, name, driver, -1, group) < 0)
-        goto cleanup;
-
-    /*
-     * Create a cgroup with memory.use_hierarchy enabled to
-     * surely account memory usage of lxc with ns subsystem
-     * enabled. (To be exact, memory and ns subsystems are
-     * enabled at the same time.)
-     *
-     * The reason why doing it here, not a upper group, say
-     * a group for driver, is to avoid overhead to track
-     * cumulative usage that we don't need.
-     */
-    if (virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_MEM_HIERACHY) < 0) {
-        virCgroupRemove(*group);
-        virCgroupFree(group);
-        goto cleanup;
-    }
-
-    ret = 0;
-cleanup:
-    return ret;
-}
-#else
-int virCgroupNewDomainDriver(virCgroupPtr driver ATTRIBUTE_UNUSED,
-                             const char *name ATTRIBUTE_UNUSED,
-                             bool create ATTRIBUTE_UNUSED,
-                             virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 /**
  * virCgroupNewDomainPartition:
