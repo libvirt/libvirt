@@ -50,6 +50,7 @@
 #include "virhash.h"
 #include "virhashcode.h"
 #include "virstring.h"
+#include "virsystemd.h"
 
 #define CGROUP_MAX_VAL 512
 
@@ -102,17 +103,28 @@ static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
+                              const char *partition,
                               bool stripEmulatorSuffix)
 {
     size_t i;
     bool valid = false;
     char *partname;
+    char *scopename;
 
     if (virAsprintf(&partname, "%s.libvirt-%s",
                     name, drivername) < 0)
         goto cleanup;
 
     if (virCgroupPartitionEscape(&partname) < 0)
+        goto cleanup;
+
+    if (!partition)
+        partition = "/machine";
+
+    if (!(scopename = virSystemdMakeScopeName(name, drivername, partition)))
+        goto cleanup;
+
+    if (virCgroupPartitionEscape(&scopename) < 0)
         goto cleanup;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -142,9 +154,10 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
         tmp++;
 
         if (STRNEQ(tmp, name) &&
-            STRNEQ(tmp, partname)) {
-            VIR_DEBUG("Name '%s' for controller '%s' does not match '%s' or '%s'",
-                      tmp, virCgroupControllerTypeToString(i), name, partname);
+            STRNEQ(tmp, partname) &&
+            STRNEQ(tmp, scopename)) {
+            VIR_DEBUG("Name '%s' for controller '%s' does not match '%s', '%s' or '%s'",
+                      tmp, virCgroupControllerTypeToString(i), name, partname, scopename);
             goto cleanup;
         }
     }
@@ -153,6 +166,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
 
  cleanup:
     VIR_FREE(partname);
+    VIR_FREE(scopename);
     return valid;
 }
 #else
@@ -1649,6 +1663,7 @@ int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 int virCgroupNewDetectMachine(const char *name,
                               const char *drivername,
                               pid_t pid,
+                              const char *partition,
                               int controllers,
                               virCgroupPtr *group)
 {
@@ -1658,7 +1673,7 @@ int virCgroupNewDetectMachine(const char *name,
         return -1;
     }
 
-    if (!virCgroupValidateMachineGroup(*group, name, drivername, true)) {
+    if (!virCgroupValidateMachineGroup(*group, name, drivername, partition, true)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
         virCgroupFree(group);
@@ -1668,22 +1683,124 @@ int virCgroupNewDetectMachine(const char *name,
     return 0;
 }
 
-int virCgroupNewMachine(const char *name,
-                        const char *drivername,
-                        bool privileged ATTRIBUTE_UNUSED,
-                        const unsigned char *uuid ATTRIBUTE_UNUSED,
-                        const char *rootdir ATTRIBUTE_UNUSED,
-                        pid_t pidleader ATTRIBUTE_UNUSED,
-                        bool isContainer ATTRIBUTE_UNUSED,
-                        const char *partition,
-                        int controllers,
-                        virCgroupPtr *group)
+/*
+ * Returns 0 on success, -1 on fatal error, -2 on systemd not available
+ */
+static int
+virCgroupNewMachineSystemd(const char *name,
+                           const char *drivername,
+                           bool privileged,
+                           const unsigned char *uuid,
+                           const char *rootdir,
+                           pid_t pidleader,
+                           bool isContainer,
+                           const char *partition,
+                           int controllers,
+                           virCgroupPtr *group)
+{
+    int ret = -1;
+    int rv;
+    virCgroupPtr init, parent = NULL;
+    char *path = NULL;
+    char *offset;
+
+    VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
+    if ((rv = virSystemdCreateMachine(name,
+                                      drivername,
+                                      privileged,
+                                      uuid,
+                                      rootdir,
+                                      pidleader,
+                                      isContainer,
+                                      partition)) < 0)
+        return rv;
+
+    if (controllers != -1)
+        controllers |= (1 << VIR_CGROUP_CONTROLLER_SYSTEMD);
+
+    VIR_DEBUG("Detecting systemd placement");
+    if (virCgroupNewDetect(pidleader,
+                           controllers,
+                           &init) < 0)
+        return -1;
+
+    path = init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement;
+    init->controllers[VIR_CGROUP_CONTROLLER_SYSTEMD].placement = NULL;
+    virCgroupFree(&init);
+
+    if (!path || STREQ(path, "/") || path[0] != '/') {
+        VIR_DEBUG("Systemd didn't setup its controller");
+        ret = -2;
+        goto cleanup;
+    }
+
+    offset = path;
+
+    if (virCgroupNew(pidleader,
+                     "",
+                     NULL,
+                     controllers,
+                     &parent) < 0)
+        goto cleanup;
+
+
+    for (;;) {
+        virCgroupPtr tmp;
+        char *t = strchr(offset + 1, '/');
+        if (t)
+            *t = '\0';
+
+        if (virCgroupNew(pidleader,
+                         path,
+                         parent,
+                         controllers,
+                         &tmp) < 0)
+            goto cleanup;
+
+        if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_NONE) < 0) {
+            virCgroupFree(&tmp);
+            goto cleanup;
+        }
+        if (t) {
+            *t = '/';
+            offset = t;
+            virCgroupFree(&parent);
+            parent = tmp;
+        } else {
+            *group = tmp;
+            break;
+        }
+    }
+
+    if (virCgroupAddTask(*group, pidleader) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virCgroupFree(&parent);
+    VIR_FREE(path);
+    return ret;
+}
+
+static int
+virCgroupNewMachineManual(const char *name,
+                          const char *drivername,
+                          pid_t pidleader,
+                          const char *partition,
+                          int controllers,
+                          virCgroupPtr *group)
 {
     virCgroupPtr parent = NULL;
     int ret = -1;
 
-    *group = NULL;
-
+    VIR_DEBUG("Fallback to non-systemd setup");
     if (virCgroupNewPartition(partition,
                               STREQ(partition, "/machine"),
                               controllers,
@@ -1717,6 +1834,44 @@ done:
 cleanup:
     virCgroupFree(&parent);
     return ret;
+}
+
+int virCgroupNewMachine(const char *name,
+                        const char *drivername,
+                        bool privileged,
+                        const unsigned char *uuid,
+                        const char *rootdir,
+                        pid_t pidleader,
+                        bool isContainer,
+                        const char *partition,
+                        int controllers,
+                        virCgroupPtr *group)
+{
+    int rv;
+
+    *group = NULL;
+
+    if ((rv = virCgroupNewMachineSystemd(name,
+                                         drivername,
+                                         privileged,
+                                         uuid,
+                                         rootdir,
+                                         pidleader,
+                                         isContainer,
+                                         partition,
+                                         controllers,
+                                         group)) == 0)
+        return 0;
+
+    if (rv == -1)
+        return -1;
+
+    return virCgroupNewMachineManual(name,
+                                     drivername,
+                                     pidleader,
+                                     partition,
+                                     controllers,
+                                     group);
 }
 
 bool virCgroupNewIgnoreError(void)
