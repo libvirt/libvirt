@@ -1,0 +1,2 @@
+qemu-img convert -f raw -O qcow2 -o encryption=on /dev/HostVG/Swap \
+/var/lib/libvirt/images/OtherDemo.img
