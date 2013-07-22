@@ -21,7 +21,7 @@
     <features/>
   </target>
   <backingStore>
-    <path>/var/lib/libvirt/images/BaseDemo.img</path>
+    <path>/dev/null</path>
     <format type='raw'/>
     <permissions>
       <mode>0644</mode>

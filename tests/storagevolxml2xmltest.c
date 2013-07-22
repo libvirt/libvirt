@@ -114,6 +114,8 @@ mymain(void)
     DO_TEST("pool-dir", "vol-qcow2");
     DO_TEST("pool-dir", "vol-qcow2-1.1");
     DO_TEST("pool-dir", "vol-qcow2-lazy");
+    DO_TEST("pool-dir", "vol-qcow2-0.10-lazy");
+    DO_TEST("pool-dir", "vol-qcow2-nobacking");
     DO_TEST("pool-disk", "vol-partition");
     DO_TEST("pool-logical", "vol-logical");
     DO_TEST("pool-logical", "vol-logical-backing");
