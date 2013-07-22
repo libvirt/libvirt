@@ -82,35 +82,60 @@ static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
         3, 3, 3, 3,
         4, 4, 4, 4
     };
+    int rv;
 
     setenv("FAIL_NO_SERVICE", "1", 1);
 
-    if (virSystemdCreateMachine("demo",
-                                "qemu",
-                                true,
-                                uuid,
-                                NULL,
-                                123,
-                                false,
-                                NULL) == 0) {
+    if ((rv = virSystemdCreateMachine("demo",
+                                      "qemu",
+                                      true,
+                                      uuid,
+                                      NULL,
+                                      123,
+                                      false,
+                                      NULL)) == 0) {
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
 
-    virErrorPtr err = virGetLastError();
-
-    if (!err) {
-        fprintf(stderr, "No error raised");
+    if (rv != -2) {
+        fprintf(stderr, "%s", "Unexpected create machine error\n");
         return -1;
     }
 
-    if (err->code == VIR_ERR_DBUS_SERVICE &&
-        STREQ(err->str2, "org.freedesktop.DBus.Error.ServiceUnknown"))
-        return 0;
+    return 0;
+}
 
-    fprintf(stderr, "Unexpected error code %d / message %s\n",
-            err->code, err->str2);
-    return -1;
+static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN] = {
+        1, 1, 1, 1,
+        2, 2, 2, 2,
+        3, 3, 3, 3,
+        4, 4, 4, 4
+    };
+    int rv;
+
+    setenv("FAIL_BAD_SERVICE", "1", 1);
+
+    if ((rv = virSystemdCreateMachine("demo",
+                                      "qemu",
+                                      true,
+                                      uuid,
+                                      NULL,
+                                      123,
+                                      false,
+                                      NULL)) == 0) {
+        fprintf(stderr, "%s", "Unexpected create machine success\n");
+        return -1;
+    }
+
+    if (rv != -1) {
+        fprintf(stderr, "%s", "Unexpected create machine error\n");
+        return -1;
+    }
+
+    return 0;
 }
 
 static int
@@ -122,7 +147,9 @@ mymain(void)
         ret = -1;
     if (virtTestRun("Test create machine ", 1, testCreateMachine, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test create nosystemd ", 1, testCreateNoSystemd, NULL) < 0)
+    if (virtTestRun("Test create no systemd ", 1, testCreateNoSystemd, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test create bad systemd ", 1, testCreateBadSystemd, NULL) < 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

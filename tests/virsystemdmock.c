@@ -60,16 +60,20 @@ dbus_bool_t dbus_connection_set_watch_functions(DBusConnection *connection ATTRI
 DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connection ATTRIBUTE_UNUSED,
                                                        DBusMessage *message,
                                                        int timeout_milliseconds ATTRIBUTE_UNUSED,
-                                                       DBusError *error ATTRIBUTE_UNUSED)
+                                                       DBusError *error)
 {
-    DBusMessage *reply;
+    DBusMessage *reply = NULL;
 
     dbus_message_set_serial(message, 7);
 
-    if (getenv("FAIL_NO_SERVICE"))
+    if (getenv("FAIL_BAD_SERVICE"))
         reply = dbus_message_new_error(message,
-                                       "org.freedesktop.DBus.Error.ServiceUnknown",
-                                       "The name org.freedesktop.machine1 was not provided by any .service files");
+                                       "org.freedesktop.systemd.badthing",
+                                       "Something went wrong creating the machine");
+    else if (getenv("FAIL_NO_SERVICE"))
+        dbus_set_error(error,
+                       "org.freedesktop.DBus.Error.ServiceUnknown",
+                       "%s", "The name org.freedesktop.machine1 was not provided by any .service files");
     else
         reply = dbus_message_new_method_return(message);
 

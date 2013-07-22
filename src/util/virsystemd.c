@@ -26,6 +26,7 @@
 #include "virstring.h"
 #include "viralloc.h"
 #include "virutil.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSTEMD
 
@@ -38,6 +39,8 @@
  * @rootdir: root directory of machine filesystem
  * @pidleader: PID of the leader process
  * @slice: name of the slice to place the machine in
+ *
+ * Returns 0 on success, -1 on fatal error, or -2 if systemd-machine is not available
  */
 int virSystemdCreateMachine(const char *name,
                             const char *drivername,
@@ -117,6 +120,7 @@ int virSystemdCreateMachine(const char *name,
      * allow further API calls to be made against the object.
      */
 
+    VIR_DEBUG("Attempting to create machine via systemd");
     if (virDBusCallMethod(conn,
                           NULL,
                           "org.freedesktop.machine1",
@@ -135,8 +139,15 @@ int virSystemdCreateMachine(const char *name,
                           (unsigned int)pidleader,
                           rootdir ? rootdir : "",
                           1, "Slice", "s",
-                          slicename) < 0)
+                          slicename) < 0) {
+        virErrorPtr err = virGetLastError();
+        if (err->code == VIR_ERR_DBUS_SERVICE &&
+            STREQ(err->str2, "org.freedesktop.DBus.Error.ServiceUnknown")) {
+            virResetLastError();
+            ret = -2;
+        }
         goto cleanup;
+    }
 
     ret = 0;
 
