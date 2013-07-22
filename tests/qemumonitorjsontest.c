@@ -938,6 +938,7 @@ testQemuMonitorJSONGetDeviceAliases(const void *data)
 
 cleanup:
     virStringFreeList(aliases);
+    qemuMonitorTestFree(test);
     return ret;
 }
 
