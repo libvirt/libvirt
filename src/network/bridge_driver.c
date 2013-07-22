@@ -116,7 +116,7 @@ static int networkStartNetworkExternal(virNetworkDriverStatePtr driver,
 static int networkShutdownNetworkExternal(virNetworkDriverStatePtr driver,
                                         virNetworkObjPtr network);
 
-static void networkReloadIptablesRules(virNetworkDriverStatePtr driver);
+static void networkReloadFirewallRules(virNetworkDriverStatePtr driver);
 static void networkRefreshDaemons(virNetworkDriverStatePtr driver);
 
 static int networkPlugBandwidth(virNetworkObjPtr net,
@@ -337,7 +337,7 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
                                "Reloaded"))
     {
         VIR_DEBUG("Reload in bridge_driver because of firewalld.");
-        networkReloadIptablesRules(_driverState);
+        networkReloadFirewallRules(_driverState);
     }
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -428,7 +428,7 @@ networkStateInitialize(bool privileged,
         goto error;
 
     networkFindActiveConfigs(driverState);
-    networkReloadIptablesRules(driverState);
+    networkReloadFirewallRules(driverState);
     networkRefreshDaemons(driverState);
     networkAutostartConfigs(driverState);
 
@@ -490,7 +490,7 @@ networkStateReload(void) {
     virNetworkLoadAllConfigs(&driverState->networks,
                              driverState->networkConfigDir,
                              driverState->networkAutostartDir);
-    networkReloadIptablesRules(driverState);
+    networkReloadFirewallRules(driverState);
     networkRefreshDaemons(driverState);
     networkAutostartConfigs(driverState);
     networkDriverUnlock(driverState);
@@ -1508,7 +1508,7 @@ networkRefreshDaemons(virNetworkDriverStatePtr driver)
 }
 
 static int
-networkAddMasqueradingIptablesRules(virNetworkObjPtr network,
+networkAddMasqueradingFirewallRules(virNetworkObjPtr network,
                                     virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1650,7 +1650,7 @@ networkAddMasqueradingIptablesRules(virNetworkObjPtr network,
 }
 
 static void
-networkRemoveMasqueradingIptablesRules(virNetworkObjPtr network,
+networkRemoveMasqueradingFirewallRules(virNetworkObjPtr network,
                                        virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1688,7 +1688,7 @@ networkRemoveMasqueradingIptablesRules(virNetworkObjPtr network,
 }
 
 static int
-networkAddRoutingIptablesRules(virNetworkObjPtr network,
+networkAddRoutingFirewallRules(virNetworkObjPtr network,
                                virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1735,7 +1735,7 @@ routeerr1:
 }
 
 static void
-networkRemoveRoutingIptablesRules(virNetworkObjPtr network,
+networkRemoveRoutingFirewallRules(virNetworkObjPtr network,
                                   virNetworkIpDefPtr ipdef)
 {
     int prefix = virNetworkIpDefPrefix(ipdef);
@@ -1857,7 +1857,7 @@ networkRemoveGeneralIp6tablesRules(virNetworkObjPtr network)
 }
 
 static int
-networkAddGeneralIptablesRules(virNetworkObjPtr network)
+networkAddGeneralFirewallRules(virNetworkObjPtr network)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
@@ -1979,7 +1979,7 @@ err1:
 }
 
 static void
-networkRemoveGeneralIptablesRules(virNetworkObjPtr network)
+networkRemoveGeneralFirewallRules(virNetworkObjPtr network)
 {
     size_t i;
     virNetworkIpDefPtr ipv4def;
@@ -2009,7 +2009,7 @@ networkRemoveGeneralIptablesRules(virNetworkObjPtr network)
 }
 
 static int
-networkAddIpSpecificIptablesRules(virNetworkObjPtr network,
+networkAddIpSpecificFirewallRules(virNetworkObjPtr network,
                                   virNetworkIpDefPtr ipdef)
 {
     /* NB: in the case of IPv6, routing rules are added when the
@@ -2018,46 +2018,46 @@ networkAddIpSpecificIptablesRules(virNetworkObjPtr network,
 
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            return networkAddMasqueradingIptablesRules(network, ipdef);
+            return networkAddMasqueradingFirewallRules(network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            return networkAddRoutingIptablesRules(network, ipdef);
+            return networkAddRoutingFirewallRules(network, ipdef);
     } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        return networkAddRoutingIptablesRules(network, ipdef);
+        return networkAddRoutingFirewallRules(network, ipdef);
     }
     return 0;
 }
 
 static void
-networkRemoveIpSpecificIptablesRules(virNetworkObjPtr network,
+networkRemoveIpSpecificFirewallRules(virNetworkObjPtr network,
                                      virNetworkIpDefPtr ipdef)
 {
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
-            networkRemoveMasqueradingIptablesRules(network, ipdef);
+            networkRemoveMasqueradingFirewallRules(network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            networkRemoveRoutingIptablesRules(network, ipdef);
+            networkRemoveRoutingFirewallRules(network, ipdef);
     } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
-        networkRemoveRoutingIptablesRules(network, ipdef);
+        networkRemoveRoutingFirewallRules(network, ipdef);
     }
 }
 
 /* Add all rules for all ip addresses (and general rules) on a network */
 static int
-networkAddIptablesRules(virNetworkObjPtr network)
+networkAddFirewallRules(virNetworkObjPtr network)
 {
     size_t i, j;
     virNetworkIpDefPtr ipdef;
     virErrorPtr orig_error;
 
     /* Add "once per network" rules */
-    if (networkAddGeneralIptablesRules(network) < 0)
+    if (networkAddGeneralFirewallRules(network) < 0)
         return -1;
 
     for (i = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
          i++) {
         /* Add address-specific iptables rules */
-        if (networkAddIpSpecificIptablesRules(network, ipdef) < 0) {
+        if (networkAddIpSpecificFirewallRules(network, ipdef) < 0) {
             goto err;
         }
     }
@@ -2067,15 +2067,15 @@ err:
     /* store the previous error message before attempting removal of rules */
     orig_error = virSaveLastError();
 
-    /* The final failed call to networkAddIpSpecificIptablesRules will
+    /* The final failed call to networkAddIpSpecificFirewallRules will
      * have removed any rules it created, but we need to remove those
      * added for previous IP addresses.
      */
     for (j = 0; j < i; j++) {
         if ((ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, j)))
-            networkRemoveIpSpecificIptablesRules(network, ipdef);
+            networkRemoveIpSpecificFirewallRules(network, ipdef);
     }
-    networkRemoveGeneralIptablesRules(network);
+    networkRemoveGeneralFirewallRules(network);
 
     /* return the original error */
     virSetError(orig_error);
@@ -2085,7 +2085,7 @@ err:
 
 /* Remove all rules for all ip addresses (and general rules) on a network */
 static void
-networkRemoveIptablesRules(virNetworkObjPtr network)
+networkRemoveFirewallRules(virNetworkObjPtr network)
 {
     size_t i;
     virNetworkIpDefPtr ipdef;
@@ -2093,13 +2093,13 @@ networkRemoveIptablesRules(virNetworkObjPtr network)
     for (i = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
          i++) {
-        networkRemoveIpSpecificIptablesRules(network, ipdef);
+        networkRemoveIpSpecificFirewallRules(network, ipdef);
     }
-    networkRemoveGeneralIptablesRules(network);
+    networkRemoveGeneralFirewallRules(network);
 }
 
 static void
-networkReloadIptablesRules(virNetworkDriverStatePtr driver)
+networkReloadFirewallRules(virNetworkDriverStatePtr driver)
 {
     size_t i;
 
@@ -2116,8 +2116,8 @@ networkReloadIptablesRules(virNetworkDriverStatePtr driver)
             /* Only the three L3 network types that are configured by libvirt
              * need to have iptables rules reloaded.
              */
-            networkRemoveIptablesRules(network);
-            if (networkAddIptablesRules(network) < 0) {
+            networkRemoveFirewallRules(network);
+            if (networkAddFirewallRules(network) < 0) {
                 /* failed to add but already logged */
             }
         }
@@ -2436,7 +2436,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         goto err1;
 
     /* Add "once per network" rules */
-    if (networkAddIptablesRules(network) < 0)
+    if (networkAddFirewallRules(network) < 0)
         goto err1;
 
     for (i = 0;
@@ -2529,7 +2529,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
  err2:
     if (!save_err)
         save_err = virSaveLastError();
-    networkRemoveIptablesRules(network);
+    networkRemoveFirewallRules(network);
 
  err1:
     if (!save_err)
@@ -2583,7 +2583,7 @@ static int networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver ATTRIBU
 
     ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
-    networkRemoveIptablesRules(network);
+    networkRemoveFirewallRules(network);
 
     ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
@@ -3411,8 +3411,8 @@ networkUpdate(virNetworkPtr net,
             network->def->forward.type == VIR_NETWORK_FORWARD_NAT ||
             network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
             /* these could affect the iptables rules */
-            networkRemoveIptablesRules(network);
-            if (networkAddIptablesRules(network) < 0)
+            networkRemoveFirewallRules(network);
+            if (networkAddFirewallRules(network) < 0)
                 goto cleanup;
 
         }
