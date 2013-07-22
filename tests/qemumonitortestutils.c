@@ -440,16 +440,11 @@ static qemuMonitorCallbacks qemuCallbacks = {
 };
 
 
-#define QEMU_JSON_GREETING "{\"QMP\": {\"version\": {\"qemu\": {\"micro\": 1, \"minor\": 0, \"major\": 1}, \"package\": \" (qemu-kvm-1.0.1)\"}, \"capabilities\": []}}"
-/* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
-
-#define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
-
-qemuMonitorTestPtr
-qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
+static qemuMonitorTestPtr
+qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
+                         virDomainChrSourceDefPtr src)
 {
     qemuMonitorTestPtr test = NULL;
-    virDomainChrSourceDef src;
     char *path = NULL;
     char *tmpdir_template = NULL;
 
@@ -477,7 +472,6 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     if (virAsprintf(&path, "%s/qemumonitorjsontest.sock", test->tmpdir) < 0)
         goto error;
 
-    test->json = json;
     if (!(test->vm = virDomainObjNew(xmlopt)))
         goto error;
 
@@ -485,29 +479,36 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
                                   &test->server) < 0)
         goto error;
 
-    memset(&src, 0, sizeof(src));
-    src.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    src.data.nix.path = (char *)path;
-    src.data.nix.listen = false;
+    memset(src, 0, sizeof(*src));
+    src->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    src->data.nix.path = (char *)path;
+    src->data.nix.listen = false;
 
     if (virNetSocketListen(test->server, 1) < 0)
         goto error;
 
-    if (!(test->mon = qemuMonitorOpen(test->vm,
-                                      &src,
-                                      json,
-                                      &qemuCallbacks)))
-        goto error;
-    virObjectLock(test->mon);
+cleanup:
+    return test;
+
+error:
+    VIR_FREE(tmpdir_template);
+    qemuMonitorTestFree(test);
+    test = NULL;
+    goto cleanup;
+
+}
+
+
+static int
+qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
+{
+    if (!test)
+        return -1;
 
     if (virNetSocketAccept(test->server, &test->client) < 0)
         goto error;
-    if (!test->client)
-        goto error;
 
-    if (qemuMonitorTestAddReponse(test, json ?
-                                  QEMU_JSON_GREETING :
-                                  QEMU_TEXT_GREETING) < 0)
+    if (!test->client)
         goto error;
 
     if (virNetSocketAddIOCallback(test->client,
@@ -528,15 +529,63 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     test->running = true;
     virMutexUnlock(&test->lock);
 
-cleanup:
-    VIR_FREE(path);
+    return 0;
+
+error:
+    qemuMonitorTestFree(test);
+    return -1;
+}
+
+
+#define QEMU_JSON_GREETING  "{\"QMP\":"\
+                            "   {\"version\":"\
+                            "       {\"qemu\":"\
+                            "           {\"micro\": 1,"\
+                            "            \"minor\": 0,"\
+                            "            \"major\": 1"\
+                            "           },"\
+                            "        \"package\": \"(qemu-kvm-1.0.1)"\
+                            "       \"},"\
+                            "    \"capabilities\": []"\
+                            "   }"\
+                            "}"
+/* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
+
+#define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
+
+qemuMonitorTestPtr
+qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
+{
+    qemuMonitorTestPtr test = NULL;
+    virDomainChrSourceDef src;
+
+    if (!(test = qemuMonitorCommonTestNew(xmlopt, &src)))
+        goto error;
+
+    test->json = json;
+    if (!(test->mon = qemuMonitorOpen(test->vm,
+                                      &src,
+                                      json,
+                                      &qemuCallbacks)))
+        goto error;
+
+    virObjectLock(test->mon);
+
+    if (qemuMonitorTestAddReponse(test, json ?
+                                  QEMU_JSON_GREETING :
+                                  QEMU_TEXT_GREETING) < 0)
+        goto error;
+
+    if (qemuMonitorCommonTestInit(test) < 0)
+        goto error;
+
+    virDomainChrSourceDefClear(&src);
+
     return test;
 
 error:
-    VIR_FREE(tmpdir_template);
     qemuMonitorTestFree(test);
-    test = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
