@@ -974,7 +974,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     virCgroupFree(&priv->cgroup);
 
-    if (!(priv->cgroup = virLXCCgroupCreate(vm->def, true)))
+    if (!(priv->cgroup = virLXCCgroupCreate(vm->def)))
         return -1;
 
     if (!virCgroupHasController(priv->cgroup,
@@ -1385,8 +1385,18 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
 
-        if (!(priv->cgroup = virLXCCgroupCreate(vm->def, false)))
+        if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0)
             goto error;
+
+        if (!virCgroupIsValidMachineGroup(priv->cgroup,
+                                          vm->def->name,
+                                          "lxc")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cgroup name is not valid for machine %s"),
+                           vm->def->name);
+            virCgroupFree(&priv->cgroup);
+            goto error;
+        }
 
         if (virLXCUpdateActiveUsbHostdevs(driver, vm->def) < 0)
             goto error;

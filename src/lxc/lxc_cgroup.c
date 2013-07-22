@@ -429,12 +429,12 @@ cleanup:
 }
 
 
-virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
 {
     virCgroupPtr parent = NULL;
     virCgroupPtr cgroup = NULL;
 
-    if (!def->resource && startup) {
+    if (!def->resource) {
         virDomainResourceDefPtr res;
 
         if (VIR_ALLOC(res) < 0)
@@ -448,41 +448,26 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
         def->resource = res;
     }
 
-    if (def->resource &&
-        def->resource->partition) {
-        if (def->resource->partition[0] != '/') {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Resource partition '%s' must start with '/'"),
-                           def->resource->partition);
-            goto cleanup;
-        }
-        /* We only auto-create the default partition. In other
-         * cases we expec the sysadmin/app to have done so */
-        if (virCgroupNewPartition(def->resource->partition,
-                                  STREQ(def->resource->partition, "/machine"),
-                                  -1,
-                                  &parent) < 0)
-            goto cleanup;
-
-        if (virCgroupNewDomainPartition(parent,
-                                        "lxc",
-                                        def->name,
-                                        true,
-                                        &cgroup) < 0)
-            goto cleanup;
-    } else {
-        if (virCgroupNewDriver("lxc",
-                               true,
-                               -1,
-                               &parent) < 0)
-            goto cleanup;
-
-        if (virCgroupNewDomainDriver(parent,
-                                     def->name,
-                                     true,
-                                     &cgroup) < 0)
-            goto cleanup;
+    if (def->resource->partition[0] != '/') {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Resource partition '%s' must start with '/'"),
+                       def->resource->partition);
+        goto cleanup;
     }
+    /* We only auto-create the default partition. In other
+     * cases we expect the sysadmin/app to have done so */
+    if (virCgroupNewPartition(def->resource->partition,
+                              STREQ(def->resource->partition, "/machine"),
+                              -1,
+                              &parent) < 0)
+        goto cleanup;
+
+    if (virCgroupNewDomainPartition(parent,
+                                    "lxc",
+                                    def->name,
+                                    true,
+                                    &cgroup) < 0)
+        goto cleanup;
 
 cleanup:
     virCgroupFree(&parent);
@@ -495,7 +480,7 @@ virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def)
     virCgroupPtr cgroup = NULL;
     int ret = -1;
 
-    if (!(cgroup = virLXCCgroupCreate(def, true)))
+    if (!(cgroup = virLXCCgroupCreate(def)))
         return NULL;
 
     if (virCgroupAddTask(cgroup, getpid()) < 0)

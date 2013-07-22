@@ -3070,7 +3070,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuUpdateActiveScsiHostdevs(driver, obj->def) < 0)
         goto error;
 
-    if (qemuInitCgroup(driver, obj, false) < 0)
+    if (qemuConnectCgroup(driver, obj) < 0)
         goto error;
 
     /* XXX: Need to change as long as lock is introduced for

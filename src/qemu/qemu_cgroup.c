@@ -627,10 +627,9 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
 }
 
 
-int
+static int
 qemuInitCgroup(virQEMUDriverPtr driver,
-               virDomainObjPtr vm,
-               bool startup)
+               virDomainObjPtr vm)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -645,7 +644,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
 
     virCgroupFree(&priv->cgroup);
 
-    if (!vm->def->resource && startup) {
+    if (!vm->def->resource) {
         virDomainResourceDefPtr res;
 
         if (VIR_ALLOC(res) < 0)
@@ -659,49 +658,30 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         vm->def->resource = res;
     }
 
-    if (vm->def->resource &&
-        vm->def->resource->partition) {
-        if (vm->def->resource->partition[0] != '/') {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Resource partition '%s' must start with '/'"),
-                           vm->def->resource->partition);
-            goto cleanup;
-        }
-        /* We only auto-create the default partition. In other
-         * cases we expec the sysadmin/app to have done so */
-        if (virCgroupNewPartition(vm->def->resource->partition,
-                                  STREQ(vm->def->resource->partition, "/machine"),
-                                  cfg->cgroupControllers,
-                                  &parent) < 0) {
-            if (virCgroupNewIgnoreError())
-                goto done;
-
-            goto cleanup;
-        }
-
-        if (virCgroupNewDomainPartition(parent,
-                                        "qemu",
-                                        vm->def->name,
-                                        true,
-                                        &priv->cgroup) < 0)
-            goto cleanup;
-    } else {
-        if (virCgroupNewDriver("qemu",
-                               true,
-                               cfg->cgroupControllers,
-                               &parent) < 0) {
-            if (virCgroupNewIgnoreError())
-                goto done;
-
-            goto cleanup;
-        }
-
-        if (virCgroupNewDomainDriver(parent,
-                                     vm->def->name,
-                                     true,
-                                     &priv->cgroup) < 0)
-            goto cleanup;
+    if (vm->def->resource->partition[0] != '/') {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Resource partition '%s' must start with '/'"),
+                       vm->def->resource->partition);
+        goto cleanup;
     }
+    /* We only auto-create the default partition. In other
+     * cases we expect the sysadmin/app to have done so */
+    if (virCgroupNewPartition(vm->def->resource->partition,
+                              STREQ(vm->def->resource->partition, "/machine"),
+                              cfg->cgroupControllers,
+                              &parent) < 0) {
+        if (virCgroupNewIgnoreError())
+            goto done;
+
+        goto cleanup;
+    }
+
+    if (virCgroupNewDomainPartition(parent,
+                                    "qemu",
+                                    vm->def->name,
+                                    true,
+                                    &priv->cgroup) < 0)
+        goto cleanup;
 
 done:
     ret = 0;
@@ -713,6 +693,43 @@ cleanup:
 
 
 int
+qemuConnectCgroup(virQEMUDriverPtr driver,
+                  virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!cfg->privileged)
+        goto done;
+
+    if (!virCgroupAvailable())
+        goto done;
+
+    virCgroupFree(&priv->cgroup);
+
+    if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0) {
+        if (virCgroupNewIgnoreError())
+            goto done;
+        goto cleanup;
+    }
+
+    if (!virCgroupIsValidMachineGroup(priv->cgroup,
+                                      vm->def->name,
+                                      "qemu")) {
+        VIR_DEBUG("Cgroup name is not valid for machine");
+        virCgroupFree(&priv->cgroup);
+        goto done;
+    }
+
+done:
+    ret = 0;
+cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+int
 qemuSetupCgroup(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
                 virBitmapPtr nodemask)
@@ -721,7 +738,7 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     int ret = -1;
 
-    if (qemuInitCgroup(driver, vm, true) < 0)
+    if (qemuInitCgroup(driver, vm) < 0)
         return -1;
 
     if (!priv->cgroup)
