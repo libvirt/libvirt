@@ -1020,6 +1020,12 @@ mymain(void)
 
     DO_TEST_PARSE_ERROR("pci-bridge-negative-index-invalid",
                         QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST_PARSE_ERROR("pci-bridge-duplicate-index",
+                        QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST_PARSE_ERROR("pci-root-nonzero-index",
+                        QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST_PARSE_ERROR("pci-root-address",
+                        QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
