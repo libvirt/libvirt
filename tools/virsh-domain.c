@@ -9631,8 +9631,10 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
 
             if (source) {
                 new_node = xmlNewNode(NULL, BAD_CAST "source");
-                xmlNewProp(new_node, (const xmlChar *)disk_type,
-                           (const xmlChar *)source);
+                if (STREQ(disk_type, "block"))
+                    xmlNewProp(new_node, BAD_CAST "dev", BAD_CAST source);
+                else
+                    xmlNewProp(new_node, BAD_CAST disk_type, BAD_CAST source);
                 xmlAddChild(disk_node, new_node);
             } else if (type == VSH_PREPARE_DISK_XML_INSERT) {
                 vshError(NULL, _("No source is specified for inserting media"));
