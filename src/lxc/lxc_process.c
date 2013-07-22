@@ -75,7 +75,7 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     priv->doneStopEvent = true;
 
-    if (dom && !dom->persistent) {
+    if (!dom->persistent) {
         virDomainObjListRemove(driver->domains, dom);
         dom = NULL;
     }
