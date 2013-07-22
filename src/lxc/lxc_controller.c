@@ -128,6 +128,8 @@ struct _virLXCController {
     bool inShutdown;
     int timerShutdown;
 
+    virCgroupPtr cgroup;
+
     virLXCFusePtr fuse;
 };
 
@@ -274,6 +276,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     virObjectUnref(ctrl->server);
     virLXCControllerFreeFuse(ctrl);
+
+    virCgroupFree(&ctrl->cgroup);
 
     /* This must always be the last thing to be closed */
     VIR_FORCE_CLOSE(ctrl->handshakeFd);
@@ -657,8 +661,7 @@ cleanup:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
-                                               virCgroupPtr cgroup)
+static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
 {
     virBitmapPtr nodemask = NULL;
     int ret = -1;
@@ -670,7 +673,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
         goto cleanup;
 
-    if (virLXCCgroupSetup(ctrl->def, cgroup, nodemask) < 0)
+    if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodemask) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2102,7 +2105,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     int containerhandshake[2] = { -1, -1 };
     char **containerTTYPaths = NULL;
     size_t i;
-    virCgroupPtr cgroup = NULL;
 
     if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0)
         goto cleanup;
@@ -2122,13 +2124,10 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupPrivateNS() < 0)
         goto cleanup;
 
-    if (!(cgroup = virLXCCgroupJoin(ctrl->def)))
-        goto cleanup;
-
     if (virLXCControllerSetupLoopDevices(ctrl) < 0)
         goto cleanup;
 
-    if (virLXCControllerSetupResourceLimits(ctrl, cgroup) < 0)
+    if (virLXCControllerSetupResourceLimits(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupDevPTS(ctrl) < 0)
@@ -2214,7 +2213,6 @@ cleanup:
         VIR_FREE(containerTTYPaths[i]);
     VIR_FREE(containerTTYPaths);
 
-    virCgroupFree(&cgroup);
     virLXCControllerStopInit(ctrl);
 
     return rc;
@@ -2388,6 +2386,9 @@ int main(int argc, char *argv[])
         goto cleanup;
 
     if (virLXCControllerValidateConsoles(ctrl) < 0)
+        goto cleanup;
+
+    if (!(ctrl->cgroup = virLXCCgroupJoin(ctrl->def)))
         goto cleanup;
 
     if (virLXCControllerSetupServer(ctrl) < 0)

@@ -49,6 +49,7 @@
 #include "virhook.h"
 #include "virstring.h"
 #include "viratomic.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -701,9 +702,9 @@ int virLXCProcessStop(virLXCDriverPtr driver,
             return -1;
         }
     } else {
-        /* If cgroup doesn't exist, the VM pids must have already
-         * died and so we're just cleaning up stale state
-         */
+        /* If cgroup doesn't exist, just try cleaning up the
+         * libvirt_lxc process */
+        virProcessKillPainfully(vm->pid, true);
     }
 
     virLXCProcessCleanup(driver, vm, reason);
@@ -971,33 +972,33 @@ int virLXCProcessStart(virConnectPtr conn,
     virCapsPtr caps = NULL;
     virErrorPtr err = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
+    virCgroupPtr selfcgroup;
 
-    virCgroupFree(&priv->cgroup);
-
-    if (!(priv->cgroup = virLXCCgroupCreate(vm->def)))
+    if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
 
-    if (!virCgroupHasController(priv->cgroup,
+    if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_CPUACCT)) {
-        virCgroupFree(&priv->cgroup);
+        virCgroupFree(&selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'cpuacct' cgroups controller mount"));
         return -1;
     }
-    if (!virCgroupHasController(priv->cgroup,
+    if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virCgroupFree(&priv->cgroup);
+        virCgroupFree(&selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'devices' cgroups controller mount"));
         return -1;
     }
-    if (!virCgroupHasController(priv->cgroup,
+    if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_MEMORY)) {
-        virCgroupFree(&priv->cgroup);
+        virCgroupFree(&selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'memory' cgroups controller mount"));
         return -1;
     }
+    virCgroupFree(&selfcgroup);
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,
@@ -1170,7 +1171,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
-     * pid file out to disk */
+     * pid file out to disk & created their cgroup */
     if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
         goto cleanup;
 
@@ -1186,6 +1187,19 @@ int virLXCProcessStart(virConnectPtr conn,
                                  _("Failed to read pid file %s/%s.pid"),
                                  cfg->stateDir, vm->def->name);
         goto cleanup;
+    }
+
+    if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0)
+        goto error;
+
+    if (!virCgroupIsValidMachineGroup(priv->cgroup,
+                                      vm->def->name,
+                                      "lxc")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cgroup name is not valid for machine %s"),
+                       vm->def->name);
+        virCgroupFree(&priv->cgroup);
+        goto error;
     }
 
     priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
