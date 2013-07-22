@@ -1332,7 +1332,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def);
 }
 
-static void ATTRIBUTE_NONNULL(1)
+void ATTRIBUTE_NONNULL(1)
 virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
 {
     switch (def->type) {

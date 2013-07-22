@@ -123,6 +123,7 @@ virDomainChrInsert;
 virDomainChrRemove;
 virDomainChrSerialTargetTypeFromString;
 virDomainChrSerialTargetTypeToString;
+virDomainChrSourceDefClear;
 virDomainChrSourceDefCopy;
 virDomainChrSourceDefFree;
 virDomainChrSpicevmcTypeFromString;

@@ -2719,4 +2719,6 @@ int virDomainDefFindDevice(virDomainDefPtr def,
 bool virDomainDiskSourceIsBlockType(virDomainDiskDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
+void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);
+
 #endif /* __DOMAIN_CONF_H */
