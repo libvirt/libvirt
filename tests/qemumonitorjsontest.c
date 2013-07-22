@@ -27,6 +27,7 @@
 #include "virthread.h"
 #include "virerror.h"
 #include "virstring.h"
+#include "cpu/cpu.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -1958,6 +1959,69 @@ cleanup:
     return ret;
 }
 
+
+struct testCPUData {
+    const char *name;
+    virDomainXMLOptionPtr xmlopt;
+};
+
+
+static int
+testQemuMonitorJSONGetCPUData(const void *opaque)
+{
+    const struct testCPUData *data = opaque;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, data->xmlopt);
+    virCPUDataPtr cpuData = NULL;
+    char *jsonFile = NULL;
+    char *dataFile = NULL;
+    char *jsonStr = NULL;
+    char *expected = NULL;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (virAsprintf(&jsonFile,
+                    "%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.json",
+                    abs_srcdir, data->name) < 0 ||
+        virAsprintf(&dataFile,
+                    "%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.data",
+                    abs_srcdir, data->name) < 0)
+        goto cleanup;
+
+    if (virtTestLoadFile(jsonFile, &jsonStr) < 0 ||
+        virtTestLoadFile(dataFile, &expected) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "qom-get", jsonStr) < 0)
+        goto cleanup;
+
+    if (!(cpuData = qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
+                                               VIR_ARCH_X86_64)))
+        goto cleanup;
+
+    if (!(actual = cpuDataFormat(cpuData)))
+        goto cleanup;
+
+    if (STRNEQ(expected, actual)) {
+        virtTestDifference(stderr, expected, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(jsonFile);
+    VIR_FREE(dataFile);
+    VIR_FREE(jsonStr);
+    VIR_FREE(expected);
+    VIR_FREE(actual);
+    cpuDataFree(cpuData);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -1990,6 +2054,14 @@ mymain(void)
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = xmlopt, __VA_ARGS__ }; \
     if (virtTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0) \
         ret = -1
+
+#define DO_TEST_CPU_DATA(name) \
+    do {                                                                  \
+        struct testCPUData data = { name, xmlopt };                       \
+        const char *label = "GetCPUData(" name ")";                       \
+        if (virtTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0) \
+            ret = -1;                                                     \
+    } while (0)
 
     DO_TEST(GetStatus);
     DO_TEST(GetVersion);
@@ -2054,6 +2126,9 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetCPUInfo);
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
+
+    DO_TEST_CPU_DATA("host");
+    DO_TEST_CPU_DATA("full");
 
     virObjectUnref(xmlopt);
 

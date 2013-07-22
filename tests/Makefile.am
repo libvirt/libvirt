@@ -89,6 +89,7 @@ EXTRA_DIST =		\
 	qemucapabilitiesdata \
 	qemuhelpdata \
 	qemuhotplugtestdata \
+	qemumonitorjsondata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \

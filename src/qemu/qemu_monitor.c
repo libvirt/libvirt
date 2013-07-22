@@ -3927,3 +3927,34 @@ qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd)
 
     return 0;
 }
+
+
+/**
+ * qemuMonitorJSONGetGuestCPU:
+ * @mon: Pointer to the monitor
+ * @arch: arch of the guest
+ *
+ * Retrieve the definition of the guest CPU from a running qemu instance.
+ *
+ * Returns the cpu definition object. On error returns NULL.
+ */
+virCPUDataPtr
+qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
+                       virArch arch)
+{
+    VIR_DEBUG("mon=%p, arch='%s'", mon, virArchToString(arch));
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return NULL;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return NULL;
+    }
+
+    return qemuMonitorJSONGetGuestCPU(mon, arch);
+}

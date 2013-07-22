@@ -32,6 +32,7 @@
 # include "virhash.h"
 # include "virjson.h"
 # include "device_conf.h"
+# include "cpu/cpu.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -762,6 +763,9 @@ int qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
                                 char ***aliases);
 
 int qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd);
+
+virCPUDataPtr qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
+                                     virArch arch);
 
 /**
  * When running two dd process and using <> redirection, we need a

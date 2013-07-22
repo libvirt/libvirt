@@ -1,0 +1,45 @@
+{
+    "return": [
+        {
+            "cpuid-register": "EDX",
+            "cpuid-input-eax": 2147483658,
+            "features": 0
+        },
+        {
+            "cpuid-register": "EAX",
+            "cpuid-input-eax": 1073741825,
+            "features": 16777339
+        },
+        {
+            "cpuid-register": "EDX",
+            "cpuid-input-eax": 3221225473,
+            "features": 0
+        },
+        {
+            "cpuid-register": "ECX",
+            "cpuid-input-eax": 2147483649,
+            "features": 1
+        },
+        {
+            "cpuid-register": "EDX",
+            "cpuid-input-eax": 2147483649,
+            "features": 697564159
+        },
+        {
+            "cpuid-register": "EBX",
+            "cpuid-input-ecx": 0,
+            "cpuid-input-eax": 7,
+            "features": 2
+        },
+        {
+            "cpuid-register": "ECX",
+            "cpuid-input-eax": 1,
+            "features": 2545558051
+        },
+        {
+            "cpuid-register": "EDX",
+            "cpuid-input-eax": 1,
+            "features": 260832255
+        }
+    ]
+}

@@ -42,6 +42,7 @@
 #include "virerror.h"
 #include "virjson.h"
 #include "virstring.h"
+#include "cpu/cpu_x86.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"
@@ -49,6 +50,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+#define QOM_CPU_PATH  "/machine/unattached/device[0]"
 
 #define LINE_ENDING "\r\n"
 
@@ -5453,4 +5455,135 @@ cleanup:
         qemuMonitorJSONListPathFree(paths[i]);
     VIR_FREE(paths);
     return ret;
+}
+
+
+static int
+qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
+                                      virCPUx86CPUID *cpuid)
+{
+    const char *reg;
+    unsigned long long fun;
+    unsigned long long features;
+
+    memset(cpuid, 0, sizeof(*cpuid));
+
+    if (!(reg = virJSONValueObjectGetString(data, "cpuid-register"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing cpuid-register in CPU data"));
+        return -1;
+    }
+    if (virJSONValueObjectGetNumberUlong(data, "cpuid-input-eax", &fun) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing or invalid cpuid-input-eax in CPU data"));
+        return -1;
+    }
+    if (virJSONValueObjectGetNumberUlong(data, "features", &features) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing or invalid features in CPU data"));
+        return -1;
+    }
+
+    cpuid->function = fun;
+    if (STREQ(reg, "EAX")) {
+        cpuid->eax = features;
+    } else if (STREQ(reg, "EBX")) {
+        cpuid->ebx = features;
+    } else if (STREQ(reg, "ECX")) {
+        cpuid->ecx = features;
+    } else if (STREQ(reg, "EDX")) {
+        cpuid->edx = features;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown CPU register '%s'"), reg);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static virCPUDataPtr
+qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
+                             const char *property)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    virCPUx86Data *x86Data = NULL;
+    virCPUx86CPUID cpuid;
+    size_t i;
+    virCPUDataPtr ret = NULL;
+    int n;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", QOM_CPU_PATH,
+                                           "s:property", property,
+                                           NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply))
+        goto cleanup;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-get reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s CPU property did not return an array"),
+                       property);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(x86Data) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
+                                                  &cpuid) < 0 ||
+            virCPUx86DataAddCPUID(x86Data, &cpuid) < 0)
+            goto cleanup;
+    }
+
+    if (!(ret = virCPUx86MakeData(VIR_ARCH_X86_64, &x86Data)))
+        goto cleanup;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    virCPUx86DataFree(x86Data);
+    return ret;
+}
+
+
+/**
+ * qemuMonitorJSONGetGuestCPU:
+ * @mon: Pointer to the monitor
+ * @arch: arch of the guest
+ *
+ * Retrieve the definition of the guest CPU from a running qemu instance.
+ *
+ * Returns the cpu definition object. On error returns NULL.
+ */
+virCPUDataPtr
+qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
+                           virArch arch)
+{
+    switch (arch) {
+    case VIR_ARCH_X86_64:
+    case VIR_ARCH_I686:
+        return qemuMonitorJSONGetCPUx86Data(mon, "feature-words");
+
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("CPU definition retrieval isn't supported for '%s'"),
+                       virArchToString(arch));
+        return NULL;
+    }
 }
