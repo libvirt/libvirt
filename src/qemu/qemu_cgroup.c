@@ -633,7 +633,6 @@ qemuInitCgroup(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr parent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!cfg->privileged)
@@ -664,32 +663,26 @@ qemuInitCgroup(virQEMUDriverPtr driver,
                        vm->def->resource->partition);
         goto cleanup;
     }
-    /* We only auto-create the default partition. In other
-     * cases we expect the sysadmin/app to have done so */
-    if (virCgroupNewPartition(vm->def->resource->partition,
-                              STREQ(vm->def->resource->partition, "/machine"),
-                              cfg->cgroupControllers,
-                              &parent) < 0) {
+
+    if (virCgroupNewMachine(vm->def->name,
+                            "qemu",
+                            cfg->privileged,
+                            vm->def->uuid,
+                            NULL,
+                            vm->pid,
+                            false,
+                            vm->def->resource->partition,
+                            cfg->cgroupControllers,
+                            &priv->cgroup) < 0) {
         if (virCgroupNewIgnoreError())
             goto done;
 
         goto cleanup;
     }
 
-    if (virCgroupNewDomainPartition(parent,
-                                    "qemu",
-                                    vm->def->name,
-                                    true,
-                                    &priv->cgroup) < 0)
-        goto cleanup;
-
-    if (virCgroupAddTask(priv->cgroup, vm->pid) < 0)
-        goto cleanup;
-
 done:
     ret = 0;
 cleanup:
-    virCgroupFree(&parent);
     virObjectUnref(cfg);
     return ret;
 }
