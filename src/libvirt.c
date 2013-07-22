@@ -7661,7 +7661,7 @@ error:
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * This function provides memory stats of the node.
- * If you want to get total cpu statistics of the node, you must specify
+ * If you want to get total memory statistics of the node, you must specify
  * VIR_NODE_MEMORY_STATS_ALL_CELLS to @cellNum.
  * The @params array will be filled with the values equal to the number of
  * stats suggested by @nparams
