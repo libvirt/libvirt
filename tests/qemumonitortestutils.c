@@ -368,7 +368,8 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
 
     virObjectUnref(test->vm);
 
-    virThreadJoin(&test->thread);
+    if (test->running)
+        virThreadJoin(&test->thread);
 
     if (timer != -1)
         virEventRemoveTimeout(timer);
