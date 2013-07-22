@@ -161,41 +161,65 @@ mymain(void)
     int ret = 0;
     unsigned int flags = VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
 
-#define DO_TEST(shouldFail, pool, vol, inputvol, cmdline, flags, imgformat) \
-    do {                    \
-        struct testInfo info = { shouldFail, pool, vol, inputvol, cmdline, \
-                                 flags, imgformat }; \
-        if (virtTestRun("Storage Vol XML-2-argv " cmdline, \
-                        1, testCompareXMLToArgvHelper, &info) < 0) \
-            ret = -1;   \
-       }    \
+#define DO_TEST_FULL(shouldFail, pool, vol, inputvol, cmdline, flags,        \
+                     imgformat)                                              \
+    do {                                                                     \
+        struct testInfo info = { shouldFail, pool, vol, inputvol, cmdline,   \
+                                 flags, imgformat };                         \
+        if (virtTestRun("Storage Vol XML-2-argv " cmdline,                   \
+                        1, testCompareXMLToArgvHelper, &info) < 0)           \
+            ret = -1;                                                        \
+       }                                                                     \
     while (0);
 
-    DO_TEST(false, "pool-dir", "vol-qcow2", NULL, "qcow2", 0, FMT_OPTIONS);
-    DO_TEST(true, "pool-dir", "vol-qcow2", NULL, "qcow2-prealloc", flags,
-            FMT_OPTIONS);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", NULL,
+#define DO_TEST(pool, ...)                                                 \
+    DO_TEST_FULL(false, pool, __VA_ARGS__)
+
+#define DO_TEST_FAIL(pool, ...)                                            \
+    DO_TEST_FULL(true, pool, __VA_ARGS__)
+
+    DO_TEST("pool-dir", "vol-qcow2",
+            NULL,
+            "qcow2", 0, FMT_OPTIONS);
+    DO_TEST_FAIL("pool-dir", "vol-qcow2",
+                 NULL,
+                 "qcow2-prealloc", flags, FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            NULL,
             "qcow2-nobacking-prealloc", flags, FMT_OPTIONS);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", "vol-file",
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            "vol-file",
             "qcow2-nobacking-convert-prealloc", flags, FMT_OPTIONS);
-    DO_TEST(true, "pool-dir", "vol-qcow2", "vol-file",
-            "qcow2-convert-prealloc", flags, FMT_OPTIONS);
-    DO_TEST(false, "pool-dir", "vol-qcow2", NULL, "qcow2-flag", 0, FMT_FLAG);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", NULL,
+    DO_TEST_FAIL("pool-dir", "vol-qcow2",
+                 "vol-file",
+                 "qcow2-convert-prealloc", flags, FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-qcow2",
+            NULL,
+            "qcow2-flag", 0, FMT_FLAG);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            NULL,
             "qcow2-nobacking-flag", 0, FMT_FLAG);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", "vol-file",
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            "vol-file",
             "qcow2-nobacking-convert-flag", 0, FMT_FLAG);
-    DO_TEST(false, "pool-dir", "vol-qcow2", NULL, "qcow2-none", 0, FMT_NONE);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", NULL,
+    DO_TEST("pool-dir", "vol-qcow2",
+            NULL,
+            "qcow2-none", 0, FMT_NONE);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            NULL,
             "qcow2-nobacking-none", 0, FMT_NONE);
-    DO_TEST(false, "pool-dir", "vol-qcow2-nobacking", "vol-file",
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            "vol-file",
             "qcow2-nobacking-convert-none", 0, FMT_NONE);
-    DO_TEST(false, "pool-dir", "vol-qcow2-lazy", NULL, "qcow2-lazy", 0,
-            FMT_OPTIONS);
-    DO_TEST(false, "pool-dir", "vol-qcow2-1.1", NULL, "qcow2-1.1", 0,
-            FMT_OPTIONS);
-    DO_TEST(true, "pool-dir", "vol-qcow2-0.10-lazy", NULL, "qcow2-0.10-lazy", 0,
-            FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-qcow2-lazy",
+            NULL,
+            "qcow2-lazy", 0, FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-qcow2-1.1",
+            NULL,
+            "qcow2-1.1", 0, FMT_OPTIONS);
+    DO_TEST_FAIL("pool-dir", "vol-qcow2-0.10-lazy",
+                 NULL,
+                 "qcow2-0.10-lazy", 0, FMT_OPTIONS);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
