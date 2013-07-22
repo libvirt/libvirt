@@ -70,7 +70,7 @@
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
 /* Main driver state */
-struct network_driver {
+struct _virNetworkDriverState {
     virMutex lock;
 
     virNetworkObjList networks;
@@ -84,45 +84,47 @@ struct network_driver {
     dnsmasqCapsPtr dnsmasqCaps;
 };
 
+typedef struct _virNetworkDriverState virNetworkDriverState;
+typedef virNetworkDriverState *virNetworkDriverStatePtr;
 
-static void networkDriverLock(struct network_driver *driver)
+static void networkDriverLock(virNetworkDriverStatePtr driver)
 {
     virMutexLock(&driver->lock);
 }
-static void networkDriverUnlock(struct network_driver *driver)
+static void networkDriverUnlock(virNetworkDriverStatePtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
 
 static int networkStateCleanup(void);
 
-static int networkStartNetwork(struct network_driver *driver,
+static int networkStartNetwork(virNetworkDriverStatePtr driver,
                                virNetworkObjPtr network);
 
-static int networkShutdownNetwork(struct network_driver *driver,
+static int networkShutdownNetwork(virNetworkDriverStatePtr driver,
                                   virNetworkObjPtr network);
 
-static int networkStartNetworkVirtual(struct network_driver *driver,
+static int networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
                                      virNetworkObjPtr network);
 
-static int networkShutdownNetworkVirtual(struct network_driver *driver,
+static int networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
                                          virNetworkObjPtr network);
 
-static int networkStartNetworkExternal(struct network_driver *driver,
+static int networkStartNetworkExternal(virNetworkDriverStatePtr driver,
                                      virNetworkObjPtr network);
 
-static int networkShutdownNetworkExternal(struct network_driver *driver,
+static int networkShutdownNetworkExternal(virNetworkDriverStatePtr driver,
                                         virNetworkObjPtr network);
 
-static void networkReloadIptablesRules(struct network_driver *driver);
-static void networkRefreshDaemons(struct network_driver *driver);
+static void networkReloadIptablesRules(virNetworkDriverStatePtr driver);
+static void networkRefreshDaemons(virNetworkDriverStatePtr driver);
 
 static int networkPlugBandwidth(virNetworkObjPtr net,
                                 virDomainNetDefPtr iface);
 static int networkUnplugBandwidth(virNetworkObjPtr net,
                                   virDomainNetDefPtr iface);
 
-static struct network_driver *driverState = NULL;
+static virNetworkDriverStatePtr driverState = NULL;
 
 static char *
 networkDnsmasqLeaseFileNameDefault(const char *netname)
@@ -169,7 +171,7 @@ networkRadvdConfigFileName(const char *netname)
 
 /* do needed cleanup steps and remove the network from the list */
 static int
-networkRemoveInactive(struct network_driver *driver,
+networkRemoveInactive(virNetworkDriverStatePtr driver,
                       virNetworkObjPtr net)
 {
     char *leasefile = NULL;
@@ -256,7 +258,7 @@ networkBridgeDummyNicName(const char *brname)
 }
 
 static void
-networkFindActiveConfigs(struct network_driver *driver)
+networkFindActiveConfigs(virNetworkDriverStatePtr driver)
 {
     size_t i;
 
@@ -308,7 +310,7 @@ networkFindActiveConfigs(struct network_driver *driver)
 
 
 static void
-networkAutostartConfigs(struct network_driver *driver) {
+networkAutostartConfigs(virNetworkDriverStatePtr driver) {
     size_t i;
 
     for (i = 0; i < driver->networks.count; i++) {
@@ -327,7 +329,7 @@ networkAutostartConfigs(struct network_driver *driver) {
 static DBusHandlerResult
 firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
                              DBusMessage *message, void *user_data) {
-    struct network_driver *_driverState = user_data;
+    virNetworkDriverStatePtr _driverState = user_data;
 
     if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
                                "NameOwnerChanged") ||
@@ -1025,7 +1027,7 @@ cleanup:
 }
 
 static int
-networkStartDhcpDaemon(struct network_driver *driver,
+networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
                        virNetworkObjPtr network)
 {
     virCommandPtr cmd = NULL;
@@ -1112,7 +1114,7 @@ cleanup:
  *  Returns 0 on success, -1 on failure.
  */
 static int
-networkRefreshDhcpDaemon(struct network_driver *driver,
+networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
                          virNetworkObjPtr network)
 {
     int ret = -1;
@@ -1180,7 +1182,7 @@ cleanup:
  *  Returns 0 on success, -1 on failure.
  */
 static int
-networkRestartDhcpDaemon(struct network_driver *driver,
+networkRestartDhcpDaemon(virNetworkDriverStatePtr driver,
                          virNetworkObjPtr network)
 {
     /* if there is a running dnsmasq, kill it */
@@ -1324,7 +1326,7 @@ cleanup:
 }
 
 static int
-networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
+networkStartRadvd(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
                         virNetworkObjPtr network)
 {
     char *pidfile = NULL;
@@ -1410,7 +1412,7 @@ cleanup:
 }
 
 static int
-networkRefreshRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
+networkRefreshRadvd(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
                     virNetworkObjPtr network)
 {
     char *radvdpidbase;
@@ -1449,7 +1451,7 @@ networkRefreshRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
 #if 0
 /* currently unused, so it causes a build error unless we #if it out */
 static int
-networkRestartRadvd(struct network_driver *driver,
+networkRestartRadvd(virNetworkDriverStatePtr driver,
                     virNetworkObjPtr network)
 {
     char *radvdpidbase;
@@ -1478,7 +1480,7 @@ networkRestartRadvd(struct network_driver *driver,
  * This should be called when libvirtd is restarted.
  */
 static void
-networkRefreshDaemons(struct network_driver *driver)
+networkRefreshDaemons(virNetworkDriverStatePtr driver)
 {
     size_t i;
 
@@ -2097,7 +2099,7 @@ networkRemoveIptablesRules(virNetworkObjPtr network)
 }
 
 static void
-networkReloadIptablesRules(struct network_driver *driver)
+networkReloadIptablesRules(virNetworkDriverStatePtr driver)
 {
     size_t i;
 
@@ -2373,7 +2375,7 @@ networkAddRouteToBridge(virNetworkObjPtr network,
 }
 
 static int
-networkStartNetworkVirtual(struct network_driver *driver,
+networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
                           virNetworkObjPtr network)
 {
     size_t i;
@@ -2552,7 +2554,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     return -1;
 }
 
-static int networkShutdownNetworkVirtual(struct network_driver *driver ATTRIBUTE_UNUSED,
+static int networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
                                          virNetworkObjPtr network)
 {
     virNetDevBandwidthClear(network->def->bridge);
@@ -2600,7 +2602,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver ATTRIBUTE
 }
 
 static int
-networkStartNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
+networkStartNetworkExternal(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
                             virNetworkObjPtr network ATTRIBUTE_UNUSED)
 {
     /* put anything here that needs to be done each time a network of
@@ -2611,7 +2613,7 @@ networkStartNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int networkShutdownNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
+static int networkShutdownNetworkExternal(virNetworkDriverStatePtr driver ATTRIBUTE_UNUSED,
                                         virNetworkObjPtr network ATTRIBUTE_UNUSED)
 {
     /* put anything here that needs to be done each time a network of
@@ -2623,7 +2625,7 @@ static int networkShutdownNetworkExternal(struct network_driver *driver ATTRIBUT
 }
 
 static int
-networkStartNetwork(struct network_driver *driver,
+networkStartNetwork(virNetworkDriverStatePtr driver,
                     virNetworkObjPtr network)
 {
     int ret = 0;
@@ -2682,7 +2684,7 @@ error:
     return ret;
 }
 
-static int networkShutdownNetwork(struct network_driver *driver,
+static int networkShutdownNetwork(virNetworkDriverStatePtr driver,
                                         virNetworkObjPtr network)
 {
     int ret = 0;
@@ -2726,7 +2728,7 @@ static int networkShutdownNetwork(struct network_driver *driver,
 
 static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
                                          const unsigned char *uuid) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
@@ -2752,7 +2754,7 @@ cleanup:
 
 static virNetworkPtr networkLookupByName(virConnectPtr conn,
                                          const char *name) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
@@ -2797,7 +2799,7 @@ static int networkClose(virConnectPtr conn) {
 static int networkConnectNumOfNetworks(virConnectPtr conn) {
     int nactive = 0;
     size_t i;
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
 
     if (virConnectNumOfNetworksEnsureACL(conn) < 0)
         return -1;
@@ -2817,7 +2819,7 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
 }
 
 static int networkConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     int got = 0;
     size_t i;
 
@@ -2852,7 +2854,7 @@ static int networkConnectListNetworks(virConnectPtr conn, char **const names, in
 static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
     int ninactive = 0;
     size_t i;
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
 
     if (virConnectNumOfDefinedNetworksEnsureACL(conn) < 0)
         return -1;
@@ -2872,7 +2874,7 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
 }
 
 static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     int got = 0;
     size_t i;
 
@@ -2908,7 +2910,7 @@ networkConnectListAllNetworks(virConnectPtr conn,
                               virNetworkPtr **nets,
                               unsigned int flags)
 {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
@@ -2928,7 +2930,7 @@ cleanup:
 
 static int networkIsActive(virNetworkPtr net)
 {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -2953,7 +2955,7 @@ cleanup:
 
 static int networkIsPersistent(virNetworkPtr net)
 {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -2978,7 +2980,7 @@ cleanup:
 
 
 static int
-networkValidate(struct network_driver *driver,
+networkValidate(virNetworkDriverStatePtr driver,
                 virNetworkDefPtr def,
                 bool check_active)
 {
@@ -3127,7 +3129,7 @@ networkValidate(struct network_driver *driver,
 }
 
 static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkDefPtr def;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
@@ -3169,7 +3171,7 @@ cleanup:
 }
 
 static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
-    struct network_driver *driver = conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = conn->networkPrivateData;
     virNetworkDefPtr def = NULL;
     bool freeDef = true;
     virNetworkObjPtr network = NULL;
@@ -3227,7 +3229,7 @@ cleanup:
 
 static int
 networkUndefine(virNetworkPtr net) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
     bool active = false;
@@ -3284,7 +3286,7 @@ networkUpdate(virNetworkPtr net,
               const char *xml,
               unsigned int flags)
 {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network = NULL;
     int isActive, ret = -1;
     size_t i;
@@ -3430,7 +3432,7 @@ cleanup:
 }
 
 static int networkCreate(virNetworkPtr net) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
 
@@ -3456,7 +3458,7 @@ cleanup:
 }
 
 static int networkDestroy(virNetworkPtr net) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
 
@@ -3500,7 +3502,7 @@ cleanup:
 static char *networkGetXMLDesc(virNetworkPtr net,
                                unsigned int flags)
 {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkDefPtr def;
     char *ret = NULL;
@@ -3534,7 +3536,7 @@ cleanup:
 }
 
 static char *networkGetBridgeName(virNetworkPtr net) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *bridge = NULL;
 
@@ -3568,7 +3570,7 @@ cleanup:
 
 static int networkGetAutostart(virNetworkPtr net,
                              int *autostart) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
 
@@ -3595,7 +3597,7 @@ cleanup:
 
 static int networkSetAutostart(virNetworkPtr net,
                                int autostart) {
-    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
@@ -3794,7 +3796,7 @@ finish:
 int
 networkAllocateActualDevice(virDomainNetDefPtr iface)
 {
-    struct network_driver *driver = driverState;
+    virNetworkDriverStatePtr driver = driverState;
     enum virDomainNetType actualType = iface->type;
     virNetworkObjPtr network = NULL;
     virNetworkDefPtr netdef = NULL;
@@ -4192,7 +4194,7 @@ error:
 int
 networkNotifyActualDevice(virDomainNetDefPtr iface)
 {
-    struct network_driver *driver = driverState;
+    virNetworkDriverStatePtr driver = driverState;
     enum virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
@@ -4370,7 +4372,7 @@ error:
 int
 networkReleaseActualDevice(virDomainNetDefPtr iface)
 {
-    struct network_driver *driver = driverState;
+    virNetworkDriverStatePtr driver = driverState;
     enum virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
@@ -4525,7 +4527,7 @@ int
 networkGetNetworkAddress(const char *netname, char **netaddr)
 {
     int ret = -1;
-    struct network_driver *driver = driverState;
+    virNetworkDriverStatePtr driver = driverState;
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
     virNetworkIpDefPtr ipdef;
