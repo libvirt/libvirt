@@ -1929,6 +1929,12 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
     virBitmapPtr cpumap = NULL;
     virBitmapPtr cpumapToSet = NULL;
 
+    if (!vm->pid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot setup CPU affinity until process is started"));
+        return -1;
+    }
+
     if (!(cpumap = qemuPrepareCpumap(driver, nodemask)))
         return -1;
 
@@ -1949,11 +1955,7 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
         }
     }
 
-    /* We are pressuming we are running between fork/exec of QEMU
-     * so use '0' to indicate our own process ID. No threads are
-     * running at this point
-     */
-    if (virProcessSetAffinity(0 /* Self */, cpumapToSet) < 0)
+    if (virProcessSetAffinity(vm->pid, cpumapToSet) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2560,19 +2562,6 @@ static int qemuProcessHook(void *data)
                                   &fd) < 0)
         goto cleanup;
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
-        goto cleanup;
-
-    /* This must take place before exec(), so that all QEMU
-     * memory allocation is on the correct NUMA node
-     */
-    VIR_DEBUG("Moving process to cgroup");
-    if (qemuAddToCgroup(h->vm) < 0)
-        goto cleanup;
-
-    /* This must be done after cgroup placement to avoid resetting CPU
-     * affinity */
-    if (!h->vm->def->cputune.emulatorpin &&
-        qemuProcessInitCpuAffinity(h->driver, h->vm, h->nodemask) < 0)
         goto cleanup;
 
     if (virNumaSetupMemoryPolicy(h->vm->def->numatune, h->nodemask) < 0)
@@ -3671,10 +3660,6 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    VIR_DEBUG("Setting up domain cgroup (if required)");
-    if (qemuSetupCgroup(driver, vm, nodemask) < 0)
-        goto cleanup;
-
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
@@ -3843,6 +3828,16 @@ int qemuProcessStart(virConnectPtr conn,
     if (virCommandHandshakeWait(cmd) < 0) {
         goto cleanup;
     }
+
+    VIR_DEBUG("Setting up domain cgroup (if required)");
+    if (qemuSetupCgroup(driver, vm, nodemask) < 0)
+        goto cleanup;
+
+    /* This must be done after cgroup placement to avoid resetting CPU
+     * affinity */
+    if (!vm->def->cputune.emulatorpin &&
+        qemuProcessInitCpuAffinity(driver, vm, nodemask) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,

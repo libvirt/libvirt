@@ -683,6 +683,9 @@ qemuInitCgroup(virQEMUDriverPtr driver,
                                     &priv->cgroup) < 0)
         goto cleanup;
 
+    if (virCgroupAddTask(priv->cgroup, vm->pid) < 0)
+        goto cleanup;
+
 done:
     ret = 0;
 cleanup:
@@ -737,6 +740,12 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
     int ret = -1;
+
+    if (!vm->pid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot setup cgroups until process is started"));
+        return -1;
+    }
 
     if (qemuInitCgroup(driver, vm) < 0)
         return -1;
@@ -1008,9 +1017,6 @@ qemuAddToCgroup(virDomainObjPtr vm)
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
-
-    if (virCgroupAddTask(priv->cgroup, getpid()) < 0)
-        return -1;
 
     return 0;
 }
