@@ -431,7 +431,6 @@ cleanup:
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
 {
-    virCgroupPtr parent = NULL;
     virCgroupPtr cgroup = NULL;
 
     if (!def->resource) {
@@ -454,46 +453,26 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
                        def->resource->partition);
         goto cleanup;
     }
-    /* We only auto-create the default partition. In other
-     * cases we expect the sysadmin/app to have done so */
-    if (virCgroupNewPartition(def->resource->partition,
-                              STREQ(def->resource->partition, "/machine"),
-                              -1,
-                              &parent) < 0)
-        goto cleanup;
 
-    if (virCgroupNewDomainPartition(parent,
-                                    "lxc",
-                                    def->name,
-                                    true,
-                                    &cgroup) < 0)
+    /*
+     * XXX
+     * We should pass the PID of the LXC init process
+     * not ourselves, but this requires some more
+     * refactoring. We should also pass the root dir
+     */
+    if (virCgroupNewMachine(def->name,
+                            "lxc",
+                            true,
+                            def->uuid,
+                            NULL,
+                            getpid(),
+                            true,
+                            def->resource->partition,
+                            -1,
+                            &cgroup) < 0)
         goto cleanup;
 
 cleanup:
-    virCgroupFree(&parent);
-    return cgroup;
-}
-
-
-virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def)
-{
-    virCgroupPtr cgroup = NULL;
-    int ret = -1;
-
-    if (!(cgroup = virLXCCgroupCreate(def)))
-        return NULL;
-
-    if (virCgroupAddTask(cgroup, getpid()) < 0)
-        goto cleanup;
-
-    ret = 0;
-
-cleanup:
-    if (ret < 0) {
-        virCgroupFree(&cgroup);
-        return NULL;
-    }
-
     return cgroup;
 }
 

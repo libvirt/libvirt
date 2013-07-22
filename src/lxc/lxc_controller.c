@@ -2388,7 +2388,7 @@ int main(int argc, char *argv[])
     if (virLXCControllerValidateConsoles(ctrl) < 0)
         goto cleanup;
 
-    if (!(ctrl->cgroup = virLXCCgroupJoin(ctrl->def)))
+    if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def)))
         goto cleanup;
 
     if (virLXCControllerSetupServer(ctrl) < 0)
