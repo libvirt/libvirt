@@ -124,7 +124,7 @@ testCompareXMLToArgvHelper(const void *data)
         virAsprintf(&inputvolxml, "%s/storagevolxml2argvdata/%s.xml",
                     abs_srcdir, info->inputvol) < 0)
         goto cleanup;
-    if (virAsprintf(&poolxml, "%s/storagevolxml2argvdata/%s.xml",
+    if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, info->pool) < 0 ||
         virAsprintf(&volxml, "%s/storagevolxml2argvdata/%s.xml",
                     abs_srcdir, info->vol) < 0) {
