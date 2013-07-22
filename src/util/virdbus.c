@@ -1222,4 +1222,22 @@ int virDBusMessageRead(DBusMessage *msg ATTRIBUTE_UNUSED,
     return -1;
 }
 
+int virDBusMessageEncode(DBusMessage* msg ATTRIBUTE_UNUSED,
+                         const char *types ATTRIBUTE_UNUSED,
+                         ...)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
+int virDBusMessageDecode(DBusMessage* msg ATTRIBUTE_UNUSED,
+                         const char *types ATTRIBUTE_UNUSED,
+                         ...)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return -1;
+}
+
 #endif /* ! WITH_DBUS */
