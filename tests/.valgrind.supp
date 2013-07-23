@@ -75,3 +75,63 @@
     ...
     obj:*/lib*/libc-2.*so*
 }
+#
+# commandtest validates the various threaded commands. The
+# virThreadCreate() routine allocates and passes args to the
+# new thread which now owns the 'args' and thus cannot be free'd
+#
+{
+    commandtestLeak1
+    Memcheck:Leak
+    fun:calloc
+    fun:virAlloc
+    fun:virThreadCreate
+    fun:mymain
+    fun:virtTestMain
+}
+#
+# The Error code requires static memory that is never free'd
+# for thread local storage to store error message/data
+#
+{
+    commandtestLeak2
+    Memcheck:Leak
+    fun:calloc
+    fun:virAlloc
+    ...
+    fun:vir*LastError*
+    fun:virEventRunDefaultImpl
+    fun:virCommandThreadWorker
+    fun:virThreadHelper
+    fun:start_thread
+    fun:clone
+}
+#
+# Some of the commandtests (test0, test1, test4, & test18) cause the
+# following traceback although it appears the memory is properly freed
+#
+{
+    commandtestLeak3
+    Memcheck:Leak
+    fun:calloc
+    fun:virAllocN
+    fun:virEventPollRunOnce
+    fun:virEventRunDefaultImpl
+    fun:virCommandThreadWorker
+    fun:virThreadHelper
+    fun:start_thread
+    fun:clone
+}
+#
+# seclabeltest relies on 'selabel_close' which is not in libvirt
+#
+{
+    seclabeltestcond1
+    Memcheck:Cond
+    obj:/usr/lib64/libselinux.so.1
+    fun:selabel_close
+    fun:virSecuritySELinuxSecurityDriverClose
+    fun:virSecurityManagerDispose
+    fun:virObjectUnref
+    fun:main
+}
