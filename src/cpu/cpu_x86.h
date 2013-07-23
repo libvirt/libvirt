@@ -25,7 +25,16 @@
 # define __VIR_CPU_X86_H__
 
 # include "cpu.h"
+# include "cpu_x86_data.h"
 
 extern struct cpuArchDriver cpuDriverX86;
+
+int virCPUx86DataAddCPUID(virCPUx86Data *data,
+                          const virCPUx86CPUID *cpuid);
+
+void virCPUx86DataFree(virCPUx86Data *data);
+
+virCPUDataPtr virCPUx86MakeData(virArch arch,
+                                virCPUx86Data **data);
 
 #endif /* __VIR_CPU_X86_H__ */

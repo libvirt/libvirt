@@ -734,6 +734,12 @@ cpuNodeData;
 cpuUpdate;
 
 
+# cpu/cpu_x86.h
+virCPUx86DataAddCPUID;
+virCPUx86DataFree;
+virCPUx86MakeData;
+
+
 # datatypes.h
 virConnectClass;
 virDomainClass;

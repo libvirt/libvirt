@@ -203,7 +203,7 @@ x86DataCpuid(const virCPUx86Data *data,
 }
 
 
-static void
+void
 virCPUx86DataFree(virCPUx86Data *data)
 {
     if (data == NULL)
@@ -215,7 +215,7 @@ virCPUx86DataFree(virCPUx86Data *data)
 }
 
 
-static virCPUDataPtr
+virCPUDataPtr
 virCPUx86MakeData(virArch arch, virCPUx86Data **data)
 {
     virCPUDataPtr cpuData;
@@ -295,7 +295,7 @@ x86DataExpand(virCPUx86Data *data,
 }
 
 
-static int
+int
 virCPUx86DataAddCPUID(virCPUx86Data *data,
                       const virCPUx86CPUID *cpuid)
 {
