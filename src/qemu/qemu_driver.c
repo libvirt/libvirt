@@ -2987,8 +2987,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (!qemuMigrationIsAllowed(driver, vm, vm->def, false, false))
         goto cleanup;
 
-    if (qemuDomainObjBeginAsyncJob(driver, vm,
-                                             QEMU_ASYNC_JOB_SAVE) < 0)
+    if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SAVE) < 0)
+        goto cleanup;
 
     memset(&priv->job.info, 0, sizeof(priv->job.info));
     priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
