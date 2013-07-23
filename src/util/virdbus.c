@@ -1,7 +1,7 @@
 /*
  * virdbus.c: helper for using DBus
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -239,7 +239,6 @@ static const char virDBusBasicTypes[] = {
     DBUS_TYPE_STRING,
     DBUS_TYPE_OBJECT_PATH,
     DBUS_TYPE_SIGNATURE,
-    DBUS_TYPE_UNIX_FD
 };
 
 static bool virDBusIsBasicType(char c) {
@@ -1023,6 +1022,9 @@ int virDBusMessageDecode(DBusMessage* msg,
  * ')' - end of a struct
  * '{' - start of a dictionary entry (pair of types)
  * '}' - start of a dictionary entry (pair of types)
+ *
+ * At this time, there is no support for Unix fd's ('h'), which only
+ * newer DBus supports.
  *
  * Passing values in variadic args for basic types is
  * simple, the value is just passed directly using the
