@@ -296,8 +296,8 @@ x86DataExpand(virCPUx86Data *data,
 
 
 static int
-x86DataAddCpuid(virCPUx86Data *data,
-                const virCPUx86CPUID *cpuid)
+virCPUx86DataAddCPUID(virCPUx86Data *data,
+                      const virCPUx86CPUID *cpuid)
 {
     unsigned int basic_by = 0;
     unsigned int extended_by = 0;
@@ -734,7 +734,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
                            i, feature->name);
             goto ignore;
         }
-        if (x86DataAddCpuid(feature->data, &cpuid))
+        if (virCPUx86DataAddCPUID(feature->data, &cpuid))
             goto error;
     }
 
@@ -1200,7 +1200,7 @@ x86CPUDataParse(const char *xmlStr)
                            _("failed to parse cpuid[%zu]"), i);
             goto cleanup;
         }
-        if (x86DataAddCpuid(data, &cpuid) < 0)
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
             goto cleanup;
     }
 
@@ -1653,7 +1653,7 @@ x86Encode(virArch arch,
 
         if (v &&
             (VIR_ALLOC(data_vendor) < 0 ||
-             x86DataAddCpuid(data_vendor, &v->cpuid) < 0)) {
+             virCPUx86DataAddCPUID(data_vendor, &v->cpuid) < 0)) {
             goto error;
         }
     }
@@ -1879,7 +1879,7 @@ x86Baseline(virCPUDefPtr *cpus,
         goto error;
     }
 
-    if (vendor && x86DataAddCpuid(base_model->data, &vendor->cpuid) < 0)
+    if (vendor && virCPUx86DataAddCPUID(base_model->data, &vendor->cpuid) < 0)
         goto error;
 
     if (x86Decode(cpu, base_model->data, models, nmodels, NULL, flags) < 0)
