@@ -548,8 +548,13 @@ int virCgroupPathOfController(virCgroupPtr group,
     if (controller == -1) {
         size_t i;
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            /* Reject any controller with a placement
+             * of '/' to avoid doing bad stuff to the root
+             * cgroup
+             */
             if (group->controllers[i].mountPoint &&
-                group->controllers[i].placement) {
+                group->controllers[i].placement &&
+                STRNEQ(group->controllers[i].placement, "/")) {
                 controller = i;
                 break;
             }
@@ -1002,6 +1007,11 @@ int virCgroupRemove(virCgroupPtr group)
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
         if (!group->controllers[i].mountPoint)
+            continue;
+
+        /* Don't delete the root group, if we accidentally
+           ended up in it for some reason */
+        if (STREQ(group->controllers[i].placement, "/"))
             continue;
 
         if (virCgroupPathOfController(group,
