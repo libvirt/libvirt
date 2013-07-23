@@ -204,7 +204,7 @@ x86DataCpuid(const virCPUx86Data *data,
 
 
 static void
-x86DataFree(virCPUx86Data *data)
+virCPUx86DataFree(virCPUx86Data *data)
 {
     if (data == NULL)
         return;
@@ -236,7 +236,7 @@ x86FreeCPUData(virCPUDataPtr data)
     if (!data)
         return;
 
-    x86DataFree(data->data.x86);
+    virCPUx86DataFree(data->data.x86);
     VIR_FREE(data);
 }
 
@@ -250,7 +250,7 @@ x86DataCopy(const virCPUx86Data *data)
     if (VIR_ALLOC(copy) < 0
         || VIR_ALLOC_N(copy->basic, data->basic_len) < 0
         || VIR_ALLOC_N(copy->extended, data->extended_len) < 0) {
-        x86DataFree(copy);
+        virCPUx86DataFree(copy);
         return NULL;
     }
 
@@ -489,8 +489,8 @@ x86DataToCPU(const virCPUx86Data *data,
         goto error;
 
 cleanup:
-    x86DataFree(modelData);
-    x86DataFree(copy);
+    virCPUx86DataFree(modelData);
+    virCPUx86DataFree(copy);
     return cpu;
 
 error:
@@ -614,7 +614,7 @@ x86FeatureFree(struct x86_feature *feature)
         return;
 
     VIR_FREE(feature->name);
-    x86DataFree(feature->data);
+    virCPUx86DataFree(feature->data);
     VIR_FREE(feature);
 }
 
@@ -784,7 +784,7 @@ x86ModelFree(struct x86_model *model)
         return;
 
     VIR_FREE(model->name);
-    x86DataFree(model->data);
+    virCPUx86DataFree(model->data);
     VIR_FREE(model);
 }
 
@@ -997,7 +997,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         VIR_FREE(name);
 
         model->vendor = ancestor->vendor;
-        x86DataFree(model->data);
+        virCPUx86DataFree(model->data);
         if (!(model->data = x86DataCopy(ancestor->data)))
             goto error;
     }
@@ -1210,7 +1210,7 @@ cleanup:
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    x86DataFree(data);
+    virCPUx86DataFree(data);
     return cpuData;
 }
 
@@ -1368,7 +1368,7 @@ x86Compute(virCPUDefPtr host,
 
         if (!(guestData = x86DataCopy(guest_model->data)) ||
             !(*guest = x86MakeCPUData(arch, &guestData))) {
-            x86DataFree(guestData);
+            virCPUx86DataFree(guestData);
             goto error;
         }
     }
@@ -1685,12 +1685,12 @@ cleanup:
     return ret;
 
 error:
-    x86DataFree(data_forced);
-    x86DataFree(data_required);
-    x86DataFree(data_optional);
-    x86DataFree(data_disabled);
-    x86DataFree(data_forbidden);
-    x86DataFree(data_vendor);
+    virCPUx86DataFree(data_forced);
+    virCPUx86DataFree(data_required);
+    virCPUx86DataFree(data_optional);
+    virCPUx86DataFree(data_disabled);
+    virCPUx86DataFree(data_forbidden);
+    virCPUx86DataFree(data_vendor);
     if (forced)
         x86FreeCPUData(*forced);
     if (required)
@@ -1789,7 +1789,7 @@ x86NodeData(virArch arch)
     return cpuData;
 
 error:
-    x86DataFree(data);
+    virCPUx86DataFree(data);
 
     return NULL;
 }
