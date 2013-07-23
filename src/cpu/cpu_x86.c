@@ -216,7 +216,7 @@ virCPUx86DataFree(virCPUx86Data *data)
 
 
 static virCPUDataPtr
-x86MakeCPUData(virArch arch, virCPUx86Data **data)
+virCPUx86MakeData(virArch arch, virCPUx86Data **data)
 {
     virCPUDataPtr cpuData;
 
@@ -1204,7 +1204,7 @@ x86CPUDataParse(const char *xmlStr)
             goto cleanup;
     }
 
-    cpuData = x86MakeCPUData(VIR_ARCH_X86_64, &data);
+    cpuData = virCPUx86MakeData(VIR_ARCH_X86_64, &data);
 
 cleanup:
     VIR_FREE(nodes);
@@ -1367,7 +1367,7 @@ x86Compute(virCPUDefPtr host,
         x86DataSubtract(guest_model->data, cpu_disable->data);
 
         if (!(guestData = x86DataCopy(guest_model->data)) ||
-            !(*guest = x86MakeCPUData(arch, &guestData))) {
+            !(*guest = virCPUx86MakeData(arch, &guestData))) {
             virCPUx86DataFree(guestData);
             goto error;
         }
@@ -1659,22 +1659,22 @@ x86Encode(virArch arch,
     }
 
     if (forced &&
-        !(*forced = x86MakeCPUData(arch, &data_forced)))
+        !(*forced = virCPUx86MakeData(arch, &data_forced)))
         goto error;
     if (required &&
-        !(*required = x86MakeCPUData(arch, &data_required)))
+        !(*required = virCPUx86MakeData(arch, &data_required)))
         goto error;
     if (optional &&
-        !(*optional = x86MakeCPUData(arch, &data_optional)))
+        !(*optional = virCPUx86MakeData(arch, &data_optional)))
         goto error;
     if (disabled &&
-        !(*disabled = x86MakeCPUData(arch, &data_disabled)))
+        !(*disabled = virCPUx86MakeData(arch, &data_disabled)))
         goto error;
     if (forbidden &&
-        !(*forbidden = x86MakeCPUData(arch, &data_forbidden)))
+        !(*forbidden = virCPUx86MakeData(arch, &data_forbidden)))
         goto error;
     if (vendor &&
-        !(*vendor = x86MakeCPUData(arch, &data_vendor)))
+        !(*vendor = virCPUx86MakeData(arch, &data_vendor)))
         goto error;
 
     ret = 0;
@@ -1783,7 +1783,7 @@ x86NodeData(virArch arch)
         goto error;
     data->extended_len = ret;
 
-    if (!(cpuData = x86MakeCPUData(arch, &data)))
+    if (!(cpuData = virCPUx86MakeData(arch, &data)))
         goto error;
 
     return cpuData;
