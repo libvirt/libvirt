@@ -520,6 +520,9 @@ void virDomainEventFree(virDomainEventPtr event)
     case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
         VIR_FREE(event->data.trayChange.devAlias);
         break;
+    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
+        VIR_FREE(event->data.deviceRemoved.devAlias);
+        break;
     }
 
     VIR_FREE(event->dom.name);
