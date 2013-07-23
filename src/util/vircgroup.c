@@ -67,6 +67,8 @@ typedef enum {
                                        */
 } virCgroupFlags;
 
+static int virCgroupPartitionEscape(char **path);
+
 bool virCgroupAvailable(void)
 {
     FILE *mounts = NULL;
@@ -90,6 +92,46 @@ bool virCgroupAvailable(void)
     VIR_FORCE_FCLOSE(mounts);
     return ret;
 }
+
+bool virCgroupIsValidMachineGroup(virCgroupPtr group,
+                                  const char *name,
+                                  const char *drivername)
+{
+    size_t i;
+    bool valid = false;
+    char *partname;
+
+    if (virAsprintf(&partname, "%s.libvirt-%s",
+                    name, drivername) < 0)
+        goto cleanup;
+
+    if (virCgroupPartitionEscape(&partname) < 0)
+        goto cleanup;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        char *tmp;
+
+        if (!group->controllers[i].placement)
+            continue;
+
+        tmp = strrchr(group->controllers[i].placement, '/');
+        if (!tmp)
+            goto cleanup;
+        tmp++;
+
+        if (STRNEQ(tmp, name) &&
+            STRNEQ(tmp, partname))
+            goto cleanup;
+
+    }
+
+    valid = true;
+
+ cleanup:
+    VIR_FREE(partname);
+    return valid;
+}
+
 
 /**
  * virCgroupFree:
