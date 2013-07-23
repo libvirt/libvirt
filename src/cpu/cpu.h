@@ -37,7 +37,7 @@ typedef virCPUData *virCPUDataPtr;
 struct _virCPUData {
     virArch arch;
     union {
-        struct cpuX86Data *x86;
+        virCPUx86Data *x86;
         struct cpuPPCData ppc;
         /* generic driver needs no data */
     } data;

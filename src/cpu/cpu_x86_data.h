@@ -38,7 +38,8 @@ struct _virCPUx86CPUID {
 # define CPUX86_BASIC    0x0
 # define CPUX86_EXTENDED 0x80000000
 
-struct cpuX86Data {
+typedef struct _virCPUx86Data virCPUx86Data;
+struct _virCPUx86Data {
     size_t basic_len;
     virCPUx86CPUID *basic;
     size_t extended_len;
