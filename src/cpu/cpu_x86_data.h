@@ -26,7 +26,8 @@
 
 # include <stdint.h>
 
-struct cpuX86cpuid {
+typedef struct _virCPUx86CPUID virCPUx86CPUID;
+struct _virCPUx86CPUID {
     uint32_t function;
     uint32_t eax;
     uint32_t ebx;
@@ -39,9 +40,9 @@ struct cpuX86cpuid {
 
 struct cpuX86Data {
     size_t basic_len;
-    struct cpuX86cpuid *basic;
+    virCPUx86CPUID *basic;
     size_t extended_len;
-    struct cpuX86cpuid *extended;
+    virCPUx86CPUID *extended;
 };
 
 #endif /* __VIR_CPU_X86_DATA_H__ */

@@ -38,13 +38,13 @@
 
 #define VENDOR_STRING_LENGTH    12
 
-static const struct cpuX86cpuid cpuidNull = { 0, 0, 0, 0, 0 };
+static const virCPUx86CPUID cpuidNull = { 0, 0, 0, 0, 0 };
 
 static const virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
 
 struct x86_vendor {
     char *name;
-    struct cpuX86cpuid cpuid;
+    virCPUx86CPUID cpuid;
 
     struct x86_vendor *next;
 };
@@ -91,8 +91,8 @@ struct data_iterator {
 
 
 static int
-x86cpuidMatch(const struct cpuX86cpuid *cpuid1,
-              const struct cpuX86cpuid *cpuid2)
+x86cpuidMatch(const virCPUx86CPUID *cpuid1,
+              const virCPUx86CPUID *cpuid2)
 {
     return (cpuid1->eax == cpuid2->eax &&
             cpuid1->ebx == cpuid2->ebx &&
@@ -102,8 +102,8 @@ x86cpuidMatch(const struct cpuX86cpuid *cpuid1,
 
 
 static int
-x86cpuidMatchMasked(const struct cpuX86cpuid *cpuid,
-                    const struct cpuX86cpuid *mask)
+x86cpuidMatchMasked(const virCPUx86CPUID *cpuid,
+                    const virCPUx86CPUID *mask)
 {
     return ((cpuid->eax & mask->eax) == mask->eax &&
             (cpuid->ebx & mask->ebx) == mask->ebx &&
@@ -113,8 +113,8 @@ x86cpuidMatchMasked(const struct cpuX86cpuid *cpuid,
 
 
 static void
-x86cpuidSetBits(struct cpuX86cpuid *cpuid,
-                const struct cpuX86cpuid *mask)
+x86cpuidSetBits(virCPUx86CPUID *cpuid,
+                const virCPUx86CPUID *mask)
 {
     cpuid->eax |= mask->eax;
     cpuid->ebx |= mask->ebx;
@@ -124,8 +124,8 @@ x86cpuidSetBits(struct cpuX86cpuid *cpuid,
 
 
 static void
-x86cpuidClearBits(struct cpuX86cpuid *cpuid,
-                  const struct cpuX86cpuid *mask)
+x86cpuidClearBits(virCPUx86CPUID *cpuid,
+                  const virCPUx86CPUID *mask)
 {
     cpuid->eax &= ~mask->eax;
     cpuid->ebx &= ~mask->ebx;
@@ -135,8 +135,8 @@ x86cpuidClearBits(struct cpuX86cpuid *cpuid,
 
 
 static void
-x86cpuidAndBits(struct cpuX86cpuid *cpuid,
-                const struct cpuX86cpuid *mask)
+x86cpuidAndBits(virCPUx86CPUID *cpuid,
+                const virCPUx86CPUID *mask)
 {
     cpuid->eax &= mask->eax;
     cpuid->ebx &= mask->ebx;
@@ -146,10 +146,10 @@ x86cpuidAndBits(struct cpuX86cpuid *cpuid,
 
 
 /* skips all zero CPUID leafs */
-static struct cpuX86cpuid *
+static virCPUx86CPUID *
 x86DataCpuidNext(struct data_iterator *iterator)
 {
-    struct cpuX86cpuid *ret;
+    virCPUx86CPUID *ret;
     struct cpuX86Data *data = iterator->data;
 
     if (!data)
@@ -177,11 +177,11 @@ x86DataCpuidNext(struct data_iterator *iterator)
 }
 
 
-static struct cpuX86cpuid *
+static virCPUx86CPUID *
 x86DataCpuid(const struct cpuX86Data *data,
              uint32_t function)
 {
-    struct cpuX86cpuid *cpuids;
+    virCPUx86CPUID *cpuids;
     int len;
     size_t i;
 
@@ -297,11 +297,11 @@ x86DataExpand(struct cpuX86Data *data,
 
 static int
 x86DataAddCpuid(struct cpuX86Data *data,
-                const struct cpuX86cpuid *cpuid)
+                const virCPUx86CPUID *cpuid)
 {
     unsigned int basic_by = 0;
     unsigned int extended_by = 0;
-    struct cpuX86cpuid **cpuids;
+    virCPUx86CPUID **cpuids;
     unsigned int pos;
 
     if (cpuid->function < CPUX86_EXTENDED) {
@@ -374,8 +374,8 @@ x86DataIntersect(struct cpuX86Data *data1,
                  const struct cpuX86Data *data2)
 {
     struct data_iterator iter = DATA_ITERATOR_INIT(data1);
-    struct cpuX86cpuid *cpuid1;
-    struct cpuX86cpuid *cpuid2;
+    virCPUx86CPUID *cpuid1;
+    virCPUx86CPUID *cpuid2;
 
     while ((cpuid1 = x86DataCpuidNext(&iter))) {
         cpuid2 = x86DataCpuid(data2, cpuid1->function);
@@ -402,8 +402,8 @@ x86DataIsSubset(const struct cpuX86Data *data,
 {
 
     struct data_iterator iter = DATA_ITERATOR_INIT((struct cpuX86Data *)subset);
-    const struct cpuX86cpuid *cpuid;
-    const struct cpuX86cpuid *cpuidSubset;
+    const virCPUx86CPUID *cpuid;
+    const virCPUx86CPUID *cpuidSubset;
 
     while ((cpuidSubset = x86DataCpuidNext(&iter))) {
         if (!(cpuid = x86DataCpuid(data, cpuidSubset->function)) ||
@@ -443,7 +443,7 @@ x86DataToVendor(struct cpuX86Data *data,
                 const struct x86_map *map)
 {
     const struct x86_vendor *vendor = map->vendors;
-    struct cpuX86cpuid *cpuid;
+    virCPUx86CPUID *cpuid;
 
     while (vendor) {
         if ((cpuid = x86DataCpuid(data, vendor->cpuid.function)) &&
@@ -667,7 +667,7 @@ x86FeatureNames(const struct x86_map *map,
 
 static int
 x86ParseCPUID(xmlXPathContextPtr ctxt,
-              struct cpuX86cpuid *cpuid)
+              virCPUx86CPUID *cpuid)
 {
     unsigned long fun, eax, ebx, ecx, edx;
     int ret_fun, ret_eax, ret_ebx, ret_ecx, ret_edx;
@@ -701,7 +701,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     xmlNodePtr *nodes = NULL;
     xmlNodePtr ctxt_node = ctxt->node;
     struct x86_feature *feature;
-    struct cpuX86cpuid cpuid;
+    virCPUx86CPUID cpuid;
     int ret = 0;
     size_t i;
     int n;
@@ -914,8 +914,8 @@ x86ModelCompare(const struct x86_model *model1,
     enum compare_result result = EQUAL;
     struct data_iterator iter1 = DATA_ITERATOR_INIT(model1->data);
     struct data_iterator iter2 = DATA_ITERATOR_INIT(model2->data);
-    struct cpuX86cpuid *cpuid1;
-    struct cpuX86cpuid *cpuid2;
+    virCPUx86CPUID *cpuid1;
+    virCPUx86CPUID *cpuid2;
 
     while ((cpuid1 = x86DataCpuidNext(&iter1))) {
         enum compare_result match = SUPERSET;
@@ -1140,7 +1140,7 @@ static char *
 x86CPUDataFormat(const virCPUData *data)
 {
     struct data_iterator iter = DATA_ITERATOR_INIT(data->data.x86);
-    struct cpuX86cpuid *cpuid;
+    virCPUx86CPUID *cpuid;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
@@ -1172,7 +1172,7 @@ x86CPUDataParse(const char *xmlStr)
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
     struct cpuX86Data *data = NULL;
-    struct cpuX86cpuid cpuid;
+    virCPUx86CPUID cpuid;
     size_t i;
     int n;
 
@@ -1709,7 +1709,7 @@ error:
 
 #if HAVE_CPUID
 static inline void
-cpuidCall(struct cpuX86cpuid *cpuid)
+cpuidCall(virCPUx86CPUID *cpuid)
 {
 # if __x86_64__
     asm("xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
@@ -1743,11 +1743,11 @@ cpuidCall(struct cpuX86cpuid *cpuid)
 
 
 static int
-cpuidSet(uint32_t base, struct cpuX86cpuid **set)
+cpuidSet(uint32_t base, virCPUx86CPUID **set)
 {
     uint32_t max;
     uint32_t i;
-    struct cpuX86cpuid cpuid = { base, 0, 0, 0, 0 };
+    virCPUx86CPUID cpuid = { base, 0, 0, 0, 0 };
 
     cpuidCall(&cpuid);
     max = cpuid.eax - base;
