@@ -2401,7 +2401,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM(
         #include <net/if_dl.h>
      ]],
      [[
-        link_addr(NULL, NULL)]])],
+        link_addr(0, 0)]])],
      [AC_DEFINE([HAVE_DECL_LINK_ADDR],
                 [1],
                 [whether link_addr is available])])
