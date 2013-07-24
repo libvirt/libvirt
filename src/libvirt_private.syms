@@ -1096,8 +1096,11 @@ virAuditSend;
 
 # util/virauth.h
 virAuthGetConfigFilePath;
+virAuthGetConfigFilePathURI;
 virAuthGetPassword;
+virAuthGetPasswordPath;
 virAuthGetUsername;
+virAuthGetUsernamePath;
 
 
 # util/virauthconfig.h
