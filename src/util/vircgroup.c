@@ -95,9 +95,10 @@ bool virCgroupAvailable(void)
     return ret;
 }
 
-bool virCgroupIsValidMachineGroup(virCgroupPtr group,
-                                  const char *name,
-                                  const char *drivername)
+static bool
+virCgroupIsValidMachineGroup(virCgroupPtr group,
+                             const char *name,
+                             const char *drivername)
 {
     size_t i;
     bool valid = false;

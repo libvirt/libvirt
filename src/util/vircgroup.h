@@ -48,11 +48,6 @@ VIR_ENUM_DECL(virCgroupController);
 
 bool virCgroupAvailable(void);
 
-bool virCgroupIsValidMachineGroup(virCgroupPtr group,
-                                  const char *machinename,
-                                  const char *drivername);
-
-
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
