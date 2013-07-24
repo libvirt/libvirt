@@ -1575,6 +1575,28 @@ int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 }
 #endif
 
+/*
+ * Returns 0 on success (but @group may be NULL), -1 on fatal error
+ */
+int virCgroupNewDetectMachine(const char *name,
+                              const char *drivername,
+                              pid_t pid,
+                              virCgroupPtr *group)
+{
+    if (virCgroupNewDetect(pid, group) < 0) {
+        if (virCgroupNewIgnoreError())
+            return 0;
+        return -1;
+    }
+
+    if (!virCgroupIsValidMachineGroup(*group, name, drivername)) {
+        virCgroupFree(group);
+        return 0;
+    }
+
+    return 0;
+}
+
 int virCgroupNewMachine(const char *name,
                         const char *drivername,
                         bool privileged ATTRIBUTE_UNUSED,

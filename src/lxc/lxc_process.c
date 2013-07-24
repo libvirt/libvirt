@@ -1189,16 +1189,14 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0)
+    if (virCgroupNewDetectMachine(vm->def->name, "lxc",
+                                  vm->pid, &priv->cgroup) < 0)
         goto error;
 
-    if (!virCgroupIsValidMachineGroup(priv->cgroup,
-                                      vm->def->name,
-                                      "lxc")) {
+    if (!priv->cgroup) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cgroup name is not valid for machine %s"),
+                       _("No valid cgroup for machine %s"),
                        vm->def->name);
-        virCgroupFree(&priv->cgroup);
         goto error;
     }
 
@@ -1399,16 +1397,14 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
 
-        if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0)
+        if (virCgroupNewDetectMachine(vm->def->name, "lxc",
+                                      vm->pid, &priv->cgroup) < 0)
             goto error;
 
-        if (!virCgroupIsValidMachineGroup(priv->cgroup,
-                                          vm->def->name,
-                                          "lxc")) {
+        if (!priv->cgroup) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cgroup name is not valid for machine %s"),
+                           _("No valid cgroup for machine %s"),
                            vm->def->name);
-            virCgroupFree(&priv->cgroup);
             goto error;
         }
 

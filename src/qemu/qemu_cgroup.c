@@ -704,19 +704,11 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
 
     virCgroupFree(&priv->cgroup);
 
-    if (virCgroupNewDetect(vm->pid, &priv->cgroup) < 0) {
-        if (virCgroupNewIgnoreError())
-            goto done;
+    if (virCgroupNewDetectMachine(vm->def->name,
+                                  "qemu",
+                                  vm->pid,
+                                  &priv->cgroup) < 0)
         goto cleanup;
-    }
-
-    if (!virCgroupIsValidMachineGroup(priv->cgroup,
-                                      vm->def->name,
-                                      "qemu")) {
-        VIR_DEBUG("Cgroup name is not valid for machine");
-        virCgroupFree(&priv->cgroup);
-        goto done;
-    }
 
 done:
     ret = 0;

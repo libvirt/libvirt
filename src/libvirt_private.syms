@@ -1192,6 +1192,7 @@ virCgroupKillPainfully;
 virCgroupKillRecursive;
 virCgroupMoveTask;
 virCgroupNewDetect;
+virCgroupNewDetectMachine;
 virCgroupNewDomainPartition;
 virCgroupNewEmulator;
 virCgroupNewIgnoreError;

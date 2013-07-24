@@ -83,6 +83,11 @@ int virCgroupNewEmulator(virCgroupPtr domain,
 int virCgroupNewDetect(pid_t pid,
                        virCgroupPtr *group);
 
+int virCgroupNewDetectMachine(const char *name,
+                              const char *drivername,
+                              pid_t pid,
+                              virCgroupPtr *group);
+
 int virCgroupNewMachine(const char *name,
                         const char *drivername,
                         bool privileged,
