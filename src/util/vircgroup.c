@@ -96,9 +96,10 @@ bool virCgroupAvailable(void)
 }
 
 static bool
-virCgroupIsValidMachineGroup(virCgroupPtr group,
-                             const char *name,
-                             const char *drivername)
+virCgroupValidateMachineGroup(virCgroupPtr group,
+                              const char *name,
+                              const char *drivername,
+                              bool stripEmulatorSuffix)
 {
     size_t i;
     bool valid = false;
@@ -120,12 +121,26 @@ virCgroupIsValidMachineGroup(virCgroupPtr group,
         tmp = strrchr(group->controllers[i].placement, '/');
         if (!tmp)
             goto cleanup;
+
+        if (stripEmulatorSuffix &&
+            (i == VIR_CGROUP_CONTROLLER_CPU ||
+             i == VIR_CGROUP_CONTROLLER_CPUACCT ||
+             i == VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (STREQ(tmp, "/emulator"))
+                *tmp = '\0';
+            tmp = strrchr(group->controllers[i].placement, '/');
+            if (!tmp)
+                goto cleanup;
+        }
+
         tmp++;
 
         if (STRNEQ(tmp, name) &&
-            STRNEQ(tmp, partname))
+            STRNEQ(tmp, partname)) {
+            VIR_DEBUG("Name '%s' does not match '%s' or '%s'",
+                      tmp, name, partname);
             goto cleanup;
-
+        }
     }
 
     valid = true;
@@ -1590,7 +1605,9 @@ int virCgroupNewDetectMachine(const char *name,
         return -1;
     }
 
-    if (!virCgroupIsValidMachineGroup(*group, name, drivername)) {
+    if (!virCgroupValidateMachineGroup(*group, name, drivername, true)) {
+        VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
+                  name, drivername);
         virCgroupFree(group);
         return 0;
     }
