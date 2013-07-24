@@ -195,7 +195,7 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     if (virDBusMessageEncode(msg,
                              "sais",
                              in_str1,
-                             (long long)3, in_int32a, in_int32b, in_int32c,
+                             3, in_int32a, in_int32b, in_int32c,
                              in_str2) < 0) {
         VIR_DEBUG("Failed to encode arguments");
         goto cleanup;
