@@ -1190,7 +1190,7 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     if (virCgroupNewDetectMachine(vm->def->name, "lxc",
-                                  vm->pid, &priv->cgroup) < 0)
+                                  vm->pid, -1, &priv->cgroup) < 0)
         goto error;
 
     if (!priv->cgroup) {
@@ -1398,7 +1398,7 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
             goto error;
 
         if (virCgroupNewDetectMachine(vm->def->name, "lxc",
-                                      vm->pid, &priv->cgroup) < 0)
+                                      vm->pid, -1, &priv->cgroup) < 0)
             goto error;
 
         if (!priv->cgroup) {

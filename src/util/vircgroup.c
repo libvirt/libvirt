@@ -1406,7 +1406,7 @@ int virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
 */
 int virCgroupNewSelf(virCgroupPtr *group)
 {
-    return virCgroupNewDetect(-1, group);
+    return virCgroupNewDetect(-1, -1, group);
 }
 
 
@@ -1577,12 +1577,14 @@ int virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupNewDetect(pid_t pid,
+                       int controllers,
                        virCgroupPtr *group)
 {
-    return virCgroupNew(pid, "", NULL, -1, group);
+    return virCgroupNew(pid, "", NULL, controllers, group);
 }
 #else
 int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
+                       int controllers ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -1597,9 +1599,10 @@ int virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 int virCgroupNewDetectMachine(const char *name,
                               const char *drivername,
                               pid_t pid,
+                              int controllers,
                               virCgroupPtr *group)
 {
-    if (virCgroupNewDetect(pid, group) < 0) {
+    if (virCgroupNewDetect(pid, controllers, group) < 0) {
         if (virCgroupNewIgnoreError())
             return 0;
         return -1;

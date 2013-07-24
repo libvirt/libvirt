@@ -76,11 +76,13 @@ int virCgroupNewEmulator(virCgroupPtr domain,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 int virCgroupNewDetect(pid_t pid,
+                       int controllers,
                        virCgroupPtr *group);
 
 int virCgroupNewDetectMachine(const char *name,
                               const char *drivername,
                               pid_t pid,
+                              int controllers,
                               virCgroupPtr *group);
 
 int virCgroupNewMachine(const char *name,
