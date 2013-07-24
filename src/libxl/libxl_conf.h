@@ -126,6 +126,6 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
-                       virDomainDefPtr def, libxl_domain_config *d_config);
+                       virDomainObjPtr vm, libxl_domain_config *d_config);
 
 #endif /* LIBXL_CONF_H */

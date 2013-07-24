@@ -331,8 +331,10 @@ error:
 }
 
 static int
-libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakeDomBuildInfo(virDomainObjPtr vm, libxl_domain_config *d_config)
 {
+    virDomainDefPtr def = vm->def;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = STREQ(def->os.type, "hvm");
     size_t i;
@@ -343,8 +345,14 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_HVM);
     else
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PV);
+
     b_info->max_vcpus = def->maxvcpus;
-    libxl_bitmap_set((&b_info->avail_vcpus), def->vcpus);
+    if (libxl_cpu_bitmap_alloc(priv->ctx, &b_info->avail_vcpus, def->maxvcpus))
+        goto error;
+    libxl_bitmap_set_none(&b_info->avail_vcpus);
+    for (i = 0; i < def->vcpus; i++)
+        libxl_bitmap_set((&b_info->avail_vcpus), i);
+
     if (def->clock.ntimers > 0 &&
         def->clock.timers[0]->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         switch (def->clock.timers[0]->mode) {
@@ -795,14 +803,16 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 
 int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
-                       virDomainDefPtr def, libxl_domain_config *d_config)
+                       virDomainObjPtr vm, libxl_domain_config *d_config)
 {
+    virDomainDefPtr def = vm->def;
+
     libxl_domain_config_init(d_config);
 
     if (libxlMakeDomCreateInfo(driver, def, &d_config->c_info) < 0)
         return -1;
 
-    if (libxlMakeDomBuildInfo(def, d_config) < 0) {
+    if (libxlMakeDomBuildInfo(vm, d_config) < 0) {
         return -1;
     }
 
