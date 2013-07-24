@@ -730,7 +730,7 @@ virErrorMsg(virErrorNumber error, const char *info)
             return NULL;
         case VIR_ERR_INTERNAL_ERROR:
             if (info != NULL)
-              errmsg = _("internal error %s");
+              errmsg = _("internal error: %s");
             else
               errmsg = _("internal error");
             break;
