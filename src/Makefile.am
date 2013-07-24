@@ -728,7 +728,11 @@ PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_network.c
 
 NETWORK_DRIVER_SOURCES =					\
-		network/bridge_driver.h network/bridge_driver.c
+		network/bridge_driver.h network/bridge_driver.c \
+		network/bridge_driver_platform.h 		\
+		network/bridge_driver_platform.c		\
+		$(NULL)
+EXTRA_DIST += network/bridge_driver_linux.c network/bridge_driver_nop.c
 
 INTERFACE_DRIVER_SOURCES =
 
