@@ -536,7 +536,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
 
     /* Format children */
     virBufferAdjustIndent(&childrenBuf, indent + 2);
-    if (def->arch)
+    if (def->type == VIR_CPU_TYPE_HOST && def->arch)
         virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
     if (virCPUDefFormatBuf(&childrenBuf, def, updateCPU) < 0)

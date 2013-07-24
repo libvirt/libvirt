@@ -1,5 +1,4 @@
 <cpu mode='custom' match='exact'>
-  <arch>x86_64</arch>
   <model fallback='forbid'>Haswell-noTSX</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='vme'/>
