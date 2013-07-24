@@ -71,9 +71,10 @@ static int virCgroupPartitionEscape(char **path);
 
 bool virCgroupAvailable(void)
 {
+    bool ret = false;
+#ifdef HAVE_GETMNTENT_R
     FILE *mounts = NULL;
     struct mntent entry;
-    bool ret = false;
     char buf[CGROUP_MAX_VAL];
 
     if (!virFileExists("/proc/cgroups"))
@@ -90,6 +91,7 @@ bool virCgroupAvailable(void)
     }
 
     VIR_FORCE_FCLOSE(mounts);
+#endif
     return ret;
 }
 
