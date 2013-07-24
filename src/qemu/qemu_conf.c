@@ -1248,6 +1248,7 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     char *poolxml = NULL;
     virStorageVolInfo info;
     int ret = -1;
+    virErrorPtr savedError = NULL;
 
     if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
         return 0;
@@ -1324,8 +1325,17 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     def->srcpool->voltype = info.type;
     ret = 0;
 cleanup:
-    virStoragePoolFree(pool);
-    virStorageVolFree(vol);
+    if (ret < 0)
+        savedError = virSaveLastError();
+    if (pool)
+        virStoragePoolFree(pool);
+    if (vol)
+        virStorageVolFree(vol);
+    if (savedError) {
+        virSetError(savedError);
+        virFreeError(savedError);
+    }
+
     VIR_FREE(poolxml);
     virStoragePoolDefFree(pooldef);
     return ret;
