@@ -918,7 +918,7 @@ qemuAgentGuestSync(qemuAgentPtr mon)
 
     if (virAsprintf(&sync_msg.txBuffer,
                     "{\"execute\":\"guest-sync\", "
-                    "\"arguments\":{\"id\":%llu}}", id) < 0)
+                    "\"arguments\":{\"id\":%llu}}\n", id) < 0)
         return -1;
 
     sync_msg.txLength = strlen(sync_msg.txBuffer);
