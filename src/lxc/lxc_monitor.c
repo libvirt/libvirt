@@ -205,6 +205,9 @@ static void virLXCMonitorDispose(void *opaque)
 
 void virLXCMonitorClose(virLXCMonitorPtr mon)
 {
+    virDomainObjPtr vm;
+    virNetClientPtr client;
+
     VIR_DEBUG("mon=%p", mon);
     if (mon->client) {
         /* When manually closing the monitor, we don't
@@ -212,9 +215,18 @@ void virLXCMonitorClose(virLXCMonitorPtr mon)
          * the caller is not re-entrant safe
          */
         VIR_DEBUG("Clear EOF callback mon=%p", mon);
-        mon->cb.eofNotify = NULL;
-        virNetClientClose(mon->client);
-        virObjectUnref(mon->client);
+        vm = mon->vm;
+        client = mon->client;
         mon->client = NULL;
+        mon->cb.eofNotify = NULL;
+
+        virObjectRef(vm);
+        virObjectUnlock(vm);
+
+        virNetClientClose(client);
+        virObjectUnref(client);
+
+        virObjectLock(vm);
+        virObjectUnref(vm);
     }
 }
