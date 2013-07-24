@@ -165,6 +165,7 @@
 /tests/object-locking-files.txt
 /tests/object-locking.cm[ix]
 /tests/openvzutilstest
+/tests/qemuagenttest
 /tests/qemuargv2xmltest
 /tests/qemuhelptest
 /tests/qemuhotplugtest
