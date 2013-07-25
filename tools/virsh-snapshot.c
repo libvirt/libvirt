@@ -1678,7 +1678,8 @@ cleanup:
     vshSnapshotListFree(snaplist);
     VIR_FREE(parent_snap);
     VIR_FREE(state);
-    virDomainSnapshotFree(start);
+    if (start)
+        virDomainSnapshotFree(start);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
