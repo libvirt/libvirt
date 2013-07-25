@@ -660,8 +660,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
      * but is this safe ?  I think it is, because the callback
      * will try to acquire the virDomainObjPtr mutex next */
     if (eof) {
-        void (*eofNotify)(qemuMonitorPtr, virDomainObjPtr)
-            = mon->cb->eofNotify;
+        qemuMonitorEofNotifyCallback eofNotify = mon->cb->eofNotify;
         virDomainObjPtr vm = mon->vm;
 
         /* Make sure anyone waiting wakes up now */
@@ -671,8 +670,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm);
     } else if (error) {
-        void (*errorNotify)(qemuMonitorPtr, virDomainObjPtr)
-            = mon->cb->errorNotify;
+        qemuMonitorErrorNotifyCallback errorNotify = mon->cb->errorNotify;
         virDomainObjPtr vm = mon->vm;
 
         /* Make sure anyone waiting wakes up now */
