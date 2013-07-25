@@ -201,7 +201,7 @@ qemuMonitorTestIO(virNetSocketPtr sock,
          * if so, handle that command
          */
         t1 = test->incoming;
-        while ((t2 = strstr(t1, "\r\n"))) {
+        while ((t2 = strstr(t1, "\n"))) {
             *t2 = '\0';
 
             if (qemuMonitorTestProcessCommand(test, t1) < 0) {
@@ -209,7 +209,7 @@ qemuMonitorTestIO(virNetSocketPtr sock,
                 goto cleanup;
             }
 
-            t1 = t2 + 2;
+            t1 = t2 + 1;
         }
         used = t1 - test->incoming;
         memmove(test->incoming, t1, test->incomingLength - used);
