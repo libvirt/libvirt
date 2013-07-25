@@ -94,12 +94,8 @@ qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
     }
 
     want -= 2;
-    memcpy(test->outgoing + test->outgoingLength,
-           response,
-           want);
-    memcpy(test->outgoing + test->outgoingLength + want,
-           "\r\n",
-           2);
+    memcpy(test->outgoing + test->outgoingLength, response, want);
+    memcpy(test->outgoing + test->outgoingLength + want, "\r\n", 2);
     test->outgoingLength += want + 2;
     return 0;
 }
@@ -484,10 +480,7 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     if (!(test->vm = virDomainObjNew(xmlopt)))
         goto error;
 
-    if (virNetSocketNewListenUNIX(path,
-                                  0700,
-                                  getuid(),
-                                  getgid(),
+    if (virNetSocketNewListenUNIX(path, 0700, getuid(), getgid(),
                                   &test->server) < 0)
         goto error;
 
