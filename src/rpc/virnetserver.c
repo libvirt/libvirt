@@ -115,6 +115,8 @@ struct _virNetServer {
 
 static virClassPtr virNetServerClass;
 static void virNetServerDispose(void *obj);
+static void virNetServerUpdateServicesLocked(virNetServerPtr srv,
+                                             bool enabled);
 
 static int virNetServerOnceInit(void)
 {
@@ -269,6 +271,12 @@ static int virNetServerAddClient(virNetServerPtr srv,
         goto error;
     srv->clients[srv->nclients-1] = client;
     virObjectRef(client);
+
+    if (srv->nclients == srv->nclients_max) {
+        /* Temporarily stop accepting new clients */
+        VIR_DEBUG("Temporarily suspending services due to max_clients");
+        virNetServerUpdateServicesLocked(srv, false);
+    }
 
     virNetServerClientSetDispatcher(client,
                                     virNetServerDispatchNewMessage,
@@ -1034,15 +1042,22 @@ static void virNetServerAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,
 }
 
 
-void virNetServerUpdateServices(virNetServerPtr srv,
-                                bool enabled)
+static void
+virNetServerUpdateServicesLocked(virNetServerPtr srv,
+                                 bool enabled)
 {
     size_t i;
 
-    virObjectLock(srv);
     for (i = 0; i < srv->nservices; i++)
         virNetServerServiceToggle(srv->services[i], enabled);
+}
 
+
+void virNetServerUpdateServices(virNetServerPtr srv,
+                                bool enabled)
+{
+    virObjectLock(srv);
+    virNetServerUpdateServicesLocked(srv, enabled);
     virObjectUnlock(srv);
 }
 
@@ -1118,6 +1133,14 @@ void virNetServerRun(virNetServerPtr srv)
                 } else {
                     VIR_FREE(srv->clients);
                     srv->nclients = 0;
+                }
+
+                /* Enable services if we can accept a new client.
+                 * The new client can be accepted if we are at the limit. */
+                if (srv->nclients == srv->nclients_max - 1) {
+                    /* Now it makes sense to accept() a new client. */
+                    VIR_DEBUG("Re-enabling services");
+                    virNetServerUpdateServicesLocked(srv, true);
                 }
 
                 virObjectUnlock(srv);
