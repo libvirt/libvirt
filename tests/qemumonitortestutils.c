@@ -36,12 +36,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-typedef struct _qemuMonitorTestItem qemuMonitorTestItem;
-typedef qemuMonitorTestItem *qemuMonitorTestItemPtr;
-
 struct _qemuMonitorTestItem {
-    char *command_name;
-    char *response;
+    qemuMonitorTestResponseCallback cb;
+    void *opaque;
+    virFreeCallback freecb;
 };
 
 struct _qemuMonitorTest {
@@ -74,13 +72,23 @@ struct _qemuMonitorTest {
 };
 
 
-static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item);
+static void
+qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
+{
+    if (!item)
+        return;
+
+    if (item->freecb)
+        (item->freecb)(item->opaque);
+
+    VIR_FREE(item);
+}
 
 
 /*
  * Appends data for a reply to the outgoing buffer
  */
-static int
+int
 qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
                           const char *response)
 {
@@ -101,81 +109,17 @@ qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
 }
 
 
-/*
- * Processes a single line, looking for a matching expected
- * item to reply with, else replies with an error
- */
 static int
-qemuMonitorTestProcessCommandJSON(qemuMonitorTestPtr test,
-                                  const char *cmdstr)
+qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
 {
-    virJSONValuePtr val;
-    const char *cmdname;
-    int ret = -1;
-
-    if (!(val = virJSONValueFromString(cmdstr)))
-        return -1;
-
-    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Missing command name in %s", cmdstr);
-        goto cleanup;
-    }
-
-    if (test->nitems == 0 ||
-        STRNEQ(test->items[0]->command_name, cmdname)) {
-        ret = qemuMonitorTestAddReponse(test,
-                                        "{ \"error\": "
-                                        " { \"desc\": \"Unexpected command\", "
-                                        "   \"class\": \"UnexpectedCommand\" } }");
+    if (test->json) {
+        return qemuMonitorTestAddReponse(test,
+                                         "{ \"error\": "
+                                         " { \"desc\": \"Unexpected command\", "
+                                         "   \"class\": \"UnexpectedCommand\" } }");
     } else {
-        ret = qemuMonitorTestAddReponse(test, test->items[0]->response);
-        qemuMonitorTestItemFree(test->items[0]);
-        if (VIR_DELETE_ELEMENT(test->items, 0, test->nitems) < 0) {
-            ret = -1;
-            goto cleanup;
-        }
+        return qemuMonitorTestAddReponse(test, "unexpected command");
     }
-
-cleanup:
-    virJSONValueFree(val);
-    return ret;
-}
-
-
-static int
-qemuMonitorTestProcessCommandText(qemuMonitorTestPtr test,
-                                  const char *cmdstr)
-{
-    char *tmp;
-    char *cmdname;
-    int ret = -1;
-
-    if (VIR_STRDUP(cmdname, cmdstr) < 0)
-        return -1;
-    if (!(tmp = strchr(cmdname, ' '))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Cannot find command name in '%s'", cmdstr);
-        goto cleanup;
-    }
-    *tmp = '\0';
-
-    if (test->nitems == 0 ||
-        STRNEQ(test->items[0]->command_name, cmdname)) {
-        ret = qemuMonitorTestAddReponse(test,
-                                        "unexpected command");
-    } else {
-        ret = qemuMonitorTestAddReponse(test, test->items[0]->response);
-        qemuMonitorTestItemFree(test->items[0]);
-        if (VIR_DELETE_ELEMENT(test->items, 0, test->nitems) < 0) {
-            ret = -1;
-            goto cleanup;
-        }
-    }
-
-cleanup:
-    VIR_FREE(cmdname);
-    return ret;
 }
 
 
@@ -183,10 +127,19 @@ static int
 qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
                               const char *cmdstr)
 {
-    if (test->json)
-        return qemuMonitorTestProcessCommandJSON(test ,cmdstr);
-    else
-        return qemuMonitorTestProcessCommandText(test ,cmdstr);
+    int ret;
+
+    if (test->nitems == 0) {
+        return qemuMonitorTestAddUnexpectedErrorResponse(test);
+    } else {
+        qemuMonitorTestItemPtr item = test->items[0];
+        ret = (item->cb)(test, item, cmdstr);
+        qemuMonitorTestItemFree(item);
+        if (VIR_DELETE_ELEMENT(test->items, 0, test->nitems) < 0)
+            return -1;
+    }
+
+    return ret;
 }
 
 
@@ -317,19 +270,6 @@ qemuMonitorTestWorker(void *opaque)
 
 
 static void
-qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
-{
-    if (!item)
-        return;
-
-    VIR_FREE(item->command_name);
-    VIR_FREE(item->response);
-
-    VIR_FREE(item);
-}
-
-
-static void
 qemuMonitorTestFreeTimer(int timer ATTRIBUTE_UNUSED,
                          void *opaque ATTRIBUTE_UNUSED)
 {
@@ -392,18 +332,19 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
 
 
 int
-qemuMonitorTestAddItem(qemuMonitorTestPtr test,
-                       const char *command_name,
-                       const char *response)
+qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
+                          qemuMonitorTestResponseCallback cb,
+                          void *opaque,
+                          virFreeCallback freecb)
 {
     qemuMonitorTestItemPtr item;
 
     if (VIR_ALLOC(item) < 0)
         goto error;
 
-    if (VIR_STRDUP(item->command_name, command_name) < 0 ||
-        VIR_STRDUP(item->response, response) < 0)
-        goto error;
+    item->cb = cb;
+    item->freecb = freecb;
+    item->opaque = opaque;
 
     virMutexLock(&test->lock);
     if (VIR_APPEND_ELEMENT(test->items, test->nitems, item) < 0) {
@@ -415,8 +356,89 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     return 0;
 
 error:
-    qemuMonitorTestItemFree(item);
+    if (freecb)
+        (freecb)(opaque);
+    VIR_FREE(item);
     return -1;
+}
+
+void *
+qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item)
+{
+    return item ? item->opaque : NULL;
+}
+
+
+struct qemuMonitorTestDefaultHandlerData {
+    const char *command_name;
+    const char *response;
+};
+
+
+static int
+qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
+                                     qemuMonitorTestItemPtr item,
+                                     const char *cmdstr)
+{
+    struct qemuMonitorTestDefaultHandlerData *data = item->opaque;
+    virJSONValuePtr val = NULL;
+    char *cmdcopy = NULL;
+    const char *cmdname;
+    char *tmp;
+    int ret = -1;
+
+    if (test->json) {
+        if (!(val = virJSONValueFromString(cmdstr)))
+            return -1;
+
+        if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "Missing command name in %s", cmdstr);
+            goto cleanup;
+        }
+    } else {
+        if (VIR_STRDUP(cmdcopy, cmdstr) < 0)
+            return -1;
+
+        cmdname = cmdcopy;
+
+        if (!(tmp = strchr(cmdcopy, ' '))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "Cannot find command name in '%s'", cmdstr);
+            goto cleanup;
+        }
+        *tmp = '\0';
+    }
+
+    if (STRNEQ(data->command_name, cmdname))
+        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+    else
+        ret = qemuMonitorTestAddReponse(test, data->response);
+
+cleanup:
+    VIR_FREE(cmdcopy);
+    virJSONValueFree(val);
+    return ret;
+}
+
+
+int
+qemuMonitorTestAddItem(qemuMonitorTestPtr test,
+                       const char *command_name,
+                       const char *response)
+{
+    struct qemuMonitorTestDefaultHandlerData *data;
+
+    if (VIR_ALLOC(data) < 0)
+        return -1;
+
+    data->command_name = command_name;
+    data->response = response;
+
+    return qemuMonitorTestAddHandler(test,
+                                     qemuMonitorTestProcessCommandDefault,
+                                     data,
+                                     free);
 }
 
 
@@ -434,7 +456,7 @@ qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
-static qemuMonitorCallbacks qemuCallbacks = {
+static qemuMonitorCallbacks qemuMonitorTestCallbacks = {
     .eofNotify = qemuMonitorTestEOFNotify,
     .errorNotify = qemuMonitorTestErrorNotify,
 };
@@ -502,6 +524,8 @@ error:
 static int
 qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
 {
+    int events = VIR_EVENT_HANDLE_READABLE;
+
     if (!test)
         return -1;
 
@@ -511,8 +535,11 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
     if (!test->client)
         goto error;
 
+    if (test->outgoingLength > 0)
+        events = VIR_EVENT_HANDLE_WRITABLE;
+
     if (virNetSocketAddIOCallback(test->client,
-                                  VIR_EVENT_HANDLE_WRITABLE,
+                                  events,
                                   qemuMonitorTestIO,
                                   test,
                                   NULL) < 0)
@@ -566,7 +593,7 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
                                       json,
-                                      &qemuCallbacks)))
+                                      &qemuMonitorTestCallbacks)))
         goto error;
 
     virObjectLock(test->mon);

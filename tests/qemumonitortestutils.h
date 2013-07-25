@@ -26,6 +26,23 @@
 typedef struct _qemuMonitorTest qemuMonitorTest;
 typedef qemuMonitorTest *qemuMonitorTestPtr;
 
+typedef struct _qemuMonitorTestItem qemuMonitorTestItem;
+typedef qemuMonitorTestItem *qemuMonitorTestItemPtr;
+typedef int (*qemuMonitorTestResponseCallback)(qemuMonitorTestPtr test,
+                                               qemuMonitorTestItemPtr item,
+                                               const char *message);
+
+int qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
+                              qemuMonitorTestResponseCallback cb,
+                              void *opaque,
+                              virFreeCallback freecb);
+
+int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
+                              const char *response);
+
+void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
+
+
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
                            const char *response);
