@@ -137,8 +137,8 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
 
         if (STRNEQ(tmp, name) &&
             STRNEQ(tmp, partname)) {
-            VIR_DEBUG("Name '%s' does not match '%s' or '%s'",
-                      tmp, name, partname);
+            VIR_DEBUG("Name '%s' for controller '%s' does not match '%s' or '%s'",
+                      tmp, virCgroupControllerTypeToString(i), name, partname);
             goto cleanup;
         }
     }
@@ -426,7 +426,8 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
                  * selfpath=="/libvirt.service" + path="" -> "/libvirt.service"
                  * selfpath=="/libvirt.service" + path="foo" -> "/libvirt.service/foo"
                  */
-                if (typelen == len && STREQLEN(typestr, tmp, len)) {
+                if (typelen == len && STREQLEN(typestr, tmp, len) &&
+                    group->controllers[i].mountPoint != NULL) {
                     if (virAsprintf(&group->controllers[i].placement,
                                     "%s%s%s", selfpath,
                                     (STREQ(selfpath, "/") ||
