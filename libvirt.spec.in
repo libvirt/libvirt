@@ -422,7 +422,9 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
+%if (0%{?rhel} && 0%{?rhel} < 7) || (0%{?fedora} && 0%{?fedora} < 19)
 BuildRequires: libgcrypt-devel
+%endif
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
 %if %{with_libvirtd}
