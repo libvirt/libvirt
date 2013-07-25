@@ -53,6 +53,12 @@ int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
 
 int qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test);
 
+int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
+                                 const char *cmdname,
+                                 const char *response,
+                                 ...)
+    ATTRIBUTE_SENTINEL;
+
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt);
 
