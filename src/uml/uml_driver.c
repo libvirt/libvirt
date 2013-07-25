@@ -570,8 +570,6 @@ umlStateInitialize(bool privileged,
 
     umlDriverUnlock(uml_driver);
 
-    umlAutostartConfigs(uml_driver);
-
     VIR_FREE(userdir);
 
     virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
@@ -586,6 +584,20 @@ error:
     umlDriverUnlock(uml_driver);
     umlStateCleanup();
     return -1;
+}
+
+/**
+ * umlStateAutoStart:
+ *
+ * Function to autostart the Uml daemons
+ */
+static void
+umlStateAutoStart(void)
+{
+    if (!uml_driver)
+        return;
+
+    umlAutostartConfigs(uml_driver);
 }
 
 static void umlNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
@@ -2885,6 +2897,7 @@ static virDriver umlDriver = {
 static virStateDriver umlStateDriver = {
     .name = "UML",
     .stateInitialize = umlStateInitialize,
+    .stateAutoStart = umlStateAutoStart,
     .stateCleanup = umlStateCleanup,
     .stateReload = umlStateReload,
 };

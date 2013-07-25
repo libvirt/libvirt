@@ -182,7 +182,6 @@ storageStateInitialize(bool privileged,
                                      driverState->configDir,
                                      driverState->autostartDir) < 0)
         goto error;
-    storageDriverAutostart(driverState);
 
     storageDriverUnlock(driverState);
     return 0;
@@ -192,6 +191,22 @@ error:
     storageDriverUnlock(driverState);
     storageStateCleanup();
     return -1;
+}
+
+/**
+ * storageStateAutoStart:
+ *
+ * Function to auto start the storage driver
+ */
+static void
+storageStateAutoStart(void)
+{
+    if (!driverState)
+        return;
+
+    storageDriverLock(driverState);
+    storageDriverAutostart(driverState);
+    storageDriverUnlock(driverState);
 }
 
 /**
@@ -2599,6 +2614,7 @@ static virStorageDriver storageDriver = {
 static virStateDriver stateDriver = {
     .name = "Storage",
     .stateInitialize = storageStateInitialize,
+    .stateAutoStart = storageStateAutoStart,
     .stateCleanup = storageStateCleanup,
     .stateReload = storageStateReload,
 };

@@ -430,7 +430,6 @@ networkStateInitialize(bool privileged,
     networkFindActiveConfigs(driverState);
     networkReloadFirewallRules(driverState);
     networkRefreshDaemons(driverState);
-    networkAutostartConfigs(driverState);
 
     networkDriverUnlock(driverState);
 
@@ -471,6 +470,22 @@ error:
         networkDriverUnlock(driverState);
     networkStateCleanup();
     goto cleanup;
+}
+
+/**
+ * networkStateAutoStart:
+ *
+ * Function to AutoStart the bridge configs
+ */
+static void
+networkStateAutoStart(void)
+{
+    if (!driverState)
+        return;
+
+    networkDriverLock(driverState);
+    networkAutostartConfigs(driverState);
+    networkDriverUnlock(driverState);
 }
 
 /**
@@ -3693,6 +3708,7 @@ static virNetworkDriver networkDriver = {
 static virStateDriver networkStateDriver = {
     .name = "Network",
     .stateInitialize  = networkStateInitialize,
+    .stateAutoStart  = networkStateAutoStart,
     .stateCleanup = networkStateCleanup,
     .stateReload = networkStateReload,
 };

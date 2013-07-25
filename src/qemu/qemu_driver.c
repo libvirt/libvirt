@@ -837,8 +837,6 @@ qemuStateInitialize(bool privileged,
     if (!qemu_driver->workerPool)
         goto error;
 
-    qemuAutostartDomains(qemu_driver);
-
     if (conn)
         virConnectClose(conn);
 
@@ -853,6 +851,20 @@ error:
     VIR_FREE(mempath);
     qemuStateCleanup();
     return -1;
+}
+
+/**
+ * qemuStateAutoStart:
+ *
+ * Function to auto start the QEmu daemons
+ */
+static void
+qemuStateAutoStart(void)
+{
+    if (!qemu_driver)
+        return;
+
+    qemuAutostartDomains(qemu_driver);
 }
 
 static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
@@ -16276,6 +16288,7 @@ static virDriver qemuDriver = {
 static virStateDriver qemuStateDriver = {
     .name = "QEMU",
     .stateInitialize = qemuStateInitialize,
+    .stateAutoStart = qemuStateAutoStart,
     .stateCleanup = qemuStateCleanup,
     .stateReload = qemuStateReload,
     .stateStop = qemuStateStop,
