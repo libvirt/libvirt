@@ -808,7 +808,11 @@ virRegisterStateDriver(virStateDriverPtr driver)
  * @callback: callback to invoke to inhibit shutdown of the daemon
  * @opaque: data to pass to @callback
  *
- * Initialize all virtualization drivers.
+ * Initialize all virtualization drivers. Accomplished in two phases,
+ * the first being state and structure initialization followed by any
+ * auto start supported by the driver.  This is done to ensure dependencies
+ * that some drivers may have on another driver having been initialized
+ * will exist, such as the storage driver's need to use the secret driver.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -834,6 +838,14 @@ int virStateInitialize(bool privileged,
                           err && err->message ? err->message : _("Unknown problem"));
                 return -1;
             }
+        }
+    }
+
+    for (i = 0; i < virStateDriverTabCount; i++) {
+        if (virStateDriverTab[i]->stateAutoStart) {
+            VIR_DEBUG("Running global auto start for %s state driver",
+                      virStateDriverTab[i]->name);
+            virStateDriverTab[i]->stateAutoStart();
         }
     }
     return 0;
