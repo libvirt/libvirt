@@ -869,7 +869,8 @@ error:
 qemuMonitorTestPtr
 qemuMonitorTestNew(bool json,
                    virDomainXMLOptionPtr xmlopt,
-                   virDomainObjPtr vm)
+                   virDomainObjPtr vm,
+                   virQEMUDriverPtr driver)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -882,7 +883,7 @@ qemuMonitorTestNew(bool json,
                                       &src,
                                       json,
                                       &qemuMonitorTestCallbacks,
-                                      NULL)))
+                                      driver)))
         goto error;
 
     virObjectLock(test->mon);
