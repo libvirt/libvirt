@@ -87,6 +87,7 @@ const char *mountsSmall[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
     [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
     [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+    [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
 const char *mountsFull[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu,cpuacct",
@@ -96,6 +97,7 @@ const char *mountsFull[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
     [VIR_CGROUP_CONTROLLER_FREEZER] = "/not/really/sys/fs/cgroup/freezer",
     [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup/blkio",
+    [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/not/really/sys/fs/cgroup/systemd",
 };
 
 const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
@@ -121,6 +123,7 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if (virCgroupNewSelf(&cgroup) < 0) {
@@ -161,6 +164,7 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
         [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
     };
     const char *placementFull[VIR_CGROUP_CONTROLLER_LAST] = {
         [VIR_CGROUP_CONTROLLER_CPU] = "/virtualmachines.partition",
@@ -170,6 +174,7 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/virtualmachines.partition",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if ((rv = virCgroupNewPartition("/virtualmachines", false, -1, &cgroup)) != -1) {
@@ -233,6 +238,7 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/deployment.partition/production.partition",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/deployment.partition/production.partition",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if ((rv = virCgroupNewPartition("/deployment/production", false, -1, &cgroup)) != -1) {
@@ -281,6 +287,7 @@ static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/user/berrange.user/production.partition",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if ((rv = virCgroupNewPartition("/user/berrange.user/production", false, -1, &cgroup)) != -1) {
@@ -336,6 +343,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/production.partition/foo.libvirt-lxc",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/production.partition/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if ((rv = virCgroupNewPartition("/production", true, -1, &partitioncgroup)) != 0) {
@@ -372,6 +380,7 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args ATTRIBUTE_UNU
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/user/berrange/123",
     };
 
     if ((rv = virCgroupNewPartition("/cgroup.evil", true, -1, &partitioncgroup1)) != 0) {

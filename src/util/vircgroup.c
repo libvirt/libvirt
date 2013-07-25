@@ -57,7 +57,8 @@
 
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
-              "freezer", "blkio", "net_cls", "perf_event");
+              "freezer", "blkio", "net_cls", "perf_event",
+              "name=systemd");
 
 typedef enum {
     VIR_CGROUP_NONE = 0, /* create subdir under each cgroup if possible. */
@@ -116,6 +117,9 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         char *tmp;
+
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
 
         if (!group->controllers[i].placement)
             continue;
@@ -331,6 +335,9 @@ static int virCgroupCopyPlacement(virCgroupPtr group,
         if (!group->controllers[i].mountPoint)
             continue;
 
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
         if (path[0] == '/') {
             if (VIR_STRDUP(group->controllers[i].placement, path) < 0)
                 return -1;
@@ -386,6 +393,8 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
     int ret = -1;
     char *procfile;
 
+    VIR_DEBUG("Detecting placement for pid %lld path %s",
+              (unsigned long long)pid, path);
     if (pid == -1) {
         if (VIR_STRDUP(procfile, "/proc/self/cgroup") < 0)
             goto cleanup;
@@ -422,6 +431,7 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
             const char *typestr = virCgroupControllerTypeToString(i);
             int typelen = strlen(typestr);
             char *tmp = controllers;
+
             while (tmp) {
                 char *next = strchr(tmp, ',');
                 int len;
@@ -438,13 +448,20 @@ static int virCgroupDetectPlacement(virCgroupPtr group,
                  * selfpath=="/libvirt.service" + path="foo" -> "/libvirt.service/foo"
                  */
                 if (typelen == len && STREQLEN(typestr, tmp, len) &&
-                    group->controllers[i].mountPoint != NULL) {
-                    if (virAsprintf(&group->controllers[i].placement,
-                                    "%s%s%s", selfpath,
-                                    (STREQ(selfpath, "/") ||
-                                     STREQ(path, "") ? "" : "/"),
-                                    path) < 0)
-                        goto cleanup;
+                    group->controllers[i].mountPoint != NULL &&
+                    group->controllers[i].placement == NULL) {
+                    if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
+                        if (VIR_STRDUP(group->controllers[i].placement,
+                                       selfpath) < 0)
+                            goto cleanup;
+                    } else {
+                        if (virAsprintf(&group->controllers[i].placement,
+                                        "%s%s%s", selfpath,
+                                        (STREQ(selfpath, "/") ||
+                                         STREQ(path, "") ? "" : "/"),
+                                        path) < 0)
+                            goto cleanup;
+                    }
                 }
 
                 tmp = next;
@@ -535,13 +552,16 @@ static int virCgroupDetect(virCgroupPtr group,
         return -1;
     }
 
-    if (parent || path[0] == '/') {
-        if (virCgroupCopyPlacement(group, path, parent) < 0)
-            return -1;
-    } else {
-        if (virCgroupDetectPlacement(group, pid, path) < 0)
-            return -1;
-    }
+    /* In some cases we can copy part of the placement info
+     * based on the parent cgroup...
+     */
+    if ((parent || path[0] == '/') &&
+        virCgroupCopyPlacement(group, path, parent) < 0)
+        return -1;
+
+    /* ... but use /proc/cgroups to fill in the rest */
+    if (virCgroupDetectPlacement(group, pid, path) < 0)
+        return -1;
 
     /* Check that for every mounted controller, we found our placement */
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -833,6 +853,12 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         char *path = NULL;
 
+        /* We must never mkdir() in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
+            VIR_DEBUG("Not creating systemd controller group");
+            continue;
+        }
+
         /* Skip over controllers that aren't mounted */
         if (!group->controllers[i].mountPoint) {
             VIR_DEBUG("Skipping unmounted controller %s",
@@ -1037,6 +1063,10 @@ int virCgroupRemove(virCgroupPtr group)
         if (!group->controllers[i].mountPoint)
             continue;
 
+        /* We must never rmdir() in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
         /* Don't delete the root group, if we accidentally
            ended up in it for some reason */
         if (STREQ(group->controllers[i].placement, "/"))
@@ -1074,6 +1104,10 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         /* Skip over controllers not mounted */
         if (!group->controllers[i].mountPoint)
+            continue;
+
+        /* We must never add tasks in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
         if (virCgroupSetValueU64(group, i, "tasks", (unsigned long long)pid) < 0)
@@ -1175,6 +1209,10 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (!src_group->controllers[i].mountPoint ||
             !dest_group->controllers[i].mountPoint)
+            continue;
+
+        /* We must never move tasks in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
         /* New threads are created in the same group as their parent;
