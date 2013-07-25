@@ -35,7 +35,7 @@ static int
 testQemuMonitorJSONGetStatus(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     bool running = false;
     virDomainPausedReason reason = 0;
@@ -129,7 +129,7 @@ static int
 testQemuMonitorJSONGetVersion(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     int major;
     int minor;
@@ -232,7 +232,7 @@ static int
 testQemuMonitorJSONGetMachines(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorMachineInfoPtr *info;
     int ninfo = 0;
@@ -314,7 +314,7 @@ static int
 testQemuMonitorJSONGetCPUDefinitions(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **cpus = NULL;
     int ncpus = 0;
@@ -380,7 +380,7 @@ static int
 testQemuMonitorJSONGetCommands(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **commands = NULL;
     int ncommands = 0;
@@ -445,7 +445,7 @@ static int
 testQemuMonitorJSONGetTPMModels(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **tpmmodels = NULL;
     int ntpmmodels = 0;
@@ -498,7 +498,7 @@ static int
 testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **params = NULL;
     int nparams = 0;
@@ -599,7 +599,7 @@ static int
 testQemuMonitorJSONAttachChardev(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     virDomainChrSourceDef chr;
     int ret = 0;
 
@@ -680,7 +680,7 @@ static int
 testQemuMonitorJSONDetachChardev(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
 
     if (!test)
@@ -713,7 +713,7 @@ static int
 testQemuMonitorJSONGetListPaths(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONListPathPtr *paths;
     int npaths = 0;
@@ -791,7 +791,7 @@ static int
 testQemuMonitorJSONGetObjectProperty(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONObjectProperty prop;
 
@@ -834,7 +834,7 @@ static int
 testQemuMonitorJSONSetObjectProperty(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONObjectProperty prop;
 
@@ -886,7 +886,7 @@ static int
 testQemuMonitorJSONGetDeviceAliases(const void *data)
 {
     const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **aliases = NULL;
     char **alias;

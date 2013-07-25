@@ -743,6 +743,7 @@ static qemuAgentCallbacks qemuMonitorTestAgentCallbacks = {
 
 static qemuMonitorTestPtr
 qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
+                         virDomainObjPtr vm,
                          virDomainChrSourceDefPtr src)
 {
     qemuMonitorTestPtr test = NULL;
@@ -773,8 +774,14 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
     if (virAsprintf(&path, "%s/qemumonitorjsontest.sock", test->tmpdir) < 0)
         goto error;
 
-    if (!(test->vm = virDomainObjNew(xmlopt)))
-        goto error;
+    if (vm) {
+        virObjectRef(vm);
+        test->vm = vm;
+    } else {
+        test->vm = virDomainObjNew(xmlopt);
+        if (!test->vm)
+            goto error;
+    }
 
     if (virNetSocketNewListenUNIX(path, 0700, getuid(), getgid(),
                                   &test->server) < 0)
@@ -860,12 +867,14 @@ error:
 #define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
 
 qemuMonitorTestPtr
-qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
+qemuMonitorTestNew(bool json,
+                   virDomainXMLOptionPtr xmlopt,
+                   virDomainObjPtr vm)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
 
-    if (!(test = qemuMonitorCommonTestNew(xmlopt, &src)))
+    if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
         goto error;
 
     test->json = json;
@@ -902,7 +911,7 @@ qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
 
-    if (!(test = qemuMonitorCommonTestNew(xmlopt, &src)))
+    if (!(test = qemuMonitorCommonTestNew(xmlopt, NULL, &src)))
         goto error;
 
     if (!(test->agent = qemuAgentOpen(test->vm,

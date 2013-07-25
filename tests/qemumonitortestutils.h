@@ -59,8 +59,12 @@ int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
                                  ...)
     ATTRIBUTE_SENTINEL;
 
+# define qemuMonitorTestNewSimple(json, xmlopt) \
+    qemuMonitorTestNew(json, xmlopt, NULL)
+
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
-                                      virDomainXMLOptionPtr xmlopt);
+                                      virDomainXMLOptionPtr xmlopt,
+                                      virDomainObjPtr vm);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 
