@@ -28,6 +28,7 @@
 
 #include "virthread.h"
 #include "qemu/qemu_monitor.h"
+#include "qemu/qemu_agent.h"
 #include "rpc/virnetsocket.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -62,6 +63,7 @@ struct _qemuMonitorTest {
     virNetSocketPtr client;
 
     qemuMonitorPtr mon;
+    qemuAgentPtr agent;
 
     char *tmpdir;
 
@@ -112,7 +114,7 @@ qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
 static int
 qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
 {
-    if (test->json) {
+    if (test->agent || test->json) {
         return qemuMonitorTestAddReponse(test,
                                          "{ \"error\": "
                                          " { \"desc\": \"Unexpected command\", "
@@ -306,6 +308,11 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
         qemuMonitorClose(test->mon);
     }
 
+    if (test->agent) {
+        virObjectUnlock(test->agent);
+        qemuAgentClose(test->agent);
+    }
+
     virObjectUnref(test->vm);
 
     if (test->running)
@@ -387,7 +394,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     char *tmp;
     int ret = -1;
 
-    if (test->json) {
+    if (test->agent || test->json) {
         if (!(val = virJSONValueFromString(cmdstr)))
             return -1;
 
@@ -442,6 +449,72 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
 }
 
 
+static int
+qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
+                                     qemuMonitorTestItemPtr item ATTRIBUTE_UNUSED,
+                                     const char *cmdstr)
+{
+    virJSONValuePtr val = NULL;
+    virJSONValuePtr args;
+    unsigned long long id;
+    const char *cmdname;
+    char *retmsg = NULL;
+    int ret = -1;
+
+    if (!(val = virJSONValueFromString(cmdstr)))
+        return -1;
+
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Missing guest-sync command name");
+        goto cleanup;
+    }
+
+    if (STRNEQ(cmdname, "guest-sync")) {
+        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        goto cleanup;
+    }
+
+    if (!(args = virJSONValueObjectGet(val, "arguments"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Missing arguments for guest-sync");
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(args, "id", &id)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Missing id for guest sync");
+        goto cleanup;
+    }
+
+    if (virAsprintf(&retmsg, "{\"return\":%llu}", id) < 0)
+        goto cleanup;
+
+
+    ret = qemuMonitorTestAddReponse(test, retmsg);
+
+cleanup:
+    virJSONValueFree(val);
+    VIR_FREE(retmsg);
+    return ret;
+}
+
+
+int
+qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test)
+{
+    if (!test->agent) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "This test is not an agent test");
+        return -1;
+    }
+
+    return qemuMonitorTestAddHandler(test,
+                                     qemuMonitorTestProcessGuestAgentSync,
+                                     NULL, NULL);
+}
+
+
 static void
 qemuMonitorTestEOFNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                          virDomainObjPtr vm ATTRIBUTE_UNUSED)
@@ -459,6 +532,19 @@ qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 static qemuMonitorCallbacks qemuMonitorTestCallbacks = {
     .eofNotify = qemuMonitorTestEOFNotify,
     .errorNotify = qemuMonitorTestErrorNotify,
+};
+
+
+static void
+qemuMonitorTestAgentNotify(qemuAgentPtr agent ATTRIBUTE_UNUSED,
+                           virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+}
+
+
+static qemuAgentCallbacks qemuMonitorTestAgentCallbacks = {
+    .eofNotify = qemuMonitorTestAgentNotify,
+    .errorNotify = qemuMonitorTestAgentNotify,
 };
 
 
@@ -611,6 +697,36 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     return test;
 
 error:
+    virDomainChrSourceDefClear(&src);
+    qemuMonitorTestFree(test);
+    return NULL;
+}
+
+qemuMonitorTestPtr
+qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
+{
+    qemuMonitorTestPtr test = NULL;
+    virDomainChrSourceDef src;
+
+    if (!(test = qemuMonitorCommonTestNew(xmlopt, &src)))
+        goto error;
+
+    if (!(test->agent = qemuAgentOpen(test->vm,
+                                      &src,
+                                      &qemuMonitorTestAgentCallbacks)))
+        goto error;
+
+    virObjectLock(test->agent);
+
+    if (qemuMonitorCommonTestInit(test) < 0)
+        goto error;
+
+    virDomainChrSourceDefClear(&src);
+
+    return test;
+
+error:
+    virDomainChrSourceDefClear(&src);
     qemuMonitorTestFree(test);
     return NULL;
 }
@@ -620,4 +736,11 @@ qemuMonitorPtr
 qemuMonitorTestGetMonitor(qemuMonitorTestPtr test)
 {
     return test->mon;
+}
+
+
+qemuAgentPtr
+qemuMonitorTestGetAgent(qemuMonitorTestPtr test)
+{
+    return test->agent;
 }

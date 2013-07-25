@@ -22,6 +22,7 @@
 
 # include "domain_conf.h"
 # include "qemu/qemu_monitor.h"
+# include "qemu/qemu_agent.h"
 
 typedef struct _qemuMonitorTest qemuMonitorTest;
 typedef qemuMonitorTest *qemuMonitorTestPtr;
@@ -47,12 +48,17 @@ int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
                            const char *response);
 
+int qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test);
+
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt);
+
+qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 
 
 void qemuMonitorTestFree(qemuMonitorTestPtr test);
 
 qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test);
+qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
 
 #endif /* __VIR_QEMU_MONITOR_TEST_UTILS_H__ */
