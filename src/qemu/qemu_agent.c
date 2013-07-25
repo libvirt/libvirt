@@ -930,10 +930,8 @@ qemuAgentGuestSync(qemuAgentPtr mon)
 
     VIR_DEBUG("qemuAgentSend returned: %d", send_ret);
 
-    if (send_ret < 0) {
-        /* error reported */
+    if (send_ret < 0)
         goto cleanup;
-    }
 
     if (!sync_msg.rxObject) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -976,10 +974,8 @@ qemuAgentCommand(qemuAgentPtr mon,
 
     *reply = NULL;
 
-    if (qemuAgentGuestSync(mon) < 0) {
-        /* helper reported the error */
+    if (qemuAgentGuestSync(mon) < 0)
         return -1;
-    }
 
     memset(&msg, 0, sizeof(msg));
 
