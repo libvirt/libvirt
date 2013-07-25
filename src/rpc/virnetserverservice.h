@@ -44,6 +44,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  virNetTLSContextPtr tls,
 # endif
                                                  bool readonly,
+                                                 size_t max_queued_clients,
                                                  size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
@@ -53,6 +54,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   virNetTLSContextPtr tls,
 # endif
                                                   bool readonly,
+                                                  size_t max_queued_clients,
                                                   size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,

@@ -745,6 +745,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
                                            NULL,
 #endif
                                            false,
+                                           0,
                                            5)))
         goto error;
 

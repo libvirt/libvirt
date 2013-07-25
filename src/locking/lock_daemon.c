@@ -671,7 +671,7 @@ virLockDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
 #if WITH_GNUTLS
                                            NULL,
 #endif
-                                           false, 1)))
+                                           false, 0, 1)))
         return -1;
 
     if (virNetServerAddService(srv, svc, NULL) < 0) {

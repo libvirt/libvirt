@@ -485,6 +485,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                            NULL,
 #endif
                                            false,
+                                           config->max_queued_clients,
                                            config->max_client_requests)))
         goto error;
     if (sock_path_ro) {
@@ -497,6 +498,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                  NULL,
 #endif
                                                  true,
+                                                 config->max_queued_clients,
                                                  config->max_client_requests)))
             goto error;
     }
@@ -522,6 +524,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                      NULL,
 #endif
                                                      false,
+                                                     config->max_queued_clients,
                                                      config->max_client_requests)))
                 goto error;
 
@@ -562,6 +565,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                             config->auth_tls,
                                             ctxt,
                                             false,
+                                            config->max_queued_clients,
                                             config->max_client_requests))) {
                 virObjectUnref(ctxt);
                 goto error;

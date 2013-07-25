@@ -97,6 +97,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  virNetTLSContextPtr tls,
 #endif
                                                  bool readonly,
+                                                 size_t max_queued_clients,
                                                  size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
@@ -122,7 +123,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
         goto error;
 
     for (i = 0; i < svc->nsocks; i++) {
-        if (virNetSocketListen(svc->socks[i], 0) < 0)
+        if (virNetSocketListen(svc->socks[i], max_queued_clients) < 0)
             goto error;
 
         /* IO callback is initially disabled, until we're ready
@@ -155,6 +156,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   virNetTLSContextPtr tls,
 #endif
                                                   bool readonly,
+                                                  size_t max_queued_clients,
                                                   size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
@@ -185,7 +187,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
         goto error;
 
     for (i = 0; i < svc->nsocks; i++) {
-        if (virNetSocketListen(svc->socks[i], 0) < 0)
+        if (virNetSocketListen(svc->socks[i], max_queued_clients) < 0)
             goto error;
 
         /* IO callback is initially disabled, until we're ready

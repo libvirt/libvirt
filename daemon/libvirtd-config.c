@@ -414,6 +414,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     GET_CONF_INT(conf, filename, min_workers);
     GET_CONF_INT(conf, filename, max_workers);
     GET_CONF_INT(conf, filename, max_clients);
+    GET_CONF_INT(conf, filename, max_queued_clients);
 
     GET_CONF_INT(conf, filename, prio_workers);
 
