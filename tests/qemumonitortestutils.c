@@ -708,14 +708,16 @@ error:
 
 static void
 qemuMonitorTestEOFNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                         virDomainObjPtr vm ATTRIBUTE_UNUSED)
+                         virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                         void *opaque ATTRIBUTE_UNUSED)
 {
 }
 
 
 static void
 qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                           virDomainObjPtr vm ATTRIBUTE_UNUSED)
+                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                           void *opaque ATTRIBUTE_UNUSED)
 {
 }
 
@@ -870,7 +872,8 @@ qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
                                       json,
-                                      &qemuMonitorTestCallbacks)))
+                                      &qemuMonitorTestCallbacks,
+                                      NULL)))
         goto error;
 
     virObjectLock(test->mon);

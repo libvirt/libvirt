@@ -69,11 +69,14 @@ struct _qemuMonitorMessage {
 
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitorPtr mon,
-                                           virDomainObjPtr vm);
+                                           virDomainObjPtr vm,
+                                           void *opaque);
 typedef void (*qemuMonitorEofNotifyCallback)(qemuMonitorPtr mon,
-                                             virDomainObjPtr vm);
+                                             virDomainObjPtr vm,
+                                             void *opaque);
 typedef void (*qemuMonitorErrorNotifyCallback)(qemuMonitorPtr mon,
-                                               virDomainObjPtr vm);
+                                               virDomainObjPtr vm,
+                                               void *opaque);
 /* XXX we'd really like to avoid virConnectPtr here
  * It is required so the callback can find the active
  * secret driver. Need to change this to work like the
@@ -84,28 +87,37 @@ typedef int (*qemuMonitorDiskSecretLookupCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
                                                    const char *path,
                                                    char **secret,
-                                                   size_t *secretLen);
+                                                   size_t *secretLen,
+                                                   void *opaque);
 typedef int (*qemuMonitorDomainShutdownCallback)(qemuMonitorPtr mon,
-                                                 virDomainObjPtr vm);
+                                                 virDomainObjPtr vm,
+                                                 void *opaque);
 typedef int (*qemuMonitorDomainResetCallback)(qemuMonitorPtr mon,
-                                              virDomainObjPtr vm);
+                                              virDomainObjPtr vm,
+                                              void *opaque);
 typedef int (*qemuMonitorDomainPowerdownCallback)(qemuMonitorPtr mon,
-                                                  virDomainObjPtr vm);
+                                                  virDomainObjPtr vm,
+                                                  void *opaque);
 typedef int (*qemuMonitorDomainStopCallback)(qemuMonitorPtr mon,
-                                             virDomainObjPtr vm);
+                                             virDomainObjPtr vm,
+                                             void *opaque);
 typedef int (*qemuMonitorDomainResumeCallback)(qemuMonitorPtr mon,
-                                               virDomainObjPtr vm);
+                                               virDomainObjPtr vm,
+                                               void *opaque);
 typedef int (*qemuMonitorDomainRTCChangeCallback)(qemuMonitorPtr mon,
                                                   virDomainObjPtr vm,
-                                                  long long offset);
+                                                  long long offset,
+                                                  void *opaque);
 typedef int (*qemuMonitorDomainWatchdogCallback)(qemuMonitorPtr mon,
                                                  virDomainObjPtr vm,
-                                                 int action);
+                                                 int action,
+                                                 void *opaque);
 typedef int (*qemuMonitorDomainIOErrorCallback)(qemuMonitorPtr mon,
                                                 virDomainObjPtr vm,
                                                 const char *diskAlias,
                                                 int action,
-                                                const char *reason);
+                                                const char *reason,
+                                                void *opaque);
 typedef int (*qemuMonitorDomainGraphicsCallback)(qemuMonitorPtr mon,
                                                  virDomainObjPtr vm,
                                                  int phase,
@@ -117,30 +129,39 @@ typedef int (*qemuMonitorDomainGraphicsCallback)(qemuMonitorPtr mon,
                                                  const char *remoteService,
                                                  const char *authScheme,
                                                  const char *x509dname,
-                                                 const char *saslUsername);
+                                                 const char *saslUsername,
+                                                 void *opaque);
 typedef int (*qemuMonitorDomainBlockJobCallback)(qemuMonitorPtr mon,
                                                  virDomainObjPtr vm,
                                                  const char *diskAlias,
                                                  int type,
-                                                 int status);
+                                                 int status,
+                                                 void *opaque);
 typedef int (*qemuMonitorDomainTrayChangeCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
                                                    const char *devAlias,
-                                                   int reason);
+                                                   int reason,
+                                                   void *opaque);
 typedef int (*qemuMonitorDomainPMWakeupCallback)(qemuMonitorPtr mon,
-                                                 virDomainObjPtr vm);
+                                                 virDomainObjPtr vm,
+                                                 void *opaque);
 typedef int (*qemuMonitorDomainPMSuspendCallback)(qemuMonitorPtr mon,
-                                                  virDomainObjPtr vm);
+                                                  virDomainObjPtr vm,
+                                                  void *opaque);
 typedef int (*qemuMonitorDomainBalloonChangeCallback)(qemuMonitorPtr mon,
                                                       virDomainObjPtr vm,
-                                                      unsigned long long actual);
+                                                      unsigned long long actual,
+                                                      void *opaque);
 typedef int (*qemuMonitorDomainPMSuspendDiskCallback)(qemuMonitorPtr mon,
-                                                      virDomainObjPtr vm);
+                                                      virDomainObjPtr vm,
+                                                      void *opaque);
 typedef int (*qemuMonitorDomainGuestPanicCallback)(qemuMonitorPtr mon,
-                                                   virDomainObjPtr vm);
+                                                   virDomainObjPtr vm,
+                                                   void *opaque);
 typedef int (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitorPtr mon,
                                                       virDomainObjPtr vm,
-                                                      const char *devAlias);
+                                                      const char *devAlias,
+                                                      void *opaque);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
@@ -174,12 +195,14 @@ char *qemuMonitorUnescapeArg(const char *in);
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
                                bool json,
-                               qemuMonitorCallbacksPtr cb)
+                               qemuMonitorCallbacksPtr cb,
+                               void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  int sockfd,
                                  bool json,
-                                 qemuMonitorCallbacksPtr cb)
+                                 qemuMonitorCallbacksPtr cb,
+                                 void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 void qemuMonitorClose(qemuMonitorPtr mon);

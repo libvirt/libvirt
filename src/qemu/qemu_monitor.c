@@ -61,6 +61,7 @@ struct _qemuMonitor {
     virDomainObjPtr vm;
 
     qemuMonitorCallbacksPtr cb;
+    void *callbackOpaque;
 
     /* If there's a command being processed this will be
      * non-NULL */
@@ -248,7 +249,7 @@ static void qemuMonitorDispose(void *obj)
 
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
-        (mon->cb->destroy)(mon, mon->vm);
+        (mon->cb->destroy)(mon, mon->vm, mon->callbackOpaque);
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
     virJSONValueFree(mon->options);
@@ -668,7 +669,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
-        (eofNotify)(mon, vm);
+        (eofNotify)(mon, vm, mon->callbackOpaque);
     } else if (error) {
         qemuMonitorErrorNotifyCallback errorNotify = mon->cb->errorNotify;
         virDomainObjPtr vm = mon->vm;
@@ -678,7 +679,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
-        (errorNotify)(mon, vm);
+        (errorNotify)(mon, vm, mon->callbackOpaque);
     } else {
         virObjectUnlock(mon);
         virObjectUnref(mon);
@@ -691,7 +692,8 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
                         int fd,
                         bool hasSendFD,
                         bool json,
-                        qemuMonitorCallbacksPtr cb)
+                        qemuMonitorCallbacksPtr cb,
+                        void *opaque)
 {
     qemuMonitorPtr mon;
 
@@ -725,6 +727,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     if (json)
         mon->waitGreeting = true;
     mon->cb = cb;
+    mon->callbackOpaque = opaque;
 
     if (virSetCloseExec(mon->fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -778,7 +781,8 @@ qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrSourceDefPtr config,
                 bool json,
-                qemuMonitorCallbacksPtr cb)
+                qemuMonitorCallbacksPtr cb,
+                void *opaque)
 {
     int fd;
     bool hasSendFD = false;
@@ -803,7 +807,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
 
-    ret = qemuMonitorOpenInternal(vm, fd, hasSendFD, json, cb);
+    ret = qemuMonitorOpenInternal(vm, fd, hasSendFD, json, cb, opaque);
     if (!ret)
         VIR_FORCE_CLOSE(fd);
     return ret;
@@ -813,9 +817,10 @@ qemuMonitorOpen(virDomainObjPtr vm,
 qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  int sockfd,
                                  bool json,
-                                 qemuMonitorCallbacksPtr cb)
+                                 qemuMonitorCallbacksPtr cb,
+                                 void *opaque)
 {
-    return qemuMonitorOpenInternal(vm, sockfd, true, json, cb);
+    return qemuMonitorOpenInternal(vm, sockfd, true, json, cb, opaque);
 }
 
 
@@ -1068,7 +1073,8 @@ cleanup:
         virObjectRef(mon);                                      \
         virObjectUnlock(mon);                                   \
         if ((mon)->cb && (mon)->cb->callback)                   \
-            (ret) = ((mon)->cb->callback)(mon, __VA_ARGS__);    \
+            (ret) = (mon)->cb->callback(mon, __VA_ARGS__,       \
+                                        (mon)->callbackOpaque); \
         virObjectLock(mon);                                     \
         virObjectUnref(mon);                                    \
     } while (0)

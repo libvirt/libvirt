@@ -2354,7 +2354,8 @@ cleanup:
 
 
 static void virQEMUCapsMonitorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                     virDomainObjPtr vm ATTRIBUTE_UNUSED)
+                                     virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                     void *opaque ATTRIBUTE_UNUSED)
 {
 }
 
@@ -2546,7 +2547,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     memset(&vm, 0, sizeof(vm));
     vm.pid = pid;
 
-    if (!(mon = qemuMonitorOpen(&vm, &config, true, &callbacks))) {
+    if (!(mon = qemuMonitorOpen(&vm, &config, true, &callbacks, NULL))) {
         ret = 0;
         goto cleanup;
     }
