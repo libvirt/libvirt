@@ -1007,6 +1007,20 @@ int virLXCProcessStart(virConnectPtr conn,
         return -1;
     }
 
+    if (!vm->def->resource) {
+        virDomainResourceDefPtr res;
+
+        if (VIR_ALLOC(res) < 0)
+            goto cleanup;
+
+        if (VIR_STRDUP(res->partition, "/machine") < 0) {
+            VIR_FREE(res);
+            goto cleanup;
+        }
+
+        vm->def->resource = res;
+    }
+
     if (virAsprintf(&logfile, "%s/%s.log",
                     cfg->logDir, vm->def->name) < 0)
         return -1;

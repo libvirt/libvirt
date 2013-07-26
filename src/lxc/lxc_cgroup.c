@@ -433,20 +433,6 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
 {
     virCgroupPtr cgroup = NULL;
 
-    if (!def->resource) {
-        virDomainResourceDefPtr res;
-
-        if (VIR_ALLOC(res) < 0)
-            goto cleanup;
-
-        if (VIR_STRDUP(res->partition, "/machine") < 0) {
-            VIR_FREE(res);
-            goto cleanup;
-        }
-
-        def->resource = res;
-    }
-
     if (def->resource->partition[0] != '/') {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Resource partition '%s' must start with '/'"),
