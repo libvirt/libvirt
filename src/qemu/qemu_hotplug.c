@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include "qemu_hotplug.h"
+#include "qemu_hotplugpriv.h"
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
 #include "qemu_command.h"
@@ -52,6 +53,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 #define CHANGE_MEDIA_RETRIES 10
+
+/* Wait up to 5 seconds for device removal to finish. */
+unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
+
 
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
@@ -2682,9 +2687,6 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
 }
 
 
-/* Wait up to 5 seconds for device removal to finish. */
-#define QEMU_REMOVAL_WAIT_TIME (1000ull * 5)
-
 static void
 qemuDomainMarkDeviceForRemoval(virDomainObjPtr vm,
                                virDomainDeviceInfoPtr info)
@@ -2721,7 +2723,7 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
 
     if (virTimeMillisNow(&until) < 0)
         return -1;
-    until += QEMU_REMOVAL_WAIT_TIME;
+    until += qemuDomainRemoveDeviceWaitTime;
 
     while (priv->unpluggingDevice) {
         if (virCondWaitUntil(&priv->unplugFinished,
