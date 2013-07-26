@@ -1,5 +1,5 @@
 /*
- * qemu_process.c: QEMU process management
+ * qemu_process.h: QEMU process management
  *
  * Copyright (C) 2006-2012 Red Hat, Inc.
  *

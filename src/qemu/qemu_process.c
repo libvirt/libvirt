@@ -1,5 +1,5 @@
 /*
- * qemu_process.h: QEMU process management
+ * qemu_process.c: QEMU process management
  *
  * Copyright (C) 2006-2013 Red Hat, Inc.
  *
@@ -33,6 +33,7 @@
 #endif
 
 #include "qemu_process.h"
+#include "qemu_processpriv.h"
 #include "qemu_domain.h"
 #include "qemu_cgroup.h"
 #include "qemu_capabilities.h"
@@ -1332,7 +1333,7 @@ cleanup:
 }
 
 
-static int
+int
 qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                virDomainObjPtr vm,
                                const char *devAlias,
