@@ -16,7 +16,7 @@ static void
 testSetVolumeType(virStorageVolDefPtr vol,
                   virStoragePoolDefPtr pool)
 {
-    if (!vol)
+    if (!vol || !pool)
         return;
 
     switch (pool->type) {
