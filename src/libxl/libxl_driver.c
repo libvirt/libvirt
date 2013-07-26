@@ -417,6 +417,9 @@ libxlDomainObjPrivateAlloc(void)
 
     libxl_osevent_register_hooks(priv->ctx, &libxl_event_callbacks, priv);
 
+    if (!(priv->devs = virChrdevAlloc()))
+        return NULL;
+
     return priv;
 }
 
@@ -428,6 +431,7 @@ libxlDomainObjPrivateDispose(void *obj)
     if (priv->deathW)
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
 
+    virChrdevFree(priv->devs);
     libxl_ctx_free(priv->ctx);
 }
 
@@ -4502,6 +4506,94 @@ cleanup:
     return ret;
 }
 
+
+static int
+libxlDomainOpenConsole(virDomainPtr dom,
+                       const char *dev_name,
+                       virStreamPtr st,
+                       unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    virDomainChrDefPtr chr = NULL;
+    libxlDomainObjPrivatePtr priv;
+    char *console = NULL;
+
+    virCheckFlags(VIR_DOMAIN_CONSOLE_FORCE, -1);
+
+    if (dev_name) {
+        /* XXX support device aliases in future */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Named device aliases are not supported"));
+        goto cleanup;
+    }
+
+    libxlDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+    libxlDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (vm->def->nserials)
+        chr = vm->def->serials[0];
+
+    if (!chr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find character device %s"),
+                       NULLSTR(dev_name));
+        goto cleanup;
+    }
+
+    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("character device %s is not using a PTY"),
+                       NULLSTR(dev_name));
+        goto cleanup;
+    }
+
+    ret = libxl_primary_console_get_tty(priv->ctx, vm->def->id, &console);
+    if (ret)
+        goto cleanup;
+
+    if (VIR_STRDUP(chr->source.data.file.path, console) < 0)
+        goto cleanup;
+
+    /* handle mutually exclusive access to console devices */
+    ret = virChrdevOpen(priv->devs,
+                        &chr->source,
+                        st,
+                        (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
+
+    if (ret == 1) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Active console session exists for this domain"));
+        ret = -1;
+    }
+
+cleanup:
+    VIR_FREE(console);
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
 static int
 libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
                                   int nparams)
@@ -4884,6 +4976,7 @@ static virDriver libxlDriver = {
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
     .domainHasManagedSaveImage = libxlDomainHasManagedSaveImage, /* 0.9.2 */
     .domainManagedSaveRemove = libxlDomainManagedSaveRemove, /* 0.9.2 */
+    .domainOpenConsole = libxlDomainOpenConsole, /* 1.1.2 */
     .domainIsActive = libxlDomainIsActive, /* 0.9.0 */
     .domainIsPersistent = libxlDomainIsPersistent, /* 0.9.0 */
     .domainIsUpdated = libxlDomainIsUpdated, /* 0.9.0 */
