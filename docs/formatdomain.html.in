@@ -3530,7 +3530,9 @@ qemu-kvm -net nic,model=? /dev/null
       <code>peak</code> speed. Accepted values for attributes are integer
       numbers. The units for <code>average</code> and <code>peak</code> attributes
       are kilobytes per second, and for the <code>burst</code> just kilobytes.
-      <span class="since">Since 0.9.4</span> The <code>inbound</code> can
+      Note the limitation of implementation: the <code>peak</code> attribute in
+      <code>outbound</code> element is ignored (as linux ingress filters don't
+      know it yet). <span class="since">Since 0.9.4</span> The <code>inbound</code> can
       optionally have <code>floor</code> attribute. This is there for
       guaranteeing minimal throughput for shaped interfaces. This, however,
       requires that all traffic goes through one point where QoS decisions can
