@@ -5153,7 +5153,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "product")) {
                 product = (char *)xmlNodeGetContent(cur);
 
-                if (strlen(vendor) > PRODUCT_LEN) {
+                if (strlen(product) > PRODUCT_LEN) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("disk product is more than 16 characters"));
                     goto error;
