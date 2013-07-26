@@ -931,7 +931,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
                          " of network %s"), networkName);
         goto error;
     }
-    if (strlen(def->service) > DNS_RECORD_LENGTH_SRV) {
+    if (def->service && strlen(def->service) > DNS_RECORD_LENGTH_SRV) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("Service name '%s' in network %s is too long, limit is %d bytes"),
                        def->service, networkName, DNS_RECORD_LENGTH_SRV);
@@ -947,7 +947,8 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
     }
 
     /* Check whether protocol value is the supported one */
-    if (STRNEQ(def->protocol, "tcp") && (STRNEQ(def->protocol, "udp"))) {
+    if (def->protocol && STRNEQ(def->protocol, "tcp") &&
+        (STRNEQ(def->protocol, "udp"))) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("Invalid protocol attribute value '%s' "
                          " in DNS SRV record of network %s"),
