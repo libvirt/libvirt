@@ -24,6 +24,11 @@
 
 # include "internal.h"
 
+char *virSystemdMakeScopeName(const char *name,
+                              const char *drivername,
+                              const char *slicename);
+char *virSystemdMakeSliceName(const char *partition);
+
 int virSystemdCreateMachine(const char *name,
                             const char *drivername,
                             bool privileged,

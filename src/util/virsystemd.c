@@ -27,8 +27,95 @@
 #include "viralloc.h"
 #include "virutil.h"
 #include "virlog.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSTEMD
+
+
+static void virSystemdEscapeName(virBufferPtr buf,
+                                 const char *name)
+{
+    static const char hextable[16] = "0123456789abcdef";
+
+#define ESCAPE(c)                                                       \
+    do {                                                                \
+        virBufferAddChar(buf, '\\');                                    \
+        virBufferAddChar(buf, 'x');                                     \
+        virBufferAddChar(buf, hextable[(c >> 4) & 15]);                 \
+        virBufferAddChar(buf, hextable[c & 15]);                        \
+    } while (0)
+
+#define VALID_CHARS                             \
+        "0123456789"                            \
+        "abcdefghijklmnopqrstuvwxyz"            \
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"            \
+        ":-_.\\"
+
+    if (*name == '.') {
+        ESCAPE(*name);
+        name++;
+    }
+
+    while (*name) {
+        if (*name == '/')
+            virBufferAddChar(buf, '-');
+        else if (*name == '-' ||
+                 *name == '\\' ||
+                 !strchr(VALID_CHARS, *name))
+            ESCAPE(*name);
+        else
+            virBufferAddChar(buf, *name);
+        name++;
+    }
+
+#undef ESCAPE
+#undef VALID_CHARS
+}
+
+
+char *virSystemdMakeScopeName(const char *name,
+                              const char *drivername,
+                              const char *partition)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (*partition == '/')
+        partition++;
+
+    virSystemdEscapeName(&buf, partition);
+    virBufferAddChar(&buf, '-');
+    virSystemdEscapeName(&buf, drivername);
+    virBufferAddLit(&buf, "\\x2d");
+    virSystemdEscapeName(&buf, name);
+    virBufferAddLit(&buf, ".scope");
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+char *virSystemdMakeSliceName(const char *partition)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (*partition == '/')
+        partition++;
+
+    virSystemdEscapeName(&buf, partition);
+    virBufferAddLit(&buf, ".slice");
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
 
 /**
  * virSystemdCreateMachine:
@@ -75,8 +162,8 @@ int virSystemdCreateMachine(const char *name,
         goto cleanup;
 
     if (partition) {
-        if (virAsprintf(&slicename, "%s.slice", partition) < 0)
-            goto cleanup;
+        if (!(slicename = virSystemdMakeSliceName(partition)))
+             goto cleanup;
     } else {
         if (VIR_STRDUP(slicename, "") < 0)
             goto cleanup;

@@ -138,6 +138,38 @@ static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
+
+struct testScopeData {
+    const char *name;
+    const char *partition;
+    const char *expected;
+};
+
+static int
+testScopeName(const void *opaque)
+{
+    const struct testScopeData *data = opaque;
+    int ret = -1;
+    char *actual = NULL;
+
+    if (!(actual = virSystemdMakeScopeName(data->name,
+                                           "lxc",
+                                           data->partition)))
+        goto cleanup;
+
+    if (STRNEQ(actual, data->expected)) {
+        fprintf(stderr, "Expected '%s' but got '%s'\n",
+                data->expected, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -151,6 +183,23 @@ mymain(void)
         ret = -1;
     if (virtTestRun("Test create bad systemd ", 1, testCreateBadSystemd, NULL) < 0)
         ret = -1;
+
+#define TEST_SCOPE(name, partition, unitname)                           \
+    do {                                                                \
+        struct testScopeData data = {                                   \
+            name, partition, unitname                                   \
+        };                                                              \
+        if (virtTestRun("Test scopename", 1, testScopeName, &data) < 0) \
+            ret = -1;                                                   \
+    } while (0)
+
+    TEST_SCOPE("demo", "/machine", "machine-lxc\\x2ddemo.scope");
+    TEST_SCOPE("demo-name", "/machine", "machine-lxc\\x2ddemo\\x2dname.scope");
+    TEST_SCOPE("demo!name", "/machine", "machine-lxc\\x2ddemo\\x21name.scope");
+    TEST_SCOPE(".demo", "/machine", "machine-lxc\\x2d\\x2edemo.scope");
+    TEST_SCOPE("demo", "/machine/eng-dept", "machine-eng\\x2ddept-lxc\\x2ddemo.scope");
+    TEST_SCOPE("demo", "/machine/eng-dept/testing!stuff",
+               "machine-eng\\x2ddept-testing\\x21stuff-lxc\\x2ddemo.scope");
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
