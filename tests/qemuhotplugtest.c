@@ -79,6 +79,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NET_NAME);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
@@ -457,6 +458,23 @@ mymain(void)
                    "human-monitor-command", HMP(""));
     DO_TEST_DETACH("hotplug-base", "disk-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("hotplug-base", "disk-scsi", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-scsi", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-scsi", false, true,
+                         "human-monitor-command", HMP("OK\\r\\n"),
+                         "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-scsi", true, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+    DO_TEST_DETACH("hotplug-base", "disk-scsi", false, false,
+                   "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
 
     virObjectUnref(driver.caps);
