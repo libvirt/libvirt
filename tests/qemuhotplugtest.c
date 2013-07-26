@@ -442,6 +442,23 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
                    "human-monitor-command", HMP(""));
 
+    DO_TEST_ATTACH("hotplug-base", "disk-usb", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-usb", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-usb", false, true,
+                         "human-monitor-command", HMP("OK\\r\\n"),
+                         "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base", "disk-usb", true, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+    DO_TEST_DETACH("hotplug-base", "disk-usb", false, false,
+                   "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
     virObjectUnref(driver.config);
