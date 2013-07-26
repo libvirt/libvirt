@@ -365,6 +365,13 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
         if (!xenUnifiedProbe())
             return VIR_DRV_OPEN_DECLINED;
 
+#ifdef WITH_LIBXL
+        /* Decline xen:// URI if xend is not running and libxenlight
+         * driver is potentially available. */
+        if (!xenUnifiedXendProbe())
+            return VIR_DRV_OPEN_DECLINED;
+#endif
+
         if (!(conn->uri = virURIParse("xen:///")))
             return VIR_DRV_OPEN_ERROR;
     } else {
@@ -374,6 +381,12 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
                 STRCASENEQ(conn->uri->scheme, "http"))
                 return VIR_DRV_OPEN_DECLINED;
 
+#ifdef WITH_LIBXL
+            /* Decline xen:// URI if xend is not running and libxenlight
+             * driver is potentially available. */
+            if (!xenUnifiedXendProbe())
+                return VIR_DRV_OPEN_DECLINED;
+#endif
 
             /* Return an error if the path isn't '' or '/' */
             if (conn->uri->path &&
@@ -394,13 +407,6 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
             return VIR_DRV_OPEN_DECLINED;
         }
     }
-
-#ifdef WITH_LIBXL
-    /* Decline xen:// URI if xend is not running and libxenlight
-     * driver is potentially available. */
-    if (!xenUnifiedXendProbe())
-        return VIR_DRV_OPEN_DECLINED;
-#endif
 
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */
