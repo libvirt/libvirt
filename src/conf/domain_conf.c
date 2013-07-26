@@ -10221,6 +10221,8 @@ virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        *arrPtr = NULL;
+        *cntPtr = NULL;
         break;
     }
 }
