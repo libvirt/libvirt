@@ -1185,8 +1185,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (version >= 1001000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
 
-    if (version >= 1002000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     return 0;
 }
 
@@ -2537,6 +2535,9 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
     }
+
+    if (qemuCaps->version >= 1006000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;
