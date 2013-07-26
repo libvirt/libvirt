@@ -21,6 +21,7 @@
 
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_hotplug.h"
+#include "qemu/qemu_hotplugpriv.h"
 #include "qemumonitortestutils.h"
 #include "testutils.h"
 #include "testutilsqemu.h"
@@ -47,12 +48,14 @@ struct qemuHotplugTestData {
     int action;
     bool keep;
     virDomainObjPtr vm;
+    bool deviceDeletedEvent;
 };
 
 static int
 qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr *vm,
-                         const char *domxml)
+                         const char *domxml,
+                         bool event)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
@@ -76,6 +79,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NET_NAME);
+    if (event)
+        virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
     if (qemuDomainAssignPCIAddresses((*vm)->def, priv->qemuCaps, *vm) < 0)
         goto cleanup;
@@ -232,7 +237,8 @@ testQemuHotplug(const void *data)
     if (test->vm) {
         vm = test->vm;
     } else {
-        if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml) < 0)
+        if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
+                                     test->deviceDeletedEvent) < 0)
             goto cleanup;
     }
 
@@ -350,7 +356,10 @@ mymain(void)
     if (!(driver.securityManager = virSecurityManagerNewStack(mgr)))
         return EXIT_FAILURE;
 
-#define DO_TEST(file, ACTION, dev, fial, kep, ...)                          \
+    /* wait only 100ms for DEVICE_DELETED event */
+    qemuDomainRemoveDeviceWaitTime = 100;
+
+#define DO_TEST(file, ACTION, dev, event, fial, kep, ...)                   \
     do {                                                                    \
         const char *my_mon[] = { __VA_ARGS__, NULL};                        \
         const char *name = file " " #ACTION " " dev;                        \
@@ -360,18 +369,25 @@ mymain(void)
         data.fail = fial;                                                   \
         data.mon = my_mon;                                                  \
         data.keep = kep;                                                    \
+        data.deviceDeletedEvent = event;                                    \
         if (virtTestRun(name, 1, testQemuHotplug, &data) < 0)               \
             ret = -1;                                                       \
     } while (0)
 
 #define DO_TEST_ATTACH(file, dev, fial, kep, ...)                           \
-    DO_TEST(file, ATTACH, dev, fial, kep, __VA_ARGS__)
+    DO_TEST(file, ATTACH, dev, false, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_DETACH(file, dev, fial, kep, ...)                           \
-    DO_TEST(file, DETACH, dev, fial, kep, __VA_ARGS__)
+    DO_TEST(file, DETACH, dev, false, fial, kep, __VA_ARGS__)
+
+#define DO_TEST_ATTACH_EVENT(file, dev, fial, kep, ...)                     \
+    DO_TEST(file, ATTACH, dev, true, fial, kep, __VA_ARGS__)
+
+#define DO_TEST_DETACH_EVENT(file, dev, fial, kep, ...)                     \
+    DO_TEST(file, DETACH, dev, true, fial, kep, __VA_ARGS__)
 
 #define DO_TEST_UPDATE(file, dev, fial, kep, ...)                           \
-    DO_TEST(file, UPDATE, dev, fial, kep, __VA_ARGS__)
+    DO_TEST(file, UPDATE, dev, false, fial, kep, __VA_ARGS__)
 
 
 #define QMP_OK      "{\"return\": {}}"

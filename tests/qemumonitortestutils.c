@@ -27,6 +27,7 @@
 #include "qemumonitortestutils.h"
 
 #include "virthread.h"
+#include "qemu/qemu_processpriv.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_agent.h"
 #include "rpc/virnetsocket.h"
@@ -725,6 +726,7 @@ qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 static qemuMonitorCallbacks qemuMonitorTestCallbacks = {
     .eofNotify = qemuMonitorTestEOFNotify,
     .errorNotify = qemuMonitorTestErrorNotify,
+    .domainDeviceDeleted = qemuProcessHandleDeviceDeleted,
 };
 
 
