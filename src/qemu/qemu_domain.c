@@ -2026,6 +2026,61 @@ cleanup:
     virObjectUnref(cfg);
 }
 
+static int
+qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDiskDefPtr disk,
+                                 bool cold_boot)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virDomainEventPtr event = NULL;
+    int startupPolicy = disk->startupPolicy;
+
+    virUUIDFormat(vm->def->uuid, uuid);
+
+    switch ((enum virDomainStartupPolicy) startupPolicy) {
+        case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
+            break;
+
+        case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
+            virReportSystemError(errno,
+                                 _("cannot access file '%s'"),
+                                 disk->src);
+            goto error;
+            break;
+
+        case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
+            if (cold_boot) {
+                virReportSystemError(errno,
+                                     _("cannot access file '%s'"),
+                                     disk->src);
+                goto error;
+            }
+            break;
+
+        case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
+        case VIR_DOMAIN_STARTUP_POLICY_LAST:
+            /* this should never happen */
+            break;
+    }
+
+    VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
+              "due to inaccessible source '%s'",
+              disk->dst, vm->def->name, uuid, disk->src);
+
+    event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,
+                                               VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
+    VIR_FREE(disk->src);
+
+    return 0;
+
+error:
+    return -1;
+}
+
 int
 qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -2034,11 +2089,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     int ret = -1;
     size_t i;
     virDomainDiskDefPtr disk;
-    char uuid[VIR_UUID_STRING_BUFLEN];
-    virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    virUUIDFormat(vm->def->uuid, uuid);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         disk = vm->def->disks[i];
@@ -2053,42 +2104,9 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             continue;
         }
 
-        switch ((enum virDomainStartupPolicy) disk->startupPolicy) {
-            case VIR_DOMAIN_STARTUP_POLICY_OPTIONAL:
-                break;
-
-            case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
-                virReportSystemError(errno,
-                                     _("cannot access file '%s'"),
-                                     disk->src);
-                goto cleanup;
-                break;
-
-            case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
-                if (cold_boot) {
-                    virReportSystemError(errno,
-                                         _("cannot access file '%s'"),
-                                         disk->src);
-                    goto cleanup;
-                }
-                break;
-
-            case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
-            case VIR_DOMAIN_STARTUP_POLICY_LAST:
-                /* this should never happen */
-                break;
-        }
-
-        VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
-                  "due to inaccessible source '%s'",
-                  disk->dst, vm->def->name, uuid, disk->src);
-
-        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,
-                                                   VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
-        if (event)
-            qemuDomainEventQueue(driver, event);
-
-        VIR_FREE(disk->src);
+        if (qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
+                                             cold_boot) < 0)
+            goto cleanup;
     }
 
     ret = 0;
