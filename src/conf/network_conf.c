@@ -856,7 +856,6 @@ virNetworkDNSHostDefParseXML(const char *networkName,
         virReportError(VIR_ERR_XML_DETAIL,
                        _("Missing IP address in network '%s' DNS HOST record"),
                        networkName);
-        VIR_FREE(ip);
         goto error;
     }
 
