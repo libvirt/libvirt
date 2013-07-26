@@ -3539,12 +3539,12 @@ qemu-kvm -net nic,model=? /dev/null
       forward type of route, nat, or no forward at all). Moreover, the
       virtual network the interface is connected to is required to have at least
       inbound QoS set (<code>average</code> at least). Moreover, with
-      <code>floor<code> attribute users don't need to specify
+      <code>floor</code> attribute users don't need to specify
       <code>average</code>. However, <code>peak</code> and <code>burst</code>
       attributes still require <code>average</code>. Currently, linux kernel
       doesn't allow ingress qdiscs to have any classes therefore
       <code>floor</code> can be applied only on <code>inbound</code> and not
-      </code>outbound</code>. <span class="since">Since 1.0.1</span>
+      <code>outbound</code>. <span class="since">Since 1.0.1</span>
     </p>
 
     <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
