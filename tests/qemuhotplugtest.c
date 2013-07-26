@@ -344,24 +344,27 @@ mymain(void)
 #define DO_TEST_UPDATE(file, dev, fial, kep, ...)                           \
     DO_TEST(file, UPDATE, dev, fial, kep, __VA_ARGS__)
 
+
+#define QMP_OK      "{\"return\": {}}"
+
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
-                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+                   "set_password", QMP_OK, "expire_password", QMP_OK);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-password", false, false,
-                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+                   "set_password", QMP_OK, "expire_password", QMP_OK);
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-listen", true, false, NULL);
     DO_TEST_UPDATE("graphics-spice-listen-network", "graphics-spice-listen-network", false, false,
-                   "set_password", "{\"return\":{}}", "expire_password", "{\"return\":{}}");
+                   "set_password", QMP_OK, "expire_password", QMP_OK);
     /* Strange huh? Currently, only graphics can be updated :-P */
     DO_TEST_UPDATE("disk-cdrom", "disk-cdrom-nochange", true, false, NULL);
 
     DO_TEST_ATTACH("console-compat-2", "console-virtio", false, true,
                    "chardev-add", "{\"return\": {\"pty\": \"/dev/pts/26\"}}",
-                   "device_add", "{\"return\": {}}");
+                   "device_add", QMP_OK);
 
     DO_TEST_DETACH("console-compat-2", "console-virtio", false, false,
-                   "device_del", "{\"return\": {}}",
-                   "chardev-remove", "{\"return\": {}}");
+                   "device_del", QMP_OK,
+                   "chardev-remove", QMP_OK);
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
