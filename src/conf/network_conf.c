@@ -917,7 +917,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
     if (!(def->service = virXMLPropString(node, "service")) && !partialOkay) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("Missing required service attribute in DNS SRV record "
-                         " of network %s"), networkName);
+                         "of network %s"), networkName);
         goto error;
     }
     if (def->service && strlen(def->service) > DNS_RECORD_LENGTH_SRV) {
@@ -940,7 +940,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
         (STRNEQ(def->protocol, "udp"))) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("Invalid protocol attribute value '%s' "
-                         " in DNS SRV record of network %s"),
+                         "in DNS SRV record of network %s"),
                        def->protocol, networkName);
         goto error;
     }
