@@ -2550,6 +2550,12 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
     while (!done) {
         done = true;
         if (!(fp = fopen(keypath, "r"))) {
+            if (errno == ENOENT) {
+                VIR_DEBUG("No file %s, assuming done", keypath);
+                killedAny = false;
+                goto done;
+            }
+
             virReportSystemError(errno,
                                  _("Failed to read %s"),
                                  keypath);
@@ -2589,6 +2595,7 @@ static int virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr
         }
     }
 
+ done:
     ret = killedAny ? 1 : 0;
 
 cleanup:
@@ -2658,8 +2665,13 @@ static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHas
     if (rc == 1)
         killedAny = true;
 
-    VIR_DEBUG("Iterate over children of %s", keypath);
+    VIR_DEBUG("Iterate over children of %s (killedAny=%d)", keypath, killedAny);
     if (!(dp = opendir(keypath))) {
+        if (errno == ENOENT) {
+            VIR_DEBUG("Path %s does not exist, assuming done", keypath);
+            killedAny = false;
+            goto done;
+        }
         virReportSystemError(errno,
                              _("Cannot open %s"), keypath);
         return -1;
@@ -2689,6 +2701,7 @@ static int virCgroupKillRecursiveInternal(virCgroupPtr group, int signum, virHas
         virCgroupFree(&subgroup);
     }
 
+ done:
     ret = killedAny ? 1 : 0;
 
 cleanup:
