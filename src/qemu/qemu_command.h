@@ -254,9 +254,9 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr,
                                     qemuDomainPCIConnectFlags flags);
-int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev,
-                                    qemuDomainPCIConnectFlags flags);
+int qemuDomainPCIAddressReserveNextSlot(qemuDomainPCIAddressSetPtr addrs,
+                                        virDomainDeviceInfoPtr dev,
+                                        qemuDomainPCIConnectFlags flags);
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev);
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
