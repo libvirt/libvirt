@@ -1434,9 +1434,53 @@ struct _qemuDomainPCIAddressSet {
 };
 
 
-/*
- * Check that the PCI address is valid for use
- * with the specified PCI address set.
+static bool
+qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
+                                    qemuDomainPCIConnectFlags busFlags,
+                                    qemuDomainPCIConnectFlags devFlags,
+                                    bool reportError)
+{
+    /* If this bus doesn't allow the type of connection (PCI
+     * vs. PCIe) required by the device, or if the device requires
+     * hot-plug and this bus doesn't have it, return false.
+     */
+    if (!(devFlags & busFlags & QEMU_PCI_CONNECT_TYPES_MASK)) {
+        if (reportError) {
+            if (devFlags & QEMU_PCI_CONNECT_TYPE_PCI) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("PCI bus %.4x:%.2x is not compatible with the "
+                                 "device. Device requires a standard PCI slot, "
+                                 "which is not provided by this bus"),
+                               addr->domain, addr->bus);
+            } else {
+                /* this should never happen. If it does, there is a
+                 * bug in the code that sets the flag bits for devices.
+                 */
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("The device information has no PCI "
+                             "connection types listed"));
+            }
+        }
+        return false;
+    }
+    if ((devFlags & QEMU_PCI_CONNECT_HOTPLUGGABLE) &&
+        !(busFlags & QEMU_PCI_CONNECT_HOTPLUGGABLE)) {
+        if (reportError) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("PCI bus %.4x:%.2x is not compatible with the "
+                             "device. Device requires hot-plug capability, "
+                             "which is not provided by the bus"),
+                           addr->domain, addr->bus);
+        }
+        return false;
+    }
+    return true;
+}
+
+
+/* Verify that the address is in bounds for the chosen bus, and
+ * that the bus is of the correct type for the device (via
+ * comparing the flags).
  */
 static bool
 qemuDomainPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs,
@@ -1466,24 +1510,9 @@ qemuDomainPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs,
     /* assure that at least one of the requested connection types is
      * provided by this bus
      */
-    if (!(flags & bus->flags & QEMU_PCI_CONNECT_TYPES_MASK)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid PCI address: The PCI controller "
-                         "providing bus %04x doesn't support "
-                         "connections appropriate for the device "
-                         "(%x required vs. %x provided by bus)"),
-                       addr->bus, flags & QEMU_PCI_CONNECT_TYPES_MASK,
-                       bus->flags & QEMU_PCI_CONNECT_TYPES_MASK);
+    if (!qemuDomainPCIAddressFlagsCompatible(addr, bus->flags, flags, true))
         return false;
-    }
-    /* make sure this bus allows hot-plug if the caller demands it */
-    if ((flags & QEMU_PCI_CONNECT_HOTPLUGGABLE) &&
-        !(bus->flags &  QEMU_PCI_CONNECT_HOTPLUGGABLE)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid PCI address: hot-pluggable slot requested, "
-                         "but bus %04x doesn't support hot-plug"), addr->bus);
-        return false;
-    }
+
     /* some "buses" are really just a single port */
     if (bus->minSlot && addr->slot < bus->minSlot) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -1597,10 +1626,10 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                       virDomainDeviceInfoPtr info,
                       void *opaque)
 {
-    int ret = -1;
-    char *str = NULL;
-    virDevicePCIAddressPtr addr = &info->addr.pci;
     qemuDomainPCIAddressSetPtr addrs = opaque;
+    int ret = -1;
+    virDevicePCIAddressPtr addr = &info->addr.pci;
+    bool entireSlot;
     /* FIXME: flags should be set according to the requirements of @device */
     qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
                                        QEMU_PCI_CONNECT_TYPE_PCI);
@@ -1639,56 +1668,15 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
             return 0;
     }
 
-    /* add an additional bus of the correct type if needed */
-    if (addrs->dryRun &&
-        qemuDomainPCIAddressSetGrow(addrs, addr, flags) < 0)
-        return -1;
+    entireSlot = (addr->function == 0 &&
+                  addr->multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON);
 
-    /* verify that the address is in bounds for the chosen bus, and
-     * that the bus is of the correct type for the device (via
-     * comparing the flags).
-     */
-    if (!qemuDomainPCIAddressValidate(addrs, addr, flags))
-        return -1;
-
-    if (!(str = qemuDomainPCIAddressAsString(addr)))
+    if (qemuDomainPCIAddressReserveAddr(addrs, addr, flags,
+                                        entireSlot, true) < 0)
         goto cleanup;
 
-    /* check if already in use */
-    if (addrs->buses[addr->bus].slots[addr->slot] & (1 << addr->function)) {
-        if (info->addr.pci.function != 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Attempted double use of PCI Address '%s' "
-                             "(may need \"multifunction='on'\" for device on function 0)"),
-                           str);
-        } else {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Attempted double use of PCI Address '%s'"), str);
-        }
-        goto cleanup;
-    }
-
-    /* mark as in use */
-    if ((info->addr.pci.function == 0) &&
-        (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
-        /* a function 0 w/o multifunction=on must reserve the entire slot */
-        if (addrs->buses[addr->bus].slots[addr->slot]) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Attempted double use of PCI Address on slot '%s' "
-                             "(need \"multifunction='off'\" for device "
-                             "on function 0)"),
-                           str);
-            goto cleanup;
-        }
-        addrs->buses[addr->bus].slots[addr->slot] = 0xFF;
-        VIR_DEBUG("Remembering PCI slot: %s (multifunction=off)", str);
-    } else {
-        VIR_DEBUG("Remembering PCI addr: %s", str);
-        addrs->buses[addr->bus].slots[addr->slot] |= 1 << addr->function;
-    }
     ret = 0;
 cleanup:
-    VIR_FREE(str);
     return ret;
 }
 
@@ -1871,46 +1859,73 @@ static bool qemuDomainPCIAddressSlotInUse(qemuDomainPCIAddressSetPtr addrs,
 }
 
 
+/*
+ * Reserve a slot (or just one function) for a device. If
+ * reserveEntireSlot is true, all functions for the slot are reserved,
+ * otherwise only one. If fromConfig is true, the address being
+ * requested came directly from the config and errors should be worded
+ * appropriately. If fromConfig is false, the address was
+ * automatically created by libvirt, so it is an internal error (not
+ * XML).
+ */
 int
 qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr addr,
-                                qemuDomainPCIConnectFlags flags)
+                                qemuDomainPCIConnectFlags flags,
+                                bool reserveEntireSlot,
+                                bool fromConfig)
 {
-    char *str;
+    int ret = -1;
+    char *str = NULL;
     qemuDomainPCIAddressBusPtr bus;
-
-    if (addrs->dryRun && qemuDomainPCIAddressSetGrow(addrs, addr, flags) < 0)
-        return -1;
+    virErrorNumber errType = (fromConfig
+                              ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
 
     if (!(str = qemuDomainPCIAddressAsString(addr)))
-        return -1;
+        goto cleanup;
 
-    VIR_DEBUG("Reserving PCI addr %s", str);
+    /* Add an extra bus if necessary */
+    if (addrs->dryRun && qemuDomainPCIAddressSetGrow(addrs, addr, flags) < 0)
+        goto cleanup;
+    /* Check that the requested bus exists, is the correct type, and we
+     * are asking for a valid slot
+     */
+    if (!qemuDomainPCIAddressValidate(addrs, addr, flags))
+        goto cleanup;
 
     bus = &addrs->buses[addr->bus];
-    if ((bus->minSlot && addr->slot < bus->minSlot) ||
-        addr->slot > bus->maxSlot) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to reserve PCI address %s. "
-                         "Slot %02x can't be used on bus %04x, "
-                         "only slots %02zx - %02zx are permitted on this bus."),
-                       str, addr->slot, addr->bus, bus->minSlot, bus->maxSlot);
+
+    if (reserveEntireSlot) {
+        if (bus->slots[addr->slot]) {
+            virReportError(errType,
+                           _("Attempted double use of PCI slot %s "
+                             "(may need \"multifunction='on'\" for "
+                             "device on function 0)"), str);
+            goto cleanup;
+        }
+        bus->slots[addr->slot] = 0xFF; /* reserve all functions of slot */
+        VIR_DEBUG("Reserving PCI slot %s (multifunction='off')", str);
+    } else {
+        if (bus->slots[addr->slot] & (1 << addr->function)) {
+            if (addr->function == 0) {
+                virReportError(errType,
+                               _("Attempted double use of PCI Address %s"), str);
+            } else {
+                virReportError(errType,
+                               _("Attempted double use of PCI Address %s "
+                                 "(may need \"multifunction='on'\" "
+                                 "for device on function 0)"), str);
+            }
+            goto cleanup;
+        }
+        bus->slots[addr->slot] |= (1 << addr->function);
+        VIR_DEBUG("Reserving PCI address %s", str);
     }
 
-    if (bus->slots[addr->slot] & (1 << addr->function)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to reserve PCI address %s already in use"), str);
-        VIR_FREE(str);
-        return -1;
-    }
-
+    ret = 0;
+cleanup:
     VIR_FREE(str);
-
-    addrs->lastaddr = *addr;
-    addrs->lastaddr.function = 0;
-    addrs->lastaddr.multi = 0;
-    bus->slots[addr->slot] |= 1 << addr->function;
-    return 0;
+    return ret;
 }
 
 
@@ -1919,26 +1934,7 @@ qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr addr,
                                 qemuDomainPCIConnectFlags flags)
 {
-    char *str;
-
-    if (addrs->dryRun && qemuDomainPCIAddressSetGrow(addrs, addr, flags) < 0)
-        return -1;
-
-    if (!(str = qemuDomainPCIAddressAsString(addr)))
-        return -1;
-
-    VIR_DEBUG("Reserving PCI slot %s", str);
-
-    if (addrs->buses[addr->bus].slots[addr->slot]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to reserve PCI slot %s"), str);
-        VIR_FREE(str);
-        return -1;
-    }
-
-    VIR_FREE(str);
-    addrs->buses[addr->bus].slots[addr->slot] = 0xFF;
-    return 0;
+    return qemuDomainPCIAddressReserveAddr(addrs, addr, flags, true, false);
 }
 
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
@@ -2044,12 +2040,11 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
                 VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
                           a.domain, a.bus, a.slot);
             }
-
         }
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("No more available PCI addresses"));
+                   "%s", _("No more available PCI slots"));
     return -1;
 
 success:
@@ -2409,9 +2404,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
 
                 addr.bus = tmp_addr.bus;
                 addr.slot = tmp_addr.slot;
+
+                addrs->lastaddr = addr;
+                addrs->lastaddr.function = 0;
+                addrs->lastaddr.multi = 0;
             }
             /* Finally we can reserve the slot+function */
-            if (qemuDomainPCIAddressReserveAddr(addrs, &addr, flags) < 0)
+            if (qemuDomainPCIAddressReserveAddr(addrs, &addr, flags,
+                                                false, false) < 0)
                 goto error;
 
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;

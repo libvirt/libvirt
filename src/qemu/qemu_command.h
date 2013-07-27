@@ -253,7 +253,9 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
                                     qemuDomainPCIConnectFlags flags);
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr,
-                                    qemuDomainPCIConnectFlags flags);
+                                    qemuDomainPCIConnectFlags flags,
+                                    bool reserveEntireSlot,
+                                    bool fromConfig);
 int qemuDomainPCIAddressReserveNextSlot(qemuDomainPCIAddressSetPtr addrs,
                                         virDomainDeviceInfoPtr dev,
                                         qemuDomainPCIConnectFlags flags);
