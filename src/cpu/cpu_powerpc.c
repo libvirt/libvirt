@@ -354,15 +354,15 @@ ppcDataFree(virCPUDataPtr data)
 static virCPUDataPtr
 ppcNodeData(void)
 {
-    virCPUDataPtr data;
+    virCPUDataPtr cpuData;
 
-    if (VIR_ALLOC(data) < 0)
+    if (VIR_ALLOC(cpuData) < 0)
         return NULL;
 
     asm("mfpvr %0"
-        : "=r" (data->ppc.pvr));
+        : "=r" (cpuData->data.ppc.pvr));
 
-    return data;
+    return cpuData;
 }
 #endif
 
