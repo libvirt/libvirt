@@ -499,11 +499,13 @@ STATEFUL_DRIVER_SOURCE_FILES = \
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
 		$(filter /%,$(DRIVER_SOURCE_FILES)) \
-		$(addprefix $(srcdir)/,$(filter-out /%,$(DRIVER_SOURCE_FILES)))
+		$(filter $(srcdir)/%,$(DRIVER_SOURCE_FILES)) \
+		$(addprefix $(srcdir)/,$(filter-out $(srcdir)/%, \
+			$(filter-out /%,$(DRIVER_SOURCE_FILES))))
 
 check-aclrules:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclrules.pl \
-		$(addprefix $(srcdir)/,$(filter-out /%,$(REMOTE_PROTOCOL))) \
+		$(REMOTE_PROTOCOL) \
 		$(addprefix $(srcdir)/,$(filter-out /%,$(STATEFUL_DRIVER_SOURCE_FILES)))
 
 EXTRA_DIST += check-driverimpls.pl check-aclrules.pl
