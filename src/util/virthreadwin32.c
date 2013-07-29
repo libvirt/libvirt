@@ -25,6 +25,8 @@
 
 #include "viralloc.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 struct virThreadLocalData {
     DWORD key;
     virThreadLocalCleanup cleanup;
