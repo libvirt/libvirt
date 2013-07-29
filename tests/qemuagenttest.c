@@ -207,6 +207,124 @@ cleanup:
 }
 
 
+struct qemuAgentShutdownTestData {
+    const char *mode;
+    qemuAgentEvent event;
+};
+
+
+static int
+qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
+                                    qemuMonitorTestItemPtr item,
+                                    const char *cmdstr)
+{
+    struct qemuAgentShutdownTestData *data;
+    virJSONValuePtr val = NULL;
+    virJSONValuePtr args;
+    const char *cmdname;
+    const char *mode;
+    int ret = -1;
+
+    data = qemuMonitorTestItemGetPrivateData(item);
+
+    if (!(val = virJSONValueFromString(cmdstr)))
+        return -1;
+
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
+        ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
+        goto cleanup;
+    }
+
+    if (STRNEQ(cmdname, "guest-shutdown")) {
+        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        goto cleanup;
+    }
+
+    if (!(args = virJSONValueObjectGet(val, "arguments"))) {
+        ret = qemuMonitorReportError(test,
+                                     "Missing arguments section");
+        goto cleanup;
+    }
+
+    if (!(mode = virJSONValueObjectGetString(args, "mode"))) {
+        ret = qemuMonitorReportError(test, "Missing shutdown mode");
+        goto cleanup;
+    }
+
+    /* now don't reply but return a qemu agent event */
+    qemuAgentNotifyEvent(qemuMonitorTestGetAgent(test),
+                         data->event);
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(val);
+    return ret;
+
+}
+
+
+static int
+testQemuAgentShutdown(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    struct qemuAgentShutdownTestData priv;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
+    priv.mode = "shutdown";
+
+    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+                                  &priv, NULL) < 0)
+        goto cleanup;
+
+    if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
+                          QEMU_AGENT_SHUTDOWN_HALT) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
+    priv.mode = "powerdown";
+
+    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+                                  &priv, NULL) < 0)
+        goto cleanup;
+
+    if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
+                          QEMU_AGENT_SHUTDOWN_POWERDOWN) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    priv.event = QEMU_AGENT_EVENT_RESET;
+    priv.mode = "reboot";
+
+    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+                                  &priv, NULL) < 0)
+        goto cleanup;
+
+    if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
+                          QEMU_AGENT_SHUTDOWN_REBOOT) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -232,6 +350,7 @@ mymain(void)
     DO_TEST(FSThaw);
     DO_TEST(FSTrim);
     DO_TEST(Suspend);
+    DO_TEST(Shutdown);
 
     virObjectUnref(xmlopt);
 
