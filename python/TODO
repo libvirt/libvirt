@@ -1,6 +1,0 @@
-- Need to complete, add custom wrapper function for those
-  which could not be handled fully automatically
-- Check the names generated, iD is bad, fix the name generation routine
-- add examples, web page and python based test suite
-
-Daniel Veillard

@@ -31,10 +31,6 @@ INCLUDES = \
 
 AM_CFLAGS = $(WARN_CFLAGS)
 
-DOCS_DIR = $(datadir)/doc/libvirt-python-$(VERSION)
-
-DOCS = ${srcdir}/TODO
-
 CLASSES_EXTRA = \
 	libvirt-override-virConnect.py \
 	libvirt-override-virDomain.py \
@@ -152,9 +148,6 @@ install-data-local:
 	$(INSTALL) -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt_lxc.py $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt_qemu.py $(DESTDIR)$(pyexecdir)
-	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
-	@(for doc in $(DOCS) ; \
-	   do $(INSTALL) -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py

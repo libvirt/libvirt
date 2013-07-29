@@ -1440,12 +1440,6 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_lxc.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %endif
 
-%if ! %{with_python}
-rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
-%else
-rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}/examples
-%endif
-
 %if ! %{with_qemu}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.qemu
@@ -2060,7 +2054,6 @@ fi
 %{_libdir}/python*/site-packages/libvirt_lxc.py*
 %{_libdir}/python*/site-packages/libvirtmod*
 %doc python/tests/*.py
-%doc python/TODO
 %doc examples/python
 %doc examples/domain-events/events-python
 %endif
