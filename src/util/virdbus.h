@@ -38,7 +38,7 @@ int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **reply,
                       const char *destination,
                       const char *path,
-                      const char *interface,
+                      const char *iface,
                       const char *member,
                       const char *types, ...);
 int virDBusMessageRead(DBusMessage *msg,
