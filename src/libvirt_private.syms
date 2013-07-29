@@ -1883,6 +1883,7 @@ virSocketAddrSetPort;
 
 
 # util/virstoragefile.h
+virStorageFileChainGetBroken;
 virStorageFileChainLookup;
 virStorageFileFeatureTypeFromString;
 virStorageFileFeatureTypeToString;

@@ -2187,6 +2187,28 @@ qemuDomainCleanupRun(virQEMUDriverPtr driver,
 }
 
 int
+qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
+{
+    char *brokenFile = NULL;
+
+    if (!disk->src || !disk->backingChain)
+        return 0;
+
+    if (virStorageFileChainGetBroken(disk->backingChain, &brokenFile) < 0)
+        return -1;
+
+    if (brokenFile) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Backing file '%s' of image '%s' is missing."),
+                       brokenFile, disk->src);
+        VIR_FREE(brokenFile);
+        return -1;
+    }
+
+    return 0;
+}
+
+int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainDiskDefPtr disk,
                              bool force)

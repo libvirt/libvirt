@@ -572,6 +572,13 @@ virFindBackingFile(const char *start, bool start_is_dir, const char *path,
         goto cleanup;
     }
 
+    if (virFileAccessibleAs(combined, F_OK, getuid(), getgid()) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot access backing file '%s'"),
+                             combined);
+        goto cleanup;
+    }
+
     if (!(*canonical = canonicalize_file_name(combined))) {
         virReportSystemError(errno,
                              _("Can't canonicalize path '%s'"), path);
@@ -1095,6 +1102,45 @@ virStorageFileGetMetadata(const char *path, int format,
     virHashFree(cycle);
     return ret;
 }
+
+/**
+ * virStorageFileChainCheckBroken
+ *
+ * If CHAIN is broken, set *brokenFile to the broken file name,
+ * otherwise set it to NULL. Caller MUST free *brokenFile after use.
+ * Return 0 on success, negative on error.
+ */
+int
+virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
+                             char **brokenFile)
+{
+    virStorageFileMetadataPtr tmp;
+    int ret = -1;
+
+    if (!chain)
+        return 0;
+
+    *brokenFile = NULL;
+
+    tmp = chain;
+    while (tmp) {
+        /* Break if no backing store or backing store is not file */
+       if (!tmp->backingStoreRaw)
+           break;
+       if (!tmp->backingStore) {
+           if (VIR_STRDUP(*brokenFile, tmp->backingStoreRaw) < 0)
+               goto error;
+           break;
+       }
+       tmp = tmp->backingMeta;
+    }
+
+    ret = 0;
+
+error:
+    return ret;
+}
+
 
 /**
  * virStorageFileFreeMetadata:

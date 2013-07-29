@@ -90,6 +90,8 @@ virStorageFileMetadataPtr virStorageFileGetMetadata(const char *path,
 virStorageFileMetadataPtr virStorageFileGetMetadataFromFD(const char *path,
                                                           int fd,
                                                           int format);
+int virStorageFileChainGetBroken(virStorageFileMetadataPtr chain,
+                                 char **broken_file);
 
 const char *virStorageFileChainLookup(virStorageFileMetadataPtr chain,
                                       const char *start,
