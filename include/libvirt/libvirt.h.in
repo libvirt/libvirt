@@ -181,7 +181,7 @@ typedef enum {
     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot */
     VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process */
     VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot */
-    VIR_DOMAIN_PAUSED_GUEST_PANICKED = 10, /* paused due to a guest panicked event */
+    VIR_DOMAIN_PAUSED_CRASHED = 10,     /* paused due to a guest crash */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_PAUSED_LAST

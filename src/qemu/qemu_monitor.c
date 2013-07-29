@@ -3335,7 +3335,7 @@ int qemuMonitorVMStatusToPausedReason(const char *status)
         return VIR_DOMAIN_PAUSED_WATCHDOG;
 
     case QEMU_MONITOR_VM_STATUS_GUEST_PANICKED:
-        return VIR_DOMAIN_PAUSED_GUEST_PANICKED;
+        return VIR_DOMAIN_PAUSED_CRASHED;
 
     /* unreachable from this point on */
     case QEMU_MONITOR_VM_STATUS_LAST:

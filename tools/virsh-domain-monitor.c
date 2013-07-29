@@ -228,8 +228,8 @@ vshDomainStateReasonToString(int state, int reason)
             return N_("shutting down");
         case VIR_DOMAIN_PAUSED_SNAPSHOT:
             return N_("creating snapshot");
-        case VIR_DOMAIN_PAUSED_GUEST_PANICKED:
-            return N_("guest panicked");
+        case VIR_DOMAIN_PAUSED_CRASHED:
+            return N_("crashed");
         case VIR_DOMAIN_PAUSED_UNKNOWN:
         case VIR_DOMAIN_PAUSED_LAST:
             ;

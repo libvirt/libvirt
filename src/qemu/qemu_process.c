@@ -2724,7 +2724,7 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
             newState = VIR_DOMAIN_SHUTDOWN;
             newReason = VIR_DOMAIN_SHUTDOWN_UNKNOWN;
             ignore_value(VIR_STRDUP_QUIET(msg, "shutdown"));
-        } else if (reason == VIR_DOMAIN_PAUSED_GUEST_PANICKED) {
+        } else if (reason == VIR_DOMAIN_PAUSED_CRASHED) {
             newState = VIR_DOMAIN_CRASHED;
             newReason = VIR_DOMAIN_CRASHED_PANICKED;
             ignore_value(VIR_STRDUP_QUIET(msg, "crashed"));
