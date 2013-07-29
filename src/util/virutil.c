@@ -1036,6 +1036,14 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups ATTRIBUTE_UNUSED,
 
 #else /* ! HAVE_GETPWUID_R */
 
+int
+virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
+                gid_t **list)
+{
+    *list = NULL;
+    return 0;
+}
+
 # ifdef WIN32
 /* These methods are adapted from GLib2 under terms of LGPLv2+ */
 static int
@@ -1166,6 +1174,7 @@ virGetUserRuntimeDirectory(void)
 {
     return virGetUserCacheDirectory();
 }
+
 # else /* !HAVE_GETPWUID_R && !WIN32 */
 char *
 virGetUserDirectory(void)
