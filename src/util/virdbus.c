@@ -982,13 +982,13 @@ int virDBusMessageDecode(DBusMessage* msg,
  * @replyout: pointer to receive reply message, or NULL
  * @destination: bus identifier of the target service
  * @path: object path of the target service
- * @interface: the interface of the object
+ * @iface: the interface of the object
  * @member: the name of the method in the interface
  * @types: type signature for following method arguments
  * @...: method arguments
  *
  * This invokes a method on a remote service on the
- * DBus bus @conn. The @destination, @path, @interface
+ * DBus bus @conn. The @destination, @path, @iface
  * and @member parameters identify the object method to
  * be invoked. The optional @replyout parameter will be
  * filled with any reply to the method call. The
@@ -1099,7 +1099,7 @@ int virDBusCallMethod(DBusConnection *conn,
                       DBusMessage **replyout,
                       const char *destination,
                       const char *path,
-                      const char *interface,
+                      const char *iface,
                       const char *member,
                       const char *types, ...)
 {
@@ -1113,7 +1113,7 @@ int virDBusCallMethod(DBusConnection *conn,
 
     if (!(call = dbus_message_new_method_call(destination,
                                               path,
-                                              interface,
+                                              iface,
                                               member))) {
         virReportOOMError();
         goto cleanup;
@@ -1206,7 +1206,7 @@ int virDBusCallMethod(DBusConnection *conn ATTRIBUTE_UNUSED,
                       DBusMessage **reply ATTRIBUTE_UNUSED,
                       const char *destination ATTRIBUTE_UNUSED,
                       const char *path ATTRIBUTE_UNUSED,
-                      const char *interface ATTRIBUTE_UNUSED,
+                      const char *iface ATTRIBUTE_UNUSED,
                       const char *member ATTRIBUTE_UNUSED,
                       const char *types ATTRIBUTE_UNUSED, ...)
 {
