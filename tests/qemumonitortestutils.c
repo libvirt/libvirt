@@ -97,6 +97,8 @@ qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
     size_t want = strlen(response) + 2;
     size_t have = test->outgoingCapacity - test->outgoingLength;
 
+    VIR_DEBUG("Adding response to monitor command: '%s", response);
+
     if (have < want) {
         size_t need = want - have;
         if (VIR_EXPAND_N(test->outgoing, test->outgoingCapacity, need) < 0)
@@ -111,7 +113,7 @@ qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
 }
 
 
-static int
+int
 qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
 {
     if (test->agent || test->json) {
@@ -125,11 +127,47 @@ qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
 }
 
 
+int ATTRIBUTE_FMT_PRINTF(2, 3)
+qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
+{
+    va_list msgargs;
+    char *msg = NULL;
+    char *jsonmsg = NULL;
+    int ret = -1;
+
+    va_start(msgargs, errmsg);
+
+    if (virVasprintf(&msg, errmsg, msgargs) < 0)
+        goto cleanup;
+
+    if (test->agent || test->json) {
+        if (virAsprintf(&jsonmsg, "{ \"error\": "
+                                  " { \"desc\": \"%s\", "
+                                  "   \"class\": \"UnexpectedCommand\" } }",
+                                  msg) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&jsonmsg, "error: '%s'", msg) < 0)
+            goto cleanup;
+    }
+
+    ret = qemuMonitorTestAddReponse(test, jsonmsg);
+
+cleanup:
+    va_end(msgargs);
+    VIR_FREE(msg);
+    VIR_FREE(jsonmsg);
+    return ret;
+}
+
+
 static int
 qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
                               const char *cmdstr)
 {
     int ret;
+
+    VIR_DEBUG("Processing string from monitor handler: '%s", cmdstr);
 
     if (test->nitems == 0) {
         return qemuMonitorTestAddUnexpectedErrorResponse(test);
@@ -399,8 +437,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
             return -1;
 
         if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Missing command name in %s", cmdstr);
+            ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
             goto cleanup;
         }
     } else {
@@ -410,8 +447,9 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
         cmdname = cmdcopy;
 
         if (!(tmp = strchr(cmdcopy, ' '))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Cannot find command name in '%s'", cmdstr);
+            ret = qemuMonitorReportError(test,
+                                         "Cannot find command name in '%s'",
+                                         cmdstr);
             goto cleanup;
         }
         *tmp = '\0';
@@ -465,8 +503,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
         return -1;
 
     if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Missing guest-sync command name");
+        ret = qemuMonitorReportError(test, "Missing guest-sync command name");
         goto cleanup;
     }
 
@@ -476,14 +513,12 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
     }
 
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Missing arguments for guest-sync");
+        ret = qemuMonitorReportError(test, "Missing arguments for guest-sync");
         goto cleanup;
     }
 
     if (virJSONValueObjectGetNumberUlong(args, "id", &id)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Missing id for guest sync");
+        ret = qemuMonitorReportError(test, "Missing id for guest sync");
         goto cleanup;
     }
 

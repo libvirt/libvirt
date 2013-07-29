@@ -41,8 +41,11 @@ int qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
 int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
                               const char *response);
 
+int qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test);
+
 void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
 
+int qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...);
 
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
