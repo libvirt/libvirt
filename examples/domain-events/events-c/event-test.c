@@ -262,16 +262,9 @@ static int myDomainEventRTCChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                           long long offset,
                                           void *opaque ATTRIBUTE_UNUSED)
 {
-    char *str = NULL;
-    /* HACK: use asprintf since we have gnulib's wrapper for %lld on Win32
-     * but don't have a printf() replacement with %lld */
-    if (asprintf(&str, "%s EVENT: Domain %s(%d) rtc change %lld\n",
-                 __func__, virDomainGetName(dom),
-                 virDomainGetID(dom), offset) < 0)
-        return 0;
-
-    printf("%s", str);
-    free(str);
+    printf("%s EVENT: Domain %s(%d) rtc change %" PRIdMAX "\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           (intmax_t)offset);
 
     return 0;
 }
