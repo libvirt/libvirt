@@ -191,7 +191,6 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown */
     VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request */
-    VIR_DOMAIN_SHUTDOWN_CRASHED = 2,    /* domain crashed */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_SHUTDOWN_LAST

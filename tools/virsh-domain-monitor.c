@@ -240,8 +240,6 @@ vshDomainStateReasonToString(int state, int reason)
         switch ((virDomainShutdownReason) reason) {
         case VIR_DOMAIN_SHUTDOWN_USER:
             return N_("user");
-        case VIR_DOMAIN_SHUTDOWN_CRASHED:
-            return N_("crashed");
         case VIR_DOMAIN_SHUTDOWN_UNKNOWN:
         case VIR_DOMAIN_SHUTDOWN_LAST:
             ;
