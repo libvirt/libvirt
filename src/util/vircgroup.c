@@ -95,6 +95,7 @@ bool virCgroupAvailable(void)
     return ret;
 }
 
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
@@ -149,7 +150,16 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     VIR_FREE(partname);
     return valid;
 }
-
+#else
+static bool
+virCgroupValidateMachineGroup(virCgroupPtr group ATTRIBUTE_UNUSED,
+                              const char *name ATTRIBUTE_UNUSED,
+                              const char *drivername ATTRIBUTE_UNUSED,
+                              bool stripEmulatorSuffix ATTRIBUTE_UNUSED)
+{
+    return true;
+}
+#endif
 
 /**
  * virCgroupFree:
