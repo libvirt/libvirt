@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,6 +40,7 @@
 
 #include <config.h>
 
+#define NO_LIBVIRT /* This file intentionally does not link to libvirt */
 #include "testutils.h"
 
 #ifdef linux

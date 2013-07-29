@@ -32,8 +32,10 @@
 # define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
 
 /* Work around lack of gnulib support for fprintf %z */
-# undef fprintf
-# define fprintf virFilePrintf
+# ifndef NO_LIBVIRT
+#  undef fprintf
+#  define fprintf virFilePrintf
+# endif
 
 extern char *progname;
 extern char *abs_srcdir;
