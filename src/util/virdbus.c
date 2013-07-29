@@ -738,7 +738,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
 
         switch (*t) {
         case DBUS_TYPE_BYTE:
-            GET_NEXT_VAL(unsigned char, int, "%d");
+            GET_NEXT_VAL(unsigned char, unsigned char, "%d");
             break;
 
         case DBUS_TYPE_BOOLEAN:
@@ -746,11 +746,11 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
             break;
 
         case DBUS_TYPE_INT16:
-            GET_NEXT_VAL(dbus_int16_t, int, "%d");
+            GET_NEXT_VAL(dbus_int16_t, short, "%d");
             break;
 
         case DBUS_TYPE_UINT16:
-            GET_NEXT_VAL(dbus_uint16_t, unsigned int, "%d");
+            GET_NEXT_VAL(dbus_uint16_t, unsigned short, "%d");
             break;
 
         case DBUS_TYPE_INT32:

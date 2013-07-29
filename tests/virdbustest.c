@@ -54,8 +54,8 @@ static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     unsigned char in_byte = 200, out_byte = 0;
     int in_bool = true, out_bool = false;
-    int in_int16 = 12000, out_int16 = 0;
-    unsigned int in_uint16 = 32000, out_uint16 = 0;
+    short in_int16 = 0xfefe, out_int16 = 0;
+    unsigned short in_uint16 = 32000, out_uint16 = 0;
     int in_int32 = 100000000, out_int32 = 0;
     unsigned int in_uint32 = 200000000, out_uint32 = 0;
     long long in_int64 = 1000000000000, out_int64 = 0;
@@ -232,8 +232,8 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     unsigned char in_byte = 200, out_byte = 0;
     int in_bool = true, out_bool = false;
-    int in_int16 = 12000, out_int16 = 0;
-    unsigned int in_uint16 = 32000, out_uint16 = 0;
+    short in_int16 = 12000, out_int16 = 0;
+    unsigned short in_uint16 = 32000, out_uint16 = 0;
     int in_int32 = 100000000, out_int32 = 0;
     unsigned int in_uint32 = 200000000, out_uint32 = 0;
     long long in_int64 = 1000000000000, out_int64 = 0;
