@@ -162,6 +162,52 @@ cleanup:
 
 
 static int
+testQemuAgentSuspend(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    int ret = -1;
+    size_t i;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-suspend-ram",
+                               "{ \"return\" : {} }") < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-suspend-disk",
+                               "{ \"return\" : {} }") < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-suspend-hybrid",
+                               "{ \"return\" : {} }") < 0)
+        goto cleanup;
+
+    /* try the commands - fail if ordering changes */
+    for (i = 0; i < VIR_NODE_SUSPEND_TARGET_LAST; i++) {
+        if (qemuAgentSuspend(qemuMonitorTestGetAgent(test), i) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -185,6 +231,7 @@ mymain(void)
     DO_TEST(FSFreeze);
     DO_TEST(FSThaw);
     DO_TEST(FSTrim);
+    DO_TEST(Suspend);
 
     virObjectUnref(xmlopt);
 
