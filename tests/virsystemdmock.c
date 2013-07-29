@@ -20,11 +20,12 @@
 
 #include <config.h>
 
-#include "internal.h"
+#ifdef __linux__
+# include "internal.h"
 
-#include <stdlib.h>
+# include <stdlib.h>
 
-#include <dbus/dbus.h>
+# include <dbus/dbus.h>
 
 void dbus_connection_set_change_sigpipe(dbus_bool_t will_modify_sigpipe ATTRIBUTE_UNUSED)
 {
@@ -79,3 +80,7 @@ DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connectio
 
     return reply;
 }
+
+#else
+/* Nothing to override on non-__linux__ platforms */
+#endif
