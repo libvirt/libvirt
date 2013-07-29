@@ -132,6 +132,36 @@ cleanup:
 
 
 static int
+testQemuAgentFSTrim(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItemParams(test, "guest-fstrim",
+                                     "{ \"return\" : {} }",
+                                     "minimum", "1337",
+                                     NULL) < 0)
+        goto cleanup;
+
+    if (qemuAgentFSTrim(qemuMonitorTestGetAgent(test), 1337) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -154,6 +184,7 @@ mymain(void)
 
     DO_TEST(FSFreeze);
     DO_TEST(FSThaw);
+    DO_TEST(FSTrim);
 
     virObjectUnref(xmlopt);
 
