@@ -1,0 +1,1 @@
+<srv service='name' protocol='tcp' domain='donkey' target='.' port='404' priority='10' weight='10'/>

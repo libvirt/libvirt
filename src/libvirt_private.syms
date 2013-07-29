@@ -503,6 +503,7 @@ virNetworkDefGetIpByIndex;
 virNetworkDefParseFile;
 virNetworkDefParseNode;
 virNetworkDefParseString;
+virNetworkDefUpdateSection;
 virNetworkDeleteConfig;
 virNetworkFindByName;
 virNetworkFindByUUID;

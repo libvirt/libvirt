@@ -3980,7 +3980,7 @@ cleanup:
     return ret;
 }
 
-static int
+int
 virNetworkDefUpdateSection(virNetworkDefPtr def,
                            unsigned int command, /* virNetworkUpdateCommand */
                            unsigned int section, /* virNetworkUpdateSection */

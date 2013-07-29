@@ -73,6 +73,8 @@ EXTRA_DIST =		\
 	networkxml2xmlin \
 	networkxml2xmlout \
 	networkxml2confdata \
+	networkxml2xmlupdatein \
+	networkxml2xmlupdateout \
 	nodedevschemadata \
 	nodedevschematest \
 	nodeinfodata     \
@@ -191,7 +193,7 @@ if WITH_YAJL
 test_programs += jsontest
 endif
 
-test_programs += networkxml2xmltest
+test_programs += networkxml2xmltest networkxml2xmlupdatetest
 
 if WITH_NETWORK
 test_programs += networkxml2conftest
@@ -504,6 +506,11 @@ networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
 	testutils.c testutils.h
 networkxml2xmltest_LDADD = $(LDADDS)
+
+networkxml2xmlupdatetest_SOURCES = \
+	networkxml2xmlupdatetest.c \
+	testutils.c testutils.h
+networkxml2xmlupdatetest_LDADD = $(LDADDS)
 
 if WITH_NETWORK
 networkxml2conftest_SOURCES = \

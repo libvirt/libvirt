@@ -428,4 +428,13 @@ int virNetworkObjListExport(virConnectPtr conn,
                             virNetworkObjListFilter filter,
                             unsigned int flags);
 
+/* for testing */
+int
+virNetworkDefUpdateSection(virNetworkDefPtr def,
+                           unsigned int command, /* virNetworkUpdateCommand */
+                           unsigned int section, /* virNetworkUpdateSection */
+                           int parentIndex,
+                           const char *xml,
+                           unsigned int flags);  /* virNetworkUpdateFlags */
+
 #endif /* __NETWORK_CONF_H__ */

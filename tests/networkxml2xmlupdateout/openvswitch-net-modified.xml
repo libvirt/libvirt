@@ -1,0 +1,33 @@
+<network>
+  <name>openvswitch-net</name>
+  <uuid>81ff0d90-c92e-6742-64da-4a736edb9a8b</uuid>
+  <forward mode='bridge'/>
+  <virtualport type='openvswitch'/>
+  <portgroup name='bob' default='yes'>
+    <vlan trunk='yes'>
+      <tag id='666'/>
+    </vlan>
+    <virtualport>
+      <parameters profileid='bob-profile'/>
+    </virtualport>
+  </portgroup>
+  <portgroup name='alice'>
+    <vlan trunk='yes'>
+      <tag id='888'/>
+      <tag id='808'/>
+      <tag id='909'/>
+    </vlan>
+    <virtualport>
+      <parameters profileid='alice-profile'/>
+    </virtualport>
+  </portgroup>
+  <portgroup name='native'>
+    <vlan trunk='yes'>
+      <tag id='123' nativeMode='tagged'/>
+      <tag id='444'/>
+    </vlan>
+    <virtualport>
+      <parameters profileid='native-profile'/>
+    </virtualport>
+  </portgroup>
+</network>

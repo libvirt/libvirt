@@ -1,0 +1,11 @@
+<portgroup name='alison'>
+  <vlan trunk='yes'>
+    <tag id='4'/>
+    <tag id='8'/>
+    <tag id='13'/>
+    <tag id='1990'/>
+  </vlan>
+  <virtualport>
+    <parameters profileid='alison-profile'/>
+  </virtualport>
+</portgroup>
