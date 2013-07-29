@@ -67,8 +67,6 @@ typedef enum {
                                        */
 } virCgroupFlags;
 
-static int virCgroupPartitionEscape(char **path);
-
 bool virCgroupAvailable(void)
 {
     bool ret = false;
@@ -96,6 +94,9 @@ bool virCgroupAvailable(void)
 }
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+
+static int virCgroupPartitionEscape(char **path);
+
 static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
