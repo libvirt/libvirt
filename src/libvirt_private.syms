@@ -2044,6 +2044,7 @@ virGetUnprivSGIOSysfsPath;
 virGetUserCacheDirectory;
 virGetUserConfigDirectory;
 virGetUserDirectory;
+virGetUserDirectoryByUID;
 virGetUserID;
 virGetUserName;
 virGetUserRuntimeDirectory;

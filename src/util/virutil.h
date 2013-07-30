@@ -111,6 +111,7 @@ static inline int getgid (void) { return 0; }
 char *virGetHostname(void);
 
 char *virGetUserDirectory(void);
+char *virGetUserDirectoryByUID(uid_t uid);
 char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);

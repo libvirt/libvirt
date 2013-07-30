@@ -647,6 +647,14 @@ cleanup:
     return result;
 }
 
+
+char *
+virGetUserDirectory(void)
+{
+    return virGetUserDirectoryByUID(geteuid());
+}
+
+
 #ifdef HAVE_GETPWUID_R
 /* Look up fields from the user database for the given user.  On
  * error, set errno, report the error, and return -1.  */
@@ -750,12 +758,15 @@ static char *virGetGroupEnt(gid_t gid)
     return ret;
 }
 
-char *virGetUserDirectory(void)
+
+char *
+virGetUserDirectoryByUID(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(geteuid(), NULL, NULL, &ret);
+    virGetUserEnt(uid, NULL, NULL, &ret);
     return ret;
 }
+
 
 static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
 {
@@ -1092,8 +1103,11 @@ virGetWin32DirectoryRoot(char **path)
 
 
 char *
-virGetUserDirectory(void)
+virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 {
+    /* Since Windows lacks setuid binaries, and since we already fake
+     * geteuid(), we can safely assume that this is only called when
+     * querying about the current user */
     const char *dir;
     char *ret;
 
@@ -1177,7 +1191,7 @@ virGetUserRuntimeDirectory(void)
 
 # else /* !HAVE_GETPWUID_R && !WIN32 */
 char *
-virGetUserDirectory(void)
+virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserDirectory is not available"));
