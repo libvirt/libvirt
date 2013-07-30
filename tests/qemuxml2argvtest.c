@@ -1063,6 +1063,9 @@ mymain(void)
 
     DO_TEST("arm-vexpressa9-nodevs",
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB);
+    DO_TEST("arm-vexpressa9-basic",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DRIVE);
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);

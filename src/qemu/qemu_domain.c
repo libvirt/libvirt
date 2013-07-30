@@ -799,6 +799,23 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     return 0;
 }
 
+static const char *
+qemuDomainDefaultNetModel(virDomainDefPtr def) {
+    if (def->os.arch == VIR_ARCH_S390 ||
+        def->os.arch == VIR_ARCH_S390X)
+        return "virtio";
+
+    if (def->os.arch == VIR_ARCH_ARMV7L) {
+        if (STREQ(def->os.machine, "versatilepb"))
+            return "smc91c111";
+
+        /* Incomplete. vexpress (and a few others) use this, but not all
+         * arm boards */
+        return "lan9118";
+    }
+
+    return "rtl8139";
+}
 
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
@@ -814,8 +831,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !dev->data.net->model) {
         if (VIR_STRDUP(dev->data.net->model,
-                       def->os.arch == VIR_ARCH_S390 ||
-                       def->os.arch == VIR_ARCH_S390X ? "virtio" : "rtl8139") < 0)
+                       qemuDomainDefaultNetModel(def)) < 0)
             goto cleanup;
     }
 

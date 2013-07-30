@@ -417,6 +417,26 @@ cleanup:
     return ret;
 }
 
+static bool
+qemuDomainSupportsNicdev(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+        return false;
+
+    /* arm boards require legacy -net nic */
+    if (def->os.arch == VIR_ARCH_ARMV7L)
+        return false;
+
+    return true;
+}
+
+static bool
+qemuDomainSupportsNetdev(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+{
+    if (!qemuDomainSupportsNicdev(def, qemuCaps))
+        return false;
+    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
+}
 
 /**
  * qemuOpenVhostNet:
@@ -454,8 +474,7 @@ qemuOpenVhostNet(virDomainDefPtr def,
      * option), don't try to open the device.
      */
     if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_NET) &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+          qemuDomainSupportsNetdev(def, qemuCaps))) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("vhost-net is not supported with "
@@ -7335,8 +7354,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
      *
      * NB, no support for -netdev without use of -device
      */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (qemuDomainSupportsNetdev(def, qemuCaps)) {
         if (!(host = qemuBuildHostNetStr(net, driver,
                                          ',', vlan,
                                          tapfdName, tapfdSize,
@@ -7344,7 +7362,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             goto cleanup;
         virCommandAddArgList(cmd, "-netdev", host, NULL);
     }
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (qemuDomainSupportsNicdev(def, qemuCaps)) {
         bool multiqueue = tapfdSize > 1 || vhostfdSize > 1;
 
         if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex,
@@ -7356,8 +7374,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             goto cleanup;
         virCommandAddArgList(cmd, "-net", nic, NULL);
     }
-    if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+    if (!qemuDomainSupportsNetdev(def, qemuCaps)) {
         if (!(host = qemuBuildHostNetStr(net, driver,
                                          ',', vlan,
                                          tapfdName, tapfdSize,
@@ -8408,8 +8425,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             int vlan;
 
             /* VLANs are not used with -netdev, so don't record them */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+            if (qemuDomainSupportsNetdev(def, qemuCaps))
                 vlan = -1;
             else
                 vlan = i;
