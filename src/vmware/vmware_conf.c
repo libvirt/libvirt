@@ -205,7 +205,7 @@ vmwareSetSentinal(const char **prog, const char *key)
     const char **tmp = prog;
 
     while (tmp && *tmp) {
-        if (*tmp == PROGRAM_SENTINAL) {
+        if (*tmp == PROGRAM_SENTINEL) {
             *tmp = key;
             break;
         }
@@ -392,7 +392,7 @@ int
 vmwareMoveFile(char *srcFile, char *dstFile)
 {
     const char *cmdmv[] =
-        { "mv", PROGRAM_SENTINAL, PROGRAM_SENTINAL, NULL };
+        { "mv", PROGRAM_SENTINEL, PROGRAM_SENTINEL, NULL };
 
     if (!virFileExists(srcFile)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("file %s does not exist"),

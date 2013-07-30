@@ -28,7 +28,7 @@
 # include "virthread.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
-# define PROGRAM_SENTINAL ((char *)0x1)
+# define PROGRAM_SENTINEL ((char *)0x1)
 
 # define TYPE_PLAYER        0
 # define TYPE_WORKSTATION   1

@@ -252,8 +252,8 @@ vmwareStopVM(struct vmware_driver *driver,
              virDomainShutoffReason reason)
 {
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINAL, "stop",
-        PROGRAM_SENTINAL, "soft", NULL
+        VMRUN, "-T", PROGRAM_SENTINEL, "stop",
+        PROGRAM_SENTINEL, "soft", NULL
     };
 
     vmwareSetSentinal(cmd, vmw_types[driver->type]);
@@ -273,8 +273,8 @@ static int
 vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
 {
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINAL, "start",
-        PROGRAM_SENTINAL, PROGRAM_SENTINAL, NULL
+        VMRUN, "-T", PROGRAM_SENTINEL, "start",
+        PROGRAM_SENTINEL, PROGRAM_SENTINEL, NULL
     };
     const char *vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
 
@@ -446,8 +446,8 @@ vmwareDomainSuspend(virDomainPtr dom)
 
     virDomainObjPtr vm;
     const char *cmd[] = {
-      VMRUN, "-T", PROGRAM_SENTINAL, "pause",
-      PROGRAM_SENTINAL, NULL
+      VMRUN, "-T", PROGRAM_SENTINEL, "pause",
+      PROGRAM_SENTINEL, NULL
     };
     int ret = -1;
 
@@ -495,7 +495,7 @@ vmwareDomainResume(virDomainPtr dom)
 
     virDomainObjPtr vm;
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINAL, "unpause", PROGRAM_SENTINAL,
+        VMRUN, "-T", PROGRAM_SENTINEL, "unpause", PROGRAM_SENTINEL,
         NULL
     };
     int ret = -1;
@@ -544,8 +544,8 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
     const char * vmxPath = NULL;
     virDomainObjPtr vm;
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINAL,
-        "reset", PROGRAM_SENTINAL, "soft", NULL
+        VMRUN, "-T", PROGRAM_SENTINEL,
+        "reset", PROGRAM_SENTINEL, "soft", NULL
     };
     int ret = -1;
 

@@ -564,12 +564,12 @@ cleanup:
  * key value. This lets us declare the argv on the
  * stack and just splice in the domain name after
  */
-#define PROGRAM_SENTINAL ((char *)0x1)
+#define PROGRAM_SENTINEL ((char *)0x1)
 static void openvzSetProgramSentinal(const char **prog, const char *key)
 {
     const char **tmp = prog;
     while (tmp && *tmp) {
-        if (*tmp == PROGRAM_SENTINAL) {
+        if (*tmp == PROGRAM_SENTINEL) {
             *tmp = key;
             break;
         }
@@ -580,7 +580,7 @@ static void openvzSetProgramSentinal(const char **prog, const char *key)
 static int openvzDomainSuspend(virDomainPtr dom) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINAL, "--suspend", NULL};
+    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--suspend", NULL};
     int ret = -1;
 
     openvzDriverLock(driver);
@@ -618,7 +618,7 @@ cleanup:
 static int openvzDomainResume(virDomainPtr dom) {
   struct openvz_driver *driver = dom->conn->privateData;
   virDomainObjPtr vm;
-  const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINAL, "--resume", NULL};
+  const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--resume", NULL};
   int ret = -1;
 
   openvzDriverLock(driver);
@@ -658,7 +658,7 @@ openvzDomainShutdownFlags(virDomainPtr dom,
                           unsigned int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "stop", PROGRAM_SENTINAL, NULL};
+    const char *prog[] = {VZCTL, "--quiet", "stop", PROGRAM_SENTINEL, NULL};
     int ret = -1;
     int status;
 
@@ -721,7 +721,7 @@ static int openvzDomainReboot(virDomainPtr dom,
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "restart", PROGRAM_SENTINAL, NULL};
+    const char *prog[] = {VZCTL, "--quiet", "restart", PROGRAM_SENTINEL, NULL};
     int ret = -1;
     int status;
 
@@ -1041,7 +1041,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL};
+    const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINEL, NULL};
 
     virCheckFlags(0, NULL);
 
@@ -1126,7 +1126,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL };
+    const char *prog[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINEL, NULL };
     int ret = -1;
     int status;
 
@@ -1180,7 +1180,7 @@ openvzDomainUndefineFlags(virDomainPtr dom,
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = { VZCTL, "--quiet", "destroy", PROGRAM_SENTINAL, NULL };
+    const char *prog[] = { VZCTL, "--quiet", "destroy", PROGRAM_SENTINEL, NULL };
     int ret = -1;
     int status;
 
@@ -1228,7 +1228,7 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINAL,
+    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
                            "--onboot", autostart ? "yes" : "no",
                            "--save", NULL };
     int ret = -1;
@@ -1326,7 +1326,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
                                         unsigned int nvcpus)
 {
     char        str_vcpus[32];
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINAL,
+    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
                            "--cpus", str_vcpus, "--save", NULL };
     unsigned int pcpus;
     pcpus = openvzGetNodeCPUs();
@@ -1685,7 +1685,7 @@ openvzDomainSetMemoryInternal(virDomainObjPtr vm,
                               unsigned long long mem)
 {
     char str_mem[16];
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINAL,
+    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
         "--kmemsize", str_mem, "--save", NULL
     };
 
