@@ -9,7 +9,7 @@
     <p>
       Migration of guests between hosts is a complicated problem with many possible
       solutions, each with their own positive and negative points. For maximum
-      flexibility of both hypervisor integration, and adminsitrator deployment,
+      flexibility of both hypervisor integration, and administrator deployment,
       libvirt implements several options for migration.
     </p>
 
@@ -187,7 +187,7 @@
         URI. In this case the management application should specify the
         hypervisor specific URI explicitly, using an IP address, or a
         correct hostname.</li>
-      <li>The host has multiple network interaces. If a host has multiple
+      <li>The host has multiple network interfaces. If a host has multiple
         network interfaces, it might be desirable for the migration data
         stream to be sent over a specific interface for either security
         or performance reasons. In this case the management application
