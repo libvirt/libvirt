@@ -248,8 +248,13 @@
 %if 0%{?fedora} >= 16
     %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
 %endif
-%if 0%{?rhel} >= 6
+%if 0%{?rhel} == 6
     %ifarch %{ix86} x86_64
+        %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
+    %endif
+%endif
+%if 0%{?rhel} >= 7
+    %ifarch x86_64
         %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
     %endif
 %endif
