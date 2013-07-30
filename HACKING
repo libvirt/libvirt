@@ -180,7 +180,7 @@ possible to add a filter to avoid the errors. For example:
 ==4643==    by 0x34D8C01569: ??? (in /usr/lib64/ld-2.15.so)
 
 
-In this instance, it is acceptible to modify the "tests/.valgrind.supp" file
+In this instance, it is acceptable to modify the "tests/.valgrind.supp" file
 in order to add a suppression filter. The filter should be unique enough to
 not suppress real leaks, but it should be generic enough to cover multiple
 code paths. The format of the entry can be found in the documentation found at

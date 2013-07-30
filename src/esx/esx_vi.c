@@ -3715,7 +3715,7 @@ esxVI_LookupDatastoreContentByDatastoreName
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not serach in datastore '%s': %s"),
+                       _("Could not search in datastore '%s': %s"),
                        datastoreName, taskInfoErrorMessage);
         goto cleanup;
     }
