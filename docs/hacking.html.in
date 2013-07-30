@@ -207,7 +207,7 @@
 ==4643==    by 0x34D8C01569: ??? (in /usr/lib64/ld-2.15.so)
 
 </pre>
-        <p>In this instance, it is acceptible to modify the
+        <p>In this instance, it is acceptable to modify the
            <code>tests/.valgrind.supp</code> file in order to add a
            suppression filter. The filter should be unique enough to
            not suppress real leaks, but it should be generic enough to

@@ -3363,7 +3363,7 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
 
     if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create directroy for device %s"),
+                             _("Unable to create directory for device %s"),
                              dst);
         goto cleanup;
     }
@@ -3471,7 +3471,7 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
 
     if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
         virReportSystemError(errno,
-                             _("Unable to create directroy for device %s"),
+                             _("Unable to create directory for device %s"),
                              dst);
         goto cleanup;
     }

@@ -919,7 +919,7 @@ class CParser:
             l = lines[0]
             i = 0
             # Remove all leading '*', followed by at most one ' ' character
-            # since we need to preserve correct identation of code examples
+            # since we need to preserve correct indentation of code examples
             while i < len(l) and l[i] == '*':
                 i = i + 1
             if i > 0:

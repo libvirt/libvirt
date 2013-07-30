@@ -1001,7 +1001,7 @@
     </dl>
 
     <p>
-      Guest NUMA topology can be specifed using the <code>numa</code> element.
+      Guest NUMA topology can be specified using the <code>numa</code> element.
       <span class="since">Since 0.9.8</span>
     </p>
 
@@ -3034,7 +3034,7 @@
 
     <p>
       Provides direct attachment of the virtual machine's NIC to the given
-      physial interface of the host.
+      physical interface of the host.
       <span class="since">Since 0.7.7 (QEMU and KVM only)</span><br/>
       This setup requires the Linux macvtap
       driver to be available. <span class="since">(Since Linux 2.6.34.)</span>
@@ -3439,7 +3439,7 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       If no target is specified, certain hypervisors will
       automatically generate a name for the created tun device. This
-      name can be manually specifed, however the name <i>must not
+      name can be manually specified, however the name <i>must not
       start with either 'vnet' or 'vif'</i>, which are prefixes
       reserved by libvirt and certain hypervisors. Manually specified
       targets using these prefixes will be ignored.
