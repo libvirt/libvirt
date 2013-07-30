@@ -1773,6 +1773,16 @@ cleanup:
     return ret;
 }
 
+static bool
+qemuDomainSupportsPCI(virDomainDefPtr def) {
+    if (def->os.arch != VIR_ARCH_ARMV7L)
+        return true;
+
+    if (STREQ(def->os.machine, "versatilepb"))
+        return true;
+
+    return false;
+}
 
 int
 qemuDomainAssignPCIAddresses(virDomainDefPtr def,
@@ -1838,8 +1848,10 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
             goto cleanup;
 
-        if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
-            goto cleanup;
+        if (qemuDomainSupportsPCI(def)) {
+            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+                goto cleanup;
+        }
     }
 
     if (obj && obj->privateData) {
