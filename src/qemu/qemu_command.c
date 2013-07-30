@@ -1429,6 +1429,7 @@ struct _qemuDomainPCIAddressSet {
     qemuDomainPCIAddressBus *buses;
     size_t nbuses;
     virDevicePCIAddress lastaddr;
+    qemuDomainPCIConnectFlags lastFlags;
     bool dryRun;          /* on a dry run, new buses are auto-added
                              and addresses aren't saved in device infos */
 };
@@ -1630,7 +1631,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     int ret = -1;
     virDevicePCIAddressPtr addr = &info->addr.pci;
     bool entireSlot;
-    /* FIXME: flags should be set according to the requirements of @device */
+    /* flags may be changed from default below */
     qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
                                        QEMU_PCI_CONNECT_TYPE_PCI);
 
@@ -1644,28 +1645,60 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return 0;
     }
 
+    /* Change flags according to differing requirements of different
+     * devices.
+     */
+    if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+        switch (device->data.controller->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+            /* pci-bridge needs a PCI slot, but it isn't
+             * hot-pluggable, so it doesn't need a hot-pluggable slot.
+             */
+            flags = QEMU_PCI_CONNECT_TYPE_PCI;
+            break;
+        default:
+            break;
+        }
+    }
+
     /* Ignore implicit controllers on slot 0:0:1.0:
      * implicit IDE controller on 0:0:1.1 (no qemu command line)
      * implicit USB controller on 0:0:1.2 (-usb)
      *
      * If the machine does have a PCI bus, they will get reserved
      * in qemuAssignDevicePCISlots().
-     *
-     * FIXME: When we have support for a pcie-root controller at bus
-     * 0, we will no longer be able to skip checking of these devices,
-     * as they are PCI, and thus can't be connected to bus 0 if it is
-     * PCIe rather than PCI.
+     */
+
+    /* These are the IDE and USB controllers in the PIIX3, hardcoded
+     * to bus 0 slot 1.  They cannot be attached to a PCIe slot, only
+     * PCI.
      */
     if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER && addr->domain == 0 &&
         addr->bus == 0 && addr->slot == 1) {
         virDomainControllerDefPtr cont = device->data.controller;
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE && cont->idx == 0 &&
-            addr->function == 1)
-            return 0;
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB && cont->idx == 0 &&
-            (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
-             cont->model == -1) && addr->function == 2)
-            return 0;
+
+        if ((cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE && cont->idx == 0 &&
+             addr->function == 1) ||
+            (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB && cont->idx == 0 &&
+             (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
+              cont->model == -1) && addr->function == 2)) {
+            /* Note the check for nbuses > 0 - if there are no PCI
+             * buses, we skip this check. This is a quirk required for
+             * some machinetypes such as s390, which pretend to have a
+             * PCI bus for long enough to generate the "-usb" on the
+             * commandline, but that don't really care if a PCI bus
+             * actually exists. */
+            if (addrs->nbuses > 0 &&
+                !(addrs->buses[0].flags & QEMU_PCI_CONNECT_TYPE_PCI)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Bus 0 must be PCI for integrated PIIX3 "
+                                 "USB or IDE controllers"));
+                return -1;
+            } else {
+                return 0;
+            }
+        }
     }
 
     entireSlot = (addr->function == 0 &&
@@ -1695,8 +1728,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         int nbuses = 0;
         size_t i;
         int rv;
-        qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
-                                           QEMU_PCI_CONNECT_TYPE_PCI);
+        qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCI;
 
         for (i = 0; i < def->ncontrollers; i++) {
             if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
@@ -1941,7 +1973,11 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev)
 {
     int ret = 0;
-    /* FIXME: flags should be set according to the particular device */
+    /* Flags should be set according to the particular device,
+     * but only the caller knows the type of device. Currently this
+     * function is only used for hot-plug, though, and hot-plug is
+     * only supported for standard PCI devices, so we can safely use
+     * the setting below */
     qemuDomainPCIConnectFlags flags = (QEMU_PCI_CONNECT_HOTPLUGGABLE |
                                        QEMU_PCI_CONNECT_TYPE_PCI);
 
@@ -2005,7 +2041,16 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
                                 virDevicePCIAddressPtr next_addr,
                                 qemuDomainPCIConnectFlags flags)
 {
-    virDevicePCIAddress a = addrs->lastaddr;
+    /* default to starting the search for a free slot from
+     * 0000:00:00.0
+     */
+    virDevicePCIAddress a = { 0, 0, 0, 0, false };
+
+    /* except if this search is for the exact same type of device as
+     * last time, continue the search from the previous match
+     */
+    if (flags == addrs->lastFlags)
+        a = addrs->lastaddr;
 
     if (addrs->nbuses == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("No PCI buses available"));
@@ -2014,6 +2059,12 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 
     /* Start the search at the last used bus and slot */
     for (a.slot++; a.bus < addrs->nbuses; a.bus++) {
+        if (!qemuDomainPCIAddressFlagsCompatible(&a, addrs->buses[a.bus].flags,
+                                                 flags, false)) {
+            VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
+                      a.domain, a.bus);
+            continue;
+        }
         for (; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
             if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                 goto success;
@@ -2030,9 +2081,15 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
         if (qemuDomainPCIAddressSetGrow(addrs, &a, flags) < 0)
             return -1;
         goto success;
-    } else {
+    } else if (flags == addrs->lastFlags) {
         /* Check the buses from 0 up to the last used one */
         for (a.bus = 0; a.bus <= addrs->lastaddr.bus; a.bus++) {
+            if (!qemuDomainPCIAddressFlagsCompatible(&a, addrs->buses[a.bus].flags,
+                                                     flags, false)) {
+                VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
+                          a.domain, a.bus);
+                continue;
+            }
             for (a.slot = 1; a.slot <= QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
                 if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                     goto success;
@@ -2072,6 +2129,7 @@ qemuDomainPCIAddressReserveNextSlot(qemuDomainPCIAddressSetPtr addrs,
     }
 
     addrs->lastaddr = addr;
+    addrs->lastFlags = flags;
     return 0;
 }
 
@@ -2285,21 +2343,34 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         goto error;
     }
 
-    flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
-
     /* PCI controllers */
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-            if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)
-                continue;
             if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
                 continue;
+            switch (def->controllers[i]->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+                /* pci-root is implicit in the machine,
+                 * and needs no address */
+                continue;
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+                /* pci-bridge doesn't require hot-plug
+                 * (although it does provide hot-plug in its slots)
+                 */
+                flags = QEMU_PCI_CONNECT_TYPE_PCI;
+                break;
+            default:
+                flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
+                break;
+            }
             if (qemuDomainPCIAddressReserveNextSlot(addrs,
                                                     &def->controllers[i]->info,
                                                     flags) < 0)
                 goto error;
         }
     }
+
+    flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
 
     for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
