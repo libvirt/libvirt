@@ -15,6 +15,7 @@ EnvironmentFile=-/etc/sysconfig/libvirtd
 ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
+Restart=on-failure
 # Override the maximum number of opened files
 #LimitNOFILE=2048
 
