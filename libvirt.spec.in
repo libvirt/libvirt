@@ -1343,16 +1343,18 @@ of recent versions of Linux (and other OSes).
     %define init_scripts --with-init_script=redhat
 %endif
 
-%if 0%{?enable_autotools}
- autoreconf -if
-%endif
-
 %if %{with_selinux}
     %if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
         %define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
     %else
         %define with_selinux_mount --with-selinux-mount="/selinux"
     %endif
+%endif
+
+# place macros above and build commands below this comment
+
+%if 0%{?enable_autotools}
+ autoreconf -if
 %endif
 
 %configure %{?_without_xen} \
