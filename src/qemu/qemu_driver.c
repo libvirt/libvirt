@@ -4090,68 +4090,6 @@ unsupported:
 
 
 static int
-qemuDomainPrepareAgentVCPUs(unsigned int nvcpus,
-                            qemuAgentCPUInfoPtr cpuinfo,
-                            int ncpuinfo)
-{
-    size_t i;
-    int nonline = 0;
-    int nofflinable = 0;
-
-    /* count the active and offlinable cpus */
-    for (i = 0; i < ncpuinfo; i++) {
-        if (cpuinfo[i].online)
-            nonline++;
-
-        if (cpuinfo[i].offlinable && cpuinfo[i].online)
-            nofflinable++;
-
-        /* This shouldn't happen, but we can't trust the guest agent */
-        if (!cpuinfo[i].online && !cpuinfo[i].offlinable) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid data provided by guest agent"));
-            return -1;
-        }
-    }
-
-    /* the guest agent reported less cpus than requested */
-    if (nvcpus > ncpuinfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("guest agent reports less cpu than requested"));
-        return -1;
-    }
-
-    /* not enough offlinable CPUs to support the request */
-    if (nvcpus < nonline - nofflinable) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Cannot offline enough CPUs"));
-        return -1;
-    }
-
-    for (i = 0; i < ncpuinfo; i++) {
-        if (nvcpus < nonline) {
-            /* unplug */
-            if (cpuinfo[i].offlinable && cpuinfo[i].online) {
-                cpuinfo[i].online = false;
-                nonline--;
-            }
-        } else if (nvcpus > nonline) {
-            /* plug */
-            if (!cpuinfo[i].online) {
-                cpuinfo[i].online = true;
-                nonline++;
-            }
-        } else {
-            /* done */
-            break;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                         unsigned int flags)
 {
@@ -4243,7 +4181,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (ncpuinfo < 0)
             goto endjob;
 
-        if (qemuDomainPrepareAgentVCPUs(nvcpus, cpuinfo, ncpuinfo) < 0)
+        if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
             goto endjob;
 
         qemuDomainObjEnterAgent(vm);

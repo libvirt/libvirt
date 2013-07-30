@@ -94,4 +94,7 @@ struct _qemuAgentCPUInfo {
 
 int qemuAgentGetVCPUs(qemuAgentPtr mon, qemuAgentCPUInfoPtr *info);
 int qemuAgentSetVCPUs(qemuAgentPtr mon, qemuAgentCPUInfoPtr cpus, size_t ncpus);
+int qemuAgentUpdateCPUInfo(unsigned int nvcpus,
+                           qemuAgentCPUInfoPtr cpuinfo,
+                           int ncpuinfo);
 #endif /* __QEMU_AGENT_H__ */
