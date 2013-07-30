@@ -100,6 +100,9 @@
 %define with_numactl          0%{!?_without_numactl:%{server_drivers}}
 %define with_selinux          0%{!?_without_selinux:%{server_drivers}}
 
+# Just hardcode to off, since few people ever have apparmor RPMs installed
+%define with_apparmor         0%{!?_without_apparmor:0}
+
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_capng         0%{!?_without_capng:0}
@@ -471,6 +474,9 @@ BuildRequires: avahi-devel
 %endif
 %if %{with_selinux}
 BuildRequires: libselinux-devel
+%endif
+%if %{with_apparmor}
+BuildRequires: libapparmor-devel
 %endif
 %if %{with_network}
 BuildRequires: dnsmasq >= 2.41
@@ -1268,6 +1274,10 @@ of recent versions of Linux (and other OSes).
     %define _without_selinux --without-selinux
 %endif
 
+%if ! %{with_apparmor}
+    %define _without_apparmor --without-apparmor
+%endif
+
 %if ! %{with_hal}
     %define _without_hal --without-hal
 %endif
@@ -1367,6 +1377,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_netcf} \
            %{?_without_selinux} \
            %{?_with_selinux_mount} \
+           %{?_without_apparmor} \
            %{?_without_hal} \
            %{?_without_udev} \
            %{?_without_yajl} \
@@ -1835,6 +1846,11 @@ fi
     %endif
 
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
+
+    %if %{with_apparmor}
+%attr(0755, root, root) %{_libexecdir}/virt-aa-helper
+    %endif
+
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_sbindir}/virtlockd
 
