@@ -16,8 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-SUBDIRS= . tests
-
 INCLUDES = \
 	$(PYTHON_INCLUDES) \
 	-I$(top_builddir)/gnulib/lib \
