@@ -304,6 +304,7 @@
           <ref name="hvmppc"/>
           <ref name="hvmppc64"/>
           <ref name="hvms390"/>
+          <ref name="hvmarm"/>
         </choice>
       </optional>
       <value>hvm</value>
@@ -409,6 +410,24 @@
             <value>s390-ccw</value>
             <value>s390-ccw-virtio</value>
           </choice>
+        </attribute>
+      </optional>
+    </group>
+  </define>
+  <define name="hvmarm">
+    <group>
+      <optional>
+        <attribute name="arch">
+          <choice>
+            <value>armv7l</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <data type="string">
+            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
+          </data>
         </attribute>
       </optional>
     </group>

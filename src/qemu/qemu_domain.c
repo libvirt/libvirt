@@ -703,6 +703,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
+    bool addDefaultMemballoon = true;
 
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
@@ -737,6 +738,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 
     case VIR_ARCH_ARMV7L:
        addDefaultUSB = false;
+       addDefaultMemballoon = false;
        break;
 
     case VIR_ARCH_ALPHA:
@@ -785,7 +787,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         }
     }
 
-    if (!def->memballoon) {
+    if (addDefaultMemballoon && !def->memballoon) {
         virDomainMemballoonDefPtr memballoon;
         if (VIR_ALLOC(memballoon) < 0)
             return -1;

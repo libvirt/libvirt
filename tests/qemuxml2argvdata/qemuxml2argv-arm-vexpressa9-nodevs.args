@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-arm -S -M vexpress-a9 -m 1024 -smp 1 -nographic \
+-nodefconfig -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-boot c -kernel /arm.kernel -initrd /arm.initrd \
+-append console=ttyAMA0,115200n8 -dtb /arm.dtb -usb

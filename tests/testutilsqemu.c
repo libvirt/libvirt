@@ -145,6 +145,36 @@ error:
     return -1;
 }
 
+static int testQemuAddArmGuest(virCapsPtr caps)
+{
+    static const char *machines[] = { "vexpress-a9",
+                                      "vexpress-a15",
+                                      "versatilepb" };
+    virCapsGuestMachinePtr *capsmachines = NULL;
+    virCapsGuestPtr guest;
+
+    capsmachines = virCapabilitiesAllocMachines(machines,
+                                                ARRAY_CARDINALITY(machines));
+    if (!capsmachines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_ARMV7L,
+                                    "/usr/bin/qemu-system-arm", NULL,
+                                    ARRAY_CARDINALITY(machines),
+                                    capsmachines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+error:
+    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    return -1;
+}
+
 
 virCapsPtr testQemuCapsInit(void) {
     virCapsPtr caps;
@@ -268,6 +298,9 @@ virCapsPtr testQemuCapsInit(void) {
         goto cleanup;
 
     if (testQemuAddS390Guest(caps))
+        goto cleanup;
+
+    if (testQemuAddArmGuest(caps))
         goto cleanup;
 
     if (virTestGetDebug()) {
