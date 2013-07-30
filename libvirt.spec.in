@@ -355,6 +355,14 @@
 %endif
 
 
+# RHEL releases provide stable tool chains and so it is safe to turn
+# compiler warning into errors without being worried about frequent
+# changes in reported warnings
+%if 0%{?rhel}
+    %define enable_werror --enable-werror
+%endif
+
+
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: @VERSION@
@@ -1397,6 +1405,7 @@ of recent versions of Linux (and other OSes).
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
+           %{?enable_werror} \
            %{init_scripts}
 make %{?_smp_mflags}
 gzip -9 ChangeLog
