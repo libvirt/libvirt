@@ -4,7 +4,7 @@
   <forward dev='eth0' mode='nat'>
     <interface dev='eth0'/>
   </forward>
-  <bridge name='virbr0' stp='on' delay='0' />
+  <bridge name='virbr0' stp='on' delay='0'/>
   <dns>
     <host ip='192.168.122.1'>
       <hostname>host</hostname>

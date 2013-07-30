@@ -2283,7 +2283,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < def->ntxts; i++) {
-        virBufferAsprintf(buf, "<txt name='%s' value='%s' />\n",
+        virBufferAsprintf(buf, "<txt name='%s' value='%s'/>\n",
                               def->txts[i].name,
                               def->txts[i].value);
     }
@@ -2362,7 +2362,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     if (def->tftproot) {
-        virBufferEscapeString(buf, "<tftp root='%s' />\n",
+        virBufferEscapeString(buf, "<tftp root='%s'/>\n",
                               def->tftproot);
     }
     if ((def->nranges || def->nhosts)) {
@@ -2379,36 +2379,36 @@ virNetworkIpDefFormat(virBufferPtr buf,
                 VIR_FREE(saddr);
                 goto error;
             }
-            virBufferAsprintf(buf, "<range start='%s' end='%s' />\n",
+            virBufferAsprintf(buf, "<range start='%s' end='%s'/>\n",
                               saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
         }
         for (i = 0; i < def->nhosts; i++) {
-            virBufferAddLit(buf, "<host ");
+            virBufferAddLit(buf, "<host");
             if (def->hosts[i].mac)
-                virBufferAsprintf(buf, "mac='%s' ", def->hosts[i].mac);
+                virBufferAsprintf(buf, " mac='%s'", def->hosts[i].mac);
             if (def->hosts[i].id)
-                virBufferAsprintf(buf, "id='%s' ", def->hosts[i].id);
+                virBufferAsprintf(buf, " id='%s'", def->hosts[i].id);
             if (def->hosts[i].name)
-                virBufferAsprintf(buf, "name='%s' ", def->hosts[i].name);
+                virBufferAsprintf(buf, " name='%s'", def->hosts[i].name);
             if (VIR_SOCKET_ADDR_VALID(&def->hosts[i].ip)) {
                 char *ipaddr = virSocketAddrFormat(&def->hosts[i].ip);
                 if (!ipaddr)
                     goto error;
-                virBufferAsprintf(buf, "ip='%s' ", ipaddr);
+                virBufferAsprintf(buf, " ip='%s'", ipaddr);
                 VIR_FREE(ipaddr);
             }
             virBufferAddLit(buf, "/>\n");
         }
         if (def->bootfile) {
-            virBufferEscapeString(buf, "<bootp file='%s' ",
+            virBufferEscapeString(buf, "<bootp file='%s'",
                                   def->bootfile);
             if (VIR_SOCKET_ADDR_VALID(&def->bootserver)) {
                 char *ipaddr = virSocketAddrFormat(&def->bootserver);
                 if (!ipaddr)
                     goto error;
-                virBufferEscapeString(buf, "server='%s' ", ipaddr);
+                virBufferEscapeString(buf, " server='%s'", ipaddr);
                 VIR_FREE(ipaddr);
             }
             virBufferAddLit(buf, "/>\n");
@@ -2656,12 +2656,12 @@ virNetworkDefFormatInternal(virBufferPtr buf,
         virBufferAddLit(buf, "<bridge");
         if (def->bridge)
             virBufferEscapeString(buf, " name='%s'", def->bridge);
-        virBufferAsprintf(buf, " stp='%s' delay='%ld' />\n",
+        virBufferAsprintf(buf, " stp='%s' delay='%ld'/>\n",
                           def->stp ? "on" : "off",
                           def->delay);
     } else if (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                def->bridge) {
-        virBufferEscapeString(buf, "<bridge name='%s' />\n", def->bridge);
+        virBufferEscapeString(buf, "<bridge name='%s'/>\n", def->bridge);
     }
 
 

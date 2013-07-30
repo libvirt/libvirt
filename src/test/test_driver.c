@@ -250,11 +250,11 @@ static const char *defaultNetworkXML =
 "<network>"
 "  <name>default</name>"
 "  <uuid>dd8fe884-6c02-601e-7551-cca97df1c5df</uuid>"
-"  <bridge name='virbr0' />"
+"  <bridge name='virbr0'/>"
 "  <forward/>"
 "  <ip address='192.168.122.1' netmask='255.255.255.0'>"
 "    <dhcp>"
-"      <range start='192.168.122.2' end='192.168.122.254' />"
+"      <range start='192.168.122.2' end='192.168.122.254'/>"
 "    </dhcp>"
 "  </ip>"
 "</network>";
