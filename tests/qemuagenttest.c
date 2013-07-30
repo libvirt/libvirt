@@ -325,6 +325,125 @@ cleanup:
 }
 
 
+static const char testQemuAgentCPUResponse[] =
+    "{\"return\": "
+    "   ["
+    "       {\"online\": true,"
+    "        \"can-offline\": false,"
+    "        \"logical-id\": 0"
+    "       },"
+    "       {\"online\": true,"
+    "        \"can-offline\": true,"
+    "        \"logical-id\": 1"
+    "       },"
+    "       {\"online\": true,"
+    "        \"can-offline\": true,"
+    "        \"logical-id\": 2"
+    "        },"
+    "       {\"online\": false,"
+    "        \"can-offline\": true,"
+    "        \"logical-id\": 3"
+    "       }"
+    "   ]"
+    "}";
+
+static const char testQemuAgentCPUArguments1[] =
+    "[{\"logical-id\":0,\"online\":true},"
+     "{\"logical-id\":1,\"online\":false},"
+     "{\"logical-id\":2,\"online\":true},"
+     "{\"logical-id\":3,\"online\":false}]";
+
+static const char testQemuAgentCPUArguments2[] =
+    "[{\"logical-id\":0,\"online\":true},"
+     "{\"logical-id\":1,\"online\":true},"
+     "{\"logical-id\":2,\"online\":true},"
+     "{\"logical-id\":3,\"online\":true}]";
+
+static int
+testQemuAgentCPU(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    qemuAgentCPUInfoPtr cpuinfo = NULL;
+    int nvcpus;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-vcpus",
+                               testQemuAgentCPUResponse) < 0)
+        goto cleanup;
+
+    /* get cpus */
+    if ((nvcpus = qemuAgentGetVCPUs(qemuMonitorTestGetAgent(test),
+                                    &cpuinfo)) < 0)
+        goto cleanup;
+
+    if (nvcpus != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected '4' cpus, got '%d'", nvcpus);
+        goto cleanup;
+    }
+
+    /* try to unplug one */
+    if (qemuAgentUpdateCPUInfo(2, cpuinfo, nvcpus) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
+                                     "{ \"return\" : 4 }",
+                                     "vcpus", testQemuAgentCPUArguments1,
+                                     NULL) < 0)
+        goto cleanup;
+
+    if ((nvcpus = qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test),
+                                    cpuinfo, nvcpus)) < 0)
+        goto cleanup;
+
+    if (nvcpus != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected '4' cpus updated , got '%d'", nvcpus);
+        goto cleanup;
+    }
+
+    /* try to hotplug two */
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
+                                     "{ \"return\" : 4 }",
+                                     "vcpus", testQemuAgentCPUArguments2,
+                                     NULL) < 0)
+        goto cleanup;
+
+    if (qemuAgentUpdateCPUInfo(4, cpuinfo, nvcpus) < 0)
+        goto cleanup;
+
+    if ((nvcpus = qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test),
+                                    cpuinfo, nvcpus)) < 0)
+        goto cleanup;
+
+    if (nvcpus != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected '4' cpus updated , got '%d'", nvcpus);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpuinfo);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -351,6 +470,7 @@ mymain(void)
     DO_TEST(FSTrim);
     DO_TEST(Suspend);
     DO_TEST(Shutdown);
+    DO_TEST(CPU);
 
     virObjectUnref(xmlopt);
 
