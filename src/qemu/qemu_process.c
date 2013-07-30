@@ -1604,22 +1604,25 @@ qemuProcessExtractTTYPath(const char *haystack,
 }
 
 static int
-qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
+qemuProcessLookupPTYs(virDomainDefPtr def,
+                      virQEMUCapsPtr qemuCaps,
+                      virDomainChrDefPtr *devices,
                       int count,
-                      virHashTablePtr paths,
-                      bool chardevfmt)
+                      virHashTablePtr paths)
 {
     size_t i;
-    const char *prefix = chardevfmt ? "char" : "";
 
     for (i = 0; i < count; i++) {
         virDomainChrDefPtr chr = devices[i];
+        bool chardevfmt = virQEMUCapsSupportsChardev(def, qemuCaps, chr);
+
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             char id[32];
             const char *path;
 
             if (snprintf(id, sizeof(id), "%s%s",
-                         prefix, chr->info.alias) >= sizeof(id))
+                         chardevfmt ? "char" : "",
+                         chr->info.alias) >= sizeof(id))
                 return -1;
 
             path = (const char *) virHashLookup(paths, id);
@@ -1653,19 +1656,21 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
                                      virQEMUCapsPtr qemuCaps,
                                      virHashTablePtr paths)
 {
-    bool chardevfmt = virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV);
     size_t i = 0;
 
-    if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials,
-                              paths, chardevfmt) < 0)
+    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
+                              vm->def->serials, vm->def->nserials,
+                              paths) < 0)
         return -1;
 
-    if (qemuProcessLookupPTYs(vm->def->parallels, vm->def->nparallels,
-                              paths, chardevfmt) < 0)
+    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
+                              vm->def->parallels, vm->def->nparallels,
+                              paths) < 0)
         return -1;
 
-    if (qemuProcessLookupPTYs(vm->def->channels, vm->def->nchannels,
-                              paths, chardevfmt) < 0)
+    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
+                              vm->def->channels, vm->def->nchannels,
+                              paths) < 0)
         return -1;
     /* For historical reasons, console[0] can be just an alias
      * for serial[0]. That's why we need to update it as well. */
@@ -1683,8 +1688,9 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
         }
     }
 
-    if (qemuProcessLookupPTYs(vm->def->consoles + i, vm->def->nconsoles - i,
-                              paths, chardevfmt) < 0)
+    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
+                              vm->def->consoles + i, vm->def->nconsoles - i,
+                              paths) < 0)
         return -1;
 
     return 0;
@@ -1774,7 +1780,8 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     virHashTablePtr paths = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    if (!virQEMUCapsUsedQMP(qemuCaps) && pos != -1) {
+    if (!virQEMUCapsUsedQMP(qemuCaps)
+        && pos != -1) {
         if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
             return -1;
 

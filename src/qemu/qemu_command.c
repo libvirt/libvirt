@@ -8516,8 +8516,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             char *devstr;
 
             /* Use -chardev with -device if they are available */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
                 virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(&serial->source,
                                                       serial->info.alias,

@@ -2838,3 +2838,21 @@ virQEMUCapsUsedQMP(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->usedQMP;
 }
+
+bool
+virQEMUCapsSupportsChardev(virDomainDefPtr def,
+                           virQEMUCapsPtr qemuCaps,
+                           virDomainChrDefPtr chr ATTRIBUTE_UNUSED)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+        return false;
+
+    /* This may not be true for all ARM machine types, but at least
+     * the only supported serial devices of vexpress and versatile
+     * don't have the -chardev property wired up. */
+    if (def->os.arch != VIR_ARCH_ARMV7L)
+        return false;
+
+    return true;
+}
