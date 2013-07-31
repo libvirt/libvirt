@@ -1295,6 +1295,7 @@
             <value>usb</value>
             <value>uml</value>
             <value>sata</value>
+            <value>sd</value>
           </choice>
         </attribute>
       </optional>

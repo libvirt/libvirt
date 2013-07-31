@@ -73,7 +73,8 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "xen",
               "usb",
               "uml",
-              "sata")
+              "sata",
+              "sd")
 
 
 VIR_ENUM_DECL(qemuDiskCacheV1)
@@ -645,6 +646,9 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
         break;
     case VIR_DOMAIN_DISK_BUS_XEN:
         ret = virAsprintf(&dev_name, "xenblk%d", devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_SD:
+        ret = virAsprintf(&dev_name, "sd%d", devid);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3786,7 +3790,9 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
 
     case VIR_DOMAIN_DISK_BUS_XEN:
-        /* Xen has no address type currently, so assign based on index */
+    case VIR_DOMAIN_DISK_BUS_SD:
+        /* Xen and SD have no address type currently, so assign
+         * based on index */
         break;
     }
 
@@ -8213,12 +8219,13 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, "-drive");
 
             /* Unfortunately it is not possible to use
-               -device for floppies, or Xen paravirt
+               -device for floppies, xen PV, or SD
                devices. Fortunately, those don't need
                static PCI addresses, so we don't really
                care that we can't use -device */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN) {
+                if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN &&
+                    disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
                     withDeviceArg = true;
                 } else {
                     virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
@@ -9915,6 +9922,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
             else if (STREQ(values[i], "xen"))
                 def->bus = VIR_DOMAIN_DISK_BUS_XEN;
+            else if (STREQ(values[i], "sd"))
+                def->bus = VIR_DOMAIN_DISK_BUS_SD;
         } else if (STREQ(keywords[i], "media")) {
             if (STREQ(values[i], "cdrom")) {
                 def->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
@@ -10064,7 +10073,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
 
     if (def->bus == VIR_DOMAIN_DISK_BUS_IDE) {
         ignore_value(VIR_STRDUP(def->dst, "hda"));
-    } else if (def->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+    } else if (def->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
+               def->bus == VIR_DOMAIN_DISK_BUS_SD) {
         ignore_value(VIR_STRDUP(def->dst, "sda"));
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         ignore_value(VIR_STRDUP(def->dst, "vda"));

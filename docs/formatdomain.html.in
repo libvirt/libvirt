@@ -1785,7 +1785,8 @@
         as a device ordering hint.  The optional <code>bus</code>
         attribute specifies the type of disk device to emulate;
         possible values are driver specific, with typical values being
-        "ide", "scsi", "virtio", "xen", "usb" or "sata". If omitted, the bus
+        "ide", "scsi", "virtio", "xen", "usb", "sata", or
+        "sd" <span class="since">"sd" since 1.1.2</span>. If omitted, the bus
         type is inferred from the style of the device name (e.g. a device named
         'sda' will typically be exported using a SCSI bus). The optional
         attribute <code>tray</code> indicates the tray status of the
