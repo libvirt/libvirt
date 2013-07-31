@@ -2017,6 +2017,27 @@ fi
 AC_MSG_RESULT([$withval])
 AM_CONDITIONAL([WITH_TESTS], [test "$withval" = "yes"])
 
+AC_ARG_ENABLE([expensive-tests],
+  [AC_HELP_STRING([--enable-expensive-tests],
+    [set the default for enabling expensive tests (gnulib and long timeouts) ]
+    [@<:@default=check@:>@; use VIR_TEST_EXPENSIVE to override during make])],
+  [case $enableval in
+    0|no) VIR_TEST_EXPENSIVE_DEFAULT=0 ;;
+    1|yes) VIR_TEST_EXPENSIVE_DEFAULT=1 ;;
+    check) ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for enable-expensive-tests option])
+      ;;
+  esac], [enableval=check])
+if test "$enableval" = check; then
+  if test -d $srcdir/.git ; then
+    VIR_TEST_EXPENSIVE_DEFAULT=0
+  else
+    VIR_TEST_EXPENSIVE_DEFAULT=1
+  fi
+fi
+AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
+AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
+
 AC_ARG_ENABLE([test-coverage],
   AC_HELP_STRING([--enable-test-coverage], [turn on code coverage instrumentation @<:@default=no@:>@]),
 [case "${enableval}" in

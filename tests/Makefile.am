@@ -300,6 +300,7 @@ TESTS = $(test_programs) \
 lv_abs_top_builddir=`cd '$(top_builddir)'; pwd`
 path_add = $(lv_abs_top_builddir)/daemon$(PATH_SEPARATOR)$(lv_abs_top_builddir)/tools$(PATH_SEPARATOR)$(lv_abs_top_builddir)/tests
 
+VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=$(lv_abs_top_builddir)	\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
@@ -311,6 +312,7 @@ TESTS_ENVIRONMENT =				\
   LIBVIRT_DRIVER_DIR="$(abs_top_builddir)/src/.libs" \
   LIBVIRT_AUTOSTART=0				\
   LC_ALL=C					\
+  VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE)	\
   $(VG)
 
 
