@@ -1620,7 +1620,8 @@
         policy what to do with the disk if the source file is not accessible.
         (NB, <code>startupPolicy</code> is not valid for "volume" disk unless
          the specified storage volume is of "file" type). This is done by the
-        <code>startupPolicy</code> attribute, accepting these values:
+        <code>startupPolicy</code> attribute (<span class="since">Since 0.9.7</span>),
+        accepting these values:
         <table class="top_table">
           <tr>
             <td> mandatory </td>
@@ -1636,7 +1637,10 @@
             <td> drop if missing at any start attempt </td>
           </tr>
         </table>
-        <span class="since">Since 0.9.7</span>
+        <span class="since">Since 1.1.2</span> the <code>startupPolicy</code> is extended
+        to support hard disks besides cdrom and floppy. On guest cold bootup, if a certain disk
+        is not accessible or its disk chain is broken, with startupPolicy 'optional' the guest
+        will drop this disk. This feature doesn't support migration currently.
         </dd>
       <dt><code>mirror</code></dt>
       <dd>

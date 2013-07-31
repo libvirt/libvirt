@@ -1124,6 +1124,9 @@
                   <ref name="absFilePath"/>
                 </attribute>
                 <optional>
+                  <ref name="startupPolicy"/>
+                </optional>
+                <optional>
                   <ref name='devSeclabel'/>
                 </optional>
               </element>
@@ -1141,6 +1144,9 @@
                 <attribute name="dir">
                   <ref name="absFilePath"/>
                 </attribute>
+                <optional>
+                  <ref name="startupPolicy"/>
+                </optional>
                 <empty/>
               </element>
             </optional>

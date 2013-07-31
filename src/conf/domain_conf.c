@@ -4796,7 +4796,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 switch (def->type) {
                 case VIR_DOMAIN_DISK_TYPE_FILE:
                     source = virXMLPropString(cur, "file");
-                    startupPolicy = virXMLPropString(cur, "startupPolicy");
                     break;
                 case VIR_DOMAIN_DISK_TYPE_BLOCK:
                     source = virXMLPropString(cur, "dev");
@@ -4883,7 +4882,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 case VIR_DOMAIN_DISK_TYPE_VOLUME:
                     if (virDomainDiskSourcePoolDefParse(cur, def) < 0)
                         goto error;
-                    startupPolicy = virXMLPropString(cur, "startupPolicy");
                     break;
                 default:
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4891,6 +4889,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                    virDomainDiskTypeToString(def->type));
                     goto error;
                 }
+
+                startupPolicy = virXMLPropString(cur, "startupPolicy");
 
                 /* People sometimes pass a bogus '' source path
                    when they mean to omit the source element
@@ -5464,12 +5464,20 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Setting disk %s is allowed only for "
-                             "cdrom or floppy"),
+        if (def->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Setting disk %s is not allowed for "
+                             "disk of network type"),
                            startupPolicy);
+            goto error;
+        }
+
+        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            val == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Setting disk 'requisite' is allowed only for "
+                             "cdrom or floppy"));
             goto error;
         }
         def->startupPolicy = val;
@@ -14121,6 +14129,9 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferEscapeString(buf, "      <source dev='%s'",
                                   def->src);
+            if (def->startupPolicy)
+                virBufferEscapeString(buf, " startupPolicy='%s'",
+                                      startupPolicy);
             if (def->nseclabels) {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
@@ -14133,8 +14144,12 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
             }
             break;
         case VIR_DOMAIN_DISK_TYPE_DIR:
-            virBufferEscapeString(buf, "      <source dir='%s'/>\n",
+            virBufferEscapeString(buf, "      <source dir='%s'",
                                   def->src);
+            if (def->startupPolicy)
+                virBufferEscapeString(buf, " startupPolicy='%s'",
+                                      startupPolicy);
+            virBufferAddLit(buf, "/>\n");
             break;
         case VIR_DOMAIN_DISK_TYPE_NETWORK:
             virBufferAsprintf(buf, "      <source protocol='%s'",
