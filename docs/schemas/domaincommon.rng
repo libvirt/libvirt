@@ -1540,6 +1540,7 @@
                 <value>pci-root</value>
                 <value>pcie-root</value>
                 <value>pci-bridge</value>
+                <value>dmi-to-pci-bridge</value>
               </choice>
             </attribute>
           </group>

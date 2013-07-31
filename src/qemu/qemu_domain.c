@@ -760,12 +760,23 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
         return -1;
 
-    if (addPCIeRoot &&
-        virDomainDefMaybeAddController(
-            def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-            VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) < 0)
+    /* When a machine has a pcie-root, make sure that there is always
+     * a dmi-to-pci-bridge controller added as bus 1, and a pci-bridge
+     * as bus 2, so that standard PCI devices can be connected
+     */
+    if (addPCIeRoot) {
+        if (virDomainDefMaybeAddController(
+                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) < 0 ||
+            virDomainDefMaybeAddController(
+                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
+                VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0 ||
+            virDomainDefMaybeAddController(
+                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
+                VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE) < 0) {
         return -1;
-
+        }
+    }
     return 0;
 }
 

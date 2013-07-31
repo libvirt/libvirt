@@ -294,7 +294,8 @@ mymain(void)
     DO_TEST_DIFFERENT("pci-bridge-many-disks");
     DO_TEST_DIFFERENT("pci-autoadd-addr");
     DO_TEST_DIFFERENT("pci-autoadd-idx");
-    DO_TEST("pcie-root");
+    DO_TEST_DIFFERENT("pcie-root");
+    DO_TEST("q35");
 
     DO_TEST("hostdev-scsi-lsi");
     DO_TEST("hostdev-scsi-virtio-scsi");

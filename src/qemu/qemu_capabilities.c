@@ -234,6 +234,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "vnc-share-policy", /* 150 */
               "device-del-event",
+              "dmi-to-pci-bridge",
     );
 
 struct _virQEMUCaps {
@@ -1381,6 +1382,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pci-bridge", QEMU_CAPS_DEVICE_PCI_BRIDGE },
     { "vfio-pci", QEMU_CAPS_DEVICE_VFIO_PCI },
     { "scsi-generic", QEMU_CAPS_DEVICE_SCSI_GENERIC },
+    { "i82801b11-bridge", QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

@@ -1561,6 +1561,13 @@ qemuDomainPCIAddressBusSetModel(qemuDomainPCIAddressBusPtr bus,
         bus->minSlot = 1;
         bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        /* slots 1 - 31, standard PCI slots,
+         * but *not* hot-pluggable */
+        bus->flags = QEMU_PCI_CONNECT_TYPE_PCI;
+        bus->minSlot = 1;
+        bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
+        break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PCI controller model %d"), model);
@@ -1668,6 +1675,12 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
              * hot-pluggable, so it doesn't need a hot-pluggable slot.
              */
             flags = QEMU_PCI_CONNECT_TYPE_PCI;
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+            /* pci-bridge needs a PCIe slot, but it isn't
+             * hot-pluggable, so it doesn't need a hot-pluggable slot.
+             */
+            flags = QEMU_PCI_CONNECT_TYPE_PCIE;
             break;
         default:
             break;
@@ -2371,6 +2384,12 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                  * (although it does provide hot-plug in its slots)
                  */
                 flags = QEMU_PCI_CONNECT_TYPE_PCI;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+                /* dmi-to-pci-bridge requires a non-hotplug PCIe
+                 * slot
+                 */
+                flags = QEMU_PCI_CONNECT_TYPE_PCIE;
                 break;
             default:
                 flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
@@ -4350,6 +4369,20 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
             }
             virBufferAsprintf(&buf, "pci-bridge,chassis_nr=%d,id=pci.%d",
                               def->idx, def->idx);
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("The dmi-to-pci-bridge (i82801b11-bridge) "
+                                 "controller is not supported in this QEMU binary"));
+                goto error;
+            }
+            if (def->idx == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("dmi-to-pci-bridge index should be > 0"));
+                goto error;
+            }
+            virBufferAsprintf(&buf, "i82801b11-bridge,id=pci.%d", def->idx);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
