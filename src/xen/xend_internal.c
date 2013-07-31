@@ -2171,7 +2171,6 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
     if (xenDaemonDomainResume(conn, def) < 0)
         goto error;
 
-    virDomainDefFree(def);
     return 0;
 
   error:
