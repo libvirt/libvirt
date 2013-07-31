@@ -3621,16 +3621,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Checking for CDROM and floppy presence");
     if (qemuDomainCheckDiskPresence(driver, vm,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDomainDetermineDiskChain(driver, vm->def->disks[i],
-                                         false) < 0)
-            goto cleanup;
-    }
 
     /* Get the advisory nodeset from numad if 'placement' of
      * either <vcpu> or <numatune> is 'auto'.

@@ -2043,19 +2043,11 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             break;
 
         case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
-            virReportSystemError(errno,
-                                 _("cannot access file '%s'"),
-                                 disk->src);
             goto error;
-            break;
 
         case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
-            if (cold_boot) {
-                virReportSystemError(errno,
-                                     _("cannot access file '%s'"),
-                                     disk->src);
+            if (cold_boot)
                 goto error;
-            }
             break;
 
         case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
@@ -2064,6 +2056,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             break;
     }
 
+    virResetLastError();
     VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
               "due to inaccessible source '%s'",
               disk->dst, vm->def->name, uuid, disk->src);
@@ -2089,30 +2082,30 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     int ret = -1;
     size_t i;
     virDomainDiskDefPtr disk;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
+    VIR_DEBUG("Checking for disk presence");
     for (i = 0; i < vm->def->ndisks; i++) {
         disk = vm->def->disks[i];
 
-        if (!disk->startupPolicy || !disk->src)
+        if (!disk->src)
             continue;
 
-        if (virFileAccessibleAs(disk->src, F_OK,
-                                cfg->user,
-                                cfg->group) >= 0) {
-            /* disk accessible */
+        if (qemuDomainDetermineDiskChain(driver, disk, false) >= 0 &&
+            qemuDiskChainCheckBroken(disk) >= 0)
             continue;
+
+        if (disk->startupPolicy) {
+            if (qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
+                                                 cold_boot) >= 0)
+                continue;
         }
 
-        if (qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
-                                             cold_boot) < 0)
-            goto cleanup;
+        goto error;
     }
 
     ret = 0;
 
-cleanup:
-    virObjectUnref(cfg);
+error:
     return ret;
 }
 
