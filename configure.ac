@@ -2440,26 +2440,28 @@ AC_DEFINE_UNQUOTED([base64_encode_alloc],[libvirt_gl_base64_encode_alloc],[Hack 
 
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
-AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
-	  docs/schemas/Makefile \
-	  gnulib/lib/Makefile \
-	  gnulib/tests/Makefile \
-          libvirt.pc libvirt.spec mingw-libvirt.spec \
-          po/Makefile.in \
-	  include/libvirt/Makefile include/libvirt/libvirt.h \
-	  python/Makefile \
-          daemon/Makefile \
-          tools/Makefile \
-          tests/Makefile \
-          examples/apparmor/Makefile \
-          examples/domain-events/events-c/Makefile \
-          examples/domsuspend/Makefile \
-          examples/dominfo/Makefile \
-          examples/openauth/Makefile \
-          examples/python/Makefile \
-          examples/hellolibvirt/Makefile \
-          examples/systemtap/Makefile \
-          examples/xml/nwfilter/Makefile)
+AC_CONFIG_FILES([\
+        Makefile src/Makefile include/Makefile docs/Makefile \
+        docs/schemas/Makefile \
+        gnulib/lib/Makefile \
+        gnulib/tests/Makefile \
+        libvirt.pc libvirt.spec mingw-libvirt.spec \
+        po/Makefile.in \
+        include/libvirt/Makefile include/libvirt/libvirt.h \
+        python/Makefile \
+        daemon/Makefile \
+        tools/Makefile \
+        tests/Makefile \
+        examples/apparmor/Makefile \
+        examples/domain-events/events-c/Makefile \
+        examples/domsuspend/Makefile \
+        examples/dominfo/Makefile \
+        examples/openauth/Makefile \
+        examples/python/Makefile \
+        examples/hellolibvirt/Makefile \
+        examples/systemtap/Makefile \
+        examples/xml/nwfilter/Makefile])
+AC_OUTPUT
 
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])
