@@ -107,6 +107,15 @@ and run the tests:
 Valgrind <http://valgrind.org/> is a test that checks for memory management
 issues, such as leaks or use of uninitialized variables.
 
+Some tests are skipped by default in a development environment, based on the
+time they take in comparison to the likelihood that those tests will turn up
+problems during incremental builds. These tests default to being run when when
+building from a tarball or with the configure option --enable-expensive-tests;
+you can also force a one-time toggle of these tests by setting
+VIR_TEST_EXPENSIVE to 0 or 1 at make time, as in:
+
+  make check VIR_TEST_EXPENSIVE=1
+
 If you encounter any failing tests, the VIR_TEST_DEBUG environment variable
 may provide extra information to debug the failures. Larger values of
 VIR_TEST_DEBUG may provide larger amounts of information:

@@ -156,8 +156,8 @@ autoreconf -if
   --without-parallels \
   --without-netcf \
   --without-audit \
-  --without-dtrace
-
+  --without-dtrace \
+  --enable-expensive-tests
 
 %mingw_make %{?_smp_mflags}
 
