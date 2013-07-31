@@ -3297,6 +3297,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     int ret = -1;
     virNetworkIpDefPtr ipdef = virNetworkIpDefByIndex(def, parentIndex);
     virNetworkDHCPHostDef host;
+    bool partialOkay = (command == VIR_NETWORK_UPDATE_COMMAND_DELETE);
 
     memset(&host, 0, sizeof(host));
 
@@ -3307,13 +3308,11 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     if (!ipdef)
         goto cleanup;
 
-    /* parse the xml into a virNetworkDHCPHostDef */
-    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+    if (virNetworkDHCPHostDefParseXML(def->name, ipdef, ctxt->node,
+                                      &host, partialOkay) < 0)
+        goto cleanup;
 
-        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
-                                          ctxt->node, &host, false) < 0) {
-            goto cleanup;
-        }
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
         /* search for the entry with this (mac|name),
          * and update the IP+(mac|name) */
@@ -3345,11 +3344,6 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
                (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
-        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
-                                          ctxt->node, &host, true) < 0) {
-            goto cleanup;
-        }
-
         /* log error if an entry with same name/address/ip already exists */
         for (i = 0; i < ipdef->nhosts; i++) {
             if ((host.mac &&
@@ -3378,11 +3372,6 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                                ipdef->nhosts, host) < 0)
             goto cleanup;
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
-
-        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
-                                          ctxt->node, &host, false) < 0) {
-            goto cleanup;
-        }
 
         /* find matching entry - all specified attributes must match */
         for (i = 0; i < ipdef->nhosts; i++) {
