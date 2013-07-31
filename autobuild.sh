@@ -18,6 +18,7 @@ cd build
 # Run with options not normally exercised by the rpm build, for
 # more complete code coverage.
 ../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
+  --enable-expensive-tests \
   --enable-test-coverage \
   --disable-nls \
   --enable-werror \
@@ -76,6 +77,7 @@ if test -x /usr/bin/i686-w64-mingw32-gcc ; then
     --build=$(uname -m)-w64-linux \
     --host=i686-w64-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-w64-mingw32/sys-root/mingw" \
+    --enable-expensive-tests \
     --enable-werror \
     --without-libvirtd \
     --without-python
@@ -96,6 +98,7 @@ if test -x /usr/bin/x86_64-w64-mingw32-gcc ; then
     --build=$(uname -m)-w64-linux \
     --host=x86_64-w64-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/x86_64-w64-mingw32/sys-root/mingw" \
+    --enable-expensive-tests \
     --enable-werror \
     --without-libvirtd \
     --without-python

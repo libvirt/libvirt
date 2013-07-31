@@ -1383,6 +1383,7 @@ of recent versions of Linux (and other OSes).
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            %{init_scripts}
+           --enable-expensive-tests \
 make %{?_smp_mflags}
 gzip -9 ChangeLog
 
