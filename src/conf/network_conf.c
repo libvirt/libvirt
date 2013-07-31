@@ -3420,7 +3420,7 @@ cleanup:
 static int
 virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                                unsigned int command,
-                               int parentIndex ATTRIBUTE_UNUSED,
+                               int parentIndex,
                                xmlXPathContextPtr ctxt,
                                /* virNetworkUpdateFlags */
                                unsigned int fflags ATTRIBUTE_UNUSED)
