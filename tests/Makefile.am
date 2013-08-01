@@ -417,21 +417,21 @@ qemumonitorjsontest_SOURCES = \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemumonitorjsontest_LDADD = $(qemu_LDADDS) libqemumonitortestutils.la
+qemumonitorjsontest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
 qemuagenttest_SOURCES = \
 	qemuagenttest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemuagenttest_LDADD = $(qemu_LDADDS) libqemumonitortestutils.la
+qemuagenttest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
 qemuhotplugtest_SOURCES = \
 	qemuhotplugtest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemuhotplugtest_LDADD = $(qemu_LDADDS) libqemumonitortestutils.la
+qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
