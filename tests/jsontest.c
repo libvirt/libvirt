@@ -60,11 +60,17 @@ testJSONAddRemove(const void *data)
 {
     const struct testInfo *info = data;
     virJSONValuePtr json;
-    virJSONValuePtr name;
+    virJSONValuePtr name = NULL;
     char *result = NULL;
     int ret = -1;
 
     json = virJSONValueFromString(info->doc);
+    if (!json) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "Fail to parse %s\n", info->doc);
+        ret = -1;
+        goto cleanup;
+    }
 
     switch (virJSONValueObjectRemoveKey(json, "name", &name)) {
     case 1:
