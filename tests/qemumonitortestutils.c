@@ -669,7 +669,7 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
     va_start(args, response);
 
     if (VIR_ALLOC(data) < 0)
-        return -1;
+        goto error;
 
     if (VIR_STRDUP(data->command_name, cmdname) < 0 ||
         VIR_STRDUP(data->response, response) < 0)
