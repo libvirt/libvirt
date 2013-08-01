@@ -474,6 +474,50 @@ cleanup:
 }
 
 
+static const char testQemuAgentArbitraryCommandResponse[] =
+    "{\"return\":\"bla\"}";
+
+static int
+testQemuAgentArbitraryCommand(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    int ret = -1;
+    char *reply = NULL;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "ble",
+                               testQemuAgentArbitraryCommandResponse) < 0)
+        goto cleanup;
+
+    if (qemuAgentArbitraryCommand(qemuMonitorTestGetAgent(test),
+                                  "{\"execute\":\"ble\"}",
+                                  &reply,
+                                  VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        goto cleanup;
+
+    if (STRNEQ(reply, testQemuAgentArbitraryCommandResponse)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "invalid processing of guest agent reply: "
+                       "got '%s' expected '%s'",
+                       reply, testQemuAgentArbitraryCommandResponse);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -501,6 +545,7 @@ mymain(void)
     DO_TEST(Suspend);
     DO_TEST(Shutdown);
     DO_TEST(CPU);
+    DO_TEST(ArbitraryCommand);
 
     virObjectUnref(xmlopt);
 
