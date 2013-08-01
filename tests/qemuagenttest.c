@@ -324,6 +324,29 @@ testQemuAgentShutdown(const void *data)
                           QEMU_AGENT_SHUTDOWN_REBOOT) < 0)
         goto cleanup;
 
+    /* check negative response, so that we can verify that the agent breaks
+     * out from sleep */
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-shutdown",
+                               "{\"error\":"
+                               "    {\"class\":\"CommandDisabled\","
+                               "     \"desc\":\"The command guest-shutdown has "
+                                               "been disabled for this instance\","
+                               "     \"data\":{\"name\":\"guest-shutdown\"}"
+                               "    }"
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
+                          QEMU_AGENT_SHUTDOWN_REBOOT) != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "agent shutdown command should have failed");
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
