@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-07-12 08:54-0400\n"
+"POT-Creation-Date: 2013-08-01 17:46-0400\n"
 "PO-Revision-Date: 2013-04-26 08:02+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -433,8 +433,8 @@ msgstr "La conexión ya está abierta"
 msgid "keepalive support is required to connect"
 msgstr "keepalive support is required to connect"
 
-#: daemon/remote.c:888 daemon/remote.c:978 src/remote/remote_driver.c:1529
-#: src/remote/remote_driver.c:1619
+#: daemon/remote.c:888 daemon/remote.c:978 src/remote/remote_driver.c:1530
+#: src/remote/remote_driver.c:1620
 #, c-format
 msgid "unknown parameter type: %d"
 msgstr "tipo de parámetro desconocido: %d"
@@ -447,7 +447,7 @@ msgstr "tipo de parámetro desconocido: %d"
 msgid "nparams too large"
 msgstr "nparams demasiado extensos"
 
-#: daemon/remote.c:939 src/remote/remote_driver.c:1579
+#: daemon/remote.c:939 src/remote/remote_driver.c:1580
 #, c-format
 msgid "Parameter %s too big for destination"
 msgstr "El parámetro %s es demasiado extenso para el destino"
@@ -798,7 +798,7 @@ msgstr "Expresión regular demasiado grande"
 msgid "Unmatched ) or \\)"
 msgstr "No coincidentes) o \\)"
 
-#: gnulib/lib/regcomp.c:704
+#: gnulib/lib/regcomp.c:707
 msgid "No previous regular expression"
 msgstr " No hay expresiones regulares previas"
 
@@ -2493,14 +2493,14 @@ msgstr "tipo %s de dominio no esperado, se esperaba %s"
 msgid "unexpected domain type %s, expecting one of these: %s"
 msgstr "tipo %s de dominio no esperado, se esperaba uno de estos: %s"
 
-#: src/conf/domain_conf.c:10116 src/conf/network_conf.c:1714
+#: src/conf/domain_conf.c:10116 src/conf/network_conf.c:1716
 #: src/conf/secret_conf.c:193 src/openvz/openvz_conf.c:1087
 #: src/xenxs/xen_xm.c:220
 msgid "Failed to generate UUID"
 msgstr "Fallo al intentar generar UUID"
 
 #: src/conf/domain_conf.c:10123 src/conf/domain_conf.c:11613
-#: src/conf/network_conf.c:1721 src/conf/nwfilter_conf.c:2577
+#: src/conf/network_conf.c:1723 src/conf/nwfilter_conf.c:2577
 #: src/conf/secret_conf.c:199 src/conf/storage_conf.c:856
 msgid "malformed uuid element"
 msgstr "elemento uuid erróneo"
@@ -3545,7 +3545,7 @@ msgstr ""
 "Configuración de dispositivo no es compatible: Dominio no tiene soporte de "
 "Bus USB "
 
-#: src/conf/domain_conf.c:16130 src/conf/network_conf.c:2450
+#: src/conf/domain_conf.c:16130 src/conf/network_conf.c:2452
 #: src/conf/nwfilter_conf.c:2731 src/util/virdnsmasq.c:559
 #, c-format
 msgid "cannot create config directory '%s'"
@@ -3556,8 +3556,8 @@ msgstr "No es posible crear configuración de directorio '%s'"
 msgid "unexpected domain %s already exists"
 msgstr "el dominio no esperado %s ya existe"
 
-#: src/conf/domain_conf.c:16309 src/conf/network_conf.c:2671
-#: src/conf/network_conf.c:2704 src/conf/nwfilter_conf.c:3120
+#: src/conf/domain_conf.c:16309 src/conf/network_conf.c:2673
+#: src/conf/network_conf.c:2706 src/conf/nwfilter_conf.c:3120
 #: src/conf/storage_conf.c:1713 src/util/virpci.c:2090
 #, c-format
 msgid "Failed to open dir '%s'"
@@ -3747,11 +3747,11 @@ msgstr "virInterfaceDefFormat no se encuentra nombre de interfaz"
 msgid "unexpected interface type %d"
 msgstr "Tipo de interfaz %d no esperada"
 
-#: src/conf/interface_conf.c:1276 src/conf/network_conf.c:347
+#: src/conf/interface_conf.c:1276 src/conf/network_conf.c:348
 #: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3049
 #: src/conf/storage_conf.c:1636 src/libxl/libxl_driver.c:1176
 #: src/parallels/parallels_driver.c:920 src/qemu/qemu_driver.c:566
-#: src/remote/remote_driver.c:901 src/test/test_driver.c:544
+#: src/remote/remote_driver.c:902 src/test/test_driver.c:544
 #: src/test/test_driver.c:800 src/xen/xen_driver.c:365
 msgid "cannot initialize mutex"
 msgstr "No es posible iniciar mutex"
@@ -3897,80 +3897,80 @@ msgstr "No es posible generar de forma azarosa un UUID para instanceid"
 msgid "cannot generate a random uuid for interfaceid"
 msgstr "No se puede generar un UUID aleatorio  para interfaceid"
 
-#: src/conf/network_conf.c:290
+#: src/conf/network_conf.c:291
 #, c-format
 msgid "cannot save persistent config of transient network '%s'"
 msgstr ""
 "No  se puede guardar la configuración persistente de la red transitorio '%s'"
 
-#: src/conf/network_conf.c:301
+#: src/conf/network_conf.c:302
 #, c-format
 msgid "cannot save live config of inactive network '%s'"
 msgstr "No  se puede guardar la configuración en vivo de red inactiva '%s'"
 
-#: src/conf/network_conf.c:477
+#: src/conf/network_conf.c:478
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-#: src/conf/network_conf.c:511
+#: src/conf/network_conf.c:512
 msgid "network is not running"
 msgstr "red no está en ejecución"
 
-#: src/conf/network_conf.c:518
+#: src/conf/network_conf.c:519
 msgid "cannot change persistent config of a transient network"
 msgstr ""
 "No  se puede cambiar la configuración persistente de una red transitoria"
 
-#: src/conf/network_conf.c:625
+#: src/conf/network_conf.c:626
 #, c-format
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Falta el atributo 'start' en rango dhcp para red '%s'"
 
-#: src/conf/network_conf.c:634
+#: src/conf/network_conf.c:635
 #, c-format
 msgid "Missing 'end' attribute in dhcp range for network '%s'"
 msgstr "Falta el atributo 'end' attribute en rango dhcp para red '%s'"
 
-#: src/conf/network_conf.c:644
+#: src/conf/network_conf.c:645
 #, c-format
 msgid "Invalid dhcp range '%s' to '%s' in network '%s'"
 msgstr "rango dhcp '%s' a '%s' no válido en la red '%s'"
 
-#: src/conf/network_conf.c:673
+#: src/conf/network_conf.c:674
 #, c-format
 msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr ""
 
-#: src/conf/network_conf.c:680
+#: src/conf/network_conf.c:681
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "No es posible analizar la dirección MAC '%s' en la red '%s' "
 
-#: src/conf/network_conf.c:686
+#: src/conf/network_conf.c:687
 #, c-format
 msgid "expected unicast mac address, found multicast '%s' in network '%s'"
 msgstr ""
 "Dirección MAC  unidifusión esperada, se encontró de multidifusión '%s' en "
 "red '%s'"
 
-#: src/conf/network_conf.c:698
+#: src/conf/network_conf.c:699
 #, c-format
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:706
+#: src/conf/network_conf.c:707
 #, c-format
 msgid "Cannot use host name '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:714
+#: src/conf/network_conf.c:715
 #, c-format
 msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "Dirección IP inválida en definición de host estático para red '%s'"
 
-#: src/conf/network_conf.c:724
+#: src/conf/network_conf.c:725
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
@@ -3979,363 +3979,363 @@ msgstr ""
 "Por lo menos un atributo name, mac, o ip debe especificarse para definición "
 "de host estático en red '%s' "
 
-#: src/conf/network_conf.c:736
+#: src/conf/network_conf.c:737
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%s' must have id or name attribute"
 msgstr ""
 
-#: src/conf/network_conf.c:743
+#: src/conf/network_conf.c:744
 #, c-format
 msgid ""
 "Static host definition in IPv4 network '%s' must have mac or name attribute"
 msgstr ""
 
-#: src/conf/network_conf.c:750
+#: src/conf/network_conf.c:751
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
 msgstr ""
 "No se encuentra la dirección IP en la definición estática de anfitrión para "
 "la red '%s' "
 
-#: src/conf/network_conf.c:855
+#: src/conf/network_conf.c:856
 #, c-format
 msgid "Missing IP address in network '%s' DNS HOST record"
 msgstr ""
 
-#: src/conf/network_conf.c:863
+#: src/conf/network_conf.c:864
 #, c-format
 msgid "Invalid IP address in network '%s' DNS HOST record"
 msgstr ""
 
-#: src/conf/network_conf.c:882 src/conf/network_conf.c:891
+#: src/conf/network_conf.c:883 src/conf/network_conf.c:892
 #, c-format
 msgid "Missing hostname in network '%s' DNS HOST record"
 msgstr ""
 
-#: src/conf/network_conf.c:898
+#: src/conf/network_conf.c:899
 #, c-format
 msgid "Missing ip and hostname in network '%s' DNS HOST record"
 msgstr ""
 
-#: src/conf/network_conf.c:919
+#: src/conf/network_conf.c:920
 #, c-format
 msgid "Missing required service attribute in DNS SRV record  of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:925
+#: src/conf/network_conf.c:926
 #, c-format
 msgid "Service name '%s' in network %s is too long, limit is %d bytes"
 msgstr ""
 
-#: src/conf/network_conf.c:932
+#: src/conf/network_conf.c:933
 #, c-format
 msgid ""
 "Missing required protocol attribute in dns srv record '%s' of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:941
+#: src/conf/network_conf.c:943
 #, c-format
 msgid "Invalid protocol attribute value '%s'  in DNS SRV record of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:956
+#: src/conf/network_conf.c:958
 #, c-format
 msgid "Missing or invalid port attribute in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:964
+#: src/conf/network_conf.c:966
 #, c-format
 msgid "Missing or invalid priority attribute in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:972
+#: src/conf/network_conf.c:974
 #, c-format
 msgid "Missing or invalid weight attribute in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:982
+#: src/conf/network_conf.c:984
 #, c-format
 msgid ""
 "Missing required service attribute or protocol in DNS SRV record of network "
 "%s"
 msgstr ""
 
-#: src/conf/network_conf.c:1001
+#: src/conf/network_conf.c:1003
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1007
+#: src/conf/network_conf.c:1009
 #, c-format
 msgid "prohibited space character in DNS TXT record name '%s' of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1013
+#: src/conf/network_conf.c:1015
 #, c-format
 msgid ""
 "missing required value attribute in DNS TXT record named '%s' of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1020
+#: src/conf/network_conf.c:1022
 #, c-format
 msgid "Missing required name or value in DNS TXT record of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1049
+#: src/conf/network_conf.c:1051
 #, c-format
 msgid "invalid <host> element found in <dns> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1071
+#: src/conf/network_conf.c:1073
 #, c-format
 msgid "invalid <srv> element found in <dns> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1093
+#: src/conf/network_conf.c:1095
 #, c-format
 msgid "invalid <txt> element found in <dns> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1147
+#: src/conf/network_conf.c:1149
 #, c-format
 msgid "Missing required address attribute in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1153
+#: src/conf/network_conf.c:1155
 #, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1162
+#: src/conf/network_conf.c:1164
 #, c-format
 msgid "Invalid netmask '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1170
+#: src/conf/network_conf.c:1172
 #, c-format
 msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1184
+#: src/conf/network_conf.c:1186
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1191
+#: src/conf/network_conf.c:1193
 #, c-format
 msgid ""
 "Invalid netmask '%s' for address '%s' in network '%s' (both must be IPv4)"
 msgstr ""
 
-#: src/conf/network_conf.c:1198
+#: src/conf/network_conf.c:1200
 #, c-format
 msgid "Network '%s' IP address cannot have both a prefix and a netmask"
 msgstr ""
 
-#: src/conf/network_conf.c:1204
+#: src/conf/network_conf.c:1206
 #, c-format
 msgid "Invalid IPv4 prefix '%lu' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1211
+#: src/conf/network_conf.c:1213
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1217
+#: src/conf/network_conf.c:1219
 #, c-format
 msgid "netmask not allowed for IPv6 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1223
+#: src/conf/network_conf.c:1225
 #, c-format
 msgid "Invalid IPv6 prefix '%lu' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1229
+#: src/conf/network_conf.c:1231
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1246
+#: src/conf/network_conf.c:1248
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1297
+#: src/conf/network_conf.c:1299
 msgid "Missing required name attribute in portgroup"
 msgstr ""
 
-#: src/conf/network_conf.c:1349
+#: src/conf/network_conf.c:1351
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%s"
 msgstr ""
 
-#: src/conf/network_conf.c:1358 src/conf/network_conf.c:1502
+#: src/conf/network_conf.c:1360 src/conf/network_conf.c:1504
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1363
+#: src/conf/network_conf.c:1365
 #, c-format
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1370
+#: src/conf/network_conf.c:1372
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1377
+#: src/conf/network_conf.c:1379
 #, c-format
 msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
 "network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1385
+#: src/conf/network_conf.c:1387
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1392
+#: src/conf/network_conf.c:1394
 #, c-format
 msgid "Bad ipv4 end address '%s' in <nat> in <forward> in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1401
+#: src/conf/network_conf.c:1403
 #, c-format
 msgid "invalid <port> element found in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1406
+#: src/conf/network_conf.c:1408
 #, c-format
 msgid "Only one <port> element is allowed in <nat> in <forward> in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1414
+#: src/conf/network_conf.c:1416
 #, c-format
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1422
+#: src/conf/network_conf.c:1424
 #, c-format
 msgid ""
 "Missing or invalid 'end' attribute in <port> in <nat> in <forward> in "
 "network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1463
+#: src/conf/network_conf.c:1465
 #, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "tipo de reenvío '%s' desconocido"
 
-#: src/conf/network_conf.c:1482
+#: src/conf/network_conf.c:1484
 #, fuzzy, c-format
 msgid "Unknown forward <driver name='%s'/> in network %s"
 msgstr "Tipo de reenvío %d desconocido en la red '%s'"
 
-#: src/conf/network_conf.c:1494
+#: src/conf/network_conf.c:1496
 #, c-format
 msgid "invalid <interface> element found in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1510
+#: src/conf/network_conf.c:1512
 #, c-format
 msgid "invalid <pf> element found in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1518
+#: src/conf/network_conf.c:1520
 #, c-format
 msgid "invalid <nat> element found in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1523
+#: src/conf/network_conf.c:1525
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1535
+#: src/conf/network_conf.c:1537
 #, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements in <forward> of network %s are "
 "mutually exclusive"
 msgstr ""
 
-#: src/conf/network_conf.c:1544
+#: src/conf/network_conf.c:1546
 #, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1569
+#: src/conf/network_conf.c:1571
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1581
+#: src/conf/network_conf.c:1583
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1607
+#: src/conf/network_conf.c:1609
 #, c-format
 msgid "missing address type in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1614
+#: src/conf/network_conf.c:1616
 #, c-format
 msgid "unknown address type '%s' in network %s"
 msgstr "Se desconoce tipo de dirección '%s' en red %s"
 
-#: src/conf/network_conf.c:1631
+#: src/conf/network_conf.c:1633
 #, c-format
 msgid "unsupported address type '%s' in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1641
+#: src/conf/network_conf.c:1643
 #, c-format
 msgid "Only one <pf> element is allowed in <forward> of network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:1654
+#: src/conf/network_conf.c:1656
 #, c-format
 msgid "Missing required dev attribute in <pf> element of network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1737
+#: src/conf/network_conf.c:1739
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1767
+#: src/conf/network_conf.c:1769
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "dirección de puente mac '%s' no válida en la red '%s'"
 
-#: src/conf/network_conf.c:1774
+#: src/conf/network_conf.c:1776
 #, c-format
 msgid "Invalid multicast bridge mac address '%s' in network '%s'"
 msgstr "Dirección MAC de puente multidifusión inválido '%s' en red '%s'"
 
-#: src/conf/network_conf.c:1862
+#: src/conf/network_conf.c:1864
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr ""
 "se ha solicitado reenvío de %s, pero no se han provisto direcciones IP para "
 "la red '%s'"
 
-#: src/conf/network_conf.c:1870
+#: src/conf/network_conf.c:1872
 #, c-format
 msgid ""
 "multiple forwarding interfaces specified for network '%s', only one is "
@@ -4344,12 +4344,12 @@ msgstr ""
 "se han especificado múltiples interfaces de reenvío para la red '%s', pero "
 "sólo una es soportada"
 
-#: src/conf/network_conf.c:1883
+#: src/conf/network_conf.c:1885
 #, c-format
 msgid "bridge name not allowed in %s mode (network '%s')"
 msgstr "Nombre de puente no tiene permiso en modo %s (red '%s')"
 
-#: src/conf/network_conf.c:1892
+#: src/conf/network_conf.c:1894
 #, c-format
 msgid ""
 "bridge delay/stp options only allowed in route, nat, and isolated mode, not "
@@ -4358,88 +4358,88 @@ msgstr ""
 "las opciones demorar/detener del puente sólo están permitidas en modo route, "
 "nat y aislado, no en %s (red '%s')"
 
-#: src/conf/network_conf.c:1899
+#: src/conf/network_conf.c:1901
 #, c-format
 msgid ""
 "A network with forward mode='%s' can specify a bridge name or a forward dev, "
 "but not both (network '%s')"
 msgstr ""
 
-#: src/conf/network_conf.c:1930
+#: src/conf/network_conf.c:1932
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
-#: src/conf/network_conf.c:1957
+#: src/conf/network_conf.c:1959
 #, c-format
 msgid "unexpected root element <%s>, expecting <network>"
 msgstr "Elemento inesperado de root <%s>, se esperaba <network>"
 
-#: src/conf/network_conf.c:2239
+#: src/conf/network_conf.c:2241
 #, c-format
 msgid "Unknown forward type %d in network '%s'"
 msgstr "Tipo de reenvío %d desconocido en la red '%s'"
 
-#: src/conf/network_conf.c:2268
+#: src/conf/network_conf.c:2270
 #, fuzzy, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "tipo de dispositivo de host %d no esperado"
 
-#: src/conf/network_conf.c:2521
+#: src/conf/network_conf.c:2523
 msgid "(network status)"
 msgstr ""
 
-#: src/conf/network_conf.c:2526
+#: src/conf/network_conf.c:2528
 msgid "Could not find any 'network' element in status file"
 msgstr ""
 
-#: src/conf/network_conf.c:2537 src/conf/network_conf.c:2624
+#: src/conf/network_conf.c:2539 src/conf/network_conf.c:2626
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "El nombre del archivo de configuración de la red '%s' no se corresponde con "
 "el nombre de la red '%s'"
 
-#: src/conf/network_conf.c:2556
+#: src/conf/network_conf.c:2558
 #, c-format
 msgid "Malformed 'class_id' attribute: %s"
 msgstr ""
 
-#: src/conf/network_conf.c:2568
+#: src/conf/network_conf.c:2570
 #, c-format
 msgid "Malformed 'floor_sum' attribute: %s"
 msgstr ""
 
-#: src/conf/network_conf.c:2751 src/util/virdnsmasq.c:271
+#: src/conf/network_conf.c:2753 src/util/virdnsmasq.c:271
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "No es posible eliminar el archivo de configuración '%s'"
 
-#: src/conf/network_conf.c:2820
+#: src/conf/network_conf.c:2822
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "La generación del puente ha superado el ID máximo %d"
 
-#: src/conf/network_conf.c:2838
+#: src/conf/network_conf.c:2840
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "el nombre del puente '%s' ya está siendo utilizado."
 
-#: src/conf/network_conf.c:2872
+#: src/conf/network_conf.c:2874
 #, c-format
 msgid "can't update '%s' section of network '%s'"
 msgstr "No se puede actualizar sección '%s' de red '%s'"
 
-#: src/conf/network_conf.c:2879
+#: src/conf/network_conf.c:2881
 #, c-format
 msgid "unrecognized network update command code %d"
 msgstr "red no reconocida actualizaqr código de comando %d"
 
-#: src/conf/network_conf.c:2889
+#: src/conf/network_conf.c:2891
 #, c-format
 msgid "unexpected element <%s>, expecting <%s>, while updating network '%s'"
 msgstr "Elemento inesperado <%s>, se esperaba <%s>, al actualizar red '%s'"
 
-#: src/conf/network_conf.c:2944
+#: src/conf/network_conf.c:2946
 #, c-format
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %d in "
@@ -4448,14 +4448,14 @@ msgstr ""
 "No se pudo actualizar entrada dhcp  no se  encontró  elemento <ip> en index "
 "%d en red '%s'"
 
-#: src/conf/network_conf.c:2967
+#: src/conf/network_conf.c:2969
 #, c-format
 msgid "couldn't update dhcp host entry - no <ip> element found in network '%s'"
 msgstr ""
 "No se pudo actualizar entrada dhcp no se  encontró  elemento <ip>  en red "
 "'%s'"
 
-#: src/conf/network_conf.c:3015
+#: src/conf/network_conf.c:3017
 #, c-format
 msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" in network '%s'"
@@ -4463,7 +4463,7 @@ msgstr ""
 "No se pudo localizar una entrada de  host existente dhcp con  \"mac='%s'\" "
 "en red '%s'"
 
-#: src/conf/network_conf.c:3048
+#: src/conf/network_conf.c:3050
 #, c-format
 msgid ""
 "there is an existing dhcp host entry in network '%s' that matches \"<host "
@@ -4472,17 +4472,17 @@ msgstr ""
 "Hay una entrada de  host dhcp en red '%s' que coincide con \"<host mac='%s' "
 "nombre='%s' ip='%s'/>\""
 
-#: src/conf/network_conf.c:3086
+#: src/conf/network_conf.c:3088
 #, c-format
 msgid "couldn't locate a matching dhcp host entry in network '%s'"
 msgstr ""
 "No se pudo localizar una entrada de host dhcp no coincidente en red  '%s'"
 
-#: src/conf/network_conf.c:3131
+#: src/conf/network_conf.c:3133
 msgid "dhcp ranges cannot be modified, only added or deleted"
 msgstr "Rangos dhcp no se pueden modificar, solamente adicionar o borrar"
 
-#: src/conf/network_conf.c:3155
+#: src/conf/network_conf.c:3157
 #, c-format
 msgid ""
 "there is an existing dhcp range entry in network '%s' that matches \"<range "
@@ -4491,23 +4491,23 @@ msgstr ""
 "Existe una entrada del rango dhcp en red '%s' que coincide con \"<range "
 "start='%s' end='%s'/>\""
 
-#: src/conf/network_conf.c:3177
+#: src/conf/network_conf.c:3179
 #, c-format
 msgid "couldn't locate a matching dhcp range entry in network '%s'"
 msgstr ""
 "No se pudo localizar una entrada de  rango dhcp coincidente en red '%s'"
 
-#: src/conf/network_conf.c:3226
+#: src/conf/network_conf.c:3228
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr ""
 "Las entradas de 'interface forward'  no pueden modificarse, solo se pueden  "
 "añadir o borrar"
 
-#: src/conf/network_conf.c:3235
+#: src/conf/network_conf.c:3237
 msgid "missing dev attribute in <interface> element"
 msgstr "Falta atributo dev en <interface> element"
 
-#: src/conf/network_conf.c:3252
+#: src/conf/network_conf.c:3254
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%s' that matches "
@@ -4516,7 +4516,7 @@ msgstr ""
 "Hay una entrada de interfaz en red '%s' que coincide con \"<interface "
 "dev='%s'>\""
 
-#: src/conf/network_conf.c:3272
+#: src/conf/network_conf.c:3274
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%s' matching <interface "
@@ -4525,7 +4525,7 @@ msgstr ""
 "No se encontró una entrada de interfaz en red '%s' que coincida con  "
 "<interface dev='%s'>"
 
-#: src/conf/network_conf.c:3281
+#: src/conf/network_conf.c:3283
 #, c-format
 msgid ""
 "unable to delete interface '%s' in network '%s'. It is currently being used  "
@@ -4534,7 +4534,7 @@ msgstr ""
 "unable to delete interface '%s' in network '%s'. It is currently being used  "
 "by %d domains."
 
-#: src/conf/network_conf.c:3347
+#: src/conf/network_conf.c:3349
 #, c-format
 msgid ""
 "couldn't find a portgroup entry in network '%s' matching <portgroup "
@@ -4543,7 +4543,7 @@ msgstr ""
 "No se encontró una entrada portgroup  en red '%s' coincidente con <portgroup "
 "name='%s'>"
 
-#: src/conf/network_conf.c:3355
+#: src/conf/network_conf.c:3357
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%s' that matches "
@@ -4552,7 +4552,7 @@ msgstr ""
 "No hay entrada existente portgroup en red '%s' que coincida con  "
 "\"<portgroup name='%s'>\""
 
-#: src/conf/network_conf.c:3369
+#: src/conf/network_conf.c:3371
 #, c-format
 msgid ""
 "a different portgroup entry in network '%s' is already set as the default. "
@@ -4561,83 +4561,83 @@ msgstr ""
 "Una entrada portgroup diferente en red '%s' ya se ha establecido como "
 "predeterminada. Solamente se permite una predeterminada."
 
-#: src/conf/network_conf.c:3431
+#: src/conf/network_conf.c:3433
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 
-#: src/conf/network_conf.c:3464
+#: src/conf/network_conf.c:3466
 #, c-format
 msgid ""
 "there is already at least one DNS HOST record with a matching field in "
 "network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3482
+#: src/conf/network_conf.c:3484
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3488
+#: src/conf/network_conf.c:3490
 #, c-format
 msgid "multiple matching DNS HOST records were found in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3527
+#: src/conf/network_conf.c:3529
 msgid "DNS SRV records cannot be modified, only added or deleted"
 msgstr ""
 
-#: src/conf/network_conf.c:3552
+#: src/conf/network_conf.c:3554
 #, c-format
 msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3570
+#: src/conf/network_conf.c:3572
 #, c-format
 msgid "couldn't locate a matching DNS SRV record in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3576
+#: src/conf/network_conf.c:3578
 #, c-format
 msgid ""
 "multiple DNS SRV records matching all specified fields were found in network "
 "%s"
 msgstr ""
 
-#: src/conf/network_conf.c:3614
+#: src/conf/network_conf.c:3616
 msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr ""
 
-#: src/conf/network_conf.c:3634
+#: src/conf/network_conf.c:3636
 #, c-format
 msgid "there is already a DNS TXT record with name '%s' in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3652
+#: src/conf/network_conf.c:3654
 #, c-format
 msgid "couldn't locate a matching DNS TXT record in network %s"
 msgstr ""
 
-#: src/conf/network_conf.c:3684
+#: src/conf/network_conf.c:3686
 msgid "network_update_xml"
 msgstr "network_update_xml"
 
-#: src/conf/network_conf.c:3734
+#: src/conf/network_conf.c:3736
 msgid "can't update unrecognized section of network"
 msgstr "No se puede actualizar sección desconocida de 'network'"
 
-#: src/conf/network_conf.c:3857
+#: src/conf/network_conf.c:3859
 #, c-format
 msgid "network '%s' is already defined with uuid %s"
 msgstr "la red '%s' ya se ha definido con uuid %s"
 
-#: src/conf/network_conf.c:3866
+#: src/conf/network_conf.c:3868
 #, c-format
 msgid "network is already active as '%s'"
 msgstr "la red ya se encuentra activa como '%s'"
 
-#: src/conf/network_conf.c:3880
+#: src/conf/network_conf.c:3882
 #, c-format
 msgid "network '%s' already exists with uuid %s"
 msgstr "la red '%s' ya existe con el uuid %s"
@@ -7210,7 +7210,7 @@ msgid "cannot read from stream"
 msgstr "No se puede leer desde la secuencia"
 
 #: src/fdstream.c:490 src/locking/lock_daemon.c:141
-#: src/locking/lock_daemon.c:186 src/qemu/qemu_capabilities.c:2669
+#: src/locking/lock_daemon.c:186 src/qemu/qemu_capabilities.c:2670
 #: src/util/vireventpoll.c:681 src/util/virnodesuspend.c:66
 #: src/util/virobject.c:223
 msgid "Unable to initialize mutex"
@@ -8348,7 +8348,7 @@ msgstr "No se puede crear lockspace %s"
 
 #: src/locking/lock_driver_sanlock.c:262 src/locking/lock_driver_sanlock.c:317
 #: src/locking/lock_driver_sanlock.c:696 src/storage/storage_backend.c:292
-#: src/util/virutil.c:819 src/util/virutil.c:1102
+#: src/util/virutil.c:827 src/util/virutil.c:1118
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "no es posible modificar la pertenencua de '%s' a (%u, %u)"
@@ -11150,7 +11150,7 @@ msgstr ""
 msgid "node cpumap not implemented on this platform"
 msgstr "cpumap de nodo no implementado en esta plataforma"
 
-#: src/nodeinfo.c:1149 src/util/virutil.c:3346
+#: src/nodeinfo.c:1149 src/util/virutil.c:3406
 #, c-format
 msgid "failed to set %s"
 msgstr "Falló establecer %s"
@@ -12710,44 +12710,44 @@ msgstr "No es posible encontrar el binario QEMU %s"
 msgid "this qemu binary requires libvirt to be compiled with yajl"
 msgstr "este binario de qemu requiere libvirt para ser compilado con yajl"
 
-#: src/qemu/qemu_capabilities.c:1301 src/util/virdnsmasq.c:700
+#: src/qemu/qemu_capabilities.c:1299 src/util/virdnsmasq.c:700
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
 msgstr "No  se puede analizar el número de la versión %s en '%.*s'"
 
-#: src/qemu/qemu_capabilities.c:1494
+#: src/qemu/qemu_capabilities.c:1492
 msgid "Malformed QEMU device list string, missing quote"
 msgstr "Cadena de lista de dispositivo QEMU  errónea, falta cuota"
 
-#: src/qemu/qemu_capabilities.c:1552
+#: src/qemu/qemu_capabilities.c:1550
 msgid "Malformed QEMU device list string, missing '='"
 msgstr "Cadena de lista de dispositivo QEMU errónea, falta  '='"
 
-#: src/qemu/qemu_capabilities.c:1672
+#: src/qemu/qemu_capabilities.c:1670
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "No se pudo encontrar emulador para %s"
 
-#: src/qemu/qemu_capabilities.c:1994
+#: src/qemu/qemu_capabilities.c:1992
 msgid "unable to probe for add-fd"
 msgstr "No se puede sondear para add-fd"
 
-#: src/qemu/qemu_capabilities.c:2528
+#: src/qemu/qemu_capabilities.c:2526
 #, c-format
 msgid "Unknown QEMU arch %s"
 msgstr "Se desconoce arquitectura QEMU '%s'"
 
-#: src/qemu/qemu_capabilities.c:2573
+#: src/qemu/qemu_capabilities.c:2574
 #, c-format
 msgid "Failed to kill process %lld: %s"
 msgstr "No pudo matar el proceso %lld: %s"
 
-#: src/qemu/qemu_capabilities.c:2600
+#: src/qemu/qemu_capabilities.c:2601
 #, c-format
 msgid "Cannot check QEMU binary %s"
 msgstr "No  se puede comprobar binario QEMU %s"
 
-#: src/qemu/qemu_capabilities.c:2611
+#: src/qemu/qemu_capabilities.c:2612
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "Binario QEMU %s no es ejecutable"
@@ -14459,7 +14459,7 @@ msgstr "Dominio es pmsuspended"
 
 #: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4025
 #: src/qemu/qemu_migration.c:4170 src/qemu/qemu_process.c:580
-#: src/qemu/qemu_process.c:3886
+#: src/qemu/qemu_process.c:3887
 msgid "resume operation failed"
 msgstr "Falló al reanudarse la operación"
 
@@ -17405,7 +17405,7 @@ msgstr ""
 msgid "Unable to find an unused port for SPICE TLS"
 msgstr "No se puede encontrar un puerto no utilizado para SPICE TLS"
 
-#: src/qemu/qemu_process.c:3398 src/qemu/qemu_process.c:4247
+#: src/qemu/qemu_process.c:3398 src/qemu/qemu_process.c:4248
 #: src/uml/uml_driver.c:1032
 msgid "VM is already active"
 msgstr "la MV ya se encuentra activa"
@@ -17414,7 +17414,7 @@ msgstr "la MV ya se encuentra activa"
 msgid "Unable to set huge path in security driver"
 msgstr "No se puede establecer ruta amplia en controlador de seguridad"
 
-#: src/qemu/qemu_process.c:3519 src/qemu/qemu_process.c:4270
+#: src/qemu/qemu_process.c:3519 src/qemu/qemu_process.c:4271
 #: src/uml/uml_driver.c:1054
 #, c-format
 msgid "cannot create log directory %s"
@@ -17443,22 +17443,22 @@ msgstr "No es posible eliminar archivo viejo de PID de %s"
 msgid "Raw I/O is not supported on this platform"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3727
+#: src/qemu/qemu_process.c:3728
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr "Dominio %s no apareció"
 
-#: src/qemu/qemu_process.c:3780
+#: src/qemu/qemu_process.c:3781
 #, c-format
 msgid "cannot stat fd %d"
 msgstr "No se pudo stat fd %d"
 
-#: src/qemu/qemu_process.c:3867
+#: src/qemu/qemu_process.c:3868
 #, c-format
 msgid "unable to set balloon to %lld"
 msgstr "No es posible establecer globo para %lld"
 
-#: src/qemu/qemu_process.c:4048
+#: src/qemu/qemu_process.c:4049
 #, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
 msgstr "Falló  remoción de regla ebtables para permitir dirección MAC en '%s'"
@@ -17469,7 +17469,7 @@ msgstr "Falló  remoción de regla ebtables para permitir dirección MAC en '%s'
 #: src/remote/remote_client_bodies.h:2762
 #: src/remote/remote_client_bodies.h:2796
 #: src/remote/remote_client_bodies.h:3184
-#: src/remote/remote_client_bodies.h:5573 src/remote/remote_driver.c:1966
+#: src/remote/remote_client_bodies.h:5573 src/remote/remote_driver.c:1967
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "Longitud %s mayor que el máxima: %d > %d"
@@ -17519,11 +17519,11 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: para transporte 'etx', se necesita un comando"
 
-#: src/remote/remote_driver.c:617
+#: src/remote/remote_driver.c:618
 msgid "GNUTLS support not available in this build"
 msgstr ""
 
-#: src/remote/remote_driver.c:693
+#: src/remote/remote_driver.c:694
 #, c-format
 msgid ""
 "Unable to locate libvirtd daemon in %s (to override, set $LIBVIRTD_PATH to "
@@ -17532,203 +17532,203 @@ msgstr ""
 "No se  puede localizar demonio libvirtd en %s (para anular, establezca "
 "$LIBVIRTD_PATH al nombre del binario libvirtd)"
 
-#: src/remote/remote_driver.c:750
+#: src/remote/remote_driver.c:751
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
 "los métodos de transporte ssh y ext, propios de Unix, no tienen soporte bajo "
 "Windows"
 
-#: src/remote/remote_driver.c:1209
+#: src/remote/remote_driver.c:1210
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
 "remoteNodeGetCPUStats: el número devuelto de estadística  excede el límite"
 
-#: src/remote/remote_driver.c:1228 src/remote/remote_driver.c:1292
+#: src/remote/remote_driver.c:1229 src/remote/remote_driver.c:1293
 #, c-format
 msgid "Stats %s too big for destination"
 msgstr "Estadística %s es demasiado grande para el destino"
 
-#: src/remote/remote_driver.c:1273
+#: src/remote/remote_driver.c:1274
 msgid "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
 msgstr ""
 "remoteNodeGetMemoryStats: el número devuelto de estadística  excede el límite"
 
-#: src/remote/remote_driver.c:1324
+#: src/remote/remote_driver.c:1325
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "demasiadas celdas NUMA: %d > %d"
 
-#: src/remote/remote_driver.c:1363 src/remote/remote_driver.c:1377
+#: src/remote/remote_driver.c:1364 src/remote/remote_driver.c:1378
 #, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "demasiados ID de dominios remotos: %d > %d"
 
-#: src/remote/remote_driver.c:1560
+#: src/remote/remote_driver.c:1561
 msgid "returned number of parameters exceeds limit"
 msgstr "Número de parámetros devueltos excede el límite"
 
-#: src/remote/remote_driver.c:1651
+#: src/remote/remote_driver.c:1652
 msgid "returned number of disk errors exceeds limit"
 msgstr "Número devuelto de errores de disco excede el límite"
 
-#: src/remote/remote_driver.c:1701
+#: src/remote/remote_driver.c:1702
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr ""
 "remoteDomainBlockStatsFlags: retornó número de estadísticas excede el límite"
 
-#: src/remote/remote_driver.c:1896 src/remote/remote_driver.c:2066
+#: src/remote/remote_driver.c:1897 src/remote/remote_driver.c:2067
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "La numeración de las vCPU es mayor que la permitida: %d > %d"
 
-#: src/remote/remote_driver.c:1904 src/remote/remote_driver.c:2008
-#: src/remote/remote_driver.c:2073
+#: src/remote/remote_driver.c:1905 src/remote/remote_driver.c:2009
+#: src/remote/remote_driver.c:2074
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "La longitud del búfer del mapa de vCPU es mayor que la permitida: %d > %d"
 
-#: src/remote/remote_driver.c:1925 src/remote/remote_driver.c:2090
+#: src/remote/remote_driver.c:1926 src/remote/remote_driver.c:2091
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "El host reporta demasiadas VCPU: %d > %d "
 
-#: src/remote/remote_driver.c:1932 src/remote/remote_driver.c:2028
-#: src/remote/remote_driver.c:2096
+#: src/remote/remote_driver.c:1933 src/remote/remote_driver.c:2029
+#: src/remote/remote_driver.c:2097
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "el host reporta que la longitud del buffer del mapa es mayor que la "
 "permitida: %d > %d"
 
-#: src/remote/remote_driver.c:2146
+#: src/remote/remote_driver.c:2147
 #, c-format
 msgid "security label exceeds maximum: %zu"
 msgstr "La etiqueta de seguridad excede el máximo: %zu"
 
-#: src/remote/remote_driver.c:2190
+#: src/remote/remote_driver.c:2191
 #, c-format
 msgid "security label exceeds maximum: %zd"
 msgstr "Etiqueta de seguridad excede máximo: %zd"
 
-#: src/remote/remote_driver.c:2262
+#: src/remote/remote_driver.c:2263
 #, c-format
 msgid "security model exceeds maximum: %zu"
 msgstr "El  modelo de seguridad excede el máximo: %zu"
 
-#: src/remote/remote_driver.c:2271
+#: src/remote/remote_driver.c:2272
 #, c-format
 msgid "security doi exceeds maximum: %zu"
 msgstr "DOI de seguridad excede el máximo: %zu"
 
-#: src/remote/remote_driver.c:2358
+#: src/remote/remote_driver.c:2359
 msgid "caller ignores cookie or cookielen"
 msgstr "el llamador ignora cookie o cookielen"
 
-#: src/remote/remote_driver.c:2367 src/remote/remote_driver.c:5221
+#: src/remote/remote_driver.c:2368 src/remote/remote_driver.c:5222
 msgid "caller ignores uri_out"
 msgstr "el llamador ignora uri_out"
 
-#: src/remote/remote_driver.c:2471
+#: src/remote/remote_driver.c:2472
 #, c-format
 msgid "too many memory stats requested: %d > %d"
 msgstr "se han solicitado demasiadas estadísticas de memoria: %d > %d"
 
-#: src/remote/remote_driver.c:2515
+#: src/remote/remote_driver.c:2516
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr ""
 "petición de bloqueo de examen demasiado extensa para el protocolo remoto, "
 "%zi > %d"
 
-#: src/remote/remote_driver.c:2536 src/remote/remote_driver.c:2587
+#: src/remote/remote_driver.c:2537 src/remote/remote_driver.c:2588
 msgid "returned buffer is not same size as requested"
 msgstr "el buffer obtenido no es del mismo tamaño que el pedido"
 
-#: src/remote/remote_driver.c:2567
+#: src/remote/remote_driver.c:2568
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr ""
 "la petición de lectura de memoria es demasiado grande para el protocolo "
 "remoto, %zi > %d"
 
-#: src/remote/remote_driver.c:2712
+#: src/remote/remote_driver.c:2713
 #, c-format
 msgid "nparams count exceeds maximum: %u > %u"
 msgstr "conteo de nparams excede el máximo: %u > %u"
 
-#: src/remote/remote_driver.c:2718
+#: src/remote/remote_driver.c:2719
 #, c-format
 msgid "ncpus count exceeds maximum: %u > %u"
 msgstr "conteo de ncpus excede el máximo: %u > %u"
 
-#: src/remote/remote_driver.c:2743
+#: src/remote/remote_driver.c:2744
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
 "remoteDomainGetCPUStats: retornó el número de estadísticas excede el límite"
 
-#: src/remote/remote_driver.c:3540
+#: src/remote/remote_driver.c:3541
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "tipo de autenticación %s desconocido"
 
-#: src/remote/remote_driver.c:3549
+#: src/remote/remote_driver.c:3550
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "se ha rechazado el tipo de autenticación %s solicitada "
 
-#: src/remote/remote_driver.c:3588
+#: src/remote/remote_driver.c:3589
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "tipo de autenticación %d no soportado"
 
-#: src/remote/remote_driver.c:3875
+#: src/remote/remote_driver.c:3876
 msgid "Failed to make auth credentials"
 msgstr "Falló al realizar credenciales de autorización"
 
-#: src/remote/remote_driver.c:3886
+#: src/remote/remote_driver.c:3887
 msgid "No authentication callback available"
 msgstr "No se ha suministrado una retrollamada de autenticación."
 
-#: src/remote/remote_driver.c:3892 src/remote/remote_driver.c:4202
+#: src/remote/remote_driver.c:3893 src/remote/remote_driver.c:4203
 msgid "Failed to collect auth credentials"
 msgstr "Falló al recolectar credenciales de autorización"
 
-#: src/remote/remote_driver.c:3996
+#: src/remote/remote_driver.c:3997
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "El mecanismo SASL %s no está soportado por el servidor"
 
-#: src/remote/remote_driver.c:4026
+#: src/remote/remote_driver.c:4027
 #, c-format
 msgid "SASL negotiation data too long: %zu bytes"
 msgstr "Datos de negociación de SASL son demasiado extensos: %zu bytes"
 
-#: src/remote/remote_driver.c:4121
+#: src/remote/remote_driver.c:4122
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "la negociación SSF %d no fue lo suficientemente poderosa"
 
-#: src/remote/remote_driver.c:4242 src/remote/remote_driver.c:5009
+#: src/remote/remote_driver.c:4243 src/remote/remote_driver.c:5010
 msgid "adding cb to list"
 msgstr "añadiendo cb a la lista"
 
-#: src/remote/remote_driver.c:4723
+#: src/remote/remote_driver.c:4724
 msgid "no internalFlags support"
 msgstr "No hay soporte de internalFlags"
 
-#: src/remote/remote_driver.c:5050 src/remote/remote_driver.c:5057
+#: src/remote/remote_driver.c:5051 src/remote/remote_driver.c:5058
 #, c-format
 msgid "unable to find callback ID %d"
 msgstr "no es posible encontrar ID %d de retrollamada"
 
-#: src/remote/remote_driver.c:5153 src/remote/remote_driver.c:5212
-#: src/remote/remote_driver.c:5295 src/remote/remote_driver.c:5356
-#: src/remote/remote_driver.c:5415
+#: src/remote/remote_driver.c:5154 src/remote/remote_driver.c:5213
+#: src/remote/remote_driver.c:5296 src/remote/remote_driver.c:5357
+#: src/remote/remote_driver.c:5416
 msgid "caller ignores cookieout or cookieoutlen"
 msgstr "El llamador ignora cookieout o cookieoutlen"
 
-#: src/remote/remote_driver.c:5514
+#: src/remote/remote_driver.c:5515
 msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
@@ -19168,62 +19168,62 @@ msgstr "no existe '%s'"
 msgid "Invalid security label '%s'"
 msgstr "Etiqueta de seguridad '%s' no válida"
 
-#: src/security/security_dac.c:89
+#: src/security/security_dac.c:91
 #, c-format
 msgid "Missing separator ':' in DAC label \"%s\""
 msgstr ""
 
-#: src/security/security_dac.c:153
+#: src/security/security_dac.c:156
 msgid "Failed to determine default DAC seclabel for an unknown object"
 msgstr ""
 "Falló determinar DAC seclabel predeterminado para un objeto desconocido"
 
-#: src/security/security_dac.c:163
+#: src/security/security_dac.c:171
 #, c-format
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "DAC seclabel no se pudo determinar para dominio '%s'"
 
-#: src/security/security_dac.c:214
+#: src/security/security_dac.c:226
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 "No se pudo determinar DAC predeterminado imagelabel para un objeto "
 "desconocido"
 
-#: src/security/security_dac.c:224
+#: src/security/security_dac.c:236
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr "DAC imagelabel no se pudo determinar para dominio '%s'"
 
-#: src/security/security_dac.c:299
+#: src/security/security_dac.c:328
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "No es posible establecer usuario y  grupo para  '%ld:%ld' en '%s'"
 
-#: src/security/security_dac.c:319
+#: src/security/security_dac.c:348
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "no es posible resolver el enlace simbólico %s"
 
-#: src/security/security_dac.c:1007 src/security/security_selinux.c:622
+#: src/security/security_dac.c:1038 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr "Etiqueta de imagen de seguridad ya está definida para VM"
 
-#: src/security/security_dac.c:1015 src/security/security_selinux.c:629
+#: src/security/security_dac.c:1046 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "Modelo de etiqueta de seguridad %s no tiene soporte de SELinux "
 
-#: src/security/security_dac.c:1025
+#: src/security/security_dac.c:1056
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr "Falta etiqueta para controlador de seguridad estática en dominio %s"
 
-#: src/security/security_dac.c:1039 src/security/security_dac.c:1059
+#: src/security/security_dac.c:1070 src/security/security_dac.c:1090
 #, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "No se puede generar el usuario DAC e ID de grupo para dominio %s"
 
-#: src/security/security_dac.c:1049 src/security/security_selinux.c:700
+#: src/security/security_dac.c:1080 src/security/security_selinux.c:700
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr "Tipo de nivel de seguridad inesperado '%s'"
@@ -19242,12 +19242,12 @@ msgstr "Nop es encontró controlador de seguridad  %s "
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr "Controlador de seguridad  'none' no  puede crear huéspedes continuos"
 
-#: src/security/security_manager.c:447
+#: src/security/security_manager.c:459
 #, c-format
 msgid "Unable to find security driver for label %s"
 msgstr ""
 
-#: src/security/security_manager.c:474
+#: src/security/security_manager.c:486
 msgid "Unconfined guests are not allowed on this host"
 msgstr "No se  permiten los huéspedes no confinados en este host"
 
@@ -19754,14 +19754,14 @@ msgstr "Operación no tiene soporte para dispositivo: %s"
 msgid "cannot create path '%s'"
 msgstr "no es posible crear  la ruta '%s'"
 
-#: src/storage/storage_backend.c:283 src/util/virutil.c:808
-#: src/util/virutil.c:1096 src/util/virutil.c:1192
+#: src/storage/storage_backend.c:283 src/util/virutil.c:816
+#: src/util/virutil.c:1112 src/util/virutil.c:1216
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "falló estadística de '%s'"
 
 #: src/storage/storage_backend.c:299 src/storage/storage_backend.c:601
-#: src/util/virutil.c:830 src/util/virutil.c:1110 src/util/virutil.c:1205
+#: src/util/virutil.c:838 src/util/virutil.c:1126 src/util/virutil.c:1229
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "no es posible definir el modo de '%s' a %04o"
@@ -19778,7 +19778,7 @@ msgstr "Operación no tiene soporte para dispositivo: %s"
 
 #: src/storage/storage_backend.c:406 src/storage/storage_backend_disk.c:650
 #: src/storage/storage_backend_logical.c:710
-#: src/storage/storage_backend_rbd.c:439
+#: src/storage/storage_backend_rbd.c:442
 msgid "storage pool does not support encrypted volumes"
 msgstr "el grupo de almacenamiento no tiene soporte para volúmenes cifrados"
 
@@ -20196,8 +20196,8 @@ msgstr ""
 "'%s'"
 
 #: src/storage/storage_backend_iscsi.c:376
-#: src/storage/storage_backend_scsi.c:525 src/util/virutil.c:3604
-#: src/util/virutil.c:3701
+#: src/storage/storage_backend_scsi.c:525 src/util/virutil.c:3664
+#: src/util/virutil.c:3761
 #, c-format
 msgid "Failed to opendir path '%s'"
 msgstr "Falló al opendir  la ruta '%s'"
@@ -20317,52 +20317,52 @@ msgstr "Recibió  monitor erróneo, revise la definición XML"
 msgid "failed to connect to the RADOS monitor on: %s"
 msgstr "Falló  la conexión  al monitor RADOS en: %s"
 
-#: src/storage/storage_backend_rbd.c:217 src/storage/storage_backend_rbd.c:522
+#: src/storage/storage_backend_rbd.c:220 src/storage/storage_backend_rbd.c:525
 #, c-format
 msgid "failed to open the RBD image '%s'"
 msgstr "Falló abrir la imagen RBD '%s'"
 
-#: src/storage/storage_backend_rbd.c:225
+#: src/storage/storage_backend_rbd.c:228
 msgid "failed to stat the RBD image"
 msgstr "Falló 'stat' la imagen RBD"
 
-#: src/storage/storage_backend_rbd.c:280 src/storage/storage_backend_rbd.c:391
-#: src/storage/storage_backend_rbd.c:432 src/storage/storage_backend_rbd.c:478
-#: src/storage/storage_backend_rbd.c:515
+#: src/storage/storage_backend_rbd.c:283 src/storage/storage_backend_rbd.c:394
+#: src/storage/storage_backend_rbd.c:435 src/storage/storage_backend_rbd.c:481
+#: src/storage/storage_backend_rbd.c:518
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%s' exist?"
 msgstr "Falló crear el RBD IoCTX. ¿El grupo '%s' existe?"
 
-#: src/storage/storage_backend_rbd.c:288
+#: src/storage/storage_backend_rbd.c:291
 msgid "failed to stat the RADOS cluster"
 msgstr "Falló 'stat' el clúster de RADOS"
 
-#: src/storage/storage_backend_rbd.c:295
+#: src/storage/storage_backend_rbd.c:298
 #, c-format
 msgid "failed to stat the RADOS pool '%s'"
 msgstr "Falló 'stat' el grupo de RADOS '%s'"
 
-#: src/storage/storage_backend_rbd.c:317
+#: src/storage/storage_backend_rbd.c:320
 msgid "A problem occurred while listing RBD images"
 msgstr ""
 
-#: src/storage/storage_backend_rbd.c:381
+#: src/storage/storage_backend_rbd.c:384
 msgid "This storage backend does not supported zeroed removal of volumes"
 msgstr ""
 "Este segundo plano de almacenaje no soportó la remoción de volúmenes "
 "llenados con cero"
 
-#: src/storage/storage_backend_rbd.c:398
+#: src/storage/storage_backend_rbd.c:401
 #, c-format
 msgid "failed to remove volume '%s/%s'"
 msgstr "Falló remoción del volumen '%s/%s'"
 
-#: src/storage/storage_backend_rbd.c:445
+#: src/storage/storage_backend_rbd.c:448
 #, c-format
 msgid "failed to create volume '%s/%s'"
 msgstr "Falló crear volumen '%s/%s'"
 
-#: src/storage/storage_backend_rbd.c:529
+#: src/storage/storage_backend_rbd.c:532
 #, c-format
 msgid "failed to resize the RBD image '%s'"
 msgstr "Falló  el cambio de tamaño de imagen RBD '%s'"
@@ -21190,7 +21190,7 @@ msgstr "No se  puede 'symlink' el directorio %s a %s"
 msgid "cannot block signals"
 msgstr "no es posible bloquear señales"
 
-#: src/util/vircommand.c:239 src/util/vircommand.c:572
+#: src/util/vircommand.c:239 src/util/vircommand.c:578
 msgid "cannot fork child process"
 msgstr "no es posible iniciar proceso hijo"
 
@@ -21215,185 +21215,185 @@ msgstr "libvirtd salió durante el protocolo de enlace"
 msgid "Unexpected confirm code '%c' from parent"
 msgstr "Código de confirmación inesperado '%c' del padre"
 
-#: src/util/vircommand.c:408
+#: src/util/vircommand.c:410
 #, c-format
 msgid "Cannot find '%s' in path"
 msgstr "No se encontró '%s' en ruta"
 
-#: src/util/vircommand.c:426
+#: src/util/vircommand.c:428
 msgid "cannot create pipe"
 msgstr "no es posible crear pipe"
 
-#: src/util/vircommand.c:433 src/util/vircommand.c:460
+#: src/util/vircommand.c:435 src/util/vircommand.c:462
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Falló al definir marca de descriptor de archivo non-blocking"
 
-#: src/util/vircommand.c:453
+#: src/util/vircommand.c:455
 msgid "Failed to create pipe"
 msgstr "Falló al crear pipe"
 
-#: src/util/vircommand.c:521
+#: src/util/vircommand.c:527
 #, c-format
 msgid "failed to preserve fd %d"
 msgstr "No se pudo preservar FD %d"
 
-#: src/util/vircommand.c:528
+#: src/util/vircommand.c:534
 msgid "failed to setup stdin file handle"
 msgstr "Falló al definir manipulador de archivo stdin"
 
-#: src/util/vircommand.c:533
+#: src/util/vircommand.c:539
 msgid "failed to setup stdout file handle"
 msgstr "Falló al definir manipulador de archivo stdout"
 
-#: src/util/vircommand.c:538
+#: src/util/vircommand.c:544
 msgid "failed to setup stderr file handle"
 msgstr "Falló al definir manipulador de archivo stderr"
 
-#: src/util/vircommand.c:559
+#: src/util/vircommand.c:565
 msgid "cannot become session leader"
 msgstr "no es posible convertirse en líder de sesión"
 
-#: src/util/vircommand.c:565
+#: src/util/vircommand.c:571
 msgid "cannot change to root directory"
 msgstr "No se pudo  cambiar directorio root"
 
-#: src/util/vircommand.c:582
+#: src/util/vircommand.c:588
 #, c-format
 msgid "could not write pidfile %s for %d"
 msgstr "no es posible escribir el archivo pid %s de %d"
 
-#: src/util/vircommand.c:601
+#: src/util/vircommand.c:607
 msgid "Could not disable SIGPIPE"
 msgstr "No se  pudo inhabilitar SIGPIPE"
 
-#: src/util/vircommand.c:625
+#: src/util/vircommand.c:631
 #, c-format
 msgid "unable to set SELinux security context '%s' for '%s'"
 msgstr "No se puede establecer contexto de seguridad SELinux '%s' para '%s'"
 
-#: src/util/vircommand.c:638
+#: src/util/vircommand.c:644
 #, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
 msgstr "No se puede establecer perfil  AppArmor '%s' para '%s'"
 
-#: src/util/vircommand.c:663
+#: src/util/vircommand.c:670
 #, c-format
 msgid "Unable to change to %s"
 msgstr "No se puede cambiar a %s"
 
-#: src/util/vircommand.c:673
+#: src/util/vircommand.c:680
 msgid "Could not re-enable SIGPIPE"
 msgstr "No se  pudo re-habilitar SIGPIPE"
 
-#: src/util/vircommand.c:686
+#: src/util/vircommand.c:693
 #, c-format
 msgid "cannot execute binary %s"
 msgstr "no es posible ejecutar binario %s"
 
-#: src/util/vircommand.c:747
+#: src/util/vircommand.c:755
 msgid "virRun is not implemented for WIN32"
 msgstr "virRun no se ejecuta para WIN32"
 
-#: src/util/vircommand.c:759
+#: src/util/vircommand.c:767
 msgid "virExec is not implemented for WIN32"
 msgstr "virExec no se encuentra implementado en WIN32"
 
-#: src/util/vircommand.c:1787 src/util/vircommand.c:1799
-#: src/util/vircommand.c:1992 src/util/vircommand.c:2040
-#: src/util/vircommand.c:2191 src/util/vircommand.c:2310
-#: src/util/vircommand.c:2451 src/util/vircommand.c:2518
+#: src/util/vircommand.c:1795 src/util/vircommand.c:1807
+#: src/util/vircommand.c:2000 src/util/vircommand.c:2048
+#: src/util/vircommand.c:2199 src/util/vircommand.c:2318
+#: src/util/vircommand.c:2459 src/util/vircommand.c:2526
 msgid "invalid use of command API"
 msgstr "Uso inválido del comando API"
 
-#: src/util/vircommand.c:1892
+#: src/util/vircommand.c:1900
 msgid "unable to poll on child"
 msgstr "No se pudo sondear en hijo"
 
-#: src/util/vircommand.c:1919
+#: src/util/vircommand.c:1927
 msgid "unable to read child stdout"
 msgstr "No se  puede  leer stdout de hijo"
 
-#: src/util/vircommand.c:1920
+#: src/util/vircommand.c:1928
 msgid "unable to read child stderr"
 msgstr "No se puede leer stderr de hijo"
 
-#: src/util/vircommand.c:1951
+#: src/util/vircommand.c:1959
 msgid "unable to write to child input"
 msgstr "No   se  pudo escribir a salida de hijo"
 
-#: src/util/vircommand.c:2006
+#: src/util/vircommand.c:2014
 msgid "Executing new processes is not supported on Win32 platform"
 msgstr ""
 "La ejecución de nuevos procesos no tiene soporte en la plataforma Win32"
 
-#: src/util/vircommand.c:2062
+#: src/util/vircommand.c:2070
 msgid "cannot mix caller fds with blocking execution"
 msgstr "No se  pudo  mezclar llamada fds con ejecución de bloqueo"
 
-#: src/util/vircommand.c:2068
+#: src/util/vircommand.c:2076
 msgid "cannot mix string I/O with daemon"
 msgstr "No se pudo mezclar cadena de E/S con demonio"
 
-#: src/util/vircommand.c:2204
+#: src/util/vircommand.c:2212
 msgid "unable to open pipe"
 msgstr "No se pudo  abrir tubería"
 
-#: src/util/vircommand.c:2214
+#: src/util/vircommand.c:2222
 msgid "cannot mix string I/O with asynchronous command"
 msgstr "No se pudo   mezclar cadena de E/S con comando asíncrono"
 
-#: src/util/vircommand.c:2220
+#: src/util/vircommand.c:2228
 #, c-format
 msgid "command is already running as pid %lld"
 msgstr "El comando ya está ejecutándose como PID %lld"
 
-#: src/util/vircommand.c:2227
+#: src/util/vircommand.c:2235
 msgid "daemonized command cannot use virCommandRunAsync"
 msgstr "Comando demonizado no puede usar virCommandRunAsync"
 
-#: src/util/vircommand.c:2232
+#: src/util/vircommand.c:2240
 #, c-format
 msgid "daemonized command cannot set working directory %s"
 msgstr "Comando demonizado  no  se puede establecer directorio de trabajo  %s"
 
-#: src/util/vircommand.c:2238
+#: src/util/vircommand.c:2246
 msgid "creation of pid file requires daemonized command"
 msgstr "La creación del archivo PID requiere comando  demonizado"
 
-#: src/util/vircommand.c:2270
+#: src/util/vircommand.c:2278
 msgid "Unable to create thread to process command's IO"
 msgstr "No se puede crear hilo para ES de comando de proceso"
 
-#: src/util/vircommand.c:2316
+#: src/util/vircommand.c:2324
 msgid "command is not yet running"
 msgstr "El  comando aún no está ejecutándose"
 
-#: src/util/vircommand.c:2333
+#: src/util/vircommand.c:2341
 msgid "Error while processing command's IO"
 msgstr ""
 
-#: src/util/vircommand.c:2350
+#: src/util/vircommand.c:2358
 #, c-format
 msgid "Child process (%s) unexpected %s%s%s"
 msgstr "Proceso hijo  (%s) inesperado %s%s%s"
 
-#: src/util/vircommand.c:2457 src/util/vircommand.c:2524
+#: src/util/vircommand.c:2465 src/util/vircommand.c:2532
 msgid "Handshake is already complete"
 msgstr "Protocolo de enlace ya está completo"
 
-#: src/util/vircommand.c:2465
+#: src/util/vircommand.c:2473
 msgid "Unable to wait for child process"
 msgstr "No se puede esperar proceso de hijo"
 
-#: src/util/vircommand.c:2468
+#: src/util/vircommand.c:2476
 msgid "Child quit during startup handshake"
 msgstr "Hijo salió durante el inicio del protocolo de enlace"
 
-#: src/util/vircommand.c:2489
+#: src/util/vircommand.c:2497
 msgid "No error message from child failure"
 msgstr "No aparece ningún mensaje de error de falla de hijo"
 
-#: src/util/vircommand.c:2530
+#: src/util/vircommand.c:2538
 msgid "Unable to notify child process"
 msgstr "No se puede notificar proceso de hijo"
 
@@ -22771,9 +22771,9 @@ msgid "cannot limit locked memory of process %lld to %llu"
 msgstr "No se puede limitar el número de procesos a %d"
 
 #: src/util/virprocess.c:665 src/util/virprocess.c:706
-#: src/util/virprocess.c:754 src/util/virutil.c:3773 src/util/virutil.c:3781
-#: src/util/virutil.c:3789 src/util/virutil.c:3799 src/util/virutil.c:3808
-#: src/util/virutil.c:3815
+#: src/util/virprocess.c:754 src/util/virutil.c:3833 src/util/virutil.c:3841
+#: src/util/virutil.c:3849 src/util/virutil.c:3859 src/util/virutil.c:3868
+#: src/util/virutil.c:3875
 msgid "Not supported on this platform"
 msgstr "No está soportado en  esta plataforma"
 
@@ -23876,204 +23876,194 @@ msgstr "Error en la consulta"
 msgid "Failed to read file '%s'"
 msgstr "Falló al leer el archivo '%s' "
 
-#: src/util/virutil.c:860
+#: src/util/virutil.c:874
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "Falló  la creación de socket necesaria para '%s'"
 
-#: src/util/virutil.c:890
+#: src/util/virutil.c:905
 #, c-format
 msgid "child process failed to create file '%s'"
 msgstr "El proceso hijo falló al crear archivo '%s'"
 
-#: src/util/virutil.c:907
+#: src/util/virutil.c:922
 msgid "child process failed to send fd to parent"
 msgstr "El proceso hijo falló al enviar FD al padre"
 
-#: src/util/virutil.c:949 src/util/virutil.c:1152
+#: src/util/virutil.c:965 src/util/virutil.c:1176
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "falló al esperar que el proceso hijo genere '%s'"
 
-#: src/util/virutil.c:1089
+#: src/util/virutil.c:1105
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "falló al crear el directorio '%s'"
 
-#: src/util/virutil.c:1182
+#: src/util/virutil.c:1206
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "el proceso hijo falló al crear el directorio '%s' "
 
-#: src/util/virutil.c:1198
+#: src/util/virutil.c:1222
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "no es posible modificar la pertenencia de '%s' al grupo %u"
 
-#: src/util/virutil.c:1236
+#: src/util/virutil.c:1260
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs no está implementada para WIN32"
 
-#: src/util/virutil.c:1248
+#: src/util/virutil.c:1272
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate no se encuentra implementado en WIN32"
 
-#: src/util/virutil.c:1752
+#: src/util/virutil.c:1776
 #, c-format
 msgid "invalid scale %llu"
 msgstr "Escala inválida %llu"
 
-#: src/util/virutil.c:1768 src/util/virutil.c:1793
+#: src/util/virutil.c:1792 src/util/virutil.c:1817
 #, c-format
 msgid "unknown suffix '%s'"
 msgstr "sufijo desconocido '%s'"
 
-#: src/util/virutil.c:1799
+#: src/util/virutil.c:1823
 #, c-format
 msgid "value too large: %llu%s"
 msgstr "valor demasiado grande: %llu%s"
 
-#: src/util/virutil.c:2214
+#: src/util/virutil.c:2238
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "El índice de disco %d es negativo"
 
-#: src/util/virutil.c:2270
+#: src/util/virutil.c:2294
 msgid "failed to determine host name"
 msgstr "Falló al determinar el nombre del host"
 
-#: src/util/virutil.c:2365
+#: src/util/virutil.c:2390
 #, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "Falló al buscar registro de usuario para el uid '%u' "
 
-#: src/util/virutil.c:2418
+#: src/util/virutil.c:2449
 #, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Falló al buscar registro de grupo para GID '%u'"
 
-#: src/util/virutil.c:2572
+#: src/util/virutil.c:2608
 #, c-format
 msgid "Failed to parse user '%s'"
 msgstr ""
 
-#: src/util/virutil.c:2656
+#: src/util/virutil.c:2692
 #, c-format
 msgid "Failed to parse group '%s'"
 msgstr ""
 
-#: src/util/virutil.c:2680
+#: src/util/virutil.c:2775
 #, c-format
 msgid "cannot change to '%u' group"
 msgstr ""
 
-#: src/util/virutil.c:2711
-#, c-format
-msgid "cannot getpwuid_r(%u)"
-msgstr ""
+#: src/util/virutil.c:2783
+#, fuzzy
+msgid "cannot set supplemental groups"
+msgstr "no es posible definir el modo de archivo '%s'"
 
-#: src/util/virutil.c:2718
-#, c-format
-msgid "getpwuid_r failed to retrieve data for uid '%u'"
-msgstr ""
-
-#: src/util/virutil.c:2727
-#, c-format
-msgid "cannot initgroups(\"%s\", %d)"
-msgstr "No se puede initgroups(\"%s\", %d)"
-
-#: src/util/virutil.c:2734
+#: src/util/virutil.c:2790
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr ""
 
-#: src/util/virutil.c:2853
+#: src/util/virutil.c:2910
 msgid "Unable to determine home directory"
 msgstr "No se  puede determinar directorio principal"
 
-#: src/util/virutil.c:2869 src/util/virutil.c:2884
+#: src/util/virutil.c:2926 src/util/virutil.c:2941
 msgid "Unable to determine config directory"
 msgstr "No se puede determinar directorio config"
 
-#: src/util/virutil.c:2900
+#: src/util/virutil.c:2958
 msgid "virGetUserDirectory is not available"
 msgstr "no se encuentra disponible virGetUserDirectory"
 
-#: src/util/virutil.c:2909
+#: src/util/virutil.c:2967
 msgid "virGetUserConfigDirectory is not available"
 msgstr "No está disponible virGetUserConfigDirectory "
 
-#: src/util/virutil.c:2918
+#: src/util/virutil.c:2976
 msgid "virGetUserCacheDirectory is not available"
 msgstr "No está disponible virGetUserCacheDirectory"
 
-#: src/util/virutil.c:2927
+#: src/util/virutil.c:2985
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "No está disponible virGetUserRuntimeDirectory"
 
-#: src/util/virutil.c:2937
+#: src/util/virutil.c:2995
 msgid "virGetUserName is not available"
 msgstr "no se encuentra disponible virGetUserName"
 
-#: src/util/virutil.c:2946
+#: src/util/virutil.c:3004
 msgid "virGetUserID is not available"
 msgstr "no se encuentra disponible virGetUserID"
 
-#: src/util/virutil.c:2956
+#: src/util/virutil.c:3014
 msgid "virGetGroupID is not available"
 msgstr "no se encuentra disponible virGetGroupID"
 
-#: src/util/virutil.c:2966
+#: src/util/virutil.c:3026
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID no está disponible"
 
-#: src/util/virutil.c:2974
+#: src/util/virutil.c:3034
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName no está disponible"
 
-#: src/util/virutil.c:3035
+#: src/util/virutil.c:3095
 msgid "prctl failed to set KEEPCAPS"
 msgstr ""
 
-#: src/util/virutil.c:3053 src/util/virutil.c:3085
+#: src/util/virutil.c:3113 src/util/virutil.c:3145
 #, c-format
 msgid "cannot apply process capabilities %d"
 msgstr "No  se  pueden aplicar las  capacidades del proceso %d"
 
-#: src/util/virutil.c:3064
+#: src/util/virutil.c:3124
 msgid "prctl failed to reset KEEPCAPS"
 msgstr ""
 
-#: src/util/virutil.c:3245
+#: src/util/virutil.c:3305
 #, c-format
 msgid "Malformed wwn: %s"
 msgstr "wwn errado: %s"
 
-#: src/util/virutil.c:3306
+#: src/util/virutil.c:3366
 #, c-format
 msgid "Unable to get device ID '%s'"
 msgstr "No se puede obtener ID de dispositivo '%s'"
 
-#: src/util/virutil.c:3336 src/util/virutil.c:3372
+#: src/util/virutil.c:3396 src/util/virutil.c:3432
 msgid "unpriv_sgio is not supported by this kernel"
 msgstr ""
 
-#: src/util/virutil.c:3384
+#: src/util/virutil.c:3444
 #, c-format
 msgid "failed to parse value of %s"
 msgstr ""
 
-#: src/util/virutil.c:3528
+#: src/util/virutil.c:3588
 #, c-format
 msgid "Invalid vport operation (%d)"
 msgstr "Operación vport inválida (%d)"
 
-#: src/util/virutil.c:3554
+#: src/util/virutil.c:3614
 #, c-format
 msgid "vport operation '%s' is not supported for host%d"
 msgstr ""
 
-#: src/util/virutil.c:3572
+#: src/util/virutil.c:3632
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
 msgstr ""
@@ -33688,6 +33678,9 @@ msgstr "%s: demasiados argumentos de línea de comandos\n"
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: nombre de hipervisor sin soporte %s\n"
+
+#~ msgid "cannot initgroups(\"%s\", %d)"
+#~ msgstr "No se puede initgroups(\"%s\", %d)"
 
 #~ msgid "host lookup failed %s"
 #~ msgstr "Falló la búsqueda del host %s"

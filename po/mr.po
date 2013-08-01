@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-07-12 08:54-0400\n"
+"POT-Creation-Date: 2013-08-01 17:46-0400\n"
 "PO-Revision-Date: 2013-04-26 08:02+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/fedora/language/"
@@ -436,8 +436,8 @@ msgstr "जुळवणी आधिपासून उघडे आहे"
 msgid "keepalive support is required to connect"
 msgstr "जोडणीकरीता keepalive समर्थन आवश्यक आहे"
 
-#: daemon/remote.c:888 daemon/remote.c:978 src/remote/remote_driver.c:1529
-#: src/remote/remote_driver.c:1619
+#: daemon/remote.c:888 daemon/remote.c:978 src/remote/remote_driver.c:1530
+#: src/remote/remote_driver.c:1620
 #, c-format
 msgid "unknown parameter type: %d"
 msgstr "अपरिचीत घटक प्रकार: %d"
@@ -450,7 +450,7 @@ msgstr "अपरिचीत घटक प्रकार: %d"
 msgid "nparams too large"
 msgstr "nparams खूपच मोठे आहे"
 
-#: daemon/remote.c:939 src/remote/remote_driver.c:1579
+#: daemon/remote.c:939 src/remote/remote_driver.c:1580
 #, c-format
 msgid "Parameter %s too big for destination"
 msgstr "घटक %s लक्ष्यकरीता खूप मोठे आहे"
@@ -798,7 +798,7 @@ msgstr "रेग्युलर एक्सप्रेशन खूप मो
 msgid "Unmatched ) or \\)"
 msgstr "जुळले नाही ) किंवा \\)"
 
-#: gnulib/lib/regcomp.c:704
+#: gnulib/lib/regcomp.c:707
 msgid "No previous regular expression"
 msgstr "मागील रेग्युलर एक्सप्रेशन नाही"
 
@@ -2442,14 +2442,14 @@ msgstr "अनपेक्षित डोमैन प्रकार %s, %s �
 msgid "unexpected domain type %s, expecting one of these: %s"
 msgstr "अनपेक्षित डोमैन प्रकार %s, यापैकी एक अपेक्षित आहे: %s"
 
-#: src/conf/domain_conf.c:10116 src/conf/network_conf.c:1714
+#: src/conf/domain_conf.c:10116 src/conf/network_conf.c:1716
 #: src/conf/secret_conf.c:193 src/openvz/openvz_conf.c:1087
 #: src/xenxs/xen_xm.c:220
 msgid "Failed to generate UUID"
 msgstr "UUID निर्माण करण्यास अपयशी"
 
 #: src/conf/domain_conf.c:10123 src/conf/domain_conf.c:11613
-#: src/conf/network_conf.c:1721 src/conf/nwfilter_conf.c:2577
+#: src/conf/network_conf.c:1723 src/conf/nwfilter_conf.c:2577
 #: src/conf/secret_conf.c:199 src/conf/storage_conf.c:856
 msgid "malformed uuid element"
 msgstr "सदोषीत uuid घटक"
@@ -3418,7 +3418,7 @@ msgstr "अनपेक्षीत गुणविशेष %d"
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr "साधन संरचना सहत्व नाही: डोमेनकडे USB बस सपोर्ट नाही"
 
-#: src/conf/domain_conf.c:16130 src/conf/network_conf.c:2450
+#: src/conf/domain_conf.c:16130 src/conf/network_conf.c:2452
 #: src/conf/nwfilter_conf.c:2731 src/util/virdnsmasq.c:559
 #, c-format
 msgid "cannot create config directory '%s'"
@@ -3429,8 +3429,8 @@ msgstr "संयोजना डिरेक्ट्री '%s' बनवण�
 msgid "unexpected domain %s already exists"
 msgstr "अनपेक्षीत क्षेत्र %s आधिपासूनच अस्तित्वात आहे"
 
-#: src/conf/domain_conf.c:16309 src/conf/network_conf.c:2671
-#: src/conf/network_conf.c:2704 src/conf/nwfilter_conf.c:3120
+#: src/conf/domain_conf.c:16309 src/conf/network_conf.c:2673
+#: src/conf/network_conf.c:2706 src/conf/nwfilter_conf.c:3120
 #: src/conf/storage_conf.c:1713 src/util/virpci.c:2090
 #, c-format
 msgid "Failed to open dir '%s'"
@@ -3619,11 +3619,11 @@ msgstr "virInterfaceDefFormat च्या इंटरफेसचे नाव
 msgid "unexpected interface type %d"
 msgstr "अनपेक्षीत संवाद प्रकार %d"
 
-#: src/conf/interface_conf.c:1276 src/conf/network_conf.c:347
+#: src/conf/interface_conf.c:1276 src/conf/network_conf.c:348
 #: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3049
 #: src/conf/storage_conf.c:1636 src/libxl/libxl_driver.c:1176
 #: src/parallels/parallels_driver.c:920 src/qemu/qemu_driver.c:566
-#: src/remote/remote_driver.c:901 src/test/test_driver.c:544
+#: src/remote/remote_driver.c:902 src/test/test_driver.c:544
 #: src/test/test_driver.c:800 src/xen/xen_driver.c:365
 msgid "cannot initialize mutex"
 msgstr "mutex प्रारंभ करणे अशक्य"
@@ -3767,76 +3767,76 @@ msgstr "instanceid करीता विनाक्रम uuid निर्म
 msgid "cannot generate a random uuid for interfaceid"
 msgstr "interfaceid करीता विनाक्रम uuid निर्माण करणे अशक्य"
 
-#: src/conf/network_conf.c:290
+#: src/conf/network_conf.c:291
 #, c-format
 msgid "cannot save persistent config of transient network '%s'"
 msgstr "ट्रांजिएंट नेटवर्क '%s' ची पर्सिस्टंट संरचना साठवणे अशक्य"
 
-#: src/conf/network_conf.c:301
+#: src/conf/network_conf.c:302
 #, c-format
 msgid "cannot save live config of inactive network '%s'"
 msgstr "बंद नेटवर्क '%s' ची लाइव्ह संरचना साठवणे अशक्य"
 
-#: src/conf/network_conf.c:477
+#: src/conf/network_conf.c:478
 msgid "NULL NetworkDef"
 msgstr "NULL NetworkDef"
 
-#: src/conf/network_conf.c:511
+#: src/conf/network_conf.c:512
 msgid "network is not running"
 msgstr "नेटवर्क सुरू नाही"
 
-#: src/conf/network_conf.c:518
+#: src/conf/network_conf.c:519
 msgid "cannot change persistent config of a transient network"
 msgstr "ट्रांजिएंट नेटवर्कची पर्सिस्टंट संरचना बदलणे अशक्य"
 
-#: src/conf/network_conf.c:625
+#: src/conf/network_conf.c:626
 #, c-format
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "नेटवर्क '%s' करीता dhcp व्याप्ति अंतर्गत 'start' गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:634
+#: src/conf/network_conf.c:635
 #, c-format
 msgid "Missing 'end' attribute in dhcp range for network '%s'"
 msgstr "नेटवर्क '%s' करीता dhcp व्याप्ति अंतर्गत 'end' गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:644
+#: src/conf/network_conf.c:645
 #, c-format
 msgid "Invalid dhcp range '%s' to '%s' in network '%s'"
 msgstr "अवैध dhcp व्याप्ति '%s', '%s' करीता, नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:673
+#: src/conf/network_conf.c:674
 #, c-format
 msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr "MAC पत्ता '%s' निर्देशीत करणे अवैध, नेटवर्क '%s' IPv6 स्टॅटिक यजमान वर्णनमध्ये"
 
-#: src/conf/network_conf.c:680
+#: src/conf/network_conf.c:681
 #, c-format
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "नेटवर्क '%s' मध्ये MAC पत्ता '%s' वाचणे अशक्य"
 
-#: src/conf/network_conf.c:686
+#: src/conf/network_conf.c:687
 #, c-format
 msgid "expected unicast mac address, found multicast '%s' in network '%s'"
 msgstr "अपेक्षित unicast मॅक पत्ता, मल्टिकास्ट '%s' आढळले, नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:698
+#: src/conf/network_conf.c:699
 #, c-format
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "नेटवर्क '%3$s' च्या id '%2$s' मध्ये, अवैध कॅरेक्टर '%1$c'"
 
-#: src/conf/network_conf.c:706
+#: src/conf/network_conf.c:707
 #, c-format
 msgid "Cannot use host name '%s' in network '%s'"
 msgstr "यजमान नाव '%s' याचा वापर नेटवर्क '%s'मध्ये होत नाही"
 
-#: src/conf/network_conf.c:714
+#: src/conf/network_conf.c:715
 #, c-format
 msgid "Invalid IP address in static host definition for network '%s'"
 msgstr "नेटवर्क '%s' करीता स्टॅटिक यमजान वर्णनमध्ये अवैध IP पत्ता आढळले"
 
-#: src/conf/network_conf.c:724
+#: src/conf/network_conf.c:725
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
@@ -3845,80 +3845,80 @@ msgstr ""
 "नेटवर्क '%s' मध्ये स्टॅटिक यजमान वर्णनकरीता किमान नाव, मॅक, किंवा ip गुणधर्म निर्देशीत "
 "करणे आवश्यक"
 
-#: src/conf/network_conf.c:736
+#: src/conf/network_conf.c:737
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%s' must have id or name attribute"
 msgstr "IPv6 नेटवर्क '%s'मधील स्टॅटिक यजमान निर्देशनकडे id किंवा नाव गुणधर्म पाहिजे"
 
-#: src/conf/network_conf.c:743
+#: src/conf/network_conf.c:744
 #, c-format
 msgid ""
 "Static host definition in IPv4 network '%s' must have mac or name attribute"
 msgstr "IPv4 नेटवर्क '%s'मध्ये स्टॅटिक यजमान निर्देशनमध्ये मॅक किंवा नाव गुणधर्म असणे आवश्यक"
 
-#: src/conf/network_conf.c:750
+#: src/conf/network_conf.c:751
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
 msgstr "स्टॅटिक यजमान वर्णनमध्ये नेटवर्क '%s' करीता IP पत्ता आढळला नाही"
 
-#: src/conf/network_conf.c:855
+#: src/conf/network_conf.c:856
 #, c-format
 msgid "Missing IP address in network '%s' DNS HOST record"
 msgstr "नेटवर्क '%s' DNS HOST रेकॉर्डमध्ये IP पत्ता आढळले नाही"
 
-#: src/conf/network_conf.c:863
+#: src/conf/network_conf.c:864
 #, c-format
 msgid "Invalid IP address in network '%s' DNS HOST record"
 msgstr "नेटवर्क '%s' DNS HOST रेकॉर्डमध्ये अवैध IP पत्ता"
 
-#: src/conf/network_conf.c:882 src/conf/network_conf.c:891
+#: src/conf/network_conf.c:883 src/conf/network_conf.c:892
 #, c-format
 msgid "Missing hostname in network '%s' DNS HOST record"
 msgstr "नेटवर्क '%s' DNS HOST रेकॉर्डमध्ये यजमाननाव आढळले नाही"
 
-#: src/conf/network_conf.c:898
+#: src/conf/network_conf.c:899
 #, c-format
 msgid "Missing ip and hostname in network '%s' DNS HOST record"
 msgstr "नेटवर्क '%s' DNS HOST रेकॉर्डमध्ये ip व यजमाननाव आढळले नाही"
 
-#: src/conf/network_conf.c:919
+#: src/conf/network_conf.c:920
 #, c-format
 msgid "Missing required service attribute in DNS SRV record  of network %s"
 msgstr "नेटवर्क %sच्या DNS SRV रेकॉर्डमध्ये आवश्यक सर्व्हिस गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:925
+#: src/conf/network_conf.c:926
 #, c-format
 msgid "Service name '%s' in network %s is too long, limit is %d bytes"
 msgstr "सर्व्हिस नाव '%s', नेटवर्क %sमध्ये खूप लांब आहे, मर्यादा %d बाइट्स आहे"
 
-#: src/conf/network_conf.c:932
+#: src/conf/network_conf.c:933
 #, c-format
 msgid ""
 "Missing required protocol attribute in dns srv record '%s' of network %s"
 msgstr "नेटवर्क %1$sच्या dns srv रेकॉर्ड '%2$s'मध्ये आवश्यक प्रोटोकॉल गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:941
+#: src/conf/network_conf.c:943
 #, c-format
 msgid "Invalid protocol attribute value '%s'  in DNS SRV record of network %s"
 msgstr "नेटवर्क %2$s च्या DNS SRV रेकॉर्डमध्ये अवैध प्रोटोकॉल गुणधर्म मूल्य '%1$s' आढळले"
 
-#: src/conf/network_conf.c:956
+#: src/conf/network_conf.c:958
 #, c-format
 msgid "Missing or invalid port attribute in network %s"
 msgstr "नेटवर्क %sमध्ये न आढळणारे किंवा अवैध पोर्ट गुणधर्म"
 
-#: src/conf/network_conf.c:964
+#: src/conf/network_conf.c:966
 #, c-format
 msgid "Missing or invalid priority attribute in network %s"
 msgstr "नेटवर्क %sमध्ये न आढळणारे किंवा अवैध प्राधान्यता गुणधर्म"
 
-#: src/conf/network_conf.c:972
+#: src/conf/network_conf.c:974
 #, c-format
 msgid "Missing or invalid weight attribute in network %s"
 msgstr "नेटवर्क %sमध्ये न आढळणारे किंवा अवैध व्हेट गुणधर्म"
 
-#: src/conf/network_conf.c:982
+#: src/conf/network_conf.c:984
 #, c-format
 msgid ""
 "Missing required service attribute or protocol in DNS SRV record of network "
@@ -3926,113 +3926,113 @@ msgid ""
 msgstr ""
 "नेटवर्क %sच्या DNS SRV रेकॉर्डमध्ये आवश्यक सर्व्हिस गुणधर्म किंवा प्रोटोकॉल आढळले नाही"
 
-#: src/conf/network_conf.c:1001
+#: src/conf/network_conf.c:1003
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr "नेटवर्क %sच्या DNS TXT रेकॉर्डमध्ये आवश्यक नाव गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:1007
+#: src/conf/network_conf.c:1009
 #, c-format
 msgid "prohibited space character in DNS TXT record name '%s' of network %s"
 msgstr "नेटवर्क '%2$s' च्या DNS TXT रेकॉर्ड नाव '%1$s'मध्ये प्रतिषिध्द स्पेस कॅरेक्टर"
 
-#: src/conf/network_conf.c:1013
+#: src/conf/network_conf.c:1015
 #, c-format
 msgid ""
 "missing required value attribute in DNS TXT record named '%s' of network %s"
 msgstr "नेटवर्क %2$sच्या DNS TXT रेकॉर्ड नाव '%1$s'मध्ये आवश्यक मूल्य गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:1020
+#: src/conf/network_conf.c:1022
 #, c-format
 msgid "Missing required name or value in DNS TXT record of network %s"
 msgstr "नेटवर्क %sच्या DNS TXT रेकॉर्डमध्ये आवश्यक नाव किंवा मूल्य आढळले नाही"
 
-#: src/conf/network_conf.c:1049
+#: src/conf/network_conf.c:1051
 #, c-format
 msgid "invalid <host> element found in <dns> of network %s"
 msgstr "नेटवर्क %sच्या <dns> मध्ये अवैध <host> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1071
+#: src/conf/network_conf.c:1073
 #, c-format
 msgid "invalid <srv> element found in <dns> of network %s"
 msgstr "नेटवर्क %sच्या <dns>मध्ये अवैध <host> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1093
+#: src/conf/network_conf.c:1095
 #, c-format
 msgid "invalid <txt> element found in <dns> of network %s"
 msgstr "नेटवर्क %sच्या <dns> मध्ये अवैध <txt> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1147
+#: src/conf/network_conf.c:1149
 #, c-format
 msgid "Missing required address attribute in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1153
+#: src/conf/network_conf.c:1155
 #, c-format
 msgid "Invalid address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1162
+#: src/conf/network_conf.c:1164
 #, c-format
 msgid "Invalid netmask '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1170
+#: src/conf/network_conf.c:1172
 #, c-format
 msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1184
+#: src/conf/network_conf.c:1186
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1191
+#: src/conf/network_conf.c:1193
 #, c-format
 msgid ""
 "Invalid netmask '%s' for address '%s' in network '%s' (both must be IPv4)"
 msgstr ""
 
-#: src/conf/network_conf.c:1198
+#: src/conf/network_conf.c:1200
 #, c-format
 msgid "Network '%s' IP address cannot have both a prefix and a netmask"
 msgstr ""
 
-#: src/conf/network_conf.c:1204
+#: src/conf/network_conf.c:1206
 #, c-format
 msgid "Invalid IPv4 prefix '%lu' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1211
+#: src/conf/network_conf.c:1213
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1217
+#: src/conf/network_conf.c:1219
 #, c-format
 msgid "netmask not allowed for IPv6 address '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1223
+#: src/conf/network_conf.c:1225
 #, c-format
 msgid "Invalid IPv6 prefix '%lu' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1229
+#: src/conf/network_conf.c:1231
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
 msgstr ""
 
-#: src/conf/network_conf.c:1246
+#: src/conf/network_conf.c:1248
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
 msgstr "नेटवर्क '%s'मध्ये IPv6 एलिमेंटमध्ये असमर्थीत <tftp> एलिमेंट"
 
-#: src/conf/network_conf.c:1297
+#: src/conf/network_conf.c:1299
 msgid "Missing required name attribute in portgroup"
 msgstr "portgroupमध्ये आवश्यक नाव गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:1349
+#: src/conf/network_conf.c:1351
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -4040,19 +4040,19 @@ msgid ""
 msgstr ""
 "<nat> एलिमेंटचा वापर तेव्हाच होतो जेव्हा नेटवर्क %sमध्ये <forward> 'mode' हे 'nat' असते"
 
-#: src/conf/network_conf.c:1358 src/conf/network_conf.c:1502
+#: src/conf/network_conf.c:1360 src/conf/network_conf.c:1504
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward>मध्ये अवैध <address> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1363
+#: src/conf/network_conf.c:1365
 #, c-format
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %s"
 msgstr ""
 "नेटवर्क %sमध्ये <forward>मध्ये <nat> अंतर्गत फक्त एकच <address> एलिमेंट स्वीकारले जाते"
 
-#: src/conf/network_conf.c:1370
+#: src/conf/network_conf.c:1372
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -4061,7 +4061,7 @@ msgstr ""
 "नेटवर्क %sमध्ये <forward>मध्ये <nat>अंतर्गत <address> एलिमेंटकरीता 'start' गुणधर्म आढळले "
 "नाही"
 
-#: src/conf/network_conf.c:1377
+#: src/conf/network_conf.c:1379
 #, c-format
 msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
@@ -4070,27 +4070,27 @@ msgstr ""
 "नेटवर्क %sमध्ये <forward>मध्ये <nat>अंतर्गत <address> एलिमेंटकरीता 'end' गुणधर्म आढळले "
 "नाही"
 
-#: src/conf/network_conf.c:1385
+#: src/conf/network_conf.c:1387
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr "नेटवर्क '%s'मध्ये <forward> अंतर्गत <nat> मध्ये अयोग्य ipv4 सुरूवातीचा पत्ता '%s'"
 
-#: src/conf/network_conf.c:1392
+#: src/conf/network_conf.c:1394
 #, c-format
 msgid "Bad ipv4 end address '%s' in <nat> in <forward> in network '%s'"
 msgstr "नेटवर्क '%s'मध्ये <forward> अंतर्गत <nat>मध्ये अयोग्य ipv4 समाप्तीचा पत्ता '%s'"
 
-#: src/conf/network_conf.c:1401
+#: src/conf/network_conf.c:1403
 #, c-format
 msgid "invalid <port> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward> मध्ये अवैध <port> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1406
+#: src/conf/network_conf.c:1408
 #, c-format
 msgid "Only one <port> element is allowed in <nat> in <forward> in network %s"
 msgstr "नेटवर्क %sमध्ये <forward>मध्ये <nat> अंतर्गत फक्त एकच <port> एलिमेंट स्वीकारले जाते"
 
-#: src/conf/network_conf.c:1414
+#: src/conf/network_conf.c:1416
 #, c-format
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
@@ -4099,7 +4099,7 @@ msgstr ""
 "नेटवर्क %sमध्ये <forward>मध्ये <nat>अंतर्गत <port> एलिमेंटकरीता 'start' गुणधर्म आढळले "
 "नाही किंवा अवैध आहे"
 
-#: src/conf/network_conf.c:1422
+#: src/conf/network_conf.c:1424
 #, c-format
 msgid ""
 "Missing or invalid 'end' attribute in <port> in <nat> in <forward> in "
@@ -4108,37 +4108,37 @@ msgstr ""
 "नेटवर्क %sमध्ये <forward>मध्ये <nat>अंतर्गत <port> एलिमेंटकरीता 'end' गुणधर्म आढळले नाही "
 "किंवा अवैध आहे"
 
-#: src/conf/network_conf.c:1463
+#: src/conf/network_conf.c:1465
 #, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "अपरिचीत फॉर्वडींग प्रकार '%s'"
 
-#: src/conf/network_conf.c:1482
+#: src/conf/network_conf.c:1484
 #, fuzzy, c-format
 msgid "Unknown forward <driver name='%s'/> in network %s"
 msgstr "अपरिचीत फॉरवर्ड प्रकार %d, नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:1494
+#: src/conf/network_conf.c:1496
 #, c-format
 msgid "invalid <interface> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward>मध्ये अवैध <interface> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1510
+#: src/conf/network_conf.c:1512
 #, c-format
 msgid "invalid <pf> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward>मध्ये अवैध <pf> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1518
+#: src/conf/network_conf.c:1520
 #, c-format
 msgid "invalid <nat> element found in <forward> of network %s"
 msgstr "नेटवर्क %sच्या <forward>मध्ये अवैध <nat> एलिमेंट आढळले"
 
-#: src/conf/network_conf.c:1523
+#: src/conf/network_conf.c:1525
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %s"
 msgstr "नेटवर्क %sमध्ये <forward>मध्ये फक्त एकच <nat> एलिमेंट स्वीकारले जाते"
 
-#: src/conf/network_conf.c:1535
+#: src/conf/network_conf.c:1537
 #, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements in <forward> of network %s are "
@@ -4146,7 +4146,7 @@ msgid ""
 msgstr ""
 "<forward>मध्ये नेटवर्क %sच्या <address>, <interface>, व <pf> एलिमेंट्स परस्पर भिन्न आहेत"
 
-#: src/conf/network_conf.c:1544
+#: src/conf/network_conf.c:1546
 #, c-format
 msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
@@ -4155,64 +4155,64 @@ msgstr ""
 "<address> किंवा <pf> उप-एलिमेंट्स  नेटवर्क %sमध्ये उपलब्ध असताना <forward> 'dev' "
 "गुणधर्माचा वापर होत नाही"
 
-#: src/conf/network_conf.c:1569
+#: src/conf/network_conf.c:1571
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
 msgstr "नेटवर्क %sच्या <forward> <interface> एलिमेंटमध्ये आवश्यक dev गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:1581
+#: src/conf/network_conf.c:1583
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
 msgstr ""
 "<forward dev='%s'> हे पहिले <interface dev='%s'/> सह नेटवर्क %sमध्ये जुळायला पाहिजे"
 
-#: src/conf/network_conf.c:1607
+#: src/conf/network_conf.c:1609
 #, c-format
 msgid "missing address type in network %s"
 msgstr "नेटवर्क '%s'मध्ये न आढळणारे पत्ता प्रकार"
 
-#: src/conf/network_conf.c:1614
+#: src/conf/network_conf.c:1616
 #, c-format
 msgid "unknown address type '%s' in network %s"
 msgstr "नेटवर्क %2$s मधील अपरिचीत पत्ता प्रकार '%1$s'"
 
-#: src/conf/network_conf.c:1631
+#: src/conf/network_conf.c:1633
 #, c-format
 msgid "unsupported address type '%s' in network %s"
 msgstr "नेटवर्क %2$s मधील अपरिचीत पत्ता प्रकार '%1$s'"
 
-#: src/conf/network_conf.c:1641
+#: src/conf/network_conf.c:1643
 #, c-format
 msgid "Only one <pf> element is allowed in <forward> of network %s"
 msgstr "नेटवर्क %sमध्ये <forward>मध्ये फक्त एकच <pf> एलिमेंट स्वीकारले जाते"
 
-#: src/conf/network_conf.c:1654
+#: src/conf/network_conf.c:1656
 #, c-format
 msgid "Missing required dev attribute in <pf> element of network '%s'"
 msgstr "नेटवर्क '%s'च्या <pf> एलिमेंटमध्ये आवश्यक dev गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:1737
+#: src/conf/network_conf.c:1739
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "नेटवर्क '%2$s'मध्ये अवैध ipv6 सेटिंग '%1$s'"
 
-#: src/conf/network_conf.c:1767
+#: src/conf/network_conf.c:1769
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "अवैध ब्रिज मॅक पत्ता '%s', नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:1774
+#: src/conf/network_conf.c:1776
 #, c-format
 msgid "Invalid multicast bridge mac address '%s' in network '%s'"
 msgstr "अवैध मल्टिकास्ट ब्रिज् मॅक पत्ता '%s', नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:1862
+#: src/conf/network_conf.c:1864
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr "%s फॉरवर्डिंगकरीता विनंती केली, परंतु नेटवर्क '%s' करीता IP पत्ता पुरवले नाही"
 
-#: src/conf/network_conf.c:1870
+#: src/conf/network_conf.c:1872
 #, c-format
 msgid ""
 "multiple forwarding interfaces specified for network '%s', only one is "
@@ -4220,12 +4220,12 @@ msgid ""
 msgstr ""
 "नेटवर्क '%s' करीता एकापेक्षा जास्त फारवर्डिंग इंटरफेस निर्देशीत केले, फक्त एकच समर्थीत आहे"
 
-#: src/conf/network_conf.c:1883
+#: src/conf/network_conf.c:1885
 #, c-format
 msgid "bridge name not allowed in %s mode (network '%s')"
 msgstr "%s मोडमध्ये (नेटवर्क '%s') ब्रिज्चे नाव स्वीकार्य नाही"
 
-#: src/conf/network_conf.c:1892
+#: src/conf/network_conf.c:1894
 #, c-format
 msgid ""
 "bridge delay/stp options only allowed in route, nat, and isolated mode, not "
@@ -4234,7 +4234,7 @@ msgstr ""
 "फक्त route, nat, व आसोलेटेड मोडमध्ये ब्रिज डिले/stp पर्याय स्वीकारले जाते, %s (नेटवर्क "
 "'%s')मध्ये स्वीकारले जात नाही"
 
-#: src/conf/network_conf.c:1899
+#: src/conf/network_conf.c:1901
 #, c-format
 msgid ""
 "A network with forward mode='%s' can specify a bridge name or a forward dev, "
@@ -4243,97 +4243,97 @@ msgstr ""
 "फॉरवर्ड mode='%s' सह नेटवर्क ब्रिज नाव किंवा फॉरवर्ड dev साधन निर्देशीत करू शकतो, परंतु "
 "दोन्ही (नेटवर्क '%s') नाही"
 
-#: src/conf/network_conf.c:1930
+#: src/conf/network_conf.c:1932
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
-#: src/conf/network_conf.c:1957
+#: src/conf/network_conf.c:1959
 #, c-format
 msgid "unexpected root element <%s>, expecting <network>"
 msgstr "अनपेक्षित रूट घटक <%s>, <network> अपेक्षित आहे"
 
-#: src/conf/network_conf.c:2239
+#: src/conf/network_conf.c:2241
 #, c-format
 msgid "Unknown forward type %d in network '%s'"
 msgstr "अपरिचीत फॉरवर्ड प्रकार %d, नेटवर्क '%s' मध्ये"
 
-#: src/conf/network_conf.c:2268
+#: src/conf/network_conf.c:2270
 #, fuzzy, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "अनपेक्षीत hostdev प्रकार %d"
 
-#: src/conf/network_conf.c:2521
+#: src/conf/network_conf.c:2523
 msgid "(network status)"
 msgstr "(नेटवर्क स्थिती)"
 
-#: src/conf/network_conf.c:2526
+#: src/conf/network_conf.c:2528
 msgid "Could not find any 'network' element in status file"
 msgstr ""
 
-#: src/conf/network_conf.c:2537 src/conf/network_conf.c:2624
+#: src/conf/network_conf.c:2539 src/conf/network_conf.c:2626
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "नेटवर्क संयोजना फाइलनाव '%s' नेटवर्क नाव '%s' सह जुळत नाही"
 
-#: src/conf/network_conf.c:2556
+#: src/conf/network_conf.c:2558
 #, c-format
 msgid "Malformed 'class_id' attribute: %s"
 msgstr "सदोषीत 'class_id' गुणधर्म: %s"
 
-#: src/conf/network_conf.c:2568
+#: src/conf/network_conf.c:2570
 #, c-format
 msgid "Malformed 'floor_sum' attribute: %s"
 msgstr "सदोषीत 'floor_sum' गुणधर्म: %s"
 
-#: src/conf/network_conf.c:2751 src/util/virdnsmasq.c:271
+#: src/conf/network_conf.c:2753 src/util/virdnsmasq.c:271
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "संयोजना फाइल '%s' काढून टाकू शकत नाही"
 
-#: src/conf/network_conf.c:2820
+#: src/conf/network_conf.c:2822
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "ब्रीज निर्माण कमाल id %d ओलांडले"
 
-#: src/conf/network_conf.c:2838
+#: src/conf/network_conf.c:2840
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "ब्रीज नाव '%s' आधिपासूनच वापरणीत आहे."
 
-#: src/conf/network_conf.c:2872
+#: src/conf/network_conf.c:2874
 #, c-format
 msgid "can't update '%s' section of network '%s'"
 msgstr "नेटवर्क '%2$s' चे '%1$s' विभाग सुधारित करणे अशक्य"
 
-#: src/conf/network_conf.c:2879
+#: src/conf/network_conf.c:2881
 #, c-format
 msgid "unrecognized network update command code %d"
 msgstr "अनोळखी नेटवर्क सुधारणा आदेश कोड %d"
 
-#: src/conf/network_conf.c:2889
+#: src/conf/network_conf.c:2891
 #, c-format
 msgid "unexpected element <%s>, expecting <%s>, while updating network '%s'"
 msgstr "अनपेक्षित घटक <%s>, <%s> अपेक्षित, नेटवर्क '%s' सुधारित करतेवेळी"
 
-#: src/conf/network_conf.c:2944
+#: src/conf/network_conf.c:2946
 #, c-format
 msgid ""
 "couldn't update dhcp host entry - no <ip> element found at index %d in "
 "network '%s'"
 msgstr "नेटवर्क '%2$s'मध्ये इंडेक्स् %1$d येथे dhcp यजमान नोंदणी - <ip> घटक आढळले नाही"
 
-#: src/conf/network_conf.c:2967
+#: src/conf/network_conf.c:2969
 #, c-format
 msgid "couldn't update dhcp host entry - no <ip> element found in network '%s'"
 msgstr "नेटवर्क '%s'मध्ये dhcp यजमान नोंदणी - <ip> एलिमेंट सुधारित करणे अशक्य"
 
-#: src/conf/network_conf.c:3015
+#: src/conf/network_conf.c:3017
 #, c-format
 msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" in network '%s'"
 msgstr "नेटवर्क '%s' मध्ये \"mac='%s'\" सह अस्तित्वातील dhcp यजमान नोंदणी शोधणे अशक्य"
 
-#: src/conf/network_conf.c:3048
+#: src/conf/network_conf.c:3050
 #, c-format
 msgid ""
 "there is an existing dhcp host entry in network '%s' that matches \"<host "
@@ -4342,16 +4342,16 @@ msgstr ""
 "नेटवर्क '%s' मध्ये अस्तित्वातील dhcp यजमान नोंदणी आहे जे \"<host mac='%s' name='%s' "
 "ip='%s'/>\" सह जुळते"
 
-#: src/conf/network_conf.c:3086
+#: src/conf/network_conf.c:3088
 #, c-format
 msgid "couldn't locate a matching dhcp host entry in network '%s'"
 msgstr "नेटवर्क '%s' मध्ये जुळणारे dhcp यजमान नोंदणी शोधणे अशक्य"
 
-#: src/conf/network_conf.c:3131
+#: src/conf/network_conf.c:3133
 msgid "dhcp ranges cannot be modified, only added or deleted"
 msgstr "dhcp व्याप्ति संपादित करणे अशक्य, फक्त समाविष्ट किंवा नष्ट करणे शक्य"
 
-#: src/conf/network_conf.c:3155
+#: src/conf/network_conf.c:3157
 #, c-format
 msgid ""
 "there is an existing dhcp range entry in network '%s' that matches \"<range "
@@ -4360,20 +4360,20 @@ msgstr ""
 "नेटवर्क '%s' मध्ये अस्तित्वातील dhcp यजमान नोंदणी आहे जे \"<range start='%s' end='%s'/"
 ">\" सह जुळते"
 
-#: src/conf/network_conf.c:3177
+#: src/conf/network_conf.c:3179
 #, c-format
 msgid "couldn't locate a matching dhcp range entry in network '%s'"
 msgstr "नेटवर्क '%s' मध्ये जुळणारे dhcp व्याप्ति नोंदणी शोधणे अशक्य"
 
-#: src/conf/network_conf.c:3226
+#: src/conf/network_conf.c:3228
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr "फॉरवर्ड इंटरफेस नोंदणी आढळले नाही, फक्त समाविष्ट किंवा नष्ट केले जातात"
 
-#: src/conf/network_conf.c:3235
+#: src/conf/network_conf.c:3237
 msgid "missing dev attribute in <interface> element"
 msgstr "<interface> घटकात dev गुणधर्म आढळले नाही"
 
-#: src/conf/network_conf.c:3252
+#: src/conf/network_conf.c:3254
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%s' that matches "
@@ -4381,14 +4381,14 @@ msgid ""
 msgstr ""
 "नेटवर्क '%s' मध्ये अस्तित्वातील इंटरफेस नोंदणी जे \"<interface dev='%s'>\" सह जुळते"
 
-#: src/conf/network_conf.c:3272
+#: src/conf/network_conf.c:3274
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%s' matching <interface "
 "dev='%s'>"
 msgstr "नेटवर्क '%s' मध्ये इंटरफेस नोंदणी आढळली नाही जे <interface dev='%s'> सह जुळते"
 
-#: src/conf/network_conf.c:3281
+#: src/conf/network_conf.c:3283
 #, c-format
 msgid ""
 "unable to delete interface '%s' in network '%s'. It is currently being used  "
@@ -4396,7 +4396,7 @@ msgid ""
 msgstr ""
 "इंटरफेस '%s' नष्ट करण्यास अशक्य, नेटवर्क '%s' मध्ये. ते सध्या   %d डोमेन्स्तर्फे वारले जाते."
 
-#: src/conf/network_conf.c:3347
+#: src/conf/network_conf.c:3349
 #, c-format
 msgid ""
 "couldn't find a portgroup entry in network '%s' matching <portgroup "
@@ -4404,7 +4404,7 @@ msgid ""
 msgstr ""
 "नेटवर्क '%s' मध्ये <portgroup name='%s'> सह जुळणारी portgroup नोंदणी आढळली नाही"
 
-#: src/conf/network_conf.c:3355
+#: src/conf/network_conf.c:3357
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%s' that matches "
@@ -4413,7 +4413,7 @@ msgstr ""
 "नेटवर्क '%s' मध्ये अस्तित्वातील portgroup नोंदणी आहे जे \"<portgroup name='%s'>\" सह "
 "जुळते"
 
-#: src/conf/network_conf.c:3369
+#: src/conf/network_conf.c:3371
 #, c-format
 msgid ""
 "a different portgroup entry in network '%s' is already set as the default. "
@@ -4422,83 +4422,83 @@ msgstr ""
 "नेटवर्क '%s' मध्ये वेगळी portgroup नोंदणी आधिपासूनच ठरवली आहे. फक्त एक पूर्वनिर्धारित "
 "स्वीकारले जाते."
 
-#: src/conf/network_conf.c:3431
+#: src/conf/network_conf.c:3433
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST रेकॉर्ड्सला संपादित करणे अशक्य, फक्त समावेश किंवा नष्ट करणे शक्य आहे"
 
-#: src/conf/network_conf.c:3464
+#: src/conf/network_conf.c:3466
 #, c-format
 msgid ""
 "there is already at least one DNS HOST record with a matching field in "
 "network %s"
 msgstr "नेटवर्क %s मध्ये जुळणाऱ्या क्षेत्रासह किमान एक DNS HOST रेकॉर्ड आहे"
 
-#: src/conf/network_conf.c:3482
+#: src/conf/network_conf.c:3484
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr "नेटवर्क %sमध्ये जुळणारे DNS HOST रेकॉर्ड शोधणे अशक्य"
 
-#: src/conf/network_conf.c:3488
+#: src/conf/network_conf.c:3490
 #, c-format
 msgid "multiple matching DNS HOST records were found in network %s"
 msgstr "नेटवर्क %s मध्ये एकापेक्षाजास्त जुळणारे DNS HOST रेकॉर्ड्स आढळले"
 
-#: src/conf/network_conf.c:3527
+#: src/conf/network_conf.c:3529
 msgid "DNS SRV records cannot be modified, only added or deleted"
 msgstr "DNS SRV रेकॉर्ड्स संपादित करणे अशक्य, फक्त समावेश किंवा नष्ट करणे शक्य"
 
-#: src/conf/network_conf.c:3552
+#: src/conf/network_conf.c:3554
 #, c-format
 msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %s"
 msgstr "नेटवर्क %sमध्ये सर्व निर्देशीत क्षेत्रांसह जुळणारे किमान एक DNS SRV रेकॉर्ड आहे"
 
-#: src/conf/network_conf.c:3570
+#: src/conf/network_conf.c:3572
 #, c-format
 msgid "couldn't locate a matching DNS SRV record in network %s"
 msgstr "नेटवर्क %sमध्ये जुळणारे DNS SRV रेकॉर्ड स्थीत करण्यास अशक्य"
 
-#: src/conf/network_conf.c:3576
+#: src/conf/network_conf.c:3578
 #, c-format
 msgid ""
 "multiple DNS SRV records matching all specified fields were found in network "
 "%s"
 msgstr "नेटवर्क %sमध्ये सर्व निर्देशीत क्षेत्रांसह जुळणारे एकापेक्षाजास्त DNS SRV रेकॉर्ड्स आढळले"
 
-#: src/conf/network_conf.c:3614
+#: src/conf/network_conf.c:3616
 msgid "DNS TXT records cannot be modified, only added or deleted"
 msgstr "DNS TXT रेकॉर्ड्स संपादित करणे अश्कय, फक्त समाविष्ट किंवा नष्ट करणे शक्य आहे"
 
-#: src/conf/network_conf.c:3634
+#: src/conf/network_conf.c:3636
 #, c-format
 msgid "there is already a DNS TXT record with name '%s' in network %s"
 msgstr "नेटवर्क %2$sमध्ये  नाव '%1$s' सह DNS TXT रेकॉर्ड आधिपासूनच अस्तित्वात आहे"
 
-#: src/conf/network_conf.c:3652
+#: src/conf/network_conf.c:3654
 #, c-format
 msgid "couldn't locate a matching DNS TXT record in network %s"
 msgstr "नेटवर्क %sमध्ये जुळणारे DNS TXT रेकॉर्ड शोधणे अशक्य"
 
-#: src/conf/network_conf.c:3684
+#: src/conf/network_conf.c:3686
 msgid "network_update_xml"
 msgstr "network_update_xml"
 
-#: src/conf/network_conf.c:3734
+#: src/conf/network_conf.c:3736
 msgid "can't update unrecognized section of network"
 msgstr "नेटवर्कचे अनोळखे विभाग सुधारीत करणे अशक्य"
 
-#: src/conf/network_conf.c:3857
+#: src/conf/network_conf.c:3859
 #, c-format
 msgid "network '%s' is already defined with uuid %s"
 msgstr "नेटवर्क '%s' आधिपासूनच uuid %s सह वर्णन केले आहे"
 
-#: src/conf/network_conf.c:3866
+#: src/conf/network_conf.c:3868
 #, c-format
 msgid "network is already active as '%s'"
 msgstr "नेटवर्क आधिपासूनच '%s' म्हणून सक्रिय आहे"
 
-#: src/conf/network_conf.c:3880
+#: src/conf/network_conf.c:3882
 #, c-format
 msgid "network '%s' already exists with uuid %s"
 msgstr "नेटवर्क '%s' आधिपासूनच uuid %s सह अस्तित्वात आहे"
@@ -6963,7 +6963,7 @@ msgid "cannot read from stream"
 msgstr "स्ट्रिमपासून वाचणे अशक्य"
 
 #: src/fdstream.c:490 src/locking/lock_daemon.c:141
-#: src/locking/lock_daemon.c:186 src/qemu/qemu_capabilities.c:2669
+#: src/locking/lock_daemon.c:186 src/qemu/qemu_capabilities.c:2670
 #: src/util/vireventpoll.c:681 src/util/virnodesuspend.c:66
 #: src/util/virobject.c:223
 msgid "Unable to initialize mutex"
@@ -8120,7 +8120,7 @@ msgstr "लॉकस्पेस् %s निर्माण करण्या�
 
 #: src/locking/lock_driver_sanlock.c:262 src/locking/lock_driver_sanlock.c:317
 #: src/locking/lock_driver_sanlock.c:696 src/storage/storage_backend.c:292
-#: src/util/virutil.c:819 src/util/virutil.c:1102
+#: src/util/virutil.c:827 src/util/virutil.c:1118
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "'%s' यांस (%u, %u) करीता chown अशक्य"
@@ -10886,7 +10886,7 @@ msgstr "ह्या प्लॅटफॉर्मवर यजमान cpu �
 msgid "node cpumap not implemented on this platform"
 msgstr "या प्लॅटफॉर्मवर नोड cpumap लागू केली नाही"
 
-#: src/nodeinfo.c:1149 src/util/virutil.c:3346
+#: src/nodeinfo.c:1149 src/util/virutil.c:3406
 #, c-format
 msgid "failed to set %s"
 msgstr "%s ठरवण्यास अपयशी"
@@ -12374,44 +12374,44 @@ msgstr "QEMU बायनरी %s आढळले नाही"
 msgid "this qemu binary requires libvirt to be compiled with yajl"
 msgstr "yajl सह कंपाइल करण्यासाठी ह्या qemu बाइनरीला libvirt आवश्यक आहे"
 
-#: src/qemu/qemu_capabilities.c:1301 src/util/virdnsmasq.c:700
+#: src/qemu/qemu_capabilities.c:1299 src/util/virdnsmasq.c:700
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s आवृत्ती क्रमांक वाचणे अशक्य, '%.*s' मधील"
 
-#: src/qemu/qemu_capabilities.c:1494
+#: src/qemu/qemu_capabilities.c:1492
 msgid "Malformed QEMU device list string, missing quote"
 msgstr "सदोषीत QEMU साधन सूची स्ट्रिंग, कोट आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:1552
+#: src/qemu/qemu_capabilities.c:1550
 msgid "Malformed QEMU device list string, missing '='"
 msgstr "सदोषीत QEMU साधन सूची स्ट्रिंग, '=' आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:1672
+#: src/qemu/qemu_capabilities.c:1670
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "%s करीता योग्य एम्युलेटर शोधणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:1994
+#: src/qemu/qemu_capabilities.c:1992
 msgid "unable to probe for add-fd"
 msgstr "add-fd करीता चौकशी करणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:2528
+#: src/qemu/qemu_capabilities.c:2526
 #, c-format
 msgid "Unknown QEMU arch %s"
 msgstr "अपरिचीत QEMU आर्क %s"
 
-#: src/qemu/qemu_capabilities.c:2573
+#: src/qemu/qemu_capabilities.c:2574
 #, c-format
 msgid "Failed to kill process %lld: %s"
 msgstr "प्रोसेस %lld: %s नष्ट करण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:2600
+#: src/qemu/qemu_capabilities.c:2601
 #, c-format
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU बाइनरि %s तपासणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:2611
+#: src/qemu/qemu_capabilities.c:2612
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU बाइनरि %s चालवण्याजोगी नाही"
@@ -14089,7 +14089,7 @@ msgstr "डोमेन pmsuspended आहे"
 
 #: src/qemu/qemu_driver.c:1667 src/qemu/qemu_migration.c:4025
 #: src/qemu/qemu_migration.c:4170 src/qemu/qemu_process.c:580
-#: src/qemu/qemu_process.c:3886
+#: src/qemu/qemu_process.c:3887
 msgid "resume operation failed"
 msgstr "पुन्हप्रारंभ कार्यपद्धती अपयशी"
 
@@ -16903,7 +16903,7 @@ msgstr "XML संरचनामध्ये स्पाइस TLS पोर�
 msgid "Unable to find an unused port for SPICE TLS"
 msgstr "SPICE TLS करीता न वापरलेले पोर्ट शोधणे अशक्य"
 
-#: src/qemu/qemu_process.c:3398 src/qemu/qemu_process.c:4247
+#: src/qemu/qemu_process.c:3398 src/qemu/qemu_process.c:4248
 #: src/uml/uml_driver.c:1032
 msgid "VM is already active"
 msgstr "VM आधिपासूनच सक्रीय आहे"
@@ -16912,7 +16912,7 @@ msgstr "VM आधिपासूनच सक्रीय आहे"
 msgid "Unable to set huge path in security driver"
 msgstr "सुरक्षा ड्राइव्हरमध्ये ह्युज मार्ग सेट करण्यास अशक्य"
 
-#: src/qemu/qemu_process.c:3519 src/qemu/qemu_process.c:4270
+#: src/qemu/qemu_process.c:3519 src/qemu/qemu_process.c:4271
 #: src/uml/uml_driver.c:1054
 #, c-format
 msgid "cannot create log directory %s"
@@ -16940,22 +16940,22 @@ msgstr "स्टेल PID फाइल %s काढून टाकणे अ�
 msgid "Raw I/O is not supported on this platform"
 msgstr "ह्या प्लॅटफॉर्मवरील रॉ I/O समर्थीत नाही"
 
-#: src/qemu/qemu_process.c:3727
+#: src/qemu/qemu_process.c:3728
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr "डोमेन %s सुरू झाले नाही"
 
-#: src/qemu/qemu_process.c:3780
+#: src/qemu/qemu_process.c:3781
 #, c-format
 msgid "cannot stat fd %d"
 msgstr "fd %d ला स्टॅट करणे अशक्य"
 
-#: src/qemu/qemu_process.c:3867
+#: src/qemu/qemu_process.c:3868
 #, c-format
 msgid "unable to set balloon to %lld"
 msgstr "%lld करीता बलून ठरवणे अशक्य"
 
-#: src/qemu/qemu_process.c:4048
+#: src/qemu/qemu_process.c:4049
 #, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
 msgstr "'%s' वरील MAC पत्ता स्वीकारण्यासाठी edtables नियम काढून टाकण्यास अपयशी"
@@ -16966,7 +16966,7 @@ msgstr "'%s' वरील MAC पत्ता स्वीकारण्या�
 #: src/remote/remote_client_bodies.h:2762
 #: src/remote/remote_client_bodies.h:2796
 #: src/remote/remote_client_bodies.h:3184
-#: src/remote/remote_client_bodies.h:5573 src/remote/remote_driver.c:1966
+#: src/remote/remote_client_bodies.h:5573 src/remote/remote_driver.c:1967
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s लांबी कमाल पेक्षा जास्त आहे: %d > %d"
@@ -17015,11 +17015,11 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' transport करीता, आदेश आवश्यक आहे"
 
-#: src/remote/remote_driver.c:617
+#: src/remote/remote_driver.c:618
 msgid "GNUTLS support not available in this build"
 msgstr "या बिल्डमध्ये GNUTLS समर्थन अनुपलब्ध"
 
-#: src/remote/remote_driver.c:693
+#: src/remote/remote_driver.c:694
 #, c-format
 msgid ""
 "Unable to locate libvirtd daemon in %s (to override, set $LIBVIRTD_PATH to "
@@ -17028,190 +17028,190 @@ msgstr ""
 "%s मध्ये libvirtd डिमन शोधणे अशक्य (खोडून पुनःलिहण्यासाठी, $LIBVIRTD_PATH यास "
 "libvirtd बाइनरिच्या नावाकरीता निश्चित करा)"
 
-#: src/remote/remote_driver.c:750
+#: src/remote/remote_driver.c:751
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "ट्रान्सपोर्ट पद्धती unix, ssh व ext Windows अंतर्गत समर्थीत नाही"
 
-#: src/remote/remote_driver.c:1209
+#: src/remote/remote_driver.c:1210
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetCPUStats: पुरवलेल्या stats ची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:1228 src/remote/remote_driver.c:1292
+#: src/remote/remote_driver.c:1229 src/remote/remote_driver.c:1293
 #, c-format
 msgid "Stats %s too big for destination"
 msgstr "लक्ष्यकरीता स्टॅट्स् %s खपूच मोठे आहे"
 
-#: src/remote/remote_driver.c:1273
+#: src/remote/remote_driver.c:1274
 msgid "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetMemoryStats: पुरवलेल्या stats ची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:1324
+#: src/remote/remote_driver.c:1325
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "खूपच जास्त NUMA कक्ष: %d > %d"
 
-#: src/remote/remote_driver.c:1363 src/remote/remote_driver.c:1377
+#: src/remote/remote_driver.c:1364 src/remote/remote_driver.c:1378
 #, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "खूपच जास्त दूर्रस्थ क्षेत्र IDs: %d > %d"
 
-#: src/remote/remote_driver.c:1560
+#: src/remote/remote_driver.c:1561
 msgid "returned number of parameters exceeds limit"
 msgstr "पुरवलेल्या घटकांची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:1651
+#: src/remote/remote_driver.c:1652
 msgid "returned number of disk errors exceeds limit"
 msgstr "पुरवलेल्या डिस्क त्रुटींची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:1701
+#: src/remote/remote_driver.c:1702
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr "remoteDomainBlockStatsFlags: पुरवलेल्या stats ची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:1896 src/remote/remote_driver.c:2066
+#: src/remote/remote_driver.c:1897 src/remote/remote_driver.c:2067
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "vCPU प्रमाण कमालपेक्षा जास्त आहे: %d > %d"
 
-#: src/remote/remote_driver.c:1904 src/remote/remote_driver.c:2008
-#: src/remote/remote_driver.c:2073
+#: src/remote/remote_driver.c:1905 src/remote/remote_driver.c:2009
+#: src/remote/remote_driver.c:2074
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU मॅप बफर लांबी कमाल पेक्षा जास्त आहे: %d > %d"
 
-#: src/remote/remote_driver.c:1925 src/remote/remote_driver.c:2090
+#: src/remote/remote_driver.c:1926 src/remote/remote_driver.c:2091
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "यजमानने बरेचशे vCPUs आढळण्याचे तपशील पाठविला आहे: %d > %d"
 
-#: src/remote/remote_driver.c:1932 src/remote/remote_driver.c:2028
-#: src/remote/remote_driver.c:2096
+#: src/remote/remote_driver.c:1933 src/remote/remote_driver.c:2029
+#: src/remote/remote_driver.c:2097
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "यजमान तपशील मॅफ बफरची लांबी कमाल पेक्षा जास्त आहे असे दर्शविते: %d > %d"
 
-#: src/remote/remote_driver.c:2146
+#: src/remote/remote_driver.c:2147
 #, c-format
 msgid "security label exceeds maximum: %zu"
 msgstr "सेक्युरिटि लेबल कमाल: %zu पेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:2190
+#: src/remote/remote_driver.c:2191
 #, c-format
 msgid "security label exceeds maximum: %zd"
 msgstr "सुरक्षा लेबल कमालपेक्षा जास्त आहे: %zd"
 
-#: src/remote/remote_driver.c:2262
+#: src/remote/remote_driver.c:2263
 #, c-format
 msgid "security model exceeds maximum: %zu"
 msgstr "सुरक्षा मॉडल कमालपेक्षा जास्त आहे: %zu"
 
-#: src/remote/remote_driver.c:2271
+#: src/remote/remote_driver.c:2272
 #, c-format
 msgid "security doi exceeds maximum: %zu"
 msgstr "सुरक्षा doi कमालपेक्षा जास्त आहे: %zu"
 
-#: src/remote/remote_driver.c:2358
+#: src/remote/remote_driver.c:2359
 msgid "caller ignores cookie or cookielen"
 msgstr "कॉलर कूकि किंवा cookielen ला दुर्लक्ष करतो"
 
-#: src/remote/remote_driver.c:2367 src/remote/remote_driver.c:5221
+#: src/remote/remote_driver.c:2368 src/remote/remote_driver.c:5222
 msgid "caller ignores uri_out"
 msgstr "कॉलर uri_out ला दुर्लक्ष करतो"
 
-#: src/remote/remote_driver.c:2471
+#: src/remote/remote_driver.c:2472
 #, c-format
 msgid "too many memory stats requested: %d > %d"
 msgstr "एकापेक्षा जास्त स्मृती आकडेवारीकरीता विनंती केली: %d > %d"
 
-#: src/remote/remote_driver.c:2515
+#: src/remote/remote_driver.c:2516
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "दूर्रस्थ शिष्टाचार करीता ब्लॉक कमाल विनंती खूपच जास्त आहे, %zi > %d"
 
-#: src/remote/remote_driver.c:2536 src/remote/remote_driver.c:2587
+#: src/remote/remote_driver.c:2537 src/remote/remote_driver.c:2588
 msgid "returned buffer is not same size as requested"
 msgstr "पाठिवलेले बफर विनंतीकृत आकाराचे आढळले नाही"
 
-#: src/remote/remote_driver.c:2567
+#: src/remote/remote_driver.c:2568
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "दूर्रस्थ शिष्टाचार करीता स्मृती कमाल विनंती खूपच जास्त आहे, %zi > %d"
 
-#: src/remote/remote_driver.c:2712
+#: src/remote/remote_driver.c:2713
 #, c-format
 msgid "nparams count exceeds maximum: %u > %u"
 msgstr "nparams प्रमाण कमालपेक्षा जास्त आहे: %u > %u"
 
-#: src/remote/remote_driver.c:2718
+#: src/remote/remote_driver.c:2719
 #, c-format
 msgid "ncpus count exceeds maximum: %u > %u"
 msgstr "ncpus प्रमाण कमालपेक्षा जास्त आहे: %u > %u"
 
-#: src/remote/remote_driver.c:2743
+#: src/remote/remote_driver.c:2744
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteDomainGetCPUStats: पुरवलेल्या stats ची संख्या मर्यादापेक्षा जास्त आहे"
 
-#: src/remote/remote_driver.c:3540
+#: src/remote/remote_driver.c:3541
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "अपरिचीत अधिप्रमाणन प्रकार %s"
 
-#: src/remote/remote_driver.c:3549
+#: src/remote/remote_driver.c:3550
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "विनंतीकृत अधिप्रमाणन प्रकार %s नकारले गेले"
 
-#: src/remote/remote_driver.c:3588
+#: src/remote/remote_driver.c:3589
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "असमर्थीत अधिप्रमाणन प्रकार %d"
 
-#: src/remote/remote_driver.c:3875
+#: src/remote/remote_driver.c:3876
 msgid "Failed to make auth credentials"
 msgstr "अधिप्रमाणन श्रेय निर्माण करण्यास अपयशी"
 
-#: src/remote/remote_driver.c:3886
+#: src/remote/remote_driver.c:3887
 msgid "No authentication callback available"
 msgstr "ओळखपटवण्याचे कॉलबॅक अनुपलब्ध"
 
-#: src/remote/remote_driver.c:3892 src/remote/remote_driver.c:4202
+#: src/remote/remote_driver.c:3893 src/remote/remote_driver.c:4203
 msgid "Failed to collect auth credentials"
 msgstr "अधिप्रमाणन श्रेय प्राप्त करण्यास अपयशी"
 
-#: src/remote/remote_driver.c:3996
+#: src/remote/remote_driver.c:3997
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL कार्यपद्धती %s या सर्वर द्वारे समर्थीत नाही"
 
-#: src/remote/remote_driver.c:4026
+#: src/remote/remote_driver.c:4027
 #, c-format
 msgid "SASL negotiation data too long: %zu bytes"
 msgstr "SASL मध्यस्थी डाटा खूपच लांब आहे: %zu बाईटस्"
 
-#: src/remote/remote_driver.c:4121
+#: src/remote/remote_driver.c:4122
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "मध्यस्थी SSF %d अपेक्षीतरित्या सक्षम आढळे नाही"
 
-#: src/remote/remote_driver.c:4242 src/remote/remote_driver.c:5009
+#: src/remote/remote_driver.c:4243 src/remote/remote_driver.c:5010
 msgid "adding cb to list"
 msgstr "यादी करीता cb समावेष करत आहे"
 
-#: src/remote/remote_driver.c:4723
+#: src/remote/remote_driver.c:4724
 msgid "no internalFlags support"
 msgstr "internalFlags समर्थन नाही"
 
-#: src/remote/remote_driver.c:5050 src/remote/remote_driver.c:5057
+#: src/remote/remote_driver.c:5051 src/remote/remote_driver.c:5058
 #, c-format
 msgid "unable to find callback ID %d"
 msgstr "कॉलबॅक ID %d शोधणे अशक्य"
 
-#: src/remote/remote_driver.c:5153 src/remote/remote_driver.c:5212
-#: src/remote/remote_driver.c:5295 src/remote/remote_driver.c:5356
-#: src/remote/remote_driver.c:5415
+#: src/remote/remote_driver.c:5154 src/remote/remote_driver.c:5213
+#: src/remote/remote_driver.c:5296 src/remote/remote_driver.c:5357
+#: src/remote/remote_driver.c:5416
 msgid "caller ignores cookieout or cookieoutlen"
 msgstr "कॉलर cookieout किंवा cookieoutlen कडे दुर्लक्ष करतो"
 
-#: src/remote/remote_driver.c:5514
+#: src/remote/remote_driver.c:5515
 msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
@@ -18617,59 +18617,59 @@ msgstr "'%s' अस्तित्वात नाही"
 msgid "Invalid security label '%s'"
 msgstr "अवैद सुरक्षा लेबल '%s'"
 
-#: src/security/security_dac.c:89
+#: src/security/security_dac.c:91
 #, c-format
 msgid "Missing separator ':' in DAC label \"%s\""
 msgstr "DAC लेबल \"%s\" मध्ये ':' आढळले नाही"
 
-#: src/security/security_dac.c:153
+#: src/security/security_dac.c:156
 msgid "Failed to determine default DAC seclabel for an unknown object"
 msgstr "अपरिचीत ऑब्जेक्टकरीता पूर्वनिर्धारित DAC seclabel ओळखण्यास अपयशी"
 
-#: src/security/security_dac.c:163
+#: src/security/security_dac.c:171
 #, c-format
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "डोमेन '%s' करीता DAC seclabel ओळखणे अशक्य"
 
-#: src/security/security_dac.c:214
+#: src/security/security_dac.c:226
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr "अपरिचीत ऑब्जेक्टकरीता पूर्वनिर्धारित DAC imagelabel ओळखण्यास अपयशी"
 
-#: src/security/security_dac.c:224
+#: src/security/security_dac.c:236
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr "डोमेन '%s' करीता DAC imagelabel ओळखणे अशक्य"
 
-#: src/security/security_dac.c:299
+#: src/security/security_dac.c:328
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "'%3$s' वर '%1$ld:%2$ld' करीता युजर व ग्रूप ठरवणे अशक्य"
 
-#: src/security/security_dac.c:319
+#: src/security/security_dac.c:348
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "symlink %s निर्धारीत करणे अशक्य"
 
-#: src/security/security_dac.c:1007 src/security/security_selinux.c:622
+#: src/security/security_dac.c:1038 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr "सेक्युरिटि प्रतिमा लेबल आधिपासूनच VM करीता व्यख्ययीत केले"
 
-#: src/security/security_dac.c:1015 src/security/security_selinux.c:629
+#: src/security/security_dac.c:1046 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "सुरक्षा लेबल मॉडल %s selinux सह समर्थीत नाही"
 
-#: src/security/security_dac.c:1025
+#: src/security/security_dac.c:1056
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr "डोमेन %s मध्ये स्टॅटिक सेक्युरिटि ड्राइव्हरकरीता लेबल आढळले नाही"
 
-#: src/security/security_dac.c:1039 src/security/security_dac.c:1059
+#: src/security/security_dac.c:1070 src/security/security_dac.c:1090
 #, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "डोमेन %s करीता dac युजर व ग्रूप id निर्माण करणे अशक्य"
 
-#: src/security/security_dac.c:1049 src/security/security_selinux.c:700
+#: src/security/security_dac.c:1080 src/security/security_selinux.c:700
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr "अनपेक्षित सेक्युरिटि लेबल प्रकार '%s'"
@@ -18688,12 +18688,12 @@ msgstr "सेक्युरिटि ड्राइव्हर %s आढळ�
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr "सेक्युरिटि ड्राइव्हर \"none\" मर्यादीत अतिथी निर्माण करण्यास अशक्य"
 
-#: src/security/security_manager.c:447
+#: src/security/security_manager.c:459
 #, c-format
 msgid "Unable to find security driver for label %s"
 msgstr ""
 
-#: src/security/security_manager.c:474
+#: src/security/security_manager.c:486
 msgid "Unconfined guests are not allowed on this host"
 msgstr "ह्या यजमानवर अमर्यादीत अतिथींना परवानगी नाही"
 
@@ -19197,14 +19197,14 @@ msgstr "या साधनकरीता कार्य समर्थीत
 msgid "cannot create path '%s'"
 msgstr "मार्ग '%s' बनवणे अशक्य"
 
-#: src/storage/storage_backend.c:283 src/util/virutil.c:808
-#: src/util/virutil.c:1096 src/util/virutil.c:1192
+#: src/storage/storage_backend.c:283 src/util/virutil.c:816
+#: src/util/virutil.c:1112 src/util/virutil.c:1216
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s' ची आकडेवारी अपयशी"
 
 #: src/storage/storage_backend.c:299 src/storage/storage_backend.c:601
-#: src/util/virutil.c:830 src/util/virutil.c:1110 src/util/virutil.c:1205
+#: src/util/virutil.c:838 src/util/virutil.c:1126 src/util/virutil.c:1229
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "'%s' चे मोड %04o करीता सेट करणे अशक्य"
@@ -19221,7 +19221,7 @@ msgstr "या साधनकरीता कार्य समर्थीत
 
 #: src/storage/storage_backend.c:406 src/storage/storage_backend_disk.c:650
 #: src/storage/storage_backend_logical.c:710
-#: src/storage/storage_backend_rbd.c:439
+#: src/storage/storage_backend_rbd.c:442
 msgid "storage pool does not support encrypted volumes"
 msgstr "स्टोरेज पूल एनक्रिप्टेड खंडकरीता समर्थन पुरवत नाही"
 
@@ -19620,8 +19620,8 @@ msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr "IQN '%2$s' सह iscsi संवाद सुधारीत करण्यासाठी आदेश '%1$s' चालवण्यास अपयशी"
 
 #: src/storage/storage_backend_iscsi.c:376
-#: src/storage/storage_backend_scsi.c:525 src/util/virutil.c:3604
-#: src/util/virutil.c:3701
+#: src/storage/storage_backend_scsi.c:525 src/util/virutil.c:3664
+#: src/util/virutil.c:3761
 #, c-format
 msgid "Failed to opendir path '%s'"
 msgstr "मार्ग '%s' वरील डिरीक्ट्री उघडण्यास अपयशी"
@@ -19739,50 +19739,50 @@ msgstr "सदोषीत मॉनिटर प्राप्त, XML वर�
 msgid "failed to connect to the RADOS monitor on: %s"
 msgstr "RADOS मॉनिटर: %s सह जोडणी करण्यास अपयशी"
 
-#: src/storage/storage_backend_rbd.c:217 src/storage/storage_backend_rbd.c:522
+#: src/storage/storage_backend_rbd.c:220 src/storage/storage_backend_rbd.c:525
 #, c-format
 msgid "failed to open the RBD image '%s'"
 msgstr "RBD प्रतिमा '%s' उघडण्यास अपयशी"
 
-#: src/storage/storage_backend_rbd.c:225
+#: src/storage/storage_backend_rbd.c:228
 msgid "failed to stat the RBD image"
 msgstr "RBD प्रतिमाची आकडेवारि अशक्य"
 
-#: src/storage/storage_backend_rbd.c:280 src/storage/storage_backend_rbd.c:391
-#: src/storage/storage_backend_rbd.c:432 src/storage/storage_backend_rbd.c:478
-#: src/storage/storage_backend_rbd.c:515
+#: src/storage/storage_backend_rbd.c:283 src/storage/storage_backend_rbd.c:394
+#: src/storage/storage_backend_rbd.c:435 src/storage/storage_backend_rbd.c:481
+#: src/storage/storage_backend_rbd.c:518
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%s' exist?"
 msgstr "RBD IoCTX निर्माण करण्यास अपयशी. पूल '%s' अस्तित्वात आहे?"
 
-#: src/storage/storage_backend_rbd.c:288
+#: src/storage/storage_backend_rbd.c:291
 msgid "failed to stat the RADOS cluster"
 msgstr "RADOS क्लस्टरची आकडेवारि करण्यास अपयशी"
 
-#: src/storage/storage_backend_rbd.c:295
+#: src/storage/storage_backend_rbd.c:298
 #, c-format
 msgid "failed to stat the RADOS pool '%s'"
 msgstr "RADOS पूल '%s' ची आकडेवारी अपयशी"
 
-#: src/storage/storage_backend_rbd.c:317
+#: src/storage/storage_backend_rbd.c:320
 msgid "A problem occurred while listing RBD images"
 msgstr "RBD प्रतिमा सूचीत दाखवतेवेळी अडचण आढळली"
 
-#: src/storage/storage_backend_rbd.c:381
+#: src/storage/storage_backend_rbd.c:384
 msgid "This storage backend does not supported zeroed removal of volumes"
 msgstr "हे स्टोरेज बॅकएंड खंडाचे झिरोअड् रिमोवलकरीता समर्थन पुरवत नाही"
 
-#: src/storage/storage_backend_rbd.c:398
+#: src/storage/storage_backend_rbd.c:401
 #, c-format
 msgid "failed to remove volume '%s/%s'"
 msgstr "खंड '%s/%s' काढून टकाण्यास अपयशी"
 
-#: src/storage/storage_backend_rbd.c:445
+#: src/storage/storage_backend_rbd.c:448
 #, c-format
 msgid "failed to create volume '%s/%s'"
 msgstr "खंड '%s/%s' काढून टाकण्यास अपयशी"
 
-#: src/storage/storage_backend_rbd.c:529
+#: src/storage/storage_backend_rbd.c:532
 #, c-format
 msgid "failed to resize the RBD image '%s'"
 msgstr "RBD प्रतिमा '%s' पुनःआकार देण्यास अपयशी"
@@ -20596,7 +20596,7 @@ msgstr "डिरेक्ट्री %s ला %s करीता symlink अ�
 msgid "cannot block signals"
 msgstr "संकेत ब्लॉक करणे अशक्य"
 
-#: src/util/vircommand.c:239 src/util/vircommand.c:572
+#: src/util/vircommand.c:239 src/util/vircommand.c:578
 msgid "cannot fork child process"
 msgstr "उप क्रिया विभाजीत करणे अशक्य"
 
@@ -20621,184 +20621,184 @@ msgstr "हँडशेकवेळी libvirtd पासून बाहेर 
 msgid "Unexpected confirm code '%c' from parent"
 msgstr "पॅरेंटपासून खात्रीपूर्वक कोड '%c' अनपेक्षित"
 
-#: src/util/vircommand.c:408
+#: src/util/vircommand.c:410
 #, c-format
 msgid "Cannot find '%s' in path"
 msgstr "मार्गमध्ये '%s' शोधणे अशक्य"
 
-#: src/util/vircommand.c:426
+#: src/util/vircommand.c:428
 msgid "cannot create pipe"
 msgstr "पाइप बनवू शकत नाही"
 
-#: src/util/vircommand.c:433 src/util/vircommand.c:460
+#: src/util/vircommand.c:435 src/util/vircommand.c:462
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "विना-ब्लॉक करणारे फाइल वर्णन बाब निश्चित करण्यास अपयशी"
 
-#: src/util/vircommand.c:453
+#: src/util/vircommand.c:455
 msgid "Failed to create pipe"
 msgstr "पाइप निर्माण करण्यास अपयशी"
 
-#: src/util/vircommand.c:521
+#: src/util/vircommand.c:527
 #, c-format
 msgid "failed to preserve fd %d"
 msgstr "fd %d साठवण्यास अपयशी"
 
-#: src/util/vircommand.c:528
+#: src/util/vircommand.c:534
 msgid "failed to setup stdin file handle"
 msgstr "stdin फाइल हॅन्डलची मांडणी करण्यास अपयशी"
 
-#: src/util/vircommand.c:533
+#: src/util/vircommand.c:539
 msgid "failed to setup stdout file handle"
 msgstr "stdout फाइल हॅन्डलची मांडणी करण्यास अपयशी"
 
-#: src/util/vircommand.c:538
+#: src/util/vircommand.c:544
 msgid "failed to setup stderr file handle"
 msgstr "stderr फाइल हॅन्डलची मांडणी करण्यास अपयशी"
 
-#: src/util/vircommand.c:559
+#: src/util/vircommand.c:565
 msgid "cannot become session leader"
 msgstr "सत्र प्रतिनिधी बनणे शक्य नाही"
 
-#: src/util/vircommand.c:565
+#: src/util/vircommand.c:571
 msgid "cannot change to root directory"
 msgstr "रूट डिरेक्ट्रीचा वापर करणे अशक्य"
 
-#: src/util/vircommand.c:582
+#: src/util/vircommand.c:588
 #, c-format
 msgid "could not write pidfile %s for %d"
 msgstr "%2$d करीता pidfile %1$s लिहण्यास अशक्य"
 
-#: src/util/vircommand.c:601
+#: src/util/vircommand.c:607
 msgid "Could not disable SIGPIPE"
 msgstr "SIGPIPE बंद करणे अशक्य"
 
-#: src/util/vircommand.c:625
+#: src/util/vircommand.c:631
 #, c-format
 msgid "unable to set SELinux security context '%s' for '%s'"
 msgstr "'%2$s' करीता SELinux सुरक्षा संदर्भ '%1$s' सेट करणे अशक्य"
 
-#: src/util/vircommand.c:638
+#: src/util/vircommand.c:644
 #, c-format
 msgid "unable to set AppArmor profile '%s' for '%s'"
 msgstr "'%2$s' करीता AppArmor प्रोफाइल '%1$s' सेट करणे अशक्य"
 
-#: src/util/vircommand.c:663
+#: src/util/vircommand.c:670
 #, c-format
 msgid "Unable to change to %s"
 msgstr "%s करीता बदलणे अशक्य"
 
-#: src/util/vircommand.c:673
+#: src/util/vircommand.c:680
 msgid "Could not re-enable SIGPIPE"
 msgstr "SIGPIPE ला पुनःसुरू करणे अशक्य"
 
-#: src/util/vircommand.c:686
+#: src/util/vircommand.c:693
 #, c-format
 msgid "cannot execute binary %s"
 msgstr "बायनरी %s कार्यान्वीत करणे अशक्य"
 
-#: src/util/vircommand.c:747
+#: src/util/vircommand.c:755
 msgid "virRun is not implemented for WIN32"
 msgstr "WIN32 करीता virRun लागू केले नाही"
 
-#: src/util/vircommand.c:759
+#: src/util/vircommand.c:767
 msgid "virExec is not implemented for WIN32"
 msgstr "WIN32 करीता virExec लागू केले नाही"
 
-#: src/util/vircommand.c:1787 src/util/vircommand.c:1799
-#: src/util/vircommand.c:1992 src/util/vircommand.c:2040
-#: src/util/vircommand.c:2191 src/util/vircommand.c:2310
-#: src/util/vircommand.c:2451 src/util/vircommand.c:2518
+#: src/util/vircommand.c:1795 src/util/vircommand.c:1807
+#: src/util/vircommand.c:2000 src/util/vircommand.c:2048
+#: src/util/vircommand.c:2199 src/util/vircommand.c:2318
+#: src/util/vircommand.c:2459 src/util/vircommand.c:2526
 msgid "invalid use of command API"
 msgstr "आदेश APIचा अवैध वापर"
 
-#: src/util/vircommand.c:1892
+#: src/util/vircommand.c:1900
 msgid "unable to poll on child"
 msgstr "चाइल्डवर पोल करणे अशक्य"
 
-#: src/util/vircommand.c:1919
+#: src/util/vircommand.c:1927
 msgid "unable to read child stdout"
 msgstr "चाइल्ड stdout वाचणे अशक्य"
 
-#: src/util/vircommand.c:1920
+#: src/util/vircommand.c:1928
 msgid "unable to read child stderr"
 msgstr "चाइल्ड stderr वाचणे अशक्य"
 
-#: src/util/vircommand.c:1951
+#: src/util/vircommand.c:1959
 msgid "unable to write to child input"
 msgstr "चाइल्ड इंपुटकरीता लिहणे अशक्य"
 
-#: src/util/vircommand.c:2006
+#: src/util/vircommand.c:2014
 msgid "Executing new processes is not supported on Win32 platform"
 msgstr "Win32 प्लॅटफॉर्मवर नवीन प्रोसेस सुरू करणे समर्थीत नाही"
 
-#: src/util/vircommand.c:2062
+#: src/util/vircommand.c:2070
 msgid "cannot mix caller fds with blocking execution"
 msgstr "ब्लॉकिंग एक्जिक्युशनसह कॉलर fds एकत्र करणे अशक्य"
 
-#: src/util/vircommand.c:2068
+#: src/util/vircommand.c:2076
 msgid "cannot mix string I/O with daemon"
 msgstr "डिमनसह स्ट्रिंग I/O एकत्र करणे अशक्य"
 
-#: src/util/vircommand.c:2204
+#: src/util/vircommand.c:2212
 msgid "unable to open pipe"
 msgstr "पाइप उघडणे अशकय"
 
-#: src/util/vircommand.c:2214
+#: src/util/vircommand.c:2222
 msgid "cannot mix string I/O with asynchronous command"
 msgstr "असिंक्रोनस आदेशसह स्ट्रिंग I/O एकत्र करणे अशक्य"
 
-#: src/util/vircommand.c:2220
+#: src/util/vircommand.c:2228
 #, c-format
 msgid "command is already running as pid %lld"
 msgstr "आदेश आधिपासूनच pid %lld म्हणून सुरू आहे"
 
-#: src/util/vircommand.c:2227
+#: src/util/vircommand.c:2235
 msgid "daemonized command cannot use virCommandRunAsync"
 msgstr "डिमन असलेले आदेश virCommandRunAsync चा वापर करू शकत नाही"
 
-#: src/util/vircommand.c:2232
+#: src/util/vircommand.c:2240
 #, c-format
 msgid "daemonized command cannot set working directory %s"
 msgstr "डिमन असलेले आदेश कार्यरत डिरेक्ट्री %s ठरवण्यास अशक्य"
 
-#: src/util/vircommand.c:2238
+#: src/util/vircommand.c:2246
 msgid "creation of pid file requires daemonized command"
 msgstr "pid फाइलच्या निर्माणकरीता डिमन झालेले आदेश आवश्यक आहे"
 
-#: src/util/vircommand.c:2270
+#: src/util/vircommand.c:2278
 msgid "Unable to create thread to process command's IO"
 msgstr "आदेशांचे IO विश्लेषीत करण्यासाठी थ्रेड निर्माण अशक्य"
 
-#: src/util/vircommand.c:2316
+#: src/util/vircommand.c:2324
 msgid "command is not yet running"
 msgstr "आदेश अजूनहि सुरू नाही"
 
-#: src/util/vircommand.c:2333
+#: src/util/vircommand.c:2341
 msgid "Error while processing command's IO"
 msgstr "आदेशांचे IO विश्लेषीत करतेवेळी त्रुटी"
 
-#: src/util/vircommand.c:2350
+#: src/util/vircommand.c:2358
 #, c-format
 msgid "Child process (%s) unexpected %s%s%s"
 msgstr "चाइल्ड प्रोसेस (%s) अनपेक्षित %s%s%s"
 
-#: src/util/vircommand.c:2457 src/util/vircommand.c:2524
+#: src/util/vircommand.c:2465 src/util/vircommand.c:2532
 msgid "Handshake is already complete"
 msgstr "हँडशेक आधिपासूनच पूर्ण झाले"
 
-#: src/util/vircommand.c:2465
+#: src/util/vircommand.c:2473
 msgid "Unable to wait for child process"
 msgstr "चाइल्ड प्रोसेसकरीता प्रतिक्षा करणे अशक्य"
 
-#: src/util/vircommand.c:2468
+#: src/util/vircommand.c:2476
 msgid "Child quit during startup handshake"
 msgstr "स्टार्टअप हँडशेकवेळी चाइल्डमधून बाहेर पडा"
 
-#: src/util/vircommand.c:2489
+#: src/util/vircommand.c:2497
 msgid "No error message from child failure"
 msgstr "चाइल्ड अपयशपासून त्रुटी संदेश अशक्य"
 
-#: src/util/vircommand.c:2530
+#: src/util/vircommand.c:2538
 msgid "Unable to notify child process"
 msgstr "चाइल्ड प्रोसेस सूचीत करणे अशक्य"
 
@@ -22158,9 +22158,9 @@ msgid "cannot limit locked memory of process %lld to %llu"
 msgstr "%d करीता प्रोसेस्ची संख्या मर्यादित करणे अशक्य"
 
 #: src/util/virprocess.c:665 src/util/virprocess.c:706
-#: src/util/virprocess.c:754 src/util/virutil.c:3773 src/util/virutil.c:3781
-#: src/util/virutil.c:3789 src/util/virutil.c:3799 src/util/virutil.c:3808
-#: src/util/virutil.c:3815
+#: src/util/virprocess.c:754 src/util/virutil.c:3833 src/util/virutil.c:3841
+#: src/util/virutil.c:3849 src/util/virutil.c:3859 src/util/virutil.c:3868
+#: src/util/virutil.c:3875
 msgid "Not supported on this platform"
 msgstr "ह्या प्लॅटफॉर्मवर समर्थीत नाही"
 
@@ -23259,204 +23259,194 @@ msgstr "तपासणी त्रुटी"
 msgid "Failed to read file '%s'"
 msgstr "फाइल '%s' वाचण्यास अपयशी"
 
-#: src/util/virutil.c:860
+#: src/util/virutil.c:874
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "'%s' करीता आवश्यक सॉकेट निर्माण करण्यास अपयशी"
 
-#: src/util/virutil.c:890
+#: src/util/virutil.c:905
 #, c-format
 msgid "child process failed to create file '%s'"
 msgstr "चाइल्ड प्रोसेस फाइल '%s' निर्माण करण्यास अपयशी"
 
-#: src/util/virutil.c:907
+#: src/util/virutil.c:922
 msgid "child process failed to send fd to parent"
 msgstr "चाइल्ड प्रोसेस fd ला पॅरेंटकरीता पाठवण्यास अपयशी"
 
-#: src/util/virutil.c:949 src/util/virutil.c:1152
+#: src/util/virutil.c:965 src/util/virutil.c:1176
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "'%s' चे निर्माण करणाऱ्या चाईल्डची प्रतिक्षा करण्यास अपयशी"
 
-#: src/util/virutil.c:1089
+#: src/util/virutil.c:1105
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "डिरेक्ट्री '%s' निर्माण करण्यास अपयशी"
 
-#: src/util/virutil.c:1182
+#: src/util/virutil.c:1206
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "चाईल्ड नवीन डिरेक्ट्री '%s' निर्माण करण्यास अपयशी"
 
-#: src/util/virutil.c:1198
+#: src/util/virutil.c:1222
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "'%s' ला ग्रूप %u करीता chown करणे अशक्य"
 
-#: src/util/virutil.c:1236
+#: src/util/virutil.c:1260
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "WIN32 करीता virFileOpenAs लागू केले नाही"
 
-#: src/util/virutil.c:1248
+#: src/util/virutil.c:1272
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "WIN32 करीता virDirCreate लागू केले नाही"
 
-#: src/util/virutil.c:1752
+#: src/util/virutil.c:1776
 #, c-format
 msgid "invalid scale %llu"
 msgstr "अवैध प्रमाण %llu"
 
-#: src/util/virutil.c:1768 src/util/virutil.c:1793
+#: src/util/virutil.c:1792 src/util/virutil.c:1817
 #, c-format
 msgid "unknown suffix '%s'"
 msgstr "अपरिचीत सफीक्स् '%s'"
 
-#: src/util/virutil.c:1799
+#: src/util/virutil.c:1823
 #, c-format
 msgid "value too large: %llu%s"
 msgstr "मूल्य खूप मोठे आहे: %llu%s"
 
-#: src/util/virutil.c:2214
+#: src/util/virutil.c:2238
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "डिस्क इंडेक्स् %d नेगेटिव्ह आहे"
 
-#: src/util/virutil.c:2270
+#: src/util/virutil.c:2294
 msgid "failed to determine host name"
 msgstr "यजमान नाव ओळखण्यास अपयशी"
 
-#: src/util/virutil.c:2365
+#: src/util/virutil.c:2390
 #, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "uid '%u' करीता वापरकर्ता रेकॉर्ड शोधणे अपयशी"
 
-#: src/util/virutil.c:2418
+#: src/util/virutil.c:2449
 #, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "gid '%u' करीता ग्रूप रेकॉर्ड शोधणे अशक्य"
 
-#: src/util/virutil.c:2572
+#: src/util/virutil.c:2608
 #, c-format
 msgid "Failed to parse user '%s'"
 msgstr "वापरकर्ता '%s' वाचण्यास अपयशी"
 
-#: src/util/virutil.c:2656
+#: src/util/virutil.c:2692
 #, c-format
 msgid "Failed to parse group '%s'"
 msgstr "ग्रूप '%s' वाचण्यास अपयशी"
 
-#: src/util/virutil.c:2680
+#: src/util/virutil.c:2775
 #, c-format
 msgid "cannot change to '%u' group"
 msgstr "'%u' गटकरीता बदलणे अशक्य"
 
-#: src/util/virutil.c:2711
-#, c-format
-msgid "cannot getpwuid_r(%u)"
-msgstr "getpwuid_r(%u) अशक्य"
+#: src/util/virutil.c:2783
+#, fuzzy
+msgid "cannot set supplemental groups"
+msgstr "फाइल पद्धत '%s' सेट करणे अशक्य"
 
-#: src/util/virutil.c:2718
-#, c-format
-msgid "getpwuid_r failed to retrieve data for uid '%u'"
-msgstr "uid '%u'करीता getpwuid_r डाटा पुनरप्राप्ति अपयशी"
-
-#: src/util/virutil.c:2727
-#, c-format
-msgid "cannot initgroups(\"%s\", %d)"
-msgstr "initgroups(\"%s\", %d) अशक्य"
-
-#: src/util/virutil.c:2734
+#: src/util/virutil.c:2790
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "uidला '%u' असे बदलणे अशक्य"
 
-#: src/util/virutil.c:2853
+#: src/util/virutil.c:2910
 msgid "Unable to determine home directory"
 msgstr "होम डिरेक्ट्री ओळखणे अशक्य"
 
-#: src/util/virutil.c:2869 src/util/virutil.c:2884
+#: src/util/virutil.c:2926 src/util/virutil.c:2941
 msgid "Unable to determine config directory"
 msgstr "काँफिग डिरेक्ट्री ओळखण्यास अशक्य"
 
-#: src/util/virutil.c:2900
+#: src/util/virutil.c:2958
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory अनुपलब्ध"
 
-#: src/util/virutil.c:2909
+#: src/util/virutil.c:2967
 msgid "virGetUserConfigDirectory is not available"
 msgstr "virGetUserConfigDirectory अनुपलब्ध"
 
-#: src/util/virutil.c:2918
+#: src/util/virutil.c:2976
 msgid "virGetUserCacheDirectory is not available"
 msgstr "virGetUserCacheDirectory अनुपलब्ध"
 
-#: src/util/virutil.c:2927
+#: src/util/virutil.c:2985
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory अनुपलब्ध"
 
-#: src/util/virutil.c:2937
+#: src/util/virutil.c:2995
 msgid "virGetUserName is not available"
 msgstr "virGetUserName अनुपलब्ध"
 
-#: src/util/virutil.c:2946
+#: src/util/virutil.c:3004
 msgid "virGetUserID is not available"
 msgstr "virGetUserID अनुपलब्ध"
 
-#: src/util/virutil.c:2956
+#: src/util/virutil.c:3014
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID अनुपलब्ध"
 
-#: src/util/virutil.c:2966
+#: src/util/virutil.c:3026
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID अनुपलब्ध"
 
-#: src/util/virutil.c:2974
+#: src/util/virutil.c:3034
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName अनुपलब्ध"
 
-#: src/util/virutil.c:3035
+#: src/util/virutil.c:3095
 msgid "prctl failed to set KEEPCAPS"
 msgstr "prctl KEEPCAPS सेट करण्यास अपयशी"
 
-#: src/util/virutil.c:3053 src/util/virutil.c:3085
+#: src/util/virutil.c:3113 src/util/virutil.c:3145
 #, c-format
 msgid "cannot apply process capabilities %d"
 msgstr "क्षमता %d चे विश्लेषण लागू करणे अशक्य"
 
-#: src/util/virutil.c:3064
+#: src/util/virutil.c:3124
 msgid "prctl failed to reset KEEPCAPS"
 msgstr "prctl KEEPCAPSला मूळस्थिती आणण्यास अपयशी"
 
-#: src/util/virutil.c:3245
+#: src/util/virutil.c:3305
 #, c-format
 msgid "Malformed wwn: %s"
 msgstr "सदोषीत wwn: %s"
 
-#: src/util/virutil.c:3306
+#: src/util/virutil.c:3366
 #, c-format
 msgid "Unable to get device ID '%s'"
 msgstr "साधन ID '%s' प्राप्त करणे अशक्य"
 
-#: src/util/virutil.c:3336 src/util/virutil.c:3372
+#: src/util/virutil.c:3396 src/util/virutil.c:3432
 msgid "unpriv_sgio is not supported by this kernel"
 msgstr "unpriv_sgio ह्या कर्नलतर्फे समर्थीत नाही"
 
-#: src/util/virutil.c:3384
+#: src/util/virutil.c:3444
 #, c-format
 msgid "failed to parse value of %s"
 msgstr "%sचे मूल्य वाचण्यास अपयशी"
 
-#: src/util/virutil.c:3528
+#: src/util/virutil.c:3588
 #, c-format
 msgid "Invalid vport operation (%d)"
 msgstr "अवैध vport कार्य (%d)"
 
-#: src/util/virutil.c:3554
+#: src/util/virutil.c:3614
 #, c-format
 msgid "vport operation '%s' is not supported for host%d"
 msgstr "vport ऑपरेशन '%s' यजमान%dकरीता समर्थीत नाही"
 
-#: src/util/virutil.c:3572
+#: src/util/virutil.c:3632
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
 msgstr "vport निर्माण/नष्ट करतेवेळी '%s' चे '%s' करीता लेखन अपयशी ठरले"
@@ -32825,6 +32815,15 @@ msgstr "%s: एकापेक्षाजास्त आदेशओळ बा
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: असमर्थीत हायपरवाइजर नाव %s\n"
+
+#~ msgid "cannot getpwuid_r(%u)"
+#~ msgstr "getpwuid_r(%u) अशक्य"
+
+#~ msgid "getpwuid_r failed to retrieve data for uid '%u'"
+#~ msgstr "uid '%u'करीता getpwuid_r डाटा पुनरप्राप्ति अपयशी"
+
+#~ msgid "cannot initgroups(\"%s\", %d)"
+#~ msgstr "initgroups(\"%s\", %d) अशक्य"
 
 #~ msgid "host lookup failed %s"
 #~ msgstr "यजमान लुकअप अपयशी %s"
