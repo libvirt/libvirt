@@ -251,6 +251,13 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
         goto cleanup;
     }
 
+    if (STRNEQ(mode, data->mode)) {
+        ret = qemuMonitorReportError(test,
+                                     "expected shutdown mode '%s' got '%s'",
+                                     data->mode, mode);
+        goto cleanup;
+    }
+
     /* now don't reply but return a qemu agent event */
     qemuAgentNotifyEvent(qemuMonitorTestGetAgent(test),
                          data->event);
@@ -279,7 +286,7 @@ testQemuAgentShutdown(const void *data)
         goto cleanup;
 
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
-    priv.mode = "shutdown";
+    priv.mode = "halt";
 
     if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
