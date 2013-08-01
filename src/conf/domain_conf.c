@@ -210,7 +210,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "usb",
               "spapr-vio",
               "virtio-s390",
-              "ccw")
+              "ccw",
+              "virtio-mmio")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -2390,6 +2391,7 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
         return 1;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
         return 1;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
@@ -3031,6 +3033,9 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.ccw.devno);
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+        break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown address type '%d'"), info->type);
@@ -3493,6 +3498,9 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         if (virDomainDeviceCCWAddressParseXML
                 (address, &info->addr.ccw) < 0)
             goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
         break;
 
     default:
@@ -5848,6 +5856,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Controllers must use the 'pci' address type"));
@@ -6408,6 +6417,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Network interfaces must use 'pci' address type"));

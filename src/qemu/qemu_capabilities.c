@@ -240,6 +240,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "usb-storage", /* 155 */
               "usb-storage.removable",
+              "virtio-mmio",
     );
 
 struct _virQEMUCaps {
@@ -1389,6 +1390,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "scsi-generic", QEMU_CAPS_DEVICE_SCSI_GENERIC },
     { "i82801b11-bridge", QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE },
     { "usb-storage", QEMU_CAPS_DEVICE_USB_STORAGE },
+    { "virtio-mmio", QEMU_CAPS_DEVICE_VIRTIO_MMIO },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
@@ -2842,17 +2844,19 @@ virQEMUCapsUsedQMP(virQEMUCapsPtr qemuCaps)
 bool
 virQEMUCapsSupportsChardev(virDomainDefPtr def,
                            virQEMUCapsPtr qemuCaps,
-                           virDomainChrDefPtr chr ATTRIBUTE_UNUSED)
+                           virDomainChrDefPtr chr)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         return false;
 
-    /* This may not be true for all ARM machine types, but at least
-     * the only supported serial devices of vexpress and versatile
-     * don't have the -chardev property wired up. */
     if (def->os.arch != VIR_ARCH_ARMV7L)
-        return false;
+        return true;
 
-    return true;
+    /* This may not be true for all ARM machine types, but at least
+     * the only supported non-virtio serial devices of vexpress and versatile
+     * don't have the -chardev property wired up. */
+    return (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO ||
+            (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO));
 }
