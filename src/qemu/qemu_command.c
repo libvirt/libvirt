@@ -441,8 +441,10 @@ qemuOpenVhostNet(virDomainDefPtr def,
 {
     size_t i;
 
-    /* If the config says explicitly to not use vhost, return now */
-    if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
+    /* If running a plain QEMU guest, or
+     * if the config says explicitly to not use vhost, return now*/
+    if (def->virtType != VIR_DOMAIN_VIRT_KVM ||
+        net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
         *vhostfdSize = 0;
         return 0;
     }
