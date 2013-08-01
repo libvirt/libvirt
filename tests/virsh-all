@@ -21,6 +21,8 @@ test -z "$srcdir" && srcdir=$(pwd)
 
 . "$srcdir/test-lib.sh"
 
+test_expensive
+
 fail=0
 
 test_url=test:///default
