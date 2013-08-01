@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-06-12 16:53-0400\n"
+"POT-Creation-Date: 2013-08-01 17:45-0400\n"
 "PO-Revision-Date: 2006-11-27 16:59+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -4547,7 +4547,7 @@ msgstr "internal error"
 msgid "unexpected domain snapshot %s already exists"
 msgstr "unexpected mime type"
 
-#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1002
+#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1014
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr ""
@@ -9344,64 +9344,64 @@ msgstr ""
 msgid "Buffer error when generating device name for device with sysname '%s'"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:654
+#: src/node_device/node_device_udev.c:675
 #, c-format
 msgid "SCSI host found, but its udev name '%s' does not begin with 'host'"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:822
+#: src/node_device/node_device_udev.c:843
 #, fuzzy, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/node_device/node_device_udev.c:1194
+#: src/node_device/node_device_udev.c:1215
 #, fuzzy, c-format
 msgid "Unknown device type %d"
 msgstr "unknown OS type"
 
-#: src/node_device/node_device_udev.c:1245
+#: src/node_device/node_device_udev.c:1266
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%s'"
 msgstr "could not connect to %s"
 
-#: src/node_device/node_device_udev.c:1327
-#: src/node_device/node_device_udev.c:1591
+#: src/node_device/node_device_udev.c:1348
+#: src/node_device/node_device_udev.c:1612
 #, fuzzy, c-format
 msgid "Failed to create device for '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/node_device/node_device_udev.c:1379
+#: src/node_device/node_device_udev.c:1400
 #, fuzzy, c-format
 msgid "udev scan devices returned %d"
 msgstr "Domain %s created from %s\n"
 
-#: src/node_device/node_device_udev.c:1455
+#: src/node_device/node_device_udev.c:1476
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
 "descriptor %d"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1462
+#: src/node_device/node_device_udev.c:1483
 msgid "udev_monitor_receive_device returned NULL"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1501
+#: src/node_device/node_device_udev.c:1522
 #, fuzzy, c-format
 msgid "Failed to get udev device for syspath '%s' or '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/node_device/node_device_udev.c:1625
+#: src/node_device/node_device_udev.c:1646
 #, fuzzy, c-format
 msgid "Failed to initialize libpciaccess: %s"
 msgstr "Failed to undefine domain %s"
 
-#: src/node_device/node_device_udev.c:1649
+#: src/node_device/node_device_udev.c:1670
 #, fuzzy
 msgid "Failed to initialize mutex for driverState"
 msgstr "Failed to undefine domain %s"
 
-#: src/node_device/node_device_udev.c:1670
+#: src/node_device/node_device_udev.c:1692
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
@@ -10469,7 +10469,7 @@ msgstr "Failed to suspend domain %s"
 msgid "pool '%s' not found"
 msgstr "domain name or uuid"
 
-#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:825
+#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:828
 #, fuzzy, c-format
 msgid "cannot open path '%s'"
 msgstr "Failed to suspend domain %s"
@@ -10479,7 +10479,7 @@ msgstr "Failed to suspend domain %s"
 msgid "Failed to load pool configs"
 msgstr "Failed to suspend domain %s"
 
-#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:909
+#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:912
 #, fuzzy, c-format
 msgid "cannot statvfs path '%s'"
 msgstr "Failed to suspend domain %s"
@@ -12393,8 +12393,8 @@ msgstr "Failed to suspend domain %s"
 msgid "Unable to write to domain logfile %s"
 msgstr "failed to write configuration file"
 
-#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:787
-#: src/storage/storage_backend_fs.c:1231
+#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:799
+#: src/storage/storage_backend_fs.c:1234
 msgid "unable to find kvm-img or qemu-img"
 msgstr ""
 
@@ -12532,7 +12532,7 @@ msgstr "Domain %s suspended\n"
 
 #: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
 #: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
-#: src/qemu/qemu_process.c:3808
+#: src/qemu/qemu_process.c:3816
 #, fuzzy
 msgid "resume operation failed"
 msgstr "operation failed"
@@ -13115,8 +13115,8 @@ msgstr "Failed to suspend domain %s"
 msgid "unknown disk format %s for %s"
 msgstr "unknown OS type %s"
 
-#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1022
-#: src/storage/storage_backend.c:1050 src/storage/storage_backend.c:1170
+#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1034
+#: src/storage/storage_backend.c:1062 src/storage/storage_backend.c:1182
 #: src/util/storage_file.c:746 src/util/storage_file.c:842
 #, fuzzy, c-format
 msgid "cannot stat file '%s'"
@@ -15019,70 +15019,70 @@ msgstr "Failed to suspend domain %s"
 msgid "cannot set max opened files to %d"
 msgstr "Failed to suspend domain %s"
 
-#: src/qemu/qemu_process.c:3268
+#: src/qemu/qemu_process.c:3273
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
+#: src/qemu/qemu_process.c:3354 src/qemu/qemu_process.c:4211
 #: src/uml/uml_driver.c:1013
 #, fuzzy
 msgid "VM is already active"
 msgstr "Domain is already active"
 
-#: src/qemu/qemu_process.c:3415
+#: src/qemu/qemu_process.c:3420
 #, fuzzy
 msgid "Unable to find an unused port for VNC"
 msgstr "failed to write configuration file"
 
-#: src/qemu/qemu_process.c:3427
+#: src/qemu/qemu_process.c:3432
 #, fuzzy
 msgid "Unable to find an unused port for SPICE"
 msgstr "failed to write configuration file"
 
-#: src/qemu/qemu_process.c:3440
+#: src/qemu/qemu_process.c:3445
 #, fuzzy
 msgid "Unable to find an unused port for SPICE TLS"
 msgstr "failed to write configuration file"
 
-#: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
+#: src/qemu/qemu_process.c:3478 src/qemu/qemu_process.c:4227
 #: src/uml/uml_driver.c:1035
 #, fuzzy, c-format
 msgid "cannot create log directory %s"
 msgstr "failed to write configuration file: %s"
 
-#: src/qemu/qemu_process.c:3486
+#: src/qemu/qemu_process.c:3491
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
 "modules."
 msgstr ""
 
-#: src/qemu/qemu_process.c:3554
+#: src/qemu/qemu_process.c:3559
 #, fuzzy
 msgid "Failed to build pidfile path."
 msgstr "Failed to suspend domain %s"
 
-#: src/qemu/qemu_process.c:3561
+#: src/qemu/qemu_process.c:3566
 #, fuzzy, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "failed to write configuration file: %s"
 
-#: src/qemu/qemu_process.c:3649
+#: src/qemu/qemu_process.c:3657
 #, fuzzy, c-format
 msgid "Domain %s didn't show up"
 msgstr "Domain %s is being shutdown\n"
 
-#: src/qemu/qemu_process.c:3702
+#: src/qemu/qemu_process.c:3710
 #, fuzzy, c-format
 msgid "cannot stat fd %d"
 msgstr "Failed to suspend domain %s"
 
-#: src/qemu/qemu_process.c:3789
+#: src/qemu/qemu_process.c:3797
 #, fuzzy, c-format
 msgid "unable to set balloon to %lld"
 msgstr "Failed to suspend domain %s"
 
-#: src/qemu/qemu_process.c:4026
+#: src/qemu/qemu_process.c:4034
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
 msgstr "Failed to save domain %s to %s"
@@ -16651,70 +16651,70 @@ msgstr "command '%s' doesn't exist"
 msgid "Invalid security label '%s'"
 msgstr "domain memory"
 
-#: src/security/security_dac.c:112
+#: src/security/security_dac.c:114
 #, fuzzy, c-format
 msgid "failed to parse DAC seclabel '%s' for domain '%s'"
 msgstr "Failed to get devices for domain %s\n"
 
-#: src/security/security_dac.c:133
+#: src/security/security_dac.c:136
 msgid "Failed to determine default DAC seclabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:143
+#: src/security/security_dac.c:151
 #, fuzzy, c-format
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "could not connect to %s"
 
-#: src/security/security_dac.c:178
+#: src/security/security_dac.c:190
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "name of the inactive domain"
 
-#: src/security/security_dac.c:199
+#: src/security/security_dac.c:211
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:209
+#: src/security/security_dac.c:221
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:284
+#: src/security/security_dac.c:313
 #, fuzzy, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/security/security_dac.c:304
+#: src/security/security_dac.c:333
 #, fuzzy, c-format
 msgid "cannot resolve symlink %s"
 msgstr "Failed to create domain %s\n"
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:601
+#: src/security/security_dac.c:904 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "invalid domain pointer in"
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:622
+#: src/security/security_dac.c:915 src/security/security_selinux.c:622
 #, fuzzy
 msgid "security image label already defined for VM"
 msgstr "domain %s exists already"
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:629
+#: src/security/security_dac.c:923 src/security/security_selinux.c:629
 #, fuzzy, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "Domain %s started\n"
 
-#: src/security/security_dac.c:901
+#: src/security/security_dac.c:933
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:913 src/security/security_dac.c:933
+#: src/security/security_dac.c:945 src/security/security_dac.c:965
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "could not connect to %s"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:703
+#: src/security/security_dac.c:955 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "unexpected mime type"
@@ -16734,7 +16734,7 @@ msgstr "domain name or uuid"
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr "domain name or uuid"
 
-#: src/security/security_manager.c:354
+#: src/security/security_manager.c:384
 #, fuzzy
 msgid "Unconfined guests are not allowed on this host"
 msgstr "library call failed, possibly not supported"
@@ -17274,25 +17274,25 @@ msgid "cannot close file '%s'"
 msgstr "Failed to suspend domain %s"
 
 #: src/storage/storage_backend.c:263 src/storage/storage_backend.c:411
-#: src/storage/storage_backend_fs.c:770 src/storage/storage_backend_fs.c:787
-#: src/storage/storage_backend_fs.c:1049
+#: src/storage/storage_backend_fs.c:773 src/storage/storage_backend_fs.c:790
+#: src/storage/storage_backend_fs.c:1052
 #, fuzzy, c-format
 msgid "cannot create path '%s'"
 msgstr "Failed to create domain %s\n"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:794 src/util/util.c:1097
-#: src/util/util.c:1193
+#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
+#: src/util/util.c:1217
 #, fuzzy, c-format
 msgid "stat of '%s' failed"
 msgstr "operation failed: %s"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:805 src/util/util.c:1103
+#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
 #, fuzzy, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:605
-#: src/util/util.c:816 src/util/util.c:1111 src/util/util.c:1206
+#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
+#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
 #, fuzzy, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "Failed to suspend domain %s"
@@ -17317,136 +17317,136 @@ msgstr ""
 msgid "secrets already defined"
 msgstr "domain %s exists already"
 
-#: src/storage/storage_backend.c:589
+#: src/storage/storage_backend.c:601
 #, fuzzy, c-format
 msgid "failed to create %s"
 msgstr "Failed to create domain %s\n"
 
-#: src/storage/storage_backend.c:599
+#: src/storage/storage_backend.c:611
 #, fuzzy, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend.c:641
+#: src/storage/storage_backend.c:653
 #, fuzzy, c-format
 msgid "unable to parse qemu-img output '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:692 src/storage/storage_backend.c:698
+#: src/storage/storage_backend.c:704 src/storage/storage_backend.c:710
 #, fuzzy, c-format
 msgid "unknown storage vol type %d"
 msgstr "unknown OS type %s"
 
-#: src/storage/storage_backend.c:715
+#: src/storage/storage_backend.c:727
 msgid "a different backing store cannot be specified."
 msgstr ""
 
-#: src/storage/storage_backend.c:722
+#: src/storage/storage_backend.c:734
 #, fuzzy, c-format
 msgid "unknown storage vol backing store type %d"
 msgstr "unknown OS type %s"
 
-#: src/storage/storage_backend.c:741
+#: src/storage/storage_backend.c:753
 #, c-format
 msgid "inaccessible backing store volume %s"
 msgstr ""
 
-#: src/storage/storage_backend.c:753
+#: src/storage/storage_backend.c:765
 #, c-format
 msgid "qcow volume encryption unsupported with volume format %s"
 msgstr ""
 
-#: src/storage/storage_backend.c:761
+#: src/storage/storage_backend.c:773
 #, fuzzy, c-format
 msgid "unsupported volume encryption format %d"
 msgstr "operation failed"
 
-#: src/storage/storage_backend.c:767
+#: src/storage/storage_backend.c:779
 msgid "too many secrets for qcow encryption"
 msgstr ""
 
-#: src/storage/storage_backend.c:881
+#: src/storage/storage_backend.c:893
 msgid "cannot copy from volume with qcow-create"
 msgstr ""
 
-#: src/storage/storage_backend.c:887
+#: src/storage/storage_backend.c:899
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr ""
 
-#: src/storage/storage_backend.c:893
+#: src/storage/storage_backend.c:905
 msgid "copy-on-write image not supported with qcow-create"
 msgstr ""
 
-#: src/storage/storage_backend.c:899
+#: src/storage/storage_backend.c:911
 msgid "encrypted volumes not supported with qcow-create"
 msgstr ""
 
-#: src/storage/storage_backend.c:931
+#: src/storage/storage_backend.c:943
 #, fuzzy, c-format
 msgid "Unknown file create tool type '%d'."
 msgstr "unknown OS type %s"
 
-#: src/storage/storage_backend.c:979
+#: src/storage/storage_backend.c:991
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr ""
 
-#: src/storage/storage_backend.c:1043
+#: src/storage/storage_backend.c:1055
 #, fuzzy, c-format
 msgid "cannot open volume '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:1079
+#: src/storage/storage_backend.c:1091
 #, fuzzy, c-format
 msgid "unexpected storage mode for '%s'"
 msgstr "unexpected dict node"
 
-#: src/storage/storage_backend.c:1203
+#: src/storage/storage_backend.c:1215
 #, fuzzy, c-format
 msgid "cannot seek to end of file '%s'"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend.c:1233
+#: src/storage/storage_backend.c:1245
 #, fuzzy, c-format
 msgid "cannot get file context of '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:1303
+#: src/storage/storage_backend.c:1315
 #, fuzzy, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend.c:1310
+#: src/storage/storage_backend.c:1322
 #, fuzzy, c-format
 msgid "cannot read beginning of file '%s'"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend.c:1384
+#: src/storage/storage_backend.c:1396
 #, fuzzy, c-format
 msgid "cannot read dir '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:1477
+#: src/storage/storage_backend.c:1489
 #: src/storage/storage_backend_logical.c:212
 #, fuzzy, c-format
 msgid "Failed to compile regex %s"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:1507
+#: src/storage/storage_backend.c:1519
 msgid "cannot read fd"
 msgstr ""
 
-#: src/storage/storage_backend.c:1619
+#: src/storage/storage_backend.c:1631
 #, fuzzy
 msgid "cannot open file using fd"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend.c:1650
+#: src/storage/storage_backend.c:1662
 #, fuzzy
 msgid "read error on pipe"
 msgstr "internal error %s"
 
-#: src/storage/storage_backend.c:1679 src/storage/storage_backend.c:1692
+#: src/storage/storage_backend.c:1691 src/storage/storage_backend.c:1704
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr ""
@@ -17464,7 +17464,7 @@ msgstr ""
 msgid "device path '%s' doesn't exist"
 msgstr "command '%s' doesn't exist"
 
-#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:749
+#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:752
 msgid "Overwrite and no overwrite flags are mutually exclusive"
 msgstr ""
 
@@ -17534,8 +17534,8 @@ msgstr "invalid connection pointer in %s"
 msgid "hostname must be specified for netfs sources"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:364
-#: src/storage/storage_backend_fs.c:462
+#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:365
+#: src/storage/storage_backend_fs.c:465
 #: src/storage/storage_backend_iscsi.c:101
 #: src/storage/storage_backend_iscsi.c:598
 #: src/storage/storage_backend_iscsi.c:662
@@ -17548,126 +17548,126 @@ msgstr ""
 msgid "cannot read mount list '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend_fs.c:369 src/storage/storage_backend_fs.c:467
+#: src/storage/storage_backend_fs.c:370 src/storage/storage_backend_fs.c:470
 #: src/storage/storage_backend_iscsi.c:668
 #: src/storage/storage_backend_iscsi.c:706
 #, fuzzy
 msgid "missing source host"
 msgstr "missing source information for device"
 
-#: src/storage/storage_backend_fs.c:374
+#: src/storage/storage_backend_fs.c:375
 #, fuzzy
 msgid "missing source path"
 msgstr "missing source information for device"
 
-#: src/storage/storage_backend_fs.c:380 src/storage/storage_backend_fs.c:478
+#: src/storage/storage_backend_fs.c:381 src/storage/storage_backend_fs.c:481
 #: src/storage/storage_backend_iscsi.c:675
 #: src/storage/storage_backend_iscsi.c:713
 #, fuzzy
 msgid "missing source device"
 msgstr "missing source information for device"
 
-#: src/storage/storage_backend_fs.c:388
+#: src/storage/storage_backend_fs.c:390
 #, fuzzy, c-format
 msgid "Target '%s' is already mounted"
 msgstr "unexpected mime type"
 
-#: src/storage/storage_backend_fs.c:472
+#: src/storage/storage_backend_fs.c:475
 #, fuzzy
 msgid "missing source dir"
 msgstr "missing source information for device"
 
-#: src/storage/storage_backend_fs.c:563
+#: src/storage/storage_backend_fs.c:566
 #, fuzzy, c-format
 msgid "Not capable of probing for filesystem of type %s"
 msgstr "unknown OS type %s"
 
-#: src/storage/storage_backend_fs.c:572
+#: src/storage/storage_backend_fs.c:575
 #, fuzzy, c-format
 msgid "Failed to create filesystem probe for device %s"
 msgstr "Failed to undefine domain %s"
 
-#: src/storage/storage_backend_fs.c:596
+#: src/storage/storage_backend_fs.c:599
 #, fuzzy, c-format
 msgid "Existing filesystem of type '%s' found on device '%s'"
 msgstr "unexpected mime type"
 
-#: src/storage/storage_backend_fs.c:604
+#: src/storage/storage_backend_fs.c:607
 msgid "Found additional probes to run, filesystem probing may be incorrect"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:626
+#: src/storage/storage_backend_fs.c:629
 #, fuzzy
 msgid "probing for filesystems is unsupported by this build"
 msgstr "Domain %s started\n"
 
-#: src/storage/storage_backend_fs.c:651
+#: src/storage/storage_backend_fs.c:654
 #, fuzzy, c-format
 msgid "Failed to make filesystem of type '%s' on device '%s'"
 msgstr "Failed to list inactive domains"
 
-#: src/storage/storage_backend_fs.c:664
+#: src/storage/storage_backend_fs.c:667
 #, c-format
 msgid ""
 "mkfs is not supported on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:682
+#: src/storage/storage_backend_fs.c:685
 #, fuzzy, c-format
 msgid "No source device specified when formatting pool '%s'"
 msgstr "domain id or name"
 
-#: src/storage/storage_backend_fs.c:693
+#: src/storage/storage_backend_fs.c:696
 #, c-format
 msgid "Source device does not exist when formatting pool '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:760
+#: src/storage/storage_backend_fs.c:763
 #, fuzzy, c-format
 msgid "path '%s' is not absolute"
 msgstr "command '%s' doesn't exist"
 
-#: src/storage/storage_backend_fs.c:892
+#: src/storage/storage_backend_fs.c:895
 #, fuzzy, c-format
 msgid "cannot probe backing volume info: %s"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend_fs.c:978
+#: src/storage/storage_backend_fs.c:981
 #, fuzzy, c-format
 msgid "failed to remove pool '%s'"
 msgstr "failed to get domain '%s'"
 
-#: src/storage/storage_backend_fs.c:1011
+#: src/storage/storage_backend_fs.c:1014
 #, fuzzy, c-format
 msgid "volume target path '%s' already exists"
 msgstr "unexpected mime type"
 
-#: src/storage/storage_backend_fs.c:1039
+#: src/storage/storage_backend_fs.c:1042
 #, fuzzy
 msgid "cannot copy from volume to a directory volume"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend_fs.c:1069
+#: src/storage/storage_backend_fs.c:1072
 msgid ""
 "storage pool does not support building encrypted volumes from other volumes"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:1089
+#: src/storage/storage_backend_fs.c:1092
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:1143
+#: src/storage/storage_backend_fs.c:1146
 #, fuzzy, c-format
 msgid "cannot unlink file '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/storage/storage_backend_fs.c:1152
+#: src/storage/storage_backend_fs.c:1155
 #, fuzzy, c-format
 msgid "cannot remove directory '%s'"
 msgstr "failed to write configuration file: %s"
 
-#: src/storage/storage_backend_fs.c:1161
+#: src/storage/storage_backend_fs.c:1164
 #, fuzzy, c-format
 msgid "removing block or network volumes is not supported: %s"
 msgstr "Domain %s started\n"
@@ -19394,185 +19394,175 @@ msgstr "Failed to suspend domain %s"
 msgid "Failed to read file '%s'"
 msgstr "Failed to create domain %s\n"
 
-#: src/util/util.c:846
+#: src/util/util.c:860
 #, fuzzy, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/util/util.c:876
+#: src/util/util.c:891
 #, fuzzy, c-format
 msgid "child process failed to create file '%s'"
 msgstr "failed to write configuration file"
 
-#: src/util/util.c:893
+#: src/util/util.c:908
 #, fuzzy
 msgid "child process failed to send fd to parent"
 msgstr "Failed to suspend domain %s"
 
-#: src/util/util.c:935 src/util/util.c:1153
+#: src/util/util.c:951 src/util/util.c:1177
 #, fuzzy, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "Failed to start domain %s"
 
-#: src/util/util.c:1045
+#: src/util/util.c:1061
 #, fuzzy, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "failed to get hypervisor type"
 
-#: src/util/util.c:1071
+#: src/util/util.c:1087
 #, fuzzy, c-format
 msgid "failed to create file '%s'"
 msgstr "failed to write configuration file"
 
-#: src/util/util.c:1072
+#: src/util/util.c:1088
 #, fuzzy, c-format
 msgid "failed to open file '%s'"
 msgstr "Failed to suspend domain %s"
 
-#: src/util/util.c:1090
+#: src/util/util.c:1106
 #, fuzzy, c-format
 msgid "failed to create directory '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/util/util.c:1183
+#: src/util/util.c:1207
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/util/util.c:1199
+#: src/util/util.c:1223
 #, fuzzy, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "failed to write configuration file: %s"
 
-#: src/util/util.c:1237
+#: src/util/util.c:1261
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr ""
 
-#: src/util/util.c:1249
+#: src/util/util.c:1273
 msgid "virDirCreate is not implemented for WIN32"
 msgstr ""
 
-#: src/util/util.c:1751
+#: src/util/util.c:1775
 #, fuzzy, c-format
 msgid "invalid scale %llu"
 msgstr "invalid argument in %s"
 
-#: src/util/util.c:1767 src/util/util.c:1792
+#: src/util/util.c:1791 src/util/util.c:1816
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
 msgstr "unknown host %s"
 
-#: src/util/util.c:1798
+#: src/util/util.c:1822
 #, fuzzy, c-format
 msgid "value too large: %llu%s"
 msgstr "Failed to suspend domain %s"
 
-#: src/util/util.c:2183
+#: src/util/util.c:2207
 #, c-format
 msgid "Disk index %d is negative"
 msgstr ""
 
-#: src/util/util.c:2239
+#: src/util/util.c:2263
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "failed to get hypervisor type"
 
-#: src/util/util.c:2334
+#: src/util/util.c:2359
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "Failed to undefine domain %s"
 
-#: src/util/util.c:2387
+#: src/util/util.c:2418
 #, fuzzy, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Failed to undefine domain %s"
 
-#: src/util/util.c:2503
+#: src/util/util.c:2539
 #, fuzzy, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "Failed to undefine domain %s"
 
-#: src/util/util.c:2552
+#: src/util/util.c:2588
 #, fuzzy, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "Failed to undefine domain %s"
 
-#: src/util/util.c:2580
+#: src/util/util.c:2673
 #, fuzzy, c-format
-msgid "cannot change to '%d' group"
+msgid "cannot change to '%u' group"
 msgstr "failed to write configuration file: %s"
 
-#: src/util/util.c:2611
-#, fuzzy, c-format
-msgid "cannot getpwuid_r(%d)"
-msgstr "Failed to create domain %s\n"
+#: src/util/util.c:2681
+#, fuzzy
+msgid "cannot set supplemental groups"
+msgstr "Failed to suspend domain %s"
 
-#: src/util/util.c:2618
+#: src/util/util.c:2688
 #, fuzzy, c-format
-msgid "getpwuid_r failed to retrieve data for uid '%d'"
-msgstr "Failed to create domain from %s"
-
-#: src/util/util.c:2627
-#, fuzzy, c-format
-msgid "cannot initgroups(\"%s\", %d)"
-msgstr "Failed to create domain %s\n"
-
-#: src/util/util.c:2634
-#, fuzzy, c-format
-msgid "cannot change to uid to '%d'"
+msgid "cannot change to uid to '%u'"
 msgstr "failed to write configuration file: %s"
 
-#: src/util/util.c:2753
+#: src/util/util.c:2800
 #, fuzzy
 msgid "Unable to determine home directory"
 msgstr "failed to write configuration file: %s"
 
-#: src/util/util.c:2769 src/util/util.c:2784
+#: src/util/util.c:2816 src/util/util.c:2831
 #, fuzzy
 msgid "Unable to determine config directory"
 msgstr "failed to get hypervisor type"
 
-#: src/util/util.c:2800
+#: src/util/util.c:2847
 msgid "virGetUserDirectory is not available"
 msgstr ""
 
-#: src/util/util.c:2809
+#: src/util/util.c:2856
 #, fuzzy
 msgid "virGetUserConfigDirectory is not available"
 msgstr "Domain is already active"
 
-#: src/util/util.c:2818
+#: src/util/util.c:2865
 #, fuzzy
 msgid "virGetUserCacheDirectory is not available"
 msgstr "Domain is already active"
 
-#: src/util/util.c:2827
+#: src/util/util.c:2874
 #, fuzzy
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "Domain is already active"
 
-#: src/util/util.c:2837
+#: src/util/util.c:2884
 msgid "virGetUserName is not available"
 msgstr ""
 
-#: src/util/util.c:2846
+#: src/util/util.c:2893
 msgid "virGetUserID is not available"
 msgstr ""
 
-#: src/util/util.c:2856
+#: src/util/util.c:2903
 msgid "virGetGroupID is not available"
 msgstr ""
 
-#: src/util/util.c:2866
+#: src/util/util.c:2915
 msgid "virSetUIDGID is not available"
 msgstr ""
 
-#: src/util/util.c:2874
+#: src/util/util.c:2923
 #, fuzzy
 msgid "virGetGroupName is not available"
 msgstr "Domain is already active"
 
-#: src/util/util.c:3009
+#: src/util/util.c:3058
 #, fuzzy, c-format
 msgid "Malformed wwn: %s"
 msgstr "invalid argument in %s"
@@ -27790,12 +27780,12 @@ msgstr "Failed to create domain %s\n"
 msgid "succeeded to complete action %s on media\n"
 msgstr ""
 
-#: tools/virsh-edit.c:110
+#: tools/virsh-edit.c:112
 #, fuzzy
 msgid "The XML configuration was changed by another user."
 msgstr "Undefine the configuration for an inactive domain."
 
-#: tools/virsh-edit.c:119
+#: tools/virsh-edit.c:121
 #, fuzzy
 msgid "Failed."
 msgstr "operation failed"
@@ -31080,6 +31070,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "unexpected mime type"
+
+#, fuzzy
+#~ msgid "cannot getpwuid_r(%d)"
+#~ msgstr "Failed to create domain %s\n"
+
+#, fuzzy
+#~ msgid "getpwuid_r failed to retrieve data for uid '%d'"
+#~ msgstr "Failed to create domain from %s"
+
+#, fuzzy
+#~ msgid "cannot initgroups(\"%s\", %d)"
+#~ msgstr "Failed to create domain %s\n"
 
 #, fuzzy
 #~ msgid "Cannot recover cgroup %s from %s"

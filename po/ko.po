@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-06-12 16:53-0400\n"
+"POT-Creation-Date: 2013-08-01 17:45-0400\n"
 "PO-Revision-Date: 2010-04-22 14:04+1000\n"
 "Last-Translator: Hyunsok Oh <hoh@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -4526,7 +4526,7 @@ msgstr "내부 오류"
 msgid "unexpected domain snapshot %s already exists"
 msgstr "예기치 못한 도메인 %s가 이미 존재함"
 
-#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1002
+#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1014
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "풀(pool) 타입 %d에 대해 백엔드가 빠짐"
@@ -9247,64 +9247,64 @@ msgstr ""
 msgid "Buffer error when generating device name for device with sysname '%s'"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:654
+#: src/node_device/node_device_udev.c:675
 #, c-format
 msgid "SCSI host found, but its udev name '%s' does not begin with 'host'"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:822
+#: src/node_device/node_device_udev.c:843
 #, fuzzy, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
 msgstr "sysfs 경로 '%s'를 opendir하는 데 실패"
 
-#: src/node_device/node_device_udev.c:1194
+#: src/node_device/node_device_udev.c:1215
 #, fuzzy, c-format
 msgid "Unknown device type %d"
 msgstr "알려지지 않은 장치 유형  "
 
-#: src/node_device/node_device_udev.c:1245
+#: src/node_device/node_device_udev.c:1266
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%s'"
 msgstr "%s상의 매체를 꺼내기할 수 없음"
 
-#: src/node_device/node_device_udev.c:1327
-#: src/node_device/node_device_udev.c:1591
+#: src/node_device/node_device_udev.c:1348
+#: src/node_device/node_device_udev.c:1612
 #, fuzzy, c-format
 msgid "Failed to create device for '%s'"
 msgstr "%s로부터 노드 장치를 생성하는 데 실패"
 
-#: src/node_device/node_device_udev.c:1379
+#: src/node_device/node_device_udev.c:1400
 #, fuzzy, c-format
 msgid "udev scan devices returned %d"
 msgstr "노드 장치 %s가 %s로부터 생성되었습니다\n"
 
-#: src/node_device/node_device_udev.c:1455
+#: src/node_device/node_device_udev.c:1476
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
 "descriptor %d"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1462
+#: src/node_device/node_device_udev.c:1483
 msgid "udev_monitor_receive_device returned NULL"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1501
+#: src/node_device/node_device_udev.c:1522
 #, fuzzy, c-format
 msgid "Failed to get udev device for syspath '%s' or '%s'"
 msgstr "%s로부터 노드 장치를 생성하는 데 실패"
 
-#: src/node_device/node_device_udev.c:1625
+#: src/node_device/node_device_udev.c:1646
 #, fuzzy, c-format
 msgid "Failed to initialize libpciaccess: %s"
 msgstr "인증서를 초기화할 수 없습니다: %s"
 
-#: src/node_device/node_device_udev.c:1649
+#: src/node_device/node_device_udev.c:1670
 #, fuzzy
 msgid "Failed to initialize mutex for driverState"
 msgstr "이벤트 시스템을 초기화하는 데 실패했습니다"
 
-#: src/node_device/node_device_udev.c:1670
+#: src/node_device/node_device_udev.c:1692
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
@@ -10348,7 +10348,7 @@ msgstr "그룹 '%s' 검색에 실패했습니다"
 msgid "pool '%s' not found"
 msgstr "네트워크 '%s'를 찾을 수 없음"
 
-#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:825
+#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:828
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "'%s' 경로를 열 수 없음"
@@ -10358,7 +10358,7 @@ msgstr "'%s' 경로를 열 수 없음"
 msgid "Failed to load pool configs"
 msgstr "풀 %s를 만드는 데 실패"
 
-#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:909
+#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:912
 #, c-format
 msgid "cannot statvfs path '%s'"
 msgstr "경로 '%s'를 statvfs할 수 없음"
@@ -12256,8 +12256,8 @@ msgstr "%s를 열 수 없음"
 msgid "Unable to write to domain logfile %s"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 
-#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:787
-#: src/storage/storage_backend_fs.c:1231
+#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:799
+#: src/storage/storage_backend_fs.c:1234
 msgid "unable to find kvm-img or qemu-img"
 msgstr "kvm-img나 qemu-img를 찾을 수 없음"
 
@@ -12394,7 +12394,7 @@ msgstr "도메인 %s가 중지됨\n"
 
 #: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
 #: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
-#: src/qemu/qemu_process.c:3808
+#: src/qemu/qemu_process.c:3816
 msgid "resume operation failed"
 msgstr "재개 동작이 실패했습니다"
 
@@ -12967,8 +12967,8 @@ msgstr "경로 '%s'를 opendir하는데 실패"
 msgid "unknown disk format %s for %s"
 msgstr "알려져 있지 않은 풀(pool) 형식 타입 %s"
 
-#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1022
-#: src/storage/storage_backend.c:1050 src/storage/storage_backend.c:1170
+#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1034
+#: src/storage/storage_backend.c:1062 src/storage/storage_backend.c:1182
 #: src/util/storage_file.c:746 src/util/storage_file.c:842
 #, c-format
 msgid "cannot stat file '%s'"
@@ -14882,68 +14882,68 @@ msgstr "프로세스 %d의 CPU 진화도를 얻을 수 없음"
 msgid "cannot set max opened files to %d"
 msgstr "'%s'의 모드를 %04o로 설정할 수 없음"
 
-#: src/qemu/qemu_process.c:3268
+#: src/qemu/qemu_process.c:3273
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
+#: src/qemu/qemu_process.c:3354 src/qemu/qemu_process.c:4211
 #: src/uml/uml_driver.c:1013
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
 
-#: src/qemu/qemu_process.c:3415
+#: src/qemu/qemu_process.c:3420
 #, fuzzy
 msgid "Unable to find an unused port for VNC"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:3427
+#: src/qemu/qemu_process.c:3432
 #, fuzzy
 msgid "Unable to find an unused port for SPICE"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:3440
+#: src/qemu/qemu_process.c:3445
 #, fuzzy
 msgid "Unable to find an unused port for SPICE TLS"
 msgstr "사용되지 않은 VNC 포트를 찾을 수 없음"
 
-#: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
+#: src/qemu/qemu_process.c:3478 src/qemu/qemu_process.c:4227
 #: src/uml/uml_driver.c:1035
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "로그 디렉터리 %s를 생성할 수 없음"
 
-#: src/qemu/qemu_process.c:3486
+#: src/qemu/qemu_process.c:3491
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
 "modules."
 msgstr ""
 
-#: src/qemu/qemu_process.c:3554
+#: src/qemu/qemu_process.c:3559
 msgid "Failed to build pidfile path."
 msgstr "pidfile 경로를 설정하는 데 실패"
 
-#: src/qemu/qemu_process.c:3561
+#: src/qemu/qemu_process.c:3566
 #, fuzzy, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "%s에 대한 비정상 PID파일을 제거할 수 없음"
 
-#: src/qemu/qemu_process.c:3649
+#: src/qemu/qemu_process.c:3657
 #, fuzzy, c-format
 msgid "Domain %s didn't show up"
 msgstr "도메인 %s가 보이지 않습니다\n"
 
-#: src/qemu/qemu_process.c:3702
+#: src/qemu/qemu_process.c:3710
 #, fuzzy, c-format
 msgid "cannot stat fd %d"
 msgstr "stat할 수 없음: %s"
 
-#: src/qemu/qemu_process.c:3789
+#: src/qemu/qemu_process.c:3797
 #, fuzzy, c-format
 msgid "unable to set balloon to %lld"
 msgstr "위치 %lld로 %s에서 이동할 수 없음"
 
-#: src/qemu/qemu_process.c:4026
+#: src/qemu/qemu_process.c:4034
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
 msgstr "MAC 주소를 '%s'에 허용하는 ebtables 규칙을 제거하는 데 실패"
@@ -16522,70 +16522,70 @@ msgstr "'%s'가 존재하지 않습니다"
 msgid "Invalid security label '%s'"
 msgstr "잘못된 않은 보안 레이블 '%s'"
 
-#: src/security/security_dac.c:112
+#: src/security/security_dac.c:114
 #, fuzzy, c-format
 msgid "failed to parse DAC seclabel '%s' for domain '%s'"
 msgstr "도메인 %s에 대한 PYT 장치를 허용할 수 없음"
 
-#: src/security/security_dac.c:133
+#: src/security/security_dac.c:136
 msgid "Failed to determine default DAC seclabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:143
+#: src/security/security_dac.c:151
 #, fuzzy, c-format
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "%s상의 매체를 꺼내기할 수 없음"
 
-#: src/security/security_dac.c:178
+#: src/security/security_dac.c:190
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "도메인 %s의 메모리 통계를 얻는 데 실패했습니다"
 
-#: src/security/security_dac.c:199
+#: src/security/security_dac.c:211
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:209
+#: src/security/security_dac.c:221
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:284
+#: src/security/security_dac.c:313
 #, fuzzy, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "보안 문맥 '%d:%d\"를 '%s'상에 설정할 수 없음"
 
-#: src/security/security_dac.c:304
+#: src/security/security_dac.c:333
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "심볼릭 링크 %s를 찾을 수 없음"
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:601
+#: src/security/security_dac.c:904 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "유효하지 않은 보안 유형  "
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:622
+#: src/security/security_dac.c:915 src/security/security_selinux.c:622
 #, fuzzy
 msgid "security image label already defined for VM"
 msgstr "보안 레이블이 VM에 대해 이미 정의되었습니다"
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:629
+#: src/security/security_dac.c:923 src/security/security_selinux.c:629
 #, fuzzy, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "비디오 유형 %s는 QEMU가 지원하지 않습니다"
 
-#: src/security/security_dac.c:901
+#: src/security/security_dac.c:933
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:913 src/security/security_dac.c:933
+#: src/security/security_dac.c:945 src/security/security_dac.c:965
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "컨테이너에 대한 eth 이름을 생성할 수 없음"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:703
+#: src/security/security_dac.c:955 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "예기치 못한 비밀 사용 유형 %d"
@@ -16605,7 +16605,7 @@ msgstr "보안 모델 찾을 수 없음"
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr "보안 모델 찾을 수 없음"
 
-#: src/security/security_manager.c:354
+#: src/security/security_manager.c:384
 #, fuzzy
 msgid "Unconfined guests are not allowed on this host"
 msgstr "이 플랫폼에 사용 가능한 NUMA 메모리 정보가 없음"
@@ -17147,25 +17147,25 @@ msgid "cannot close file '%s'"
 msgstr "파일 '%s'를 닫을 수 없음"
 
 #: src/storage/storage_backend.c:263 src/storage/storage_backend.c:411
-#: src/storage/storage_backend_fs.c:770 src/storage/storage_backend_fs.c:787
-#: src/storage/storage_backend_fs.c:1049
+#: src/storage/storage_backend_fs.c:773 src/storage/storage_backend_fs.c:790
+#: src/storage/storage_backend_fs.c:1052
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "경로 %s를 생성할 수 없음"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:794 src/util/util.c:1097
-#: src/util/util.c:1193
+#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
+#: src/util/util.c:1217
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s'에 대한 stat이 실패했습니다"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:805 src/util/util.c:1103
+#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "'%s'를 (%u, %u)로 chown할 수 없음"
 
-#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:605
-#: src/util/util.c:816 src/util/util.c:1111 src/util/util.c:1206
+#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
+#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "'%s'의 모드를 %04o로 설정할 수 없음"
@@ -17189,138 +17189,138 @@ msgstr "uuid 생성 중 너무 많은 충돌 발생"
 msgid "secrets already defined"
 msgstr "비밀정보가 이미 정의되었습니다"
 
-#: src/storage/storage_backend.c:589
+#: src/storage/storage_backend.c:601
 #, fuzzy, c-format
 msgid "failed to create %s"
 msgstr "'%s' 생성 실패"
 
-#: src/storage/storage_backend.c:599
+#: src/storage/storage_backend.c:611
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "%s를 (%u, %u)로 chown할 수 없음"
 
-#: src/storage/storage_backend.c:641
+#: src/storage/storage_backend.c:653
 #, fuzzy, c-format
 msgid "unable to parse qemu-img output '%s'"
 msgstr "보안 문맥 '%s'를 설정할 수 없음"
 
-#: src/storage/storage_backend.c:692 src/storage/storage_backend.c:698
+#: src/storage/storage_backend.c:704 src/storage/storage_backend.c:710
 #, c-format
 msgid "unknown storage vol type %d"
 msgstr "알려지지 않은 저장 볼륨 유형 %d"
 
-#: src/storage/storage_backend.c:715
+#: src/storage/storage_backend.c:727
 #, fuzzy
 msgid "a different backing store cannot be specified."
 msgstr "다른 종류의 보조 기억이 지정될 수 없습니다"
 
-#: src/storage/storage_backend.c:722
+#: src/storage/storage_backend.c:734
 #, c-format
 msgid "unknown storage vol backing store type %d"
 msgstr "알려지지 않은 저장소 볼륨 보조 기억 유형 %d"
 
-#: src/storage/storage_backend.c:741
+#: src/storage/storage_backend.c:753
 #, c-format
 msgid "inaccessible backing store volume %s"
 msgstr "억세스할 수 없는 보조 기억 불륨 %s"
 
-#: src/storage/storage_backend.c:753
+#: src/storage/storage_backend.c:765
 #, c-format
 msgid "qcow volume encryption unsupported with volume format %s"
 msgstr "qcow 볼륨 암호화가 볼륨 형식 %s와 지원되지 않음"
 
-#: src/storage/storage_backend.c:761
+#: src/storage/storage_backend.c:773
 #, c-format
 msgid "unsupported volume encryption format %d"
 msgstr "지원하지 않는 볼륨 암호화 형식 %d"
 
-#: src/storage/storage_backend.c:767
+#: src/storage/storage_backend.c:779
 msgid "too many secrets for qcow encryption"
 msgstr "qcow 암호화에 대해 너무 많은 비밀 정보"
 
-#: src/storage/storage_backend.c:881
+#: src/storage/storage_backend.c:893
 msgid "cannot copy from volume with qcow-create"
 msgstr "qcow-create로 볼륨으로부터 복사할 수 없음"
 
-#: src/storage/storage_backend.c:887
+#: src/storage/storage_backend.c:899
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr "지원하지 않는 저장소 볼륨 유형 %d"
 
-#: src/storage/storage_backend.c:893
+#: src/storage/storage_backend.c:905
 msgid "copy-on-write image not supported with qcow-create"
 msgstr "qcow-create와 함께 copy-on-write(쓰기시 복사) 이미지가 지원되지 않음"
 
-#: src/storage/storage_backend.c:899
+#: src/storage/storage_backend.c:911
 msgid "encrypted volumes not supported with qcow-create"
 msgstr "암호화된 볼륨은 qcow-create와 함께 지원되지 않음"
 
-#: src/storage/storage_backend.c:931
+#: src/storage/storage_backend.c:943
 #, c-format
 msgid "Unknown file create tool type '%d'."
 msgstr "알려지지 않은 파일 생성 도구 유형 '%d'."
 
-#: src/storage/storage_backend.c:979
+#: src/storage/storage_backend.c:991
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr ""
 "qemu-img가 없이 로우(raw) 파일이 아닌 이미지의 생성은 지원되지 않습니다."
 
-#: src/storage/storage_backend.c:1043
+#: src/storage/storage_backend.c:1055
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "볼륨 '%s'를 열 수 없음"
 
-#: src/storage/storage_backend.c:1079
+#: src/storage/storage_backend.c:1091
 #, fuzzy, c-format
 msgid "unexpected storage mode for '%s'"
 msgstr "예기치 못한 hostdev 모드 %d"
 
-#: src/storage/storage_backend.c:1203
+#: src/storage/storage_backend.c:1215
 #, c-format
 msgid "cannot seek to end of file '%s'"
 msgstr "파일 '%s'의 끝으로 seek할 수 없음"
 
-#: src/storage/storage_backend.c:1233
+#: src/storage/storage_backend.c:1245
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "파일 '%s'의 문맥을 얻을 수 없음"
 
-#: src/storage/storage_backend.c:1303
+#: src/storage/storage_backend.c:1315
 #, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "파일 '%s'의 시작 부분으로 이동할 수 없습니다"
 
-#: src/storage/storage_backend.c:1310
+#: src/storage/storage_backend.c:1322
 #, c-format
 msgid "cannot read beginning of file '%s'"
 msgstr "파일 '%s'의 시작 부분을 읽을 수 없음"
 
-#: src/storage/storage_backend.c:1384
+#: src/storage/storage_backend.c:1396
 #, c-format
 msgid "cannot read dir '%s'"
 msgstr "'%s' 디렉터리를 읽을 수 없음"
 
-#: src/storage/storage_backend.c:1477
+#: src/storage/storage_backend.c:1489
 #: src/storage/storage_backend_logical.c:212
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "정규식 %s를 컴파일하는 데 실패"
 
-#: src/storage/storage_backend.c:1507
+#: src/storage/storage_backend.c:1519
 msgid "cannot read fd"
 msgstr "fd에서 읽을 수 없음"
 
-#: src/storage/storage_backend.c:1619
+#: src/storage/storage_backend.c:1631
 #, fuzzy
 msgid "cannot open file using fd"
 msgstr "파일 '%s'를 열 수 없음"
 
-#: src/storage/storage_backend.c:1650
+#: src/storage/storage_backend.c:1662
 #, fuzzy
 msgid "read error on pipe"
 msgstr "'%s'에 대한 파이프 읽기 실패"
 
-#: src/storage/storage_backend.c:1679 src/storage/storage_backend.c:1692
+#: src/storage/storage_backend.c:1691 src/storage/storage_backend.c:1704
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s은 Win32상에서 구현되지 않음"
@@ -17338,7 +17338,7 @@ msgstr "장치 끝 위치를 구문분석할 수 없음"
 msgid "device path '%s' doesn't exist"
 msgstr "템플릿 '%s'는 존재하지 않습니다"
 
-#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:749
+#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:752
 msgid "Overwrite and no overwrite flags are mutually exclusive"
 msgstr ""
 
@@ -17408,8 +17408,8 @@ msgstr "잘못된 netfs 경로(/로 끝남): %s"
 msgid "hostname must be specified for netfs sources"
 msgstr "장치 주소 유형이 지정되지 않았습니다"
 
-#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:364
-#: src/storage/storage_backend_fs.c:462
+#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:365
+#: src/storage/storage_backend_fs.c:465
 #: src/storage/storage_backend_iscsi.c:101
 #: src/storage/storage_backend_iscsi.c:598
 #: src/storage/storage_backend_iscsi.c:662
@@ -17422,123 +17422,123 @@ msgstr ""
 msgid "cannot read mount list '%s'"
 msgstr "'%s' 마운트 목록을 읽을 수 없음"
 
-#: src/storage/storage_backend_fs.c:369 src/storage/storage_backend_fs.c:467
+#: src/storage/storage_backend_fs.c:370 src/storage/storage_backend_fs.c:470
 #: src/storage/storage_backend_iscsi.c:668
 #: src/storage/storage_backend_iscsi.c:706
 msgid "missing source host"
 msgstr "소스 호스트가 빠짐"
 
-#: src/storage/storage_backend_fs.c:374
+#: src/storage/storage_backend_fs.c:375
 msgid "missing source path"
 msgstr "소스 경로가 빠짐"
 
-#: src/storage/storage_backend_fs.c:380 src/storage/storage_backend_fs.c:478
+#: src/storage/storage_backend_fs.c:381 src/storage/storage_backend_fs.c:481
 #: src/storage/storage_backend_iscsi.c:675
 #: src/storage/storage_backend_iscsi.c:713
 msgid "missing source device"
 msgstr "소스 장치가 빠짐"
 
-#: src/storage/storage_backend_fs.c:388
+#: src/storage/storage_backend_fs.c:390
 #, fuzzy, c-format
 msgid "Target '%s' is already mounted"
 msgstr "타겟 %s가 이미 존재합니다"
 
-#: src/storage/storage_backend_fs.c:472
+#: src/storage/storage_backend_fs.c:475
 msgid "missing source dir"
 msgstr "소스 디렉터리가 빠짐"
 
-#: src/storage/storage_backend_fs.c:563
+#: src/storage/storage_backend_fs.c:566
 #, fuzzy, c-format
 msgid "Not capable of probing for filesystem of type %s"
 msgstr "알려지지 않은 파일 시스템 유형 '%s'"
 
-#: src/storage/storage_backend_fs.c:572
+#: src/storage/storage_backend_fs.c:575
 #, fuzzy, c-format
 msgid "Failed to create filesystem probe for device %s"
 msgstr "PCI 장치 '%s'를 다시 감지하도록 하는 데 실패했습니다"
 
-#: src/storage/storage_backend_fs.c:596
+#: src/storage/storage_backend_fs.c:599
 #, fuzzy, c-format
 msgid "Existing filesystem of type '%s' found on device '%s'"
 msgstr "지원하지 않는 데이터 타입 '%c'가 인자 '%s'에 대해 사용됨"
 
-#: src/storage/storage_backend_fs.c:604
+#: src/storage/storage_backend_fs.c:607
 msgid "Found additional probes to run, filesystem probing may be incorrect"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:626
+#: src/storage/storage_backend_fs.c:629
 #, fuzzy
 msgid "probing for filesystems is unsupported by this build"
 msgstr "비디오 유형 %s는 QEMU가 지원하지 않습니다"
 
-#: src/storage/storage_backend_fs.c:651
+#: src/storage/storage_backend_fs.c:654
 #, fuzzy, c-format
 msgid "Failed to make filesystem of type '%s' on device '%s'"
 msgstr "노드 장치 '%s'를 파괴하는 데 실패"
 
-#: src/storage/storage_backend_fs.c:664
+#: src/storage/storage_backend_fs.c:667
 #, c-format
 msgid ""
 "mkfs is not supported on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:682
+#: src/storage/storage_backend_fs.c:685
 #, fuzzy, c-format
 msgid "No source device specified when formatting pool '%s'"
 msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
 
-#: src/storage/storage_backend_fs.c:693
+#: src/storage/storage_backend_fs.c:696
 #, c-format
 msgid "Source device does not exist when formatting pool '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:760
+#: src/storage/storage_backend_fs.c:763
 #, c-format
 msgid "path '%s' is not absolute"
 msgstr "경로 '%s'가 절대경로가 아닙니다"
 
-#: src/storage/storage_backend_fs.c:892
+#: src/storage/storage_backend_fs.c:895
 #, fuzzy, c-format
 msgid "cannot probe backing volume info: %s"
 msgstr "%s의 값 구문 분석 실패"
 
-#: src/storage/storage_backend_fs.c:978
+#: src/storage/storage_backend_fs.c:981
 #, c-format
 msgid "failed to remove pool '%s'"
 msgstr "풀 '%s'을 제거하는 데 실패"
 
-#: src/storage/storage_backend_fs.c:1011
+#: src/storage/storage_backend_fs.c:1014
 #, fuzzy, c-format
 msgid "volume target path '%s' already exists"
 msgstr "타겟 %s가 이미 존재합니다"
 
-#: src/storage/storage_backend_fs.c:1039
+#: src/storage/storage_backend_fs.c:1042
 msgid "cannot copy from volume to a directory volume"
 msgstr "볼륨을 디렉터리 볼륨으로 복사할 수 없습니다"
 
-#: src/storage/storage_backend_fs.c:1069
+#: src/storage/storage_backend_fs.c:1072
 msgid ""
 "storage pool does not support building encrypted volumes from other volumes"
 msgstr ""
 "저장소 풀이 다른 볼륨에서 암호화된 볼륨을 만드는 것을 지원하지 않습니다"
 
-#: src/storage/storage_backend_fs.c:1089
+#: src/storage/storage_backend_fs.c:1092
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 "qemu-img가 없이 로우(raw)가 아닌 이미지를 만드는 것을 지원하지 않습니다"
 
-#: src/storage/storage_backend_fs.c:1143
+#: src/storage/storage_backend_fs.c:1146
 #, c-format
 msgid "cannot unlink file '%s'"
 msgstr "파일 '%s'를 unlink할 수 없음"
 
-#: src/storage/storage_backend_fs.c:1152
+#: src/storage/storage_backend_fs.c:1155
 #, fuzzy, c-format
 msgid "cannot remove directory '%s'"
 msgstr "디렉터리 %s를 생성할 수 없음"
 
-#: src/storage/storage_backend_fs.c:1161
+#: src/storage/storage_backend_fs.c:1164
 #, fuzzy, c-format
 msgid "removing block or network volumes is not supported: %s"
 msgstr ""
@@ -19242,191 +19242,181 @@ msgstr "'%s' 파일 열기 실패"
 msgid "Failed to read file '%s'"
 msgstr "'%s' 파일 읽기 실패"
 
-#: src/util/util.c:846
+#: src/util/util.c:860
 #, fuzzy, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "%s로부터 노드 장치를 생성하는 데 실패"
 
-#: src/util/util.c:876
+#: src/util/util.c:891
 #, fuzzy, c-format
 msgid "child process failed to create file '%s'"
 msgstr "자식이 파일 '%s'를 만드는 데 실패"
 
-#: src/util/util.c:893
+#: src/util/util.c:908
 #, fuzzy
 msgid "child process failed to send fd to parent"
 msgstr "자식이 파이프에 쓰는 것을 실패했습니다"
 
-#: src/util/util.c:935 src/util/util.c:1153
+#: src/util/util.c:951 src/util/util.c:1177
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "차일드 생성 '%s'를 기다리는 데 실패"
 
-#: src/util/util.c:1045
+#: src/util/util.c:1061
 #, fuzzy, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "도메인에 대해 최대 vcpu를 결정할 수 없음"
 
-#: src/util/util.c:1071
+#: src/util/util.c:1087
 #, c-format
 msgid "failed to create file '%s'"
 msgstr "파일 '%s'를 만드는 데 실패"
 
-#: src/util/util.c:1072
+#: src/util/util.c:1088
 #, fuzzy, c-format
 msgid "failed to open file '%s'"
 msgstr "'%s' 파일 열기 실패"
 
-#: src/util/util.c:1090
+#: src/util/util.c:1106
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "디렉터리 '%s' 생성 실패"
 
-#: src/util/util.c:1183
+#: src/util/util.c:1207
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
 
-#: src/util/util.c:1199
+#: src/util/util.c:1223
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "'%s'를 그룹 %u로 chown할 수 없음"
 
-#: src/util/util.c:1237
+#: src/util/util.c:1261
 #, fuzzy
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "%s은 Win32상에서 구현되지 않음"
 
-#: src/util/util.c:1249
+#: src/util/util.c:1273
 #, fuzzy
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "%s은 Win32상에서 구현되지 않음"
 
-#: src/util/util.c:1751
+#: src/util/util.c:1775
 #, fuzzy, c-format
 msgid "invalid scale %llu"
 msgstr "잘못된 캡 값"
 
-#: src/util/util.c:1767 src/util/util.c:1792
+#: src/util/util.c:1791 src/util/util.c:1816
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
 msgstr "알려지지 크기 단위 %s"
 
-#: src/util/util.c:1798
+#: src/util/util.c:1822
 #, fuzzy, c-format
 msgid "value too large: %llu%s"
 msgstr "%s를 열 수 없음"
 
-#: src/util/util.c:2183
+#: src/util/util.c:2207
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "디스크 인덱스 %d가 음수입니다"
 
-#: src/util/util.c:2239
+#: src/util/util.c:2263
 msgid "failed to determine host name"
 msgstr "호스트 이름을 결정하는 데 실패"
 
-#: src/util/util.c:2334
+#: src/util/util.c:2359
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "uid '%d'에 대한 사용자 레코드를 찾는 데 실패했습니다"
 
-#: src/util/util.c:2387
+#: src/util/util.c:2418
 #, fuzzy, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "이름이 '%s'인 그룹 레코드를 찾는 데 실패했습니다"
 
-#: src/util/util.c:2503
+#: src/util/util.c:2539
 #, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "이름이 '%s'인 사용자 레코드를 찾는 데 실패했습니다"
 
-#: src/util/util.c:2552
+#: src/util/util.c:2588
 #, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "이름이 '%s'인 그룹 레코드를 찾는 데 실패했습니다"
 
-#: src/util/util.c:2580
-#, c-format
-msgid "cannot change to '%d' group"
+#: src/util/util.c:2673
+#, fuzzy, c-format
+msgid "cannot change to '%u' group"
 msgstr "'%d' 그룹으로 변경할 수 없음"
 
-#: src/util/util.c:2611
-#, fuzzy, c-format
-msgid "cannot getpwuid_r(%d)"
-msgstr "setuid(%d)를 '%s'를 읽기 위해 할 수 없음"
+#: src/util/util.c:2681
+#, fuzzy
+msgid "cannot set supplemental groups"
+msgstr "설정 모드 '%s'를 설정할 수 없음"
 
-#: src/util/util.c:2618
+#: src/util/util.c:2688
 #, fuzzy, c-format
-msgid "getpwuid_r failed to retrieve data for uid '%d'"
-msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
-
-#: src/util/util.c:2627
-#, fuzzy, c-format
-msgid "cannot initgroups(\"%s\", %d)"
-msgstr "setuid(%d)를 '%s'를 읽기 위해 할 수 없음"
-
-#: src/util/util.c:2634
-#, fuzzy, c-format
-msgid "cannot change to uid to '%d'"
+msgid "cannot change to uid to '%u'"
 msgstr "'%d' 사용자로 변경할 수 없음"
 
-#: src/util/util.c:2753
+#: src/util/util.c:2800
 #, fuzzy
 msgid "Unable to determine home directory"
 msgstr "디렉터리 %s를 열 수 없음"
 
-#: src/util/util.c:2769 src/util/util.c:2784
+#: src/util/util.c:2816 src/util/util.c:2831
 #, fuzzy
 msgid "Unable to determine config directory"
 msgstr "호스트 이름을 결정하는 데 실패"
 
-#: src/util/util.c:2800
+#: src/util/util.c:2847
 #, fuzzy
 msgid "virGetUserDirectory is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2809
+#: src/util/util.c:2856
 #, fuzzy
 msgid "virGetUserConfigDirectory is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2818
+#: src/util/util.c:2865
 #, fuzzy
 msgid "virGetUserCacheDirectory is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2827
+#: src/util/util.c:2874
 #, fuzzy
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2837
+#: src/util/util.c:2884
 #, fuzzy
 msgid "virGetUserName is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2846
+#: src/util/util.c:2893
 #, fuzzy
 msgid "virGetUserID is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2856
+#: src/util/util.c:2903
 #, fuzzy
 msgid "virGetGroupID is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2866
+#: src/util/util.c:2915
 #, fuzzy
 msgid "virSetUIDGID is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:2874
+#: src/util/util.c:2923
 #, fuzzy
 msgid "virGetGroupName is not available"
 msgstr "cpu 친밀도(affinity)를 사용할 수 없습니다"
 
-#: src/util/util.c:3009
+#: src/util/util.c:3058
 #, fuzzy, c-format
 msgid "Malformed wwn: %s"
 msgstr "잘못된 형식의 크기 %s"
@@ -27540,12 +27530,12 @@ msgstr "polkit 동작  %s을 생성하는 데 실패했습니다"
 msgid "succeeded to complete action %s on media\n"
 msgstr ""
 
-#: tools/virsh-edit.c:110
+#: tools/virsh-edit.c:112
 #, fuzzy
 msgid "The XML configuration was changed by another user."
 msgstr "오류: XML 설정이 다른 사용자에 의해 변경되었습니다"
 
-#: tools/virsh-edit.c:119
+#: tools/virsh-edit.c:121
 #, fuzzy
 msgid "Failed."
 msgstr "popen 실패"
@@ -30724,6 +30714,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "지원되지 않는 디스크 유형 '%s'"
+
+#, fuzzy
+#~ msgid "cannot getpwuid_r(%d)"
+#~ msgstr "setuid(%d)를 '%s'를 읽기 위해 할 수 없음"
+
+#, fuzzy
+#~ msgid "getpwuid_r failed to retrieve data for uid '%d'"
+#~ msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
+
+#, fuzzy
+#~ msgid "cannot initgroups(\"%s\", %d)"
+#~ msgstr "setuid(%d)를 '%s'를 읽기 위해 할 수 없음"
 
 #, fuzzy
 #~ msgid "Cannot recover cgroup %s from %s"

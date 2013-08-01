@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-06-12 16:53-0400\n"
+"POT-Creation-Date: 2013-08-01 17:45-0400\n"
 "PO-Revision-Date: 2011-07-26 04:04+0000\n"
 "Last-Translator: veillard <veillard@redhat.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4459,7 +4459,7 @@ msgstr "lỗi nội bộ"
 msgid "unexpected domain snapshot %s already exists"
 msgstr "ảnh chụp miền %s không mong đợi đã tồn tại"
 
-#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1002
+#: src/conf/storage_conf.c:251 src/storage/storage_backend.c:1014
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "thiếu backend cho kiểu pool %d"
@@ -9113,39 +9113,39 @@ msgid "Buffer error when generating device name for device with sysname '%s'"
 msgstr ""
 "Lỗi bộ đệm khi đang tạo tên thiết bị cho thiết bị với tên hệ thống '%s'"
 
-#: src/node_device/node_device_udev.c:654
+#: src/node_device/node_device_udev.c:675
 #, c-format
 msgid "SCSI host found, but its udev name '%s' does not begin with 'host'"
 msgstr ""
 "Máy chủ SCSI đã thấy, nhưng tên udev '%s' của nó không bắt đầu với 'host'"
 
-#: src/node_device/node_device_udev.c:822
+#: src/node_device/node_device_udev.c:843
 #, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
 msgstr "Thất bại khi xử lý thiết bị SCSI với đường dẫn sysfs '%s'"
 
-#: src/node_device/node_device_udev.c:1194
+#: src/node_device/node_device_udev.c:1215
 #, c-format
 msgid "Unknown device type %d"
 msgstr "Kiểu thiết bị không rõ %d"
 
-#: src/node_device/node_device_udev.c:1245
+#: src/node_device/node_device_udev.c:1266
 #, c-format
 msgid "Could not get syspath for parent of '%s'"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1327
-#: src/node_device/node_device_udev.c:1591
+#: src/node_device/node_device_udev.c:1348
+#: src/node_device/node_device_udev.c:1612
 #, c-format
 msgid "Failed to create device for '%s'"
 msgstr "Thất bại khi tạo thiết bị cho '%s'"
 
-#: src/node_device/node_device_udev.c:1379
+#: src/node_device/node_device_udev.c:1400
 #, c-format
 msgid "udev scan devices returned %d"
 msgstr "udev quét thiết bị trả lại %d"
 
-#: src/node_device/node_device_udev.c:1455
+#: src/node_device/node_device_udev.c:1476
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
@@ -9154,25 +9154,25 @@ msgstr ""
 "Ký hiệu tập tin trả lại bởi udev %d không khớp ký hiệu tập tin thiết bị nút "
 "%d"
 
-#: src/node_device/node_device_udev.c:1462
+#: src/node_device/node_device_udev.c:1483
 msgid "udev_monitor_receive_device returned NULL"
 msgstr "udev_monitor_receive_device trả lại NULL"
 
-#: src/node_device/node_device_udev.c:1501
+#: src/node_device/node_device_udev.c:1522
 #, c-format
 msgid "Failed to get udev device for syspath '%s' or '%s'"
 msgstr "Thất bại khi lấy thiết bị udev cho đường dẫn hệ thống '%s' hoặc '%s'"
 
-#: src/node_device/node_device_udev.c:1625
+#: src/node_device/node_device_udev.c:1646
 #, c-format
 msgid "Failed to initialize libpciaccess: %s"
 msgstr ""
 
-#: src/node_device/node_device_udev.c:1649
+#: src/node_device/node_device_udev.c:1670
 msgid "Failed to initialize mutex for driverState"
 msgstr "Thất bại khi khởi chạy mutex cho driverState"
 
-#: src/node_device/node_device_udev.c:1670
+#: src/node_device/node_device_udev.c:1692
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink trả lại NULL"
 
@@ -10209,7 +10209,7 @@ msgstr "Tìm kiếm không hợp lệ từ '%s'"
 msgid "pool '%s' not found"
 msgstr "Mạng '%s' không tìm thấy"
 
-#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:825
+#: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:828
 #, c-format
 msgid "cannot open path '%s'"
 msgstr "không thể mở đường dẫn '%s'"
@@ -10219,7 +10219,7 @@ msgstr "không thể mở đường dẫn '%s'"
 msgid "Failed to load pool configs"
 msgstr "Thất bại khi dựng pool %s"
 
-#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:909
+#: src/parallels/parallels_storage.c:402 src/storage/storage_backend_fs.c:912
 #, c-format
 msgid "cannot statvfs path '%s'"
 msgstr "không thể statvfs đường dẫn '%s'"
@@ -12063,8 +12063,8 @@ msgstr "thất bại khi tạo tập tin '%s'"
 msgid "Unable to write to domain logfile %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:787
-#: src/storage/storage_backend_fs.c:1231
+#: src/qemu/qemu_domain.c:1591 src/storage/storage_backend.c:799
+#: src/storage/storage_backend_fs.c:1234
 msgid "unable to find kvm-img or qemu-img"
 msgstr "không thể tìm ảnh kvm hay ảnh qemu"
 
@@ -12199,7 +12199,7 @@ msgstr "Miền %s đã ngừng\n"
 
 #: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
 #: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
-#: src/qemu/qemu_process.c:3808
+#: src/qemu/qemu_process.c:3816
 msgid "resume operation failed"
 msgstr "tiếp tục thao tác thất bại"
 
@@ -12754,8 +12754,8 @@ msgstr "thất bại khi mở đường dẫn '%s'"
 msgid "unknown disk format %s for %s"
 msgstr "định dạng đĩa %s không rõ cho %s"
 
-#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1022
-#: src/storage/storage_backend.c:1050 src/storage/storage_backend.c:1170
+#: src/qemu/qemu_driver.c:9243 src/storage/storage_backend.c:1034
+#: src/storage/storage_backend.c:1062 src/storage/storage_backend.c:1182
 #: src/util/storage_file.c:746 src/util/storage_file.c:842
 #, c-format
 msgid "cannot stat file '%s'"
@@ -14609,68 +14609,68 @@ msgstr ""
 msgid "cannot set max opened files to %d"
 msgstr "không thể đặt chế độ của '%s' sang %04o"
 
-#: src/qemu/qemu_process.c:3268
+#: src/qemu/qemu_process.c:3273
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
+#: src/qemu/qemu_process.c:3354 src/qemu/qemu_process.c:4211
 #: src/uml/uml_driver.c:1013
 msgid "VM is already active"
 msgstr "Máy ảo đã hoạt động"
 
-#: src/qemu/qemu_process.c:3415
+#: src/qemu/qemu_process.c:3420
 #, fuzzy
 msgid "Unable to find an unused port for VNC"
 msgstr "Không thể tìm cổng VNC chưa sử dụng"
 
-#: src/qemu/qemu_process.c:3427
+#: src/qemu/qemu_process.c:3432
 #, fuzzy
 msgid "Unable to find an unused port for SPICE"
 msgstr "Không thể tìm cổng VNC chưa sử dụng"
 
-#: src/qemu/qemu_process.c:3440
+#: src/qemu/qemu_process.c:3445
 #, fuzzy
 msgid "Unable to find an unused port for SPICE TLS"
 msgstr "Không thể tìm cổng VNC chưa sử dụng"
 
-#: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
+#: src/qemu/qemu_process.c:3478 src/qemu/qemu_process.c:4227
 #: src/uml/uml_driver.c:1035
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "không thể tạo thư mục bản ghi %s"
 
-#: src/qemu/qemu_process.c:3486
+#: src/qemu/qemu_process.c:3491
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
 "modules."
 msgstr ""
 
-#: src/qemu/qemu_process.c:3554
+#: src/qemu/qemu_process.c:3559
 msgid "Failed to build pidfile path."
 msgstr "Thất bại khi dựng đường dẫn tập tin pid"
 
-#: src/qemu/qemu_process.c:3561
+#: src/qemu/qemu_process.c:3566
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3649
+#: src/qemu/qemu_process.c:3657
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3702
+#: src/qemu/qemu_process.c:3710
 #, c-format
 msgid "cannot stat fd %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3789
+#: src/qemu/qemu_process.c:3797
 #, fuzzy, c-format
 msgid "unable to set balloon to %lld"
 msgstr "không thể bắt đầu di trú tới %s"
 
-#: src/qemu/qemu_process.c:4026
+#: src/qemu/qemu_process.c:4034
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
 msgstr "thất bại khi xóa bỏ quy tắc ebtables để cho phép địa chỉ MAC trên '%s'"
@@ -16193,69 +16193,69 @@ msgstr "'%s' không tồn tại"
 msgid "Invalid security label '%s'"
 msgstr "Nhãn bảo mật không hợp lệ '%s'"
 
-#: src/security/security_dac.c:112
+#: src/security/security_dac.c:114
 #, fuzzy, c-format
 msgid "failed to parse DAC seclabel '%s' for domain '%s'"
 msgstr "Không thể cho phép các thiết bị PYT cho miền %s"
 
-#: src/security/security_dac.c:133
+#: src/security/security_dac.c:136
 msgid "Failed to determine default DAC seclabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:143
+#: src/security/security_dac.c:151
 #, fuzzy, c-format
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "không thể lấy miêu tả của miền %s"
 
-#: src/security/security_dac.c:178
+#: src/security/security_dac.c:190
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "Thất bại khi gỡ bỏ ảnh lưu cho miền %s"
 
-#: src/security/security_dac.c:199
+#: src/security/security_dac.c:211
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:209
+#: src/security/security_dac.c:221
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:284
+#: src/security/security_dac.c:313
 #, fuzzy, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "thất bại khi đặt người dùng và nhóm cho '%d:%d' trên '%s'"
 
-#: src/security/security_dac.c:304
+#: src/security/security_dac.c:333
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "không thể xử lý liên kết tượng trưng %s"
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:601
+#: src/security/security_dac.c:904 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "kiểu bảo mật không hợp lệ"
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:622
+#: src/security/security_dac.c:915 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr ""
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:629
+#: src/security/security_dac.c:923 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr ""
 
-#: src/security/security_dac.c:901
+#: src/security/security_dac.c:933
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:913 src/security/security_dac.c:933
+#: src/security/security_dac.c:945 src/security/security_dac.c:965
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "không thể tạo một uuid ngẫu nhiên cho instanceid"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:703
+#: src/security/security_dac.c:955 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "kiểu sử dụng bí mật không mong đợi %d"
@@ -16274,7 +16274,7 @@ msgstr ""
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr ""
 
-#: src/security/security_manager.c:354
+#: src/security/security_manager.c:384
 msgid "Unconfined guests are not allowed on this host"
 msgstr ""
 
@@ -16774,25 +16774,25 @@ msgid "cannot close file '%s'"
 msgstr "thất bại khi đóng tập tin '%s'"
 
 #: src/storage/storage_backend.c:263 src/storage/storage_backend.c:411
-#: src/storage/storage_backend_fs.c:770 src/storage/storage_backend_fs.c:787
-#: src/storage/storage_backend_fs.c:1049
+#: src/storage/storage_backend_fs.c:773 src/storage/storage_backend_fs.c:790
+#: src/storage/storage_backend_fs.c:1052
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "không thể tạo đường dẫn '%s'"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:794 src/util/util.c:1097
-#: src/util/util.c:1193
+#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
+#: src/util/util.c:1217
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "thống kê '%s' thất bại"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:805 src/util/util.c:1103
+#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "không thể chown '%s' sang (%u, %u)"
 
-#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:605
-#: src/util/util.c:816 src/util/util.c:1111 src/util/util.c:1206
+#: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
+#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "không thể đặt chế độ của '%s' sang %04o"
@@ -16816,135 +16816,135 @@ msgstr "quá nhiều xung đột khi tạo một uuid"
 msgid "secrets already defined"
 msgstr "các bí mật đã định nghĩa"
 
-#: src/storage/storage_backend.c:589
+#: src/storage/storage_backend.c:601
 #, c-format
 msgid "failed to create %s"
 msgstr ""
 
-#: src/storage/storage_backend.c:599
+#: src/storage/storage_backend.c:611
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "không thể chown %s sang (%u, %u)"
 
-#: src/storage/storage_backend.c:641
+#: src/storage/storage_backend.c:653
 #, fuzzy, c-format
 msgid "unable to parse qemu-img output '%s'"
 msgstr "không thể đặt ngữ cảnh bảo mật '%s'"
 
-#: src/storage/storage_backend.c:692 src/storage/storage_backend.c:698
+#: src/storage/storage_backend.c:704 src/storage/storage_backend.c:710
 #, c-format
 msgid "unknown storage vol type %d"
 msgstr "kiểu ổ lưu trữ %d không rõ"
 
-#: src/storage/storage_backend.c:715
+#: src/storage/storage_backend.c:727
 msgid "a different backing store cannot be specified."
 msgstr ""
 
-#: src/storage/storage_backend.c:722
+#: src/storage/storage_backend.c:734
 #, c-format
 msgid "unknown storage vol backing store type %d"
 msgstr "kiểu lưu trữ lại %d không rõ của ổ lưu trữ"
 
-#: src/storage/storage_backend.c:741
+#: src/storage/storage_backend.c:753
 #, c-format
 msgid "inaccessible backing store volume %s"
 msgstr "ổ lưu trữ lại %s không truy cập được"
 
-#: src/storage/storage_backend.c:753
+#: src/storage/storage_backend.c:765
 #, c-format
 msgid "qcow volume encryption unsupported with volume format %s"
 msgstr "mã hóa ổ qcow không hỗ trợ với định dạng ổ %s"
 
-#: src/storage/storage_backend.c:761
+#: src/storage/storage_backend.c:773
 #, c-format
 msgid "unsupported volume encryption format %d"
 msgstr "định dạng mã hóa ổ %d không hỗ trợ"
 
-#: src/storage/storage_backend.c:767
+#: src/storage/storage_backend.c:779
 msgid "too many secrets for qcow encryption"
 msgstr "quá nhiều bí mật cho mã hóa qcow"
 
-#: src/storage/storage_backend.c:881
+#: src/storage/storage_backend.c:893
 msgid "cannot copy from volume with qcow-create"
 msgstr "không thể sao chép từ ổ với qcow-create"
 
-#: src/storage/storage_backend.c:887
+#: src/storage/storage_backend.c:899
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr "kiểu ổ lưu trữ %d không hỗ trợ"
 
-#: src/storage/storage_backend.c:893
+#: src/storage/storage_backend.c:905
 msgid "copy-on-write image not supported with qcow-create"
 msgstr "ảnh copy-on-write không hỗ trợ với qcow-create"
 
-#: src/storage/storage_backend.c:899
+#: src/storage/storage_backend.c:911
 msgid "encrypted volumes not supported with qcow-create"
 msgstr "các ổ đã mã hóa không hỗ trợ với qcow-create"
 
-#: src/storage/storage_backend.c:931
+#: src/storage/storage_backend.c:943
 #, c-format
 msgid "Unknown file create tool type '%d'."
 msgstr "Kiểu công cụ tạo tập tin '%d' không rõ."
 
-#: src/storage/storage_backend.c:979
+#: src/storage/storage_backend.c:991
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr "tạo các ảnh tập tin non-raw không được hỗ trợ mà không có qemu-img."
 
-#: src/storage/storage_backend.c:1043
+#: src/storage/storage_backend.c:1055
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "không thể mở ổ '%s'"
 
-#: src/storage/storage_backend.c:1079
+#: src/storage/storage_backend.c:1091
 #, c-format
 msgid "unexpected storage mode for '%s'"
 msgstr "chế độ lưu trữ không mong muốn cho '%s'"
 
-#: src/storage/storage_backend.c:1203
+#: src/storage/storage_backend.c:1215
 #, c-format
 msgid "cannot seek to end of file '%s'"
 msgstr "không thể tìm tới kết thúc của tập tin '%s'"
 
-#: src/storage/storage_backend.c:1233
+#: src/storage/storage_backend.c:1245
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "không thể lấy ngữ cảnh tập tin '%s'"
 
-#: src/storage/storage_backend.c:1303
+#: src/storage/storage_backend.c:1315
 #, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "không thể tìm kiếm tới đầu của tập tin '%s'"
 
-#: src/storage/storage_backend.c:1310
+#: src/storage/storage_backend.c:1322
 #, c-format
 msgid "cannot read beginning of file '%s'"
 msgstr "không thể đọc đầu của tập tin '%s'"
 
-#: src/storage/storage_backend.c:1384
+#: src/storage/storage_backend.c:1396
 #, c-format
 msgid "cannot read dir '%s'"
 msgstr "không thể đọc thư mục '%s'"
 
-#: src/storage/storage_backend.c:1477
+#: src/storage/storage_backend.c:1489
 #: src/storage/storage_backend_logical.c:212
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "Thất bại khi biên dịch regex %s"
 
-#: src/storage/storage_backend.c:1507
+#: src/storage/storage_backend.c:1519
 msgid "cannot read fd"
 msgstr "không thể đọc fd"
 
-#: src/storage/storage_backend.c:1619
+#: src/storage/storage_backend.c:1631
 msgid "cannot open file using fd"
 msgstr ""
 
-#: src/storage/storage_backend.c:1650
+#: src/storage/storage_backend.c:1662
 #, fuzzy
 msgid "read error on pipe"
 msgstr "lỗi đọc trên ống tới '%s'"
 
-#: src/storage/storage_backend.c:1679 src/storage/storage_backend.c:1692
+#: src/storage/storage_backend.c:1691 src/storage/storage_backend.c:1704
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s không thực thi trên Win32"
@@ -16962,7 +16962,7 @@ msgstr "không thể phân tích vị trí kết thúc thiết bị"
 msgid "device path '%s' doesn't exist"
 msgstr "mẫu '%s' không tồn tại"
 
-#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:749
+#: src/storage/storage_backend_disk.c:403 src/storage/storage_backend_fs.c:752
 msgid "Overwrite and no overwrite flags are mutually exclusive"
 msgstr ""
 
@@ -17032,8 +17032,8 @@ msgstr "đường dẫn netfs không hợp lệ (kết thúc với /): %s"
 msgid "hostname must be specified for netfs sources"
 msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 
-#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:364
-#: src/storage/storage_backend_fs.c:462
+#: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:365
+#: src/storage/storage_backend_fs.c:465
 #: src/storage/storage_backend_iscsi.c:101
 #: src/storage/storage_backend_iscsi.c:598
 #: src/storage/storage_backend_iscsi.c:662
@@ -17046,121 +17046,121 @@ msgstr ""
 msgid "cannot read mount list '%s'"
 msgstr "không thể đọc danh sách lắp '%s'"
 
-#: src/storage/storage_backend_fs.c:369 src/storage/storage_backend_fs.c:467
+#: src/storage/storage_backend_fs.c:370 src/storage/storage_backend_fs.c:470
 #: src/storage/storage_backend_iscsi.c:668
 #: src/storage/storage_backend_iscsi.c:706
 msgid "missing source host"
 msgstr "thiếu máy chủ nguồn"
 
-#: src/storage/storage_backend_fs.c:374
+#: src/storage/storage_backend_fs.c:375
 msgid "missing source path"
 msgstr "thiếu đường dẫn nguồn"
 
-#: src/storage/storage_backend_fs.c:380 src/storage/storage_backend_fs.c:478
+#: src/storage/storage_backend_fs.c:381 src/storage/storage_backend_fs.c:481
 #: src/storage/storage_backend_iscsi.c:675
 #: src/storage/storage_backend_iscsi.c:713
 msgid "missing source device"
 msgstr "thiếu thiết bị nguồn"
 
-#: src/storage/storage_backend_fs.c:388
+#: src/storage/storage_backend_fs.c:390
 #, fuzzy, c-format
 msgid "Target '%s' is already mounted"
 msgstr "Mạng '%s' đã đang chạy"
 
-#: src/storage/storage_backend_fs.c:472
+#: src/storage/storage_backend_fs.c:475
 msgid "missing source dir"
 msgstr "thiếu thư mục nguồn"
 
-#: src/storage/storage_backend_fs.c:563
+#: src/storage/storage_backend_fs.c:566
 #, c-format
 msgid "Not capable of probing for filesystem of type %s"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:572
+#: src/storage/storage_backend_fs.c:575
 #, fuzzy, c-format
 msgid "Failed to create filesystem probe for device %s"
 msgstr "Thất bại khi bật một re-probe cho thiết bị PCI '%s'"
 
-#: src/storage/storage_backend_fs.c:596
+#: src/storage/storage_backend_fs.c:599
 #, fuzzy, c-format
 msgid "Existing filesystem of type '%s' found on device '%s'"
 msgstr "Mong đợi kiểu '%s' nhưng lại thấy '%s'"
 
-#: src/storage/storage_backend_fs.c:604
+#: src/storage/storage_backend_fs.c:607
 msgid "Found additional probes to run, filesystem probing may be incorrect"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:626
+#: src/storage/storage_backend_fs.c:629
 #, fuzzy
 msgid "probing for filesystems is unsupported by this build"
 msgstr "xuyên qua hệ thống tập tin không được hỗ trợ bởi QEMU này"
 
-#: src/storage/storage_backend_fs.c:651
+#: src/storage/storage_backend_fs.c:654
 #, fuzzy, c-format
 msgid "Failed to make filesystem of type '%s' on device '%s'"
 msgstr "Thất bại khi phá huỷ thiết bị nút '%s'"
 
-#: src/storage/storage_backend_fs.c:664
+#: src/storage/storage_backend_fs.c:667
 #, c-format
 msgid ""
 "mkfs is not supported on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:682
+#: src/storage/storage_backend_fs.c:685
 #, fuzzy, c-format
 msgid "No source device specified when formatting pool '%s'"
 msgstr "không có thiết bị nút khớp tên '%s'"
 
-#: src/storage/storage_backend_fs.c:693
+#: src/storage/storage_backend_fs.c:696
 #, c-format
 msgid "Source device does not exist when formatting pool '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:760
+#: src/storage/storage_backend_fs.c:763
 #, c-format
 msgid "path '%s' is not absolute"
 msgstr "đường dẫn '%s' không tuyệt đối"
 
-#: src/storage/storage_backend_fs.c:892
+#: src/storage/storage_backend_fs.c:895
 #, c-format
 msgid "cannot probe backing volume info: %s"
 msgstr ""
 
-#: src/storage/storage_backend_fs.c:978
+#: src/storage/storage_backend_fs.c:981
 #, c-format
 msgid "failed to remove pool '%s'"
 msgstr "thất bại khi xóa bỏ pool '%s'"
 
-#: src/storage/storage_backend_fs.c:1011
+#: src/storage/storage_backend_fs.c:1014
 #, fuzzy, c-format
 msgid "volume target path '%s' already exists"
 msgstr "đích %s đã tồn tại"
 
-#: src/storage/storage_backend_fs.c:1039
+#: src/storage/storage_backend_fs.c:1042
 msgid "cannot copy from volume to a directory volume"
 msgstr "không thể sao chép từ ổ tới một ổ thư mục"
 
-#: src/storage/storage_backend_fs.c:1069
+#: src/storage/storage_backend_fs.c:1072
 msgid ""
 "storage pool does not support building encrypted volumes from other volumes"
 msgstr "pool lưu trữ không hỗ trợ dựng các ổ mã hóa từ các ổ khác"
 
-#: src/storage/storage_backend_fs.c:1089
+#: src/storage/storage_backend_fs.c:1092
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "tạo các ảnh non-raw không được hỗ trợ mà không có qemu-img"
 
-#: src/storage/storage_backend_fs.c:1143
+#: src/storage/storage_backend_fs.c:1146
 #, c-format
 msgid "cannot unlink file '%s'"
 msgstr "không thể gỡ liên kết tập tin '%s'"
 
-#: src/storage/storage_backend_fs.c:1152
+#: src/storage/storage_backend_fs.c:1155
 #, fuzzy, c-format
 msgid "cannot remove directory '%s'"
 msgstr "không thể tạo thư mục %s"
 
-#: src/storage/storage_backend_fs.c:1161
+#: src/storage/storage_backend_fs.c:1164
 #, fuzzy, c-format
 msgid "removing block or network volumes is not supported: %s"
 msgstr "Tạo các ổ không-tập-tin không được hỗ trợ"
@@ -18818,183 +18818,173 @@ msgstr "Thất bại khi mở tập tin '%s'"
 msgid "Failed to read file '%s'"
 msgstr "Thất bại khi đọc tập tin '%s'"
 
-#: src/util/util.c:846
+#: src/util/util.c:860
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr ""
 
-#: src/util/util.c:876
+#: src/util/util.c:891
 #, fuzzy, c-format
 msgid "child process failed to create file '%s'"
 msgstr "thất bại khi tạo tập tin '%s'"
 
-#: src/util/util.c:893
+#: src/util/util.c:908
 msgid "child process failed to send fd to parent"
 msgstr ""
 
-#: src/util/util.c:935 src/util/util.c:1153
+#: src/util/util.c:951 src/util/util.c:1177
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "thất bại khi chờ con đang tạo '%s'"
 
-#: src/util/util.c:1045
+#: src/util/util.c:1061
 #, fuzzy, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "không thể quyết định số vcpu lớn nhất cho miền"
 
-#: src/util/util.c:1071
+#: src/util/util.c:1087
 #, c-format
 msgid "failed to create file '%s'"
 msgstr "thất bại khi tạo tập tin '%s'"
 
-#: src/util/util.c:1072
+#: src/util/util.c:1088
 #, fuzzy, c-format
 msgid "failed to open file '%s'"
 msgstr "Thất bại khi mở tập tin '%s'"
 
-#: src/util/util.c:1090
+#: src/util/util.c:1106
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "thất bại khi tạo thư mục '%s'"
 
-#: src/util/util.c:1183
+#: src/util/util.c:1207
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "con thất bại khi tạo thư mục '%s'"
 
-#: src/util/util.c:1199
+#: src/util/util.c:1223
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "không thể chown '%s' sang nhóm %u"
 
-#: src/util/util.c:1237
+#: src/util/util.c:1261
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr ""
 
-#: src/util/util.c:1249
+#: src/util/util.c:1273
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate không chấp nhận cho WIN32"
 
-#: src/util/util.c:1751
+#: src/util/util.c:1775
 #, fuzzy, c-format
 msgid "invalid scale %llu"
 msgstr "Gọi không hợp lệ"
 
-#: src/util/util.c:1767 src/util/util.c:1792
+#: src/util/util.c:1791 src/util/util.c:1816
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
 msgstr "đuôi hàng loạt không rõ '%s'"
 
-#: src/util/util.c:1798
+#: src/util/util.c:1822
 #, fuzzy, c-format
 msgid "value too large: %llu%s"
 msgstr "không thể mở %s"
 
-#: src/util/util.c:2183
+#: src/util/util.c:2207
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "Chỉ mục đĩa %d phủ định"
 
-#: src/util/util.c:2239
+#: src/util/util.c:2263
 msgid "failed to determine host name"
 msgstr "thất bại khi quyết định tên máy chủ"
 
-#: src/util/util.c:2334
+#: src/util/util.c:2359
 #, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "Thất bại khi tìm bản ghi người dùng cho uid '%u'"
 
-#: src/util/util.c:2387
+#: src/util/util.c:2418
 #, fuzzy, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Thất bại khi tìm bản ghi nhóm cho tên '%s'"
 
-#: src/util/util.c:2503
+#: src/util/util.c:2539
 #, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "Thất bại khi tìm bản ghi người dùng cho tên '%s'"
 
-#: src/util/util.c:2552
+#: src/util/util.c:2588
 #, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "Thất bại khi tìm bản ghi nhóm cho tên '%s'"
 
-#: src/util/util.c:2580
-#, c-format
-msgid "cannot change to '%d' group"
+#: src/util/util.c:2673
+#, fuzzy, c-format
+msgid "cannot change to '%u' group"
 msgstr "không thể thay đổi sang nhóm '%d'"
 
-#: src/util/util.c:2611
-#, c-format
-msgid "cannot getpwuid_r(%d)"
-msgstr ""
+#: src/util/util.c:2681
+#, fuzzy
+msgid "cannot set supplemental groups"
+msgstr "không thể đặt chế độ tập tin '%s'"
 
-#: src/util/util.c:2618
+#: src/util/util.c:2688
 #, fuzzy, c-format
-msgid "getpwuid_r failed to retrieve data for uid '%d'"
-msgstr "con thất bại khi tạo thư mục '%s'"
+msgid "cannot change to uid to '%u'"
+msgstr "không thể thay đổi sang nhóm '%d'"
 
-#: src/util/util.c:2627
-#, c-format
-msgid "cannot initgroups(\"%s\", %d)"
-msgstr ""
-
-#: src/util/util.c:2634
-#, c-format
-msgid "cannot change to uid to '%d'"
-msgstr ""
-
-#: src/util/util.c:2753
+#: src/util/util.c:2800
 #, fuzzy
 msgid "Unable to determine home directory"
 msgstr "Không thể quyết định bộ nhớ miền."
 
-#: src/util/util.c:2769 src/util/util.c:2784
+#: src/util/util.c:2816 src/util/util.c:2831
 #, fuzzy
 msgid "Unable to determine config directory"
 msgstr "Không thể quyết định bộ nhớ miền."
 
-#: src/util/util.c:2800
+#: src/util/util.c:2847
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory không có sẵn"
 
-#: src/util/util.c:2809
+#: src/util/util.c:2856
 #, fuzzy
 msgid "virGetUserConfigDirectory is not available"
 msgstr "virGetUserDirectory không có sẵn"
 
-#: src/util/util.c:2818
+#: src/util/util.c:2865
 #, fuzzy
 msgid "virGetUserCacheDirectory is not available"
 msgstr "virGetUserDirectory không có sẵn"
 
-#: src/util/util.c:2827
+#: src/util/util.c:2874
 #, fuzzy
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserDirectory không có sẵn"
 
-#: src/util/util.c:2837
+#: src/util/util.c:2884
 msgid "virGetUserName is not available"
 msgstr "virGetUserName không có sẵn"
 
-#: src/util/util.c:2846
+#: src/util/util.c:2893
 msgid "virGetUserID is not available"
 msgstr "virGetUserID không có sẵn"
 
-#: src/util/util.c:2856
+#: src/util/util.c:2903
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID không có sẵn"
 
-#: src/util/util.c:2866
+#: src/util/util.c:2915
 msgid "virSetUIDGID is not available"
 msgstr ""
 
-#: src/util/util.c:2874
+#: src/util/util.c:2923
 #, fuzzy
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupID không có sẵn"
 
-#: src/util/util.c:3009
+#: src/util/util.c:3058
 #, fuzzy, c-format
 msgid "Malformed wwn: %s"
 msgstr "Kích thước %s sai dạng thức"
@@ -26948,12 +26938,12 @@ msgstr "Thất bại khi tạo hành động polkit %s"
 msgid "succeeded to complete action %s on media\n"
 msgstr ""
 
-#: tools/virsh-edit.c:110
+#: tools/virsh-edit.c:112
 #, fuzzy
 msgid "The XML configuration was changed by another user."
 msgstr "LỖI: cấu hình XML đã thay đổi bởi người khác"
 
-#: tools/virsh-edit.c:119
+#: tools/virsh-edit.c:121
 msgid "Failed."
 msgstr ""
 
@@ -30070,6 +30060,10 @@ msgstr "Không có tham số dòng lệnh qemu được chỉ định"
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "kiểu (tên) bộ thời gian không hỗ trợ '%s'"
+
+#, fuzzy
+#~ msgid "getpwuid_r failed to retrieve data for uid '%d'"
+#~ msgstr "con thất bại khi tạo thư mục '%s'"
 
 #, fuzzy
 #~ msgid "Cannot recover cgroup %s from %s"
