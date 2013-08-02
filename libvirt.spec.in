@@ -2089,7 +2089,6 @@ fi
 %{_libdir}/python*/site-packages/libvirt_qemu.py*
 %{_libdir}/python*/site-packages/libvirt_lxc.py*
 %{_libdir}/python*/site-packages/libvirtmod*
-%doc python/tests/*.py
 %doc examples/python
 %doc examples/domain-events/events-python
 %endif
