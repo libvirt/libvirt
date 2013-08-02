@@ -700,6 +700,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        void *opaque ATTRIBUTE_UNUSED)
 {
     bool addDefaultUSB = true;
+    bool addImplicitSATA = false;
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
 
@@ -722,6 +723,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             STREQ(def->os.machine, "q35")) {
            addPCIeRoot = true;
            addDefaultUSB = false;
+           addImplicitSATA = true;
            break;
         }
         if (!STRPREFIX(def->os.machine, "pc-0.") &&
@@ -752,6 +754,11 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (addDefaultUSB &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
+        return -1;
+
+    if (addImplicitSATA &&
+        virDomainDefMaybeAddController(
+            def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
         return -1;
 
     if (addPCIRoot &&

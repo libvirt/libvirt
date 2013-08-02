@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='usb' index='0'/>
+    <controller type='sata' index='0'/>
     <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
     <controller type='pci' index='2' model='pci-bridge'/>
     <memballoon model='none'/>

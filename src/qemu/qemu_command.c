@@ -1686,6 +1686,18 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
             break;
         }
     }
+    /* SATA controllers aren't hot-plugged, and can be put in either a
+     * PCI or PCIe slot
+     */
+    if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA)
+        flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+
+    /* video cards aren't hot-plugged, and can be put in either a PCI
+     * or PCIe slot
+     */
+    if (device->type == VIR_DOMAIN_DEVICE_VIDEO)
+        flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
 
     /* Ignore implicit controllers on slot 0:0:1.0:
      * implicit IDE controller on 0:0:1.1 (no qemu command line)
@@ -2258,6 +2270,12 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     }
 
     if (def->nvideos > 0) {
+        /* Because the PIIX3 integrated IDE/USB controllers are
+         * already at slot 1, when qemu looks for the first free slot
+         * to place the VGA controller (which is always the first
+         * device added after integrated devices), it *always* ends up
+         * at slot 2.
+         */
         virDomainVideoDefPtr primaryVideo = def->videos[0];
         if (primaryVideo->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
@@ -2304,6 +2322,136 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
 
         if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
             VIR_DEBUG("PCI address 0:0:2.0 in use, future addition of a video"
+                      " device will not be possible without manual"
+                      " intervention");
+            virResetLastError();
+        } else if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr, flags) < 0) {
+            goto error;
+        }
+    }
+    return 0;
+
+error:
+    return -1;
+}
+
+
+static bool
+qemuDomainMachineIsQ35(virDomainDefPtr def)
+{
+    return (STRPREFIX(def->os.machine, "pc-q35") ||
+            STREQ(def->os.machine, "q35"));
+}
+
+
+static int
+qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
+                                    virQEMUCapsPtr qemuCaps,
+                                    qemuDomainPCIAddressSetPtr addrs)
+{
+    size_t i;
+    virDevicePCIAddress tmp_addr;
+    bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    virDevicePCIAddressPtr addrptr;
+    qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+
+    /* Verify that the first SATA controller is at 00:1F.2 */
+    /* the q35 machine type *always* has a SATA controller at this address */
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
+            def->controllers[i]->idx == 0) {
+            if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                if (def->controllers[i]->info.addr.pci.domain != 0 ||
+                    def->controllers[i]->info.addr.pci.bus != 0 ||
+                    def->controllers[i]->info.addr.pci.slot != 0x1F ||
+                    def->controllers[i]->info.addr.pci.function != 2) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Primary SATA controller must have PCI address 0:0:1f.2"));
+                    goto error;
+                }
+            } else {
+                def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                def->controllers[i]->info.addr.pci.domain = 0;
+                def->controllers[i]->info.addr.pci.bus = 0;
+                def->controllers[i]->info.addr.pci.slot = 0x1F;
+                def->controllers[i]->info.addr.pci.function = 2;
+            }
+        }
+    }
+
+    /* Reserve slot 0x1F function 0 (ISA bridge, not in config model)
+     * and function 3 (SMBus, also not (yet) in config model). As with
+     * the SATA controller, these devices are always present in a q35
+     * machine; there is no way to not have them.
+     */
+    if (addrs->nbuses) {
+        memset(&tmp_addr, 0, sizeof(tmp_addr));
+        tmp_addr.slot = 0x1F;
+        tmp_addr.function = 0;
+        tmp_addr.multi = 1;
+        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
+                                            false, false) < 0)
+           goto error;
+        tmp_addr.function = 3;
+        tmp_addr.multi = 0;
+        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
+                                            false, false) < 0)
+           goto error;
+    }
+
+    if (def->nvideos > 0) {
+        /* NB: unlike the pc machinetypes, on q35 machinetypes the
+         * integrated devices are at slot 0x1f, so when qemu looks for
+         * the first free lot for the first VGA, it will always be at
+         * slot 1 (which was used up by the integrated PIIX3 devices
+         * on pc machinetypes).
+         */
+        virDomainVideoDefPtr primaryVideo = def->videos[0];
+        if (primaryVideo->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            primaryVideo->info.addr.pci.domain = 0;
+            primaryVideo->info.addr.pci.bus = 0;
+            primaryVideo->info.addr.pci.slot = 1;
+            primaryVideo->info.addr.pci.function = 0;
+            addrptr = &primaryVideo->info.addr.pci;
+
+            if (!qemuDomainPCIAddressValidate(addrs, addrptr, flags))
+                goto error;
+
+            if (qemuDomainPCIAddressSlotInUse(addrs, addrptr)) {
+                if (qemuDeviceVideoUsable) {
+                    virResetLastError();
+                    if (qemuDomainPCIAddressReserveNextSlot(addrs,
+                                                            &primaryVideo->info,
+                                                            flags) < 0)
+                        goto error;
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("PCI address 0:0:1.0 is in use, "
+                                     "QEMU needs it for primary video"));
+                    goto error;
+                }
+            } else if (qemuDomainPCIAddressReserveSlot(addrs, addrptr, flags) < 0) {
+                goto error;
+            }
+        } else if (!qemuDeviceVideoUsable) {
+            if (primaryVideo->info.addr.pci.domain != 0 ||
+                primaryVideo->info.addr.pci.bus != 0 ||
+                primaryVideo->info.addr.pci.slot != 1 ||
+                primaryVideo->info.addr.pci.function != 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Primary video card must have PCI address 0:0:1.0"));
+                goto error;
+            }
+            /* If TYPE==PCI, then qemuCollectPCIAddress() function
+             * has already reserved the address, so we must skip */
+        }
+    } else if (addrs->nbuses && !qemuDeviceVideoUsable) {
+        memset(&tmp_addr, 0, sizeof(tmp_addr));
+        tmp_addr.slot = 1;
+
+        if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
+            VIR_DEBUG("PCI address 0:0:1.0 in use, future addition of a video"
                       " device will not be possible without manual"
                       " intervention");
             virResetLastError();
@@ -2365,6 +2513,11 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         STREQ(def->os.machine, "pc") ||
         STRPREFIX(def->os.machine, "rhel")) &&
         qemuValidateDevicePCISlotsPIIX3(def, qemuCaps, addrs) < 0) {
+        goto error;
+    }
+
+    if (qemuDomainMachineIsQ35(def) &&
+        qemuDomainValidateDevicePCISlotsQ35(def, qemuCaps, addrs) < 0) {
         goto error;
     }
 
@@ -7679,6 +7832,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                                        _("SATA is not supported with this "
                                          "QEMU binary"));
                         goto error;
+                    } else if (cont->idx == 0 && qemuDomainMachineIsQ35(def)) {
+                        /* first SATA controller on Q35 machines is implicit */
+                        continue;
                     } else {
                         char *devstr;
 
@@ -7692,6 +7848,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     }
                 } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                            cont->model == -1 &&
+                           !qemuDomainMachineIsQ35(def) &&
                            (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
                             def->os.arch == VIR_ARCH_PPC64)) {
                     if (usblegacy) {
@@ -7716,7 +7873,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (usbcontroller == 0)
+    if (usbcontroller == 0 && !qemuDomainMachineIsQ35(def))
         virCommandAddArg(cmd, "-usb");
 
     for (i = 0; i < def->nhubs; i++) {
