@@ -859,7 +859,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (!(nicstr = qemuBuildNicDevStr(net, vlan, 0, priv->qemuCaps)))
+        if (!(nicstr = qemuBuildNicDevStr(vm->def, net, vlan, 0, priv->qemuCaps)))
             goto try_remove;
     } else {
         if (!(nicstr = qemuBuildNicStr(net, NULL, vlan)))
@@ -1057,7 +1057,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
             goto error;
         }
 
-        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev, configfd_name,
+        if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, configfd_name,
                                                  priv->qemuCaps)))
             goto error;
 
@@ -1302,7 +1302,7 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto cleanup;
-        if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev, priv->qemuCaps)))
+        if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
             goto cleanup;
     }
 
