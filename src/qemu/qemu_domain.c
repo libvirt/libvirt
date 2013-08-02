@@ -699,6 +699,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        void *opaque ATTRIBUTE_UNUSED)
 {
+    bool addDefaultUSB = true;
     bool addPCIRoot = false;
 
     /* check for emulator and create a default one if needed */
@@ -714,8 +715,10 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             break;
         if (STRPREFIX(def->os.machine, "pc-q35") ||
             STREQ(def->os.machine, "q35") ||
-            STREQ(def->os.machine, "isapc"))
+            STREQ(def->os.machine, "isapc")) {
+            addDefaultUSB = false;
             break;
+        }
         if (!STRPREFIX(def->os.machine, "pc-0.") &&
             !STRPREFIX(def->os.machine, "pc-1.") &&
             !STRPREFIX(def->os.machine, "pc-i440") &&
@@ -724,6 +727,10 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             break;
         addPCIRoot = true;
         break;
+
+    case VIR_ARCH_ARMV7L:
+       addDefaultUSB = false;
+       break;
 
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:
@@ -736,6 +743,11 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     default:
         break;
     }
+
+    if (addDefaultUSB &&
+        virDomainDefMaybeAddController(
+            def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
+        return -1;
 
     if (addPCIRoot &&
         virDomainDefMaybeAddController(

@@ -11718,12 +11718,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (def->virtType == VIR_DOMAIN_VIRT_QEMU ||
-        def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
-        def->virtType == VIR_DOMAIN_VIRT_KVM)
-        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
-            goto error;
-
     /* analysis of the resource leases */
     if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
