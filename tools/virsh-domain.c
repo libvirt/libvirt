@@ -6157,6 +6157,10 @@ static const vshCmdOptDef opts_cpu_baseline[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("file containing XML CPU descriptions")
     },
+    {.name = "features",
+     .type = VSH_OT_BOOL,
+     .help = N_("Show features that are part of the CPU model type")
+    },
     {.name = NULL}
 };
 
@@ -6168,6 +6172,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     char *result = NULL;
     const char **list = NULL;
+    unsigned int flags = 0;
     int count = 0;
 
     xmlDocPtr xml = NULL;
@@ -6176,6 +6181,9 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     xmlBufferPtr xml_buf = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
+
+    if (vshCommandOptBool(cmd, "features"))
+        flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -6220,7 +6228,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
         list[i] = vshStrdup(ctl, (const char *)xmlBufferContent(xml_buf));
     }
 
-    result = virConnectBaselineCPU(ctl->conn, list, count, 0);
+    result = virConnectBaselineCPU(ctl->conn, list, count, flags);
 
     if (result) {
         vshPrint(ctl, "%s", result);

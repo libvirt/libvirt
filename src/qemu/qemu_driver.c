@@ -11056,12 +11056,12 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     char *cpu = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
 
     if (virConnectBaselineCPUEnsureACL(conn) < 0)
         goto cleanup;
 
-    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0);
+    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
 
 cleanup:
     return cpu;

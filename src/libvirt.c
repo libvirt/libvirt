@@ -18524,10 +18524,15 @@ error:
  * @conn: virConnect connection
  * @xmlCPUs: array of XML descriptions of host CPUs
  * @ncpus: number of CPUs in xmlCPUs
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virConnectBaselineCPUFlags
  *
  * Computes the most feature-rich CPU which is compatible with all given
  * host CPUs.
+ *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
+ * will explicitly list all CPU features that are part of the host CPU,
+ * without this flag features that are part of the CPU model will not be
+ * listed.
  *
  * Returns XML description of the computed CPU or NULL on error.
  */

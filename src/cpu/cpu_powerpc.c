@@ -304,11 +304,14 @@ ppcDecode(virCPUDefPtr cpu,
           const virCPUDataPtr data,
           const char **models,
           unsigned int nmodels,
-          const char *preferred ATTRIBUTE_UNUSED)
+          const char *preferred ATTRIBUTE_UNUSED,
+          unsigned int flags)
 {
     int ret = -1;
     struct ppc_map *map;
     const struct ppc_model *model;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
     if (data == NULL || (map = ppcLoadMap()) == NULL)
         return -1;
@@ -377,13 +380,16 @@ static virCPUDefPtr
 ppcBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
             const char **models,
-            unsigned int nmodels)
+            unsigned int nmodels,
+            unsigned int flags)
 {
     struct ppc_map *map = NULL;
     const struct ppc_model *model;
     const struct ppc_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
 
     if (!(map = ppcLoadMap()))
         goto error;

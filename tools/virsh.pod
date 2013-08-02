@@ -485,13 +485,16 @@ cell and the total free memory on the machine.  Finally, with a
 numeric argument or with --cellno plus a cell number it will display
 the free memory for the specified cell only.
 
-=item B<cpu-baseline> I<FILE>
+=item B<cpu-baseline> I<FILE> [I<--features>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.
 The list of host CPUs is built by extracting all <cpu> elements from the
 <file>. Thus, the <file> can contain either a set of <cpu> elements separated
 by new lines or even a set of complete <capabilities> elements printed by
-B<capabilities> command.
+B<capabilities> command.  If I<--features> is specified then the
+resulting XML description will explicitly include all features that make
+up the CPU, without this option features that are part of the CPU model
+will not be listed in the XML description.
 
 =item B<cpu-compare> I<FILE>
 

@@ -167,7 +167,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, models, nmodels, preferred);
+    return driver->decode(cpu, data, models, nmodels, preferred, 0);
 }
 
 
@@ -276,7 +276,8 @@ char *
 cpuBaselineXML(const char **xmlCPUs,
                unsigned int ncpus,
                const char **models,
-               unsigned int nmodels)
+               unsigned int nmodels,
+               unsigned int flags)
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -323,7 +324,7 @@ cpuBaselineXML(const char **xmlCPUs,
         doc = NULL;
     }
 
-    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels)))
+    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels, flags)))
         goto error;
 
     cpustr = virCPUDefFormat(cpu, 0);
@@ -350,7 +351,8 @@ virCPUDefPtr
 cpuBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
             const char **models,
-            unsigned int nmodels)
+            unsigned int nmodels,
+            unsigned int flags)
 {
     struct cpuArchDriver *driver;
     size_t i;
@@ -392,7 +394,7 @@ cpuBaseline(virCPUDefPtr *cpus,
         return NULL;
     }
 
-    return driver->baseline(cpus, ncpus, models, nmodels);
+    return driver->baseline(cpus, ncpus, models, nmodels, flags);
 }
 
 

@@ -4008,6 +4008,15 @@ int virConnectCompareCPU(virConnectPtr conn,
 
 
 /**
+ * virConnectBaselineCPUFlags
+ *
+ * Flags when getting XML description of a computed CPU
+ */
+typedef enum {
+    VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features */
+} virConnectBaselineCPUFlags;
+
+/**
  * virConnectBaselineCPU:
  *
  * @conn: virConnect connection

@@ -53,7 +53,8 @@ typedef int
                      const virCPUDataPtr data,
                      const char **models,
                      unsigned int nmodels,
-                     const char *preferred);
+                     const char *preferred,
+                     unsigned int flags);
 
 typedef int
 (*cpuArchEncode)    (virArch arch,
@@ -81,7 +82,8 @@ typedef virCPUDefPtr
 (*cpuArchBaseline)  (virCPUDefPtr *cpus,
                      unsigned int ncpus,
                      const char **models,
-                     unsigned int nmodels);
+                     unsigned int nmodels,
+                     unsigned int flags);
 
 typedef int
 (*cpuArchUpdate)    (virCPUDefPtr guest,
@@ -149,13 +151,15 @@ extern char *
 cpuBaselineXML(const char **xmlCPUs,
                unsigned int ncpus,
                const char **models,
-               unsigned int nmodels);
+               unsigned int nmodels,
+               unsigned int flags);
 
 extern virCPUDefPtr
 cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,
              const char **models,
-             unsigned int nmodels);
+             unsigned int nmodels,
+             unsigned int flags);
 
 extern int
 cpuUpdate   (virCPUDefPtr guest,

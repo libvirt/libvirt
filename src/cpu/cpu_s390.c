@@ -48,8 +48,12 @@ s390Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
            const virCPUDataPtr data ATTRIBUTE_UNUSED,
            const char **models ATTRIBUTE_UNUSED,
            unsigned int nmodels ATTRIBUTE_UNUSED,
-           const char *preferred ATTRIBUTE_UNUSED)
+           const char *preferred ATTRIBUTE_UNUSED,
+           unsigned int flags)
 {
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
+
     return 0;
 }
 

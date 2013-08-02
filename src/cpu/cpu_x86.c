@@ -1319,13 +1319,42 @@ x86GuestData(virCPUDefPtr host,
     return x86Compute(host, guest, data, message);
 }
 
+static int
+x86AddFeatures(virCPUDefPtr cpu,
+               struct x86_map *map)
+{
+    const struct x86_model *candidate;
+    const struct x86_feature *feature = map->features;
+
+    candidate = map->models;
+    while (candidate != NULL) {
+        if (STREQ(cpu->model, candidate->name))
+            break;
+        candidate = candidate->next;
+    }
+    if (!candidate) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s not a known CPU model"), cpu->model);
+        return -1;
+    }
+    while (feature != NULL) {
+        if (x86DataIsSubset(candidate->data, feature->data) &&
+            virCPUDefAddFeature(cpu, feature->name,
+                                VIR_CPU_FEATURE_REQUIRE) < 0)
+            return -1;
+        feature = feature->next;
+    }
+    return 0;
+}
+
 
 static int
 x86Decode(virCPUDefPtr cpu,
           const struct cpuX86Data *data,
           const char **models,
           unsigned int nmodels,
-          const char *preferred)
+          const char *preferred,
+          unsigned int flags)
 {
     int ret = -1;
     struct x86_map *map;
@@ -1333,6 +1362,8 @@ x86Decode(virCPUDefPtr cpu,
     virCPUDefPtr cpuCandidate;
     virCPUDefPtr cpuModel = NULL;
     size_t i;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
     if (data == NULL || (map = x86LoadMap()) == NULL)
         return -1;
@@ -1406,6 +1437,9 @@ x86Decode(virCPUDefPtr cpu,
         goto out;
     }
 
+    if (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES &&
+        x86AddFeatures(cpuModel, map) < 0)
+        goto out;
     cpu->model = cpuModel->model;
     cpu->vendor = cpuModel->vendor;
     cpu->nfeatures = cpuModel->nfeatures;
@@ -1426,9 +1460,10 @@ x86DecodeCPUData(virCPUDefPtr cpu,
                  const virCPUDataPtr data,
                  const char **models,
                  unsigned int nmodels,
-                 const char *preferred)
+                 const char *preferred,
+                 unsigned int flags)
 {
-    return x86Decode(cpu, data->data.x86, models, nmodels, preferred);
+    return x86Decode(cpu, data->data.x86, models, nmodels, preferred, flags);
 }
 
 
@@ -1674,7 +1709,8 @@ static virCPUDefPtr
 x86Baseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
             const char **models,
-            unsigned int nmodels)
+            unsigned int nmodels,
+            unsigned int flags)
 {
     struct x86_map *map = NULL;
     struct x86_model *base_model = NULL;
@@ -1755,7 +1791,7 @@ x86Baseline(virCPUDefPtr *cpus,
     if (vendor && x86DataAddCpuid(base_model->data, &vendor->cpuid) < 0)
         goto error;
 
-    if (x86Decode(cpu, base_model->data, models, nmodels, NULL) < 0)
+    if (x86Decode(cpu, base_model->data, models, nmodels, NULL, flags) < 0)
         goto error;
 
     if (!outputVendor)

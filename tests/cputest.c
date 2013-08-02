@@ -75,6 +75,7 @@ struct data {
     const char *modelsName;
     unsigned int nmodels;
     const char *preferred;
+    unsigned int flags;
     int result;
 };
 
@@ -330,7 +331,7 @@ cpuTestBaseline(const void *arg)
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
         goto cleanup;
 
-    baseline = cpuBaseline(cpus, ncpus, NULL, 0);
+    baseline = cpuBaseline(cpus, ncpus, NULL, 0, data->flags);
     if (data->result < 0) {
         virResetLastError();
         if (!baseline)
@@ -510,12 +511,12 @@ mymain(void)
     }
 
 #define DO_TEST(arch, api, name, host, cpu,                             \
-                models, nmodels, preferred, result)                     \
+                models, nmodels, preferred, flags, result)              \
     do {                                                                \
         static struct data data = {                                     \
             arch, api, host, cpu, models,                               \
             models == NULL ? NULL : #models,                            \
-            nmodels, preferred, result    \
+            nmodels, preferred, flags, result                           \
         };                                                              \
         if (cpuTestRun(name, &data) < 0)                                \
             ret = -1;                                                   \
@@ -524,31 +525,31 @@ mymain(void)
 #define DO_TEST_COMPARE(arch, host, cpu, result)                        \
     DO_TEST(arch, API_COMPARE,                                          \
             host "/" cpu " (" #result ")",                              \
-            host, cpu, NULL, 0, NULL, result)
+            host, cpu, NULL, 0, NULL, 0, result)
 
 #define DO_TEST_UPDATE(arch, host, cpu, result)                         \
     do {                                                                \
         DO_TEST(arch, API_UPDATE,                                       \
                 cpu " on " host,                                        \
-                host, cpu, NULL, 0, NULL, 0);                           \
+                host, cpu, NULL, 0, NULL, 0, 0);                        \
         DO_TEST_COMPARE(arch, host, host "+" cpu, result);              \
     } while (0)
 
-#define DO_TEST_BASELINE(arch, name, result)                            \
+#define DO_TEST_BASELINE(arch, name, flags, result)                     \
     DO_TEST(arch, API_BASELINE, name, NULL, "baseline-" name,           \
-            NULL, 0, NULL, result)
+            NULL, 0, NULL, flags, result)
 
 #define DO_TEST_HASFEATURE(arch, host, feature, result)                 \
     DO_TEST(arch, API_HAS_FEATURE,                                      \
             host "/" feature " (" #result ")",                          \
-            host, feature, NULL, 0, NULL, result)
+            host, feature, NULL, 0, NULL, 0, result)
 
 #define DO_TEST_GUESTDATA(arch, host, cpu, models, preferred, result)   \
     DO_TEST(arch, API_GUEST_DATA,                                       \
             host "/" cpu " (" #models ", pref=" #preferred ")",         \
             host, cpu, models,                                          \
             models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
-            preferred, result)
+            preferred, 0, result)
 
     /* host to host comparison */
     DO_TEST_COMPARE("x86", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
@@ -593,11 +594,12 @@ mymain(void)
     DO_TEST_UPDATE("x86", "host", "host-passthrough", VIR_CPU_COMPARE_IDENTICAL);
 
     /* computing baseline CPUs */
-    DO_TEST_BASELINE("x86", "incompatible-vendors", -1);
-    DO_TEST_BASELINE("x86", "no-vendor", 0);
-    DO_TEST_BASELINE("x86", "some-vendors", 0);
-    DO_TEST_BASELINE("x86", "1", 0);
-    DO_TEST_BASELINE("x86", "2", 0);
+    DO_TEST_BASELINE("x86", "incompatible-vendors", 0, -1);
+    DO_TEST_BASELINE("x86", "no-vendor", 0, 0);
+    DO_TEST_BASELINE("x86", "some-vendors", 0, 0);
+    DO_TEST_BASELINE("x86", "1", 0, 0);
+    DO_TEST_BASELINE("x86", "2", 0, 0);
+    DO_TEST_BASELINE("x86", "3", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
 
     /* CPU features */
     DO_TEST_HASFEATURE("x86", "host", "vmx", YES);

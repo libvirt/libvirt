@@ -1,0 +1,7 @@
+<cpuTest>
+<cpu>
+  <arch>x86_64</arch>
+  <model>Westmere</model>
+  <topology sockets='1' cores='2' threads='1'/>
+</cpu>
+</cpuTest>
