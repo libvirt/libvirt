@@ -1204,7 +1204,9 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                  vm->def->resource->partition,
+                                  vm->def->resource ?
+                                  vm->def->resource->partition :
+                                  NULL,
                                   -1, &priv->cgroup) < 0)
         goto error;
 
@@ -1413,7 +1415,9 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
             goto error;
 
         if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                      vm->def->resource->partition,
+                                      vm->def->resource ?
+                                      vm->def->resource->partition :
+                                      NULL,
                                       -1, &priv->cgroup) < 0)
             goto error;
 
