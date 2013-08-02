@@ -35,12 +35,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virLibConnError(conn, error, info)                               \
-    virReportErrorHelper(VIR_FROM_NONE, error, NULL, __FUNCTION__,       \
+#define virLibConnError(conn, error, info)                              \
+    virReportErrorHelper(VIR_FROM_NONE, error, __FILE__, __FUNCTION__,  \
                          __LINE__, info)
 
 #define virLibDomainError(domain, error, info)                          \
-    virReportErrorHelper(VIR_FROM_DOM, error, NULL, __FUNCTION__,       \
+    virReportErrorHelper(VIR_FROM_DOM, error, __FILE__, __FUNCTION__,   \
                          __LINE__, info)
 
 /**
