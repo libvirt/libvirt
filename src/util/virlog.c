@@ -1181,9 +1181,11 @@ virLogOutputToJournald(virLogSource source,
     journalAddInt(&state, "PRIORITY", priority);
     journalAddString(&state, "LIBVIRT_SOURCE",
                      virLogSourceTypeToString(source));
-    journalAddString(&state, "CODE_FILE", filename);
+    if (filename)
+        journalAddString(&state, "CODE_FILE", filename);
     journalAddInt(&state, "CODE_LINE", linenr);
-    journalAddString(&state, "CODE_FUNC", funcname);
+    if (funcname)
+        journalAddString(&state, "CODE_FUNC", funcname);
 
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
