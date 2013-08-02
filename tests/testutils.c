@@ -66,6 +66,7 @@
 
 static unsigned int testDebug = -1;
 static unsigned int testVerbose = -1;
+static unsigned int testExpensive = -1;
 
 static unsigned int testOOM = 0;
 static size_t testCounter = 0;
@@ -579,6 +580,13 @@ virTestGetVerbose(void) {
     if (testVerbose == -1)
         testVerbose = virTestGetFlag("VIR_TEST_VERBOSE");
     return testVerbose || virTestGetDebug();
+}
+
+unsigned int
+virTestGetExpensive(void) {
+    if (testExpensive == -1)
+        testExpensive = virTestGetFlag("VIR_TEST_EXPENSIVE");
+    return testExpensive;
 }
 
 int virtTestMain(int argc,

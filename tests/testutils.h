@@ -65,6 +65,7 @@ int virtTestDifferenceBin(FILE *stream,
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
+unsigned int virTestGetExpensive(void);
 
 char *virtTestLogContentAndReset(void);
 

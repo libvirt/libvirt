@@ -1,4 +1,22 @@
-# source this file; set up for tests
+# test-lib.sh: source this file; set up for tests
+
+# Copyright (C) 2008-2013 Red Hat, Inc.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# Based on an idea from GNU coreutils
 
 test -z "$abs_srcdir" && abs_srcdir=$(pwd)
 test -z "$abs_builddir" && abs_builddir=$(pwd)
@@ -158,15 +176,12 @@ require_selinux_()
   esac
 }
 
-very_expensive_()
+test_expensive()
 {
-  if test "$RUN_VERY_EXPENSIVE_TESTS" != yes; then
+  if test "$VIR_TEST_EXPENSIVE" != 1; then
     skip_test_ '
 This test is very expensive, so it is disabled by default.
-To run it anyway, rerun make check with the RUN_VERY_EXPENSIVE_TESTS
-environment variable set to yes.  E.g.,
-
-  env RUN_VERY_EXPENSIVE_TESTS=yes make check
+To run it anyway, rerun: make check VIR_TEST_EXPENSIVE=1
 '
   fi
 }
