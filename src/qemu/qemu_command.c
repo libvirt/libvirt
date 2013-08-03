@@ -4211,9 +4211,26 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             virBufferAddLit(&opt, "ide-drive");
         }
 
-        virBufferAsprintf(&opt, ",bus=ahci%d.%d",
-                          disk->info.addr.drive.controller,
-                          disk->info.addr.drive.unit);
+        if (qemuDomainMachineIsQ35(def) &&
+            disk->info.addr.drive.controller == 0) {
+            /* Q35 machines have an implicit ahci (sata) controller at
+             * 00:1F.2 which has no "id" associated with it. For this
+             * reason, we can't refer to it as "ahci0". Instead, we
+             * don't give an id, which qemu interprets as "use the
+             * first ahci controller". We then need to specify the
+             * unit with "unit=%d" rather than adding it onto the bus
+             * arg.
+             */
+            virBufferAsprintf(&opt, ",unit=%d", disk->info.addr.drive.unit);
+        } else {
+            /* All other ahci controllers have been created by
+             * libvirt, so they *do* have an id, and we can identify
+             * them that way.
+             */
+            virBufferAsprintf(&opt, ",bus=ahci%d.%d",
+                              disk->info.addr.drive.controller,
+                              disk->info.addr.drive.unit);
+        }
         break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {

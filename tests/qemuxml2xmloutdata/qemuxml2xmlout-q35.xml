@@ -14,6 +14,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
     <controller type='pci' index='0' model='pcie-root'/>
     <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
     <controller type='pci' index='2' model='pci-bridge'/>
