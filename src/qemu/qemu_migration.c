@@ -1996,12 +1996,11 @@ static char
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
         /* TODO support NBD for TUNNELLED migration */
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                _("NBD in tunnelled migration is currently not supported"));
-            goto cleanup;
+            VIR_WARN("NBD in tunnelled migration is currently not supported");
+        } else {
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+            priv->nbdPort = 0;
         }
-        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-        priv->nbdPort = 0;
     }
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
