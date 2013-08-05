@@ -2896,7 +2896,7 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
 {
     struct sexpr *root = NULL;
     size_t i;
-    int ret = -1;
+    int ret = 0;
     struct sexpr *_for_i, *node;
 
     if (maxnames == 0)
@@ -2919,16 +2919,15 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
             break;
     }
 
-    ret = 0;
-
 cleanup:
     sexpr_free(root);
     return ret;
 
 error:
-    for (i = 0; ret != -1 && i < ret; ++i)
+    for (i = 0; i < ret; ++i)
         VIR_FREE(names[i]);
 
+    ret = -1;
     goto cleanup;
 }
 
