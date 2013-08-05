@@ -152,7 +152,8 @@ static void testTLSDerEncode(ASN1_TYPE src,
  * TLS certificate code
  */
 void
-testTLSGenerateCert(struct testTLSCertReq *req)
+testTLSGenerateCert(struct testTLSCertReq *req,
+                    gnutls_x509_crt_t ca)
 {
     gnutls_x509_crt_t crt;
     int err;
@@ -379,10 +380,10 @@ testTLSGenerateCert(struct testTLSCertReq *req)
 
 
     /*
-     * If no 'cart' is set then we are self signing
-     * the cert. This is done for CA certs
+     * If no 'ca' is set then we are self signing
+     * the cert. This is done for the root CA certs
      */
-    if ((err = gnutls_x509_crt_sign(crt, req->cacrt ? req->cacrt : crt, privkey) < 0)) {
+    if ((err = gnutls_x509_crt_sign(crt, ca ? ca : crt, privkey) < 0)) {
         VIR_WARN("Failed to sign certificate %s", gnutls_strerror(err));
         abort();
     }

@@ -36,7 +36,6 @@ extern const char *keyfile;
  */
 struct testTLSCertReq {
     gnutls_x509_crt_t crt;
-    gnutls_x509_crt_t cacrt; /* If not set, then the cert will be self-signed */
 
     const char *filename;
 
@@ -70,7 +69,8 @@ struct testTLSCertReq {
     int expire_offset;
 };
 
-void testTLSGenerateCert(struct testTLSCertReq *req);
+void testTLSGenerateCert(struct testTLSCertReq *req,
+                         gnutls_x509_crt_t ca);
 void testTLSDiscardCert(struct testTLSCertReq *req);
 
 void testTLSInit(void);

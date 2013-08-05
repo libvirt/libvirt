@@ -100,20 +100,6 @@ static int testTLSSessionInit(const void *opaque)
     ignore_value(virSetNonBlock(channel[1]));
 
 
-    /* Generate all the certs we need for this test */
-    testTLSGenerateCert(&data->careq);
-    data->serverreq.cacrt = data->careq.crt;
-    testTLSGenerateCert(&data->serverreq);
-
-    if (data->othercareq.filename) {
-        testTLSGenerateCert(&data->othercareq);
-        data->clientreq.cacrt = data->othercareq.crt;
-    } else {
-        data->clientreq.cacrt = data->careq.crt;
-    }
-    testTLSGenerateCert(&data->clientreq);
-
-
     /* We skip initial sanity checks here because we
      * want to make sure that problems are being
      * detected at the TLS session validation stage
@@ -243,12 +229,6 @@ cleanup:
     virObjectUnref(serverSess);
     virObjectUnref(clientSess);
 
-    testTLSDiscardCert(&data->careq);
-    if (data->othercareq.filename)
-        testTLSDiscardCert(&data->othercareq);
-    testTLSDiscardCert(&data->clientreq);
-    testTLSDiscardCert(&data->serverreq);
-
     VIR_FORCE_CLOSE(channel[0]);
     VIR_FORCE_CLOSE(channel[1]);
     return ret;
@@ -275,7 +255,8 @@ mymain(void)
         data.expectClientFail = _expectClientFail;                      \
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
-        if (virtTestRun("TLS Session", 1, testTLSSessionInit, &data) < 0) \
+        if (virtTestRun("TLS Session " #_serverReq " + " #_clientReq,   \
+                        1, testTLSSessionInit, &data) < 0)              \
             ret = -1;                                                   \
     } while (0)
 
@@ -292,68 +273,87 @@ mymain(void)
         data.expectClientFail = _expectClientFail;                      \
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
-        if (virtTestRun("TLS Session", 1, testTLSSessionInit, &data) < 0) \
+        if (virtTestRun("TLS Session " #_serverReq " + " #_clientReq,   \
+                        1, testTLSSessionInit, &data) < 0)              \
             ret = -1;                                                   \
     } while (0)
+
+# define TLS_CERT_REQ(varname, cavarname,                               \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
+    static struct testTLSCertReq varname = {                            \
+        NULL, #varname ".pem",                                          \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
+    };                                                                  \
+    testTLSGenerateCert(&varname, cavarname.crt)
+
+# define TLS_ROOT_REQ(varname,                                          \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
+    static struct testTLSCertReq varname = {                            \
+        NULL, #varname ".pem",                                          \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
+    };                                                                  \
+    testTLSGenerateCert(&varname, NULL)
 
     /* A perfect CA, perfect client & perfect server */
 
     /* Basic:CA:critical */
-    static struct testTLSCertReq cacertreq = {
-        NULL, NULL, "cacert.pem", "UK",
-        "libvirt CA", NULL, NULL, NULL, NULL,
-        true, true, true,
-        true, true, GNUTLS_KEY_KEY_CERT_SIGN,
-        false, false, NULL, NULL,
-        0, 0,
-    };
-    static struct testTLSCertReq cacert1req = {
-        NULL, NULL, "cacert1.pem", "UK",
-        "libvirt CA 1", NULL, NULL, NULL, NULL,
-        true, true, true,
-        false, false, 0,
-        false, false, NULL, NULL,
-        0, 0,
-    };
-    static struct testTLSCertReq servercertreq = {
-        NULL, NULL, "servercert.pem", "UK",
-        "libvirt.org", NULL, NULL, NULL, NULL,
-        true, true, false,
-        true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
-        true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
-        0, 0,
-    };
-    static struct testTLSCertReq clientcertreq = {
-        NULL, NULL, "clientcert.pem", "UK",
-        "libvirt", NULL, NULL, NULL, NULL,
-        true, true, false,
-        true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
-        true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
-        0, 0,
-    };
+    TLS_ROOT_REQ(cacertreq,
+                  "UK", "libvirt CA", NULL, NULL, NULL, NULL,
+                  true, true, true,
+                  true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                  false, false, NULL, NULL,
+                  0, 0);
+
+    TLS_ROOT_REQ(altcacertreq,
+                 "UK", "libvirt CA 1", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 false, false, 0,
+                 false, false, NULL, NULL,
+                 0, 0);
+
+    TLS_CERT_REQ(servercertreq, cacertreq,
+                 "UK", "libvirt.org", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
+                 0, 0);
+    TLS_CERT_REQ(clientcertreq, cacertreq,
+                 "UK", "libvirt", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
+                 0, 0);
+
+    TLS_CERT_REQ(clientcertaltreq, altcacertreq,
+                 "UK", "libvirt", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
+                 0, 0);
 
     DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", NULL);
-    DO_SESS_TEST_EXT(cacertreq, cacert1req, servercertreq, clientcertreq, true, true, "libvirt.org", NULL);
+    DO_SESS_TEST_EXT(cacertreq, altcacertreq, servercertreq, clientcertaltreq, true, true, "libvirt.org", NULL);
+
 
     /* When an altname is set, the CN is ignored, so it must be duplicated
      * as an altname for it to match */
-    static struct testTLSCertReq servercertalt1req = {
-        NULL, NULL, "servercert.pem", "UK",
-        "libvirt.org", "www.libvirt.org", "libvirt.org", "192.168.122.1", "fec0::dead:beaf",
-        true, true, false,
-        true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
-        true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
-        0, 0,
-    };
+    TLS_CERT_REQ(servercertalt1req, cacertreq,
+                 "UK", "libvirt.org", "www.libvirt.org", "libvirt.org", "192.168.122.1", "fec0::dead:beaf",
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
+                 0, 0);
     /* This intentionally doesn't replicate */
-    static struct testTLSCertReq servercertalt2req = {
-        NULL, NULL, "servercert.pem", "UK",
-        "libvirt.org", "www.libvirt.org", "wiki.libvirt.org", "192.168.122.1", "fec0::dead:beaf",
-        true, true, false,
-        true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
-        true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
-        0, 0,
-    };
+    TLS_CERT_REQ(servercertalt2req, cacertreq,
+                 "UK", "libvirt.org", "www.libvirt.org", "wiki.libvirt.org", "192.168.122.1", "fec0::dead:beaf",
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
+                 0, 0);
 
     DO_SESS_TEST(cacertreq, servercertalt1req, clientcertreq, false, false, "libvirt.org", NULL);
     DO_SESS_TEST(cacertreq, servercertalt1req, clientcertreq, false, false, "www.libvirt.org", NULL);
@@ -395,6 +395,16 @@ mymain(void)
     DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, true, false, "libvirt.org", wildcards4);
     DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards5);
     DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards6);
+
+    testTLSDiscardCert(&clientcertreq);
+    testTLSDiscardCert(&clientcertaltreq);
+
+    testTLSDiscardCert(&servercertreq);
+    testTLSDiscardCert(&servercertalt1req);
+    testTLSDiscardCert(&servercertalt2req);
+
+    testTLSDiscardCert(&cacertreq);
+    testTLSDiscardCert(&altcacertreq);
 
     testTLSCleanup();
 
