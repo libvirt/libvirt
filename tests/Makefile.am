@@ -134,7 +134,7 @@ test_programs += virdbustest \
 endif
 
 if WITH_GNUTLS
-test_programs += virnettlscontexttest
+test_programs += virnettlscontexttest virnettlssessiontest
 endif
 
 if WITH_SECDRIVER_SELINUX
@@ -601,17 +601,28 @@ virnetsockettest_LDADD = $(LDADDS)
 
 if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
-	virnettlscontexttest.c testutils.h testutils.c
+	virnettlscontexttest.c \
+	virnettlshelpers.h virnettlshelpers.c \
+	testutils.h testutils.c
 virnettlscontexttest_LDADD = $(LDADDS)
+virnettlssessiontest_SOURCES = \
+	virnettlssessiontest.c \
+	virnettlshelpers.h virnettlshelpers.c \
+	testutils.h testutils.c
+virnettlssessiontest_LDADD = $(LDADDS)
 if HAVE_LIBTASN1
 virnettlscontexttest_SOURCES += pkix_asn1_tab.c
 virnettlscontexttest_LDADD += -ltasn1
+virnettlssessiontest_SOURCES += pkix_asn1_tab.c
+virnettlssessiontest_LDADD += -ltasn1
 else
 EXTRA_DIST += pkix_asn1_tab.c
 endif
 else
 EXTRA_DIST += \
-	virnettlscontexttest.c testutils.h testutils.c pkix_asn1_tab.c
+	virnettlscontexttest.c virnettlssessiontest.c \
+	virnettlshelpers.h virnettlshelpers.c \
+	testutils.h testutils.c pkix_asn1_tab.c
 endif
 
 virtimetest_SOURCES = \

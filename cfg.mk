@@ -905,7 +905,7 @@ $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protoco
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.h$$
 
 _src1=libvirt|fdstream|qemu/qemu_monitor|util/(vircommand|virfile)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
-_test1=shunloadtest|virnettlscontexttest|vircgroupmock
+_test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/($(_test1)))\.c$$
 
