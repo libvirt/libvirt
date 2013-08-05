@@ -35,6 +35,7 @@ module Test_libvirtd =
              { "2" = "fred@EXAMPLE.COM" }
         }
         { "max_clients" = "20" }
+        { "max_queued_clients" = "1000" }
         { "min_workers" = "5" }
         { "max_workers" = "20" }
         { "prio_workers" = "5" }
