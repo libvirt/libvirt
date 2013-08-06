@@ -71,6 +71,9 @@ struct testTLSCertReq {
 
 void testTLSGenerateCert(struct testTLSCertReq *req,
                          gnutls_x509_crt_t ca);
+void testTLSWriteCertChain(const char *filename,
+                           gnutls_x509_crt_t *certs,
+                           size_t ncerts);
 void testTLSDiscardCert(struct testTLSCertReq *req);
 
 void testTLSInit(void);

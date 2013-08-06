@@ -455,14 +455,15 @@ static int virNetTLSContextCheckCert(gnutls_x509_crt_t cert,
 
 static int virNetTLSContextCheckCertPair(gnutls_x509_crt_t cert,
                                          const char *certFile,
-                                         gnutls_x509_crt_t cacert,
+                                         gnutls_x509_crt_t *cacerts,
+                                         size_t ncacerts,
                                          const char *cacertFile,
                                          bool isServer)
 {
     unsigned int status;
 
     if (gnutls_x509_crt_list_verify(&cert, 1,
-                                    &cacert, 1,
+                                    cacerts, ncacerts,
                                     NULL, 0,
                                     0, &status) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR, isServer ?
@@ -500,16 +501,15 @@ static int virNetTLSContextCheckCertPair(gnutls_x509_crt_t cert,
 
 
 static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
-                                                          bool isServer,
-                                                          bool isCA ATTRIBUTE_UNUSED)
+                                                          bool isServer)
 {
     gnutls_datum_t data;
     gnutls_x509_crt_t cert = NULL;
     char *buf = NULL;
     int ret = -1;
 
-    VIR_DEBUG("isServer %d isCA %d certFile %s",
-              isServer, isCA, certFile);
+    VIR_DEBUG("isServer %d certFile %s",
+              isServer, certFile);
 
     if (gnutls_x509_crt_init(&cert) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
@@ -543,31 +543,69 @@ cleanup:
 }
 
 
+static int virNetTLSContextLoadCACertListFromFile(const char *certFile,
+                                                  gnutls_x509_crt_t *certs,
+                                                  size_t *ncerts)
+{
+    gnutls_datum_t data;
+    char *buf = NULL;
+    int ret = -1;
+    unsigned int certMax = *ncerts;
+
+    *ncerts = 0;
+    VIR_DEBUG("certFile %s", certFile);
+
+    if (virFileReadAll(certFile, (1<<16), &buf) < 0)
+        goto cleanup;
+
+    data.data = (unsigned char *)buf;
+    data.size = strlen(buf);
+
+    if (gnutls_x509_crt_list_import(certs, &certMax, &data, GNUTLS_X509_FMT_PEM, 0) < 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Unable to import CA certificate list %s"),
+                       certFile);
+        goto cleanup;
+    }
+    *ncerts = certMax;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(buf);
+    return ret;
+}
+
+
+#define MAX_CERTS 16
 static int virNetTLSContextSanityCheckCredentials(bool isServer,
                                                   const char *cacertFile,
                                                   const char *certFile)
 {
     gnutls_x509_crt_t cert = NULL;
-    gnutls_x509_crt_t cacert = NULL;
+    gnutls_x509_crt_t cacerts[MAX_CERTS];
+    size_t ncacerts = MAX_CERTS;
+    size_t i;
     int ret = -1;
 
     if ((access(certFile, R_OK) == 0) &&
-        !(cert = virNetTLSContextLoadCertFromFile(certFile, isServer, false)))
+        !(cert = virNetTLSContextLoadCertFromFile(certFile, isServer)))
         goto cleanup;
     if ((access(cacertFile, R_OK) == 0) &&
-        !(cacert = virNetTLSContextLoadCertFromFile(cacertFile, isServer, false)))
+        virNetTLSContextLoadCACertListFromFile(cacertFile, cacerts, &ncacerts) < 0)
         goto cleanup;
 
     if (cert &&
         virNetTLSContextCheckCert(cert, certFile, isServer, false) < 0)
         goto cleanup;
 
-    if (cacert &&
-        virNetTLSContextCheckCert(cacert, cacertFile, isServer, true) < 0)
-        goto cleanup;
+    for (i = 0; i < ncacerts; i++) {
+        if (virNetTLSContextCheckCert(cacerts[i], cacertFile, isServer, true) < 0)
+            goto cleanup;
+    }
 
-    if (cert && cacert &&
-        virNetTLSContextCheckCertPair(cert, certFile, cacert, cacertFile, isServer) < 0)
+    if (cert && ncacerts &&
+        virNetTLSContextCheckCertPair(cert, certFile, cacerts, ncacerts, cacertFile, isServer) < 0)
         goto cleanup;
 
     ret = 0;
@@ -575,8 +613,8 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
 cleanup:
     if (cert)
         gnutls_x509_crt_deinit(cert);
-    if (cacert)
-        gnutls_x509_crt_deinit(cacert);
+    for (i = 0; i < ncacerts; i++)
+        gnutls_x509_crt_deinit(cacerts[i]);
     return ret;
 }
 

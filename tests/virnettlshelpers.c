@@ -406,6 +406,40 @@ testTLSGenerateCert(struct testTLSCertReq *req,
 }
 
 
+void testTLSWriteCertChain(const char *filename,
+                           gnutls_x509_crt_t *certs,
+                           size_t ncerts)
+{
+    size_t i;
+    int fd;
+    int err;
+    static char buffer[1024*1024];
+    size_t size;
+
+    if ((fd = open(filename, O_WRONLY|O_CREAT, 0600)) < 0) {
+        VIR_WARN("Failed to open %s", filename);
+        abort();
+    }
+
+    for (i = 0; i < ncerts; i++) {
+        size = sizeof(buffer);
+        if ((err = gnutls_x509_crt_export(certs[i], GNUTLS_X509_FMT_PEM, buffer, &size) < 0)) {
+            VIR_WARN("Failed to export certificate %s", gnutls_strerror(err));
+            unlink(filename);
+            abort();
+        }
+
+        if (safewrite(fd, buffer, size) != size) {
+            VIR_WARN("Failed to write certificate to %s", filename);
+            unlink(filename);
+            abort();
+        }
+    }
+
+    VIR_FORCE_CLOSE(fd);
+}
+
+
 void testTLSDiscardCert(struct testTLSCertReq *req)
 {
     if (!req->crt)

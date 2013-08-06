@@ -193,7 +193,7 @@ static int testTLSSessionInit(const void *opaque)
             VIR_WARN("Expected server cert check fail");
             goto cleanup;
         } else {
-            VIR_DEBUG("Not unexpected server cert fail");
+            VIR_DEBUG("No unexpected server cert fail");
         }
     }
 
@@ -213,7 +213,7 @@ static int testTLSSessionInit(const void *opaque)
             VIR_WARN("Expected client cert check fail");
             goto cleanup;
         } else {
-            VIR_DEBUG("Not unexpected client cert fail");
+            VIR_DEBUG("No unexpected client cert fail");
         }
     }
 
@@ -405,6 +405,57 @@ mymain(void)
     DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
                  false, false, "libvirt.org", wildcards6);
 
+    TLS_ROOT_REQ(cacertrootreq,
+                 "UK", "libvirt root", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel1areq, cacertrootreq,
+                 "UK", "libvirt level 1a", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel1breq, cacertrootreq,
+                 "UK", "libvirt level 1b", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel2areq, cacertlevel1areq,
+                 "UK", "libvirt level 2a", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(servercertlevel3areq, cacertlevel2areq,
+                 "UK", "libvirt.org", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
+                 0, 0);
+    TLS_CERT_REQ(clientcertlevel2breq, cacertlevel1breq,
+                 "UK", "libvirt client level 2b", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
+                 0, 0);
+
+    gnutls_x509_crt_t certchain[] = {
+        cacertrootreq.crt,
+        cacertlevel1areq.crt,
+        cacertlevel1breq.crt,
+        cacertlevel2areq.crt,
+    };
+
+    testTLSWriteCertChain("cacertchain.pem",
+                          certchain,
+                          ARRAY_CARDINALITY(certchain));
+
+    DO_SESS_TEST("cacertchain.pem", servercertlevel3areq.filename, clientcertlevel2breq.filename,
+                 false, false, "libvirt.org", NULL);
+
     testTLSDiscardCert(&clientcertreq);
     testTLSDiscardCert(&clientcertaltreq);
 
@@ -414,6 +465,14 @@ mymain(void)
 
     testTLSDiscardCert(&cacertreq);
     testTLSDiscardCert(&altcacertreq);
+
+    testTLSDiscardCert(&cacertrootreq);
+    testTLSDiscardCert(&cacertlevel1areq);
+    testTLSDiscardCert(&cacertlevel1breq);
+    testTLSDiscardCert(&cacertlevel2areq);
+    testTLSDiscardCert(&servercertlevel3areq);
+    testTLSDiscardCert(&clientcertlevel2breq);
+    unlink("cacertchain.pem");
 
     testTLSCleanup();
 

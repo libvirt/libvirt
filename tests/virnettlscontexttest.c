@@ -510,6 +510,57 @@ mymain(void)
     DO_CTX_TEST(true, cacertreq.filename, servercertnew1req.filename, true);
     DO_CTX_TEST(false, cacertreq.filename, clientcertnew1req.filename, true);
 
+    TLS_ROOT_REQ(cacertrootreq,
+                 "UK", "libvirt root", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel1areq, cacertrootreq,
+                 "UK", "libvirt level 1a", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel1breq, cacertrootreq,
+                 "UK", "libvirt level 1b", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(cacertlevel2areq, cacertlevel1areq,
+                 "UK", "libvirt level 2a", NULL, NULL, NULL, NULL,
+                 true, true, true,
+                 true, true, GNUTLS_KEY_KEY_CERT_SIGN,
+                 false, false, NULL, NULL,
+                 0, 0);
+    TLS_CERT_REQ(servercertlevel3areq, cacertlevel2areq,
+                 "UK", "libvirt.org", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
+                 0, 0);
+    TLS_CERT_REQ(clientcertlevel2breq, cacertlevel1breq,
+                 "UK", "libvirt client level 2b", NULL, NULL, NULL, NULL,
+                 true, true, false,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
+                 0, 0);
+
+    gnutls_x509_crt_t certchain[] = {
+        cacertrootreq.crt,
+        cacertlevel1areq.crt,
+        cacertlevel1breq.crt,
+        cacertlevel2areq.crt,
+    };
+
+    testTLSWriteCertChain("cacertchain.pem",
+                          certchain,
+                          ARRAY_CARDINALITY(certchain));
+
+    DO_CTX_TEST(true, "cacertchain.pem", servercertlevel3areq.filename, false);
+    DO_CTX_TEST(false, "cacertchain.pem", clientcertlevel2breq.filename, false);
+
     testTLSDiscardCert(&cacertreq);
     testTLSDiscardCert(&cacert1req);
     testTLSDiscardCert(&cacert2req);
@@ -557,6 +608,14 @@ mymain(void)
     testTLSDiscardCert(&servercertnewreq);
     testTLSDiscardCert(&servercertnew1req);
     testTLSDiscardCert(&clientcertnew1req);
+
+    testTLSDiscardCert(&cacertrootreq);
+    testTLSDiscardCert(&cacertlevel1areq);
+    testTLSDiscardCert(&cacertlevel1breq);
+    testTLSDiscardCert(&cacertlevel2areq);
+    testTLSDiscardCert(&servercertlevel3areq);
+    testTLSDiscardCert(&clientcertlevel2breq);
+    unlink("cacertchain.pem");
 
     testTLSCleanup();
 
