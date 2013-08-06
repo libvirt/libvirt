@@ -160,6 +160,7 @@ typedef testDomainNamespaceDef *testDomainNamespaceDefPtr;
 struct _testDomainNamespaceDef {
     int runstate;
     bool transient;
+    bool hasManagedSave;
 };
 
 static void
@@ -197,6 +198,13 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     }
     nsdata->transient = tmp;
 
+    tmp = virXPathBoolean("boolean(./test:hasmanagedsave)", ctxt);
+    if (tmp == -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("invalid hasmanagedsave"));
+        goto error;
+    }
+    nsdata->hasManagedSave = tmp;
+
     tmp = virXPathUInt("string(./test:runstate)", ctxt, &tmpuint);
     if (tmp == 0) {
         if (tmpuint >= VIR_DOMAIN_LAST) {
@@ -216,6 +224,11 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     if (nsdata->transient && nsdata->runstate == VIR_DOMAIN_SHUTOFF) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
             _("transient domain cannot have runstate 'shutoff'"));
+        goto error;
+    }
+    if (nsdata->hasManagedSave && nsdata->runstate != VIR_DOMAIN_SHUTOFF) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+            _("domain with managedsave data can only have runstate 'shutoff'"));
         goto error;
     }
 
@@ -588,6 +601,7 @@ testDomainStartState(testConnPtr privconn,
         goto cleanup;
     }
 
+    dom->hasManagedSave = false;
     ret = 0;
 cleanup:
     if (ret < 0)
@@ -937,6 +951,7 @@ testParseDomains(testConnPtr privconn,
 
         nsdata = def->namespaceData;
         obj->persistent = !nsdata->transient;
+        obj->hasManagedSave = nsdata->hasManagedSave;
 
         if (nsdata->runstate != VIR_DOMAIN_SHUTOFF) {
             if (testDomainStartState(privconn, obj,
@@ -2825,7 +2840,7 @@ static int testDomainUndefineFlags(virDomainPtr domain,
     virDomainEventPtr event = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
 
     testDriverLock(privconn);
     privdom = virDomainObjListFindByName(privconn->domains,
@@ -2836,9 +2851,19 @@ static int testDomainUndefineFlags(virDomainPtr domain,
         goto cleanup;
     }
 
+    if (privdom->hasManagedSave &&
+        !(flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Refusing to undefine while domain managed "
+                         "save image exists"));
+        goto cleanup;
+    }
+
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
+    privdom->hasManagedSave = false;
+
     if (virDomainObjIsActive(privdom)) {
         privdom->persistent = 0;
     } else {
@@ -5969,6 +5994,111 @@ testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
     return cpuGetModels(arch, models);
 }
 
+static int
+testDomainManagedSave(virDomainPtr dom, unsigned int flags)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
+                  VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
+
+    testDriverLock(privconn);
+    vm = virDomainObjListFindByName(privconn->domains, dom->name);
+    testDriverUnlock(privconn);
+
+    if (vm == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot do managed save for transient domain"));
+        goto cleanup;
+    }
+
+    testDomainShutdownState(dom, vm, VIR_DOMAIN_SHUTOFF_SAVED);
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_SAVED);
+    vm->hasManagedSave = true;
+
+    ret = 0;
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    if (event) {
+        testDriverLock(privconn);
+        testDomainEventQueue(privconn, event);
+        testDriverUnlock(privconn);
+    }
+
+    return ret;
+}
+
+
+static int
+testDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    testDriverLock(privconn);
+
+    vm = virDomainObjListFindByName(privconn->domains, dom->name);
+    if (vm == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    ret = vm->hasManagedSave;
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    testDriverUnlock(privconn);
+    return ret;
+}
+
+static int
+testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    testDriverLock(privconn);
+
+    vm = virDomainObjListFindByName(privconn->domains, dom->name);
+    if (vm == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    vm->hasManagedSave = false;
+    ret = 0;
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    testDriverUnlock(privconn);
+    return ret;
+}
+
+
 static virDriver testDriver = {
     .no = VIR_DRV_TEST,
     .name = "Test",
@@ -6042,6 +6172,9 @@ static virDriver testDriver = {
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
     .connectGetCPUModelNames = testConnectGetCPUModelNames, /* 1.1.3 */
+    .domainManagedSave = testDomainManagedSave, /* 1.1.3 */
+    .domainHasManagedSaveImage = testDomainHasManagedSaveImage, /* 1.1.3 */
+    .domainManagedSaveRemove = testDomainManagedSaveRemove, /* 1.1.3 */
 };
 
 static virNetworkDriver testNetworkDriver = {

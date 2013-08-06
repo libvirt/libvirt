@@ -34,7 +34,7 @@ Max memory:     261072 KiB\n\
 Used memory:    131072 KiB\n\
 Persistent:     yes\n\
 Autostart:      disable\n\
-Managed save:   unknown\n\
+Managed save:   no\n\
 \n";
 static const char *domuuid_fc4 = DOM_UUID "\n\n";
 static const char *domid_fc4 = "2\n\n";
