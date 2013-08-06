@@ -187,7 +187,7 @@ struct _xenUnifiedPrivate {
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 
-char *xenDomainUsedCpus(virDomainPtr dom);
+char *xenDomainUsedCpus(virDomainPtr dom, virDomainDefPtr def);
 
 virDomainXMLOptionPtr xenDomainXMLConfInit(void);
 
