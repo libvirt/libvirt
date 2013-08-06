@@ -379,8 +379,7 @@ testDomainGenerateIfnames(virDomainDefPtr domdef)
 
 /* Helper to update info for a single VCPU */
 static int
-testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     virDomainObjPtr dom,
+testDomainUpdateVCPU(virDomainObjPtr dom,
                      int vcpu,
                      int maplen,
                      int maxcpu)
@@ -430,12 +429,11 @@ testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
  * @clear_all: If true, rebuild info for ALL vcpus, not just newly added vcpus
  */
 static int
-testDomainUpdateVCPUs(virConnectPtr conn,
+testDomainUpdateVCPUs(testConnPtr privconn,
                       virDomainObjPtr dom,
                       int nvcpus,
                       unsigned int clear_all)
 {
-    testConnPtr privconn = conn->privateData;
     testDomainObjPrivatePtr privdata = dom->privateData;
     size_t i;
     int ret = -1;
@@ -453,13 +451,13 @@ testDomainUpdateVCPUs(virConnectPtr conn,
     /* Set running VCPU and cpumap state */
     if (clear_all) {
         for (i = 0; i < nvcpus; ++i)
-            if (testDomainUpdateVCPU(conn, dom, i, cpumaplen, maxcpu) < 0)
+            if (testDomainUpdateVCPU(dom, i, cpumaplen, maxcpu) < 0)
                 goto cleanup;
 
     } else if (nvcpus > dom->def->vcpus) {
         /* VCPU amount has grown, populate info for the new vcpus */
         for (i = dom->def->vcpus; i < nvcpus; ++i)
-            if (testDomainUpdateVCPU(conn, dom, i, cpumaplen, maxcpu) < 0)
+            if (testDomainUpdateVCPU(dom, i, cpumaplen, maxcpu) < 0)
                 goto cleanup;
     }
 
@@ -488,14 +486,13 @@ testDomainShutdownState(virDomainPtr domain,
 
 /* Set up domain runtime state */
 static int
-testDomainStartState(virConnectPtr conn,
+testDomainStartState(testConnPtr privconn,
                      virDomainObjPtr dom,
                      virDomainRunningReason reason)
 {
-    testConnPtr privconn = conn->privateData;
     int ret = -1;
 
-    if (testDomainUpdateVCPUs(conn, dom, dom->def->vcpus, 1) < 0)
+    if (testDomainUpdateVCPUs(privconn, dom, dom->def->vcpus, 1) < 0)
         goto cleanup;
 
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
@@ -587,7 +584,8 @@ static int testOpenDefault(virConnectPtr conn) {
     domdef = NULL;
 
     domobj->persistent = 1;
-    if (testDomainStartState(conn, domobj, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+    if (testDomainStartState(privconn, domobj,
+                             VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virObjectUnlock(domobj);
         goto error;
     }
@@ -779,8 +777,7 @@ error:
 }
 
 static int
-testParseDomains(virConnectPtr conn,
-                 testConnPtr privconn, const char *file,
+testParseDomains(testConnPtr privconn, const char *file,
                  xmlDocPtr doc, xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
@@ -829,7 +826,8 @@ testParseDomains(virConnectPtr conn,
         }
 
         obj->persistent = 1;
-        if (testDomainStartState(conn, obj, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+        if (testDomainStartState(privconn, obj,
+                                 VIR_DOMAIN_RUNNING_BOOTED) < 0) {
             virObjectUnlock(obj);
             goto error;
         }
@@ -1180,7 +1178,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 
     if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
         goto error;
-    if (testParseDomains(conn, privconn, file, doc, ctxt) < 0)
+    if (testParseDomains(privconn, file, doc, ctxt) < 0)
         goto error;
     if (testParseNetworks(privconn, file, doc, ctxt) < 0)
         goto error;
@@ -1428,7 +1426,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     def = NULL;
 
-    if (testDomainStartState(conn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0)
+    if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0)
         goto cleanup;
 
     event = virDomainEventNewFromObj(dom,
@@ -2043,7 +2041,7 @@ testDomainRestoreFlags(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (testDomainStartState(conn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0)
+    if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0)
         goto cleanup;
 
     event = virDomainEventNewFromObj(dom,
@@ -2342,11 +2340,11 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         break;
 
     case VIR_DOMAIN_AFFECT_LIVE:
-        ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
+        ret = testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0);
         break;
 
     case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
-        ret = testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0);
+        ret = testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0);
         if (ret == 0) {
             persistentDef->vcpus = nrCpus;
         }
@@ -2668,7 +2666,7 @@ static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
         goto cleanup;
     }
 
-    if (testDomainStartState(domain->conn, privdom,
+    if (testDomainStartState(privconn, privdom,
                              VIR_DOMAIN_RUNNING_BOOTED) < 0)
         goto cleanup;
     domain->id = privdom->def->id;
