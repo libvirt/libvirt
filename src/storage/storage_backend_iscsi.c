@@ -732,15 +732,29 @@ virStorageBackendISCSISetAuth(const char *portal,
             conn->secretDriver->secretGetValue(secret, &secret_size, 0,
                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
         if (!secret_value) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get the value of the secret "
-                             "for username %s"), chap.username);
+            if (chap.secret.uuidUsable) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not get the value of the secret "
+                                 "for username %s using uuid '%s'"),
+                                 chap.username, chap.secret.uuid);
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not get the value of the secret "
+                                 "for username %s using usage value '%s'"),
+                                 chap.username, chap.secret.usage);
+            }
             goto cleanup;
         }
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("username '%s' specified but secret not found"),
-                       chap.username);
+        if (chap.secret.uuidUsable) {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("no secret matches uuid '%s'"),
+                           chap.secret.uuid);
+        } else {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("no secret matches usage value '%s'"),
+                           chap.secret.usage);
+        }
         goto cleanup;
     }
 

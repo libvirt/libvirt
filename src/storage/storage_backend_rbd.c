@@ -91,8 +91,15 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
         }
 
         if (secret == NULL) {
-            virReportError(VIR_ERR_NO_SECRET, "%s",
-                           _("failed to find the secret"));
+            if (pool->def->source.auth.cephx.secret.uuidUsable) {
+                virReportError(VIR_ERR_NO_SECRET,
+                               _("no secret matches uuid '%s'"),
+                                 pool->def->source.auth.cephx.secret.uuid);
+            } else {
+                virReportError(VIR_ERR_NO_SECRET,
+                               _("no secret matches usage value '%s'"),
+                                 pool->def->source.auth.cephx.secret.usage);
+            }
             goto cleanup;
         }
 
@@ -100,10 +107,19 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
                                                           VIR_SECRET_GET_VALUE_INTERNAL_CALL);
 
         if (!secret_value) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get the value of the secret "
-                             "for username %s"),
-                           pool->def->source.auth.cephx.username);
+            if (pool->def->source.auth.cephx.secret.uuidUsable) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not get the value of the secret "
+                                 "for username '%s' using uuid '%s'"),
+                               pool->def->source.auth.cephx.username,
+                               pool->def->source.auth.cephx.secret.uuid);
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not get the value of the secret "
+                                 "for username '%s' using usage value '%s'"),
+                               pool->def->source.auth.cephx.username,
+                               pool->def->source.auth.cephx.secret.usage);
+            }
             goto cleanup;
         }
 

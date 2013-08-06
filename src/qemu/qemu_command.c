@@ -3043,18 +3043,32 @@ qemuGetSecretString(virConnectPtr conn,
     }
 
     if (!sec) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s username '%s' specified but secret not found"),
-                       scheme, username);
+        if (diskSecretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("%s no secret matches uuid '%s'"),
+                           scheme, uuid);
+        } else {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("%s no secret matches usage value '%s'"),
+                           scheme, usage);
+        }
         goto cleanup;
     }
 
     secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
                                                         VIR_SECRET_GET_VALUE_INTERNAL_CALL);
     if (!secret) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not get value of the secret for username %s"),
-                       username);
+        if (diskSecretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get value of the secret for "
+                             "username '%s' using uuid '%s'"),
+                           username, uuid);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get value of the secret for "
+                             "username '%s' using usage value '%s'"),
+                           username, usage);
+        }
         goto cleanup;
     }
 
