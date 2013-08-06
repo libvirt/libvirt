@@ -38,6 +38,7 @@
 #include "virfile.h"
 #include "virutil.h"
 #include "virxml.h"
+#include "conf/secret_conf.h"
 
 static virSecretPtr
 vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
@@ -536,15 +537,10 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     for (i = 0; i < list->nsecrets; i++) {
         virSecretPtr sec = list->secrets[i];
-        const char *usageType = NULL;
-
-        switch (virSecretGetUsageType(sec)) {
-        case VIR_SECRET_USAGE_TYPE_VOLUME:
-            usageType = _("Volume");
-            break;
-        }
-
+        int usageType = virSecretGetUsageType(sec);
+        const char *usageStr = virSecretUsageTypeTypeToString(usageType);
         char uuid[VIR_UUID_STRING_BUFLEN];
+
         if (virSecretGetUUIDString(list->secrets[i], uuid) < 0) {
             vshError(ctl, "%s", _("Failed to get uuid of secret"));
             goto cleanup;
@@ -552,7 +548,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         if (usageType) {
             vshPrint(ctl, "%-36s %s %s\n",
-                     uuid, usageType,
+                     uuid, usageStr,
                      virSecretGetUsageID(sec));
         } else {
             vshPrint(ctl, "%-36s %s\n",
