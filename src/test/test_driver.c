@@ -687,6 +687,43 @@ static char *testBuildFilename(const char *relativeTo,
     }
 }
 
+static xmlNodePtr
+testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
+{
+    xmlNodePtr ret = NULL;
+    xmlDocPtr doc = NULL;
+    char *absFile = NULL;
+    char *relFile = virXMLPropString(node, "file");
+
+    if (relFile != NULL) {
+        absFile = testBuildFilename(file, relFile);
+        VIR_FREE(relFile);
+        if (!absFile) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("resolving %s filename"), type);
+            return NULL;
+        }
+
+        if (!(doc = virXMLParse(absFile, NULL, type)))
+            goto error;
+
+        ret = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+        if (!ret) {
+            virReportOOMError();
+            goto error;
+        }
+        xmlReplaceNode(node, ret);
+        xmlFreeNode(node);
+    } else {
+        ret = node;
+    }
+
+error:
+    xmlFreeDoc(doc);
+    VIR_FREE(absFile);
+    return ret;
+}
+
 static int
 testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
 {
@@ -777,8 +814,9 @@ error:
 }
 
 static int
-testParseDomains(testConnPtr privconn, const char *file,
-                 xmlDocPtr doc, xmlXPathContextPtr ctxt)
+testParseDomains(testConnPtr privconn,
+                 const char *file,
+                 xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
     size_t i;
@@ -792,29 +830,16 @@ testParseDomains(testConnPtr privconn, const char *file,
 
     for (i = 0; i < num; i++) {
         virDomainDefPtr def;
-        char *relFile = virXMLPropString(nodes[i], "file");
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving domain filename"));
-                goto error;
-            }
-            def = virDomainDefParseFile(absFile, privconn->caps,
-                                        privconn->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_TEST,
-                                        VIR_DOMAIN_XML_INACTIVE);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virDomainDefParseNode(doc, nodes[i],
-                                             privconn->caps, privconn->xmlopt,
-                                             1 << VIR_DOMAIN_VIRT_TEST,
-                                             VIR_DOMAIN_XML_INACTIVE)) == NULL)
-                goto error;
-        }
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "domain");
+        if (!node)
+            goto error;
+
+        def = virDomainDefParseNode(ctxt->doc, node,
+                                    privconn->caps, privconn->xmlopt,
+                                    1 << VIR_DOMAIN_VIRT_TEST,
+                                    VIR_DOMAIN_XML_INACTIVE);
+        if (!def)
+            goto error;
 
         if (testDomainGenerateIfnames(def) < 0 ||
             !(obj = virDomainObjListAdd(privconn->domains,
@@ -842,8 +867,9 @@ error:
 }
 
 static int
-testParseNetworks(testConnPtr privconn, const char *file,
-                  xmlDocPtr doc, xmlXPathContextPtr ctxt)
+testParseNetworks(testConnPtr privconn,
+                  const char *file,
+                  xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
     size_t i;
@@ -857,24 +883,13 @@ testParseNetworks(testConnPtr privconn, const char *file,
 
     for (i = 0; i < num; i++) {
         virNetworkDefPtr def;
-        char *relFile = virXMLPropString(nodes[i], "file");
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving network filename"));
-                goto error;
-            }
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "network");
+        if (!node)
+            goto error;
 
-            def = virNetworkDefParseFile(absFile);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virNetworkDefParseNode(doc, nodes[i])) == NULL)
-                goto error;
-        }
+        def = virNetworkDefParseNode(ctxt->doc, node);
+        if (!def)
+            goto error;
 
         if (!(obj = virNetworkAssignDef(&privconn->networks, def, false))) {
             virNetworkDefFree(def);
@@ -893,8 +908,9 @@ error:
 }
 
 static int
-testParseInterfaces(testConnPtr privconn, const char *file,
-                    xmlDocPtr doc, xmlXPathContextPtr ctxt)
+testParseInterfaces(testConnPtr privconn,
+                    const char *file,
+                    xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
     size_t i;
@@ -908,24 +924,14 @@ testParseInterfaces(testConnPtr privconn, const char *file,
 
     for (i = 0; i < num; i++) {
         virInterfaceDefPtr def;
-        char *relFile = virXMLPropString(nodes[i], "file");
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving interface filename"));
-                goto error;
-            }
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
+                                                   "interface");
+        if (!node)
+            goto error;
 
-            def = virInterfaceDefParseFile(absFile);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virInterfaceDefParseNode(doc, nodes[i])) == NULL)
-                goto error;
-        }
+        def = virInterfaceDefParseNode(ctxt->doc, node);
+        if (!def)
+            goto error;
 
         if (!(obj = virInterfaceAssignDef(&privconn->ifaces, def))) {
             virInterfaceDefFree(def);
@@ -943,9 +949,8 @@ error:
 }
 
 static int
-testOpenVolumesForPool(xmlDocPtr xml,
+testOpenVolumesForPool(const char *file,
                        xmlXPathContextPtr ctxt,
-                       const char *file,
                        virStoragePoolObjPtr pool,
                        int poolidx)
 {
@@ -966,26 +971,14 @@ testOpenVolumesForPool(xmlDocPtr xml,
     }
 
     for (i = 0; i < num; i++) {
-        char *relFile = virXMLPropString(nodes[i], "file");
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving volume filename"));
-                goto error;
-            }
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
+                                                   "volume");
+        if (!node)
+            goto error;
 
-            def = virStorageVolDefParseFile(pool->def, absFile);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virStorageVolDefParseNode(pool->def, xml,
-                                                 nodes[i])) == NULL) {
-                goto error;
-            }
-        }
+        def = virStorageVolDefParseNode(pool->def, ctxt->doc, node);
+        if (!def)
+            goto error;
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count+1) < 0)
@@ -1017,8 +1010,9 @@ error:
 }
 
 static int
-testParseStorage(testConnPtr privconn, const char *file,
-                 xmlDocPtr doc, xmlXPathContextPtr ctxt)
+testParseStorage(testConnPtr privconn,
+                 const char *file,
+                 xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
     size_t i;
@@ -1032,26 +1026,14 @@ testParseStorage(testConnPtr privconn, const char *file,
 
     for (i = 0; i < num; i++) {
         virStoragePoolDefPtr def;
-        char *relFile = virXMLPropString(nodes[i], "file");
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving pool filename"));
-                goto error;
-            }
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
+                                                   "pool");
+        if (!node)
+            goto error;
 
-            def = virStoragePoolDefParseFile(absFile);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virStoragePoolDefParseNode(doc,
-                                                  nodes[i])) == NULL) {
-                goto error;
-            }
-        }
+        def = virStoragePoolDefParseNode(ctxt->doc, node);
+        if (!def)
+            goto error;
 
         if (!(obj = virStoragePoolObjAssignDef(&privconn->pools,
                                                 def))) {
@@ -1066,7 +1048,7 @@ testParseStorage(testConnPtr privconn, const char *file,
         obj->active = 1;
 
         /* Find storage volumes */
-        if (testOpenVolumesForPool(doc, ctxt, file, obj, i+1) < 0) {
+        if (testOpenVolumesForPool(file, ctxt, obj, i+1) < 0) {
             virStoragePoolObjUnlock(obj);
             goto error;
         }
@@ -1081,8 +1063,9 @@ error:
 }
 
 static int
-testParseNodedevs(testConnPtr privconn, const char *file,
-                  xmlDocPtr doc, xmlXPathContextPtr ctxt)
+testParseNodedevs(testConnPtr privconn,
+                  const char *file,
+                  xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
     size_t i;
@@ -1096,27 +1079,14 @@ testParseNodedevs(testConnPtr privconn, const char *file,
 
     for (i = 0; i < num; i++) {
         virNodeDeviceDefPtr def;
-        char *relFile = virXMLPropString(nodes[i], "file");
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
+                                                  "nodedev");
+        if (!node)
+            goto error;
 
-        if (relFile != NULL) {
-            char *absFile = testBuildFilename(file, relFile);
-            VIR_FREE(relFile);
-
-            if (!absFile) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("resolving device filename"));
-                goto error;
-            }
-
-            def = virNodeDeviceDefParseFile(absFile, 0, NULL);
-            VIR_FREE(absFile);
-            if (!def)
-                goto error;
-        } else {
-            if ((def = virNodeDeviceDefParseNode(doc,
-                                                 nodes[i], 0, NULL)) == NULL)
-                goto error;
-        }
+        def = virNodeDeviceDefParseNode(ctxt->doc, node, 0, NULL);
+        if (!def)
+            goto error;
 
         if (!(obj = virNodeDeviceAssignDef(&privconn->devs, def))) {
             virNodeDeviceDefFree(def);
@@ -1178,15 +1148,15 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 
     if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
         goto error;
-    if (testParseDomains(privconn, file, doc, ctxt) < 0)
+    if (testParseDomains(privconn, file, ctxt) < 0)
         goto error;
-    if (testParseNetworks(privconn, file, doc, ctxt) < 0)
+    if (testParseNetworks(privconn, file, ctxt) < 0)
         goto error;
-    if (testParseInterfaces(privconn, file, doc, ctxt) < 0)
+    if (testParseInterfaces(privconn, file, ctxt) < 0)
         goto error;
-    if (testParseStorage(privconn, file, doc, ctxt) < 0)
+    if (testParseStorage(privconn, file, ctxt) < 0)
         goto error;
-    if (testParseNodedevs(privconn, file, doc, ctxt) < 0)
+    if (testParseNodedevs(privconn, file, ctxt) < 0)
         goto error;
 
     xmlXPathFreeContext(ctxt);
