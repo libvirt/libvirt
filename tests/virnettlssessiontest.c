@@ -39,10 +39,10 @@
 # define VIR_FROM_THIS VIR_FROM_RPC
 
 struct testTLSSessionData {
-    struct testTLSCertReq careq;
-    struct testTLSCertReq othercareq;
-    struct testTLSCertReq serverreq;
-    struct testTLSCertReq clientreq;
+    const char *servercacrt;
+    const char *clientcacrt;
+    const char *servercrt;
+    const char *clientcrt;
     bool expectServerFail;
     bool expectClientFail;
     const char *hostname;
@@ -104,32 +104,29 @@ static int testTLSSessionInit(const void *opaque)
      * want to make sure that problems are being
      * detected at the TLS session validation stage
      */
-    serverCtxt = virNetTLSContextNewServer(data->careq.filename,
+    serverCtxt = virNetTLSContextNewServer(data->servercacrt,
                                            NULL,
-                                           data->serverreq.filename,
+                                           data->servercrt,
                                            keyfile,
                                            data->wildcards,
                                            false,
                                            true);
 
-    clientCtxt = virNetTLSContextNewClient(data->othercareq.filename ?
-                                           data->othercareq.filename :
-                                           data->careq.filename,
+    clientCtxt = virNetTLSContextNewClient(data->clientcacrt,
                                            NULL,
-                                           data->clientreq.filename,
+                                           data->clientcrt,
                                            keyfile,
                                            false,
                                            true);
 
     if (!serverCtxt) {
         VIR_WARN("Unexpected failure loading %s against %s",
-                 data->careq.filename, data->serverreq.filename);
+                 data->servercacrt, data->servercrt);
         goto cleanup;
     }
     if (!clientCtxt) {
         VIR_WARN("Unexpected failure loading %s against %s",
-                 data->othercareq.filename ? data->othercareq.filename :
-                 data->careq.filename, data->clientreq.filename);
+                 data->clientcacrt, data->clientcrt);
         goto cleanup;
     }
 
@@ -140,13 +137,12 @@ static int testTLSSessionInit(const void *opaque)
 
     if (!serverSess) {
         VIR_WARN("Unexpected failure using %s against %s",
-                 data->careq.filename, data->serverreq.filename);
+                 data->servercacrt, data->servercrt);
         goto cleanup;
     }
     if (!clientSess) {
         VIR_WARN("Unexpected failure using %s against %s",
-                 data->othercareq.filename ? data->othercareq.filename :
-                 data->careq.filename, data->clientreq.filename);
+                 data->clientcacrt, data->clientcrt);
         goto cleanup;
     }
 
@@ -242,38 +238,37 @@ mymain(void)
 
     testTLSInit();
 
-# define DO_SESS_TEST(_caReq, _serverReq, _clientReq, _expectServerFail,\
+# define DO_SESS_TEST(_caCrt, _serverCrt, _clientCrt, _expectServerFail, \
                       _expectClientFail, _hostname, _wildcards)         \
     do {                                                                \
         static struct testTLSSessionData data;                          \
-        static struct testTLSCertReq other;                             \
-        data.careq = _caReq;                                            \
-        data.othercareq = other;                                        \
-        data.serverreq = _serverReq;                                    \
-        data.clientreq = _clientReq;                                    \
+        data.servercacrt = _caCrt;                                      \
+        data.clientcacrt = _caCrt;                                      \
+        data.servercrt = _serverCrt;                                    \
+        data.clientcrt = _clientCrt;                                    \
         data.expectServerFail = _expectServerFail;                      \
         data.expectClientFail = _expectClientFail;                      \
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
-        if (virtTestRun("TLS Session " #_serverReq " + " #_clientReq,   \
+        if (virtTestRun("TLS Session " #_serverCrt " + " #_clientCrt,   \
                         1, testTLSSessionInit, &data) < 0)              \
             ret = -1;                                                   \
     } while (0)
 
-# define DO_SESS_TEST_EXT(_caReq, _othercaReq, _serverReq, _clientReq,  \
+# define DO_SESS_TEST_EXT(_serverCaCrt, _clientCaCrt, _serverCrt, _clientCrt, \
                           _expectServerFail, _expectClientFail,         \
                           _hostname, _wildcards)                        \
     do {                                                                \
         static struct testTLSSessionData data;                          \
-        data.careq = _caReq;                                            \
-        data.othercareq = _othercaReq;                                  \
-        data.serverreq = _serverReq;                                    \
-        data.clientreq = _clientReq;                                    \
+        data.servercacrt = _serverCaCrt;                                \
+        data.clientcacrt = _clientCaCrt;                                \
+        data.servercrt = _serverCrt;                                    \
+        data.clientcrt = _clientCrt;                                    \
         data.expectServerFail = _expectServerFail;                      \
         data.expectClientFail = _expectClientFail;                      \
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
-        if (virtTestRun("TLS Session " #_serverReq " + " #_clientReq,   \
+        if (virtTestRun("TLS Session " #_serverCrt " + " #_clientCrt,   \
                         1, testTLSSessionInit, &data) < 0)              \
             ret = -1;                                                   \
     } while (0)
@@ -282,7 +277,7 @@ mymain(void)
                       co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
                       kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
     static struct testTLSCertReq varname = {                            \
-        NULL, #varname ".pem",                                          \
+        NULL, #varname "-sess.pem",                                     \
         co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
         kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
     };                                                                  \
@@ -292,7 +287,7 @@ mymain(void)
                       co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
                       kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
     static struct testTLSCertReq varname = {                            \
-        NULL, #varname ".pem",                                          \
+        NULL, #varname "-sess.pem",                                     \
         co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
         kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
     };                                                                  \
@@ -335,8 +330,10 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, 0);
 
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", NULL);
-    DO_SESS_TEST_EXT(cacertreq, altcacertreq, servercertreq, clientcertaltreq, true, true, "libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", NULL);
+    DO_SESS_TEST_EXT(cacertreq.filename, altcacertreq.filename, servercertreq.filename,
+                     clientcertaltreq.filename, true, true, "libvirt.org", NULL);
 
 
     /* When an altname is set, the CN is ignored, so it must be duplicated
@@ -355,13 +352,19 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
-    DO_SESS_TEST(cacertreq, servercertalt1req, clientcertreq, false, false, "libvirt.org", NULL);
-    DO_SESS_TEST(cacertreq, servercertalt1req, clientcertreq, false, false, "www.libvirt.org", NULL);
-    DO_SESS_TEST(cacertreq, servercertalt1req, clientcertreq, false, true, "wiki.libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt1req.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt1req.filename, clientcertreq.filename,
+                 false, false, "www.libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt1req.filename, clientcertreq.filename,
+                 false, true, "wiki.libvirt.org", NULL);
 
-    DO_SESS_TEST(cacertreq, servercertalt2req, clientcertreq, false, true, "libvirt.org", NULL);
-    DO_SESS_TEST(cacertreq, servercertalt2req, clientcertreq, false, false, "www.libvirt.org", NULL);
-    DO_SESS_TEST(cacertreq, servercertalt2req, clientcertreq, false, false, "wiki.libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt2req.filename, clientcertreq.filename,
+                 false, true, "libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt2req.filename, clientcertreq.filename,
+                 false, false, "www.libvirt.org", NULL);
+    DO_SESS_TEST(cacertreq.filename, servercertalt2req.filename, clientcertreq.filename,
+                 false, false, "wiki.libvirt.org", NULL);
 
     const char *const wildcards1[] = {
         "C=UK,CN=dogfood",
@@ -389,12 +392,18 @@ mymain(void)
         NULL,
     };
 
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, true, false, "libvirt.org", wildcards1);
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards2);
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards3);
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, true, false, "libvirt.org", wildcards4);
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards5);
-    DO_SESS_TEST(cacertreq, servercertreq, clientcertreq, false, false, "libvirt.org", wildcards6);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 true, false, "libvirt.org", wildcards1);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", wildcards2);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", wildcards3);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 true, false, "libvirt.org", wildcards4);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", wildcards5);
+    DO_SESS_TEST(cacertreq.filename, servercertreq.filename, clientcertreq.filename,
+                 false, false, "libvirt.org", wildcards6);
 
     testTLSDiscardCert(&clientcertreq);
     testTLSDiscardCert(&clientcertaltreq);

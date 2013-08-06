@@ -42,8 +42,8 @@
 
 struct testTLSContextData {
     bool isServer;
-    struct testTLSCertReq careq;
-    struct testTLSCertReq certreq;
+    const char *cacrt;
+    const char *crt;
     bool expectFail;
 };
 
@@ -63,17 +63,17 @@ static int testTLSContextInit(const void *opaque)
     int ret = -1;
 
     if (data->isServer) {
-        ctxt = virNetTLSContextNewServer(data->careq.filename,
+        ctxt = virNetTLSContextNewServer(data->cacrt,
                                          NULL,
-                                         data->certreq.filename,
+                                         data->crt,
                                          keyfile,
                                          NULL,
                                          true,
                                          true);
     } else {
-        ctxt = virNetTLSContextNewClient(data->careq.filename,
+        ctxt = virNetTLSContextNewClient(data->cacrt,
                                          NULL,
-                                         data->certreq.filename,
+                                         data->crt,
                                          keyfile,
                                          true,
                                          true);
@@ -82,14 +82,14 @@ static int testTLSContextInit(const void *opaque)
     if (ctxt) {
         if (data->expectFail) {
             VIR_WARN("Expected failure %s against %s",
-                     data->careq.filename, data->certreq.filename);
+                     data->cacrt, data->crt);
             goto cleanup;
         }
     } else {
         virErrorPtr err = virGetLastError();
         if (!data->expectFail) {
             VIR_WARN("Unexpected failure %s against %s",
-                     data->careq.filename, data->certreq.filename);
+                     data->cacrt, data->crt);
             goto cleanup;
         }
         VIR_DEBUG("Got error %s", err ? err->message : "<unknown>");
@@ -111,14 +111,14 @@ mymain(void)
 
     testTLSInit();
 
-# define DO_CTX_TEST(_isServer, _caReq, _certReq, _expectFail)          \
+# define DO_CTX_TEST(_isServer, _caCrt, _crt, _expectFail)              \
     do {                                                                \
         static struct testTLSContextData data;                          \
         data.isServer = _isServer;                                      \
-        data.careq = _caReq;                                            \
-        data.certreq = _certReq;                                        \
+        data.cacrt = _caCrt;                                            \
+        data.crt = _crt;                                                \
         data.expectFail = _expectFail;                                  \
-        if (virtTestRun("TLS Context " #_caReq  " + " #_certReq, 1,     \
+        if (virtTestRun("TLS Context " #_caCrt  " + " #_crt, 1,         \
                         testTLSContextInit, &data) < 0)                 \
             ret = -1;                                                   \
     } while (0)
@@ -127,7 +127,7 @@ mymain(void)
                       co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
                       kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
     static struct testTLSCertReq varname = {                            \
-        NULL, #varname ".pem",                                          \
+        NULL, #varname "-ctx.pem",                                      \
         co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
         kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo                     \
     };                                                                  \
@@ -137,7 +137,7 @@ mymain(void)
                       co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
                       kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
     static struct testTLSCertReq varname = {                            \
-        NULL, #varname ".pem",                                          \
+        NULL, #varname "-ctx.pem",                                      \
         co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
         kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo                     \
     };                                                                  \
@@ -167,8 +167,8 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, 0);
 
-    DO_CTX_TEST(true, cacertreq, servercertreq, false);
-    DO_CTX_TEST(false, cacertreq, clientcertreq, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercertreq.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcertreq.filename, false);
 
 
     /* Some other CAs which are good */
@@ -215,9 +215,9 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
-    DO_CTX_TEST(true, cacert1req, servercert1req, false);
-    DO_CTX_TEST(true, cacert2req, servercert2req, false);
-    DO_CTX_TEST(true, cacert3req, servercert3req, false);
+    DO_CTX_TEST(true, cacert1req.filename, servercert1req.filename, false);
+    DO_CTX_TEST(true, cacert2req.filename, servercert2req.filename, false);
+    DO_CTX_TEST(true, cacert3req.filename, servercert3req.filename, false);
 
     /* Now some bad certs */
 
@@ -266,9 +266,9 @@ mymain(void)
      * be rejected. GNUTLS < 3 does not reject it and
      * we don't anticipate them changing this behaviour
      */
-    DO_CTX_TEST(true, cacert4req, servercert4req, GNUTLS_VERSION_MAJOR >= 3);
-    DO_CTX_TEST(true, cacert5req, servercert5req, true);
-    DO_CTX_TEST(true, cacert6req, servercert6req, true);
+    DO_CTX_TEST(true, cacert4req.filename, servercert4req.filename, GNUTLS_VERSION_MAJOR >= 3);
+    DO_CTX_TEST(true, cacert5req.filename, servercert5req.filename, true);
+    DO_CTX_TEST(true, cacert6req.filename, servercert6req.filename, true);
 
 
     /* Various good servers */
@@ -322,13 +322,13 @@ mymain(void)
                  true, false, GNUTLS_KP_TLS_WWW_CLIENT, GNUTLS_KP_TLS_WWW_SERVER,
                  0, 0);
 
-    DO_CTX_TEST(true, cacertreq, servercert7req, false);
-    DO_CTX_TEST(true, cacertreq, servercert8req, false);
-    DO_CTX_TEST(true, cacertreq, servercert9req, false);
-    DO_CTX_TEST(true, cacertreq, servercert10req, false);
-    DO_CTX_TEST(true, cacertreq, servercert11req, false);
-    DO_CTX_TEST(true, cacertreq, servercert12req, false);
-    DO_CTX_TEST(true, cacertreq, servercert13req, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert7req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert8req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert9req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert10req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert11req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert12req.filename, false);
+    DO_CTX_TEST(true, cacertreq.filename, servercert13req.filename, false);
     /* Bad servers */
 
     /* usage:cert-sign:critical */
@@ -353,9 +353,9 @@ mymain(void)
                  false, false, NULL, NULL,
                  0, 0);
 
-    DO_CTX_TEST(true, cacertreq, servercert14req, true);
-    DO_CTX_TEST(true, cacertreq, servercert15req, true);
-    DO_CTX_TEST(true, cacertreq, servercert16req, true);
+    DO_CTX_TEST(true, cacertreq.filename, servercert14req.filename, true);
+    DO_CTX_TEST(true, cacertreq.filename, servercert15req.filename, true);
+    DO_CTX_TEST(true, cacertreq.filename, servercert16req.filename, true);
 
 
 
@@ -410,13 +410,13 @@ mymain(void)
                  true, false, GNUTLS_KP_TLS_WWW_CLIENT, GNUTLS_KP_TLS_WWW_SERVER,
                  0, 0);
 
-    DO_CTX_TEST(false, cacertreq, clientcert1req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert2req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert3req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert4req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert5req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert6req, false);
-    DO_CTX_TEST(false, cacertreq, clientcert7req, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert1req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert2req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert3req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert4req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert5req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert6req.filename, false);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert7req.filename, false);
     /* Bad clients */
 
     /* usage:cert-sign:critical */
@@ -441,9 +441,9 @@ mymain(void)
                  false, false, NULL, NULL,
                  0, 0);
 
-    DO_CTX_TEST(false, cacertreq, clientcert8req, true);
-    DO_CTX_TEST(false, cacertreq, clientcert9req, true);
-    DO_CTX_TEST(false, cacertreq, clientcert10req, true);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert8req.filename, true);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert9req.filename, true);
+    DO_CTX_TEST(false, cacertreq.filename, clientcert10req.filename, true);
 
 
 
@@ -474,9 +474,9 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, -1);
 
-    DO_CTX_TEST(true, cacertexpreq, servercertexpreq, true);
-    DO_CTX_TEST(true, cacertreq, servercertexp1req, true);
-    DO_CTX_TEST(false, cacertreq, clientcertexp1req, true);
+    DO_CTX_TEST(true, cacertexpreq.filename, servercertexpreq.filename, true);
+    DO_CTX_TEST(true, cacertreq.filename, servercertexp1req.filename, true);
+    DO_CTX_TEST(false, cacertreq.filename, clientcertexp1req.filename, true);
 
 
     /* Not activated stuff */
@@ -506,9 +506,9 @@ mymain(void)
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  1, 2);
 
-    DO_CTX_TEST(true, cacertnewreq, servercertnewreq, true);
-    DO_CTX_TEST(true, cacertreq, servercertnew1req, true);
-    DO_CTX_TEST(false, cacertreq, clientcertnew1req, true);
+    DO_CTX_TEST(true, cacertnewreq.filename, servercertnewreq.filename, true);
+    DO_CTX_TEST(true, cacertreq.filename, servercertnew1req.filename, true);
+    DO_CTX_TEST(false, cacertreq.filename, clientcertnew1req.filename, true);
 
     testTLSDiscardCert(&cacertreq);
     testTLSDiscardCert(&cacert1req);
