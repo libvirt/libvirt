@@ -159,6 +159,7 @@ typedef struct _testDomainNamespaceDef testDomainNamespaceDef;
 typedef testDomainNamespaceDef *testDomainNamespaceDefPtr;
 struct _testDomainNamespaceDef {
     int runstate;
+    bool transient;
 };
 
 static void
@@ -189,6 +190,13 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(nsdata) < 0)
         return -1;
 
+    tmp = virXPathBoolean("boolean(./test:transient)", ctxt);
+    if (tmp == -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("invalid transient"));
+        goto error;
+    }
+    nsdata->transient = tmp;
+
     tmp = virXPathUInt("string(./test:runstate)", ctxt, &tmpuint);
     if (tmp == 0) {
         if (tmpuint >= VIR_DOMAIN_LAST) {
@@ -202,6 +210,12 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     } else if (tmp == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid runstate"));
+        goto error;
+    }
+
+    if (nsdata->transient && nsdata->runstate == VIR_DOMAIN_SHUTOFF) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+            _("transient domain cannot have runstate 'shutoff'"));
         goto error;
     }
 
@@ -922,7 +936,7 @@ testParseDomains(testConnPtr privconn,
         }
 
         nsdata = def->namespaceData;
-        obj->persistent = 1;
+        obj->persistent = !nsdata->transient;
 
         if (nsdata->runstate != VIR_DOMAIN_SHUTOFF) {
             if (testDomainStartState(privconn, obj,
