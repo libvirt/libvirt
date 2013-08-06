@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <libxml/xmlsave.h>
+#include <libxml/xpathInternals.h>
 
 
 #include "virerror.h"
@@ -152,13 +153,81 @@ static void testDomainObjPrivateFree(void *data)
     VIR_FREE(priv);
 }
 
+#define TEST_NAMESPACE_HREF "http://libvirt.org/schemas/domain/test/1.0"
+
+typedef struct _testDomainNamespaceDef testDomainNamespaceDef;
+typedef testDomainNamespaceDef *testDomainNamespaceDefPtr;
+struct _testDomainNamespaceDef {
+    int runstate;
+};
+
+static void
+testDomainDefNamespaceFree(void *data)
+{
+    testDomainNamespaceDefPtr nsdata = data;
+    VIR_FREE(nsdata);
+}
+
+static int
+testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
+                            xmlNodePtr root ATTRIBUTE_UNUSED,
+                            xmlXPathContextPtr ctxt,
+                            void **data)
+{
+    testDomainNamespaceDefPtr nsdata = NULL;
+    int tmp;
+    unsigned int tmpuint;
+
+    if (xmlXPathRegisterNs(ctxt, BAD_CAST "test",
+                           BAD_CAST TEST_NAMESPACE_HREF) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       TEST_NAMESPACE_HREF);
+        return -1;
+    }
+
+    if (VIR_ALLOC(nsdata) < 0)
+        return -1;
+
+    tmp = virXPathUInt("string(./test:runstate)", ctxt, &tmpuint);
+    if (tmp == 0) {
+        if (tmpuint >= VIR_DOMAIN_LAST) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("runstate '%d' out of range'"), tmpuint);
+            goto error;
+        }
+        nsdata->runstate = tmpuint;
+    } else if (tmp == -1) {
+        nsdata->runstate = VIR_DOMAIN_RUNNING;
+    } else if (tmp == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid runstate"));
+        goto error;
+    }
+
+    *data = nsdata;
+    return 0;
+
+error:
+    testDomainDefNamespaceFree(nsdata);
+    return -1;
+}
 
 static virDomainXMLOptionPtr
 testBuildXMLConfig(void)
 {
-    virDomainXMLPrivateDataCallbacks priv = { .alloc = testDomainObjPrivateAlloc,
-                                              .free = testDomainObjPrivateFree };
-    return virDomainXMLOptionNew(NULL, &priv, NULL);
+    virDomainXMLPrivateDataCallbacks priv = {
+        .alloc = testDomainObjPrivateAlloc,
+        .free = testDomainObjPrivateFree
+    };
+
+    /* All our XML extensions are input only, so we only need to parse */
+    virDomainXMLNamespace ns = {
+        .parse = testDomainDefNamespaceParse,
+        .free = testDomainDefNamespaceFree,
+    };
+
+    return virDomainXMLOptionNew(NULL, &priv, &ns);
 }
 
 
@@ -831,6 +900,7 @@ testParseDomains(testConnPtr privconn,
 
     for (i = 0; i < num; i++) {
         virDomainDefPtr def;
+        testDomainNamespaceDefPtr nsdata;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "domain");
         if (!node)
             goto error;
@@ -851,12 +921,19 @@ testParseDomains(testConnPtr privconn,
             goto error;
         }
 
+        nsdata = def->namespaceData;
         obj->persistent = 1;
-        if (testDomainStartState(privconn, obj,
-                                 VIR_DOMAIN_RUNNING_BOOTED) < 0) {
-            virObjectUnlock(obj);
-            goto error;
+
+        if (nsdata->runstate != VIR_DOMAIN_SHUTOFF) {
+            if (testDomainStartState(privconn, obj,
+                                     VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+                virObjectUnlock(obj);
+                goto error;
+            }
+        } else {
+            testDomainShutdownState(NULL, obj, 0);
         }
+        virDomainObjSetState(obj, nsdata->runstate, 0);
 
         virObjectUnlock(obj);
     }
