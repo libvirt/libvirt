@@ -62,7 +62,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
     # which triggers spurious warnings for our usage
-    AC_CACHE_CHECK([whether gcc -Wformat allows NULL strings],
+    AC_CACHE_CHECK([whether the C compiler's -Wformat allows NULL strings],
       [lv_cv_gcc_wformat_null_works], [
       save_CFLAGS=$CFLAGS
       CFLAGS='-Wunknown-pragmas -Werror -Wformat'
@@ -101,7 +101,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     dnl Check whether strchr(s, char variable) causes a bogus compile
     dnl warning, which is the case with GCC < 4.6 on some glibc
-    AC_CACHE_CHECK([whether GCC -Wlogical-op gives bogus warnings],
+    AC_CACHE_CHECK([whether the C compiler's -Wlogical-op gives bogus warnings],
       [lv_cv_gcc_wlogical_op_broken], [
       save_CFLAGS="$CFLAGS"
       CFLAGS="-O2 -Wlogical-op -Werror"
