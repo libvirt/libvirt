@@ -13517,7 +13517,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        virArchToString(src->os.arch));
         return false;
     }
-    if (STRNEQ(src->os.machine, dst->os.machine)) {
+    if (STRNEQ_NULLABLE(src->os.machine, dst->os.machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain OS type %s does not match source %s"),
                        dst->os.machine, src->os.machine);
