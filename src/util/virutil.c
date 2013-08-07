@@ -1010,18 +1010,18 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     }
 
     if (gid != (gid_t)-1) {
-        size_t n = ret;
+        size_t i;
 
-        for (size_t i = 0; i < ret; i++) {
+        for (i = 0; i < ret; i++) {
             if ((*list)[i] == gid)
                 goto cleanup;
         }
-        if (VIR_APPEND_ELEMENT(*list, n, gid) < 0) {
+        if (VIR_APPEND_ELEMENT(*list, i, gid) < 0) {
             ret = -1;
             VIR_FREE(*list);
             goto cleanup;
         } else {
-            ret = n;
+            ret = i;
         }
     }
 
