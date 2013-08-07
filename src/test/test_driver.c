@@ -162,12 +162,24 @@ struct _testDomainNamespaceDef {
     int runstate;
     bool transient;
     bool hasManagedSave;
+
+    unsigned int num_snap_nodes;
+    xmlNodePtr *snap_nodes;
 };
 
 static void
 testDomainDefNamespaceFree(void *data)
 {
     testDomainNamespaceDefPtr nsdata = data;
+    size_t i;
+
+    if (!nsdata)
+        return;
+
+    for (i = 0; i < nsdata->num_snap_nodes; i++)
+        xmlFreeNode(nsdata->snap_nodes[i]);
+
+    VIR_FREE(nsdata->snap_nodes);
     VIR_FREE(nsdata);
 }
 
@@ -178,7 +190,9 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             void **data)
 {
     testDomainNamespaceDefPtr nsdata = NULL;
-    int tmp;
+    xmlNodePtr *nodes = NULL;
+    int tmp, n;
+    size_t i;
     unsigned int tmpuint;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "test",
@@ -191,6 +205,25 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 
     if (VIR_ALLOC(nsdata) < 0)
         return -1;
+
+    n = virXPathNodeSet("./test:domainsnapshot", ctxt, &nodes);
+    if (n < 0)
+        goto error;
+
+    if (n && VIR_ALLOC_N(nsdata->snap_nodes, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        xmlNodePtr newnode = xmlCopyNode(nodes[i], 1);
+        if (!newnode) {
+            virReportOOMError();
+            goto error;
+        }
+
+        nsdata->snap_nodes[nsdata->num_snap_nodes] = newnode;
+        nsdata->num_snap_nodes++;
+    }
+    VIR_FREE(nodes);
 
     tmp = virXPathBoolean("boolean(./test:transient)", ctxt);
     if (tmp == -1) {
@@ -237,6 +270,7 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     return 0;
 
 error:
+    VIR_FREE(nodes);
     testDomainDefNamespaceFree(nsdata);
     return -1;
 }
@@ -933,6 +967,63 @@ error:
 }
 
 static int
+testParseDomainSnapshots(testConnPtr privconn,
+                         virDomainObjPtr domobj,
+                         const char *file,
+                         xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int ret = -1;
+    testDomainNamespaceDefPtr nsdata = domobj->def->namespaceData;
+    xmlNodePtr *nodes = nsdata->snap_nodes;
+
+    for (i = 0; i < nsdata->num_snap_nodes; i++) {
+        virDomainSnapshotObjPtr snap;
+        virDomainSnapshotDefPtr def;
+        xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
+                                                  "domainsnapshot");
+        if (!node)
+            goto error;
+
+        def = virDomainSnapshotDefParseNode(ctxt->doc, node,
+                                            privconn->caps,
+                                            privconn->xmlopt,
+                                            1 << VIR_DOMAIN_VIRT_TEST,
+                                            VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
+                                            VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
+                                            VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
+        if (!def)
+            goto error;
+
+        if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, def))) {
+            virDomainSnapshotDefFree(def);
+            goto error;
+        }
+
+        if (def->current) {
+            if (domobj->current_snapshot) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("more than one snapshot claims to be active"));
+                goto error;
+            }
+
+            domobj->current_snapshot = snap;
+        }
+    }
+
+    if (virDomainSnapshotUpdateRelations(domobj->snapshots) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Snapshots have inconsistent relations for "
+                         "domain %s"), domobj->def->name);
+        goto error;
+    }
+
+    ret = 0;
+error:
+    return ret;
+}
+
+static int
 testParseDomains(testConnPtr privconn,
                  const char *file,
                  xmlXPathContextPtr ctxt)
@@ -967,6 +1058,11 @@ testParseDomains(testConnPtr privconn,
                                         privconn->xmlopt,
                                         0, NULL))) {
             virDomainDefFree(def);
+            goto error;
+        }
+
+        if (testParseDomainSnapshots(privconn, obj, file, ctxt) < 0) {
+            virObjectUnlock(obj);
             goto error;
         }
 
