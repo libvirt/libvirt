@@ -830,6 +830,11 @@ ACCESS_DRIVER_SYM_FILES = \
 		libvirt_access_qemu.syms \
 		libvirt_access_lxc.syms
 
+ACCESS_DRIVER_API_FILES = \
+		libvirt_access.xml \
+		libvirt_access_qemu.xml \
+		libvirt_access_lxc.xml
+
 ACCESS_DRIVER_SOURCES = \
 		access/viraccessperm.h access/viraccessperm.c \
 		access/viraccessmanager.h access/viraccessmanager.c \
@@ -1496,8 +1501,8 @@ EXTRA_DIST += $(ACCESS_DRIVER_POLKIT_SOURCES)
 endif
 
 
-BUILT_SOURCES += $(ACCESS_DRIVER_GENERATED)
-CLEANFILES += $(ACCESS_DRIVER_GENERATED)
+BUILT_SOURCES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_API_FILES)
+CLEANFILES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_API_FILES)
 
 libvirt_access.syms: $(srcdir)/rpc/gendispatch.pl \
 			$(REMOTE_PROTOCOL) Makefile.am
@@ -1510,6 +1515,19 @@ libvirt_access_qemu.syms: $(srcdir)/rpc/gendispatch.pl \
 libvirt_access_lxc.syms: $(srcdir)/rpc/gendispatch.pl \
 			$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
+	  lxc LXC $(LXC_PROTOCOL) > $@
+
+libvirt_access.xml: $(srcdir)/rpc/gendispatch.pl \
+			$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclapi \
+	  remote REMOTE $(REMOTE_PROTOCOL) > $@
+libvirt_access_qemu.xml: $(srcdir)/rpc/gendispatch.pl \
+			$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclapi \
+	  qemu QEMU $(QEMU_PROTOCOL) > $@
+libvirt_access_lxc.xml: $(srcdir)/rpc/gendispatch.pl \
+			$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclapi \
 	  lxc LXC $(LXC_PROTOCOL) > $@
 
 $(srcdir)/access/viraccessapicheck.h: $(srcdir)/rpc/gendispatch.pl \

@@ -477,3 +477,17 @@ dl.variablelist > dt {
 dl.variablelist > dt:after {
     content: ": ";
 }
+
+table.acl {
+    margin: 1em;
+    border-spacing: 0px;
+    border: 1px solid #ccc;
+}
+
+table.acl tr, table.acl td {
+    padding: 0.3em;
+}
+
+table.acl thead {
+    background: #ddd;
+}

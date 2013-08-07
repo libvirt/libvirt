@@ -29,6 +29,69 @@
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
 
+  <xsl:variable name="acls">
+    <xsl:copy-of select="document('../src/libvirt_access.xml')/aclinfo/api"/>
+  </xsl:variable>
+  <xsl:variable name="qemuacls">
+    <xsl:copy-of select="document('../src/libvirt_access_qemu.xml')/aclinfo/api"/>
+  </xsl:variable>
+  <xsl:variable name="lxcacls">
+    <xsl:copy-of select="document('../src/libvirt_access_lxc.xml')/aclinfo/api"/>
+  </xsl:variable>
+
+  <xsl:template name="aclinfo">
+    <xsl:param name="api"/>
+
+    <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/check) > 0">
+      <h5>Access control parameter checks</h5>
+      <table class="acl">
+        <thead>
+          <tr>
+            <th>Object</th>
+            <th>Permission</th>
+            <th>Condition</th>
+          </tr>
+        </thead>
+        <xsl:apply-templates select="exsl:node-set($acls)/api[@name=$api]/check" mode="acl"/>
+      </table>
+    </xsl:if>
+    <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/filter) > 0">
+      <h5>Access control return value filters</h5>
+      <table class="acl">
+        <thead>
+          <tr>
+            <th>Object</th>
+            <th>Permission</th>
+          </tr>
+        </thead>
+        <xsl:apply-templates select="exsl:node-set($acls)/api[@name=$api]/filter" mode="acl"/>
+      </table>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="check" mode="acl">
+    <tr>
+      <td><xsl:value-of select="@object"/></td>
+      <td><xsl:value-of select="@perm"/></td>
+      <xsl:choose>
+        <xsl:when test="@flags">
+          <td><xsl:value-of select="@flags"/></td>
+        </xsl:when>
+        <xsl:otherwise>
+          <td>-</td>
+        </xsl:otherwise>
+      </xsl:choose>
+    </tr>
+  </xsl:template>
+
+  <xsl:template match="filter" mode="acl">
+    <tr>
+      <td><xsl:value-of select="@object"/></td>
+      <td><xsl:value-of select="@perm"/></td>
+    </tr>
+  </xsl:template>
+
+
   <xsl:template name="navbar">
     <xsl:variable name="previous" select="preceding-sibling::file[1]"/>
     <xsl:variable name="next" select="following-sibling::file[1]"/>
@@ -553,6 +616,11 @@
         </xsl:if>
       </dl>
     </xsl:if>
+    <div class="acl">
+      <xsl:call-template name="aclinfo">
+        <xsl:with-param name="api" select="$name"/>
+      </xsl:call-template>
+    </div>
   </xsl:template>
 
   <xsl:template match="exports" mode="toc">

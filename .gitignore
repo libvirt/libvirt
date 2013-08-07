@@ -115,8 +115,11 @@
 /src/libvirt*.def
 /src/libvirt.syms
 /src/libvirt_access.syms
+/src/libvirt_access.xml
 /src/libvirt_access_lxc.syms
+/src/libvirt_access_lxc.xml
 /src/libvirt_access_qemu.syms
+/src/libvirt_access_qemu.xml
 /src/libvirt_*.stp
 /src/libvirt_*helper
 /src/libvirt_*probes.h
