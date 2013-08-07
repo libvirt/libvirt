@@ -1519,6 +1519,43 @@
       &lt;source pool='blk-pool0' volume='blk-pool0-vol0'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
     &lt;/disk&gt;
+    &lt;disk type='network' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/2'&gt;
+        &lt;host name='example.com' port='3260'/&gt;
+      &lt;/source&gt;
+      &lt;auth username='myuser'&gt;
+        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+      &lt;/auth&gt;
+      &lt;target dev='vda' bus='virtio'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='network' device='lun'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/1'&gt;
+       iqn.2013-07.com.example:iscsi-pool
+        &lt;host name='example.com' port='3260'/&gt;
+      &lt;/source&gt;
+      &lt;auth username='myuser'&gt;
+        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+      &lt;/auth&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='volume' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source pool='iscsi-pool' volume='unit:0:0:1' mode='host'/&gt;
+      &lt;auth username='myuser'&gt;
+        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+      &lt;/auth&gt;
+      &lt;target dev='vda' bus='virtio'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='volume' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source pool='iscsi-pool' volume='unit:0:0:2' mode='direct'/&gt;
+      &lt;auth username='myuser'&gt;
+        &lt;secret type='chap' usage='libvirtiscsi'/&gt;
+      &lt;/auth&gt;
+      &lt;target dev='vda' bus='virtio'/&gt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1526,7 +1563,7 @@
       <dt><code>disk</code></dt>
       <dd>The <code>disk</code> element is the main container for describing
         disks. The <code>type</code> attribute is either "file",
-        "block", "dir", or "network"
+        "block", "dir", "network", or "volume"
         and refers to the underlying source for the disk. The optional
         <code>device</code> attribute indicates how the disk is to be exposed
         to the guest OS. Possible values for this attribute are
@@ -1576,57 +1613,96 @@
         "network" attribute since 0.8.7; "snapshot" since
         0.9.5</span></dd>
       <dt><code>source</code></dt>
-      <dd>If the disk <code>type</code> is "file", then
-        the <code>file</code> attribute specifies the fully-qualified
-        path to the file holding the disk. If the disk
-        <code>type</code> is "block", then the <code>dev</code>
-        attribute specifies the path to the host device to serve as
-        the disk. With "file", "block", and "volume", one or more optional
+      <dd>Representation of the disk <code>source</code> depends on the
+      disk <code>type</code> attribute value as follows:
+          <dl>
+            <dt><code>type='file'</code>
+            <span class="since">since 0.0.3</span></dt>
+              <dd>
+              The <code>file</code> attribute specifies the fully-qualified
+              path to the file holding the disk.
+              </dd>
+            <dt><code>type='block'</code>
+            <span class="since">since 0.0.3</span></dt>
+              <dd>
+              The <code>dev</code> attribute specifies the path to the
+              host device to serve as the disk.
+              </dd>
+            <dt><code>type='dir'</code>
+            <span class="since">since 0.7.5</span></dt>
+              <dd>
+              The <code>dir</code> attribute specifies the fully-qualified path
+              to the directory to use as the disk.
+              </dd>
+            <dt><code>type='network'</code>
+            <span class="since">since 0.8.7</span></dt>
+              <dd>
+              The <code>protocol</code> attribute specifies the protocol to
+              access to the requested image. Possible values are "nbd",
+              "iscsi", "rbd", "sheepdog" or "gluster".  If the
+              <code>protocol</code> attribute is "rbd", "sheepdog" or
+              "gluster", an additional attribute <code>name</code> is
+              mandatory to specify which volume/image will be used. For "nbd",
+              the <code>name</code> attribute is optional. For "iscsi"
+              (<span class="since">since 1.0.4</span>), the <code>name</code>
+              attribute may include a logical unit number, separated from the
+              target's name by a slash (e.g.,
+              <code>iqn.2013-07.com.example:iscsi-pool/1</code>). If not
+              specified, the default LUN is zero.
+              </dd>
+            <dt><code>type='volume'</code>
+            <span class="since">since 1.0.5</span></dt>
+              <dd>
+              The underlying disk source is represented by attributes
+              <code>pool</code> and <code>volume</code>. Attribute
+              <code>pool</code> specifies the name of the
+              <a href="formatstorage.html">storage pool</a> (managed
+              by libvirt) where the disk source resides. Attribute
+              <code>volume</code> specifies the name of storage volume (managed
+              by libvirt) used as the disk source. The value for the
+              <code>volume</code> attribute will be the output from the "Name"
+              column of a <code>virsh vol-list [pool-name]</code> command.
+              <p>
+              Use the attribute <code>mode</code>
+              (<span class="since">since 1.1.1</span>) to indicate how to
+              represent the LUN as the disk source. Valid values are
+              "direct" and "host". If <code>mode</code> is not specified,
+              the default is to use "host".
+
+              Using "direct" as the <code>mode</code> value indicates to use
+              the <a href="formatstorage.html">storage pool's</a>
+              <code>source</code> element <code>host</code> attribute as
+              the disk source to generate the libiscsi URI (e.g.
+              'file=iscsi://example.com:3260/iqn.2013-07.com.example:iscsi-pool/1').
+
+              Using "host" as the <code>mode</code> value indicates to use the
+              LUN's path as it shows up on host (e.g.
+              'file=/dev/disk/by-path/ip-example.com:3260-iscsi-iqn.2013-07.com.example:iscsi-pool-lun-1').
+              </p>
+              </dd>
+          </dl>
+        With "file", "block", and "volume", one or more optional
         sub-elements <code>seclabel</code>, <a href="#seclabel">described
         below</a> (and <span class="since">since 0.9.9</span>), can be
         used to override the domain security labeling policy for just
         that source file. (NB, for "volume" type disk, <code>seclabel</code>
         is only valid when the specified storage volume is of 'file' or
-        'block' type).  If the disk <code>type</code> is "dir", then the
-        <code>dir</code> attribute specifies the fully-qualified path
-        to the directory to use as the disk. If the disk <code>type</code>
-        is "network", then the <code>protocol</code> attribute specifies
-        the protocol to access to the requested image; possible values
-        are "nbd", "iscsi", "rbd", "sheepdog" or "gluster".  If the
-        <code>protocol</code> attribute is "rbd", "sheepdog" or "gluster", an
-        additional attribute <code>name</code> is mandatory to specify which
-        volume/image will be used; for "nbd" it is optional.  For "iscsi",
-        the <code>name</code> attribute may include a logical unit number,
-        separated from the target's name by a slash (for example,
-        <code>iqn.1992-01.com.example/1</code>); the default LUN is zero.
+        'block' type).
+        <p>
         When the disk <code>type</code> is "network", the <code>source</code>
         may have zero or more <code>host</code> sub-elements used to
-        specify the hosts to connect.  If the disk <code>type</code> is
-        "volume", the underlying disk source is represented by attributes
-        <code>pool</code> and <code>volume</code>. Attribute <code>pool</code>
-        specifies the name of storage pool (managed by libvirt) where the disk
-        source resides, and attribute <code>volume</code> specifies the name of
-        storage volume (managed by libvirt) used as the disk source. For a
-        "volume" type disk, if the underlying storage pool is "iscsi", attribute
-        <code>mode</code> (<span class="since">since 1.1.1</span>) can be used
-        to indicate how to represent the LUN as the disk source. The value
-        "host" indicates to use the LUN's path as it shows up on host, e.g.
-        /dev/disk/by-path/ip-10.11.12.9:3260-iscsi-iqn.2013-06.fc:iscsi.iscsi0-lun-1).
-        The value "direct" indicates to use the storage pool's
-        <code>source</code> element <code>host</code> attribute as the
-        disk source for the libiscsi URI, e.g.
-        file=iscsi://demo.org:6000/iqn.1992-01.com.example/1.
-        <span class="since">Since 0.0.3; <code>type='dir'</code> since
-        0.7.5; <code>type='network'</code> since
-        0.8.7; <code>protocol='iscsi'</code> since 1.0.4;
-        <code>type='volume'</code> since 1.0.5;</span><br/>
+        specify the hosts to connect.
+        </p>
+        <p>
         For a "file" or "volume" disk type which represents a cdrom or floppy
         (the <code>device</code> attribute), it is possible to define
         policy what to do with the disk if the source file is not accessible.
         (NB, <code>startupPolicy</code> is not valid for "volume" disk unless
          the specified storage volume is of "file" type). This is done by the
-        <code>startupPolicy</code> attribute (<span class="since">Since 0.9.7</span>),
+        <code>startupPolicy</code> attribute
+        (<span class="since">since 0.9.7</span>),
         accepting these values:
+        </p>
         <table class="top_table">
           <tr>
             <td> mandatory </td>
@@ -1642,10 +1718,13 @@
             <td> drop if missing at any start attempt </td>
           </tr>
         </table>
-        <span class="since">Since 1.1.2</span> the <code>startupPolicy</code> is extended
-        to support hard disks besides cdrom and floppy. On guest cold bootup, if a certain disk
-        is not accessible or its disk chain is broken, with startupPolicy 'optional' the guest
-        will drop this disk. This feature doesn't support migration currently.
+        <p>
+        <span class="since">Since 1.1.2</span> the <code>startupPolicy</code>
+        is extended to support hard disks besides cdrom and floppy. On guest
+        cold bootup, if a certain disk is not accessible or its disk chain is
+        broken, with startupPolicy 'optional' the guest will drop this disk.
+        This feature doesn't support migration currently.
+        </p>
         </dd>
       <dt><code>mirror</code></dt>
       <dd>
