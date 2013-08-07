@@ -166,15 +166,13 @@ cleanup:
  * If flags does not include VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE, then
  * caps and expectedVirtTypes are ignored.
  */
-virDomainSnapshotDefPtr
-virDomainSnapshotDefParseString(const char *xmlStr,
-                                virCapsPtr caps,
-                                virDomainXMLOptionPtr xmlopt,
-                                unsigned int expectedVirtTypes,
-                                unsigned int flags)
+static virDomainSnapshotDefPtr
+virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
+                          virCapsPtr caps,
+                          virDomainXMLOptionPtr xmlopt,
+                          unsigned int expectedVirtTypes,
+                          unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    xmlDocPtr xml = NULL;
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotDefPtr ret = NULL;
     xmlNodePtr *nodes = NULL;
@@ -184,25 +182,12 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     struct timeval tv;
     int active;
     char *tmp;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
     char *memorySnapshot = NULL;
     char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
 
-    xml = virXMLParseCtxt(NULL, xmlStr, _("(domain_snapshot)"), &ctxt);
-    if (!xml) {
-        xmlKeepBlanksDefault(keepBlanksDefault);
-        return NULL;
-    }
-    xmlKeepBlanksDefault(keepBlanksDefault);
-
     if (VIR_ALLOC(def) < 0)
         goto cleanup;
-
-    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "domainsnapshot")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
-        goto cleanup;
-    }
 
     gettimeofday(&tv, NULL);
 
@@ -261,7 +246,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                                _("missing domain in snapshot"));
                 goto cleanup;
             }
-            def->dom = virDomainDefParseNode(xml, domainNode, caps, xmlopt,
+            def->dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
+                                             caps, xmlopt,
                                              expectedVirtTypes,
                                              (VIR_DOMAIN_XML_INACTIVE |
                                               VIR_DOMAIN_XML_SECURE));
@@ -348,10 +334,61 @@ cleanup:
     VIR_FREE(nodes);
     VIR_FREE(memorySnapshot);
     VIR_FREE(memoryFile);
-    xmlXPathFreeContext(ctxt);
     if (ret == NULL)
         virDomainSnapshotDefFree(def);
-    xmlFreeDoc(xml);
+
+    return ret;
+}
+
+virDomainSnapshotDefPtr
+virDomainSnapshotDefParseNode(xmlDocPtr xml,
+                              xmlNodePtr root,
+                              virCapsPtr caps,
+                              virDomainXMLOptionPtr xmlopt,
+                              unsigned int expectedVirtTypes,
+                              unsigned int flags)
+{
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainSnapshotDefPtr def = NULL;
+
+    if (!xmlStrEqual(root->name, BAD_CAST "domainsnapshot")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
+        goto cleanup;
+    }
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctxt->node = root;
+    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt,
+                                    expectedVirtTypes, flags);
+cleanup:
+    xmlXPathFreeContext(ctxt);
+    return def;
+}
+
+virDomainSnapshotDefPtr
+virDomainSnapshotDefParseString(const char *xmlStr,
+                                virCapsPtr caps,
+                                virDomainXMLOptionPtr xmlopt,
+                                unsigned int expectedVirtTypes,
+                                unsigned int flags)
+{
+    virDomainSnapshotDefPtr ret = NULL;
+    xmlDocPtr xml;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
+
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)")))) {
+        xmlKeepBlanksDefault(keepBlanksDefault);
+        ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
+                                            caps, xmlopt,
+                                            expectedVirtTypes, flags);
+        xmlFreeDoc(xml);
+    }
+    xmlKeepBlanksDefault(keepBlanksDefault);
 
     return ret;
 }
