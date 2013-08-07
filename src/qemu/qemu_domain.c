@@ -2068,13 +2068,53 @@ cleanup:
 }
 
 static int
+qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainDiskDefPtr disk)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virDomainEventPtr event = NULL;
+    virDomainDiskDefPtr del_disk = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuid);
+
+    VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
+              "due to inaccessible source '%s'",
+              disk->dst, vm->def->name, uuid, disk->src);
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
+        disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+
+        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL,
+                                                   disk->info.alias,
+                                                   VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
+        VIR_FREE(disk->src);
+    } else {
+        event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL,
+                                                   disk->info.alias,
+                                                   VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START);
+
+        if (!(del_disk = virDomainDiskRemoveByName(vm->def, disk->src))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("no source device %s"), disk->src);
+            return -1;
+        }
+        virDomainDiskDefFree(del_disk);
+    }
+
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
+    return 0;
+}
+
+static int
 qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk,
                                  bool cold_boot)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
-    virDomainEventPtr event = NULL;
     int startupPolicy = disk->startupPolicy;
 
     virUUIDFormat(vm->def->uuid, uuid);
@@ -2097,17 +2137,8 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             break;
     }
 
-    virResetLastError();
-    VIR_DEBUG("Dropping disk '%s' on domain '%s' (UUID '%s') "
-              "due to inaccessible source '%s'",
-              disk->dst, vm->def->name, uuid, disk->src);
-
-    event = virDomainEventDiskChangeNewFromObj(vm, disk->src, NULL, disk->info.alias,
-                                               VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
-    if (event)
-        qemuDomainEventQueue(driver, event);
-
-    VIR_FREE(disk->src);
+    if (qemuDomainCheckRemoveOptionalDisk(driver, vm, disk) < 0)
+        goto error;
 
     return 0;
 
@@ -2125,8 +2156,8 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     virDomainDiskDefPtr disk;
 
     VIR_DEBUG("Checking for disk presence");
-    for (i = 0; i < vm->def->ndisks; i++) {
-        disk = vm->def->disks[i];
+    for (i = vm->def->ndisks; i > 0; i--) {
+        disk = vm->def->disks[i - 1];
 
         if (!disk->src)
             continue;
@@ -2135,10 +2166,11 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             qemuDiskChainCheckBroken(disk) >= 0)
             continue;
 
-        if (disk->startupPolicy) {
-            if (qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
-                                                 cold_boot) >= 0)
-                continue;
+        if (disk->startupPolicy &&
+            qemuDomainCheckDiskStartupPolicy(driver, vm, disk,
+                                             cold_boot) >= 0) {
+            virResetLastError();
+            continue;
         }
 
         goto error;
