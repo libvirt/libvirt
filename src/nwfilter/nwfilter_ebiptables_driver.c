@@ -188,6 +188,9 @@ static const char ebiptables_script_set_ifs[] =
 
 static const char *m_state_out_str   = "-m state --state NEW,ESTABLISHED";
 static const char *m_state_in_str    = "-m state --state ESTABLISHED";
+static const char *m_state_out_str_new = "-m conntrack --ctstate NEW,ESTABLISHED";
+static const char *m_state_in_str_new  = "-m conntrack --ctstate ESTABLISHED";
+
 static const char *m_physdev_in_str  = "-m physdev " PHYSDEV_IN;
 static const char *m_physdev_out_str = "-m physdev " PHYSDEV_OUT;
 static const char *m_physdev_out_old_str = "-m physdev " PHYSDEV_OUT_OLD;
@@ -4338,6 +4341,49 @@ ebiptablesDriverProbeCtdir(void)
         iptables_ctdir_corrected = CTDIR_STATUS_OLD;
 }
 
+static void
+ebiptablesDriverProbeStateMatch(void)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *cmdout = NULL, *version;
+    unsigned long thisversion;
+
+    NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
+
+    virBufferAsprintf(&buf,
+                      "$IPT --version");
+
+    if (ebiptablesExecCLI(&buf, NULL, &cmdout) < 0) {
+        VIR_ERROR(_("Testing of iptables command failed: %s"),
+                  cmdout);
+        return;
+    }
+
+    /*
+     * we expect output in the format
+     * iptables v1.4.16
+     */
+    if (!(version = strchr(cmdout, 'v')) ||
+        virParseVersionString(version + 1, &thisversion, true) < 0) {
+        VIR_ERROR(_("Could not determine iptables version from string %s"),
+                  cmdout);
+        goto cleanup;
+    }
+
+    /*
+     * since version 1.4.16 '-m state --state ...' will be converted to
+     * '-m conntrack --ctstate ...'
+     */
+    if (thisversion >= 1 * 1000000 + 4 * 1000 + 16) {
+        m_state_out_str = m_state_out_str_new;
+        m_state_in_str = m_state_in_str_new;
+    }
+
+cleanup:
+    VIR_FREE(cmdout);
+    return;
+}
+
 static int
 ebiptablesDriverInit(bool privileged)
 {
@@ -4375,8 +4421,10 @@ ebiptablesDriverInit(bool privileged)
         return -ENOTSUP;
     }
 
-    if (iptables_cmd_path)
+    if (iptables_cmd_path) {
         ebiptablesDriverProbeCtdir();
+        ebiptablesDriverProbeStateMatch();
+    }
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 
