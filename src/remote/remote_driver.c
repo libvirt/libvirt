@@ -2431,6 +2431,7 @@ remoteDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     make_nonnull_domain(&args.dom, dom);
     args.flags = flags;
 
+    memset(&ret, 0, sizeof(ret));
     if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS,
              (xdrproc_t)xdr_remote_domain_create_with_flags_args, (char *)&args,
              (xdrproc_t)xdr_remote_domain_create_with_flags_ret, (char *)&ret) == -1) {
