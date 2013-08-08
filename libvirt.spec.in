@@ -1872,6 +1872,7 @@ fi
 %attr(0755, root, root) %{_sbindir}/virtlockd
 
 %{_mandir}/man8/libvirtd.8*
+%{_mandir}/man8/virtlockd.8*
 
     %if %{with_driver_modules}
         %if %{with_network}

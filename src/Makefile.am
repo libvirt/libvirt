@@ -2019,9 +2019,31 @@ virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
+POD2MAN = pod2man -c "Virtualization Support" \
+			-r "$(PACKAGE)-$(VERSION)" -s 8
 
+$(srcdir)/virtlockd.8.in: locking/virtlockd.pod.in $(top_srcdir)/configure.ac
+	$(AM_V_GEN)$(POD2MAN) --name VIRTLOCKD $< $@ \
+	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
-EXTRA_DIST += locking/virtlockd.service.in locking/virtlockd.socket.in
+virtlockd.8: $(srcdir)/virtlockd.8.in
+	$(AM_V_GEN)sed \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	mv $@-t $@
+
+man8_MANS = virtlockd.8
+
+MAINTAINERCLEANFILES += $(srcdir)/virtlockd.8.in
+
+EXTRA_DIST += \
+        locking/virtlockd.service.in \
+        locking/virtlockd.socket.in \
+        locking/virtlockd.pod.in \
+        virtlockd.8.in \
+        $(NULL)
+
 
 if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_SYSTEMD

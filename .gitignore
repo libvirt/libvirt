@@ -144,6 +144,8 @@
 /src/util/virkeymaps.h
 /src/virt-aa-helper
 /src/virtlockd
+/src/virtlockd.8
+/src/virtlockd.8.in
 /src/virtlockd.init
 /tests/*.log
 /tests/*.pid
