@@ -336,7 +336,7 @@ AC_DEFUN([LIBVIRT_CHECK_PKG],[
   fi
 
   if test $fail = 1; then
-    AC_MSG_ERROR([You must install the ]pc_name[ >= ]pc_version[pkg-config module to compile libvirt])
+    AC_MSG_ERROR([You must install the ]pc_name[ >= ]pc_version[ pkg-config module to compile libvirt])
   fi
 
   if test "x$with_var" = "xyes" ; then
