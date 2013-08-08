@@ -58,14 +58,18 @@ dbus_bool_t dbus_connection_set_watch_functions(DBusConnection *connection ATTRI
     return 1;
 }
 
+dbus_bool_t dbus_message_set_reply_serial(DBusMessage *message ATTRIBUTE_UNUSED,
+                                          dbus_uint32_t serial ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connection ATTRIBUTE_UNUSED,
                                                        DBusMessage *message,
                                                        int timeout_milliseconds ATTRIBUTE_UNUSED,
                                                        DBusError *error)
 {
     DBusMessage *reply = NULL;
-
-    dbus_message_set_serial(message, 7);
 
     if (getenv("FAIL_BAD_SERVICE"))
         reply = dbus_message_new_error(message,
