@@ -398,6 +398,51 @@ static const libxl_osevent_hooks libxl_event_callbacks = {
     .timeout_deregister = libxlTimeoutDeregisterEventHook,
 };
 
+static int
+libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    char *log_file;
+    int ret = -1;
+
+    if (priv->ctx)
+        return 0;
+
+    if (virAsprintf(&log_file, "%s/%s.log", LIBXL_LOG_DIR, vm->def->name) < 0)
+        return -1;
+
+    if ((priv->logger_file = fopen(log_file, "a")) == NULL)  {
+        virReportSystemError(errno,
+                             _("failed to open logfile %s"),
+                             log_file);
+        goto cleanup;
+    }
+
+    priv->logger =
+        (xentoollog_logger *)xtl_createlogger_stdiostream(priv->logger_file,
+                                                          XTL_DEBUG, 0);
+    if (!priv->logger) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot create libxenlight logger for domain %s"),
+                       vm->def->name);
+        goto cleanup;
+    }
+
+    if (libxl_ctx_alloc(&priv->ctx, LIBXL_VERSION, 0, priv->logger)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed libxl context initialization"));
+        goto cleanup;
+    }
+
+    libxl_osevent_register_hooks(priv->ctx, &libxl_event_callbacks, priv);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(log_file);
+    return ret;
+}
+
 static void *
 libxlDomainObjPrivateAlloc(void)
 {
@@ -408,14 +453,6 @@ libxlDomainObjPrivateAlloc(void)
 
     if (!(priv = virObjectLockableNew(libxlDomainObjPrivateClass)))
         return NULL;
-
-    if (libxl_ctx_alloc(&priv->ctx, LIBXL_VERSION, 0, libxl_driver->logger)) {
-        VIR_ERROR(_("Failed libxl context initialization"));
-        virObjectUnref(priv);
-        return NULL;
-    }
-
-    libxl_osevent_register_hooks(priv->ctx, &libxl_event_callbacks, priv);
 
     if (!(priv->devs = virChrdevAlloc()))
         return NULL;
@@ -432,6 +469,11 @@ libxlDomainObjPrivateDispose(void *obj)
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
 
     virChrdevFree(priv->devs);
+
+    xtl_logger_destroy(priv->logger);
+    if (priv->logger_file)
+        VIR_FORCE_FCLOSE(priv->logger_file);
+
     libxl_ctx_free(priv->ctx);
 }
 
@@ -929,6 +971,9 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
+    if (libxlDomainObjPrivateInitCtx(vm) < 0)
+        goto error;
+
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
     if (restore_fd < 0) {
@@ -1135,9 +1180,6 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
     libxl_ctx_free(libxl_driver->ctx);
-    xtl_logger_destroy(libxl_driver->logger);
-    if (libxl_driver->logger_file)
-        VIR_FORCE_FCLOSE(libxl_driver->logger_file);
 
     virObjectUnref(libxl_driver->reservedVNCPorts);
 
@@ -1187,7 +1229,6 @@ libxlStateInitialize(bool privileged,
                      void *opaque ATTRIBUTE_UNUSED)
 {
     const libxl_version_info *ver_info;
-    char *log_file = NULL;
     virCommandPtr cmd;
     int status, ret = 0;
     unsigned int free_mem;
@@ -1267,17 +1308,6 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
 
-    if (virAsprintf(&log_file, "%s/libxl.log", libxl_driver->logDir) < 0)
-        goto error;
-
-    if ((libxl_driver->logger_file = fopen(log_file, "a")) == NULL)  {
-        virReportSystemError(errno,
-                             _("failed to create logfile %s"),
-                             log_file);
-        goto error;
-    }
-    VIR_FREE(log_file);
-
     /* read the host sysinfo */
     if (privileged)
         libxl_driver->hostsysinfo = virSysinfoRead();
@@ -1286,16 +1316,7 @@ libxlStateInitialize(bool privileged,
     if (!libxl_driver->domainEventState)
         goto error;
 
-    libxl_driver->logger =
-            (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG,  0);
-    if (!libxl_driver->logger) {
-        VIR_INFO("cannot create logger for libxenlight, disabling driver");
-        goto fail;
-    }
-
-    if (libxl_ctx_alloc(&libxl_driver->ctx,
-                       LIBXL_VERSION, 0,
-                       libxl_driver->logger)) {
+    if (libxl_ctx_alloc(&libxl_driver->ctx, LIBXL_VERSION, 0, NULL)) {
         VIR_INFO("cannot initialize libxenlight context, probably not running in a Xen Dom0, disabling driver");
         goto fail;
     }
@@ -1362,7 +1383,6 @@ libxlStateInitialize(bool privileged,
 error:
     ret = -1;
 fail:
-    VIR_FREE(log_file);
     if (libxl_driver)
         libxlDriverUnlock(libxl_driver);
     libxlStateCleanup();

@@ -57,8 +57,6 @@ struct _libxlDriverPrivate {
     virDomainXMLOptionPtr xmlopt;
     unsigned int version;
 
-    FILE *logger_file;
-    xentoollog_logger *logger;
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 
@@ -93,6 +91,9 @@ typedef libxlDomainObjPrivate *libxlDomainObjPrivatePtr;
 struct _libxlDomainObjPrivate {
     virObjectLockable parent;
 
+    /* per domain log stream for libxl messages */
+    FILE *logger_file;
+    xentoollog_logger *logger;
     /* per domain libxl ctx */
     libxl_ctx *ctx;
     /* console */
