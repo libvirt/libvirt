@@ -38,6 +38,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
+# define KEYFILE "key-sess.pem"
+
 struct testTLSSessionData {
     const char *servercacrt;
     const char *clientcacrt;
@@ -107,7 +109,7 @@ static int testTLSSessionInit(const void *opaque)
     serverCtxt = virNetTLSContextNewServer(data->servercacrt,
                                            NULL,
                                            data->servercrt,
-                                           keyfile,
+                                           KEYFILE,
                                            data->wildcards,
                                            false,
                                            true);
@@ -115,7 +117,7 @@ static int testTLSSessionInit(const void *opaque)
     clientCtxt = virNetTLSContextNewClient(data->clientcacrt,
                                            NULL,
                                            data->clientcrt,
-                                           keyfile,
+                                           KEYFILE,
                                            false,
                                            true);
 
@@ -236,7 +238,7 @@ mymain(void)
 {
     int ret = 0;
 
-    testTLSInit();
+    testTLSInit(KEYFILE);
 
 # define DO_SESS_TEST(_caCrt, _serverCrt, _clientCrt, _expectServerFail, \
                       _expectClientFail, _hostname, _wildcards)         \
@@ -474,7 +476,7 @@ mymain(void)
     testTLSDiscardCert(&clientcertlevel2breq);
     unlink("cacertchain.pem");
 
-    testTLSCleanup();
+    testTLSCleanup(KEYFILE);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -28,8 +28,6 @@
 
 # include "rpc/virnettlscontext.h"
 
-extern const char *keyfile;
-
 /*
  * This contains parameter about how to generate
  * certificates.
@@ -76,7 +74,7 @@ void testTLSWriteCertChain(const char *filename,
                            size_t ncerts);
 void testTLSDiscardCert(struct testTLSCertReq *req);
 
-void testTLSInit(void);
-void testTLSCleanup(void);
+void testTLSInit(const char *keyfile);
+void testTLSCleanup(const char *keyfile);
 
 #endif

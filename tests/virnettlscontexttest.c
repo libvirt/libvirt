@@ -40,6 +40,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
+# define KEYFILE "key-ctx.pem"
+
 struct testTLSContextData {
     bool isServer;
     const char *cacrt;
@@ -66,7 +68,7 @@ static int testTLSContextInit(const void *opaque)
         ctxt = virNetTLSContextNewServer(data->cacrt,
                                          NULL,
                                          data->crt,
-                                         keyfile,
+                                         KEYFILE,
                                          NULL,
                                          true,
                                          true);
@@ -74,7 +76,7 @@ static int testTLSContextInit(const void *opaque)
         ctxt = virNetTLSContextNewClient(data->cacrt,
                                          NULL,
                                          data->crt,
-                                         keyfile,
+                                         KEYFILE,
                                          true,
                                          true);
     }
@@ -109,7 +111,7 @@ mymain(void)
 {
     int ret = 0;
 
-    testTLSInit();
+    testTLSInit(KEYFILE);
 
 # define DO_CTX_TEST(_isServer, _caCrt, _crt, _expectFail)              \
     do {                                                                \
@@ -617,7 +619,7 @@ mymain(void)
     testTLSDiscardCert(&clientcertlevel2breq);
     unlink("cacertchain.pem");
 
-    testTLSCleanup();
+    testTLSCleanup(KEYFILE);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

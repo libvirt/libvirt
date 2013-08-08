@@ -34,8 +34,6 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
-const char *keyfile = abs_builddir "/virnettlscontexttest-key.pem";
-
 /*
  * These store some static data that is needed when
  * encoding extensions in the x509 certs
@@ -99,7 +97,7 @@ static gnutls_x509_privkey_t testTLSLoadKey(void)
 }
 
 
-void testTLSInit(void)
+void testTLSInit(const char *keyfile)
 {
     gnutls_global_init();
 
@@ -112,7 +110,7 @@ void testTLSInit(void)
 }
 
 
-void testTLSCleanup(void)
+void testTLSCleanup(const char *keyfile)
 {
     asn1_delete_structure(&pkix_asn1);
     unlink(keyfile);
