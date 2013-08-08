@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <fnmatch.h>
+#include <locale.h>
 
 #include "internal.h"
 #include "virerror.h"
