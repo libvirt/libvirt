@@ -1608,7 +1608,7 @@ check-local: check-augeas
 	$(NULL)
 
 check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock \
-	check-augeas-lockd
+	check-augeas-lockd check-augeas-virtlockd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -1656,9 +1656,18 @@ test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 		locking/qemu-lockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
 
+test_virtlockd.aug: locking/test_virtlockd.aug.in \
+		locking/virtlockd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) locking/virtlockd.conf $< $@
+
 check-augeas-lockd: test_libvirt_lockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_lockd.aug; \
+	fi
+
+check-augeas-virtlockd: test_virtlockd.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/locking test_virtlockd.aug; \
 	fi
 
 #
@@ -2035,6 +2044,12 @@ virtlockd.8: $(srcdir)/virtlockd.8.in
 
 man8_MANS = virtlockd.8
 
+conf_DATA += locking/virtlockd.conf
+
+augeas_DATA += locking/virtlockd.aug
+augeastest_DATA += test_virtlockd.aug
+
+CLEANFILES += test_virtlockd.aug
 MAINTAINERCLEANFILES += $(srcdir)/virtlockd.8.in
 
 EXTRA_DIST += \
@@ -2042,6 +2057,9 @@ EXTRA_DIST += \
         locking/virtlockd.socket.in \
         locking/virtlockd.pod.in \
         virtlockd.8.in \
+        locking/virtlockd.aug \
+        locking/virtlockd.conf \
+        locking/test_virtlockd.aug.in \
         $(NULL)
 
 

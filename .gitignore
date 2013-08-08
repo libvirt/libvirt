@@ -141,6 +141,7 @@
 /src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]
 /src/test_libvirt*.aug
+/src/test_virtlockd.aug
 /src/util/virkeymaps.h
 /src/virt-aa-helper
 /src/virtlockd
