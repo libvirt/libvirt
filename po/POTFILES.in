@@ -232,3 +232,4 @@ tools/virt-host-validate-common.c
 tools/virt-host-validate-lxc.c
 tools/virt-host-validate-qemu.c
 tools/virt-host-validate.c
+tools/virt-login-shell.c

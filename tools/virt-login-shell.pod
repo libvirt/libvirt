@@ -1,0 +1,62 @@
+=head1 NAME
+
+virt-login-shell - tool to execute a shell within a container matching the users name
+
+=head1 SYNOPSIS
+
+B<virt-login-shell>
+
+=head1 DESCRIPTION
+
+The B<virt-login-shell> program is setuid shell that is used to join
+an LXC container that matches the users name.  If the container is not
+running virt-login-shell will attempt to start the container.
+virt-sandbox-shell is not allowed to be run by root.  Normal users will get
+added to a container that matches their username, if it exists.  And they are
+configured in /etc/libvirt/virt-login-shell.conf.
+
+The basic structure of most virt-login-shell usage is:
+
+  virt-login-shell
+
+=head1 CONFIG
+
+By default, virt-login-shell will execute the /bin/sh program for the user.
+You can modify this behaviour by defining the shell variable in /etc/libvirt/virt-login-shell.conf.
+
+eg.  shell = [ "/bin/ksh", "--login"]
+
+By default no users are allowed to user virt-login-shell, if you want to allow
+certain users to use virt-login-shell, you need to modify the allowed_users variable in /etc/libvirt/virt-login-shell.conf.
+
+eg. allowed_users = [ "tom", "dick", "harry" ]
+
+=head1 BUGS
+
+Report any bugs discovered to the libvirt community via the mailing
+list C<http://libvirt.org/contact.html> or bug tracker C<http://libvirt.org/bugs.html>.
+Alternatively report bugs to your software distributor / vendor.
+
+=head1 AUTHORS
+
+  Please refer to the AUTHORS file distributed with libvirt.
+
+  Daniel Walsh <dwalsh at redhat dot com>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2013 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
+
+=head1 LICENSE
+
+virt-login-shell is distributed under the terms of the GNU LGPL v2+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+L<virsh(1)>, L<http://www.libvirt.org/>
+
+=cut

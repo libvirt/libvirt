@@ -218,6 +218,7 @@
 /tools/libvirt-guests.init
 /tools/libvirt-guests.service
 /tools/libvirt-guests.sh
+/tools/virt-login-shell
 /tools/virsh
 /tools/virsh-*-edit.c
 /tools/virt-*-validate

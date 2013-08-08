@@ -2007,14 +2007,17 @@ fi
 %doc AUTHORS ChangeLog.gz NEWS README COPYING COPYING.LESSER TODO
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
+%config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_mandir}/man1/virt-host-validate.1*
+%{_mandir}/man1/virt-login-shell.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
 %{_bindir}/virt-host-validate
+%attr(4755, root, root) %{_bindir}/virt-login-shell
 %{_libdir}/lib*.so.*
 
 %if %{with_dtrace}

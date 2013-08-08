@@ -37,6 +37,7 @@ EXTRA_DIST = \
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
+	virt-login-shell.pod				\
 	virsh.pod					\
 	libvirt-guests.sysconf				\
 	virsh-edit.c					\
@@ -52,8 +53,11 @@ EXTRA_DIST = \
 
 DISTCLEANFILES =
 
+confdir = $(sysconfdir)/libvirt
+conf_DATA = virt-login-shell.conf
+
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh virt-host-validate
+bin_PROGRAMS = virsh virt-host-validate virt-login-shell
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -65,6 +69,7 @@ dist_man1_MANS = \
 		virt-host-validate.1 \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
+		virt-login-shell.1 \
 		virsh.1
 if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
@@ -128,6 +133,24 @@ virt_host_validate_CFLAGS = \
 		$(COVERAGE_CFLAGS)				\
 		$(NULL)
 
+virt_login_shell_SOURCES =					\
+		virt-login-shell.conf				\
+		virt-login-shell.c
+
+virt_login_shell_LDFLAGS = $(COVERAGE_LDFLAGS)
+virt_login_shell_LDADD =					\
+		$(STATIC_BINARIES)				\
+		$(PIE_LDFLAGS)					\
+		$(RELRO_LDFLAGS) \
+		../src/libvirt.la				\
+		../src/libvirt-lxc.la				\
+		../gnulib/lib/libgnu.la
+
+virt_login_shell_CFLAGS =					\
+		$(WARN_CFLAGS)					\
+		$(PIE_CFLAGS)					\
+		$(COVERAGE_CFLAGS)
+
 virsh_SOURCES =							\
 		console.c console.h				\
 		virsh.c virsh.h					\
@@ -188,6 +211,11 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	  --input-format rc --input $< \
 	  --output-format coff --output $@
 endif
+
+virt-login-shell.1: virt-login-shell.pod $(top_srcdir)/configure.ac
+	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
+	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
+		rm $(srcdir)/$@; exit 1; fi
 
 virsh.1: virsh.pod $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
