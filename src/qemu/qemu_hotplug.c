@@ -1362,7 +1362,7 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, 0) < 0)
+    if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
         goto cleanup;
 
     if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps,
