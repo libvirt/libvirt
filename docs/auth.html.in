@@ -2,12 +2,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1 >Authentication &amp; access control</h1>
+    <h1>Connection authentication</h1>
     <p>
       When connecting to libvirt, some connections may require client
       authentication before allowing use of the APIs. The set of possible
       authentication mechanisms is administrator controlled, independent
-      of applications using libvirt.
+      of applications using libvirt. Once authenticated, libvirt can apply
+      fine grained <a href="acl.html">access control</a> to the operations
+      performed by a client.
     </p>
 
     <ul id="toc"></ul>

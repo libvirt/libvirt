@@ -58,6 +58,7 @@
 /daemon/libvirtd.policy
 /daemon/libvirtd.service
 /daemon/test_libvirtd.aug
+/docs/aclperms.htmlinc
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in

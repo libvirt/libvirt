@@ -128,7 +128,7 @@ fig = \
   migration-unmanaged-direct.fig
 
 EXTRA_DIST=					\
-  apibuild.py \
+  apibuild.py genaclperms.pl \
   site.xsl newapi.xsl news.xsl page.xsl \
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
@@ -138,6 +138,16 @@ EXTRA_DIST=					\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in \
   todo.pl hvsupport.pl todo.cfg-example
+
+BUILT_SOURCES += aclperms.htmlinc
+
+CLEANFILES = $(srcdir)/aclperms.htmlinc
+
+acl.html:: $(srcdir)/aclperms.htmlinc
+
+$(srcdir)/aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
+        $(srcdir)/genaclperms.pl Makefile.am
+	$(PERL) $(srcdir)/genaclperms.pl $< > $@
 
 MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_html)) \

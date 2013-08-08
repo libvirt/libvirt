@@ -26,6 +26,10 @@
     <xsl:call-template name="toc"/>
   </xsl:template>
 
+  <xsl:template match="html:div[@id='include']" mode="content">
+    <xsl:call-template name="include"/>
+  </xsl:template>
+
   <!-- This processes the sitemap to form a context sensitive
        navigation menu for the current page -->
   <xsl:template match="html:ul" mode="menu">
@@ -174,4 +178,11 @@
     </html>
   </xsl:template>
 
+  <xsl:template name="include">
+    <xsl:variable name="inchtml">
+      <xsl:copy-of select="document(@filename)"/>
+    </xsl:variable>
+
+    <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
+  </xsl:template>
 </xsl:stylesheet>

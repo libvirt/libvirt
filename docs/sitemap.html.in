@@ -69,6 +69,16 @@
                 <span>Configure authentication for the libvirt daemon</span>
               </li>
               <li>
+                <a href="acl.html">Access control</a>
+                <span>Configure access control libvirt APIs</span>
+                <ul>
+                  <li>
+                    <a href="aclpolkit.html">Polkit access control</a>
+                    <span>Using polkit for API access control</span>
+                  </li>
+                </ul>
+              </li>
+              <li>
                 <a href="migration.html">Migration</a>
                 <span>Migrating guests between machines</span>
               </li>

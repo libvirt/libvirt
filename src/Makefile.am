@@ -1658,7 +1658,7 @@ test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 
 test_virtlockd.aug: locking/test_virtlockd.aug.in \
 		locking/virtlockd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/virtlockd.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< $@
 
 check-augeas-lockd: test_libvirt_lockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
