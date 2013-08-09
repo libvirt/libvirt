@@ -4127,23 +4127,23 @@ libxlNodeGetCellsFreeMemory(virConnectPtr conn,
     if (virNodeGetCellsFreeMemoryEnsureACL(conn) < 0)
         return -1;
 
-    /* Early failure is probably worth just a warning */
     numa_info = libxl_get_numainfo(driver->ctx, &nr_nodes);
     if (numa_info == NULL || nr_nodes == 0) {
-        VIR_WARN("libxl_get_numainfo failed to retrieve NUMA data");
-        return 0;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxl_get_numainfo failed"));
+        goto cleanup;
     }
 
     /* Check/sanitize the cell range */
-    if (startCell > nr_nodes) {
+    if (startCell >= nr_nodes) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("start cell %d out of range (0-%d)"),
-                       startCell, nr_nodes);
+                       startCell, nr_nodes - 1);
         goto cleanup;
     }
     lastCell = startCell + maxCells - 1;
-    if (lastCell > nr_nodes)
-        lastCell = nr_nodes;
+    if (lastCell >= nr_nodes)
+        lastCell = nr_nodes - 1;
 
     for (numCells = 0, n = startCell; n <= lastCell; n++) {
         if (numa_info[n].size == LIBXL_NUMAINFO_INVALID_ENTRY)
