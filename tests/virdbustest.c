@@ -178,9 +178,9 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     DBusMessage *msg = NULL;
     int ret = -1;
     const char *in_str1 = "Hello";
-    int in_int32a = 100000000, out_int32a = 0;
-    int in_int32b = 200000000, out_int32b = 0;
-    int in_int32c = 300000000, out_int32c = 0;
+    int in_int32a = 1000000000, out_int32a = 0;
+    int in_int32b = 2000000000, out_int32b = 0;
+    int in_int32c = -2000000000, out_int32c = 0;
     const char *in_str2 = "World";
     char *out_str1 = NULL, *out_str2 = NULL;
 
@@ -236,7 +236,7 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
     unsigned short in_uint16 = 32000, out_uint16 = 0;
     int in_int32 = 100000000, out_int32 = 0;
     unsigned int in_uint32 = 200000000, out_uint32 = 0;
-    long long in_int64 = 1000000000000LL, out_int64 = 0;
+    long long in_int64 = -1000000000000LL, out_int64 = 0;
     unsigned long long in_uint64 = 2000000000000LL, out_uint64 = 0;
     double in_double = 3.14159265359, out_double = 0;;
     const char *in_string = "Hello World";
