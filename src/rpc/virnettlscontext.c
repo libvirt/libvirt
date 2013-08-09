@@ -545,12 +545,12 @@ cleanup:
 
 static int virNetTLSContextLoadCACertListFromFile(const char *certFile,
                                                   gnutls_x509_crt_t *certs,
+                                                  unsigned int certMax,
                                                   size_t *ncerts)
 {
     gnutls_datum_t data;
     char *buf = NULL;
     int ret = -1;
-    unsigned int certMax = *ncerts;
 
     *ncerts = 0;
     VIR_DEBUG("certFile %s", certFile);
@@ -584,15 +584,17 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
 {
     gnutls_x509_crt_t cert = NULL;
     gnutls_x509_crt_t cacerts[MAX_CERTS];
-    size_t ncacerts = MAX_CERTS;
+    size_t ncacerts = 0;
     size_t i;
     int ret = -1;
 
+    memset(cacerts, 0, sizeof(cacerts));
     if ((access(certFile, R_OK) == 0) &&
         !(cert = virNetTLSContextLoadCertFromFile(certFile, isServer)))
         goto cleanup;
     if ((access(cacertFile, R_OK) == 0) &&
-        virNetTLSContextLoadCACertListFromFile(cacertFile, cacerts, &ncacerts) < 0)
+        virNetTLSContextLoadCACertListFromFile(cacertFile, cacerts,
+                                               MAX_CERTS, &ncacerts) < 0)
         goto cleanup;
 
     if (cert &&
