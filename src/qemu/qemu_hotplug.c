@@ -1030,7 +1030,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
          */
         vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
         virProcessSetMaxMemLock(vm->pid,
-                                qemuDomainMemoryLimit(vm->def) * 1024);
+                                vm->def->mem.hard_limit * 1024);
         vm->def->hostdevs[vm->def->nhostdevs--] = NULL;
     }
 

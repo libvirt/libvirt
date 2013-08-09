@@ -9220,7 +9220,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (mlock)
-        virCommandSetMaxMemLock(cmd, qemuDomainMemoryLimit(def) * 1024);
+        virCommandSetMaxMemLock(cmd, def->mem.hard_limit * 1024);
 
     virObjectUnref(cfg);
     return cmd;

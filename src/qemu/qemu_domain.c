@@ -2306,55 +2306,6 @@ cleanup:
     return ret;
 }
 
-
-unsigned long long
-qemuDomainMemoryLimit(virDomainDefPtr def)
-{
-    unsigned long long mem;
-    size_t i;
-
-    if (def->mem.hard_limit) {
-        mem = def->mem.hard_limit;
-    } else {
-        /* If there is no hard_limit set, compute a reasonable one to avoid
-         * system thrashing caused by exploited qemu.  A 'reasonable
-         * limit' has been chosen:
-         *     (1 + k) * (domain memory + total video memory) + (32MB for
-         *     cache per each disk) + F
-         * where k = 0.5 and F = 400MB.  The cache for disks is important as
-         * kernel cache on the host side counts into the RSS limit.
-         * Moreover, VFIO requires some amount for IO space. Alex Williamson
-         * suggested adding 1GiB for IO space just to be safe (some finer
-         * tuning might be nice, though).
-         *
-         * Technically, the disk cache does not have to be included in
-         * RLIMIT_MEMLOCK but it doesn't hurt as it's just an upper limit and
-         * it makes this function and its usage simpler.
-         */
-        mem = def->mem.max_balloon;
-        for (i = 0; i < def->nvideos; i++)
-            mem += def->videos[i]->vram;
-        mem *= 1.5;
-        mem += def->ndisks * 32768;
-        mem += 409600;
-
-        for (i = 0; i < def->nhostdevs; i++) {
-            virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-            if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                hostdev->source.subsys.type ==
-                    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                hostdev->source.subsys.u.pci.backend ==
-                    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                mem += 1024 * 1024;
-                break;
-            }
-        }
-    }
-
-    return mem;
-}
-
-
 int
 qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
                            virDomainObjPtr vm)
