@@ -85,7 +85,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                 */
                 if (pp->str[0] == '%') {
                     ptr = &pp->str[1];
-                    if (!ptr)
+                    if (!*ptr)
                         continue;
                     for (i = 0; groups[i]; i++) {
                         if (!(gname = virGetGroupName(groups[i])))
@@ -96,7 +96,6 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                         }
                         VIR_FREE(gname);
                     }
-                    VIR_FREE(groups);
                     continue;
                 }
                 if (fnmatch(pp->str, name, 0) == 0) {
@@ -109,7 +108,6 @@ static int virLoginShellAllowedUser(virConfPtr conf,
     virReportSystemError(EPERM, _("%s not listed as an allowed_users in %s"), name, conf_file);
 cleanup:
     VIR_FREE(gname);
-    VIR_FREE(groups);
     return ret;
 }
 
