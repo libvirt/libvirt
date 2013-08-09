@@ -57,6 +57,9 @@ struct _libxlDriverPrivate {
     virDomainXMLOptionPtr xmlopt;
     unsigned int version;
 
+    /* log stream for driver-wide libxl ctx */
+    FILE *logger_file;
+    xentoollog_logger *logger;
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 

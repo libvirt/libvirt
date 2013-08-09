@@ -1180,6 +1180,9 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
     libxl_ctx_free(libxl_driver->ctx);
+    xtl_logger_destroy(libxl_driver->logger);
+    if (libxl_driver->logger_file)
+        VIR_FORCE_FCLOSE(libxl_driver->logger_file);
 
     virObjectUnref(libxl_driver->reservedVNCPorts);
 
@@ -1229,6 +1232,7 @@ libxlStateInitialize(bool privileged,
                      void *opaque ATTRIBUTE_UNUSED)
 {
     const libxl_version_info *ver_info;
+    char *log_file = NULL;
     virCommandPtr cmd;
     int status, ret = 0;
     unsigned int free_mem;
@@ -1308,6 +1312,17 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
 
+    if (virAsprintf(&log_file, "%s/libxl-driver.log", libxl_driver->logDir) < 0)
+        goto error;
+
+    if ((libxl_driver->logger_file = fopen(log_file, "a")) == NULL)  {
+        virReportSystemError(errno,
+                             _("failed to create logfile %s"),
+                             log_file);
+        goto error;
+    }
+    VIR_FREE(log_file);
+
     /* read the host sysinfo */
     if (privileged)
         libxl_driver->hostsysinfo = virSysinfoRead();
@@ -1316,8 +1331,18 @@ libxlStateInitialize(bool privileged,
     if (!libxl_driver->domainEventState)
         goto error;
 
-    if (libxl_ctx_alloc(&libxl_driver->ctx, LIBXL_VERSION, 0, NULL)) {
-        VIR_INFO("cannot initialize libxenlight context, probably not running in a Xen Dom0, disabling driver");
+    libxl_driver->logger =
+            (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG, 0);
+    if (!libxl_driver->logger) {
+        VIR_INFO("cannot create logger for libxenlight, disabling driver");
+        goto fail;
+    }
+
+    if (libxl_ctx_alloc(&libxl_driver->ctx,
+                       LIBXL_VERSION, 0,
+                       libxl_driver->logger)) {
+        VIR_INFO("cannot initialize libxenlight context, probably not running "
+                 "in a Xen Dom0, disabling driver");
         goto fail;
     }
 
@@ -1383,6 +1408,7 @@ libxlStateInitialize(bool privileged,
 error:
     ret = -1;
 fail:
+    VIR_FREE(log_file);
     if (libxl_driver)
         libxlDriverUnlock(libxl_driver);
     libxlStateCleanup();
