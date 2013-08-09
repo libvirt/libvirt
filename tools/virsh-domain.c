@@ -1810,10 +1810,13 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         result = virDomainGetBlockJobInfo(dom, path, &info, 0);
         pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 
-        if (result <= 0) {
+        if (result < 0) {
             vshError(ctl, _("failed to query job for disk %s"), path);
             goto cleanup;
         }
+        if (result == 0)
+            break;
+
         if (verbose)
             print_job_progress(_("Block Copy"), info.end - info.cur, info.end);
         if (info.cur == info.end)
@@ -1840,13 +1843,14 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (pivot) {
+    if (!quit && pivot) {
         abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
         if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
             vshError(ctl, _("failed to pivot job for disk %s"), path);
             goto cleanup;
         }
-    } else if (finish && virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+    } else if (finish && !quit &&
+               virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
         vshError(ctl, _("failed to finish job for disk %s"), path);
         goto cleanup;
     }
