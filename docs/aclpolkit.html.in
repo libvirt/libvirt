@@ -398,7 +398,7 @@ polkit.addRule(function(action, subject) {
     if (action.id == "org.libvirt.api.domain.getattr" &amp;&amp;
         subject.user == "berrange") {
           if (action._detail_connect_driver == 'LXC' &amp;&amp;
-              action._detail_domain_name == 'busy') {
+              action._detail_domain_name == 'demo') {
             return polkit.Result.YES;
           } else {
             return polkit.Result.NO;
