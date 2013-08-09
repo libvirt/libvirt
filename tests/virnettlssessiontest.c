@@ -451,11 +451,11 @@ mymain(void)
         cacertlevel2areq.crt,
     };
 
-    testTLSWriteCertChain("cacertchain.pem",
+    testTLSWriteCertChain("cacertchain-sess.pem",
                           certchain,
                           ARRAY_CARDINALITY(certchain));
 
-    DO_SESS_TEST("cacertchain.pem", servercertlevel3areq.filename, clientcertlevel2breq.filename,
+    DO_SESS_TEST("cacertchain-sess.pem", servercertlevel3areq.filename, clientcertlevel2breq.filename,
                  false, false, "libvirt.org", NULL);
 
     testTLSDiscardCert(&clientcertreq);
@@ -474,7 +474,7 @@ mymain(void)
     testTLSDiscardCert(&cacertlevel2areq);
     testTLSDiscardCert(&servercertlevel3areq);
     testTLSDiscardCert(&clientcertlevel2breq);
-    unlink("cacertchain.pem");
+    unlink("cacertchain-sess.pem");
 
     testTLSCleanup(KEYFILE);
 

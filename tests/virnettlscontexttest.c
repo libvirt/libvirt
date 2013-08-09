@@ -556,12 +556,12 @@ mymain(void)
         cacertlevel2areq.crt,
     };
 
-    testTLSWriteCertChain("cacertchain.pem",
+    testTLSWriteCertChain("cacertchain-ctx.pem",
                           certchain,
                           ARRAY_CARDINALITY(certchain));
 
-    DO_CTX_TEST(true, "cacertchain.pem", servercertlevel3areq.filename, false);
-    DO_CTX_TEST(false, "cacertchain.pem", clientcertlevel2breq.filename, false);
+    DO_CTX_TEST(true, "cacertchain-ctx.pem", servercertlevel3areq.filename, false);
+    DO_CTX_TEST(false, "cacertchain-ctx.pem", clientcertlevel2breq.filename, false);
 
     testTLSDiscardCert(&cacertreq);
     testTLSDiscardCert(&cacert1req);
@@ -617,7 +617,7 @@ mymain(void)
     testTLSDiscardCert(&cacertlevel2areq);
     testTLSDiscardCert(&servercertlevel3areq);
     testTLSDiscardCert(&clientcertlevel2breq);
-    unlink("cacertchain.pem");
+    unlink("cacertchain-ctx.pem");
 
     testTLSCleanup(KEYFILE);
 
