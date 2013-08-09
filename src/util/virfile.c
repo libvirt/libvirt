@@ -546,7 +546,11 @@ static int virFileLoopDeviceOpen(char **dev_name)
 
     errno = 0;
     while ((de = readdir(dh)) != NULL) {
-        if (!STRPREFIX(de->d_name, "loop"))
+        /* Checking 'loop' prefix is insufficient, since
+         * new kernels have a dev named 'loop-control'
+         */
+        if (!STRPREFIX(de->d_name, "loop") ||
+            !c_isdigit(de->d_name[4]))
             continue;
 
         if (virAsprintf(&looppath, "/dev/%s", de->d_name) < 0)
