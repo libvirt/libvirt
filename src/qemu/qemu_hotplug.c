@@ -275,7 +275,7 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
 
-        if (!(devstr = qemuBuildDriveDevStr(NULL, disk, 0, priv->qemuCaps)))
+        if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
             goto error;
     }
 
@@ -616,7 +616,7 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
             goto error;
         if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
-        if (!(devstr = qemuBuildDriveDevStr(NULL, disk, 0, priv->qemuCaps)))
+        if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
             goto error;
     }
 
