@@ -262,10 +262,8 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     VIR_FREE(scopename);
     return valid;
 }
-#endif /* VIR_CGROUP_SUPPORTED */
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int
 virCgroupCopyMounts(virCgroupPtr group,
                     virCgroupPtr parent)
@@ -652,7 +650,6 @@ virCgroupDetect(virCgroupPtr group,
 
     return 0;
 }
-#endif
 
 
 static int
@@ -810,7 +807,6 @@ cleanup:
 }
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int
 virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
 {
@@ -1013,7 +1009,6 @@ error:
 
     return -1;
 }
-#endif
 
 
 /**
@@ -1173,7 +1168,6 @@ cleanup:
 }
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int
 virCgroupSetPartitionSuffix(const char *path, char **res)
 {
@@ -1284,18 +1278,6 @@ cleanup:
     VIR_FREE(newpath);
     return ret;
 }
-#else
-int
-virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
-                      bool create ATTRIBUTE_UNUSED,
-                      int controllers ATTRIBUTE_UNUSED,
-                      virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 /**
@@ -1325,7 +1307,6 @@ virCgroupNewSelf(virCgroupPtr *group)
  *
  * Returns 0 on success, or -1 on error
  */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int
 virCgroupNewDomainPartition(virCgroupPtr partition,
                             const char *driver,
@@ -1369,19 +1350,6 @@ cleanup:
     VIR_FREE(grpname);
     return ret;
 }
-#else
-int
-virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
-                            const char *driver ATTRIBUTE_UNUSED,
-                            const char *name ATTRIBUTE_UNUSED,
-                            bool create ATTRIBUTE_UNUSED,
-                            virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 /**
@@ -1394,7 +1362,6 @@ virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
  *
  * Returns 0 on success, or -1 on error
  */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int
 virCgroupNewVcpu(virCgroupPtr domain,
                  int vcpuid,
@@ -1426,18 +1393,6 @@ cleanup:
     VIR_FREE(name);
     return ret;
 }
-#else
-int
-virCgroupNewVcpu(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                 int vcpuid ATTRIBUTE_UNUSED,
-                 bool create ATTRIBUTE_UNUSED,
-                 virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 /**
@@ -1449,7 +1404,6 @@ virCgroupNewVcpu(virCgroupPtr domain ATTRIBUTE_UNUSED,
  *
  * Returns: 0 on success or -1 on error
  */
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int
 virCgroupNewEmulator(virCgroupPtr domain,
                      bool create,
@@ -1475,21 +1429,8 @@ virCgroupNewEmulator(virCgroupPtr domain,
 cleanup:
     return ret;
 }
-#else
-int
-virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                     bool create ATTRIBUTE_UNUSED,
-                     virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-#endif
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int
 virCgroupNewDetect(pid_t pid,
                    int controllers,
@@ -1497,20 +1438,8 @@ virCgroupNewDetect(pid_t pid,
 {
     return virCgroupNew(pid, "", NULL, controllers, group);
 }
-#else
-int
-virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
-                   int controllers ATTRIBUTE_UNUSED,
-                   virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
-#ifdef VIR_CGROUP_SUPPORTED
 /*
  * Returns 0 on success (but @group may be NULL), -1 on fatal error
  */
@@ -1538,7 +1467,6 @@ virCgroupNewDetectMachine(const char *name,
 
     return 0;
 }
-#endif /* VIR_CGROUP_SUPPORTED */
 
 
 /*
@@ -1750,7 +1678,6 @@ virCgroupNewIgnoreError(void)
 }
 
 
-#ifdef VIR_CGROUP_SUPPORTED
 /**
  * virCgroupFree:
  *
@@ -1793,7 +1720,6 @@ virCgroupHasController(virCgroupPtr cgroup, int controller)
         return false;
     return cgroup->controllers[controller].mountPoint != NULL;
 }
-#endif /* VIR_CGROUP_SUPPORTED */
 
 
 int
@@ -1906,7 +1832,6 @@ virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
  *
  * Returns: 0 on success, -1 on error
  */
-#if defined(major) && defined(minor)
 int
 virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
@@ -1948,17 +1873,7 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
     VIR_FREE(str);
     return ret;
 }
-#else
-int
-virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED,
-                              unsigned int weight ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
+
 
 
 /**
@@ -2362,7 +2277,6 @@ cleanup:
  * Returns: 0 on success, 1 if path exists but is not a device, or
  * -1 on error
  */
-#if defined(major) && defined(minor)
 int
 virCgroupAllowDevicePath(virCgroupPtr group, const char *path, int perms)
 {
@@ -2384,17 +2298,6 @@ virCgroupAllowDevicePath(virCgroupPtr group, const char *path, int perms)
                                 minor(sb.st_rdev),
                                 perms);
 }
-#else
-int
-virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         const char *path ATTRIBUTE_UNUSED,
-                         int perms ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 /**
@@ -2472,7 +2375,6 @@ cleanup:
 }
 
 
-#if defined(major) && defined(minor)
 int
 virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
 {
@@ -2494,17 +2396,6 @@ virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
                                minor(sb.st_rdev),
                                perms);
 }
-#else
-int
-virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        const char *path ATTRIBUTE_UNUSED,
-                        int perms ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 int
@@ -2604,8 +2495,6 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
                                 "cpuacct.usage_percpu", usage);
 }
 
-
-#ifdef VIR_CGROUP_SUPPORTED
 
 int
 virCgroupRemoveRecursively(char *grppath)
@@ -3178,6 +3067,74 @@ virCgroupAvailable(void)
 
 
 int
+virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
+                      bool create ATTRIBUTE_UNUSED,
+                      int controllers ATTRIBUTE_UNUSED,
+                      virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
+                            const char *driver ATTRIBUTE_UNUSED,
+                            const char *name ATTRIBUTE_UNUSED,
+                            bool create ATTRIBUTE_UNUSED,
+                            virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewVcpu(virCgroupPtr domain ATTRIBUTE_UNUSED,
+                 int vcpuid ATTRIBUTE_UNUSED,
+                 bool create ATTRIBUTE_UNUSED,
+                 virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
+                     bool create ATTRIBUTE_UNUSED,
+                     virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
+                   int controllers ATTRIBUTE_UNUSED,
+                   virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
                           const char *drivername ATTRIBUTE_UNUSED,
                           pid_t pid ATTRIBUTE_UNUSED,
@@ -3204,6 +3161,51 @@ virCgroupHasController(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
                        int controller ATTRIBUTE_UNUSED)
 {
     return false;
+}
+
+
+int
+virCgroupPathOfController(virCgroupPtr group ATTRIBUTE_UNUSED,
+                          int controller ATTRIBUTE_UNUSED,
+                          const char *key ATTRIBUTE_UNUSED,
+                          char **path ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
+                              const char *path ATTRIBUTE_UNUSED,
+                              unsigned int weight ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
+                         const char *path ATTRIBUTE_UNUSED,
+                         int perms ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
+                        const char *path ATTRIBUTE_UNUSED,
+                        int perms ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
 }
 
 
