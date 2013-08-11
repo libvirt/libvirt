@@ -75,11 +75,11 @@ typedef enum {
 } virCgroupFlags;
 
 
+#ifdef VIR_CGROUP_SUPPORTED
 bool
 virCgroupAvailable(void)
 {
     bool ret = false;
-#ifdef HAVE_GETMNTENT_R
     FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
@@ -98,12 +98,10 @@ virCgroupAvailable(void)
     }
 
     VIR_FORCE_FCLOSE(mounts);
-#endif
     return ret;
 }
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int
 virCgroupPartitionNeedsEscaping(const char *path)
 {
@@ -264,17 +262,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     VIR_FREE(scopename);
     return valid;
 }
-#else
-static bool
-virCgroupValidateMachineGroup(virCgroupPtr group ATTRIBUTE_UNUSED,
-                              const char *name ATTRIBUTE_UNUSED,
-                              const char *drivername ATTRIBUTE_UNUSED,
-                              bool stripEmulatorSuffix ATTRIBUTE_UNUSED)
-{
-    return true;
-}
-#endif
-
+#endif /* VIR_CGROUP_SUPPORTED */
 
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
@@ -1522,6 +1510,7 @@ virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 #endif
 
 
+#ifdef VIR_CGROUP_SUPPORTED
 /*
  * Returns 0 on success (but @group may be NULL), -1 on fatal error
  */
@@ -1549,6 +1538,7 @@ virCgroupNewDetectMachine(const char *name,
 
     return 0;
 }
+#endif /* VIR_CGROUP_SUPPORTED */
 
 
 /*
@@ -1760,6 +1750,7 @@ virCgroupNewIgnoreError(void)
 }
 
 
+#ifdef VIR_CGROUP_SUPPORTED
 /**
  * virCgroupFree:
  *
@@ -1802,6 +1793,7 @@ virCgroupHasController(virCgroupPtr cgroup, int controller)
         return false;
     return cgroup->controllers[controller].mountPoint != NULL;
 }
+#endif /* VIR_CGROUP_SUPPORTED */
 
 
 int
@@ -3177,6 +3169,43 @@ cleanup:
 
 
 #else /* !VIR_CGROUP_SUPPORTED */
+
+bool
+virCgroupAvailable(void)
+{
+    return false;
+}
+
+
+int
+virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
+                          const char *drivername ATTRIBUTE_UNUSED,
+                          pid_t pid ATTRIBUTE_UNUSED,
+                          const char *partition ATTRIBUTE_UNUSED,
+                          int controllers ATTRIBUTE_UNUSED,
+                          virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+void
+virCgroupFree(virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+}
+
+
+bool
+virCgroupHasController(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
+                       int controller ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+
 
 int
 virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
