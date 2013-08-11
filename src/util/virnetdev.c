@@ -810,12 +810,25 @@ int virNetDevSetIPv4Address(const char *ifname,
          !(bcaststr = virSocketAddrFormat(&broadcast)))) {
         goto cleanup;
     }
+#ifdef IFCONFIG_PATH
+    cmd = virCommandNew(IFCONFIG_PATH);
+    virCommandAddArg(cmd, ifname);
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))
+        virCommandAddArg(cmd, "inet6");
+    else
+        virCommandAddArg(cmd, "inet");
+    virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    if (bcaststr)
+        virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
+    virCommandAddArg(cmd, "alias");
+#else
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     if (bcaststr)
         virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
+#endif
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -895,10 +908,21 @@ int virNetDevClearIPv4Address(const char *ifname,
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
+#ifdef IFCONFIG_PATH
+    cmd = virCommandNew(IFCONFIG_PATH);
+    virCommandAddArg(cmd, ifname);
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))
+        virCommandAddArg(cmd, "inet6");
+    else
+        virCommandAddArg(cmd, "inet");
+    virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    virCommandAddArg(cmd, "-alias");
+#else
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "del", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
+#endif
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;

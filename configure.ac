@@ -386,6 +386,10 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
+dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
+dnl we're working on BSD)
+want_ifconfig=no
+
 dnl Make some notes about which OS we're compiling for, as the lxc and qemu
 dnl drivers require linux headers, and storage_mpath, dtrace, and nwfilter
 dnl are also linux specific.  The "network" and storage_fs drivers are known
@@ -408,6 +412,8 @@ if test $with_linux = no; then
 fi
 
 if test $with_freebsd = yes; then
+   want_ifconfig=yes
+
    with_firewalld=no
 fi
 
@@ -2471,6 +2477,15 @@ AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
                 #include <net/ethernet.h>
                 #include <net/if_bridgevar.h>
                ])
+
+# Check if we need to look for ifconfig
+if test "$want_ifconfig" = "yes"; then
+     AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])
+     if test -z "$IFCONFIG_PATH"; then
+         AC_MSG_ERROR([Failed to find ifconfig.])
+     fi
+     AC_DEFINE_UNQUOTED([IFCONFIG_PATH], "$IFCONFIG_PATH", [path to ifconfig binary])
+fi
 
 # Detect when running under the clang static analyzer's scan-build driver
 # or Coverity-prevent's cov-build.  Define STATIC_ANALYSIS accordingly.
