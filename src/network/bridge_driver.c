@@ -41,6 +41,9 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#if HAVE_SYS_SYSCTL_H
+# include <sys/sysctl.h>
+#endif
 
 #include "virerror.h"
 #include "datatypes.h"
@@ -1545,10 +1548,20 @@ static int
 networkEnableIpForwarding(bool enableIPv4, bool enableIPv6)
 {
     int ret = 0;
+#ifdef HAVE_SYSCTLBYNAME
+    int enabled = 1;
+    if (enableIPv4)
+        ret = sysctlbyname("net.inet.ip.forwarding", NULL, 0,
+                            &enabled, sizeof(enabled));
+    if (enableIPv6 && ret == 0)
+        ret = sysctlbyname("net.inet6.ip6.forwarding", NULL, 0,
+                            &enabled, sizeof(enabled));
+#else
     if (enableIPv4)
         ret = virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n", 0);
     if (enableIPv6 && ret == 0)
         ret = virFileWriteStr("/proc/sys/net/ipv6/conf/all/forwarding", "1\n", 0);
+#endif
     return ret;
 }
 
