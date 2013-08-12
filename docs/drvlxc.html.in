@@ -172,6 +172,124 @@ Further block or character devices will be made available to containers
 depending on their configuration.
 </p>
 
+<h2><a name="activation">Systemd Socket Activation Integration</a></h2>
+
+<p>
+The libvirt LXC driver provides the ability to pass across pre-opened file
+descriptors when starting LXC guests. This allows for libvirt LXC to support
+systemd's <a href="http://0pointer.de/blog/projects/socket-activated-containers.html">socket
+activation capability</a>, where an incoming client connection
+in the host OS will trigger the startup of a container, which runs another
+copy of systemd which gets passed the server socket, and then activates the
+actual service handler in the container.
+</p>
+
+<p>
+Let us assume that you already have a LXC guest created, running
+a systemd instance as PID 1 inside the container, which has an
+SSHD service configured. The goal is to automatically activate
+the container when the first SSH connection is made. The first
+step is to create a couple of unit files for the host OS systemd
+instance. The <code>/etc/systemd/system/mycontainer.service</code>
+unit file specifies how systemd will start the libvirt LXC container
+</p>
+
+<pre>
+[Unit]
+Description=My little container
+
+[Service]
+ExecStart=/usr/bin/virsh -c lxc:/// start --pass-fds 3 mycontainer
+ExecStop=/usr/bin/virsh -c lxc:/// destroy mycontainer
+Type=oneshot
+RemainAfterExit=yes
+KillMode=none
+</pre>
+
+<p>
+The <code>--pass-fds 3</code> argument specifies that the file
+descriptor number 3 that <code>virsh</code> inherits from systemd,
+is to be passed into the container. Since <code>virsh</code> will
+exit immediately after starting the container, the <code>RemainAfterExit</code>
+and <code>KillMode</code> settings must be altered from their defaults.
+</p>
+
+<p>
+Next, the <code>/etc/systemd/system/mycontainer.socket</code> unit
+file is created to get the host systemd to listen on port 23 for
+TCP connections. When this unit file is activated by the first
+incoming connection, it will cause the <code>mycontainer.service</code>
+unit to be activated with the FD corresponding to the listening TCP
+socket passed in as FD 3.
+</p>
+
+<pre>
+[Unit]
+Description=The SSH socket of my little container
+
+[Socket]
+ListenStream=23
+</pre>
+
+<p>
+Port 23 was picked here so that the container doesn't conflict
+with the host's SSH which is on the normal port 22. That's it
+in terms of host side configuration.
+</p>
+
+<p>
+Inside the container, the <code>/etc/systemd/system/sshd.socket</code>
+unit file must be created
+</p>
+
+<pre>
+[Unit]
+Description=SSH Socket for Per-Connection Servers
+
+[Socket]
+ListenStream=23
+Accept=yes
+</pre>
+
+<p>
+The <code>ListenStream</code> value listed in this unit file, must
+match the value used in the host file. When systemd in the container
+receives the pre-opened FD from libvirt during container startup, it
+looks at the <code>ListenStream</code> values to figure out which
+FD to give to which service. The actual service to start is defined
+by a correspondingly named <code>/etc/systemd/system/sshd@.service</code>
+</p>
+
+<pre>
+[Unit]
+Description=SSH Per-Connection Server for %I
+
+[Service]
+ExecStart=-/usr/sbin/sshd -i
+StandardInput=socket
+</pre>
+
+<p>
+Finally, make sure this SSH service is set to start on boot of the container,
+by running the following command inside the container:
+</p>
+
+<pre>
+# mkdir -p /etc/systemd/system/sockets.target.wants/
+# ln -s /etc/systemd/system/sshd.socket /etc/systemd/system/sockets.target.wants/
+</pre>
+
+<p>
+This example shows how to activate the container based on an incoming
+SSH connection. If the container was also configured to have an httpd
+service, it may be desirable to activate it upon either an httpd or a
+sshd connection attempt. In this case, the <code>mycontainer.socket</code>
+file in the host would simply list multiple socket ports. Inside the
+container a separate <code>xxxxx.socket</code> file would need to be
+created for each service, with a corresponding <code>ListenStream</code>
+value set.
+</p>
+
 <!--
 <h2>Container configuration</h2>
 
