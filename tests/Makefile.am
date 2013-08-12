@@ -722,7 +722,7 @@ libsecurityselinuxhelper_la_LDFLAGS = -module -avoid-version \
 
 securityselinuxtest_SOURCES = \
 	securityselinuxtest.c testutils.h testutils.c
-securityselinuxtest_LDADD = $(LDADDS)
+securityselinuxtest_LDADD = $(LDADDS) $(SELINUX_LIBS)
 securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 
@@ -731,7 +731,7 @@ if WITH_ATTR
 securityselinuxlabeltest_SOURCES = \
 	securityselinuxlabeltest.c testutils.h testutils.c \
         testutilsqemu.h testutilsqemu.c
-securityselinuxlabeltest_LDADD = $(qemu_LDADDS)
+securityselinuxlabeltest_LDADD = $(qemu_LDADDS) $(SELINUX_LIBS)
 securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 endif
