@@ -917,10 +917,10 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon, bool optional)
                 security_get_boolean_active("virt_use_nfs") != 1) {
                 msg = _("Setting security context '%s' on '%s' not supported. "
                         "Consider setting virt_use_nfs");
-               if (security_getenforce() == 1)
-                   VIR_WARN(msg, tcon, path);
-               else
-                   VIR_INFO(msg, tcon, path);
+                if (security_getenforce() == 1)
+                    VIR_WARN(msg, tcon, path);
+                else
+                    VIR_INFO(msg, tcon, path);
             } else {
                 VIR_INFO("Setting security context '%s' on '%s' not supported",
                          tcon, path);
@@ -1135,6 +1135,14 @@ virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
     if (seclabel->norelabel || (disk_seclabel && disk_seclabel->norelabel))
         return 0;
 
+    /* If labelskip is true and there are no backing files, then we
+     * know it is safe to skip the restore.  FIXME - backing files should
+     * be tracked in domain XML, at which point labelskip should be a
+     * per-file attribute instead of a disk attribute.  */
+    if (disk_seclabel && disk_seclabel->labelskip &&
+        !disk->backingChain)
+        return 0;
+
     /* Don't restore labels on readoly/shared disks, because
      * other VMs may still be accessing these
      * Alternatively we could iterate over all running
@@ -1219,7 +1227,7 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
         disk_seclabel = virDomainDiskDefGenSecurityLabelDef(SECURITY_SELINUX_NAME);
         if (!disk_seclabel)
             return -1;
-        disk_seclabel->norelabel = true;
+        disk_seclabel->labelskip = true;
         if (VIR_APPEND_ELEMENT(disk->seclabels, disk->nseclabels,
                                disk_seclabel) < 0) {
             virSecurityDeviceLabelDefFree(disk_seclabel);

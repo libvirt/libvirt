@@ -152,34 +152,35 @@
   <define name="devSeclabel">
     <element name="seclabel">
       <!-- A per-device seclabel override is more limited, either
-           relabel=no or a <label> must be present.  -->
+           relabel=no or a <label> must be present on input;
+           output also can include labelskip=yes.  -->
+      <optional>
+        <attribute name='model'>
+          <text/>
+        </attribute>
+      </optional>
       <choice>
         <group>
-          <optional>
-            <attribute name='model'>
-              <text/>
-            </attribute>
-          </optional>
           <attribute name='relabel'>
             <value>no</value>
           </attribute>
         </group>
         <group>
-          <optional>
-            <attribute name='model'>
-              <text/>
-            </attribute>
-          </optional>
+          <attribute name='labelskip'>
+            <value>yes</value>
+          </attribute>
+        </group>
+        <group>
           <optional>
             <attribute name='relabel'>
               <value>yes</value>
             </attribute>
           </optional>
-          <zeroOrMore>
+          <oneOrMore>
             <element name='label'>
               <text/>
             </element>
-          </zeroOrMore>
+          </oneOrMore>
         </group>
       </choice>
     </element>

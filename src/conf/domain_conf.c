@@ -4484,7 +4484,8 @@ static int
 virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                                   size_t *nseclabels_rtn,
                                   virSecurityLabelDefPtr *vmSeclabels,
-                                  int nvmSeclabels, xmlXPathContextPtr ctxt)
+                                  int nvmSeclabels, xmlXPathContextPtr ctxt,
+                                  unsigned int flags)
 {
     virSecurityDeviceLabelDefPtr *seclabels;
     size_t nseclabels = 0;
@@ -4492,7 +4493,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     size_t i, j;
     xmlNodePtr *list = NULL;
     virSecurityLabelDefPtr vmDef = NULL;
-    char *model, *relabel, *label;
+    char *model, *relabel, *label, *labelskip;
 
     if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) < 0)
         goto error;
@@ -4546,6 +4547,13 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         } else {
             seclabels[i]->norelabel = false;
         }
+
+        /* labelskip is only parsed on live images */
+        labelskip = virXMLPropString(list[i], "labelskip");
+        seclabels[i]->labelskip = false;
+        if (labelskip && !(flags & VIR_DOMAIN_XML_INACTIVE))
+            seclabels[i]->labelskip = STREQ(labelskip, "yes");
+        VIR_FREE(labelskip);
 
         ctxt->node = list[i];
         label = virXPathStringLimit("string(./label)",
@@ -5208,7 +5216,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                               &def->nseclabels,
                                               vmSeclabels,
                                               nvmSeclabels,
-                                              ctxt) < 0)
+                                              ctxt,
+                                              flags) < 0)
             goto error;
         ctxt->node = saved_node;
     }
@@ -6884,7 +6893,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                                                           &chr_def->nseclabels,
                                                           vmSeclabels,
                                                           nvmSeclabels,
-                                                          ctxt) < 0) {
+                                                          ctxt,
+                                                          flags) < 0) {
                         ctxt->node = saved_node;
                         goto error;
                     }
@@ -14018,14 +14028,23 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
 
 static void
 virSecurityDeviceLabelDefFormat(virBufferPtr buf,
-                                virSecurityDeviceLabelDefPtr def)
+                                virSecurityDeviceLabelDefPtr def,
+                                unsigned int flags)
 {
+    /* For offline output, skip elements that allow labels but have no
+     * label specified (possible if labelskip was ignored on input).  */
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && !def->label && !def->norelabel)
+        return;
+
     virBufferAddLit(buf, "<seclabel");
 
     if (def->model)
         virBufferAsprintf(buf, " model='%s'", def->model);
 
-    virBufferAsprintf(buf, " relabel='%s'", def->norelabel ? "no" : "yes");
+    if (def->labelskip)
+        virBufferAddLit(buf, " labelskip='yes'");
+    else
+        virBufferAsprintf(buf, " relabel='%s'", def->norelabel ? "no" : "yes");
 
     if (def->label) {
         virBufferAddLit(buf, ">\n");
@@ -14100,7 +14119,8 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 
 static int
 virDomainDiskSourceDefFormat(virBufferPtr buf,
-                             virDomainDiskDefPtr def)
+                             virDomainDiskDefPtr def,
+                             unsigned int flags)
 {
     int n;
     const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
@@ -14119,7 +14139,8 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
                 for (n = 0; n < def->nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n],
+                                                    flags);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
@@ -14136,7 +14157,8 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
                 for (n = 0; n < def->nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n],
+                                                    flags);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
@@ -14201,7 +14223,8 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
                 for (n = 0; n < def->nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n],
+                                                    flags);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
@@ -14337,7 +14360,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "      </auth>\n");
     }
 
-    if (virDomainDiskSourceDefFormat(buf, def) < 0)
+    if (virDomainDiskSourceDefFormat(buf, def, flags) < 0)
         return -1;
     virDomainDiskGeometryDefFormat(buf, def);
     virDomainDiskBlockIoDefFormat(buf, def);
@@ -15189,7 +15212,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     if (def->seclabels && def->nseclabels > 0) {
         virBufferAdjustIndent(buf, 2);
         for (n = 0; n < def->nseclabels; n++)
-            virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+            virSecurityDeviceLabelDefFormat(buf, def->seclabels[n], flags);
         virBufferAdjustIndent(buf, -2);
     }
 

@@ -30,6 +30,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
+    unsigned int flags = live ? 0 : VIR_DOMAIN_XML_INACTIVE;
 
     if (virtTestLoadFile(inxml, &inXmlData) < 0)
         goto fail;
@@ -37,11 +38,10 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
+                                        QEMU_EXPECTED_VIRT_TYPES, flags)))
         goto fail;
 
-    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE | flags)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {
@@ -257,7 +257,9 @@ mymain(void)
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
     DO_TEST_FULL("seclabel-dynamic-override", false, WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-labelskip", true, WHEN_INACTIVE);
     DO_TEST("seclabel-static");
+    DO_TEST_FULL("seclabel-static-labelskip", false, WHEN_ACTIVE);
     DO_TEST("seclabel-none");
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");

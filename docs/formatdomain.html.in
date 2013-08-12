@@ -5029,7 +5029,11 @@ qemu-kvm -net nic,model=? /dev/null
       a <code>seclabel</code> element is attached to a specific path
       rather than the top-level domain assignment, only the
       attribute <code>relabel</code> or the
-      sub-element <code>label</code> are supported.
+      sub-element <code>label</code> are supported.  Additionally,
+      <span class="since">since 1.1.2</span>, an output-only
+      element <code>labelskip</code> will be present for active
+      domains on disks where labeling was skipped due to the image
+      being on a file system that lacks security labeling.
     </p>
 
     <h2><a name="examples">Example configs</a></h2>

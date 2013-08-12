@@ -343,7 +343,8 @@ typedef virSecurityDeviceLabelDef *virSecurityDeviceLabelDefPtr;
 struct _virSecurityDeviceLabelDef {
     char *model;
     char *label;        /* image label string */
-    bool norelabel;
+    bool norelabel;     /* true to skip label attempts */
+    bool labelskip;     /* live-only; true if skipping failed label attempt */
 };
 
 
