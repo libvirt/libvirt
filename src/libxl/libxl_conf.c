@@ -64,126 +64,62 @@ static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x
 static regex_t xen_cap_rec;
 
 
-static virCapsPtr
-libxlBuildCapabilities(virArch hostarch,
-                       int host_pae,
-                       struct guest_arch *guest_archs,
-                       int nr_guest_archs)
+static int
+libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 {
-    virCapsPtr caps;
-    size_t i;
+    int err;
+    libxl_physinfo phy_info;
+    int host_pae;
 
-    if ((caps = virCapabilitiesNew(hostarch, 1, 1)) == NULL)
-        goto no_memory;
-
-    if (host_pae &&
-        virCapabilitiesAddHostFeature(caps, "pae") < 0)
-        goto no_memory;
-
-    for (i = 0; i < nr_guest_archs; ++i) {
-        virCapsGuestPtr guest;
-        char const *const xen_machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
-        virCapsGuestMachinePtr *machines;
-
-        if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
-            goto no_memory;
-
-        if ((guest = virCapabilitiesAddGuest(caps,
-                                             guest_archs[i].hvm ? "hvm" : "xen",
-                                             guest_archs[i].arch,
-                                             ((hostarch == VIR_ARCH_X86_64) ?
-                                              "/usr/lib64/xen/bin/qemu-dm" :
-                                              "/usr/lib/xen/bin/qemu-dm"),
-                                             (guest_archs[i].hvm ?
-                                              "/usr/lib/xen/boot/hvmloader" :
-                                              NULL),
-                                             1,
-                                             machines)) == NULL) {
-            virCapabilitiesFreeMachines(machines, 1);
-            goto no_memory;
-        }
-        machines = NULL;
-
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          "xen",
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
-            goto no_memory;
-
-        if (guest_archs[i].pae &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "pae",
-                                           1,
-                                           0) == NULL)
-            goto no_memory;
-
-        if (guest_archs[i].nonpae &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "nonpae",
-                                           1,
-                                           0) == NULL)
-            goto no_memory;
-
-        if (guest_archs[i].ia64_be &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "ia64_be",
-                                           1,
-                                           0) == NULL)
-            goto no_memory;
-
-        if (guest_archs[i].hvm) {
-            if (virCapabilitiesAddGuestFeature(guest,
-                                               "acpi",
-                                               1,
-                                               1) == NULL)
-                goto no_memory;
-
-            if (virCapabilitiesAddGuestFeature(guest, "apic",
-                                               1,
-                                               0) == NULL)
-                goto no_memory;
-
-            if (virCapabilitiesAddGuestFeature(guest,
-                                               "hap",
-                                               0,
-                                               1) == NULL)
-                goto no_memory;
-        }
+    err = regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
+    if (err != 0) {
+        char error[100];
+        regerror(err, &xen_cap_rec, error, sizeof(error));
+        regfree(&xen_cap_rec);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"), error);
+        return -1;
     }
 
-    return caps;
-
- no_memory:
-    virObjectUnref(caps);
-    return NULL;
-}
-
-static virCapsPtr
-libxlMakeCapabilitiesInternal(virArch hostarch,
-                              libxl_physinfo *phy_info,
-                              char *capabilities)
-{
-    char *str, *token;
-    regmatch_t subs[4];
-    char *saveptr = NULL;
-    size_t i;
-
-    int host_pae = 0;
-    struct guest_arch guest_archs[32];
-    int nr_guest_archs = 0;
-    virCapsPtr caps = NULL;
-
-    memset(guest_archs, 0, sizeof(guest_archs));
+    if (libxl_get_physinfo(ctx, &phy_info) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to get node physical info from libxenlight"));
+        return -1;
+    }
 
     /* hw_caps is an array of 32-bit words whose meaning is listed in
      * xen-unstable.hg/xen/include/asm-x86/cpufeature.h.  Each feature
      * is defined in the form X*32+Y, corresponding to the Y'th bit in
      * the X'th 32-bit word of hw_cap.
      */
-    host_pae = phy_info->hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
+    host_pae = phy_info.hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
+    if (host_pae &&
+        virCapabilitiesAddHostFeature(caps, "pae") < 0)
+        return -1;
 
+    return 0;
+}
+
+static int
+libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
+{
+    const libxl_version_info *ver_info;
+    char *str, *token;
+    regmatch_t subs[4];
+    char *saveptr = NULL;
+    size_t i;
+    virArch hostarch = caps->host.arch;
+
+    struct guest_arch guest_archs[32];
+    int nr_guest_archs = 0;
+
+    memset(guest_archs, 0, sizeof(guest_archs));
+
+    if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to get version info from libxenlight"));
+        return -1;
+    }
     /* Format of capabilities string is documented in the code in
      * xen-unstable.hg/xen/arch/.../setup.c.
      *
@@ -209,7 +145,7 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
     /* Split capabilities string into tokens. strtok_r is OK here because
      * we "own" the buffer.  Parse out the features from each token.
      */
-    for (str = capabilities, nr_guest_archs = 0;
+    for (str = ver_info->capabilities, nr_guest_archs = 0;
          nr_guest_archs < sizeof(guest_archs) / sizeof(guest_archs[0])
                  && (token = strtok_r(str, " ", &saveptr)) != NULL;
          str = NULL) {
@@ -273,17 +209,80 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
         }
     }
 
-    if ((caps = libxlBuildCapabilities(hostarch,
-                                       host_pae,
-                                       guest_archs,
-                                       nr_guest_archs)) == NULL)
-        goto error;
+    for (i = 0; i < nr_guest_archs; ++i) {
+        virCapsGuestPtr guest;
+        char const *const xen_machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
+        virCapsGuestMachinePtr *machines;
 
-    return caps;
+        if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
+            return -1;
 
- error:
-    virObjectUnref(caps);
-    return NULL;
+        if ((guest = virCapabilitiesAddGuest(caps,
+                                             guest_archs[i].hvm ? "hvm" : "xen",
+                                             guest_archs[i].arch,
+                                             ((hostarch == VIR_ARCH_X86_64) ?
+                                              "/usr/lib64/xen/bin/qemu-dm" :
+                                              "/usr/lib/xen/bin/qemu-dm"),
+                                             (guest_archs[i].hvm ?
+                                              "/usr/lib/xen/boot/hvmloader" :
+                                              NULL),
+                                             1,
+                                             machines)) == NULL) {
+            virCapabilitiesFreeMachines(machines, 1);
+            return -1;
+        }
+        machines = NULL;
+
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          "xen",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            return -1;
+
+        if (guest_archs[i].pae &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "pae",
+                                           1,
+                                           0) == NULL)
+            return -1;
+
+        if (guest_archs[i].nonpae &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "nonpae",
+                                           1,
+                                           0) == NULL)
+            return -1;
+
+        if (guest_archs[i].ia64_be &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "ia64_be",
+                                           1,
+                                           0) == NULL)
+            return -1;
+
+        if (guest_archs[i].hvm) {
+            if (virCapabilitiesAddGuestFeature(guest,
+                                               "acpi",
+                                               1,
+                                               1) == NULL)
+                return -1;
+
+            if (virCapabilitiesAddGuestFeature(guest, "apic",
+                                               1,
+                                               0) == NULL)
+                return -1;
+
+            if (virCapabilitiesAddGuestFeature(guest,
+                                               "hap",
+                                               0,
+                                               1) == NULL)
+                return -1;
+        }
+    }
+
+    return 0;
 }
 
 static int
@@ -873,35 +872,22 @@ error:
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
-    int err;
-    libxl_physinfo phy_info;
-    const libxl_version_info *ver_info;
+    virCapsPtr caps;
 
-    err = regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
-    if (err != 0) {
-        char error[100];
-        regerror(err, &xen_cap_rec, error, sizeof(error));
-        regfree(&xen_cap_rec);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"), error);
+    if ((caps = virCapabilitiesNew(virArchFromHost(), 1, 1)) == NULL)
         return NULL;
-    }
 
-    if (libxl_get_physinfo(ctx, &phy_info) != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to get node physical info from libxenlight"));
-        return NULL;
-    }
+    if (libxlCapsInitHost(ctx, caps) < 0)
+        goto error;
 
-    if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to get version info from libxenlight"));
-        return NULL;
-    }
+    if (libxlCapsInitGuests(ctx, caps) < 0)
+        goto error;
 
-    return libxlMakeCapabilitiesInternal(virArchFromHost(),
-                                         &phy_info,
-                                         ver_info->capabilities);
+    return caps;
+
+error:
+    virObjectUnref(caps);
+    return NULL;
 }
 
 int
