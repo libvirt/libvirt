@@ -57,7 +57,7 @@
 #define VIR_FROM_THIS VIR_FROM_CGROUP
 
 #if defined(__linux__) && defined(HAVE_GETMNTENT_R) && \
-    defined(_DIRENT_HAVE_D_TYPE)
+    defined(_DIRENT_HAVE_D_TYPE) && defined(_SC_CLK_TCK)
 # define VIR_CGROUP_SUPPORTED
 #endif
 
@@ -2605,117 +2605,11 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 }
 
 
-/**
- * virCgroupGetCpuCfsQuota:
- *
- * @group: The cgroup to get cpu.cfs_quota_us for
- * @cfs_quota: Pointer to the returned cpu bandwidth (in usecs) that this tg
- *             will be allowed to consume over period
- *
- * Returns: 0 on success
- */
-int
-virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
-{
-    return virCgroupGetValueI64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.cfs_quota_us", cfs_quota);
-}
-
-
-int
-virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
-{
-    return virCgroupGetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPUACCT,
-                                "cpuacct.usage", usage);
-}
-
-
 int
 virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 {
     return virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
                                 "cpuacct.usage_percpu", usage);
-}
-
-
-#ifdef _SC_CLK_TCK
-int
-virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
-                        unsigned long long *sys)
-{
-    char *str;
-    char *p;
-    int ret = -1;
-    static double scale = -1.0;
-
-    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
-                             "cpuacct.stat", &str) < 0)
-        return -1;
-
-    if (!(p = STRSKIP(str, "user ")) ||
-        virStrToLong_ull(p, &p, 10, user) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse user stat '%s'"),
-                       p);
-        goto cleanup;
-    }
-    if (!(p = STRSKIP(p, "\nsystem ")) ||
-        virStrToLong_ull(p, NULL, 10, sys) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse sys stat '%s'"),
-                       p);
-        goto cleanup;
-    }
-    /* times reported are in system ticks (generally 100 Hz), but that
-     * rate can theoretically vary between machines.  Scale things
-     * into approximate nanoseconds.  */
-    if (scale < 0) {
-        long ticks_per_sec = sysconf(_SC_CLK_TCK);
-        if (ticks_per_sec == -1) {
-            virReportSystemError(errno, "%s",
-                                 _("Cannot determine system clock HZ"));
-            goto cleanup;
-        }
-        scale = 1000000000.0 / ticks_per_sec;
-    }
-    *user *= scale;
-    *sys *= scale;
-
-    ret = 0;
-cleanup:
-    VIR_FREE(str);
-    return ret;
-}
-#else
-int
-virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        unsigned long long *user ATTRIBUTE_UNUSED,
-                        unsigned long long *sys ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
-
-
-int
-virCgroupSetFreezerState(virCgroupPtr group, const char *state)
-{
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
-}
-
-
-int
-virCgroupGetFreezerState(virCgroupPtr group, char **state)
-{
-    return virCgroupGetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
 }
 
 
@@ -3099,6 +2993,100 @@ virCgroupIdentifyRoot(virCgroupPtr group)
 }
 
 
+/**
+ * virCgroupGetCpuCfsQuota:
+ *
+ * @group: The cgroup to get cpu.cfs_quota_us for
+ * @cfs_quota: Pointer to the returned cpu bandwidth (in usecs) that this tg
+ *             will be allowed to consume over period
+ *
+ * Returns: 0 on success
+ */
+int
+virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
+{
+    return virCgroupGetValueI64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.cfs_quota_us", cfs_quota);
+}
+
+
+int
+virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
+{
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPUACCT,
+                                "cpuacct.usage", usage);
+}
+
+
+int
+virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
+                        unsigned long long *sys)
+{
+    char *str;
+    char *p;
+    int ret = -1;
+    static double scale = -1.0;
+
+    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+                             "cpuacct.stat", &str) < 0)
+        return -1;
+
+    if (!(p = STRSKIP(str, "user ")) ||
+        virStrToLong_ull(p, &p, 10, user) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse user stat '%s'"),
+                       p);
+        goto cleanup;
+    }
+    if (!(p = STRSKIP(p, "\nsystem ")) ||
+        virStrToLong_ull(p, NULL, 10, sys) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse sys stat '%s'"),
+                       p);
+        goto cleanup;
+    }
+    /* times reported are in system ticks (generally 100 Hz), but that
+     * rate can theoretically vary between machines.  Scale things
+     * into approximate nanoseconds.  */
+    if (scale < 0) {
+        long ticks_per_sec = sysconf(_SC_CLK_TCK);
+        if (ticks_per_sec == -1) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot determine system clock HZ"));
+            goto cleanup;
+        }
+        scale = 1000000000.0 / ticks_per_sec;
+    }
+    *user *= scale;
+    *sys *= scale;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(str);
+    return ret;
+}
+
+
+int
+virCgroupSetFreezerState(virCgroupPtr group, const char *state)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_FREEZER,
+                                "freezer.state", state);
+}
+
+
+int
+virCgroupGetFreezerState(virCgroupPtr group, char **state)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_FREEZER,
+                                "freezer.state", state);
+}
+
+
 int
 virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
                       const char *mountopts)
@@ -3221,6 +3209,67 @@ virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 int
 virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
+                        long long *cfs_quota ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetCpuacctUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
+                         unsigned long long *usage ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetCpuacctPercpuUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
+                               char **usage ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
+                        unsigned long long *user ATTRIBUTE_UNUSED,
+                        unsigned long long *sys ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupSetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
+                         const char *state ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
+                         char **state ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
