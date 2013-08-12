@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-int networkCheckRouteCollision(virNetworkObjPtr network)
+int networkCheckRouteCollision(virNetworkObjPtr network ATTRIBUTE_UNUSED)
 {
     return 0;
 }
