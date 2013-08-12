@@ -102,6 +102,9 @@ int virCgroupNewMachine(const char *name,
 
 bool virCgroupNewIgnoreError(void);
 
+void virCgroupFree(virCgroupPtr *group);
+
+bool virCgroupHasController(virCgroupPtr cgroup, int controller);
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,
                               const char *key,
@@ -195,9 +198,6 @@ int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
 
 int virCgroupRemoveRecursively(char *grppath);
 int virCgroupRemove(virCgroupPtr group);
-
-void virCgroupFree(virCgroupPtr *group);
-bool virCgroupHasController(virCgroupPtr cgroup, int controller);
 
 int virCgroupKill(virCgroupPtr group, int signum);
 int virCgroupKillRecursive(virCgroupPtr group, int signum);

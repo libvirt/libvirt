@@ -271,48 +271,6 @@ virCgroupValidateMachineGroup(virCgroupPtr group ATTRIBUTE_UNUSED,
 #endif
 
 
-/**
- * virCgroupFree:
- *
- * @group: The group structure to free
- */
-void
-virCgroupFree(virCgroupPtr *group)
-{
-    size_t i;
-
-    if (*group == NULL)
-        return;
-
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_FREE((*group)->controllers[i].mountPoint);
-        VIR_FREE((*group)->controllers[i].linkPoint);
-        VIR_FREE((*group)->controllers[i].placement);
-    }
-
-    VIR_FREE((*group)->path);
-    VIR_FREE(*group);
-}
-
-
-/**
- * virCgroupHasController: query whether a cgroup controller is present
- *
- * @cgroup: The group structure to be queried, or NULL
- * @controller: cgroup subsystem id
- *
- * Returns true if a cgroup controller is mounted and is associated
- * with this cgroup object.
- */
-bool
-virCgroupHasController(virCgroupPtr cgroup, int controller)
-{
-    if (!cgroup)
-        return false;
-    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
-        return false;
-    return cgroup->controllers[controller].mountPoint != NULL;
-}
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int
@@ -704,57 +662,6 @@ virCgroupDetect(virCgroupPtr group,
 #endif
 
 
-int
-virCgroupPathOfController(virCgroupPtr group,
-                          int controller,
-                          const char *key,
-                          char **path)
-{
-    if (controller == -1) {
-        size_t i;
-        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            /* Reject any controller with a placement
-             * of '/' to avoid doing bad stuff to the root
-             * cgroup
-             */
-            if (group->controllers[i].mountPoint &&
-                group->controllers[i].placement &&
-                STRNEQ(group->controllers[i].placement, "/")) {
-                controller = i;
-                break;
-            }
-        }
-    }
-    if (controller == -1) {
-        virReportSystemError(ENOSYS, "%s",
-                             _("No controllers are mounted"));
-        return -1;
-    }
-
-    if (group->controllers[controller].mountPoint == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' is not mounted"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    if (group->controllers[controller].placement == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' is not enabled for group"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    if (virAsprintf(path, "%s%s/%s",
-                    group->controllers[controller].mountPoint,
-                    group->controllers[controller].placement,
-                    key ? key : "") < 0)
-        return -1;
-
-    return 0;
-}
-
-
 static int
 virCgroupSetValueStr(virCgroupPtr group,
                      int controller,
@@ -1114,116 +1021,6 @@ error:
     return -1;
 }
 #endif
-
-#if defined _DIRENT_HAVE_D_TYPE
-int
-virCgroupRemoveRecursively(char *grppath)
-{
-    DIR *grpdir;
-    struct dirent *ent;
-    int rc = 0;
-
-    grpdir = opendir(grppath);
-    if (grpdir == NULL) {
-        if (errno == ENOENT)
-            return 0;
-        rc = -errno;
-        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
-        return rc;
-    }
-
-    for (;;) {
-        char *path;
-
-        errno = 0;
-        ent = readdir(grpdir);
-        if (ent == NULL) {
-            if ((rc = -errno))
-                VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
-            break;
-        }
-
-        if (ent->d_name[0] == '.') continue;
-        if (ent->d_type != DT_DIR) continue;
-
-        if (virAsprintf(&path, "%s/%s", grppath, ent->d_name) == -1) {
-            rc = -ENOMEM;
-            break;
-        }
-        rc = virCgroupRemoveRecursively(path);
-        VIR_FREE(path);
-        if (rc != 0)
-            break;
-    }
-    closedir(grpdir);
-
-    VIR_DEBUG("Removing cgroup %s", grppath);
-    if (rmdir(grppath) != 0 && errno != ENOENT) {
-        rc = -errno;
-        VIR_ERROR(_("Unable to remove %s (%d)"), grppath, errno);
-    }
-
-    return rc;
-}
-#else
-int
-virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
-
-
-/**
- * virCgroupRemove:
- *
- * @group: The group to be removed
- *
- * It first removes all child groups recursively
- * in depth first order and then removes @group
- * because the presence of the child groups
- * prevents removing @group.
- *
- * Returns: 0 on success
- */
-int
-virCgroupRemove(virCgroupPtr group)
-{
-    int rc = 0;
-    size_t i;
-    char *grppath = NULL;
-
-    VIR_DEBUG("Removing cgroup %s", group->path);
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        /* Skip over controllers not mounted */
-        if (!group->controllers[i].mountPoint)
-            continue;
-
-        /* We must never rmdir() in systemd's hierarchy */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
-            continue;
-
-        /* Don't delete the root group, if we accidentally
-           ended up in it for some reason */
-        if (STREQ(group->controllers[i].placement, "/"))
-            continue;
-
-        if (virCgroupPathOfController(group,
-                                      i,
-                                      NULL,
-                                      &grppath) != 0)
-            continue;
-
-        VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
-        rc = virCgroupRemoveRecursively(grppath);
-        VIR_FREE(grppath);
-    }
-    VIR_DEBUG("Done removing cgroup %s", group->path);
-
-    return rc;
-}
 
 
 /**
@@ -1955,6 +1752,101 @@ virCgroupNewIgnoreError(void)
         return true;
     }
     return false;
+}
+
+
+/**
+ * virCgroupFree:
+ *
+ * @group: The group structure to free
+ */
+void
+virCgroupFree(virCgroupPtr *group)
+{
+    size_t i;
+
+    if (*group == NULL)
+        return;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        VIR_FREE((*group)->controllers[i].mountPoint);
+        VIR_FREE((*group)->controllers[i].linkPoint);
+        VIR_FREE((*group)->controllers[i].placement);
+    }
+
+    VIR_FREE((*group)->path);
+    VIR_FREE(*group);
+}
+
+
+/**
+ * virCgroupHasController: query whether a cgroup controller is present
+ *
+ * @cgroup: The group structure to be queried, or NULL
+ * @controller: cgroup subsystem id
+ *
+ * Returns true if a cgroup controller is mounted and is associated
+ * with this cgroup object.
+ */
+bool
+virCgroupHasController(virCgroupPtr cgroup, int controller)
+{
+    if (!cgroup)
+        return false;
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
+        return false;
+    return cgroup->controllers[controller].mountPoint != NULL;
+}
+
+
+int
+virCgroupPathOfController(virCgroupPtr group,
+                          int controller,
+                          const char *key,
+                          char **path)
+{
+    if (controller == -1) {
+        size_t i;
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            /* Reject any controller with a placement
+             * of '/' to avoid doing bad stuff to the root
+             * cgroup
+             */
+            if (group->controllers[i].mountPoint &&
+                group->controllers[i].placement &&
+                STRNEQ(group->controllers[i].placement, "/")) {
+                controller = i;
+                break;
+            }
+        }
+    }
+    if (controller == -1) {
+        virReportSystemError(ENOSYS, "%s",
+                             _("No controllers are mounted"));
+        return -1;
+    }
+
+    if (group->controllers[controller].mountPoint == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Controller '%s' is not mounted"),
+                       virCgroupControllerTypeToString(controller));
+        return -1;
+    }
+
+    if (group->controllers[controller].placement == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Controller '%s' is not enabled for group"),
+                       virCgroupControllerTypeToString(controller));
+        return -1;
+    }
+
+    if (virAsprintf(path, "%s%s/%s",
+                    group->controllers[controller].mountPoint,
+                    group->controllers[controller].placement,
+                    key ? key : "") < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -2819,6 +2711,117 @@ virCgroupGetFreezerState(virCgroupPtr group, char **state)
     return virCgroupGetValueStr(group,
                                 VIR_CGROUP_CONTROLLER_FREEZER,
                                 "freezer.state", state);
+}
+
+
+#if defined _DIRENT_HAVE_D_TYPE
+int
+virCgroupRemoveRecursively(char *grppath)
+{
+    DIR *grpdir;
+    struct dirent *ent;
+    int rc = 0;
+
+    grpdir = opendir(grppath);
+    if (grpdir == NULL) {
+        if (errno == ENOENT)
+            return 0;
+        rc = -errno;
+        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
+        return rc;
+    }
+
+    for (;;) {
+        char *path;
+
+        errno = 0;
+        ent = readdir(grpdir);
+        if (ent == NULL) {
+            if ((rc = -errno))
+                VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
+            break;
+        }
+
+        if (ent->d_name[0] == '.') continue;
+        if (ent->d_type != DT_DIR) continue;
+
+        if (virAsprintf(&path, "%s/%s", grppath, ent->d_name) == -1) {
+            rc = -ENOMEM;
+            break;
+        }
+        rc = virCgroupRemoveRecursively(path);
+        VIR_FREE(path);
+        if (rc != 0)
+            break;
+    }
+    closedir(grpdir);
+
+    VIR_DEBUG("Removing cgroup %s", grppath);
+    if (rmdir(grppath) != 0 && errno != ENOENT) {
+        rc = -errno;
+        VIR_ERROR(_("Unable to remove %s (%d)"), grppath, errno);
+    }
+
+    return rc;
+}
+#else
+int
+virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+#endif
+
+
+/**
+ * virCgroupRemove:
+ *
+ * @group: The group to be removed
+ *
+ * It first removes all child groups recursively
+ * in depth first order and then removes @group
+ * because the presence of the child groups
+ * prevents removing @group.
+ *
+ * Returns: 0 on success
+ */
+int
+virCgroupRemove(virCgroupPtr group)
+{
+    int rc = 0;
+    size_t i;
+    char *grppath = NULL;
+
+    VIR_DEBUG("Removing cgroup %s", group->path);
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        /* Skip over controllers not mounted */
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        /* We must never rmdir() in systemd's hierarchy */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        /* Don't delete the root group, if we accidentally
+           ended up in it for some reason */
+        if (STREQ(group->controllers[i].placement, "/"))
+            continue;
+
+        if (virCgroupPathOfController(group,
+                                      i,
+                                      NULL,
+                                      &grppath) != 0)
+            continue;
+
+        VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
+        rc = virCgroupRemoveRecursively(grppath);
+        VIR_FREE(grppath);
+    }
+    VIR_DEBUG("Done removing cgroup %s", group->path);
+
+    return rc;
 }
 
 
