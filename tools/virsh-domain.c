@@ -3052,6 +3052,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
         for (i = 0; i < nvolumes; i++) {
             ctxt->node = vol_nodes[i];
+            VIR_FREE(source);
+            VIR_FREE(target);
 
             /* get volume source and target paths */
             if (!(target = virXPathString("string(./target/@dev)", ctxt)))
@@ -3094,6 +3096,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             }
             vlist[nvols].source = source;
             vlist[nvols].target = target;
+            source = NULL;
+            target = NULL;
             nvols++;
         }
 
@@ -3193,6 +3197,8 @@ out:
     }
 
 cleanup:
+    VIR_FREE(source);
+    VIR_FREE(target);
     for (i = 0; i < nvols; i++) {
         VIR_FREE(vlist[i].source);
         VIR_FREE(vlist[i].target);
