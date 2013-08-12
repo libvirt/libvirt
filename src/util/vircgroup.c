@@ -56,6 +56,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_CGROUP
 
+#if defined(__linux__) && defined(HAVE_GETMNTENT_R) && \
+    defined(_DIRENT_HAVE_D_TYPE)
+# define VIR_CGROUP_SUPPORTED
+#endif
+
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
               "freezer", "blkio", "net_cls", "perf_event",
@@ -2714,7 +2719,8 @@ virCgroupGetFreezerState(virCgroupPtr group, char **state)
 }
 
 
-#if defined _DIRENT_HAVE_D_TYPE
+#ifdef VIR_CGROUP_SUPPORTED
+
 int
 virCgroupRemoveRecursively(char *grppath)
 {
@@ -2764,15 +2770,6 @@ virCgroupRemoveRecursively(char *grppath)
 
     return rc;
 }
-#else
-int
-virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif
 
 
 /**
@@ -2825,7 +2822,6 @@ virCgroupRemove(virCgroupPtr group)
 }
 
 
-#if defined HAVE_KILL && defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /*
  * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
  */
@@ -3073,38 +3069,7 @@ virCgroupKillPainfully(virCgroupPtr group)
     return ret;
 }
 
-#else /* !(HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R) */
-int
-virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
-              int signum ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
 
-
-int
-virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       int signum ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-#endif /* HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R */
-
-
-#ifdef __linux__
 static char *
 virCgroupIdentifyRoot(virCgroupPtr group)
 {
@@ -3221,7 +3186,48 @@ cleanup:
     VIR_FREE(opts);
     return ret;
 }
-#else /* __linux__ */
+
+
+#else /* !VIR_CGROUP_SUPPORTED */
+
+int
+virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
+              int signum ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
+                       int signum ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
 int
 virCgroupIsolateMount(virCgroupPtr group ATTRIBUTE_UNUSED,
                       const char *oldroot ATTRIBUTE_UNUSED,
@@ -3231,4 +3237,5 @@ virCgroupIsolateMount(virCgroupPtr group ATTRIBUTE_UNUSED,
                          _("Control groups not supported on this platform"));
     return -1;
 }
-#endif /* __linux__ */
+
+#endif /* !VIR_CGROUP_SUPPORTED */
