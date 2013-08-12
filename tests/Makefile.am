@@ -391,7 +391,7 @@ qemu_LDADDS += $(LDADDS)
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2argvtest_LDADD = $(qemu_LDADDS)
+qemuxml2argvtest_LDADD = $(qemu_LDADDS) $(LIBXML_LIBS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
@@ -559,7 +559,7 @@ interfacexml2xmltest_LDADD = $(LDADDS)
 cputest_SOURCES = \
 	cputest.c \
 	testutils.c testutils.h
-cputest_LDADD = $(LDADDS)
+cputest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 
 virshtest_SOURCES = \
 	virshtest.c \
@@ -606,12 +606,12 @@ virnettlscontexttest_SOURCES = \
 	virnettlscontexttest.c \
 	virnettlshelpers.h virnettlshelpers.c \
 	testutils.h testutils.c
-virnettlscontexttest_LDADD = $(LDADDS)
+virnettlscontexttest_LDADD = $(LDADDS) $(GNUTLS_LIBS)
 virnettlssessiontest_SOURCES = \
 	virnettlssessiontest.c \
 	virnettlshelpers.h virnettlshelpers.c \
 	testutils.h testutils.c
-virnettlssessiontest_LDADD = $(LDADDS)
+virnettlssessiontest_LDADD = $(LDADDS) $(GNUTLS_LIBS)
 if HAVE_LIBTASN1
 virnettlscontexttest_SOURCES += pkix_asn1_tab.c
 virnettlscontexttest_LDADD += -ltasn1
@@ -675,7 +675,7 @@ if WITH_DBUS
 virdbustest_SOURCES = \
 	virdbustest.c testutils.h testutils.c
 virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virdbustest_LDADD = $(LDADDS)
+virdbustest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c

@@ -1119,7 +1119,9 @@ libvirt_driver_qemu_impl_la_CFLAGS = \
 libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_impl_la_LIBADD = $(CAPNG_LIBS) \
                                 $(GNUTLS_LIBS) \
-				$(LIBNL_LIBS)
+				$(LIBNL_LIBS) \
+				$(LIBXML_LIBS) \
+				$(NULL)
 libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 
 conf_DATA += qemu/qemu.conf
@@ -1280,6 +1282,7 @@ libvirt_driver_network_impl_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf \
 		$(AM_CFLAGS)
 libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
+libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS)
 endif
 EXTRA_DIST += network/default.xml
 
