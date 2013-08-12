@@ -1175,7 +1175,7 @@
     &lt;hyperv&gt;
       &lt;relaxed state='on'/&gt;
       &lt;vapic state='on'/&gt;
-      &lt;spinlocks state='on' retries='4096'&lt;/spinlocks&gt;
+      &lt;spinlocks state='on' retries='4096'/&gt;
     &lt;/hyperv&gt;
 
   &lt;/features&gt;
