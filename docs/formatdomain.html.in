@@ -2465,6 +2465,15 @@
       PCI controllers have an optional <code>model</code> attribute with
       possible values <code>pci-root</code>, <code>pcie-root</code>,
       <code>pci-bridge</code>, or <code>dmi-to-pci-bridge</code>.
+      The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
+      have an optional <code>pcihole64</code> element specifying how big
+      (in kilobytes, or in the unit specified by <code>pcihole64</code>'s
+      <code>unit</code> attribute) the 64-bit PCI hole should be. Some guests (like
+      Windows XP or Windows Server 2003) might crash when QEMU and Seabios
+      are recent enough to support 64-bit PCI holes, unless this is disabled
+      (set to 0). <span class="since">Since 1.1.2 (QEMU only)</span>
+    </p>
+    <p>
       For machine types which provide an implicit PCI bus, the pci-root
       controller with index=0 is auto-added and required to use PCI devices.
       pci-root has no address.

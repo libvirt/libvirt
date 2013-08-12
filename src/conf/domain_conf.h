@@ -814,6 +814,13 @@ struct _virDomainVirtioSerialOpts {
     int vectors; /* -1 == undef */
 };
 
+typedef struct _virDomainPciControllerOpts virDomainPciControllerOpts;
+typedef virDomainPciControllerOpts *virDomainPciControllerOptsPtr;
+struct _virDomainPciControllerOpts {
+    bool pcihole64;
+    unsigned long pcihole64size;
+};
+
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
     int type;
@@ -822,6 +829,7 @@ struct _virDomainControllerDef {
     unsigned int queues;
     union {
         virDomainVirtioSerialOpts vioserial;
+        virDomainPciControllerOpts pciopts;
     } opts;
     virDomainDeviceInfo info;
 };

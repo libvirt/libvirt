@@ -311,6 +311,11 @@ mymain(void)
 
     DO_TEST_DIFFERENT("s390-defaultconsole");
 
+    DO_TEST("pcihole64");
+    DO_TEST_DIFFERENT("pcihole64-gib");
+    DO_TEST("pcihole64-none");
+    DO_TEST("pcihole64-q35");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

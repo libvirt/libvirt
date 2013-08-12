@@ -5680,6 +5680,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *model = NULL;
     char *queues = NULL;
     xmlNodePtr saved = ctxt->node;
+    int rc;
 
     ctxt->node = node;
 
@@ -5792,7 +5793,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         switch (def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT: {
+            unsigned long long bytes;
             if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("pci-root and pcie-root controllers should not "
@@ -5805,7 +5807,15 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  "should have index 0"));
                 goto error;
             }
+            if ((rc = virDomainParseScaledValue("./pcihole64", ctxt,
+                                                &bytes, 1024,
+                                                1024ULL * ULONG_MAX, false)) < 0)
+                goto error;
 
+            if (rc == 1)
+                def->opts.pciopts.pcihole64 = true;
+            def->opts.pciopts.pcihole64size = VIR_DIV_UP(bytes, 1024);
+        }
         }
 
     default:
@@ -14484,6 +14494,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
+    bool pcihole64 = false;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -14521,11 +14532,17 @@ virDomainControllerDefFormat(virBufferPtr buf,
         }
         break;
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        if (def->opts.pciopts.pcihole64)
+            pcihole64 = true;
+        break;
+
     default:
         break;
     }
 
-    if (def->queues || virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (def->queues || virDomainDeviceInfoIsSet(&def->info, flags) ||
+        pcihole64) {
         virBufferAddLit(buf, ">\n");
 
         if (def->queues)
@@ -14534,6 +14551,11 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (virDomainDeviceInfoIsSet(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
+
+        if (pcihole64) {
+            virBufferAsprintf(buf, "      <pcihole64 unit='KiB'>%lu</"
+                              "pcihole64>\n", def->opts.pciopts.pcihole64size);
+        }
 
         virBufferAddLit(buf, "    </controller>\n");
     } else {

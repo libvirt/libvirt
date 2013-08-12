@@ -1544,14 +1544,30 @@
             <attribute name="type">
               <value>pci</value>
             </attribute>
-            <attribute name="model">
-              <choice>
-                <value>pci-root</value>
-                <value>pcie-root</value>
-                <value>pci-bridge</value>
-                <value>dmi-to-pci-bridge</value>
-              </choice>
-            </attribute>
+            <!-- *-root controllers have an optional element "pcihole64"-->
+            <choice>
+              <group>
+                <attribute name="model">
+                  <choice>
+                    <value>pci-root</value>
+                    <value>pcie-root</value>
+                  </choice>
+                </attribute>
+                <optional>
+                  <element name="pcihole64">
+                    <ref name="scaledInteger"/>
+                  </element>
+                </optional>
+              </group>
+              <group>
+                <attribute name="model">
+                  <choice>
+                    <value>pci-bridge</value>
+                    <value>dmi-to-pci-bridge</value>
+                  </choice>
+                </attribute>
+              </group>
+            </choice>
           </group>
           <!-- virtio-serial has optional "ports" and "vectors" -->
           <group>
