@@ -97,9 +97,95 @@ virCgroupAvailable(void)
     return ret;
 }
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 
-static int virCgroupPartitionEscape(char **path);
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+static int
+virCgroupPartitionNeedsEscaping(const char *path)
+{
+    FILE *fp = NULL;
+    int ret = 0;
+    char *line = NULL;
+    size_t buflen;
+
+    /* If it starts with 'cgroup.' or a '_' of any
+     * of the controller names from /proc/cgroups,
+     * then we must prefix a '_'
+     */
+    if (STRPREFIX(path, "cgroup."))
+        return 1;
+
+    if (path[0] == '_' ||
+        path[0] == '.')
+        return 1;
+
+    if (!(fp = fopen("/proc/cgroups", "r"))) {
+        /* The API contract is that we return ENXIO
+         * if cgroups are not available on a host */
+        if (errno == ENOENT)
+            errno = ENXIO;
+        virReportSystemError(errno, "%s",
+                             _("Cannot open /proc/cgroups"));
+        return -1;
+    }
+
+    /*
+     * Data looks like this:
+     * #subsys_name hierarchy num_cgroups enabled
+     * cpuset  2 4  1
+     * cpu     3 48 1
+     * cpuacct 3 48 1
+     * memory  4 4  1
+     * devices 5 4  1
+     * freezer 6 4  1
+     * net_cls 7 1  1
+     */
+    while (getline(&line, &buflen, fp) > 0) {
+        char *tmp;
+        size_t len;
+
+        if (STRPREFIX(line, "#subsys_name"))
+            continue;
+
+        tmp = strchrnul(line, ' ');
+        *tmp = '\0';
+        len = tmp - line;
+
+        if (STRPREFIX(path, line) &&
+            path[len] == '.') {
+            ret = 1;
+            goto cleanup;
+        }
+    }
+
+    if (ferror(fp)) {
+        virReportSystemError(errno, "%s",
+                             _("Error while reading /proc/cgroups"));
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
+    return ret;
+}
+
+
+static int
+virCgroupPartitionEscape(char **path)
+{
+    size_t len = strlen(*path) + 1;
+    int rc;
+    char escape = '_';
+
+    if ((rc = virCgroupPartitionNeedsEscaping(*path)) <= 0)
+        return rc;
+
+    if (VIR_INSERT_ELEMENT(*path, 0, len, escape) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
@@ -1298,94 +1384,6 @@ cleanup:
 
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-static int
-virCgroupPartitionNeedsEscaping(const char *path)
-{
-    FILE *fp = NULL;
-    int ret = 0;
-    char *line = NULL;
-    size_t buflen;
-
-    /* If it starts with 'cgroup.' or a '_' of any
-     * of the controller names from /proc/cgroups,
-     * then we must prefix a '_'
-     */
-    if (STRPREFIX(path, "cgroup."))
-        return 1;
-
-    if (path[0] == '_' ||
-        path[0] == '.')
-        return 1;
-
-    if (!(fp = fopen("/proc/cgroups", "r"))) {
-        /* The API contract is that we return ENXIO
-         * if cgroups are not available on a host */
-        if (errno == ENOENT)
-            errno = ENXIO;
-        virReportSystemError(errno, "%s",
-                             _("Cannot open /proc/cgroups"));
-        return -1;
-    }
-
-    /*
-     * Data looks like this:
-     * #subsys_name hierarchy num_cgroups enabled
-     * cpuset  2 4  1
-     * cpu     3 48 1
-     * cpuacct 3 48 1
-     * memory  4 4  1
-     * devices 5 4  1
-     * freezer 6 4  1
-     * net_cls 7 1  1
-     */
-    while (getline(&line, &buflen, fp) > 0) {
-        char *tmp;
-        size_t len;
-
-        if (STRPREFIX(line, "#subsys_name"))
-            continue;
-
-        tmp = strchrnul(line, ' ');
-        *tmp = '\0';
-        len = tmp - line;
-
-        if (STRPREFIX(path, line) &&
-            path[len] == '.') {
-            ret = 1;
-            goto cleanup;
-        }
-    }
-
-    if (ferror(fp)) {
-        virReportSystemError(errno, "%s",
-                             _("Error while reading /proc/cgroups"));
-        goto cleanup;
-    }
-
-cleanup:
-    VIR_FREE(line);
-    VIR_FORCE_FCLOSE(fp);
-    return ret;
-}
-
-
-static int
-virCgroupPartitionEscape(char **path)
-{
-    size_t len = strlen(*path) + 1;
-    int rc;
-    char escape = '_';
-
-    if ((rc = virCgroupPartitionNeedsEscaping(*path)) <= 0)
-        return rc;
-
-    if (VIR_INSERT_ELEMENT(*path, 0, len, escape) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 static int
 virCgroupSetPartitionSuffix(const char *path, char **res)
 {
