@@ -2184,8 +2184,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto ignore;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid or not yet handled value '%s' for VMX entry "
-                             "'%s'"), fileName, fileName_name);
+                           _("Invalid or not yet handled value '%s' "
+                             "for VMX entry '%s' for device type '%s'"),
+                             fileName, fileName_name,
+                             deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -2220,8 +2222,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             fileName = NULL;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid or not yet handled value '%s' for VMX entry "
-                             "'%s'"), fileName, fileName_name);
+                           _("Invalid or not yet handled value '%s' "
+                             "for VMX entry '%s' for device type '%s'"),
+                             fileName, fileName_name,
+                             deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -2248,8 +2252,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             fileName = NULL;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid or not yet handled value '%s' for VMX entry "
-                             "'%s'"), fileName, fileName_name);
+                           _("Invalid or not yet handled value '%s' "
+                             "for VMX entry '%s' for device type '%s'"),
+                             fileName, fileName_name,
+                             deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else {
