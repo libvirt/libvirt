@@ -191,6 +191,8 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_VNC_SHARE_POLICY   = 150, /* set display sharing policy */
     QEMU_CAPS_DEVICE_DEL_EVENT   = 151, /* DEVICE_DELETED event */
     QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE  = 152, /* -device i82801b11-bridge */
+    QEMU_CAPS_I440FX_PCI_HOLE64_SIZE = 153, /* i440FX-pcihost.pci-hole64-size */
+    QEMU_CAPS_Q35_PCI_HOLE64_SIZE = 154, /* q35-pcihost.pci-hole64-size */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

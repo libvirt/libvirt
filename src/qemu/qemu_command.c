@@ -2399,6 +2399,17 @@ qemuDomainMachineIsQ35(virDomainDefPtr def)
 }
 
 
+static bool
+qemuDomainMachineIsI440FX(virDomainDefPtr def)
+{
+    return (STREQ(def->os.machine, "pc") ||
+            STRPREFIX(def->os.machine, "pc-0.") ||
+            STRPREFIX(def->os.machine, "pc-1.") ||
+            STRPREFIX(def->os.machine, "pc-i440") ||
+            STRPREFIX(def->os.machine, "rhel"));
+}
+
+
 static int
 qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
@@ -7950,6 +7961,53 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     } else {
         virCommandAddArgList(cmd, "-bootloader", def->os.bootloader, NULL);
+    }
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainControllerDefPtr cont = def->controllers[i];
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+            cont->opts.pciopts.pcihole64) {
+            const char *hoststr = NULL;
+            bool cap = false;
+            bool machine = false;
+
+            switch (cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+                hoststr = "i440FX-pcihost";
+                cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
+                machine = qemuDomainMachineIsI440FX(def);
+                break;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+                hoststr = "q35-pcihost";
+                cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
+                machine = qemuDomainMachineIsQ35(def);
+                break;
+
+            default:
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("64-bit PCI hole setting is only for root"
+                                 " PCI controllers"));
+                goto error;
+            }
+
+            if (!machine) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("Setting the 64-bit PCI hole size is not "
+                             "supported for machine '%s'"), def->os.machine);
+                goto error;
+            }
+            if (!cap) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("64-bit PCI hole size setting is not supported "
+                                 "with this QEMU binary"));
+                goto error;
+            }
+
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.pci-hole64-size=%luK", hoststr,
+                                   cont->opts.pciopts.pcihole64size);
+        }
     }
 
     for (i = 0; i < def->ndisks; i++) {

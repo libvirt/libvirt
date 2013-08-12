@@ -1047,6 +1047,16 @@ mymain(void)
             QEMU_CAPS_KVM, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
             QEMU_CAPS_VIRTIO_SCSI);
 
+    DO_TEST("pcihole64", QEMU_CAPS_DEVICE, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
+    DO_TEST_FAILURE("pcihole64-none", QEMU_CAPS_DEVICE);
+    DO_TEST("pcihole64-q35",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_VGA, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

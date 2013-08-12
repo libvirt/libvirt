@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/libexec/qemu-kvm -S -M pc-1.2 -m 2048 -smp 2 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi \
+-boot c -global i440FX-pcihost.pci-hole64-size=1048576K -usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

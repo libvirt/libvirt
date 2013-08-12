@@ -235,6 +235,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vnc-share-policy", /* 150 */
               "device-del-event",
               "dmi-to-pci-bridge",
+              "i440fx-pci-hole64-size",
+              "q35-pci-hole64-size",
     );
 
 struct _virQEMUCaps {
@@ -1436,6 +1438,14 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsScsiGeneric[] = {
     { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsI440FXPciHost[] = {
+    { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE },
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PciHost[] = {
+    { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1473,6 +1483,10 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbHost) },
     { "scsi-generic", virQEMUCapsObjectPropsScsiGeneric,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsScsiGeneric) },
+    { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPciHost,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPciHost) },
+    { "q35-pcihost", virQEMUCapsObjectPropsQ35PciHost,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PciHost) },
 };
 
 
