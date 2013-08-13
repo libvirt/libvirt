@@ -36,6 +36,10 @@ from the configuration.
 
 =over
 
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
 =item B<-d, --daemon>
 
 Run as a daemon & write PID file.

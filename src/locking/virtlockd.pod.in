@@ -26,6 +26,10 @@ The virtlockd daemon listens for requests on a local Unix domain socket.
 
 =over
 
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
 =item B<-d, --daemon>
 
 Run as a daemon and write PID file.
@@ -42,7 +46,7 @@ Use this name for the PID file, overriding the default value.
 
 Enable output of verbose messages.
 
-=item B<    --version>
+=item B<-V, --version>
 
 Display version information then exit.
 

@@ -1038,12 +1038,13 @@ daemonUsage(const char *argv0, bool privileged)
               "  %s [options]\n"
               "\n"
               "Options:\n"
+              "  -h | --help            Display program help:\n"
               "  -v | --verbose         Verbose messages.\n"
               "  -d | --daemon          Run as a daemon & write PID file.\n"
               "  -l | --listen          Listen for TCP/IP connections.\n"
               "  -t | --timeout <secs>  Exit after timeout period.\n"
               "  -f | --config <file>   Configuration file.\n"
-              "     | --version         Display version information.\n"
+              "  -V | --version         Display version information.\n"
               "  -p | --pid-file <file> Change name of PID file.\n"
               "\n"
               "libvirt management daemon:\n"),
@@ -1098,10 +1099,6 @@ daemonUsage(const char *argv0, bool privileged)
     }
 }
 
-enum {
-    OPT_VERSION = 129
-};
-
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
     virNetServerPtr srv = NULL;
@@ -1123,14 +1120,14 @@ int main(int argc, char **argv) {
     mode_t old_umask;
 
     struct option opts[] = {
-        { "verbose", no_argument, &verbose, 1},
-        { "daemon", no_argument, &godaemon, 1},
-        { "listen", no_argument, &ipsock, 1},
+        { "verbose", no_argument, &verbose, 'v'},
+        { "daemon", no_argument, &godaemon, 'd'},
+        { "listen", no_argument, &ipsock, 'l'},
         { "config", required_argument, NULL, 'f'},
         { "timeout", required_argument, NULL, 't'},
         { "pid-file", required_argument, NULL, 'p'},
-        { "version", no_argument, NULL, OPT_VERSION },
-        { "help", no_argument, NULL, '?' },
+        { "version", no_argument, NULL, 'V' },
+        { "help", no_argument, NULL, 'h' },
         {0, 0, 0, 0}
     };
 
@@ -1173,7 +1170,7 @@ int main(int argc, char **argv) {
         int c;
         char *tmp;
 
-        c = getopt_long(argc, argv, "ldf:p:t:v", opts, &optidx);
+        c = getopt_long(argc, argv, "ldf:p:t:vVh", opts, &optidx);
 
         if (c == -1) {
             break;
@@ -1219,17 +1216,17 @@ int main(int argc, char **argv) {
             }
             break;
 
-        case OPT_VERSION:
+        case 'V':
             daemonVersion(argv[0]);
-            return 0;
+            exit(EXIT_SUCCESS);
+
+        case 'h':
+            daemonUsage(argv[0], privileged);
+            exit(EXIT_SUCCESS);
 
         case '?':
-            daemonUsage(argv[0], privileged);
-            return 2;
-
         default:
-            VIR_ERROR(_("%s: internal error: unknown flag: %c"),
-                      argv[0], c);
+            daemonUsage(argv[0], privileged);
             exit(EXIT_FAILURE);
         }
     }
