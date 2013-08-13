@@ -603,5 +603,16 @@
       <vendor name='IBM'/>
       <pvr value='0x003f0203'/>
     </model>
+
+    <model name='POWER7+_v2.1'>
+      <vendor name='IBM'/>
+      <pvr value='0x004a0201'/>
+    </model>
+
+    <model name='POWER8_v1.0'>
+      <vendor name='IBM'/>
+      <pvr value='0x004b0100'/>
+    </model>
+
   </arch>
 </cpus>
