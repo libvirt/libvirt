@@ -5598,6 +5598,59 @@ error:
 }
 
 
+/* Parse a value located at XPATH within CTXT, and store the
+ * result into val.  If REQUIRED, then the value must exist;
+ * otherwise, the value is optional.  The value is in bytes.
+ * Return 1 on success, 0 if the value was not present and
+ * is not REQUIRED, -1 on failure after issuing error. */
+static int
+virDomainParseScaledValue(const char *xpath,
+                          xmlXPathContextPtr ctxt,
+                          unsigned long long *val,
+                          unsigned long long scale,
+                          unsigned long long max,
+                          bool required)
+{
+    char *xpath_full = NULL;
+    char *unit = NULL;
+    int ret = -1;
+    unsigned long long bytes;
+
+    *val = 0;
+    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0)
+        goto cleanup;
+    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
+    if (ret < 0) {
+        if (ret == -2)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("could not parse element %s"),
+                           xpath);
+        else if (required)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("missing element %s"),
+                           xpath);
+        else
+            ret = 0;
+        goto cleanup;
+    }
+    VIR_FREE(xpath_full);
+
+    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0)
+        goto cleanup;
+    unit = virXPathString(xpath_full, ctxt);
+
+    if (virScaleInteger(&bytes, unit, scale, max) < 0)
+        goto cleanup;
+
+    *val = bytes;
+    ret = 1;
+cleanup:
+    VIR_FREE(xpath_full);
+    VIR_FREE(unit);
+    return ret;
+}
+
+
 static int
 virDomainControllerModelTypeFromString(const virDomainControllerDefPtr def,
                                        const char *model)
@@ -5785,58 +5838,6 @@ virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt,
                         virMacAddrPtr mac)
 {
     virMacAddrGenerate(xmlopt->config.macPrefix, mac);
-}
-
-
-/* Parse a value located at XPATH within CTXT, and store the
- * result into val.  If REQUIRED, then the value must exist;
- * otherwise, the value is optional.  The value is in bytes.
- * Return 0 on success, -1 on failure after issuing error. */
-static int
-virDomainParseScaledValue(const char *xpath,
-                          xmlXPathContextPtr ctxt,
-                          unsigned long long *val,
-                          unsigned long long scale,
-                          unsigned long long max,
-                          bool required)
-{
-    char *xpath_full = NULL;
-    char *unit = NULL;
-    int ret = -1;
-    unsigned long long bytes;
-
-    *val = 0;
-    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0)
-        goto cleanup;
-    ret = virXPathULongLong(xpath_full, ctxt, &bytes);
-    if (ret < 0) {
-        if (ret == -2)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("could not parse element %s"),
-                           xpath);
-        else if (required)
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("missing element %s"),
-                           xpath);
-        else
-            ret = 0;
-        goto cleanup;
-    }
-    VIR_FREE(xpath_full);
-
-    if (virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0)
-        goto cleanup;
-    unit = virXPathString(xpath_full, ctxt);
-
-    if (virScaleInteger(&bytes, unit, scale, max) < 0)
-        goto cleanup;
-
-    *val = bytes;
-    ret = 0;
-cleanup:
-    VIR_FREE(xpath_full);
-    VIR_FREE(unit);
-    return ret;
 }
 
 
