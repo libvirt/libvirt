@@ -24,6 +24,7 @@ INCLUDES = \
 
 AM_LDFLAGS = \
 	$(RELRO_LDFLAGS)					\
+	$(NO_INDIRECT_LDFLAGS)					\
 	$(NULL)
 
 POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"

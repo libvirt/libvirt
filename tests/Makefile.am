@@ -50,6 +50,7 @@ endif
 
 LDADDS = \
         $(WARN_CFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	../src/libvirt.la \
 	../gnulib/lib/libgnu.la

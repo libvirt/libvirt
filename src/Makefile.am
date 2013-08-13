@@ -35,6 +35,7 @@ AM_CFLAGS =	$(LIBXML_CFLAGS)				\
 AM_LDFLAGS =	$(DRIVER_MODULE_LDFLAGS)			\
 		$(COVERAGE_LDFLAGS)				\
 		$(RELRO_LDFLAGS)				\
+		$(NO_INDIRECT_LDFLAGS)				\
 		$(NULL)
 
 EXTRA_DIST = $(conf_DATA) util/keymaps.csv
