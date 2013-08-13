@@ -208,6 +208,14 @@
              and other features in the <dns> element -->
         <optional>
             <element name="dns">
+              <optional>
+                <attribute name="forwardPlainNames">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+              </optional>
               <zeroOrMore>
                 <element name="txt">
                   <attribute name="name"><ref name="dnsName"/></attribute>

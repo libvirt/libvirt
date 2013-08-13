@@ -115,6 +115,7 @@ struct _virNetworkDNSHostDef {
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
 typedef virNetworkDNSDef *virNetworkDNSDefPtr;
 struct _virNetworkDNSDef {
+    bool forwardPlainNames;
     size_t ntxts;
     virNetworkDNSTxtDefPtr txts;
     size_t nhosts;

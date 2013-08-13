@@ -663,10 +663,27 @@
         with the idiosyncrasies of the platform where libvirt is
         running. <span class="since">Since 0.8.8</span>
       </dd>
-      <dt><code>dns</code></dt><dd>
-        The dns element of a network contains configuration information for the
-        virtual network's DNS server. <span class="since">Since 0.9.3</span>
-        Currently supported elements are:
+      <dt><code>dns</code></dt>
+      <dd> The dns element of a network contains configuration
+        information for the virtual network's DNS
+        server <span class="since">Since 0.9.3</span>.
+
+        <p>
+          The dns element
+          can have an optional <code>forwardPlainNames</code>
+          attribute <span class="since">Since 1.1.2</span>.
+          If <code>forwardPlainNames</code> is "no", then DNS resolution
+          requests for names that are not qualified with a domain
+          (i.e. names with no "." character) will not be forwarded to
+          the host's upstream DNS server - they will only be resolved if
+          they are known locally within the virtual network's own DNS
+          server. If <code>forwardPlainNames</code> is "yes",
+          unqualified names <b>will</b> be forwarded to the upstream DNS
+          server if they can't be resolved by the virtual network's own
+          DNS server.
+        </p>
+
+        Currently supported sub-elements of <code>&lt;dns&gt;</code> are:
         <dl>
           <dt><code>txt</code></dt>
           <dd>A <code>dns</code> element can have 0 or more <code>txt</code> elements.

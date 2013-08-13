@@ -678,9 +678,11 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                       "##    virsh net-edit %s\n"
                       "## or other application using the libvirt API.\n"
                       "##\n## dnsmasq conf file created by libvirt\n"
-                      "strict-order\n"
-                      "domain-needed\n",
+                      "strict-order\n",
                       network->def->name);
+
+    if (!network->def->dns.forwardPlainNames)
+        virBufferAddLit(&configbuf, "domain-needed\n");
 
     if (network->def->domain) {
         virBufferAsprintf(&configbuf,
@@ -688,10 +690,16 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                           "expand-hosts\n",
                           network->def->domain);
     }
-    /* need to specify local even if no domain specified */
-    virBufferAsprintf(&configbuf,
-                      "local=/%s/\n",
-                      network->def->domain ? network->def->domain : "");
+
+    if (network->def->domain || !network->def->dns.forwardPlainNames) {
+        /* need to specify local even if no domain specified, unless
+         * the config says we should forward "plain" names (i.e. not
+         * fully qualified, no '.' characters)
+         */
+        virBufferAsprintf(&configbuf,
+                          "local=/%s/\n",
+                          network->def->domain ? network->def->domain : "");
+    }
 
     if (pidfile)
         virBufferAsprintf(&configbuf, "pid-file=%s\n", pidfile);
