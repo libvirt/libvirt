@@ -1936,12 +1936,16 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 virDomainDiskDefPtr *def)
 {
     /*
-     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
+     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
+     *                    VIR_DOMAIN_DISK_DEVICE_CDROM,
+     *                    VIR_DOMAIN_DISK_DEVICE_LUN}
      *         busType = VIR_DOMAIN_DISK_BUS_SCSI
      * controllerOrBus = [0..3] -> controller
      *            unit = [0..6,8..15]
      *
-     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
+     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
+     *                    VIR_DOMAIN_DISK_DEVICE_CDROM,
+     *                    VIR_DOMAIN_DISK_DEVICE_LUN}
      *         busType = VIR_DOMAIN_DISK_BUS_IDE
      * controllerOrBus = [0..1] -> bus
      *            unit = [0..1]
@@ -2173,12 +2177,13 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
         } else if (virFileHasSuffix(fileName, ".iso") ||
-                   STRCASEEQ(deviceType, "atapi-cdrom")) {
+                   STRCASEEQ(deviceType, "atapi-cdrom") ||
+                   STRCASEEQ(deviceType, "cdrom-raw")) {
             /*
              * This function was called in order to parse a harddisk device,
-             * but .iso files and 'atapi-cdrom' devices are for CDROM devices
-             * only. Just ignore it, another call to this function to parse a
-             * CDROM device may handle it.
+             * but .iso files, 'atapi-cdrom', and 'cdrom-raw' devices are for
+             * CDROM devices only. Just ignore it, another call to this
+             * function to parse a CDROM device may handle it.
              */
             goto ignore;
         } else {
@@ -2217,7 +2222,12 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         } else if (STRCASEEQ(deviceType, "atapi-cdrom")) {
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             (*def)->src = fileName;
-
+            fileName = NULL;
+        } else if (STRCASEEQ(deviceType, "cdrom-raw")) {
+            /* Raw access CD-ROMs actually are device='lun' */
+            (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
+            (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+            (*def)->src = fileName;
             fileName = NULL;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3213,6 +3223,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
         switch (def->disks[i]->device) {
           case VIR_DOMAIN_DISK_DEVICE_DISK:
           case VIR_DOMAIN_DISK_DEVICE_CDROM:
+          case VIR_DOMAIN_DISK_DEVICE_LUN:
             if (virVMXFormatDisk(ctx, def->disks[i], &buffer) < 0) {
                 goto cleanup;
             }
@@ -3383,7 +3394,8 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
 
     /* Check that we got a valid device type */
     if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
-        def->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        def->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid device type supplied: %s"), deviceType);
         return -1;
@@ -3427,6 +3439,8 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
             vmxDeviceType = "cdrom-image";
         else
             vmxDeviceType = "atapi-cdrom";
+    } else if (def->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        vmxDeviceType = "cdrom-raw";
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("%s %s '%s' has an unsupported type '%s'"),

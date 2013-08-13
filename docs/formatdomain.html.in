@@ -1597,8 +1597,7 @@
             defaulting to "disk".
             <p>
             Using "lun" (<span class="since">since 0.9.10</span>) is only
-            valid when type is "block" and the target element's "bus"
-            attribute is "virtio", and behaves identically to "disk",
+            valid when type is "block", and behaves identically to "disk",
             except that generic SCSI commands from the guest are accepted
             and passed through to the physical device. Also note that
             device='lun' will only be recognized for actual raw devices,

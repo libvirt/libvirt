@@ -253,8 +253,10 @@ mymain(void)
 
     DO_TEST("cdrom-scsi-file", "cdrom-scsi-file", 4);
     DO_TEST("cdrom-scsi-device", "cdrom-scsi-device", 4);
+    DO_TEST("cdrom-scsi-raw-device", "cdrom-scsi-raw-device", 4);
     DO_TEST("cdrom-ide-file", "cdrom-ide-file", 4);
     DO_TEST("cdrom-ide-device", "cdrom-ide-device", 4);
+    DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device", 4);
 
     DO_TEST("floppy-file", "floppy-file", 4);
     DO_TEST("floppy-device", "floppy-device", 4);
