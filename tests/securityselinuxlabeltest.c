@@ -209,7 +209,7 @@ testSELinuxCreateDisks(testSELinuxFile *files, size_t nfiles)
 {
     size_t i;
 
-    if (virFileMakePath(abs_builddir "/securityselinuxlabeldata") < 0)
+    if (virFileMakePath(abs_builddir "/securityselinuxlabeldata/nfs") < 0)
         return -1;
 
     for (i = 0; i < nfiles; i++) {
@@ -228,6 +228,10 @@ testSELinuxDeleteDisks(testSELinuxFile *files, size_t nfiles)
         if (unlink(files[i].file) < 0)
             return -1;
     }
+    if (rmdir(abs_builddir "/securityselinuxlabeldata/nfs") < 0)
+        return -1;
+    /* Ignore failure to remove non-empty directory with in-tree build */
+    rmdir(abs_builddir "/securityselinuxlabeldata");
     return 0;
 }
 
@@ -238,9 +242,13 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
     security_context_t ctx;
 
     for (i = 0; i < nfiles; i++) {
+        ctx = NULL;
         if (getfilecon(files[i].file, &ctx) < 0) {
             if (errno == ENODATA) {
-                ctx = NULL;
+                /* nothing to do */
+            } else if (errno == EOPNOTSUPP) {
+                if (VIR_STRDUP(ctx, "EOPNOTSUPP") < 0)
+                    return -1;
             } else {
                 virReportSystemError(errno,
                                      "Cannot read label on %s",
@@ -252,8 +260,10 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "File %s context '%s' did not match epected '%s'",
                            files[i].file, ctx, files[i].context);
+            VIR_FREE(ctx);
             return -1;
         }
+        VIR_FREE(ctx);
     }
     return 0;
 }
@@ -287,7 +297,7 @@ testSELinuxLabeling(const void *opaque)
 
 cleanup:
     if (testSELinuxDeleteDisks(files, nfiles) < 0)
-        goto cleanup;
+        VIR_WARN("unable to fully clean up");
 
     virDomainDefFree(def);
     for (i = 0; i < nfiles; i++) {
@@ -334,6 +344,7 @@ mymain(void)
     DO_TEST_LABELING("disks");
     DO_TEST_LABELING("kernel");
     DO_TEST_LABELING("chardev");
+    DO_TEST_LABELING("nfs");
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

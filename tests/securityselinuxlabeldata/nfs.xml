@@ -1,0 +1,24 @@
+<domain type='kvm'>
+  <name>vm1</name>
+  <uuid>c7b3edbd-edaf-9455-926a-d65c16db1800</uuid>
+  <memory unit='KiB'>219200</memory>
+  <os>
+    <type arch='i686' machine='pc-1.0'>hvm</type>
+    <boot dev='cdrom'/>
+  </os>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/nfs/plain.raw'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'>
+      <listen type='address' address='0.0.0.0'/>
+    </graphics>
+  </devices>
+  <seclabel model="selinux" type="dynamic" relabel="yes">
+    <label>system_u:system_r:svirt_t:s0:c41,c264</label>
+    <imagelabel>system_u:object_r:svirt_image_t:s0:c41,c264</imagelabel>
+  </seclabel>
+</domain>
