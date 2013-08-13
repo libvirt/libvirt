@@ -41,11 +41,11 @@
 #include "vircommand.h"
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static ssize_t nfdlist = 0;
-static int *fdlist = NULL;
+static ssize_t nfdlist;
+static int *fdlist;
 static const char *conf_file = SYSCONFDIR "/libvirt/virt-login-shell.conf";
 
-static void virLoginShellFini(virConnectPtr conn, virDomainPtr  dom)
+static void virLoginShellFini(virConnectPtr conn, virDomainPtr dom)
 {
     size_t i;
 
@@ -105,7 +105,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
             }
         }
     }
-    virReportSystemError(EPERM, _("%s not listed as an allowed_users in %s"), name, conf_file);
+    virReportSystemError(EPERM, _("%s not matched against 'allowed_users' in %s"), name, conf_file);
 cleanup:
     VIR_FREE(gname);
     return ret;
@@ -121,7 +121,7 @@ static char **virLoginShellGetShellArgv(virConfPtr conf)
     if (!p)
         return virStringSplit("/bin/sh -l", " ", 3);
 
-    if (p && p->type == VIR_CONF_LIST) {
+    if (p->type == VIR_CONF_LIST) {
         size_t len;
         virConfValuePtr pp;
 
@@ -139,7 +139,6 @@ static char **virLoginShellGetShellArgv(virConfPtr conf)
             if (VIR_STRDUP(shargv[i], pp->str) < 0)
                 goto error;
         }
-        shargv[len] = NULL;
     }
     return shargv;
 error:
@@ -155,15 +154,26 @@ static char *progname;
 static void
 usage(void)
 {
-    fprintf(stdout, _("\n"
-                      "%s is a privileged program that allows non root users \n"
-                      "specified in %s to join a Linux container \n"
-                      "with a matching user name and launch a shell. \n"
-                      "\n%s [options]\n\n"
-                      "  options:\n"
-                      "    -h | --help             this help:\n\n"), progname, conf_file, progname);
+    fprintf(stdout,
+            _("\n"
+              "Usage:\n"
+              "  %s [options]\n\n"
+              "Options:\n"
+              "  -h | --help            Display program help:\n"
+              "  -V | --version         Display program version:\n"
+              "\n"
+              "libvirt login shell\n"),
+            progname);
     return;
 }
+
+/* Display version information. */
+static void
+show_version(void)
+{
+    printf("%s (%s) %s\n", progname, PACKAGE_NAME, PACKAGE_VERSION);
+}
+
 
 int
 main(int argc, char **argv)
@@ -190,6 +200,7 @@ main(int argc, char **argv)
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
+        {"version", optional_argument, NULL, 'V'},
         {NULL, 0, NULL, 0}
     };
     if (virInitialize() < 0) {
@@ -214,20 +225,25 @@ main(int argc, char **argv)
         return ret;
     }
 
-    /* The only option we support is help
-     */
-    while ((arg = getopt_long(argc, argv, "h", opt, &longindex)) != -1) {
+    while ((arg = getopt_long(argc, argv, "hV", opt, &longindex)) != -1) {
         switch (arg) {
         case 'h':
             usage();
             exit(EXIT_SUCCESS);
-            break;
+
+        case 'V':
+            show_version();
+            exit(EXIT_SUCCESS);
+
+        case '?':
+        default:
+            usage();
+            exit(EXIT_FAILURE);
         }
     }
 
     if (argc > optind) {
         virReportSystemError(EINVAL, _("%s takes no options"), progname);
-        errno = EINVAL;
         goto cleanup;
     }
 
@@ -268,7 +284,9 @@ main(int argc, char **argv)
         virErrorPtr last_error;
         last_error = virGetLastError();
         if (last_error->code != VIR_ERR_OPERATION_INVALID) {
-            virReportSystemError(last_error->code,_("Can't create %s container: %s"), name, virGetLastErrorMessage());
+            virReportSystemError(last_error->code,
+                                 _("Can't create %s container: %s"),
+                                 name, last_error->message);
             goto cleanup;
         }
     }
@@ -327,7 +345,7 @@ main(int argc, char **argv)
             }
             if (execv(shargv[0], (char *const*) shargv) < 0) {
                 virReportSystemError(errno, _("Unable exec shell %s"), shargv[0]);
-                return -errno;
+                return EXIT_FAILURE;
             }
         }
         return virProcessWait(ccpid, &status2);

@@ -134,7 +134,6 @@ virt_host_validate_CFLAGS = \
 		$(NULL)
 
 virt_login_shell_SOURCES =					\
-		virt-login-shell.conf				\
 		virt-login-shell.c
 
 virt_login_shell_LDFLAGS = $(COVERAGE_LDFLAGS)

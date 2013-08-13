@@ -8,26 +8,42 @@ B<virt-login-shell>
 
 =head1 DESCRIPTION
 
-The B<virt-login-shell> program is setuid shell that is used to join
-an LXC container that matches the users name.  If the container is not
-running virt-login-shell will attempt to start the container.
+The B<virt-login-shell> program is a setuid shell that is used to join
+an LXC container that matches the user's name.  If the container is not
+running, virt-login-shell will attempt to start the container.
 virt-sandbox-shell is not allowed to be run by root.  Normal users will get
-added to a container that matches their username, if it exists.  And they are
+added to a container that matches their username, if it exists, and they are
 configured in /etc/libvirt/virt-login-shell.conf.
 
 The basic structure of most virt-login-shell usage is:
 
   virt-login-shell
 
+=head1 OPTIONS
+
+=over
+
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
+=item B<-V, --version>
+
+Display version information then exit.
+
+=back
+
 =head1 CONFIG
 
 By default, virt-login-shell will execute the /bin/sh program for the user.
-You can modify this behaviour by defining the shell variable in /etc/libvirt/virt-login-shell.conf.
+You can modify this behaviour by defining the shell variable in
+/etc/libvirt/virt-login-shell.conf.
 
 eg.  shell = [ "/bin/ksh", "--login"]
 
-By default no users are allowed to user virt-login-shell, if you want to allow
-certain users to use virt-login-shell, you need to modify the allowed_users variable in /etc/libvirt/virt-login-shell.conf.
+By default no users are allowed to use virt-login-shell, if you want to allow
+certain users to use virt-login-shell, you need to modify the allowed_users
+variable in /etc/libvirt/virt-login-shell.conf.
 
 eg. allowed_users = [ "tom", "dick", "harry" ]
 
