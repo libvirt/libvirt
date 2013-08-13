@@ -5670,6 +5670,7 @@ virDomainControllerModelTypeFromString(const virDomainControllerDefPtr def,
  */
 static virDomainControllerDefPtr
 virDomainControllerDefParseXML(xmlNodePtr node,
+                               xmlXPathContextPtr ctxt,
                                unsigned int flags)
 {
     virDomainControllerDefPtr def;
@@ -5678,6 +5679,9 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *idx = NULL;
     char *model = NULL;
     char *queues = NULL;
+    xmlNodePtr saved = ctxt->node;
+
+    ctxt->node = node;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -5819,6 +5823,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     }
 
 cleanup:
+    ctxt->node = saved;
     VIR_FREE(type);
     VIR_FREE(idx);
     VIR_FREE(model);
@@ -9491,7 +9496,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        if (!(dev->data.controller = virDomainControllerDefParseXML(node, flags)))
+        if (!(dev->data.controller = virDomainControllerDefParseXML(node, ctxt,
+                                                                    flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -11699,6 +11705,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
+                                                                              ctxt,
                                                                               flags);
         if (!controller)
             goto error;
