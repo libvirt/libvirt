@@ -1144,7 +1144,8 @@ lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
  */
 static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
                                         int fsflags,
-                                        const char *src)
+                                        const char *src,
+                                        const char *srcprefix)
 {
     FILE *fp = NULL;
     int ret = -1;
@@ -1154,11 +1155,11 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     char *line = NULL;
     const char *type;
 
-    VIR_DEBUG("src=%s dst=%s", src, fs->dst);
+    VIR_DEBUG("src=%s dst=%s srcprefix=%s", src, fs->dst, srcprefix);
 
     /* First time around we use /etc/filesystems */
 retry:
-    if (virAsprintf(&fslist, "/.oldroot%s",
+    if (virAsprintf(&fslist, "%s%s", srcprefix,
                     tryProc ? "/proc/filesystems" : "/etc/filesystems") < 0)
         goto cleanup;
 
@@ -1270,7 +1271,8 @@ cleanup:
  * probing for filesystem type
  */
 static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
-                                          const char *src)
+                                          const char *src,
+                                          const char *srcprefix)
 {
     int fsflags = 0;
     int ret = -1;
@@ -1300,7 +1302,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         }
         ret = 0;
     } else {
-        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src);
+        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix);
     }
 
 cleanup:
@@ -1318,7 +1320,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
     if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
 
-    ret = lxcContainerMountFSBlockHelper(fs, src);
+    ret = lxcContainerMountFSBlockHelper(fs, src, srcprefix);
 
     VIR_DEBUG("Done mounting filesystem ret=%d", ret);
 
