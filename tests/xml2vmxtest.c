@@ -301,6 +301,8 @@ mymain(void)
     DO_TEST("ws-in-the-wild-1", "ws-in-the-wild-1", 8);
     DO_TEST("ws-in-the-wild-2", "ws-in-the-wild-2", 8);
 
+    DO_TEST("fusion-in-the-wild-1", "fusion-in-the-wild-1", 9);
+
     DO_TEST("annotation", "annotation", 4);
 
     DO_TEST("smbios", "smbios", 4);

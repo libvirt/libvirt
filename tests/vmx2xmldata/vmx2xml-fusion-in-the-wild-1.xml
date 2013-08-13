@@ -1,0 +1,39 @@
+<domain type='vmware'>
+  <name>ATTM_VM</name>
+  <uuid>564d7088-01a1-9832-e72b-6790c73b64ea</uuid>
+  <memory unit='KiB'>3657728</memory>
+  <currentMemory unit='KiB'>3657728</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/ATTM_VM.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='cdrom'>
+      <source startupPolicy='optional'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='buslogic'/>
+    <controller type='ide' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:0c:29:3b:64:ea'/>
+      <source bridge=''/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='00:0c:29:3b:64:f4'/>
+      <source bridge=''/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
+  </devices>
+</domain>
