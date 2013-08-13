@@ -868,7 +868,7 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
 static int lxcContainerMountFSDev(virDomainDefPtr def,
                                   const char *stateDir)
 {
-    int ret;
+    int ret = -1;
     char *path = NULL;
 
     VIR_DEBUG("Mount /dev/ stateDir=%s", stateDir);
@@ -877,14 +877,24 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
                            stateDir, def->name)) < 0)
         return ret;
 
-    VIR_DEBUG("Tring to move %s to /dev", path);
+    if (virFileMakePath("/dev") < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot create /dev"));
+        goto cleanup;
+    }
 
-    if ((ret = mount(path, "/dev", NULL, MS_MOVE, NULL)) < 0) {
+    VIR_DEBUG("Trying to move %s to /dev", path);
+
+    if (mount(path, "/dev", NULL, MS_MOVE, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev"),
                              path);
+        goto cleanup;
     }
 
+    ret = 0;
+
+cleanup:
     VIR_FREE(path);
     return ret;
 }
