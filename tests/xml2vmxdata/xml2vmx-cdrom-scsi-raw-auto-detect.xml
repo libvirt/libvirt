@@ -1,0 +1,14 @@
+<domain type='vmware'>
+  <name>cdrom-scsi-device</name>
+  <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
+  <memory unit='KiB'>4096</memory>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='block' device='lun'>
+      <source startupPolicy='optional'/>
+      <target dev='sda' bus='scsi'/>
+    </disk>
+  </devices>
+</domain>

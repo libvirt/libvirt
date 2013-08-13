@@ -2221,14 +2221,26 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto ignore;
         } else if (STRCASEEQ(deviceType, "atapi-cdrom")) {
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-            (*def)->src = fileName;
-            fileName = NULL;
+
+            if (STRCASEEQ(fileName, "auto detect")) {
+                (*def)->src = NULL;
+                (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
+            } else {
+                (*def)->src = fileName;
+                fileName = NULL;
+            }
         } else if (STRCASEEQ(deviceType, "cdrom-raw")) {
             /* Raw access CD-ROMs actually are device='lun' */
             (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-            (*def)->src = fileName;
-            fileName = NULL;
+
+            if (STRCASEEQ(fileName, "auto detect")) {
+                (*def)->src = NULL;
+                (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
+            } else {
+                (*def)->src = fileName;
+                fileName = NULL;
+            }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
@@ -3473,7 +3485,13 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
 
         VIR_FREE(fileName);
     } else if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-        if (def->src != NULL) {
+        if (!def->src &&
+            def->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_OPTIONAL) {
+            virBufferAsprintf(buffer, "%s%d:%d.autodetect = \"true\"\n",
+                              busType, controllerOrBus, unit);
+            virBufferAsprintf(buffer, "%s%d:%d.fileName = \"auto detect\"\n",
+                              busType, controllerOrBus, unit);
+        } else {
             virBufferAsprintf(buffer, "%s%d:%d.fileName = \"%s\"\n",
                               busType, controllerOrBus, unit, def->src);
         }
