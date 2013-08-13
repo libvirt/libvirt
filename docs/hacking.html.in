@@ -141,6 +141,17 @@
   VIR_TEST_DEBUG=1 make check    (or)
   VIR_TEST_DEBUG=2 make check
 </pre>
+
+        <p>
+          When debugging failures during development, it is possible
+          to focus in on just the failing subtests by using TESTS and
+          VIR_TEST_RANGE:
+        </p>
+
+<pre>
+  make check VIR_TEST_DEBUG=1 VIR_TEST_RANGE=3-5 TESTS=qemuxml2argvtest
+</pre>
+
         <p>
           Also, individual tests can be run from inside the <code>tests/</code>
           directory, like:
