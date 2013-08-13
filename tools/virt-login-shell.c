@@ -76,7 +76,8 @@ static int virLoginShellAllowedUser(virConfPtr conf,
         /* Calc length and check items */
         for (pp = p->list; pp; pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                virReportSystemError(EINVAL, "%s", _("shell must be a list of strings"));
+                virReportSystemError(EINVAL, "%s",
+                                     _("shell must be a list of strings"));
                 goto cleanup;
             } else {
                 /*
@@ -105,7 +106,9 @@ static int virLoginShellAllowedUser(virConfPtr conf,
             }
         }
     }
-    virReportSystemError(EPERM, _("%s not matched against 'allowed_users' in %s"), name, conf_file);
+    virReportSystemError(EPERM,
+                         _("%s not matched against 'allowed_users' in %s"),
+                         name, conf_file);
 cleanup:
     VIR_FREE(gname);
     return ret;
@@ -128,7 +131,8 @@ static char **virLoginShellGetShellArgv(virConfPtr conf)
         /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                virReportSystemError(EINVAL, "%s", _("shell must be a list of strings"));
+                virReportSystemError(EINVAL, "%s",
+                                     _("shell must be a list of strings"));
                 goto error;
             }
         }
@@ -248,7 +252,8 @@ main(int argc, char **argv)
     }
 
     if (uid == 0) {
-        virReportSystemError(EPERM, _("%s must be run by non root users"), progname);
+        virReportSystemError(EPERM, _("%s must be run by non root users"),
+                             progname);
         goto cleanup;
     }
 
@@ -340,11 +345,12 @@ main(int argc, char **argv)
 
         if (ccpid == 0) {
             if (chdir(homedir) < 0) {
-                virReportSystemError(errno, _("Unable chdir(%s)"), homedir);
+                virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
                 return EXIT_FAILURE;
             }
             if (execv(shargv[0], (char *const*) shargv) < 0) {
-                virReportSystemError(errno, _("Unable exec shell %s"), shargv[0]);
+                virReportSystemError(errno, _("Unable to exec shell %s"),
+                                     shargv[0]);
                 return EXIT_FAILURE;
             }
         }
