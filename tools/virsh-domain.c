@@ -5965,7 +5965,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int count = 0;
-    bool ret = true;
+    bool ret = false;
     bool maximum = vshCommandOptBool(cmd, "maximum");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -5996,9 +5996,8 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (flags == -1) {
-        if (virDomainSetVcpus(dom, count) != 0) {
-            ret = false;
-        }
+        if (virDomainSetVcpus(dom, count) != 0)
+            goto cleanup;
     } else {
         /* If the --maximum flag was given, we need to ensure only the
            --config flag is in effect as well */
@@ -6015,18 +6014,18 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 
                 /* Warn the user about the invalid flag combination */
                 vshError(ctl, _("--maximum must be used with --config only"));
-                ret = false;
                 goto cleanup;
             }
         }
 
         /* Apply the virtual cpu changes */
-        if (virDomainSetVcpusFlags(dom, count, flags) < 0) {
-            ret = false;
-        }
+        if (virDomainSetVcpusFlags(dom, count, flags) < 0)
+            goto cleanup;
     }
 
-  cleanup:
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
