@@ -301,13 +301,13 @@ libxlTimeoutRegisterEventHook(void *priv,
     gettimeofday(&now, NULL);
     timersub(&abs_t, &now, &res);
     /* Ensure timeout is not overflowed */
-    if (timercmp(&res, &zero, <)) {
+    if (timercmp(&res, &zero, <))
         timeout = 0;
-    } else if (res.tv_sec > INT_MAX / 1000) {
+    else if (res.tv_sec > INT_MAX / 1000)
         timeout = INT_MAX;
-    } else {
+    else
         timeout = res.tv_sec * 1000 + (res.tv_usec + 999) / 1000;
-    }
+
     info->id = virEventAddTimeout(timeout, libxlTimerCallback,
                                   info, libxlEventHookInfoFree);
     if (info->id < 0) {
@@ -1006,10 +1006,10 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virDomainObjAssignDef(vm, def, true, NULL);
             def = NULL;
 
-            if (unlink(managed_save_path) < 0) {
+            if (unlink(managed_save_path) < 0)
                 VIR_WARN("Failed to remove the managed state %s",
                          managed_save_path);
-            }
+
             vm->hasManagedSave = false;
         }
         VIR_FREE(managed_save_path);
@@ -4177,6 +4177,7 @@ libxlNodeGetCellsFreeMemory(virConnectPtr conn,
         else
             freeMems[numCells++] = numa_info[n].free;
     }
+
     ret = numCells;
 
 cleanup:
@@ -4530,11 +4531,10 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     for (i = 0; i < nparams; ++i) {
         virTypedParameterPtr param = &params[i];
 
-        if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_WEIGHT)) {
+        if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_WEIGHT))
             sc_info.weight = params[i].value.ui;
-        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CAP)) {
+        else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CAP))
             sc_info.cap = params[i].value.ui;
-        }
     }
 
     if (libxl_domain_sched_params_set(priv->ctx, dom->id, &sc_info) != 0) {

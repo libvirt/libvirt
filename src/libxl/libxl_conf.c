@@ -246,9 +246,8 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
             /* Search for existing matching (model,hvm) tuple */
             for (i = 0; i < nr_guest_archs; i++) {
                 if ((guest_archs[i].arch == arch) &&
-                    guest_archs[i].hvm == hvm) {
+                    guest_archs[i].hvm == hvm)
                     break;
-                }
             }
 
             /* Too many arch flavours - highly unlikely ! */
@@ -916,21 +915,17 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
     if (libxlMakeDomCreateInfo(driver, def, &d_config->c_info) < 0)
         return -1;
 
-    if (libxlMakeDomBuildInfo(vm, d_config) < 0) {
+    if (libxlMakeDomBuildInfo(vm, d_config) < 0)
         return -1;
-    }
 
-    if (libxlMakeDiskList(def, d_config) < 0) {
+    if (libxlMakeDiskList(def, d_config) < 0)
         return -1;
-    }
 
-    if (libxlMakeNicList(def, d_config) < 0) {
+    if (libxlMakeNicList(def, d_config) < 0)
         return -1;
-    }
 
-    if (libxlMakeVfbList(driver, def, d_config) < 0) {
+    if (libxlMakeVfbList(driver, def, d_config) < 0)
         return -1;
-    }
 
     d_config->on_reboot = def->onReboot;
     d_config->on_poweroff = def->onPoweroff;
