@@ -5909,7 +5909,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the rng-random "
-                             " backend"));
+                             "backend"));
             goto cleanup;
         }
 
