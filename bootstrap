@@ -1,6 +1,6 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2013-07-03.20; # UTC
+scriptversion=2013-08-15.22; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -224,26 +224,20 @@ find_tool ()
   find_tool_names=$@
   eval "find_tool_res=\$$find_tool_envvar"
   if test x"$find_tool_res" = x; then
-    for i
-    do
+    for i; do
       if ($i --version </dev/null) >/dev/null 2>&1; then
-       find_tool_res=$i
-       break
+        find_tool_res=$i
+        break
       fi
     done
-  else
-    find_tool_error_prefix="\$$find_tool_envvar: "
   fi
-  test x"$find_tool_res" != x \
-    || die "one of these is required: $find_tool_names"
-  ($find_tool_res --version </dev/null) >/dev/null 2>&1 \
-    || die "${find_tool_error_prefix}cannot run $find_tool_res --version"
+  if test x"$find_tool_res" = x; then
+    warn_ "one of these is required: $find_tool_names;"
+    die   "alternatively set $find_tool_envvar to a compatible tool"
+  fi
   eval "$find_tool_envvar=\$find_tool_res"
   eval "export $find_tool_envvar"
 }
-
-# Find sha1sum, named gsha1sum on MacPorts, and shasum on Mac OS X 10.6.
-find_tool SHA1SUM sha1sum gsha1sum shasum
 
 # Override the default configuration, if necessary.
 # Make sure that bootstrap.conf is sourced from the current directory
@@ -326,7 +320,7 @@ insert_if_absent() {
     die "Error: Duplicate entries in $file: " $duplicate_entries
   fi
   linesold=$(gitignore_entries $file | wc -l)
-  linesnew=$(echo "$str" | gitignore_entries - $file | sort -u | wc -l)
+  linesnew=$( { echo "$str"; cat $file; } | gitignore_entries | sort -u | wc -l)
   if [ $linesold != $linesnew ] ; then
     { echo "$str" | cat - $file > $file.bak && mv $file.bak $file; } \
       || die "insert_if_absent $file $str: failed"
@@ -469,7 +463,7 @@ check_versions() {
     if [ "$req_ver" = "-" ]; then
       # Merely require app to exist; not all prereq apps are well-behaved
       # so we have to rely on $? rather than get_version.
-      $app --version >/dev/null 2>&1
+      $app --version >/dev/null 2>&1 </dev/null
       if [ 126 -le $? ]; then
         warn_ "Error: '$app' not found"
         ret=1
@@ -502,6 +496,12 @@ print_versions() {
   echo "----------------------"
   # can't depend on column -t
 }
+
+# Find sha1sum, named gsha1sum on MacPorts, shasum on Mac OS X 10.6.
+# Also find the compatible sha1 utility on the BSDs
+if test x"$SKIP_PO" = x; then
+  find_tool SHA1SUM sha1sum gsha1sum shasum sha1
+fi
 
 use_libtool=0
 # We'd like to use grep -E, to see if any of LT_INIT,
@@ -692,11 +692,10 @@ update_po_files() {
     cksum_file="$ref_po_dir/$po.s1"
     if ! test -f "$cksum_file" ||
         ! test -f "$po_dir/$po.po" ||
-        ! $SHA1SUM -c --status "$cksum_file" \
-            < "$new_po" > /dev/null; then
+        ! $SHA1SUM -c "$cksum_file" < "$new_po" > /dev/null 2>&1; then
       echo "$me: updated $po_dir/$po.po..."
       cp "$new_po" "$po_dir/$po.po" \
-          && $SHA1SUM < "$new_po" > "$cksum_file"
+          && $SHA1SUM < "$new_po" > "$cksum_file" || return
     fi
   done
 }
