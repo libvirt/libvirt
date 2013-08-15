@@ -133,36 +133,80 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # Remove the ones we don't want, blacklisted earlier
     gl_MANYWARN_COMPLEMENT([wantwarn], [$maybewarn], [$dontwarn])
 
-    # Check for $CC support of each warning
-    for w in $wantwarn; do
-      gl_WARN_ADD([$w])
-    done
-
     # GNULIB uses '-W' (aka -Wextra) which includes a bunch of stuff.
     # Unfortunately, this means you can't simply use '-Wsign-compare'
     # with gl_MANYWARN_COMPLEMENT
     # So we have -W enabled, and then have to explicitly turn off...
-    gl_WARN_ADD([-Wno-sign-compare])
+    wantwarn="$wantwarn -Wno-sign-compare"
 
     # GNULIB expects this to be part of -Wc++-compat, but we turn
     # that one off, so we need to manually enable this again
-    gl_WARN_ADD([-Wjump-misses-init])
+    wantwarn="$wantwarn -Wjump-misses-init"
 
     # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
     # so we need to manually re-exclude it.  Also, older gcc 4.2
     # added an implied ATTRIBUTE_NONNULL on any parameter marked
     # ATTRIBUTE_FMT_PRINT, which causes -Wformat failure on our
     # intentional use of virReportError(code, NULL).
-    gl_WARN_ADD([-Wno-format-nonliteral])
+    wantwarn="$wantwarn -Wno-format-nonliteral"
     if test $lv_cv_gcc_wformat_null_works = no; then
-      gl_WARN_ADD([-Wno-format])
+      wantwarn="$wantwarn -Wno-format"
     fi
 
     # This should be < 256 really. Currently we're down to 4096,
     # but using 1024 bytes sized buffers (mostly for virStrerror)
     # stops us from going down further
-    gl_WARN_ADD([-Wframe-larger-than=4096])
-    dnl gl_WARN_ADD([-Wframe-larger-than=256])
+    wantwarn="$wantwarn -Wframe-larger-than=4096"
+    dnl wantwarn="$wantwarn -Wframe-larger-than=256"
+
+    # Extra special flags
+    dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
+    dnl on Mingw32, but fails when actually used
+    case $host in
+       *-*-linux*)
+       dnl Fedora only uses -fstack-protector, but doesn't seem to
+       dnl be great overhead in adding -fstack-protector-all instead
+       dnl wantwarn="$wantwarn -fstack-protector"
+       wantwarn="$wantwarn -fstack-protector-all"
+       wantwarn="$wantwarn --param=ssp-buffer-size=4"
+       dnl Even though it supports it, clang complains about
+       dnl use of --param=ssp-buffer-size=4 unless used with
+       dnl the -c arg. It doesn't like it when used with args
+       dnl that just link together .o files. Unfortunately
+       dnl we can't avoid that with automake, so we must turn
+       dnl off the following clang specific warning
+       wantwarn="$wantwarn -Wno-unused-command-line-argument"
+       ;;
+       *-*-freebsd*)
+       dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
+       dnl -fstack-protector-all well
+       wantwarn="$wantwarn -fstack-protector"
+
+       wantwarn="$wantwarn -Wno-unused-command-line-argument"
+       ;;
+    esac
+    wantwarn="$wantwarn -fexceptions"
+    wantwarn="$wantwarn -fasynchronous-unwind-tables"
+    wantwarn="$wantwarn -fdiagnostics-show-option"
+    wantwarn="$wantwarn -funit-at-a-time"
+
+    # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
+    # fire even without -O.
+    wantwarn="$wantwarn -fipa-pure-const"
+    # We should eventually enable this, but right now there are at
+    # least 75 functions triggering warnings.
+    wantwarn="$wantwarn -Wno-suggest-attribute=pure"
+    wantwarn="$wantwarn -Wno-suggest-attribute=const"
+
+    if test "$set_werror" = "yes"
+    then
+      wantwarn="$wantwarn -Werror"
+    fi
+
+    # Check for $CC support of each warning
+    for w in $wantwarn; do
+      gl_WARN_ADD([$w])
+    done
 
     # Silence certain warnings in gnulib, and use improved glibc headers
     AC_DEFINE([lint], [1],
@@ -174,50 +218,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
      # define _FORTIFY_SOURCE 2
      #endif
     ])
-
-    # Extra special flags
-    dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
-    dnl on Mingw32, but fails when actually used
-    case $host in
-       *-*-linux*)
-       dnl Fedora only uses -fstack-protector, but doesn't seem to
-       dnl be great overhead in adding -fstack-protector-all instead
-       dnl gl_WARN_ADD([-fstack-protector])
-       gl_WARN_ADD([-fstack-protector-all])
-       gl_WARN_ADD([--param=ssp-buffer-size=4])
-       dnl Even though it supports it, clang complains about
-       dnl use of --param=ssp-buffer-size=4 unless used with
-       dnl the -c arg. It doesn't like it when used with args
-       dnl that just link together .o files. Unfortunately
-       dnl we can't avoid that with automake, so we must turn
-       dnl off the following clang specific warning
-       gl_WARN_ADD([-Wno-unused-command-line-argument])
-       ;;
-       *-*-freebsd*)
-       dnl FreeBSD ships old gcc 4.2.1 which doesn't handle
-       dnl -fstack-protector-all well
-       gl_WARN_ADD([-fstack-protector])
-
-       gl_WARN_ADD([-Wno-unused-command-line-argument])
-       ;;
-    esac
-    gl_WARN_ADD([-fexceptions])
-    gl_WARN_ADD([-fasynchronous-unwind-tables])
-    gl_WARN_ADD([-fdiagnostics-show-option])
-    gl_WARN_ADD([-funit-at-a-time])
-
-    # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
-    # fire even without -O.
-    gl_WARN_ADD([-fipa-pure-const])
-    # We should eventually enable this, but right now there are at
-    # least 75 functions triggering warnings.
-    gl_WARN_ADD([-Wno-suggest-attribute=pure])
-    gl_WARN_ADD([-Wno-suggest-attribute=const])
-
-    if test "$set_werror" = "yes"
-    then
-      gl_WARN_ADD([-Werror])
-    fi
 
     dnl Needed to keep compile quiet on python 2.4
     save_WARN_CFLAGS=$WARN_CFLAGS
