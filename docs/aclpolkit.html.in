@@ -344,10 +344,8 @@
       dealing with local clients connected via the UNIX socket).
       On the <code>action</code> object, the permission name is
       accessible via the <code>id</code> attribute, while the
-      object identifying attributes are exposed via a set of
-      attributes with the naming convention <code>_detail_[attrname]</code>.
-      For example, the 'domain_name' attribute would be exposed via
-      a property <code>_detail_domain_name</code>.
+      object identifying attributes are exposed via the
+      <code>lookup</code> method.
     </p>
 
     <h3><a name="exconnect">Example: restricting ability to connect to drivers</a></h3>
@@ -359,7 +357,7 @@
       use the <code>QEMU</code> driver and not the Xen or LXC
       drivers which are also available in libvirtd.
       To achieve this we need to write a rule which checks
-      whether the <code>_detail_connect_driver</code> attribute
+      whether the <code>connect_driver</code> attribute
       is <code>QEMU</code>, and match on an action
       name of <code>org.libvirt.api.connect.getattr</code>. Using
       the javascript rules format, this ends up written as
@@ -369,7 +367,7 @@
 polkit.addRule(function(action, subject) {
     if (action.id == "org.libvirt.api.connect.getattr" &amp;&amp;
         subject.user == "berrange") {
-          if (action._detail_connect_driver == 'QEMU') {
+          if (action.lookup("connect_driver") == 'QEMU') {
             return polkit.Result.YES;
           } else {
             return polkit.Result.NO;
@@ -386,8 +384,8 @@ polkit.addRule(function(action, subject) {
       full read-write mode. The goal is to only allow them to
       see the domain called <code>demo</code> on the LXC driver.
       To achieve this we need to write a rule which checks
-      whether the <code>_detail_connect_driver</code> attribute
-      is <code>LXC</code> and the <code>_detail_domain_name</code>
+      whether the <code>connect_driver</code> attribute
+      is <code>LXC</code> and the <code>domain_name</code>
       attribute is <code>demo</code>, and match on a action
       name of <code>org.libvirt.api.domain.getattr</code>. Using
       the javascript rules format, this ends up written as
@@ -397,8 +395,8 @@ polkit.addRule(function(action, subject) {
 polkit.addRule(function(action, subject) {
     if (action.id == "org.libvirt.api.domain.getattr" &amp;&amp;
         subject.user == "berrange") {
-          if (action._detail_connect_driver == 'LXC' &amp;&amp;
-              action._detail_domain_name == 'demo') {
+          if (action.lookup("connect_driver") == 'LXC' &amp;&amp;
+              action.lookup("domain_name") == 'demo') {
             return polkit.Result.YES;
           } else {
             return polkit.Result.NO;
