@@ -2603,7 +2603,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     }
 
     /* This switch statement is here to trigger compiler warning when adding
-     * a new device type. When you are adding a new field to the swtich you
+     * a new device type. When you are adding a new field to the switch you
      * also have to add a iteration statement above. Otherwise the switch
      * statement has no real function here and should be optimized out by the
      * compiler. */

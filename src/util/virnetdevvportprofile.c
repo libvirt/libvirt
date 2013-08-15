@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1114,7 +1114,7 @@ cleanup:
  * @vmOp : The VM operation (i.e., create, no-op)
  * @setlink_only : Only set the link - dont wait for the link to come up
  *
- * Associate a port on a swtich with a profile. This function
+ * Associate a port on a switch with a profile. This function
  * may notify a kernel driver or an external daemon to run
  * the setup protocol. If profile parameters were not supplied
  * by the user, then this function returns without doing
