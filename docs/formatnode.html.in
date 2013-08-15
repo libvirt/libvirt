@@ -136,11 +136,11 @@
             <dl>
               <dt><code>number</code></dt>
               <dd>The device number.</dd>
-              <dt><code>number</code></dt>
+              <dt><code>class</code></dt>
               <dd>The device class.</dd>
-              <dt><code>number</code></dt>
+              <dt><code>subclass</code></dt>
               <dd>The device subclass.</dd>
-              <dt><code>number</code></dt>
+              <dt><code>protocol</code></dt>
               <dd>The device protocol.</dd>
               <dt><code>description</code></dt>
               <dd>If present, a description of the device.</dd>
