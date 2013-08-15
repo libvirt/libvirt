@@ -1435,17 +1435,16 @@ qemuProcessReadLog(int fd, char *buf, int buflen, int off)
     ssize_t bytes;
     char *eol;
 
-    buf[0] = '\0';
-
     while (off < buflen - 1) {
         bytes = saferead(fd, buf + off, buflen - off - 1);
         if (bytes < 0)
             return -1;
-        else if (bytes == 0)
-            break;
 
         off += bytes;
         buf[off] = '\0';
+
+        if (bytes == 0)
+            break;
 
         /* Filter out debug messages from intermediate libvirt process */
         while ((eol = strchr(filter_next, '\n'))) {
