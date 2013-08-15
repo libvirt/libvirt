@@ -454,8 +454,10 @@ libxlDomainObjPrivateAlloc(void)
     if (!(priv = virObjectLockableNew(libxlDomainObjPrivateClass)))
         return NULL;
 
-    if (!(priv->devs = virChrdevAlloc()))
+    if (!(priv->devs = virChrdevAlloc())) {
+        virObjectUnref(priv);
         return NULL;
+    }
 
     return priv;
 }
