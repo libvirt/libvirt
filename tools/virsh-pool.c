@@ -1000,7 +1000,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         for (i = 0; i < npoolTypes; i++) {
             if ((poolType = virStoragePoolTypeFromString(poolTypes[i])) < 0) {
-                vshError(ctl, "%s", _("Invalid pool type"));
+                vshError(ctl, _("Invalid pool type '%s'"), poolTypes[i]);
                 virStringFreeList(poolTypes);
                 return false;
             }
