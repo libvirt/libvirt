@@ -163,10 +163,9 @@ vshPrettyCapacity(unsigned long long val, const char **unit)
 }
 
 /*
- * Convert the strings separated by ',' into array. The caller
- * must free the first array element and the returned array after
- * use (all other array elements belong to the memory allocated
- * for the first array element).
+ * Convert the strings separated by ',' into array. The returned
+ * array is a NULL terminated string list. The caller has to free
+ * the array using virStringFreeList or a similar method.
  *
  * Returns the length of the filled array on success, or -1
  * on error.
@@ -196,7 +195,8 @@ vshStringToArray(const char *str,
         str_tok++;
     }
 
-    if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
+    /* reserve the NULL element at the end */
+    if (VIR_ALLOC_N(arr, nstr_tokens + 1) < 0) {
         VIR_FREE(str_copied);
         return -1;
     }
@@ -212,12 +212,13 @@ vshStringToArray(const char *str,
             continue;
         }
         *tmp++ = '\0';
-        arr[nstr_tokens++] = str_tok;
+        arr[nstr_tokens++] = vshStrdup(NULL, str_tok);
         str_tok = tmp;
     }
-    arr[nstr_tokens++] = str_tok;
+    arr[nstr_tokens++] = vshStrdup(NULL, str_tok);
 
     *array = arr;
+    VIR_FREE(str_copied);
     return nstr_tokens;
 }
 

@@ -261,10 +261,7 @@ vshParseSnapshotMemspec(vshControl *ctl, virBufferPtr buf, const char *str)
 cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse memspec: %s"), str);
-    if (array) {
-        VIR_FREE(*array);
-        VIR_FREE(array);
-    }
+    virStringFreeList(array);
     return ret;
 }
 
@@ -313,10 +310,7 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
 cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
-    if (array) {
-        VIR_FREE(*array);
-        VIR_FREE(array);
-    }
+    virStringFreeList(array);
     return ret;
 }
 

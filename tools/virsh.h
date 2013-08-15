@@ -37,6 +37,7 @@
 # include "virerror.h"
 # include "virthread.h"
 # include "virnetdevbandwidth.h"
+# include "virstring.h"
 
 # define VSH_MAX_XML_FILE (10*1024*1024)
 
