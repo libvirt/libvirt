@@ -1507,6 +1507,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
     virStorageBackendPtr backend;
     virStorageVolDefPtr voldef = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
+    virStorageVolDefPtr buildvoldef = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -1565,20 +1566,19 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    if (VIR_ALLOC(buildvoldef) < 0) {
+        voldef = NULL;
+        goto cleanup;
+    }
+
+    /* Make a shallow copy of the 'defined' volume definition, since the
+     * original allocation value will change as the user polls 'info',
+     * but we only need the initial requested values
+     */
+    memcpy(buildvoldef, voldef, sizeof(*voldef));
+
     if (backend->buildVol) {
         int buildret;
-        virStorageVolDefPtr buildvoldef = NULL;
-
-        if (VIR_ALLOC(buildvoldef) < 0) {
-            voldef = NULL;
-            goto cleanup;
-        }
-
-        /* Make a shallow copy of the 'defined' volume definition, since the
-         * original allocation value will change as the user polls 'info',
-         * but we only need the initial requested values
-         */
-        memcpy(buildvoldef, voldef, sizeof(*voldef));
 
         /* Drop the pool lock during volume allocation */
         pool->asyncjobs++;
@@ -1595,7 +1595,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
         pool->asyncjobs--;
 
         voldef = NULL;
-        VIR_FREE(buildvoldef);
 
         if (buildret < 0) {
             virStoragePoolObjUnlock(pool);
@@ -1606,6 +1605,10 @@ storageVolCreateXML(virStoragePoolPtr obj,
 
     }
 
+    /* Update pool metadata */
+    pool->def->allocation += buildvoldef->allocation;
+    pool->def->available -= buildvoldef->allocation;
+
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
     ret = volobj;
@@ -1615,6 +1618,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
 cleanup:
     virObjectUnref(volobj);
     virStorageVolDefFree(voldef);
+    virStorageVolDefFree(buildvoldef);
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -1769,6 +1773,10 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
         pool = NULL;
         goto cleanup;
     }
+
+    /* Updating pool metadata */
+    pool->def->allocation += newvol->allocation;
+    pool->def->available -= newvol->allocation;
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
@@ -2013,6 +2021,11 @@ storageVolResize(virStorageVolPtr obj,
         goto out;
 
     vol->capacity = abs_capacity;
+
+    /* Update pool metadata */
+    pool->def->allocation += (abs_capacity - vol->capacity);
+    pool->def->available -= (abs_capacity - vol->capacity);
+
     ret = 0;
 
 out:
@@ -2355,6 +2368,10 @@ storageVolDelete(virStorageVolPtr obj,
 
     if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
         goto cleanup;
+
+    /* Update pool metadata */
+    pool->def->allocation -= vol->allocation;
+    pool->def->available += vol->allocation;
 
     for (i = 0; i < pool->volumes.count; i++) {
         if (pool->volumes.objs[i] == vol) {
