@@ -25,6 +25,7 @@
 #include <config.h>
 #include "virsh.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1341,39 +1342,45 @@ vshCommandFree(vshCmd *cmd)
  * @cmd: parsed command line to search
  * @name: option name to search for
  * @opt: result of the search
+ * @needData: true if option must be non-boolean
  *
  * Look up an option passed to CMD by NAME.  Returns 1 with *OPT set
  * to the option if found, 0 with *OPT set to NULL if the name is
  * valid and the option is not required, -1 with *OPT set to NULL if
- * the option is required but not present, and -2 if NAME is not valid
- * (-2 indicates a programming error).  No error messages are issued.
+ * the option is required but not present, and assert if NAME is not
+ * valid (which indicates a programming error).  No error messages are
+ * issued if a value is returned.
  */
-int
-vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt)
+static int
+vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt,
+              bool needData)
 {
     vshCmdOpt *candidate = cmd->opts;
     const vshCmdOptDef *valid = cmd->def->opts;
+    int ret = 0;
+
+    /* See if option is valid and/or required.  */
+    *opt = NULL;
+    while (valid) {
+        assert(valid->name);
+        if (STREQ(name, valid->name))
+            break;
+        valid++;
+    }
+    assert(!needData || valid->type != VSH_OT_BOOL);
+    if (valid->flags & VSH_OFLAG_REQ)
+        ret = -1;
 
     /* See if option is present on command line.  */
     while (candidate) {
         if (STREQ(candidate->def->name, name)) {
             *opt = candidate;
-            return 1;
+            ret = 1;
+            break;
         }
         candidate = candidate->next;
     }
-
-    /* Option not present, see if command requires it.  */
-    *opt = NULL;
-    while (valid) {
-        if (!valid->name)
-            break;
-        if (STREQ(name, valid->name))
-            return (valid->flags & VSH_OFLAG_REQ) == 0 ? 0 : -1;
-        valid++;
-    }
-    /* If we got here, the name is unknown.  */
-    return -2;
+    return ret;
 }
 
 /**
@@ -1394,14 +1401,9 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (virStrToLong_i(arg->data, NULL, 10, value) < 0)
         return -1;
@@ -1424,14 +1426,9 @@ vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (virStrToLong_ui(arg->data, NULL, 10, value) < 0)
         return -1;
@@ -1454,14 +1451,9 @@ vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (virStrToLong_ul(arg->data, NULL, 10, value) < 0)
         return -1;
@@ -1486,14 +1478,9 @@ vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK)) {
         return -1;
@@ -1528,21 +1515,14 @@ vshCommandOptStringReq(vshControl *ctl,
     /* clear out the value */
     *value = NULL;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     /* option is not required and not present */
     if (ret == 0)
         return 0;
     /* this should not be propagated here, just to be sure */
     if (ret == -1)
         error = N_("Mandatory option not present");
-
-    if (ret == -2)
-        error = N_("Programming error: Invalid option name");
-
-    if (!arg->data)
-        error = N_("Programming error: Requested option is a boolean");
-
-    if (arg->data && !*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
+    else if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
         error = N_("Option argument is empty");
 
     if (error) {
@@ -1570,14 +1550,9 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (virStrToLong_ll(arg->data, NULL, 10, value) < 0)
         return -1;
@@ -1600,14 +1575,9 @@ vshCommandOptULongLong(const vshCmd *cmd, const char *name,
     vshCmdOpt *arg;
     int ret;
 
-    ret = vshCommandOpt(cmd, name, &arg);
+    ret = vshCommandOpt(cmd, name, &arg, true);
     if (ret <= 0)
         return ret;
-    if (!arg->data) {
-        /* only possible on bool, but if name is bool, this is a
-         * programming bug */
-        return -2;
-    }
 
     if (virStrToLong_ull(arg->data, NULL, 10, value) < 0)
         return -1;
@@ -1660,7 +1630,7 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
 {
     vshCmdOpt *dummy;
 
-    return vshCommandOpt(cmd, name, &dummy) == 1;
+    return vshCommandOpt(cmd, name, &dummy, false) == 1;
 }
 
 /**
