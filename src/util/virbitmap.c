@@ -290,7 +290,6 @@ virBitmapParse(const char *str,
                virBitmapPtr *bitmap,
                size_t bitmapSize)
 {
-    int ret = 0;
     bool neg = false;
     const char *cur;
     char *tmp;
@@ -322,12 +321,12 @@ virBitmapParse(const char *str,
         }
 
         if (!c_isdigit(*cur))
-            goto parse_error;
+            goto error;
 
         if (virStrToLong_i(cur, &tmp, 10, &start) < 0)
-            goto parse_error;
+            goto error;
         if (start < 0)
-            goto parse_error;
+            goto error;
 
         cur = tmp;
 
@@ -335,35 +334,29 @@ virBitmapParse(const char *str,
 
         if (*cur == ',' || *cur == 0 || *cur == terminator) {
             if (neg) {
-                if (virBitmapIsSet(*bitmap, start)) {
-                    ignore_value(virBitmapClearBit(*bitmap, start));
-                    ret--;
-                }
+                if (virBitmapClearBit(*bitmap, start) < 0)
+                    goto error;
             } else {
-                if (!virBitmapIsSet(*bitmap, start)) {
-                    ignore_value(virBitmapSetBit(*bitmap, start));
-                    ret++;
-                }
+                if (virBitmapSetBit(*bitmap, start) < 0)
+                    goto error;
             }
         } else if (*cur == '-') {
             if (neg)
-                goto parse_error;
+                goto error;
 
             cur++;
             virSkipSpaces(&cur);
 
             if (virStrToLong_i(cur, &tmp, 10, &last) < 0)
-                goto parse_error;
+                goto error;
             if (last < start)
-                goto parse_error;
+                goto error;
 
             cur = tmp;
 
             for (i = start; i <= last; i++) {
-                if (!virBitmapIsSet(*bitmap, i)) {
-                    ignore_value(virBitmapSetBit(*bitmap, i));
-                    ret++;
-                }
+                if (virBitmapSetBit(*bitmap, i) < 0)
+                    goto error;
             }
 
             virSkipSpaces(&cur);
@@ -376,14 +369,13 @@ virBitmapParse(const char *str,
         } else if (*cur == 0 || *cur == terminator) {
             break;
         } else {
-            goto parse_error;
+            goto error;
         }
     }
 
-    sa_assert(ret >= 0);
-    return ret;
+    return virBitmapCountBits(*bitmap);
 
-parse_error:
+error:
     virBitmapFree(*bitmap);
     *bitmap = NULL;
     return -1;
