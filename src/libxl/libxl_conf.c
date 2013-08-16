@@ -101,6 +101,115 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 }
 
 static int
+libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
+{
+    libxl_numainfo *numa_info = NULL;
+    libxl_cputopology *cpu_topo = NULL;
+    int nr_nodes = 0, nr_cpus = 0;
+    virCapsHostNUMACellCPUPtr *cpus = NULL;
+    int *nr_cpus_node = NULL;
+    size_t i;
+    int ret = -1;
+
+    /* Let's try to fetch all the topology information */
+    numa_info = libxl_get_numainfo(ctx, &nr_nodes);
+    if (numa_info == NULL || nr_nodes == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxl_get_numainfo failed"));
+        goto cleanup;
+    } else {
+        cpu_topo = libxl_get_cpu_topology(ctx, &nr_cpus);
+        if (cpu_topo == NULL || nr_cpus == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("libxl_get_cpu_topology failed"));
+            goto cleanup;
+        }
+    }
+
+    if (VIR_ALLOC_N(cpus, nr_nodes) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(nr_cpus_node, nr_nodes) < 0)
+        goto cleanup;
+
+    /* For each node, prepare a list of CPUs belonging to that node */
+    for (i = 0; i < nr_cpus; i++) {
+        int node = cpu_topo[i].node;
+
+        if (cpu_topo[i].core == LIBXL_CPUTOPOLOGY_INVALID_ENTRY)
+            continue;
+
+        nr_cpus_node[node]++;
+
+        if (nr_cpus_node[node] == 1) {
+            if (VIR_ALLOC(cpus[node]) < 0)
+                goto cleanup;
+        } else {
+            if (VIR_REALLOC_N(cpus[node], nr_cpus_node[node]) < 0)
+                goto cleanup;
+        }
+
+        /* Mapping between what libxl tells and what libvirt wants */
+        cpus[node][nr_cpus_node[node]-1].id = i;
+        cpus[node][nr_cpus_node[node]-1].socket_id = cpu_topo[i].socket;
+        cpus[node][nr_cpus_node[node]-1].core_id = cpu_topo[i].core;
+        /* Allocate the siblings maps. We will be filling them later */
+        cpus[node][nr_cpus_node[node]-1].siblings = virBitmapNew(nr_cpus);
+        if (!cpus[node][nr_cpus_node[node]-1].siblings) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    /* Let's now populate the siblings bitmaps */
+    for (i = 0; i < nr_cpus; i++) {
+        int node = cpu_topo[i].node;
+        size_t j;
+
+        if (cpu_topo[i].core == LIBXL_CPUTOPOLOGY_INVALID_ENTRY)
+            continue;
+
+        for (j = 0; j < nr_cpus_node[node]; j++) {
+            if (cpus[node][j].socket_id == cpu_topo[i].socket &&
+                cpus[node][j].core_id == cpu_topo[i].core)
+                ignore_value(virBitmapSetBit(cpus[node][j].siblings, i));
+        }
+    }
+
+    for (i = 0; i < nr_nodes; i++) {
+        if (numa_info[i].size == LIBXL_NUMAINFO_INVALID_ENTRY)
+            continue;
+
+        if (virCapabilitiesAddHostNUMACell(caps, i, nr_cpus_node[i],
+                                           numa_info[i].size / 1024,
+                                           cpus[i]) < 0) {
+            virCapabilitiesClearHostNUMACellCPUTopology(cpus[i],
+                                                        nr_cpus_node[i]);
+            goto cleanup;
+        }
+
+        /* This is safe, as the CPU list is now stored in the NUMA cell */
+        cpus[i] = NULL;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret != 0) {
+        for (i = 0; i < nr_nodes; i++)
+            VIR_FREE(cpus[i]);
+        virCapabilitiesFreeNUMAInfo(caps);
+    }
+
+    VIR_FREE(cpus);
+    VIR_FREE(nr_cpus_node);
+    libxl_cputopology_list_free(cpu_topo, nr_cpus);
+    libxl_numainfo_list_free(numa_info, nr_nodes);
+
+    return ret;
+}
+
+static int
 libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 {
     const libxl_version_info *ver_info;
@@ -878,6 +987,9 @@ libxlMakeCapabilities(libxl_ctx *ctx)
         return NULL;
 
     if (libxlCapsInitHost(ctx, caps) < 0)
+        goto error;
+
+    if (libxlCapsInitNuma(ctx, caps) < 0)
         goto error;
 
     if (libxlCapsInitGuests(ctx, caps) < 0)
