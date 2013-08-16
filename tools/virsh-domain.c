@@ -6238,6 +6238,7 @@ cleanup:
     }
     VIR_FREE(list);
     VIR_FREE(buffer);
+    VIR_FREE(node_list);
 
     return ret;
 
