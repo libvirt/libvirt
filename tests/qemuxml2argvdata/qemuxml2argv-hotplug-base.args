@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/libexec/qemu-kvm -S -M pc -m 4096 -smp 4 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -boot c \

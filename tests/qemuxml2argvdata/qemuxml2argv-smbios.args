@@ -1,4 +1,5 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -smbios 'type=0,vendor=LENOVO,version=6FET82WW (3.12 )' \
 -smbios 'type=1,manufacturer=Fedora,product=Virt-Manager,version=0.8.2-3.fc14,\
 serial=32dfcb37-5af1-552b-357c-be8c3aa38310,\

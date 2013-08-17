@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M pc -m 214 -smp 8 -nographic -nodefconfig -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
 -device virtio-scsi-pci,id=scsi0,num_queues=8,bus=pci.0,addr=0x3 \

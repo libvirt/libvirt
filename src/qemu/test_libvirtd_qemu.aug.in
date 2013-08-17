@@ -15,6 +15,7 @@ module Test_libvirtd_qemu =
 { "spice_tls" = "1" }
 { "spice_tls_x509_cert_dir" = "/etc/pki/libvirt-spice" }
 { "spice_password" = "XYZ12345" }
+{ "nographics_allow_host_audio" = "1" }
 { "remote_display_port_min" = "5900" }
 { "remote_display_port_max" = "65535" }
 { "remote_websocket_port_min" = "5700" }

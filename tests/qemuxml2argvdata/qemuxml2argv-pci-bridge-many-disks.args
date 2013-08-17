@@ -1,4 +1,5 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu-kvm \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-kvm \
 -S -M pc-i440fx-1.4 -cpu qemu64,-kvmclock -bios /usr/share/seabios/bios.bin \
 -m 3907 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -boot c \

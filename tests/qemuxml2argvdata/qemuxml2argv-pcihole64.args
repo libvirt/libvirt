@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/libexec/qemu-kvm -S -M pc-1.2 -m 2048 -smp 2 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi \
 -boot c -global i440FX-pcihost.pci-hole64-size=1048576K -usb \

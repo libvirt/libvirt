@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc -S -M ppce500v2 -m 256 -smp 1 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
 -kernel /media/ram/uImage -initrd /media/ram/ramdisk \

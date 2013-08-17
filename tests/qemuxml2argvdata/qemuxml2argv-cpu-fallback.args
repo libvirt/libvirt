@@ -2,7 +2,7 @@ LC_ALL=C \
 PATH=/bin \
 HOME=/home/test \
 USER=test \
-LOGNAME=test \
+LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
 -S \
 -M pc \

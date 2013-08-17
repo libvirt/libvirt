@@ -39,6 +39,8 @@ module Libvirtd_qemu =
                  | str_entry  "spice_tls_x509_cert_dir"
                  | str_entry "spice_password"
 
+   let nogfx_entry = bool_entry "nographics_allow_host_audio"
+
    let remote_display_entry = int_entry "remote_display_port_min"
                  | int_entry "remote_display_port_max"
                  | int_entry "remote_websocket_port_min"
@@ -79,6 +81,7 @@ module Libvirtd_qemu =
    (* Each entry in the config is one of the following ... *)
    let entry = vnc_entry
              | spice_entry
+             | nogfx_entry
              | remote_display_entry
              | security_entry
              | save_entry

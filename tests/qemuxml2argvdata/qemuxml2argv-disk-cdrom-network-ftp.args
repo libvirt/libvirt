@@ -1,4 +1,5 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/kvm -S \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/kvm -S \
 -M pc-1.2 -m 1024 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -boot d -usb \
 -drive file=ftp://host.name:21/url/path/file.iso,if=none,media=cdrom,id=drive-ide0-1-0 \

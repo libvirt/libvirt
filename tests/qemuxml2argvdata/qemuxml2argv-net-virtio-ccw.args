@@ -1,4 +1,5 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S \
 -M s390-ccw -m 214 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
 -device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:55,devno=fe.0.0001 \

@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M pc-0.12 -m 2048 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -boot c -usb \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/tpm0,\

@@ -7628,8 +7628,14 @@ qemuBuildCommandLine(virConnectPtr conn,
      * if you ask for nographic. So we have to make sure we override
      * these defaults ourselves...
      */
-    if (!def->graphics)
+    if (!def->graphics) {
         virCommandAddArg(cmd, "-nographic");
+
+        if (cfg->nogfxAllowHostAudio)
+            virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+        else
+            virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         /* Disable global config files and default devices */
@@ -8746,6 +8752,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                          def->graphics[i]) < 0)
             goto error;
     }
+
     if (def->nvideos > 0) {
         int primaryVideoType = def->videos[0]->type;
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&

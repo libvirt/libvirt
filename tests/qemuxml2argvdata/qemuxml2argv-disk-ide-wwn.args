@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
 -drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-1,serial=WD-WMAP9A966149 \

@@ -488,7 +488,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                 defaultDeviceACL;
 
     if (vm->def->nsounds &&
-        (!vm->def->ngraphics ||
+        ((!vm->def->ngraphics && cfg->nogfxAllowHostAudio) ||
          ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
            cfg->vncAllowHostAudio) ||
            (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {

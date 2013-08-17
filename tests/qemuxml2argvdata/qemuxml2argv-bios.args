@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M pc -bios /usr/share/seabios/bios.bin \
 -m 1024 -smp 1 -nographic -nodefaults -device sga \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \

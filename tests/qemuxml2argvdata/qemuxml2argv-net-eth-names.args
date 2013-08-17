@@ -1,4 +1,5 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 -net nic,\
 macaddr=00:11:22:33:44:55,vlan=0,model=rtl8139,name=net0 -net tap,\

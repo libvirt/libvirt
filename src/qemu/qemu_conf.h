@@ -128,6 +128,7 @@ struct _virQEMUDriverConfig {
 
     bool relaxedACS;
     bool vncAllowHostAudio;
+    bool nogfxAllowHostAudio;
     bool clearEmulatorCapabilities;
     bool allowDiskFormatProbing;
     bool setProcessName;

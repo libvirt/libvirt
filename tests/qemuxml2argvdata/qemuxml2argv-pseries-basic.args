@@ -1,4 +1,4 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 -S -M pseries -m 512 -smp 1 -nographic \
 -nodefconfig -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
