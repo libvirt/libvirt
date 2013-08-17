@@ -340,6 +340,15 @@ xenDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         STRNEQ(def->os.type, "hvm"))
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
+    if (!def->memballoon) {
+        virDomainMemballoonDefPtr memballoon;
+        if (VIR_ALLOC(memballoon) < 0)
+            return -1;
+
+        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_XEN;
+        def->memballoon = memballoon;
+    }
+
     return 0;
 }
 

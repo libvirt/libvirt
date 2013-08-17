@@ -784,6 +784,16 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return -1;
         }
     }
+
+    if (!def->memballoon) {
+        virDomainMemballoonDefPtr memballoon;
+        if (VIR_ALLOC(memballoon) < 0)
+            return -1;
+
+        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
+        def->memballoon = memballoon;
+    }
+
     return 0;
 }
 

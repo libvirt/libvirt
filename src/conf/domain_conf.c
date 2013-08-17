@@ -12205,19 +12205,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         def->memballoon = memballoon;
         VIR_FREE(nodes);
-    } else {
-        if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
-            def->virtType == VIR_DOMAIN_VIRT_QEMU ||
-            def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
-            def->virtType == VIR_DOMAIN_VIRT_KVM) {
-            virDomainMemballoonDefPtr memballoon;
-            if (VIR_ALLOC(memballoon) < 0)
-                goto error;
-            memballoon->model = def->virtType == VIR_DOMAIN_VIRT_XEN ?
-                VIR_DOMAIN_MEMBALLOON_MODEL_XEN :
-                VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
-            def->memballoon = memballoon;
-        }
     }
 
     /* Parse the RNG device */
