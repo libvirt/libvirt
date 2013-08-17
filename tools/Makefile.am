@@ -33,6 +33,7 @@ ICON_FILES = \
 
 EXTRA_DIST = \
 	$(ICON_FILES)					\
+	$(conf_DATA)					\
 	virt-xml-validate.in				\
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
