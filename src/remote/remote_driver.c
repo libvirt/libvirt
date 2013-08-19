@@ -3041,6 +3041,13 @@ remoteConnectListAllNWFilters(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.filters.filters_len > REMOTE_NWFILTER_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many network filters '%d' for limit '%d'"),
+                       ret.filters.filters_len, REMOTE_NWFILTER_LIST_MAX);
+        goto cleanup;
+    }
+
     if (filters) {
         if (VIR_ALLOC_N(tmp_filters, ret.filters.filters_len + 1) < 0)
             goto cleanup;

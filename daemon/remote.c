@@ -4374,6 +4374,13 @@ remoteDispatchConnectListAllNWFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                                args->flags)) < 0)
         goto cleanup;
 
+    if (nfilters > REMOTE_NWFILTER_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many network filters '%d' for limit '%d'"),
+                       nfilters, REMOTE_NWFILTER_LIST_MAX);
+        goto cleanup;
+    }
+
     if (filters && nfilters) {
         if (VIR_ALLOC_N(ret->filters.filters_val, nfilters) < 0)
             goto cleanup;

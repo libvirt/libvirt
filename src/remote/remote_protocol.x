@@ -106,8 +106,8 @@ const REMOTE_NODE_DEVICE_LIST_MAX = 16384;
 /* Upper limit on lists of node device capabilities. */
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
 
-/* Upper limit on lists of network filter names. */
-const REMOTE_NWFILTER_NAME_LIST_MAX = 1024;
+/* Upper limit on lists of network filters. */
+const REMOTE_NWFILTER_LIST_MAX = 1024;
 
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
@@ -1423,7 +1423,7 @@ struct remote_connect_list_nwfilters_args {
 };
 
 struct remote_connect_list_nwfilters_ret {
-    remote_nonnull_string names<REMOTE_NWFILTER_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_NWFILTER_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_nwfilter_lookup_by_uuid_args {
@@ -2718,7 +2718,7 @@ struct remote_connect_list_all_nwfilters_args {
 };
 
 struct remote_connect_list_all_nwfilters_ret {
-    remote_nonnull_nwfilter filters<>;
+    remote_nonnull_nwfilter filters<REMOTE_NWFILTER_LIST_MAX>;
     unsigned int ret;
 };
 
