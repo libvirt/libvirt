@@ -175,7 +175,8 @@ nwfilterStateInitialize(bool privileged,
     DBusConnection *sysbus = NULL;
 
 #if WITH_DBUS
-    sysbus = virDBusGetSystemBus();
+    if (virDBusHasSystemBus())
+        sysbus = virDBusGetSystemBus();
 #endif /* WITH_DBUS */
 
     if (VIR_ALLOC(driverState) < 0)
@@ -184,6 +185,7 @@ nwfilterStateInitialize(bool privileged,
     if (virMutexInit(&driverState->lock) < 0)
         goto err_free_driverstate;
 
+    /* remember that we are going to use firewalld */
     driverState->watchingFirewallD = (sysbus != NULL);
     driverState->privileged = privileged;
 
@@ -208,7 +210,8 @@ nwfilterStateInitialize(bool privileged,
      * startup the DBus late so we don't get a reload signal while
      * initializing
      */
-    if (nwfilterDriverInstallDBusMatches(sysbus) < 0) {
+    if (sysbus &&
+        nwfilterDriverInstallDBusMatches(sysbus) < 0) {
         VIR_ERROR(_("DBus matches could not be installed. Disabling nwfilter "
                   "driver"));
         /*
@@ -216,6 +219,8 @@ nwfilterStateInitialize(bool privileged,
          * may have caused the ebiptables driver to use the firewall tool
          * but now that the watches don't work, we just disable the nwfilter
          * driver
+         *
+         * This may only happen if the system bus is available.
          */
         goto error;
     }
