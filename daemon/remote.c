@@ -1050,6 +1050,13 @@ remoteDispatchConnectListAllDomains(virNetServerPtr server ATTRIBUTE_UNUSED,
                                              args->flags)) < 0)
         goto cleanup;
 
+    if (ndomains > REMOTE_DOMAIN_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domains '%d' for limit '%d'"),
+                       ndomains, REMOTE_DOMAIN_LIST_MAX);
+        goto cleanup;
+    }
+
     if (doms && ndomains) {
         if (VIR_ALLOC_N(ret->domains.domains_val, ndomains) < 0)
             goto cleanup;

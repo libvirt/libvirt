@@ -1370,10 +1370,10 @@ remoteConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     remoteDriverLock(priv);
 
-    if (maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
+    if (maxids > REMOTE_DOMAIN_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
-                       _("too many remote domain IDs: %d > %d"),
-                       maxids, REMOTE_DOMAIN_ID_LIST_MAX);
+                       _("Too many domains '%d' for limit '%d'"),
+                       maxids, REMOTE_DOMAIN_LIST_MAX);
         goto done;
     }
     args.maxids = maxids;
@@ -1386,7 +1386,7 @@ remoteConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if (ret.ids.ids_len > maxids) {
         virReportError(VIR_ERR_RPC,
-                       _("too many remote domain IDs: %d > %d"),
+                       _("Too many domains '%d' for limit '%d'"),
                        ret.ids.ids_len, maxids);
         goto cleanup;
     }
@@ -1432,6 +1432,13 @@ remoteConnectListAllDomains(virConnectPtr conn,
              (xdrproc_t) xdr_remote_connect_list_all_domains_ret,
              (char *) &ret) == -1)
         goto done;
+
+    if (ret.domains.domains_len > REMOTE_DOMAIN_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domains '%d' for limit '%d'"),
+                       ret.domains.domains_len, REMOTE_DOMAIN_LIST_MAX);
+        goto cleanup;
+    }
 
     if (domains) {
         if (VIR_ALLOC_N(doms, ret.domains.domains_len + 1) < 0)

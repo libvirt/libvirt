@@ -73,13 +73,8 @@ typedef string remote_nonnull_string<REMOTE_STRING_MAX>;
 /* A long string, which may be NULL. */
 typedef remote_nonnull_string *remote_string;
 
-/* This just places an upper limit on the length of lists of
- * domain IDs which may be sent via the protocol.
- */
-const REMOTE_DOMAIN_ID_LIST_MAX = 16384;
-
-/* Upper limit on lists of domain names. */
-const REMOTE_DOMAIN_NAME_LIST_MAX = 16384;
+/* Upper limit on lists of domains. */
+const REMOTE_DOMAIN_LIST_MAX = 16384;
 
 /* Upper limit on cpumap (bytes) passed to virDomainPinVcpu. */
 const REMOTE_CPUMAP_MAX = 2048;
@@ -724,7 +719,7 @@ struct remote_connect_list_domains_args {
 };
 
 struct remote_connect_list_domains_ret {
-    int ids<REMOTE_DOMAIN_ID_LIST_MAX>; /* insert@1 */
+    int ids<REMOTE_DOMAIN_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_num_of_domains_ret {
@@ -990,7 +985,7 @@ struct remote_connect_list_defined_domains_args {
 };
 
 struct remote_connect_list_defined_domains_ret {
-    remote_nonnull_string names<REMOTE_DOMAIN_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_DOMAIN_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_num_of_defined_domains_ret {
@@ -2665,7 +2660,7 @@ struct remote_connect_list_all_domains_args {
 };
 
 struct remote_connect_list_all_domains_ret {
-    remote_nonnull_domain domains<>;
+    remote_nonnull_domain domains<REMOTE_DOMAIN_LIST_MAX>;
     unsigned int ret;
 };
 
