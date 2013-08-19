@@ -145,8 +145,10 @@ int virSystemdCreateMachine(const char *name,
     char *username = NULL;
     char *slicename = NULL;
 
-    if (!(conn = virDBusGetSystemBus()))
-        return -1;
+    if (!virDBusHasSystemBus())
+        return -2;
+
+    conn = virDBusGetSystemBus();
 
     if (privileged) {
         if (virAsprintf(&machinename, "%s-%s", drivername, name) < 0)
