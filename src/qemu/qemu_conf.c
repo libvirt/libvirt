@@ -1065,7 +1065,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
         disk = dev->data.disk;
 
         if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-            virDomainDiskSourceIsBlockType(disk))
+            !virDomainDiskSourceIsBlockType(disk))
             return 0;
 
         path = disk->src;
