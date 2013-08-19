@@ -22,6 +22,36 @@
 #
 # Daniel Veillard <veillard@redhat.com>
 #
+
+case $1 in
+  -h | --h | --he | --hel | --help)
+    cat <<EOF
+Usage:
+  $0 [OPTION]
+
+Options:
+  -h | --help        Display program help
+  -V | --version     Display program version
+EOF
+    exit ;;
+  -V | --v | --ve | --ver | --vers | --versi | --versio | --version)
+    cat <<EOF
+$0 (libvirt) @VERSION@
+EOF
+    exit ;;
+  --) shift ;;
+  -) # Not an option but an argument; it gets rejected later
+    ;;
+  -*)
+    echo "$0: unrecognized option '$1'" >&2
+    exit 1 ;;
+esac
+
+if test $# != 0; then
+    echo "$0: unrecognized argument '$1'" >&2
+    exit 1
+fi
+
 USER=`who am i | awk '{ print $1 }'`
 SERVER=1
 CLIENT=1
@@ -300,7 +330,7 @@ exit 0
 
 =head1 SYNOPSIS
 
-  virt-pki-validate
+  virt-pki-validate [OPTION]
 
 =head1 DESCRIPTION
 
@@ -308,6 +338,20 @@ This tool validates that the necessary PKI files are configured for
 a secure libvirt server or client using the TLS encryption protocol.
 It will report any missing certificate or key files on the host. It
 should be run as root to ensure it can read all the necessary files
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
+=item B<-V, --version>
+
+Display version information then exit.
+
+=back
 
 =head1 EXIT STATUS
 
