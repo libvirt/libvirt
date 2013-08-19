@@ -836,6 +836,12 @@ sc_prohibit_config_h_in_headers:
 	halt='headers should not include <config.h>'			\
 	  $(_sc_search_regexp)
 
+sc_prohibit_unbounded_arrays_in_rpc:
+	@prohibit='<>'							\
+	in_vc_files='\.x$$'						\
+	halt='Arrays in XDR must have a upper limit set for <NNN>'	\
+	  $(_sc_search_regexp)
+
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
