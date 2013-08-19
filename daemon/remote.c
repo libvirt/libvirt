@@ -4620,6 +4620,13 @@ remoteDispatchDomainMigrateBegin3Params(
         goto cleanup;
     }
 
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
+        goto cleanup;
+    }
+
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
@@ -4668,6 +4675,13 @@ remoteDispatchDomainMigratePrepare3Params(
 
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
 
@@ -4723,6 +4737,13 @@ remoteDispatchDomainMigratePrepareTunnel3Params(
 
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
 
@@ -4790,6 +4811,13 @@ remoteDispatchDomainMigratePerform3Params(
         goto cleanup;
     }
 
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
+        goto cleanup;
+    }
+
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
@@ -4845,6 +4873,13 @@ remoteDispatchDomainMigrateFinish3Params(
         goto cleanup;
     }
 
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
+        goto cleanup;
+    }
+
     if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
                                                     args->params.params_len,
                                                     0, &nparams)))
@@ -4894,6 +4929,13 @@ remoteDispatchDomainMigrateConfirm3Params(
 
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many migration parameters '%d' for limit '%d'"),
+                       args->params.params_len, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
         goto cleanup;
     }
 
