@@ -17,16 +17,39 @@
 
 set -e
 
+case $1 in
+  -h | --h | --he | --hel | --help)
+    cat <<EOF
+Usage:
+  $0 XML-FILE [SCHEMA-NAME]
+  $0 OPTION
+
+Options:
+  -h | --help        Display program help
+  -V | --version     Display program version
+EOF
+    exit ;;
+  -V | --v | --ve | --ver | --vers | --versi | --versio | --version)
+    cat <<EOF
+$0 (libvirt) @VERSION@
+EOF
+    exit ;;
+  --) shift ;;
+  -*)
+    echo "$0: unrecognized option '$1'" >&2
+    exit 1 ;;
+esac
+
 XMLFILE="$1"
 TYPE="$2"
 
 if [ -z "$XMLFILE" ]; then
-  echo "syntax: $0 XMLFILE [TYPE]"
+  echo "syntax: $0 XMLFILE [TYPE]" >&2
   exit 1
 fi
 
 if [ ! -f "$XMLFILE" ]; then
-  echo "$0: document $XMLFILE does not exist"
+  echo "$0: document $XMLFILE does not exist" >&2
   exit 2
 fi
 
@@ -52,7 +75,7 @@ if [ -z "$TYPE" ]; then
         TYPE="nodedev"
         ;;
      *)
-       echo "$0: cannot determine schema type for $XMLFILE"
+       echo "$0: cannot determine schema type for $XMLFILE" >&2
        exit 3
   esac
 fi
@@ -60,13 +83,13 @@ fi
 SCHEMA="@schemadir@/${TYPE}.rng"
 
 if [ ! -f "$SCHEMA" ]; then
-  echo "$0: schema $SCHEMA does not exist"
+  echo "$0: schema $SCHEMA does not exist" >&2
   exit 4
 fi
 
 xmllint --noout --relaxng "$SCHEMA" "$XMLFILE"
 
-exit 0
+exit
 
 : <<=cut
 =pod
@@ -78,6 +101,7 @@ exit 0
 =head1 SYNOPSIS
 
   virt-xml-validate XML-FILE [SCHEMA-NAME]
+  virt-xml-validate OPTION
 
 =head1 DESCRIPTION
 
@@ -117,6 +141,20 @@ The schema for the XML format used to declare driver capabilities
 
 =back
 
+=head1 OPTIONS
+
+=over
+
+=item B<-h, --help>
+
+Display command line help usage then exit.
+
+=item B<-V, --version>
+
+Display version information then exit.
+
+=back
+
 =head1 EXIT STATUS
 
 Upon successful validation, an exit status of 0 will be set. Upon
@@ -134,7 +172,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2012 by Red Hat, Inc.
+Copyright (C) 2009-2013 by Red Hat, Inc.
 Copyright (C) 2009 by Daniel P. Berrange
 
 =head1 LICENSE

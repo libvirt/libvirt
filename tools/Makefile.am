@@ -77,8 +77,9 @@ dist_man8_MANS = virt-sanlock-cleanup.8
 endif
 
 virt-xml-validate: virt-xml-validate.in Makefile
-	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|' < $< > $@ \
-	    || (rm $@ && exit 1) && chmod +x $@
+	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
+		       -e 's|[@]VERSION@|$(VERSION)|g' \
+	  < $< > $@ || (rm $@ && exit 1) && chmod +x $@
 
 virt-xml-validate.1: virt-xml-validate.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-XML-VALIDATE $< $(srcdir)/$@ \
