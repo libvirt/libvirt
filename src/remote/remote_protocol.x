@@ -88,8 +88,8 @@ const REMOTE_CPUMAPS_MAX = 8388608;
 /* Upper limit on migrate cookie. */
 const REMOTE_MIGRATE_COOKIE_MAX = 16384;
 
-/* Upper limit on lists of network names. */
-const REMOTE_NETWORK_NAME_LIST_MAX = 16384;
+/* Upper limit on lists of networks. */
+const REMOTE_NETWORK_LIST_MAX = 16384;
 
 /* Upper limit on lists of interface names. */
 const REMOTE_INTERFACE_NAME_LIST_MAX = 16384;
@@ -1317,7 +1317,7 @@ struct remote_connect_list_networks_args {
 };
 
 struct remote_connect_list_networks_ret {
-    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_NETWORK_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_num_of_defined_networks_ret {
@@ -1329,7 +1329,7 @@ struct remote_connect_list_defined_networks_args {
 };
 
 struct remote_connect_list_defined_networks_ret {
-    remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_NETWORK_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_network_lookup_by_uuid_args {
@@ -2691,7 +2691,7 @@ struct remote_connect_list_all_networks_args {
 };
 
 struct remote_connect_list_all_networks_ret {
-    remote_nonnull_network nets<>;
+    remote_nonnull_network nets<REMOTE_NETWORK_LIST_MAX>;
     unsigned int ret;
 };
 

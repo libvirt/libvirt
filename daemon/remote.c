@@ -4197,6 +4197,13 @@ remoteDispatchConnectListAllNetworks(virNetServerPtr server ATTRIBUTE_UNUSED,
                                            args->flags)) < 0)
         goto cleanup;
 
+    if (nnets > REMOTE_NETWORK_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many networks '%d' for limit '%d'"),
+                       nnets, REMOTE_NETWORK_LIST_MAX);
+        goto cleanup;
+    }
+
     if (nets && nnets) {
         if (VIR_ALLOC_N(ret->nets.nets_val, nnets) < 0)
             goto cleanup;

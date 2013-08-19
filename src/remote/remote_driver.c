@@ -2843,6 +2843,13 @@ remoteConnectListAllNetworks(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.nets.nets_len > REMOTE_NETWORK_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many networks '%d' for limit '%d'"),
+                       ret.nets.nets_len, REMOTE_NETWORK_LIST_MAX);
+        goto cleanup;
+    }
+
     if (nets) {
         if (VIR_ALLOC_N(tmp_nets, ret.nets.nets_len + 1) < 0)
             goto cleanup;
