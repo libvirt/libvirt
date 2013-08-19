@@ -3276,6 +3276,13 @@ remoteConnectListAllStoragePools(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.pools.pools_len > REMOTE_STORAGE_POOL_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many storage pools '%d' for limit '%d'"),
+                       ret.pools.pools_len, REMOTE_STORAGE_POOL_LIST_MAX);
+        goto cleanup;
+    }
+
     if (pools) {
         if (VIR_ALLOC_N(tmp_pools, ret.pools.pools_len + 1) < 0)
             goto cleanup;

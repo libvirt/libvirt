@@ -97,8 +97,8 @@ const REMOTE_INTERFACE_NAME_LIST_MAX = 16384;
 /* Upper limit on lists of defined interface names. */
 const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 16384;
 
-/* Upper limit on lists of storage pool names. */
-const REMOTE_STORAGE_POOL_NAME_LIST_MAX = 4096;
+/* Upper limit on lists of storage pools. */
+const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
 
 /* Upper limit on lists of storage vol names. */
 const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 16384;
@@ -1604,7 +1604,7 @@ struct remote_connect_list_storage_pools_args {
 };
 
 struct remote_connect_list_storage_pools_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_STORAGE_POOL_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_num_of_defined_storage_pools_ret {
@@ -1616,7 +1616,7 @@ struct remote_connect_list_defined_storage_pools_args {
 };
 
 struct remote_connect_list_defined_storage_pools_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_STORAGE_POOL_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_find_storage_pool_sources_args {
@@ -2670,7 +2670,7 @@ struct remote_connect_list_all_storage_pools_args {
 };
 
 struct remote_connect_list_all_storage_pools_ret {
-    remote_nonnull_storage_pool pools<>;
+    remote_nonnull_storage_pool pools<REMOTE_STORAGE_POOL_LIST_MAX>;
     unsigned int ret;
 };
 

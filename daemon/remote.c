@@ -4073,6 +4073,13 @@ remoteDispatchConnectListAllStoragePools(virNetServerPtr server ATTRIBUTE_UNUSED
                                                 args->flags)) < 0)
         goto cleanup;
 
+    if (npools > REMOTE_STORAGE_POOL_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many storage pools '%d' for limit '%d'"),
+                       npools, REMOTE_STORAGE_POOL_LIST_MAX);
+        goto cleanup;
+    }
+
     if (pools && npools) {
         if (VIR_ALLOC_N(ret->pools.pools_val, npools) < 0)
             goto cleanup;
