@@ -3343,6 +3343,13 @@ remoteStoragePoolListAllVolumes(virStoragePoolPtr pool,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.vols.vols_len > REMOTE_STORAGE_VOL_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many storage volumes '%d' for limit '%d'"),
+                       ret.vols.vols_len, REMOTE_STORAGE_VOL_LIST_MAX);
+        goto cleanup;
+    }
+
     if (vols) {
         if (VIR_ALLOC_N(tmp_vols, ret.vols.vols_len + 1) < 0)
             goto cleanup;

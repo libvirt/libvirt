@@ -100,8 +100,8 @@ const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 16384;
 /* Upper limit on lists of storage pools. */
 const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
 
-/* Upper limit on lists of storage vol names. */
-const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 16384;
+/* Upper limit on lists of storage vols. */
+const REMOTE_STORAGE_VOL_LIST_MAX = 16384;
 
 /* Upper limit on lists of node device names. */
 const REMOTE_NODE_DEVICE_NAME_LIST_MAX = 16384;
@@ -1746,7 +1746,7 @@ struct remote_storage_pool_list_volumes_args {
 };
 
 struct remote_storage_pool_list_volumes_ret {
-    remote_nonnull_string names<REMOTE_STORAGE_VOL_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_STORAGE_VOL_LIST_MAX>; /* insert@1 */
 };
 
 
@@ -2681,7 +2681,7 @@ struct remote_storage_pool_list_all_volumes_args {
 };
 
 struct remote_storage_pool_list_all_volumes_ret {
-    remote_nonnull_storage_vol vols<>;
+    remote_nonnull_storage_vol vols<REMOTE_STORAGE_VOL_LIST_MAX>;
     unsigned int ret;
 };
 

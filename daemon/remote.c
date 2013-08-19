@@ -4136,6 +4136,13 @@ remoteDispatchStoragePoolListAllVolumes(virNetServerPtr server ATTRIBUTE_UNUSED,
                                               args->flags)) < 0)
         goto cleanup;
 
+    if (nvols > REMOTE_STORAGE_VOL_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many storage volumes '%d' for limit '%d'"),
+                       nvols, REMOTE_STORAGE_VOL_LIST_MAX);
+        goto cleanup;
+    }
+
     if (vols && nvols) {
         if (VIR_ALLOC_N(ret->vols.vols_val, nvols) < 0)
             goto cleanup;
