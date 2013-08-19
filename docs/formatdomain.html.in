@@ -676,7 +676,11 @@
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
         the guest can use. The units for this value are kibibytes (i.e. blocks
-        of 1024 bytes)</dd>
+        of 1024 bytes). <strong>However, users of QEMU and KVM are strongly
+        advised not to set this limit as domain may get killed by the kernel.
+        To determine the memory needed for a process to run is
+        <a href="http://en.wikipedia.org/wiki/Undecidable_problem">
+        undecidable problem</a>.</strong></dd>
       <dt><code>soft_limit</code></dt>
       <dd> The optional <code>soft_limit</code> element is the memory limit to
         enforce during memory contention. The units for this value are
