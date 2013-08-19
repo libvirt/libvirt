@@ -3107,6 +3107,13 @@ remoteConnectListAllSecrets(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.secrets.secrets_len > REMOTE_SECRET_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many secrets '%d' for limit '%d'"),
+                       ret.secrets.secrets_len, REMOTE_SECRET_LIST_MAX);
+        goto cleanup;
+    }
+
     if (secrets) {
         if (VIR_ALLOC_N(tmp_secrets, ret.secrets.secrets_len + 1) < 0)
             goto cleanup;

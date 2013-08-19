@@ -188,7 +188,7 @@ const REMOTE_SECRET_VALUE_MAX = 65536;
 /*
  * Upper limit on list of secrets.
  */
-const REMOTE_SECRET_UUID_LIST_MAX = 16384;
+const REMOTE_SECRET_LIST_MAX = 16384;
 
 /*
  * Upper limit on list of CPUs accepted when computing a baseline CPU.
@@ -2002,7 +2002,7 @@ struct remote_connect_list_secrets_args {
 };
 
 struct remote_connect_list_secrets_ret {
-    remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string uuids<REMOTE_SECRET_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_secret_lookup_by_uuid_args {
@@ -2728,7 +2728,7 @@ struct remote_connect_list_all_secrets_args {
 };
 
 struct remote_connect_list_all_secrets_ret {
-    remote_nonnull_secret secrets<>;
+    remote_nonnull_secret secrets<REMOTE_SECRET_LIST_MAX>;
     unsigned int ret;
 };
 

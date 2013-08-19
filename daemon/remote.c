@@ -4433,6 +4433,13 @@ remoteDispatchConnectListAllSecrets(virNetServerPtr server ATTRIBUTE_UNUSED,
                                              args->flags)) < 0)
         goto cleanup;
 
+    if (nsecrets > REMOTE_SECRET_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many secrets '%d' for limit '%d'"),
+                       nsecrets, REMOTE_SECRET_LIST_MAX);
+        goto cleanup;
+    }
+
     if (secrets && nsecrets) {
         if (VIR_ALLOC_N(ret->secrets.secrets_val, nsecrets) < 0)
             goto cleanup;
