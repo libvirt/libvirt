@@ -234,6 +234,9 @@ const REMOTE_DOMAIN_DISK_ERRORS_MAX = 256;
  */
 const REMOTE_NODE_MEMORY_PARAMETERS_MAX = 64;
 
+/* Upper limit on migrate parameters */
+const REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX = 64;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -2746,7 +2749,7 @@ struct remote_domain_fstrim_args {
 
 struct remote_domain_migrate_begin3_params_args {
     remote_nonnull_domain dom;
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     unsigned int flags;
 };
 
@@ -2756,7 +2759,7 @@ struct remote_domain_migrate_begin3_params_ret {
 };
 
 struct remote_domain_migrate_prepare3_params_args {
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned int flags;
 };
@@ -2767,7 +2770,7 @@ struct remote_domain_migrate_prepare3_params_ret {
 };
 
 struct remote_domain_migrate_prepare_tunnel3_params_args {
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned int flags;
 };
@@ -2779,7 +2782,7 @@ struct remote_domain_migrate_prepare_tunnel3_params_ret {
 struct remote_domain_migrate_perform3_params_args {
     remote_nonnull_domain dom;
     remote_string dconnuri;
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned int flags;
 };
@@ -2789,7 +2792,7 @@ struct remote_domain_migrate_perform3_params_ret {
 };
 
 struct remote_domain_migrate_finish3_params_args {
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned int flags;
     int cancelled;
@@ -2802,7 +2805,7 @@ struct remote_domain_migrate_finish3_params_ret {
 
 struct remote_domain_migrate_confirm3_params_args {
     remote_nonnull_domain dom;
-    remote_typed_param params<>;
+    remote_typed_param params<REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX>;
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned int flags;
     int cancelled;
