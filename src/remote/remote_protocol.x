@@ -154,7 +154,7 @@ const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
 
 /* Upper limit on lists of domain snapshots. */
-const REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX = 1024;
+const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 1024;
 
 /* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
@@ -2396,7 +2396,7 @@ struct remote_domain_snapshot_list_names_args {
 };
 
 struct remote_domain_snapshot_list_names_ret {
-    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_domain_list_all_snapshots_args {
@@ -2406,7 +2406,7 @@ struct remote_domain_list_all_snapshots_args {
 };
 
 struct remote_domain_list_all_snapshots_ret {
-    remote_nonnull_domain_snapshot snapshots<>;
+    remote_nonnull_domain_snapshot snapshots<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>;
     int ret;
 };
 
@@ -2426,7 +2426,7 @@ struct remote_domain_snapshot_list_children_names_args {
 };
 
 struct remote_domain_snapshot_list_children_names_ret {
-    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_domain_snapshot_list_all_children_args {
@@ -2436,7 +2436,7 @@ struct remote_domain_snapshot_list_all_children_args {
 };
 
 struct remote_domain_snapshot_list_all_children_ret {
-    remote_nonnull_domain_snapshot snapshots<>;
+    remote_nonnull_domain_snapshot snapshots<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>;
     int ret;
 };
 

@@ -5760,6 +5760,14 @@ remoteDomainListAllSnapshots(virDomainPtr dom,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.snapshots.snapshots_len > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domain snapshots '%d' for limit '%d'"),
+                       ret.snapshots.snapshots_len,
+                       REMOTE_DOMAIN_SNAPSHOT_LIST_MAX);
+        goto cleanup;
+    }
+
     if (snapshots) {
         if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0)
             goto cleanup;
@@ -5818,6 +5826,14 @@ remoteDomainSnapshotListAllChildren(virDomainSnapshotPtr parent,
              (xdrproc_t) xdr_remote_domain_snapshot_list_all_children_ret,
              (char *) &ret) == -1)
         goto done;
+
+    if (ret.snapshots.snapshots_len > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domain snapshots '%d' for limit '%d'"),
+                       ret.snapshots.snapshots_len,
+                       REMOTE_DOMAIN_SNAPSHOT_LIST_MAX);
+        goto cleanup;
+    }
 
     if (snapshots) {
         if (VIR_ALLOC_N(snaps, ret.snapshots.snapshots_len + 1) < 0)

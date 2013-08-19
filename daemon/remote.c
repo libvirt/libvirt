@@ -3934,6 +3934,13 @@ remoteDispatchDomainListAllSnapshots(virNetServerPtr server ATTRIBUTE_UNUSED,
                                             args->flags)) < 0)
         goto cleanup;
 
+    if (nsnaps > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domain snapshots '%d' for limit '%d'"),
+                       nsnaps, REMOTE_DOMAIN_SNAPSHOT_LIST_MAX);
+        goto cleanup;
+    }
+
     if (snaps && nsnaps) {
         if (VIR_ALLOC_N(ret->snapshots.snapshots_val, nsnaps) < 0)
             goto cleanup;
@@ -3995,6 +4002,13 @@ remoteDispatchDomainSnapshotListAllChildren(virNetServerPtr server ATTRIBUTE_UNU
                                                    args->need_results ? &snaps : NULL,
                                                    args->flags)) < 0)
         goto cleanup;
+
+    if (nsnaps > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many domain snapshots '%d' for limit '%d'"),
+                       nsnaps, REMOTE_DOMAIN_SNAPSHOT_LIST_MAX);
+        goto cleanup;
+    }
 
     if (snaps && nsnaps) {
         if (VIR_ALLOC_N(ret->snapshots.snapshots_val, nsnaps) < 0)
