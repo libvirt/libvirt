@@ -4579,6 +4579,13 @@ remoteDispatchDomainGetJobStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                              &nparams, args->flags) < 0)
         goto cleanup;
 
+    if (nparams > REMOTE_DOMAIN_JOB_STATS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many job stats '%d' for limit '%d'"),
+                       nparams, REMOTE_DOMAIN_JOB_STATS_MAX);
+        goto cleanup;
+    }
+
     if (remoteSerializeTypedParameters(params, nparams,
                                        &ret->params.params_val,
                                        &ret->params.params_len,

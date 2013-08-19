@@ -5998,6 +5998,14 @@ remoteDomainGetJobStats(virDomainPtr domain,
              (xdrproc_t) xdr_remote_domain_get_job_stats_ret, (char *) &ret) == -1)
         goto done;
 
+    if (ret.params.params_len > REMOTE_DOMAIN_JOB_STATS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many job stats '%d' for limit '%d'"),
+                       ret.params.params_len,
+                       REMOTE_DOMAIN_JOB_STATS_MAX);
+        goto cleanup;
+    }
+
     *type = ret.type;
 
     if (remoteDeserializeTypedParameters(ret.params.params_val,
