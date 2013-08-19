@@ -1547,11 +1547,8 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
     if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
         goto cleanup;
 
-    if (virBitmapParse(buf, 0, &ret, NUMA_MAX_N_CPUS) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to parse thread siblings"));
+    if (virBitmapParse(buf, 0, &ret, NUMA_MAX_N_CPUS) < 0)
         goto cleanup;
-    }
 
 cleanup:
     VIR_FREE(buf);

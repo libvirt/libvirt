@@ -42,7 +42,7 @@ sed "s/vcpu placement='static'>/vcpu cpuset='aaa'>/" xml > xml-invalid || fail=1
 $abs_top_builddir/tools/virsh --connect test:///default define xml-invalid > out 2>&1 && fail=1
 cat <<\EOF > exp || fail=1
 error: Failed to define domain from xml-invalid
-error: XML error: topology cpuset syntax error
+error: invalid argument: Failed to parse bitmap 'aaa'
 
 EOF
 compare exp out || fail=1

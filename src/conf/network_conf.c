@@ -2897,9 +2897,6 @@ virNetworkLoadState(virNetworkObjListPtr nets,
         if ((class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt))) {
             if (virBitmapParse(class_id, 0, &class_id_map,
                                CLASS_ID_BITMAP_SIZE) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Malformed 'class_id' attribute: %s"),
-                               class_id);
                 VIR_FREE(class_id);
                 goto error;
             }

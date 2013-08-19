@@ -1160,11 +1160,8 @@ xenParseSxpr(const struct sexpr *root,
 
     if (cpus != NULL) {
         if (virBitmapParse(cpus, 0, &def->cpumask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid CPU mask %s"), cpus);
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto error;
-        }
     }
 
     def->maxvcpus = sexpr_int(root, "domain/vcpus");

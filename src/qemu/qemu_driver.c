@@ -8357,8 +8357,6 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             if (virBitmapParse(params[i].value.s,
                                0, &nodeset,
                                VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Failed to parse nodeset"));
                 ret = -1;
                 continue;
             }

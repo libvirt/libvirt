@@ -298,23 +298,21 @@ virBitmapParse(const char *str,
                size_t bitmapSize)
 {
     bool neg = false;
-    const char *cur;
+    const char *cur = str;
     char *tmp;
     size_t i;
     int start, last;
 
-    if (!str)
+    if (!(*bitmap = virBitmapNew(bitmapSize)))
         return -1;
 
-    cur = str;
+    if (!str)
+        goto error;
+
     virSkipSpaces(&cur);
 
-    if (*cur == 0)
-        return -1;
-
-    *bitmap = virBitmapNew(bitmapSize);
-    if (!*bitmap)
-        return -1;
+    if (*cur == '\0')
+        goto error;
 
     while (*cur != 0 && *cur != terminator) {
         /*
@@ -384,6 +382,8 @@ virBitmapParse(const char *str,
     return virBitmapCountBits(*bitmap);
 
 error:
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("Failed to parse bitmap '%s'"), str);
     virBitmapFree(*bitmap);
     *bitmap = NULL;
     return -1;

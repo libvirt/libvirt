@@ -10981,11 +10981,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
         if (tmp) {
             if (virBitmapParse(tmp, 0, &def->cpumask,
-                               VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               "%s", _("topology cpuset syntax error"));
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto error;
-            }
             VIR_FREE(tmp);
         }
     }
