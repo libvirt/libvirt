@@ -128,7 +128,7 @@ static void virLockDaemonLockSpaceDataFree(void *data,
 }
 
 static virLockDaemonPtr
-virLockDaemonNew(bool privileged)
+virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 {
     virLockDaemonPtr lockd;
 
@@ -142,7 +142,7 @@ virLockDaemonNew(bool privileged)
         return NULL;
     }
 
-    if (!(lockd->srv = virNetServerNew(1, 1, 0, 20,
+    if (!(lockd->srv = virNetServerNew(1, 1, 0, config->max_clients,
                                        -1, 0,
                                        false, NULL,
                                        virLockDaemonClientNew,
@@ -1335,7 +1335,7 @@ int main(int argc, char **argv) {
     /* rv == 1, means we setup everything from saved state,
      * so we only setup stuff from scratch if rv == 0 */
     if (rv == 0) {
-        if (!(lockDaemon = virLockDaemonNew(privileged))) {
+        if (!(lockDaemon = virLockDaemonNew(config, privileged))) {
             ret = VIR_LOCK_DAEMON_ERR_INIT;
             goto cleanup;
         }

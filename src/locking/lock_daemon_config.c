@@ -114,6 +114,7 @@ virLockDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         return NULL;
 
     data->log_buffer_size = 64;
+    data->max_clients = 1024;
 
     return data;
 }
@@ -139,6 +140,7 @@ virLockDaemonConfigLoadOptions(virLockDaemonConfigPtr data,
     GET_CONF_STR(conf, filename, log_filters);
     GET_CONF_STR(conf, filename, log_outputs);
     GET_CONF_INT(conf, filename, log_buffer_size);
+    GET_CONF_INT(conf, filename, max_clients);
 
     return 0;
 
