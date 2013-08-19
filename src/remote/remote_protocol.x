@@ -91,11 +91,8 @@ const REMOTE_MIGRATE_COOKIE_MAX = 16384;
 /* Upper limit on lists of networks. */
 const REMOTE_NETWORK_LIST_MAX = 16384;
 
-/* Upper limit on lists of interface names. */
-const REMOTE_INTERFACE_NAME_LIST_MAX = 16384;
-
-/* Upper limit on lists of defined interface names. */
-const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 16384;
+/* Upper limit on lists of interfaces. */
+const REMOTE_INTERFACE_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage pools. */
 const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
@@ -1478,7 +1475,7 @@ struct remote_connect_list_interfaces_args {
 };
 
 struct remote_connect_list_interfaces_ret {
-    remote_nonnull_string names<REMOTE_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_INTERFACE_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_connect_num_of_defined_interfaces_ret {
@@ -1490,7 +1487,7 @@ struct remote_connect_list_defined_interfaces_args {
 };
 
 struct remote_connect_list_defined_interfaces_ret {
-    remote_nonnull_string names<REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
+    remote_nonnull_string names<REMOTE_INTERFACE_LIST_MAX>; /* insert@1 */
 };
 
 struct remote_interface_lookup_by_name_args {
@@ -2701,7 +2698,7 @@ struct remote_connect_list_all_interfaces_args {
 };
 
 struct remote_connect_list_all_interfaces_ret {
-    remote_nonnull_interface ifaces<>;
+    remote_nonnull_interface ifaces<REMOTE_INTERFACE_LIST_MAX>;
     unsigned int ret;
 };
 

@@ -2909,6 +2909,13 @@ remoteConnectListAllInterfaces(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.ifaces.ifaces_len > REMOTE_INTERFACE_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many interfaces '%d' for limit '%d'"),
+                       ret.ifaces.ifaces_len, REMOTE_INTERFACE_LIST_MAX);
+        goto cleanup;
+    }
+
     if (ifaces) {
         if (VIR_ALLOC_N(tmp_ifaces, ret.ifaces.ifaces_len + 1) < 0)
             goto cleanup;

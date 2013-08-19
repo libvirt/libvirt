@@ -4256,6 +4256,13 @@ remoteDispatchConnectListAllInterfaces(virNetServerPtr server ATTRIBUTE_UNUSED,
                                                args->flags)) < 0)
         goto cleanup;
 
+    if (nifaces > REMOTE_INTERFACE_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many interfaces '%d' for limit '%d'"),
+                       nifaces, REMOTE_INTERFACE_LIST_MAX);
+        goto cleanup;
+    }
+
     if (ifaces && nifaces) {
         if (VIR_ALLOC_N(ret->ifaces.ifaces_val, nifaces) < 0)
             goto cleanup;
