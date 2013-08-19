@@ -2975,6 +2975,13 @@ remoteConnectListAllNodeDevices(virConnectPtr conn,
              (char *) &ret) == -1)
         goto done;
 
+    if (ret.devices.devices_len > REMOTE_NODE_DEVICE_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many node devices '%d' for limit '%d'"),
+                       ret.devices.devices_len, REMOTE_NODE_DEVICE_LIST_MAX);
+        goto cleanup;
+    }
+
     if (devices) {
         if (VIR_ALLOC_N(tmp_devices, ret.devices.devices_len + 1) < 0)
             goto cleanup;

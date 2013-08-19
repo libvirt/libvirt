@@ -4315,6 +4315,13 @@ remoteDispatchConnectListAllNodeDevices(virNetServerPtr server ATTRIBUTE_UNUSED,
                                                  args->flags)) < 0)
         goto cleanup;
 
+    if (ndevices > REMOTE_NODE_DEVICE_LIST_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many node devices '%d' for limit '%d'"),
+                       ndevices, REMOTE_NODE_DEVICE_LIST_MAX);
+        goto cleanup;
+    }
+
     if (devices && ndevices) {
         if (VIR_ALLOC_N(ret->devices.devices_val, ndevices) < 0)
             goto cleanup;

@@ -100,8 +100,8 @@ const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
 /* Upper limit on lists of storage vols. */
 const REMOTE_STORAGE_VOL_LIST_MAX = 16384;
 
-/* Upper limit on lists of node device names. */
-const REMOTE_NODE_DEVICE_NAME_LIST_MAX = 16384;
+/* Upper limit on lists of node devices. */
+const REMOTE_NODE_DEVICE_LIST_MAX = 16384;
 
 /* Upper limit on lists of node device capabilities. */
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
@@ -1863,7 +1863,7 @@ struct remote_node_list_devices_args {
 };
 
 struct remote_node_list_devices_ret {
-    remote_nonnull_string names<REMOTE_NODE_DEVICE_NAME_LIST_MAX>; /* insert@2 */
+    remote_nonnull_string names<REMOTE_NODE_DEVICE_LIST_MAX>; /* insert@2 */
 };
 
 struct remote_node_device_lookup_by_name_args {
@@ -2708,7 +2708,7 @@ struct remote_connect_list_all_node_devices_args {
 };
 
 struct remote_connect_list_all_node_devices_ret {
-    remote_nonnull_node_device devices<>;
+    remote_nonnull_node_device devices<REMOTE_NODE_DEVICE_LIST_MAX>;
     unsigned int ret;
 };
 
