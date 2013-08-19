@@ -470,7 +470,7 @@ static int
 test9(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    virBitmapPtr bitmap;
+    virBitmapPtr bitmap = NULL;
 
     if (virBitmapParse("100000000", 0, &bitmap, 20) != -1)
         goto cleanup;
@@ -492,6 +492,7 @@ test9(const void *opaque ATTRIBUTE_UNUSED)
 
     ret = 0;
 cleanup:
+    virBitmapFree(bitmap);
     return ret;
 
 }
