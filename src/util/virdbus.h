@@ -32,6 +32,7 @@
 # include "internal.h"
 
 DBusConnection *virDBusGetSystemBus(void);
+bool virDBusHasSystemBus(void);
 DBusConnection *virDBusGetSessionBus(void);
 
 int virDBusCallMethod(DBusConnection *conn,

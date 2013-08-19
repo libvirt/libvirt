@@ -1294,6 +1294,7 @@ virConfWriteMem;
 virDBusCallMethod;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
+virDBusHasSystemBus;
 virDBusMessageDecode;
 virDBusMessageEncode;
 virDBusMessageRead;

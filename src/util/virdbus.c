@@ -73,7 +73,8 @@ static void virDBusSystemBusInit(void)
     systembus = virDBusBusInit(DBUS_BUS_SYSTEM, &systemdbuserr);
 }
 
-DBusConnection *virDBusGetSystemBus(void)
+static DBusConnection *
+virDBusGetSystemBusInternal(void)
 {
     if (virOnce(&systemonce, virDBusSystemBusInit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -81,14 +82,34 @@ DBusConnection *virDBusGetSystemBus(void)
         return NULL;
     }
 
-    if (!systembus) {
+    return systembus;
+}
+
+
+DBusConnection *
+virDBusGetSystemBus(void)
+{
+    DBusConnection *bus;
+
+    if (!(bus = virDBusGetSystemBusInternal())) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to get DBus system bus connection: %s"),
                        systemdbuserr.message ? systemdbuserr.message : "watch setup failed");
         return NULL;
     }
 
-    return systembus;
+    return bus;
+}
+
+
+bool
+virDBusHasSystemBus(void)
+{
+    if (virDBusGetSystemBusInternal())
+        return true;
+
+    VIR_DEBUG("System DBus not available: %s", NULLSTR(systemdbuserr.message));
+    return false;
 }
 
 
@@ -1194,6 +1215,15 @@ DBusConnection *virDBusGetSystemBus(void)
                    "%s", _("DBus support not compiled into this binary"));
     return NULL;
 }
+
+
+bool
+virDBusHasSystemBus(void)
+{
+    VIR_DEBUG("DBus support not compiled into this binary");
+    return false;
+}
+
 
 DBusConnection *virDBusGetSessionBus(void)
 {
