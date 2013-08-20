@@ -1,0 +1,3 @@
+qemu-img create -f qcow2 \
+-o encryption=on,preallocation=metadata,compat=0.10 \
+/var/lib/libvirt/images/OtherDemo.img 5242880K

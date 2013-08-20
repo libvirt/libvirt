@@ -195,6 +195,7 @@ enum {
     FMT_NONE = 0,
     FMT_FLAG,
     FMT_OPTIONS,
+    FMT_COMPAT,
 };
 
 
@@ -270,6 +271,31 @@ mymain(void)
     DO_TEST("pool-logical", "vol-logical",
             "pool-dir", "vol-qcow2-nobacking",
             "logical-from-qcow2", 0, FMT_OPTIONS);
+
+    DO_TEST("pool-dir", "vol-qcow2",
+            NULL, NULL,
+            "qcow2-compat", 0, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            NULL, NULL,
+            "qcow2-nobacking-prealloc-compat", flags, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            "pool-dir", "vol-file",
+            "qcow2-nobacking-convert-prealloc-compat", flags, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-lazy",
+            NULL, NULL,
+            "qcow2-lazy", 0, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-1.1",
+            NULL, NULL,
+            "qcow2-1.1", 0, FMT_COMPAT);
+    DO_TEST_FAIL("pool-dir", "vol-qcow2-0.10-lazy",
+                 NULL, NULL,
+                 "qcow2-0.10-lazy", 0, FMT_COMPAT);
+    DO_TEST("pool-dir", "vol-qcow2-nobacking",
+            "pool-logical", "vol-logical",
+            "qcow2-from-logical-compat", 0, FMT_COMPAT);
+    DO_TEST("pool-logical", "vol-logical",
+            "pool-dir", "vol-qcow2-nobacking",
+            "logical-from-qcow2", 0, FMT_COMPAT);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

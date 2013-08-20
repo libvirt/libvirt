@@ -581,7 +581,33 @@ enum {
     QEMU_IMG_BACKING_FORMAT_NONE = 0,
     QEMU_IMG_BACKING_FORMAT_FLAG,
     QEMU_IMG_BACKING_FORMAT_OPTIONS,
+    QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT,
 };
+
+static bool
+virStorageBackendQemuImgSupportsCompat(const char *qemuimg)
+{
+    bool ret = false;
+    char *output;
+    virCommandPtr cmd = NULL;
+
+    cmd = virCommandNewArgList(qemuimg, "create", "-o", "?", "-f", "qcow2",
+                               "/dev/null", NULL);
+
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (strstr(output, "\ncompat "))
+        ret = true;
+
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(output);
+    return ret;
+}
 
 static int
 virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
@@ -612,12 +638,16 @@ virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
         goto cleanup;
     }
     if (((tmp = strstr(start, "-F fmt")) && tmp < end) ||
-        ((tmp = strstr(start, "-F backing_fmt")) && tmp < end))
+        ((tmp = strstr(start, "-F backing_fmt")) && tmp < end)) {
         ret = QEMU_IMG_BACKING_FORMAT_FLAG;
-    else if ((tmp = strstr(start, "[-o options]")) && tmp < end)
-        ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
-    else
+    } else if ((tmp = strstr(start, "[-o options]")) && tmp < end) {
+        if (virStorageBackendQemuImgSupportsCompat(qemuimg))
+            ret = QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT;
+        else
+            ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
+    } else {
         ret = QEMU_IMG_BACKING_FORMAT_NONE;
+    }
 
 cleanup:
     virCommandFree(cmd);
@@ -705,6 +735,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     const char *backingType = NULL;
     const char *inputPath = NULL;
     const char *inputType = NULL;
+    const char *compat = vol->target.compat;
     char *opts = NULL;
     bool convert = false;
     bool backing = false;
@@ -854,12 +885,16 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     if (backing)
         virCommandAddArgList(cmd, "-b", vol->backingStore.path, NULL);
 
-    if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
+    if (imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS) {
+        if (vol->target.format == VIR_STORAGE_FILE_QCOW2 && !compat &&
+            imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
+            compat = "0.10";
+
         if (virStorageBackendCreateQemuImgOpts(&opts,
                                                backing ? backingType : NULL,
                                                do_encryption, preallocate,
                                                vol->target.format,
-                                               vol->target.compat,
+                                               compat,
                                                vol->target.features) < 0) {
             virCommandFree(cmd);
             return NULL;
