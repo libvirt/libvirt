@@ -3466,6 +3466,10 @@ int qemuProcessStart(virConnectPtr conn,
      * restore any security label as we would overwrite labels
      * we did not set. */
     stop_flags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
+    /* If we fail while doing incoming migration, then we must not
+     * relabel, as the source is still using the files.  */
+    if (migrateFrom)
+        stop_flags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
     hookData.conn = conn;
     hookData.vm = vm;
