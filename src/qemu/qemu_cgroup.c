@@ -428,7 +428,8 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
         }
     }
 
-    if (virCgroupSetMemoryHardLimit(priv->cgroup, vm->def->mem.hard_limit) < 0)
+    if (vm->def->mem.hard_limit != 0 &&
+        virCgroupSetMemoryHardLimit(priv->cgroup, vm->def->mem.hard_limit) < 0)
         return -1;
 
     if (vm->def->mem.soft_limit != 0 &&
