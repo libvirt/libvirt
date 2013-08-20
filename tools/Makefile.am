@@ -22,6 +22,10 @@ INCLUDES = \
 	-I$(top_srcdir)						\
 	$(GETTEXT_CPPFLAGS)
 
+AM_LDFLAGS = \
+	$(RELRO_LDFLAGS)					\
+	$(NULL)
+
 POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 
 ICON_FILES = \
@@ -120,8 +124,8 @@ virt_host_validate_SOURCES = \
 		$(NULL)
 
 virt_host_validate_LDFLAGS = \
+		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 
@@ -139,11 +143,13 @@ virt_host_validate_CFLAGS = \
 virt_login_shell_SOURCES =					\
 		virt-login-shell.c
 
-virt_login_shell_LDFLAGS = $(COVERAGE_LDFLAGS)
+virt_login_shell_LDFLAGS = \
+		$(AM_LDFLAGS) 					\
+		$(COVERAGE_LDFLAGS)				\
+		$(NULL)
 virt_login_shell_LDADD =					\
 		$(STATIC_BINARIES)				\
 		$(PIE_LDFLAGS)					\
-		$(RELRO_LDFLAGS) \
 		../src/libvirt.la				\
 		../src/libvirt-lxc.la				\
 		../gnulib/lib/libgnu.la
@@ -169,11 +175,13 @@ virsh_SOURCES =							\
 		virsh-volume.c virsh-volume.h			\
 		$(NULL)
 
-virsh_LDFLAGS = $(COVERAGE_LDFLAGS)
+virsh_LDFLAGS = \
+		$(AM_LDFLAGS) 					\
+		$(COVERAGE_LDFLAGS)				\
+		$(NULL)
 virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(PIE_LDFLAGS)					\
-		$(RELRO_LDFLAGS) \
 		../src/libvirt.la				\
 		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\

@@ -33,7 +33,9 @@ AM_CFLAGS =	$(LIBXML_CFLAGS)				\
 		$(WIN32_EXTRA_CFLAGS)				\
 		$(COVERAGE_CFLAGS)
 AM_LDFLAGS =	$(DRIVER_MODULE_LDFLAGS)			\
-		$(COVERAGE_LDFLAGS)
+		$(COVERAGE_LDFLAGS)				\
+		$(RELRO_LDFLAGS)				\
+		$(NULL)
 
 EXTRA_DIST = $(conf_DATA) util/keymaps.csv
 
@@ -1812,7 +1814,6 @@ libvirt_la_LDFLAGS = \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(LIBVIRT_NODELETE) \
 		$(AM_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -1896,7 +1897,6 @@ libvirt_qemu_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(AM_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -1908,7 +1908,6 @@ libvirt_lxc_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(AM_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -1964,7 +1963,6 @@ virtlockd_CFLAGS = \
 virtlockd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -2243,7 +2241,6 @@ libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
 libvirt_iohelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_iohelper_LDADD =		\
 		libvirt_util.la		\
@@ -2266,7 +2263,6 @@ libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_parthelper_LDADD =		\
 		$(LIBPARTED_LIBS)	\
@@ -2298,7 +2294,6 @@ libvirt_sanlock_helper_CFLAGS = \
 libvirt_sanlock_helper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_sanlock_helper_LDADD = libvirt.la
 endif
@@ -2314,7 +2309,6 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_lxc_LDADD =			\
 		$(FUSE_LIBS) \
@@ -2358,7 +2352,6 @@ virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 virt_aa_helper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
 		$(NULL)
 virt_aa_helper_LDADD =						\
 		libvirt_conf.la					\
