@@ -196,7 +196,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
 
  cleanup:
     if (ret != 0) {
-        for (i = 0; i < nr_nodes; i++)
+        for (i = 0; cpus && i < nr_nodes; i++)
             VIR_FREE(cpus[i]);
         virCapabilitiesFreeNUMAInfo(caps);
     }
