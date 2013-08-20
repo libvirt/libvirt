@@ -1562,56 +1562,77 @@
     <dl>
       <dt><code>disk</code></dt>
       <dd>The <code>disk</code> element is the main container for describing
-        disks. The <code>type</code> attribute is either "file",
-        "block", "dir", "network", or "volume"
-        and refers to the underlying source for the disk. The optional
-        <code>device</code> attribute indicates how the disk is to be exposed
-        to the guest OS. Possible values for this attribute are
-        "floppy", "disk", "cdrom", and "lun", defaulting to
-        "disk". "lun" (<span class="since">since 0.9.10</span>) is only
-        valid when type is "block" and the target element's "bus"
-        attribute is "virtio", and behaves identically to "disk",
-        except that generic SCSI commands from the guest are accepted
-        and passed through to the physical device
-        - also note that device='lun' will only be recognized for
-        actual raw devices, never for individual partitions or LVM
-        partitions (in those cases, the kernel will reject the generic
-        SCSI commands, making it identical to device='disk').
-        The optional <code>rawio</code> attribute
-        (<span class="since">since 0.9.10</span>) indicates whether
-        the disk is needs rawio capability; valid settings are "yes"
-        or "no" (default is "no"). If any one disk in a domain has
-        rawio='yes', rawio capability will be enabled for all disks in
-        the domain (because, in the case of QEMU, this capability can
-        only be set on a per-process basis). This attribute is only
-        valid when device is "lun". NB, <code>rawio</code> intends to
-        confine the capability per-device, however, current QEMU
-        implementation gives the domain process broader capability
-        than that (per-process basis, affects all the domain disks).
-        To confine the capability as much as possible for QEMU driver
-        as this stage, <code>sgio</code> is recommended, it's more
-        secure than <code>rawio</code>.
-        The optional <code>sgio</code> (<span class="since">since 1.0.2</span>)
-        attribute indicates whether the kernel will filter unprivileged
-        SG_IO commands for the disk, valid settings are "filtered" or
-        "unfiltered". Defaults to "filtered". Similar to <code>rawio</code>,
-        <code>sgio</code> is only valid for device 'lun'.
-        The optional <code>snapshot</code> attribute indicates the default
-        behavior of the disk during disk snapshots: "internal"
-        requires a file format such as qcow2 that can store both the
-        snapshot and the data changes since the snapshot;
-        "external" will separate the snapshot from the live data; and
-        "no" means the disk will not participate in snapshots.
-        Read-only disks default to "no", while the default for other
-        disks depends on the hypervisor's capabilities.  Some
-        hypervisors allow a per-snapshot choice as well,
-        during <a href="formatsnapshot.html">domain snapshot
-        creation</a>.  Not all snapshot modes are supported;
-        for example, <code>snapshot='yes'</code> with a transient disk
-        generally does not make sense.  <span class="since">Since 0.0.3;
-        "device" attribute since 0.1.4;
-        "network" attribute since 0.8.7; "snapshot" since
-        0.9.5</span></dd>
+      disks (<span class="since">since 0.0.3</span>).
+        <dl>
+          <dt><code>type</code> attribute
+          <span class="since">since 0.0.3</span></dt>
+            <dd>
+            Valid values are "file", "block",
+            "dir" (<span class="since">since 0.7.5</span>),
+            "network" (<span class="since">since 0.8.7</span>), or
+            "volume" (<span class="since">since 1.0.5</span>)
+            and refer to the underlying source for the disk.
+            </dd>
+          <dt><code>device</code> attribute
+          <span class="since">since 0.1.4</span></dt>
+            <dd>
+            Indicates how the disk is to be exposed to the guest OS. Possible
+            values for this attribute are "floppy", "disk", "cdrom", and "lun",
+            defaulting to "disk".
+            <p>
+            Using "lun" (<span class="since">since 0.9.10</span>) is only
+            valid when type is "block" and the target element's "bus"
+            attribute is "virtio", and behaves identically to "disk",
+            except that generic SCSI commands from the guest are accepted
+            and passed through to the physical device. Also note that
+            device='lun' will only be recognized for actual raw devices,
+            but never for individual partitions or LVM partitions (in those
+            cases, the kernel will reject the generic SCSI commands, making
+            it identical to device='disk').
+            </p>
+            </dd>
+          <dt><code>rawio</code> attribute
+          <span class="since">since 0.9.10</span></dt>
+            <dd>
+            Indicates whether the disk is needs rawio capability; valid
+            settings are "yes" or "no" (default is "no"). If any one disk
+            in a domain has rawio='yes', rawio capability will be enabled
+            for all disks in the domain (because, in the case of QEMU, this
+            capability can only be set on a per-process basis). This attribute
+            is only valid when device is "lun". NB, <code>rawio</code> intends
+            to confine the capability per-device, however, current QEMU
+            implementation gives the domain process broader capability
+            than that (per-process basis, affects all the domain disks).
+            To confine the capability as much as possible for QEMU driver
+            as this stage, <code>sgio</code> is recommended, it's more
+            secure than <code>rawio</code>.
+            </dd>
+          <dt><code>sgio</code> attribute
+          <span class="since">since 1.0.2</span></dt>
+            <dd>
+            Indicates whether the kernel will filter unprivileged
+            SG_IO commands for the disk, valid settings are "filtered" or
+            "unfiltered". Defaults to "filtered". Similar to <code>rawio</code>,
+            <code>sgio</code> is only valid for device 'lun'.
+            </dd>
+          <dt><code>snapshot</code> attribute
+          <span class="since">since 0.9.5</span></dt>
+            <dd>
+            Indicates the default behavior of the disk during disk snapshots:
+            "internal" requires a file format such as qcow2 that can store
+            both the snapshot and the data changes since the snapshot;
+            "external" will separate the snapshot from the live data; and
+            "no" means the disk will not participate in snapshots. Read-only
+            disks default to "no", while the default for other disks depends
+            on the hypervisor's capabilities.  Some hypervisors allow a
+            per-snapshot choice as well, during
+            <a href="formatsnapshot.html">domain snapshot creation</a>.
+            Not all snapshot modes are supported; for example,
+            <code>snapshot='yes'</code> with a transient disk generally
+            does not make sense.
+            </dd>
+        </dl>
+      </dd>
       <dt><code>source</code></dt>
       <dd>Representation of the disk <code>source</code> depends on the
       disk <code>type</code> attribute value as follows:
