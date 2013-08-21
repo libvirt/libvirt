@@ -6633,25 +6633,34 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotPtr snapshot = NULL;
     virDomainEventPtr event = NULL;
     char *xml = NULL;
+    bool update_current = true;
+    bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
 
     /*
-     * REDEFINE + CURRENT: Not implemented yet
      * DISK_ONLY: Not implemented yet
      * REUSE_EXT: Not implemented yet
      *
      * NO_METADATA: Explicitly not implemented
      *
+     * REDEFINE + CURRENT: Implemented
      * HALT: Implemented
      * QUIESCE: Nothing to do
      * ATOMIC: Nothing to do
      * LIVE: Nothing to do
      */
     virCheckFlags(
+        VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
+        VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
         VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
         VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
         VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
         VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, NULL);
+
+    if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)))
+        update_current = false;
+    if (redefine)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (!(vm = testDomObjFromDomain(domain)))
         goto cleanup;
@@ -6669,32 +6678,41 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                                                 parse_flags)))
         goto cleanup;
 
-    if (!(def->dom = virDomainDefCopy(vm->def,
-                                      privconn->caps,
-                                      privconn->xmlopt,
-                                      true)))
-        goto cleanup;
+    if (redefine) {
+        if (!virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
+                                           &update_current, flags) < 0)
+            goto cleanup;
+    } else {
+        if (!(def->dom = virDomainDefCopy(vm->def,
+                                          privconn->caps,
+                                          privconn->xmlopt,
+                                          true)))
+            goto cleanup;
 
-    if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
-        goto cleanup;
-
-    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-        goto cleanup;
-    def = NULL;
-
-    if (vm->current_snapshot) {
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
-            VIR_STRDUP(snap->def->parent, vm->current_snapshot->def->name) < 0)
+        if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
             goto cleanup;
     }
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) &&
-        virDomainObjIsActive(vm)) {
-        testDomainShutdownState(domain, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
-                                        VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+    if (!snap) {
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+            goto cleanup;
+        def = NULL;
     }
 
+    if (!redefine) {
+        if (vm->current_snapshot &&
+            (VIR_STRDUP(snap->def->parent,
+                        vm->current_snapshot->def->name) < 0))
+            goto cleanup;
+
+        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) &&
+            virDomainObjIsActive(vm)) {
+            testDomainShutdownState(domain, vm,
+                                    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+            event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+        }
+    }
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 cleanup:
@@ -6702,7 +6720,8 @@ cleanup:
     if (vm) {
         if (snapshot) {
             virDomainSnapshotObjPtr other;
-            vm->current_snapshot = snap;
+            if (update_current)
+                vm->current_snapshot = snap;
             other = virDomainSnapshotFindByName(vm->snapshots,
                                                 snap->def->parent);
             snap->parent = other;
