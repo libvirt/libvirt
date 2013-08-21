@@ -563,6 +563,8 @@ mymain(void)
     DO_CTX_TEST(true, "cacertchain-ctx.pem", servercertlevel3areq.filename, false);
     DO_CTX_TEST(false, "cacertchain-ctx.pem", clientcertlevel2breq.filename, false);
 
+    DO_CTX_TEST(false, "cacertdoesnotexist.pem", "servercertdoesnotexist.pem", true);
+
     testTLSDiscardCert(&cacertreq);
     testTLSDiscardCert(&cacert1req);
     testTLSDiscardCert(&cacert2req);
