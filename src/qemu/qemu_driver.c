@@ -12275,6 +12275,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotDefPtr def = NULL;
     bool update_current = true;
+    bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     virDomainSnapshotObjPtr other = NULL;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
@@ -12299,11 +12300,10 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         return NULL;
     }
 
-    if (((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
-         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
+    if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))
         update_current = false;
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)
+    if (redefine)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     virUUIDFormat(domain->uuid, uuidstr);
@@ -12368,14 +12368,14 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
         (!virDomainObjIsActive(vm) ||
          def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
-         flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
+         redefine)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live snapshot creation is supported only "
                          "with external checkpoints"));
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
+    if (redefine) {
         /* Prevent circular chains */
         if (def->parent) {
             if (STREQ(def->name, def->parent)) {
@@ -12546,7 +12546,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (update_current)
         snap->def->current = true;
     if (vm->current_snapshot) {
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
+        if (!redefine &&
             VIR_STRDUP(snap->def->parent, vm->current_snapshot->def->name) < 0)
                 goto cleanup;
         if (update_current) {
@@ -12559,7 +12559,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     }
 
     /* actually do the snapshot */
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
+    if (redefine) {
         /* XXX Should we validate that the redefined snapshot even
          * makes sense, such as checking that qemu-img recognizes the
          * snapshot name in at least one of the domain's disks?  */
