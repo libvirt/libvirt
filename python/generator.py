@@ -1455,8 +1455,7 @@ def buildWrappers(module):
                 elif classname in [ "virDomainSnapshot" ]:
                     classes.write("        self._dom = dom\n")
                     classes.write("        self._conn = dom.connect()\n")
-                classes.write("        if _obj != None:self._o = _obj;return\n")
-                classes.write("        self._o = None\n\n")
+                classes.write("        self._o = _obj\n\n")
             destruct=None
             if classes_destructors.has_key(classname):
                 classes.write("    def __del__(self):\n")
