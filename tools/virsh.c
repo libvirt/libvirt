@@ -2297,15 +2297,12 @@ vshEventLoop(void *opaque)
 
 
 /*
- * Initialize connection.
+ * Initialize debug settings.
  */
-static bool
-vshInit(vshControl *ctl)
+static void
+vshInitDebug(vshControl *ctl)
 {
     char *debugEnv;
-
-    if (ctl->conn)
-        return false;
 
     if (ctl->debug == VSH_DEBUG_DEFAULT) {
         /* log level not set from commandline, check env variable */
@@ -2331,6 +2328,16 @@ vshInit(vshControl *ctl)
     }
 
     vshOpenLogFile(ctl);
+}
+
+/*
+ * Initialize connection.
+ */
+static bool
+vshInit(vshControl *ctl)
+{
+    if (ctl->conn)
+        return false;
 
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
@@ -3019,6 +3026,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             ctl->timing = true;
             break;
         case 'c':
+            VIR_FREE(ctl->name);
             ctl->name = vshStrdup(ctl, optarg);
             break;
         case 'v':
@@ -3194,12 +3202,10 @@ main(int argc, char **argv)
         ctl->name = vshStrdup(ctl, defaultConn);
     }
 
-    if (!vshInit(ctl)) {
-        vshDeinit(ctl);
-        exit(EXIT_FAILURE);
-    }
+    vshInitDebug(ctl);
 
-    if (!vshParseArgv(ctl, argc, argv)) {
+    if (!vshParseArgv(ctl, argc, argv) ||
+        !vshInit(ctl)) {
         vshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
