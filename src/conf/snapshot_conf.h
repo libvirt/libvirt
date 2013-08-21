@@ -176,6 +176,13 @@ int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def);
 bool virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap);
 
+int virDomainSnapshotRedefinePrep(virDomainPtr domain,
+                                  virDomainObjPtr vm,
+                                  virDomainSnapshotDefPtr *def,
+                                  virDomainSnapshotObjPtr *snap,
+                                  bool *update_current,
+                                  unsigned int flags);
+
 VIR_ENUM_DECL(virDomainSnapshotLocation)
 VIR_ENUM_DECL(virDomainSnapshotState)
 
