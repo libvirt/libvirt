@@ -138,9 +138,9 @@ test_programs += virnettlscontexttest virnettlssessiontest
 endif
 
 if WITH_SECDRIVER_SELINUX
+if WITH_ATTR
 test_programs += securityselinuxtest
 if WITH_QEMU
-if WITH_ATTR
 test_programs += securityselinuxlabeltest
 endif
 endif
@@ -709,6 +709,7 @@ seclabeltest_SOURCES = \
 seclabeltest_LDADD = $(LDADDS)
 
 if WITH_SECDRIVER_SELINUX
+if WITH_ATTR
 if WITH_TESTS
 noinst_LTLIBRARIES += libsecurityselinuxhelper.la
 else
@@ -727,7 +728,6 @@ securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 
 if WITH_QEMU
-if WITH_ATTR
 securityselinuxlabeltest_SOURCES = \
 	securityselinuxlabeltest.c testutils.h testutils.c \
         testutilsqemu.h testutilsqemu.c
