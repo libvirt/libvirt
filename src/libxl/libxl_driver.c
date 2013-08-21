@@ -1118,6 +1118,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
                      void *opaque)
 {
     libxlDriverPrivatePtr driver = opaque;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     libxl_dominfo d_info;
     int len;
@@ -1125,8 +1126,9 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     virObjectLock(vm);
 
+    libxlDomainObjPrivateInitCtx(vm);
     /* Does domain still exist? */
-    rc = libxl_domain_info(driver->ctx, &d_info, vm->def->id);
+    rc = libxl_domain_info(priv->ctx, &d_info, vm->def->id);
     if (rc == ERROR_INVAL) {
         goto out;
     } else if (rc != 0) {
@@ -1136,7 +1138,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     }
 
     /* Is this a domain that was under libvirt control? */
-    if (libxl_userdata_retrieve(driver->ctx, vm->def->id,
+    if (libxl_userdata_retrieve(priv->ctx, vm->def->id,
                                 "libvirt-xml", &data, &len)) {
         VIR_DEBUG("libxl_userdata_retrieve failed, ignoring domain %d", vm->def->id);
         goto out;
