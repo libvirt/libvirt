@@ -605,7 +605,8 @@ mymain(void)
     DO_TEST(Shutdown);
     DO_TEST(CPU);
     DO_TEST(ArbitraryCommand);
-    DO_TEST(Timeout);
+
+    DO_TEST(Timeout); /* Timeout should always be called last */
 
     virObjectUnref(xmlopt);
 
