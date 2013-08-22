@@ -135,38 +135,38 @@ int virIdentitySetCurrent(virIdentityPtr ident)
 virIdentityPtr virIdentityGetSystem(void)
 {
     char *username = NULL;
-    char *userid = NULL;
     char *groupname = NULL;
-    char *groupid = NULL;
-    char *seccontext = NULL;
+    unsigned long long startTime;
     virIdentityPtr ret = NULL;
 #if WITH_SELINUX
     security_context_t con;
 #endif
-    char *processid = NULL;
-    unsigned long long timestamp;
-    char *processtime = NULL;
 
-    if (virAsprintf(&processid, "%llu",
-                    (unsigned long long)getpid()) < 0)
-        goto cleanup;
+    if (!(ret = virIdentityNew()))
+        goto error;
 
-    if (virProcessGetStartTime(getpid(), &timestamp) < 0)
-        goto cleanup;
+    if (virIdentitySetUNIXProcessID(ret, getpid()) < 0)
+        goto error;
 
-    if (timestamp != 0 &&
-        virAsprintf(&processtime, "%llu", timestamp) < 0)
-        goto cleanup;
+    if (virProcessGetStartTime(getpid(), &startTime) < 0)
+        goto error;
+    if (startTime != 0 &&
+        virIdentitySetUNIXProcessTime(ret, startTime) < 0)
+        goto error;
 
     if (!(username = virGetUserName(geteuid())))
         goto cleanup;
-    if (virAsprintf(&userid, "%d", (int)geteuid()) < 0)
-        goto cleanup;
+    if (virIdentitySetUNIXUserName(ret, username) < 0)
+        goto error;
+    if (virIdentitySetUNIXUserID(ret, getuid()) < 0)
+        goto error;
 
     if (!(groupname = virGetGroupName(getegid())))
         goto cleanup;
-    if (virAsprintf(&groupid, "%d", (int)getegid()) < 0)
-        goto cleanup;
+    if (virIdentitySetUNIXGroupName(ret, groupname) < 0)
+        goto error;
+    if (virIdentitySetUNIXGroupID(ret, getgid()) < 0)
+        goto error;
 
 #if WITH_SELINUX
     if (is_selinux_enabled() > 0) {
@@ -175,56 +175,17 @@ virIdentityPtr virIdentityGetSystem(void)
                                  _("Unable to lookup SELinux process context"));
             goto cleanup;
         }
-        if (VIR_STRDUP(seccontext, con) < 0) {
+        if (virIdentitySetSELinuxContext(ret, con) < 0) {
             freecon(con);
-            goto cleanup;
+            goto error;
         }
         freecon(con);
     }
 #endif
 
-    if (!(ret = virIdentityNew()))
-        goto cleanup;
-
-    if (virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
-                           username) < 0)
-        goto error;
-    if (virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
-                           userid) < 0)
-        goto error;
-    if (virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
-                           groupname) < 0)
-        goto error;
-    if (virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
-                           groupid) < 0)
-        goto error;
-    if (seccontext &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
-                           seccontext) < 0)
-        goto error;
-    if (virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
-                           processid) < 0)
-        goto error;
-    if (processtime &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
-                           processtime) < 0)
-        goto error;
-
  cleanup:
     VIR_FREE(username);
-    VIR_FREE(userid);
     VIR_FREE(groupname);
-    VIR_FREE(groupid);
-    VIR_FREE(seccontext);
-    VIR_FREE(processid);
-    VIR_FREE(processtime);
     return ret;
 
  error:

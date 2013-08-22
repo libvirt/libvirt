@@ -653,20 +653,13 @@ int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
 static virIdentityPtr
 virNetServerClientCreateIdentity(virNetServerClientPtr client)
 {
-    char *processid = NULL;
-    char *processtime = NULL;
     char *username = NULL;
-    char *userid = NULL;
     char *groupname = NULL;
-    char *groupid = NULL;
-#if WITH_SASL
-    char *saslname = NULL;
-#endif
-#if WITH_GNUTLS
-    char *x509dname = NULL;
-#endif
     char *seccontext = NULL;
     virIdentityPtr ret = NULL;
+
+    if (!(ret = virIdentityNew()))
+        goto error;
 
     if (client->sock && virNetSocketIsLocal(client->sock)) {
         gid_t gid;
@@ -676,116 +669,60 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
         if (virNetSocketGetUNIXIdentity(client->sock,
                                         &uid, &gid, &pid,
                                         &timestamp) < 0)
-            goto cleanup;
+            goto error;
 
         if (!(username = virGetUserName(uid)))
-            goto cleanup;
-        if (virAsprintf(&userid, "%d", (int)uid) < 0)
-            goto cleanup;
+            goto error;
+        if (virIdentitySetUNIXUserName(ret, username) < 0)
+            goto error;
+        if (virIdentitySetUNIXUserID(ret, uid) < 0)
+            goto error;
+
         if (!(groupname = virGetGroupName(gid)))
-            goto cleanup;
-        if (virAsprintf(&groupid, "%d", (int)gid) < 0)
-            goto cleanup;
-        if (virAsprintf(&processid, "%llu",
-                        (unsigned long long)pid) < 0)
-            goto cleanup;
-        if (virAsprintf(&processtime, "%llu",
-                        timestamp) < 0)
-            goto cleanup;
+            goto error;
+        if (virIdentitySetUNIXGroupName(ret, groupname) < 0)
+            goto error;
+        if (virIdentitySetUNIXGroupID(ret, gid) < 0)
+            goto error;
+
+        if (virIdentitySetUNIXProcessID(ret, pid) < 0)
+            goto error;
+        if (virIdentitySetUNIXProcessTime(ret, timestamp) < 0)
+            goto error;
     }
 
 #if WITH_SASL
     if (client->sasl) {
         const char *identity = virNetSASLSessionGetIdentity(client->sasl);
-        if (VIR_STRDUP(saslname, identity) < 0)
-            goto cleanup;
+        if (virIdentitySetSASLUserName(ret, identity) < 0)
+            goto error;
     }
 #endif
 
 #if WITH_GNUTLS
     if (client->tls) {
         const char *identity = virNetTLSSessionGetX509DName(client->tls);
-        if (VIR_STRDUP(x509dname, identity) < 0)
-            goto cleanup;
+        if (virIdentitySetX509DName(ret, identity) < 0)
+            goto error;
     }
 #endif
 
     if (client->sock &&
         virNetSocketGetSELinuxContext(client->sock, &seccontext) < 0)
-        goto cleanup;
-
-    if (!(ret = virIdentityNew()))
-        goto cleanup;
-
-    if (username &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
-                           username) < 0)
         goto error;
-    if (userid &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
-                           userid) < 0)
-        goto error;
-    if (groupname &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
-                           groupname) < 0)
-        goto error;
-    if (groupid &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
-                           groupid) < 0)
-        goto error;
-    if (processid &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
-                           processid) < 0)
-        goto error;
-    if (processtime &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
-                           processtime) < 0)
-        goto error;
-#if WITH_SASL
-    if (saslname &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_SASL_USER_NAME,
-                           saslname) < 0)
-        goto error;
-#endif
-#if WITH_GNUTLS
-    if (x509dname &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
-                           x509dname) < 0)
-        goto error;
-#endif
     if (seccontext &&
-        virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
-                           seccontext) < 0)
+        virIdentitySetSELinuxContext(ret, seccontext) < 0)
         goto error;
 
  cleanup:
     VIR_FREE(username);
-    VIR_FREE(userid);
     VIR_FREE(groupname);
-    VIR_FREE(groupid);
-    VIR_FREE(processid);
-    VIR_FREE(processtime);
     VIR_FREE(seccontext);
-#if WITH_SASL
-    VIR_FREE(saslname);
-#endif
-#if WITH_GNUTLS
-    VIR_FREE(x509dname);
-#endif
     return ret;
 
  error:
     virObjectUnref(ret);
-    ret = NULL;
+    ret = 0;
     goto cleanup;
 }
 
