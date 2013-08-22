@@ -98,6 +98,7 @@ EXTRA_DIST =		\
 	storagevolxml2xmlout \
 	sysinfodata \
 	test-lib.sh	\
+	virsh-uriprecedence \
 	vmx2xmldata \
 	xencapsdata \
 	xmconfigdata \
@@ -235,6 +236,7 @@ test_scripts +=				\
 	read-bufsiz			\
 	read-non-seekable		\
 	start				\
+	virsh-uriprecedence		\
 	vcpupin				\
 	virsh-all			\
 	virsh-optparse			\

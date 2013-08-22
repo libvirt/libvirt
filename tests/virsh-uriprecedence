@@ -1,0 +1,76 @@
+#!/bin/sh
+
+: ${srcdir=.}
+. $srcdir/test-lib.sh
+
+# This test checks if virsh obeys the proper precedence of different
+# URI settings
+test_intro "virsh-uriprecedence"
+
+virsh_bin="$abs_top_builddir/tools/virsh"
+counter=1
+ret=0
+
+cleanup_() { rm -rf "$tmphome"; }
+
+# Create all mock files/directories to avoid permission problems
+tmphome="$PWD/tmp_home"
+export XDG_CONFIG_HOME="$tmphome/.config"
+export XDG_CACHE_HOME="$tmphome/.cache"
+export XDG_RUNTIME_HOME="XDG_CACHE_HOME"
+
+mkdir -p "$XDG_CONFIG_HOME/libvirt" "$XDG_CONFIG_HOME/virsh"
+mkdir -p "$XDG_CACHE_HOME/libvirt" "$XDG_CACHE_HOME/virsh"
+mkdir -p "$XDG_RUNTIME_HOME/libvirt" "$XDG_RUNTIME_HOME/virsh"
+
+# Main function checking for the proper uri being returned
+test_uri()
+{
+  result=0
+  if [ "$($virsh_bin uri)" != "$good_uri" ]; then
+      result=1
+      ret=1
+  fi
+  test_result "$counter" "$1" "$result"
+  counter="$((counter+1))"
+}
+
+# Precedence is the following (lowest priority first):
+#
+# 1) if run as root, 'uri_default' from /etc/libvirtd/libvirt.conf,
+#    otherwise qemu:///session.  There is no way to mock this file for
+#    virsh/libvirt.so and the user may have set anything in there that
+#    would spoil the test, so we don't test this
+#
+# 2) 'uri_default' from $XDG_CONFIG_HOME/libvirt/libvirt.conf
+#
+# 3) LIBVIRT_DEFAULT_URI
+#
+# 4) VIRSH_DEFAULT_CONNECT_URI
+#
+# 5) parameter -c (--connect)
+
+unset LIBVIRT_DEFAULT_URI
+unset VIRSH_DEFAULT_CONNECT_URI
+bad_uri="test:///default?bad_uri"
+good_uri="test:///default?good_uri"
+
+printf "uri_default=\"%s\"\n" "$good_uri" >"$XDG_CONFIG_HOME/libvirt/libvirt.conf"
+test_uri "User config file"
+
+printf "uri_default=\"%s\"\n" "$bad_uri" >"$XDG_CONFIG_HOME/libvirt/libvirt.conf"
+export LIBVIRT_DEFAULT_URI="$good_uri"
+test_uri "LIBVIRT_DEFAULT_URI"
+
+export LIBVIRT_DEFAULT_URI="$bad_uri"
+export VIRSH_DEFAULT_CONNECT_URI="$good_uri"
+test_uri "VIRSH_DEFAULT_CONNECT_URI"
+
+export VIRSH_DEFAULT_CONNECT_URI="$bad_uri"
+virsh_bin="$virsh_bin --connect $good_uri"
+test_uri "Parameter"
+
+# test_uri() increases $counter even for the last test, so we must
+# decrement it
+test_final "$((counter-1))" "$ret"
+(exit "$ret"); exit "$ret"
