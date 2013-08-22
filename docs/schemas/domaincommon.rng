@@ -1211,6 +1211,7 @@
         <value>sheepdog</value>
         <value>gluster</value>
         <value>iscsi</value>
+        <value>http</value>
       </choice>
     </attribute>
     <optional>
