@@ -75,9 +75,9 @@ static char *
 virAccessDriverPolkitFormatProcess(const char *actionid)
 {
     virIdentityPtr identity = virIdentityGetCurrent();
-    const char *callerPid = NULL;
-    const char *callerTime = NULL;
-    const char *callerUid = NULL;
+    pid_t pid;
+    unsigned long long startTime;
+    uid_t uid;
     char *ret = NULL;
 #ifndef PKCHECK_SUPPORTS_UID
     static bool polkitInsecureWarned;
@@ -89,39 +89,35 @@ virAccessDriverPolkitFormatProcess(const char *actionid)
                        actionid);
         return NULL;
     }
-    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_PROCESS_ID, &callerPid) < 0)
+    if (virIdentityGetUNIXProcessID(identity, &pid) < 0)
         goto cleanup;
-    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME, &callerTime) < 0)
+    if (virIdentityGetUNIXProcessTime(identity, &startTime) < 0)
         goto cleanup;
-    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_USER_ID, &callerUid) < 0)
+    if (virIdentityGetUNIXUserID(identity, &uid) < 0)
         goto cleanup;
 
-    if (!callerPid) {
+    if (!pid) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No UNIX process ID available"));
         goto cleanup;
     }
-    if (!callerTime) {
+    if (!startTime) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No UNIX process start time available"));
         goto cleanup;
     }
-    if (!callerUid) {
-        virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("No UNIX caller UID available"));
-        goto cleanup;
-    }
 
 #ifdef PKCHECK_SUPPORTS_UID
-    if (virAsprintf(&ret, "%s,%s,%s", callerPid, callerTime, callerUid) < 0)
+    if (virAsprintf(&ret, "%llu,%llu,%llu",
+                    (unsigned long long)pid, startTime, (unsigned long long)uid) < 0)
         goto cleanup;
 #else
     if (!polkitInsecureWarned) {
-        VIR_WARN("No support for caller UID with pkcheck. "
-                 "This deployment is known to be insecure.");
+        VIR_WARN("No support for caller UID with pkcheck. This deployment is known to be insecure.");
         polkitInsecureWarned = true;
     }
-    if (virAsprintf(&ret, "%s,%s", callerPid, callerTime) < 0)
+    if (virAsprintf(&ret, "%llu,%llu",
+                    (unsigned long long)pid, startTime) < 0)
         goto cleanup;
 #endif
 
