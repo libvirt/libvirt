@@ -133,7 +133,9 @@ int virIdentitySetCurrent(virIdentityPtr ident)
 virIdentityPtr virIdentityGetSystem(void)
 {
     char *username = NULL;
+    char *userid = NULL;
     char *groupname = NULL;
+    char *groupid = NULL;
     char *seccontext = NULL;
     virIdentityPtr ret = NULL;
 #if WITH_SELINUX
@@ -149,7 +151,12 @@ virIdentityPtr virIdentityGetSystem(void)
 
     if (!(username = virGetUserName(getuid())))
         goto cleanup;
+    if (virAsprintf(&userid, "%d", (int)getuid()) < 0)
+        goto cleanup;
+
     if (!(groupname = virGetGroupName(getgid())))
+        goto cleanup;
+    if (virAsprintf(&groupid, "%d", (int)getgid()) < 0)
         goto cleanup;
 
 #if WITH_SELINUX
@@ -168,15 +175,21 @@ virIdentityPtr virIdentityGetSystem(void)
     if (!(ret = virIdentityNew()))
         goto cleanup;
 
-    if (username &&
-        virIdentitySetAttr(ret,
+    if (virIdentitySetAttr(ret,
                            VIR_IDENTITY_ATTR_UNIX_USER_NAME,
                            username) < 0)
         goto error;
-    if (groupname &&
-        virIdentitySetAttr(ret,
+    if (virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                           userid) < 0)
+        goto error;
+    if (virIdentitySetAttr(ret,
                            VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
                            groupname) < 0)
+        goto error;
+    if (virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                           groupid) < 0)
         goto error;
     if (seccontext &&
         virIdentitySetAttr(ret,
@@ -190,7 +203,9 @@ virIdentityPtr virIdentityGetSystem(void)
 
 cleanup:
     VIR_FREE(username);
+    VIR_FREE(userid);
     VIR_FREE(groupname);
+    VIR_FREE(groupid);
     VIR_FREE(seccontext);
     VIR_FREE(processid);
     return ret;
