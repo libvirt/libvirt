@@ -4730,6 +4730,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                    virDomainNetDefPtr net,
                    int vlan,
                    int bootindex,
+                   bool multiqueue,
                    virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4782,6 +4783,8 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                               virDomainVirtioEventIdxTypeToString(net->driver.virtio.event_idx));
         }
     }
+    if (usingVirtio && multiqueue)
+        virBufferAddLit(&buf, ",mq=on");
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     else
@@ -7275,7 +7278,10 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         virCommandAddArgList(cmd, "-netdev", host, NULL);
     }
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex, qemuCaps)))
+        bool multiqueue = tapfdSize > 1 || vhostfdSize > 1;
+
+        if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex,
+                                       multiqueue, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else {
