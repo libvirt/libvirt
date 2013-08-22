@@ -130,6 +130,8 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Bhyve",
               "Crypto",
               "Firewall",
+
+              "Polkit", /* 60 */
     )
 
 

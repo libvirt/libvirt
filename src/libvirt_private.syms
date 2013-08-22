@@ -1794,6 +1794,10 @@ virPidFileWrite;
 virPidFileWritePath;
 
 
+# util/virpolkit.h
+virPolkitCheckAuth;
+
+
 # util/virportallocator.h
 virPortAllocatorAcquire;
 virPortAllocatorNew;

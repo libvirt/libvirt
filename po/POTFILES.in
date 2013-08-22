@@ -194,6 +194,7 @@ src/util/virnuma.c
 src/util/virobject.c
 src/util/virpci.c
 src/util/virpidfile.c
+src/util/virpolkit.c
 src/util/virportallocator.c
 src/util/virprocess.c
 src/util/virrandom.c
