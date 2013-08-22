@@ -352,3 +352,244 @@ bool virIdentityIsEqual(virIdentityPtr identA,
  cleanup:
     return ret;
 }
+
+
+int virIdentityGetUNIXUserName(virIdentityPtr ident,
+                               const char **username)
+{
+    return virIdentityGetAttr(ident,
+                              VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                              username);
+}
+
+
+int virIdentityGetUNIXUserID(virIdentityPtr ident,
+                             uid_t *uid)
+{
+    int val;
+    const char *userid;
+
+    *uid = -1;
+    if (virIdentityGetAttr(ident,
+                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                           &userid) < 0)
+        return -1;
+
+    if (!userid)
+        return -1;
+
+    if (virStrToLong_i(userid, NULL, 10, &val) < 0)
+        return -1;
+
+    *uid = (uid_t)val;
+
+    return 0;
+}
+
+int virIdentityGetUNIXGroupName(virIdentityPtr ident,
+                                const char **groupname)
+{
+    return virIdentityGetAttr(ident,
+                              VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                              groupname);
+}
+
+
+int virIdentityGetUNIXGroupID(virIdentityPtr ident,
+                              gid_t *gid)
+{
+    int val;
+    const char *groupid;
+
+    *gid = -1;
+    if (virIdentityGetAttr(ident,
+                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                           &groupid) < 0)
+        return -1;
+
+    if (!groupid)
+        return -1;
+
+    if (virStrToLong_i(groupid, NULL, 10, &val) < 0)
+        return -1;
+
+    *gid = (gid_t)val;
+
+    return 0;
+}
+
+
+int virIdentityGetUNIXProcessID(virIdentityPtr ident,
+                                pid_t *pid)
+{
+    unsigned long long val;
+    const char *processid;
+
+    *pid = 0;
+    if (virIdentityGetAttr(ident,
+                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                           &processid) < 0)
+        return -1;
+
+    if (!processid)
+        return -1;
+
+    if (virStrToLong_ull(processid, NULL, 10, &val) < 0)
+        return -1;
+
+    *pid = (pid_t)val;
+
+    return 0;
+}
+
+
+int virIdentityGetUNIXProcessTime(virIdentityPtr ident,
+                                  unsigned long long *timestamp)
+{
+    const char *processtime;
+    if (virIdentityGetAttr(ident,
+                           VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                           &processtime) < 0)
+        return -1;
+
+    if (!processtime)
+        return -1;
+
+    if (virStrToLong_ull(processtime, NULL, 10, timestamp) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int virIdentityGetSASLUserName(virIdentityPtr ident,
+                               const char **username)
+{
+    return virIdentityGetAttr(ident,
+                              VIR_IDENTITY_ATTR_SASL_USER_NAME,
+                              username);
+}
+
+
+int virIdentityGetX509DName(virIdentityPtr ident,
+                            const char **dname)
+{
+    return virIdentityGetAttr(ident,
+                              VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
+                              dname);
+}
+
+
+int virIdentityGetSELinuxContext(virIdentityPtr ident,
+                                 const char **context)
+{
+    return virIdentityGetAttr(ident,
+                              VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
+                              context);
+}
+
+
+int virIdentitySetUNIXUserName(virIdentityPtr ident,
+                               const char *username)
+{
+    return virIdentitySetAttr(ident,
+                              VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                              username);
+}
+
+
+int virIdentitySetUNIXUserID(virIdentityPtr ident,
+                             uid_t uid)
+{
+    char *val;
+    int ret;
+    if (virAsprintf(&val, "%d", (int)uid) < 0)
+        return -1;
+    ret = virIdentitySetAttr(ident,
+                             VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                             val);
+    VIR_FREE(val);
+    return ret;
+}
+
+
+int virIdentitySetUNIXGroupName(virIdentityPtr ident,
+                                const char *groupname)
+{
+    return virIdentitySetAttr(ident,
+                              VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                              groupname);
+}
+
+
+int virIdentitySetUNIXGroupID(virIdentityPtr ident,
+                              gid_t gid)
+{
+    char *val;
+    int ret;
+    if (virAsprintf(&val, "%d", (int)gid) < 0)
+        return -1;
+    ret = virIdentitySetAttr(ident,
+                             VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                             val);
+    VIR_FREE(val);
+    return ret;
+}
+
+
+int virIdentitySetUNIXProcessID(virIdentityPtr ident,
+                                pid_t pid)
+{
+    char *val;
+    int ret;
+    if (virAsprintf(&val, "%llu", (unsigned long long)pid) < 0)
+        return -1;
+    ret = virIdentitySetAttr(ident,
+                             VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                             val);
+    VIR_FREE(val);
+    return ret;
+}
+
+
+int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
+                                  unsigned long long timestamp)
+{
+    char *val;
+    int ret;
+    if (virAsprintf(&val, "%llu", timestamp) < 0)
+        return -1;
+    ret = virIdentitySetAttr(ident,
+                             VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                             val);
+    VIR_FREE(val);
+    return ret;
+}
+
+
+
+int virIdentitySetSASLUserName(virIdentityPtr ident,
+                               const char *username)
+{
+    return virIdentitySetAttr(ident,
+                              VIR_IDENTITY_ATTR_SASL_USER_NAME,
+                              username);
+}
+
+
+int virIdentitySetX509DName(virIdentityPtr ident,
+                            const char *dname)
+{
+    return virIdentitySetAttr(ident,
+                              VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
+                              dname);
+}
+
+
+int virIdentitySetSELinuxContext(virIdentityPtr ident,
+                                 const char *context)
+{
+    return virIdentitySetAttr(ident,
+                              VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
+                              context);
+}

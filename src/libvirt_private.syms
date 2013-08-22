@@ -1401,11 +1401,29 @@ virHostdevUpdateDomainActiveDevices;
 # util/viridentity.h
 virIdentityGetAttr;
 virIdentityGetCurrent;
+virIdentityGetSASLUserName;
+virIdentityGetSELinuxContext;
 virIdentityGetSystem;
+virIdentityGetUNIXGroupID;
+virIdentityGetUNIXGroupName;
+virIdentityGetUNIXProcessID;
+virIdentityGetUNIXProcessTime;
+virIdentityGetUNIXUserID;
+virIdentityGetUNIXUserName;
+virIdentityGetX509DName;
 virIdentityIsEqual;
 virIdentityNew;
 virIdentitySetAttr;
 virIdentitySetCurrent;
+virIdentitySetSASLUserName;
+virIdentitySetSELinuxContext;
+virIdentitySetUNIXGroupID;
+virIdentitySetUNIXGroupName;
+virIdentitySetUNIXProcessID;
+virIdentitySetUNIXProcessTime;
+virIdentitySetUNIXUserID;
+virIdentitySetUNIXUserName;
+virIdentitySetX509DName;
 
 
 # util/virinitctl.h

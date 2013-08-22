@@ -65,4 +65,44 @@ bool virIdentityIsEqual(virIdentityPtr identA,
     ATTRIBUTE_NONNULL(1)
     ATTRIBUTE_NONNULL(2);
 
+int virIdentityGetUNIXUserName(virIdentityPtr ident,
+                               const char **username);
+int virIdentityGetUNIXUserID(virIdentityPtr ident,
+                             uid_t *uid);
+int virIdentityGetUNIXGroupName(virIdentityPtr ident,
+                                const char **groupname);
+int virIdentityGetUNIXGroupID(virIdentityPtr ident,
+                              gid_t *gid);
+int virIdentityGetUNIXProcessID(virIdentityPtr ident,
+                                pid_t *pid);
+int virIdentityGetUNIXProcessTime(virIdentityPtr ident,
+                                  unsigned long long *timestamp);
+int virIdentityGetSASLUserName(virIdentityPtr ident,
+                               const char **username);
+int virIdentityGetX509DName(virIdentityPtr ident,
+                            const char **dname);
+int virIdentityGetSELinuxContext(virIdentityPtr ident,
+                                 const char **context);
+
+
+int virIdentitySetUNIXUserName(virIdentityPtr ident,
+                               const char *username);
+int virIdentitySetUNIXUserID(virIdentityPtr ident,
+                             uid_t uid);
+int virIdentitySetUNIXGroupName(virIdentityPtr ident,
+                                const char *groupname);
+int virIdentitySetUNIXGroupID(virIdentityPtr ident,
+                              gid_t gid);
+int virIdentitySetUNIXProcessID(virIdentityPtr ident,
+                                pid_t pid);
+int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
+                                  unsigned long long timestamp);
+int virIdentitySetSASLUserName(virIdentityPtr ident,
+                               const char *username);
+int virIdentitySetX509DName(virIdentityPtr ident,
+                            const char *dname);
+int virIdentitySetSELinuxContext(virIdentityPtr ident,
+                                 const char *context);
+
+
 #endif /* __VIR_IDENTITY_H__ */
