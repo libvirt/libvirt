@@ -2486,13 +2486,11 @@ libvirt_net_rpc_server_la_CFLAGS = \
 			$(AVAHI_CFLAGS) \
 			$(DBUS_CFLAGS) \
 			$(XDR_CFLAGS) \
-			$(AM_CFLAGS) \
-			$(POLKIT_CFLAGS)
+			$(AM_CFLAGS)
 libvirt_net_rpc_server_la_LDFLAGS = \
 			$(AM_LDFLAGS) \
 			$(AVAHI_LIBS) \
 			$(DBUS_LIBS) \
-			$(POLKIT_LIBS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
 libvirt_net_rpc_server_la_LIBADD = \
