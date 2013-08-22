@@ -127,9 +127,9 @@ DB=None
 def createTable(db, name):
     global TABLES
 
-    if db == None:
+    if db is None:
         return -1
-    if name == None:
+    if name is None:
         return -1
     c = db.cursor()
 
@@ -147,7 +147,7 @@ def createTable(db, name):
 def checkTables(db, verbose = 1):
     global TABLES
 
-    if db == None:
+    if db is None:
         return -1
     c = db.cursor()
     nbtables = c.execute("show tables")
@@ -191,7 +191,7 @@ def checkTables(db, verbose = 1):
 def openMySQL(db="libvir", passwd=None, verbose = 1):
     global DB
 
-    if passwd == None:
+    if passwd is None:
         try:
             passwd = os.environ["MySQL_PASS"]
         except:
@@ -199,7 +199,7 @@ def openMySQL(db="libvir", passwd=None, verbose = 1):
             sys.exit(1)
 
     DB = MySQLdb.connect(passwd=passwd, db=db)
-    if DB == None:
+    if DB is None:
         return -1
     ret = checkTables(DB, verbose)
     return ret
@@ -207,13 +207,13 @@ def openMySQL(db="libvir", passwd=None, verbose = 1):
 def updateWord(name, symbol, relevance):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if name == None:
+    if name is None:
         return -1
-    if symbol == None:
+    if symbol is None:
         return -1
 
     c = DB.cursor()
@@ -238,15 +238,15 @@ def updateSymbol(name, module, type, desc):
     global DB
 
     updateWord(name, name, 50)
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if name == None:
+    if name is None:
         return -1
-    if module == None:
+    if module is None:
         return -1
-    if type == None:
+    if type is None:
         return -1
 
     try:
@@ -299,11 +299,11 @@ def addFunctype(name, module, desc = ""):
 def addPage(resource, title):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if resource == None:
+    if resource is None:
         return -1
 
     c = DB.cursor()
@@ -327,17 +327,17 @@ def addPage(resource, title):
 def updateWordHTML(name, resource, desc, id, relevance):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if name == None:
+    if name is None:
         return -1
-    if resource == None:
+    if resource is None:
         return -1
-    if id == None:
+    if id is None:
         id = ""
-    if desc == None:
+    if desc is None:
         desc = ""
     else:
         try:
@@ -367,11 +367,11 @@ def updateWordHTML(name, resource, desc, id, relevance):
 def checkXMLMsgArchive(url):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if url == None:
+    if url is None:
         return -1
 
     c = DB.cursor()
@@ -379,7 +379,7 @@ def checkXMLMsgArchive(url):
         ret = c.execute(
             """SELECT ID FROM archives WHERE resource='%s'""" % (url))
         row = c.fetchone()
-        if row == None:
+        if row is None:
             return -1
     except:
         return -1
@@ -389,13 +389,13 @@ def checkXMLMsgArchive(url):
 def addXMLMsgArchive(url, title):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if url == None:
+    if url is None:
         return -1
-    if title == None:
+    if title is None:
         title = ""
     else:
         title = string.replace(title, "'", " ")
@@ -408,7 +408,7 @@ def addXMLMsgArchive(url, title):
         cmd = """SELECT ID FROM archives WHERE resource='%s'""" % (url)
         ret = c.execute(cmd)
         row = c.fetchone()
-        if row == None:
+        if row is None:
             print "addXMLMsgArchive failed to get the ID: %s" % (url)
             return -1
     except:
@@ -420,13 +420,13 @@ def addXMLMsgArchive(url, title):
 def updateWordArchive(name, id, relevance):
     global DB
 
-    if DB == None:
+    if DB is None:
         openMySQL()
-    if DB == None:
+    if DB is None:
         return -1
-    if name == None:
+    if name is None:
         return -1
-    if id == None:
+    if id is None:
         return -1
 
     c = DB.cursor()
@@ -533,9 +533,9 @@ def splitIdentifier(str):
 def addWord(word, module, symbol, relevance):
     global wordsDict
 
-    if word == None or len(word) < 3:
+    if word is None or len(word) < 3:
         return -1
-    if module == None or symbol == None:
+    if module is None or symbol is None:
         return -1
     if dropWords.has_key(word):
         return 0
@@ -544,7 +544,7 @@ def addWord(word, module, symbol, relevance):
 
     if wordsDict.has_key(word):
         d = wordsDict[word]
-        if d == None:
+        if d is None:
             return 0
         if len(d) > 500:
             wordsDict[word] = None
@@ -559,7 +559,7 @@ def addWord(word, module, symbol, relevance):
     return relevance
 
 def addString(str, module, symbol, relevance):
-    if str == None or len(str) < 3:
+    if str is None or len(str) < 3:
         return -1
     ret = 0
     str = cleanupWordsString(str)
@@ -573,9 +573,9 @@ def addString(str, module, symbol, relevance):
 def addWordHTML(word, resource, id, section, relevance):
     global wordsDictHTML
 
-    if word == None or len(word) < 3:
+    if word is None or len(word) < 3:
         return -1
-    if resource == None or section == None:
+    if resource is None or section is None:
         return -1
     if dropWords.has_key(word):
         return 0
@@ -586,14 +586,14 @@ def addWordHTML(word, resource, id, section, relevance):
 
     if wordsDictHTML.has_key(word):
         d = wordsDictHTML[word]
-        if d == None:
+        if d is None:
             print "skipped %s" % (word)
             return 0
         try:
             (r,i,s) = d[resource]
-            if i != None:
+            if i is not None:
                 id = i
-            if s != None:
+            if s is not None:
                 section = s
             relevance = relevance + r
         except:
@@ -605,7 +605,7 @@ def addWordHTML(word, resource, id, section, relevance):
     return relevance
 
 def addStringHTML(str, resource, id, section, relevance):
-    if str == None or len(str) < 3:
+    if str is None or len(str) < 3:
         return -1
     ret = 0
     str = cleanupWordsString(str)
@@ -626,9 +626,9 @@ def addStringHTML(str, resource, id, section, relevance):
 def addWordArchive(word, id, relevance):
     global wordsDictArchive
 
-    if word == None or len(word) < 3:
+    if word is None or len(word) < 3:
         return -1
-    if id == None or id == -1:
+    if id is None or id == -1:
         return -1
     if dropWords.has_key(word):
         return 0
@@ -637,7 +637,7 @@ def addWordArchive(word, id, relevance):
 
     if wordsDictArchive.has_key(word):
         d = wordsDictArchive[word]
-        if d == None:
+        if d is None:
             print "skipped %s" % (word)
             return 0
         try:
@@ -652,7 +652,7 @@ def addWordArchive(word, id, relevance):
     return relevance
 
 def addStringArchive(str, id, relevance):
-    if str == None or len(str) < 3:
+    if str is None or len(str) < 3:
         return -1
     ret = 0
     str = cleanupWordsString(str)
@@ -683,9 +683,9 @@ def loadAPI(filename):
     return doc
 
 def foundExport(file, symbol):
-    if file == None:
+    if file is None:
         return 0
-    if symbol == None:
+    if symbol is None:
         return 0
     addFunction(symbol, file)
     l = splitIdentifier(symbol)
@@ -697,7 +697,7 @@ def analyzeAPIFile(top):
     count = 0
     name = top.prop("name")
     cur = top.children
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -712,7 +712,7 @@ def analyzeAPIFiles(top):
     count = 0
     cur = top.children
 
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -725,10 +725,10 @@ def analyzeAPIFiles(top):
 
 def analyzeAPIEnum(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     addEnum(symbol, file)
@@ -740,10 +740,10 @@ def analyzeAPIEnum(top):
 
 def analyzeAPIConst(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     addConst(symbol, file)
@@ -755,10 +755,10 @@ def analyzeAPIConst(top):
 
 def analyzeAPIType(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     addType(symbol, file)
@@ -769,10 +769,10 @@ def analyzeAPIType(top):
 
 def analyzeAPIFunctype(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     addFunctype(symbol, file)
@@ -783,10 +783,10 @@ def analyzeAPIFunctype(top):
 
 def analyzeAPIStruct(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     addStruct(symbol, file)
@@ -795,7 +795,7 @@ def analyzeAPIStruct(top):
         addWord(word, file, symbol, 10)
 
     info = top.prop("info")
-    if info != None:
+    if info is not None:
         info = string.replace(info, "'", " ")
         info = string.strip(info)
         l = string.split(info)
@@ -806,17 +806,17 @@ def analyzeAPIStruct(top):
 
 def analyzeAPIMacro(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
     symbol = string.replace(symbol, "'", " ")
     symbol = string.strip(symbol)
 
     info = None
     cur = top.children
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -829,7 +829,7 @@ def analyzeAPIMacro(top):
     for word in l:
         addWord(word, file, symbol, 10)
 
-    if info == None:
+    if info is None:
         addMacro(symbol, file)
         print "Macro %s description has no <info>" % (symbol)
         return 0
@@ -845,17 +845,17 @@ def analyzeAPIMacro(top):
 
 def analyzeAPIFunction(top):
     file = top.prop("file")
-    if file == None:
+    if file is None:
         return 0
     symbol = top.prop("name")
-    if symbol == None:
+    if symbol is None:
         return 0
 
     symbol = string.replace(symbol, "'", " ")
     symbol = string.strip(symbol)
     info = None
     cur = top.children
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -863,23 +863,23 @@ def analyzeAPIFunction(top):
             info = cur.content
         elif cur.name == "return":
             rinfo = cur.prop("info")
-            if rinfo != None:
+            if rinfo is not None:
                 rinfo = string.replace(rinfo, "'", " ")
                 rinfo = string.strip(rinfo)
                 addString(rinfo, file, symbol, 7)
         elif cur.name == "arg":
             ainfo = cur.prop("info")
-            if ainfo != None:
+            if ainfo is not None:
                 ainfo = string.replace(ainfo, "'", " ")
                 ainfo = string.strip(ainfo)
                 addString(ainfo, file, symbol, 5)
             name = cur.prop("name")
-            if name != None:
+            if name is not None:
                 name = string.replace(name, "'", " ")
                 name = string.strip(name)
                 addWord(name, file, symbol, 7)
         cur = cur.next
-    if info == None:
+    if info is None:
         print "Function %s description has no <info>" % (symbol)
         addFunction(symbol, file, "")
     else:
@@ -898,7 +898,7 @@ def analyzeAPISymbols(top):
     count = 0
     cur = top.children
 
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -923,14 +923,14 @@ def analyzeAPISymbols(top):
 
 def analyzeAPI(doc):
     count = 0
-    if doc == None:
+    if doc is None:
         return -1
     root = doc.getRootElement()
     if root.name != "api":
         print "Unexpected root name"
         return -1
     cur = root.children
-    while cur != None:
+    while cur is not None:
         if cur.type == 'text':
             cur = cur.next
             continue
@@ -1056,7 +1056,7 @@ def analyzeHTMLPages():
 import time
 
 def getXMLDateArchive(t = None):
-    if t == None:
+    if t is None:
         t = time.time()
     T = time.gmtime(t)
     month = time.strftime("%B", T)
@@ -1065,7 +1065,7 @@ def getXMLDateArchive(t = None):
     return url
 
 def scanXMLMsgArchive(url, title, force = 0):
-    if url == None or title == None:
+    if url is None or title is None:
         return 0
 
     ID = checkXMLMsgArchive(url)
@@ -1082,7 +1082,7 @@ def scanXMLMsgArchive(url, title, force = 0):
         doc = libxml2.htmlParseFile(url, None)
     except:
         doc = None
-    if doc == None:
+    if doc is None:
         print "Failed to parse %s" % (url)
         return 0
 
@@ -1105,7 +1105,7 @@ def scanXMLDateArchive(t = None, force = 0):
         doc = libxml2.htmlParseFile(url, None)
     except:
         doc = None
-    if doc == None:
+    if doc is None:
         print "Failed to parse %s" % (url)
         return -1
     ctxt = doc.xpathNewContext()
@@ -1114,16 +1114,16 @@ def scanXMLDateArchive(t = None, force = 0):
     newmsg = 0
     for anchor in anchors:
         href = anchor.prop("href")
-        if href == None or href[0:3] != "msg":
+        if href is None or href[0:3] != "msg":
             continue
         try:
             links = links + 1
 
             msg = libxml2.buildURI(href, url)
             title = anchor.content
-            if title != None and title[0:4] == 'Re: ':
+            if title is not None and title[0:4] == 'Re: ':
                 title = title[4:]
-            if title != None and title[0:6] == '[xml] ':
+            if title is not None and title[0:6] == '[xml] ':
                 title = title[6:]
             newmsg = newmsg + scanXMLMsgArchive(msg, title, force)
 
@@ -1148,7 +1148,7 @@ def analyzeArchives(t = None, force = 0):
     skipped = 0
     for word in wordsDictArchive.keys():
         refs = wordsDictArchive[word]
-        if refs  == None:
+        if refs is None:
             skipped = skipped + 1
             continue
         for id in refs.keys():
@@ -1168,7 +1168,7 @@ def analyzeHTMLTop():
     skipped = 0
     for word in wordsDictHTML.keys():
         refs = wordsDictHTML[word]
-        if refs  == None:
+        if refs is None:
             skipped = skipped + 1
             continue
         for resource in refs.keys():
@@ -1197,7 +1197,7 @@ def analyzeAPITop():
     skipped = 0
     for word in wordsDict.keys():
         refs = wordsDict[word]
-        if refs  == None:
+        if refs is None:
             skipped = skipped + 1
             continue
         for (module, symbol) in refs.keys():

@@ -19,7 +19,7 @@ if len(sys.argv) != 2:
 dir = sys.argv[1]
 
 conn = libvirt.open(None)
-if conn == None:
+if conn is None:
     print 'Failed to open connection to the hypervisor'
     sys.exit(1)
 

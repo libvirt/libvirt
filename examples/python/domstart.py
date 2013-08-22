@@ -33,7 +33,7 @@ if len(sys.argv) != 2:
 (name, xmldesc) = read_domain(sys.argv[1])
 
 conn = libvirt.open(None)
-if conn == None:
+if conn is None:
     print 'Failed to open connection to the hypervisor'
     sys.exit(1)
 
@@ -43,7 +43,7 @@ except libvirt.libvirtError:
     print "Starting domain %s ... " % name,
     sys.stdout.flush()
     dom = conn.createLinux(xmldesc, 0)
-    if dom == None:
+    if dom is None:
         print "failed"
         sys.exit(1)
     else:

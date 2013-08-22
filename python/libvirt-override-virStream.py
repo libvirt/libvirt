@@ -5,7 +5,7 @@
         except AttributeError:
            pass
 
-        if self._o != None:
+        if self._o is not None:
             libvirtmod.virStreamFree(self._o)
         self._o = None
 
@@ -103,7 +103,7 @@
         the request would block, integer -2 is returned.
         """
         ret = libvirtmod.virStreamRecv(self._o, nbytes)
-        if ret == None: raise libvirtError ('virStreamRecv() failed')
+        if ret is None: raise libvirtError ('virStreamRecv() failed')
         return ret
 
     def send(self, data):

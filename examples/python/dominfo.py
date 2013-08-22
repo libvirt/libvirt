@@ -35,7 +35,7 @@ name = sys.argv[1]
 
 # Connect to libvirt
 conn = libvirt.openReadOnly(None)
-if conn == None:
+if conn is None:
     print 'Failed to open connection to the hypervisor'
     sys.exit(1)
 

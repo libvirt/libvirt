@@ -7,7 +7,7 @@
         except AttributeError:
            pass
 
-        if self._o != None:
+        if self._o is not None:
             libvirtmod.virConnectClose(self._o)
         self._o = None
 
