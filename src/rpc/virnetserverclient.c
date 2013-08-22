@@ -652,7 +652,9 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
     char *processid = NULL;
     char *processtime = NULL;
     char *username = NULL;
+    char *userid = NULL;
     char *groupname = NULL;
+    char *groupid = NULL;
 #if WITH_SASL
     char *saslname = NULL;
 #endif
@@ -672,7 +674,11 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 
         if (!(username = virGetUserName(uid)))
             goto cleanup;
+        if (virAsprintf(&userid, "%d", (int)uid) < 0)
+            goto cleanup;
         if (!(groupname = virGetGroupName(gid)))
+            goto cleanup;
+        if (virAsprintf(&userid, "%d", (int)gid) < 0)
             goto cleanup;
         if (virAsprintf(&processid, "%llu",
                         (unsigned long long)pid) < 0)
@@ -710,10 +716,20 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
                            VIR_IDENTITY_ATTR_UNIX_USER_NAME,
                            username) < 0)
         goto error;
+    if (userid &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                           userid) < 0)
+        goto error;
     if (groupname &&
         virIdentitySetAttr(ret,
                            VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
                            groupname) < 0)
+        goto error;
+    if (groupid &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                           groupid) < 0)
         goto error;
     if (processid &&
         virIdentitySetAttr(ret,
@@ -745,7 +761,9 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 
 cleanup:
     VIR_FREE(username);
+    VIR_FREE(userid);
     VIR_FREE(groupname);
+    VIR_FREE(groupid);
     VIR_FREE(processid);
     VIR_FREE(processtime);
     VIR_FREE(seccontext);
