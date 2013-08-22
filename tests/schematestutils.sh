@@ -1,5 +1,7 @@
 #!/bin/sh
 
+(xmllint --version) >/dev/null 2>&1 || skip_test_ 'Missing xmllint'
+
 check_schema () {
 
 DIRS=$1
