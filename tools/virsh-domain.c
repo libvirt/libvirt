@@ -6350,7 +6350,9 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
     if (!nparams) {
         vshPrint(ctl, "%s", _("No per-CPU stats available"));
-        goto do_show_total;
+        if (show_total)
+            goto do_show_total;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(params, nparams * MIN(show_count, 128)) < 0)
@@ -6389,10 +6391,12 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     }
     VIR_FREE(params);
 
-do_show_total:
-    if (!show_total)
+    if (!show_total) {
+        ret = true;
         goto cleanup;
+    }
 
+do_show_total:
     /* get supported num of parameter for total statistics */
     if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, flags)) < 0)
         goto failed_stats;
