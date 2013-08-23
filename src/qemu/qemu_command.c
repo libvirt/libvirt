@@ -4351,6 +4351,13 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             goto error;
         break;
     case VIR_DOMAIN_DISK_BUS_USB:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support '-device "
+                             "usb-storage'"));
+            goto error;
+
+        }
         virBufferAddLit(&opt, "usb-storage");
 
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)

@@ -237,6 +237,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "dmi-to-pci-bridge",
               "i440fx-pci-hole64-size",
               "q35-pci-hole64-size",
+
+              "usb-storage", /* 155 */
     );
 
 struct _virQEMUCaps {
@@ -1385,6 +1387,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vfio-pci", QEMU_CAPS_DEVICE_VFIO_PCI },
     { "scsi-generic", QEMU_CAPS_DEVICE_SCSI_GENERIC },
     { "i82801b11-bridge", QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE },
+    { "usb-storage", QEMU_CAPS_DEVICE_USB_STORAGE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
