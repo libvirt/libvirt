@@ -4302,7 +4302,7 @@
   </define>
   <define name='aliasName'>
     <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\-]+</param>
+      <param name="pattern">[a-zA-Z0-9_\-.]+</param>
     </data>
   </define>
   <define name='alias'>
