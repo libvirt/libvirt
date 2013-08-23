@@ -693,6 +693,7 @@ struct _virDomainDiskDef {
     char *src;
     char *dst;
     int tray_status;
+    int removable;
     int protocol;
     size_t nhosts;
     virDomainDiskHostDefPtr hosts;

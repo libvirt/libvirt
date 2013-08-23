@@ -1287,6 +1287,14 @@
           </choice>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="removable">
+          <choice>
+            <value>on</value>
+            <value>off</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="geometry">

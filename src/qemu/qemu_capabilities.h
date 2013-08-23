@@ -194,6 +194,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_I440FX_PCI_HOLE64_SIZE = 153, /* i440FX-pcihost.pci-hole64-size */
     QEMU_CAPS_Q35_PCI_HOLE64_SIZE = 154, /* q35-pcihost.pci-hole64-size */
     QEMU_CAPS_DEVICE_USB_STORAGE = 155, /* -device usb-storage */
+    QEMU_CAPS_USB_STORAGE_REMOVABLE = 156, /* usb-storage.removable */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

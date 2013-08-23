@@ -4758,6 +4758,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *authUUID = NULL;
     char *usageType = NULL;
     char *tray = NULL;
+    char *removable = NULL;
     char *logical_block_size = NULL;
     char *physical_block_size = NULL;
     char *wwn = NULL;
@@ -4914,6 +4915,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 target = virXMLPropString(cur, "dev");
                 bus = virXMLPropString(cur, "bus");
                 tray = virXMLPropString(cur, "tray");
+                removable = virXMLPropString(cur, "removable");
 
                 /* HACK: Work around for compat with Xen
                  * driver in previous libvirt releases */
@@ -5348,6 +5350,24 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
     }
 
+    if (removable) {
+        if ((def->removable = virDomainFeatureStateTypeFromString(removable)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown disk removable status '%s'"), removable);
+            goto error;
+        }
+
+        if (def->bus != VIR_DOMAIN_DISK_BUS_USB) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("removable is only valid for usb disks"));
+            goto error;
+        }
+    } else {
+        if (def->bus == VIR_DOMAIN_DISK_BUS_USB) {
+            def->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
+        }
+    }
+
     if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
         def->bus != VIR_DOMAIN_DISK_BUS_FDC) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5553,6 +5573,7 @@ cleanup:
     VIR_FREE(target);
     VIR_FREE(source);
     VIR_FREE(tray);
+    VIR_FREE(removable);
     VIR_FREE(trans);
     while (nhosts > 0) {
         virDomainDiskHostDefFree(&hosts[nhosts - 1]);
@@ -14410,10 +14431,14 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
          def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
         def->tray_status != VIR_DOMAIN_DISK_TRAY_CLOSED)
-        virBufferAsprintf(buf, " tray='%s'/>\n",
+        virBufferAsprintf(buf, " tray='%s'",
                           virDomainDiskTrayTypeToString(def->tray_status));
-    else
-        virBufferAddLit(buf, "/>\n");
+    if (def->bus == VIR_DOMAIN_DISK_BUS_USB &&
+        def->removable != VIR_DOMAIN_FEATURE_STATE_DEFAULT) {
+        virBufferAsprintf(buf, " removable='%s'",
+                          virDomainFeatureStateTypeToString(def->removable));
+    }
+    virBufferAddLit(buf, "/>\n");
 
     /*disk I/O throttling*/
     if (def->blkdeviotune.total_bytes_sec ||

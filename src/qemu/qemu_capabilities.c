@@ -239,6 +239,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "q35-pci-hole64-size",
 
               "usb-storage", /* 155 */
+              "usb-storage.removable",
     );
 
 struct _virQEMUCaps {
@@ -1449,6 +1450,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PciHost[] = {
     { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbStorage[] = {
+    { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1490,6 +1495,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPciHost) },
     { "q35-pcihost", virQEMUCapsObjectPropsQ35PciHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PciHost) },
+    { "usb-storage", virQEMUCapsObjectPropsUsbStorage,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbStorage) },
 };
 
 
@@ -1680,6 +1687,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
                          "-device", "ide-drive,?",
                          "-device", "usb-host,?",
                          "-device", "scsi-generic,?",
+                         "-device", "usb-storage,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);

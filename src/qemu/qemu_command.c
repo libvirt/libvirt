@@ -4394,6 +4394,22 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     if (disk->product)
         virBufferAsprintf(&opt, ",product=%s", disk->product);
 
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
+            if (disk->removable == VIR_DOMAIN_FEATURE_STATE_ON)
+                virBufferAddLit(&opt, ",removable=on");
+            else
+                virBufferAddLit(&opt, ",removable=off");
+        } else {
+            if (disk->removable != VIR_DOMAIN_FEATURE_STATE_DEFAULT) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support setting the "
+                                 "removable flag of USB storage devices"));
+                goto error;
+            }
+        }
+    }
+
     if (virBufferError(&opt)) {
         virReportOOMError();
         goto error;
@@ -11350,6 +11366,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                     disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 disk->bus = VIR_DOMAIN_DISK_BUS_USB;
+                disk->removable = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
                 if (VIR_STRDUP(disk->dst, "sda") < 0)
                     goto error;
                 if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)

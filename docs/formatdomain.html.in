@@ -1792,9 +1792,13 @@
         removable disks (i.e. CDROM or Floppy disk), the value can be either
         "open" or "closed", defaults to "closed". NB, the value of
         <code>tray</code> could be updated while the domain is running.
-        <span class="since">Since 0.0.3; <code>bus</code> attribute since 0.4.3;
+        The optional attribute <code>removable</code> sets the
+        removable flag for USB disks, and its value can be either "on"
+        or "off", defaulting to "off". <span class="since">Since
+        0.0.3; <code>bus</code> attribute since 0.4.3;
         <code>tray</code> attribute since 0.9.11; "usb" attribute value since
-        after 0.4.4; "sata" attribute value since 0.9.7</span>
+        after 0.4.4; "sata" attribute value since 0.9.7; "removable" attribute
+        value since 1.1.3</span>
       </dd>
       <dt><code>iotune</code></dt>
       <dd>The optional <code>iotune</code> element provides the
