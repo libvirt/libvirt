@@ -115,13 +115,13 @@ virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         return -1;
     }
 
-    if ((ret = virSecurityDACParseIds(def, uidPtr, gidPtr)) <= 0) {
-        if (groups)
-            *groups = NULL;
-        if (ngroups)
-            *ngroups = 0;
+    if (groups)
+        *groups = priv ? priv->groups : NULL;
+    if (ngroups)
+        *ngroups = priv ? priv->ngroups : 0;
+
+    if ((ret = virSecurityDACParseIds(def, uidPtr, gidPtr)) <= 0)
         return ret;
-    }
 
     if (!priv) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -134,10 +134,6 @@ virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
         *uidPtr = priv->user;
     if (gidPtr)
         *gidPtr = priv->group;
-    if (groups)
-        *groups = priv->groups;
-    if (ngroups)
-        *ngroups = priv->ngroups;
 
     return 0;
 }
