@@ -998,10 +998,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        bool multiqueue = tapfdSize > 1 || vhostfdSize > 1;
-
         if (!(nicstr = qemuBuildNicDevStr(vm->def, net, vlan, 0,
-                                          multiqueue, priv->qemuCaps)))
+                                          vhostfdSize, priv->qemuCaps)))
             goto try_remove;
     } else {
         if (!(nicstr = qemuBuildNicStr(net, NULL, vlan)))
