@@ -169,8 +169,8 @@ virt_login_shell_CFLAGS =					\
 		$(COVERAGE_CFLAGS)
 
 virsh_SOURCES =							\
-		console.c console.h				\
 		virsh.c virsh.h					\
+		virsh-console.c virsh-console.h			\
 		virsh-domain.c virsh-domain.h			\
 		virsh-domain-monitor.c virsh-domain-monitor.h	\
 		virsh-host.c virsh-host.h			\

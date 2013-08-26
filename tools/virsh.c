@@ -57,7 +57,6 @@
 #include "virerror.h"
 #include "base64.h"
 #include "virbuffer.h"
-#include "console.h"
 #include "viralloc.h"
 #include "virxml.h"
 #include <libvirt/libvirt-qemu.h>
@@ -73,6 +72,7 @@
 #include "virtypedparam.h"
 #include "virstring.h"
 
+#include "virsh-console.h"
 #include "virsh-domain.h"
 #include "virsh-domain-monitor.h"
 #include "virsh-host.h"

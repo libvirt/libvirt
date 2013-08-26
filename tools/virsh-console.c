@@ -1,7 +1,7 @@
 /*
- * console.c: A dumb serial console client
+ * virsh-console.c: A dumb serial console client
  *
- * Copyright (C) 2007-2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,8 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Daniel Berrange <berrange@redhat.com>
+ * Authors:
+ *     Daniel Berrange <berrange@redhat.com>
  */
 
 #include <config.h>
@@ -37,7 +38,7 @@
 # include <c-ctype.h>
 
 # include "internal.h"
-# include "console.h"
+# include "virsh-console.h"
 # include "virlog.h"
 # include "virfile.h"
 # include "viralloc.h"
@@ -58,6 +59,7 @@ struct virConsoleBuffer {
     char *data;
 };
 
+
 typedef struct virConsole virConsole;
 typedef virConsole *virConsolePtr;
 struct virConsole {
@@ -75,10 +77,14 @@ struct virConsole {
     char escapeChar;
 };
 
+
 static int got_signal = 0;
-static void do_signal(int sig ATTRIBUTE_UNUSED) {
+static void
+virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
+{
     got_signal = 1;
 }
+
 
 # ifndef HAVE_CFMAKERAW
 static void
@@ -92,6 +98,7 @@ cfmakeraw(struct termios *attr)
     attr->c_cflag |= CS8;
 }
 # endif /* !HAVE_CFMAKERAW */
+
 
 static void
 virConsoleShutdown(virConsolePtr con)
@@ -113,6 +120,21 @@ virConsoleShutdown(virConsolePtr con)
     con->quit = true;
     virCondSignal(&con->cond);
 }
+
+
+static void
+virConsoleFree(virConsolePtr con)
+{
+    if (!con)
+        return;
+
+    if (con->st)
+        virStreamFree(con->st);
+    virMutexDestroy(&con->lock);
+    virCondDestroy(&con->cond);
+    VIR_FREE(con);
+}
+
 
 static void
 virConsoleEventOnStream(virStreamPtr st,
@@ -171,9 +193,8 @@ virConsoleEventOnStream(virStreamPtr st,
 
         avail = con->terminalToStream.length - con->terminalToStream.offset;
         if (avail > 1024) {
-            if (VIR_REALLOC_N(con->terminalToStream.data,
-                              con->terminalToStream.offset + 1024) < 0)
-            {}
+            ignore_value(VIR_REALLOC_N(con->terminalToStream.data,
+                                       con->terminalToStream.offset + 1024));
             con->terminalToStream.length = con->terminalToStream.offset + 1024;
         }
     }
@@ -186,6 +207,7 @@ virConsoleEventOnStream(virStreamPtr st,
         virConsoleShutdown(con);
     }
 }
+
 
 static void
 virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
@@ -242,6 +264,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
     }
 }
 
+
 static void
 virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
                         int fd,
@@ -270,9 +293,8 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 
         avail = con->streamToTerminal.length - con->streamToTerminal.offset;
         if (avail > 1024) {
-            if (VIR_REALLOC_N(con->streamToTerminal.data,
-                              con->streamToTerminal.offset + 1024) < 0)
-            {}
+            ignore_value(VIR_REALLOC_N(con->streamToTerminal.data,
+                                       con->streamToTerminal.offset + 1024));
             con->streamToTerminal.length = con->streamToTerminal.offset + 1024;
         }
     }
@@ -295,6 +317,7 @@ vshGetEscapeChar(const char *s)
 
     return *s;
 }
+
 
 int
 vshMakeStdinRaw(struct termios *ttyattr, bool report_errors)
@@ -322,10 +345,12 @@ vshMakeStdinRaw(struct termios *ttyattr, bool report_errors)
     return 0;
 }
 
-int vshRunConsole(virDomainPtr dom,
-                  const char *dev_name,
-                  const char *escape_seq,
-                  unsigned int flags)
+
+int
+vshRunConsole(virDomainPtr dom,
+              const char *dev_name,
+              const char *escape_seq,
+              unsigned int flags)
 {
     int ret = -1;
     struct termios ttyattr;
@@ -348,11 +373,11 @@ int vshRunConsole(virDomainPtr dom,
        the original terminal settings on STDIN before the
        process exits - people don't like being left with a
        messed up terminal ! */
-    old_sigquit = signal(SIGQUIT, do_signal);
-    old_sigterm = signal(SIGTERM, do_signal);
-    old_sigint = signal(SIGINT, do_signal);
-    old_sighup = signal(SIGHUP, do_signal);
-    old_sigpipe = signal(SIGPIPE, do_signal);
+    old_sigquit = signal(SIGQUIT, virConsoleHandleSignal);
+    old_sigterm = signal(SIGTERM, virConsoleHandleSignal);
+    old_sigint = signal(SIGINT, virConsoleHandleSignal);
+    old_sighup = signal(SIGHUP, virConsoleHandleSignal);
+    old_sigpipe = signal(SIGPIPE, virConsoleHandleSignal);
     got_signal = 0;
 
     if (VIR_ALLOC(con) < 0)
@@ -396,15 +421,8 @@ int vshRunConsole(virDomainPtr dom,
 
     ret = 0;
 
- cleanup:
-
-    if (con) {
-        if (con->st)
-            virStreamFree(con->st);
-        virMutexDestroy(&con->lock);
-        virCondDestroy(&con->cond);
-        VIR_FREE(con);
-    }
+cleanup:
+    virConsoleFree(con);
 
     /* Restore original signal handlers */
     signal(SIGPIPE, old_sigpipe);

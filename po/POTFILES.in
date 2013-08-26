@@ -213,10 +213,10 @@ src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
 src/xenxs/xen_sxpr.c
 src/xenxs/xen_xm.c
-tools/console.c
 tools/libvirt-guests.sh.in
 tools/virsh.c
 tools/virsh.h
+tools/virsh-console.c
 tools/virsh-domain-monitor.c
 tools/virsh-domain.c
 tools/virsh-edit.c
