@@ -7903,10 +7903,21 @@ static const vshCmdInfo info_lxc_enter_namespace[] = {
 };
 
 static const vshCmdOptDef opts_lxc_enter_namespace[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
-    {"noseclabel", VSH_OT_BOOL, 0, N_("Do not change process security label")},
-    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("namespace")},
-    {NULL, 0, 0, NULL}
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "noseclabel",
+     .type = VSH_OT_BOOL,
+     .help = N_("Do not change process security label")
+    },
+    {.name = "cmd",
+     .type = VSH_OT_ARGV,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("namespace")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -10290,7 +10301,7 @@ static const vshCmdOptDef opts_domfstrim[] = {
      .type = VSH_OT_DATA,
      .help = N_("which mount point to trim")
     },
-    {NULL, 0, 0, NULL}
+    {.name = NULL}
 };
 static bool
 cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
