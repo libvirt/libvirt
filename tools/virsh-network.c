@@ -918,7 +918,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     const char *affected;
 
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "command", &commandStr) < 0)
         goto cleanup;
