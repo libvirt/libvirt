@@ -1452,8 +1452,8 @@ cleanup:
 }
 
 static void
-print_job_progress(const char *label, unsigned long long remaining,
-                   unsigned long long total)
+vshPrintJobProgress(const char *label, unsigned long long remaining,
+                    unsigned long long total)
 {
     int progress;
 
@@ -1624,8 +1624,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
             break;
 
         if (verbose)
-            print_job_progress(_("Block Commit"),
-                               info.end - info.cur, info.end);
+            vshPrintJobProgress(_("Block Commit"),
+                                info.end - info.cur, info.end);
 
         GETTIMEOFDAY(&curr);
         if (intCaught || (timeout &&
@@ -1650,7 +1650,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 
     if (verbose && !quit) {
         /* printf [100 %] */
-        print_job_progress(_("Block Commit"), 0, 1);
+        vshPrintJobProgress(_("Block Commit"), 0, 1);
     }
     vshPrint(ctl, "\n%s", quit ? _("Commit aborted") : _("Commit complete"));
 
@@ -1818,7 +1818,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             break;
 
         if (verbose)
-            print_job_progress(_("Block Copy"), info.end - info.cur, info.end);
+            vshPrintJobProgress(_("Block Copy"), info.end - info.cur, info.end);
         if (info.cur == info.end)
             break;
 
@@ -1961,7 +1961,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
         break;
     }
 
-    print_job_progress(type, info.end - info.cur, info.end);
+    vshPrintJobProgress(type, info.end - info.cur, info.end);
     if (info.bandwidth != 0)
         vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s\n"), info.bandwidth);
     return true;
@@ -2095,7 +2095,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
             break;
 
         if (verbose)
-            print_job_progress(_("Block Pull"), info.end - info.cur, info.end);
+            vshPrintJobProgress(_("Block Pull"), info.end - info.cur, info.end);
 
         GETTIMEOFDAY(&curr);
         if (intCaught || (timeout &&
@@ -2120,7 +2120,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 
     if (verbose && !quit) {
         /* printf [100 %] */
-        print_job_progress(_("Block Pull"), 0, 1);
+        vshPrintJobProgress(_("Block Pull"), 0, 1);
     }
     vshPrint(ctl, "\n%s", quit ? _("Pull aborted") : _("Pull complete"));
 
@@ -3553,7 +3553,7 @@ repoll:
                 retchar == '0') {
                 if (verbose) {
                     /* print [100 %] */
-                    print_job_progress(label, 0, 1);
+                    vshPrintJobProgress(label, 0, 1);
                 }
                 break;
             }
@@ -3588,8 +3588,8 @@ repoll:
             ret = virDomainGetJobInfo(dom, &jobinfo);
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
             if (ret == 0)
-                print_job_progress(label, jobinfo.dataRemaining,
-                                   jobinfo.dataTotal);
+                vshPrintJobProgress(label, jobinfo.dataRemaining,
+                                    jobinfo.dataTotal);
         }
     }
 
