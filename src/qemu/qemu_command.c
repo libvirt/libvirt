@@ -28,6 +28,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_bridge_filter.h"
 #include "cpu/cpu.h"
+#include "dirname.h"
 #include "passfd.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -10945,29 +10946,25 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     if (VIR_STRDUP(def->emulator, progargv[0]) < 0)
         goto error;
 
-    if (strstr(def->emulator, "kvm")) {
-        def->virtType = VIR_DOMAIN_VIRT_KVM;
-        def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
-    }
+    if (!(path = last_component(def->emulator)))
+        goto error;
 
-
-    if (strstr(def->emulator, "xenner")) {
+    if (strstr(path, "xenner")) {
         def->virtType = VIR_DOMAIN_VIRT_KVM;
         if (VIR_STRDUP(def->os.type, "xen") < 0)
             goto error;
     } else {
         if (VIR_STRDUP(def->os.type, "hvm") < 0)
             goto error;
+        if (strstr(path, "kvm")) {
+            def->virtType = VIR_DOMAIN_VIRT_KVM;
+            def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+        }
     }
 
-    if (STRPREFIX(def->emulator, "qemu"))
-        path = def->emulator;
-    else
-        path = strstr(def->emulator, "qemu");
     if (def->virtType == VIR_DOMAIN_VIRT_KVM)
         def->os.arch = qemuCaps->host.arch;
-    else if (path &&
-             STRPREFIX(path, "qemu-system-"))
+    else if (STRPREFIX(path, "qemu-system-"))
         def->os.arch = virArchFromString(path + strlen("qemu-system-"));
     else
         def->os.arch = VIR_ARCH_I686;
@@ -10976,6 +10973,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         (def->os.arch == VIR_ARCH_X86_64))
         def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI)
         /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
+
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
     if (!val) {                                                        \

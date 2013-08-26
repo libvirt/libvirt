@@ -2709,6 +2709,12 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 {
     size_t i;
 
+    if (!def->os.type) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("hypervisor type must be specified"));
+        return -1;
+    }
+
     /* verify init path for container based domains */
     if (STREQ(def->os.type, "exe") && !def->os.init) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
