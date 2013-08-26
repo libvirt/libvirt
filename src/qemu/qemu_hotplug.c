@@ -1143,6 +1143,8 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
 
     if (hostdev->source.subsys.u.pci.backend
         == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+        unsigned long long memKB;
+
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VFIO PCI device assignment is not "
@@ -1155,8 +1157,9 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
          * doesn't hurt to "change" the limit to the same value.
          */
         vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-        virProcessSetMaxMemLock(vm->pid,
-                                vm->def->mem.hard_limit * 1024);
+        memKB = vm->def->mem.hard_limit ?
+            vm->def->mem.hard_limit : vm->def->mem.max_balloon + 1024 * 1024;
+        virProcessSetMaxMemLock(vm->pid, memKB);
         vm->def->hostdevs[vm->def->nhostdevs--] = NULL;
     }
 
