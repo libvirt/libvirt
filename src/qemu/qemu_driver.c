@@ -3982,6 +3982,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                        _("got wrong number of vCPU pids from QEMU monitor. "
                          "got %d, wanted %d"),
                        ncpupids, vcpus);
+        vcpus = oldvcpus;
         ret = -1;
         goto cleanup;
     }
