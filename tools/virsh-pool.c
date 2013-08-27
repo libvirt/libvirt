@@ -1264,7 +1264,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Create the output template.  Each column is sized according to
      * the longest string.
      */
-    char *outputStr;
+    char *outputStr = NULL;
     ret = virAsprintf(&outputStr,
               "%%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
               (unsigned long) nameStrLength,
@@ -1319,6 +1319,7 @@ asprintf_failure:
     functionReturn = false;
 
 cleanup:
+    VIR_FREE(outputStr);
     if (list && list->npools) {
         for (i = 0; i < list->npools; i++) {
             VIR_FREE(poolInfoTexts[i].state);
