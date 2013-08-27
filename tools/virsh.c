@@ -2321,10 +2321,9 @@ vshInitDebug(vshControl *ctl)
         debugEnv = getenv("VIRSH_LOG_FILE");
         if (debugEnv && *debugEnv) {
             ctl->logfile = vshStrdup(ctl, debugEnv);
+            vshOpenLogFile(ctl);
         }
     }
-
-    vshOpenLogFile(ctl);
 }
 
 /*
@@ -2333,6 +2332,10 @@ vshInitDebug(vshControl *ctl)
 static bool
 vshInit(vshControl *ctl)
 {
+    /* Since we have the commandline arguments parsed, we need to
+     * re-initialize all the debugging to make it work properly */
+    vshInitDebug(ctl);
+
     if (ctl->conn)
         return false;
 
@@ -3041,7 +3044,9 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             ctl->readonly = true;
             break;
         case 'l':
+            vshCloseLogFile(ctl);
             ctl->logfile = vshStrdup(ctl, optarg);
+            vshOpenLogFile(ctl);
             break;
         case 'e':
             len = strlen(optarg);
