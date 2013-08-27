@@ -2476,6 +2476,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     if (safewrite(ctl->log_fd, str, len) < 0)
         goto error;
 
+    VIR_FREE(str);
     return;
 
 error:
