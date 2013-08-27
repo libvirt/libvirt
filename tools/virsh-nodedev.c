@@ -413,8 +413,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     for (i = 0; i < ncaps; i++) {
         if ((cap_type = virNodeDevCapTypeFromString(caps[i])) < 0) {
             vshError(ctl, "%s", _("Invalid capability type"));
-            VIR_FREE(caps);
-            return false;
+            ret = false;
+            goto cleanup;
         }
 
         switch (cap_type) {
