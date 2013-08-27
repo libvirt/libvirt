@@ -9965,26 +9965,36 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
     return matchidx;
 }
 
-virDomainNetDefPtr
-virDomainNetRemove(virDomainDefPtr def, size_t i)
-{
-    virDomainNetDefPtr net = def->nets[i];
 
+void
+virDomainNetRemoveHostdev(virDomainDefPtr def,
+                          virDomainNetDefPtr net)
+{
     if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* hostdev net devices are normally also be in the hostdevs
          * array, but might have already been removed by the time we
          * get here.
          */
         virDomainHostdevDefPtr hostdev = &net->data.hostdev.def;
-        size_t h;
+        size_t i;
 
-        for (h = 0; h < def->nhostdevs; h++) {
-            if (def->hostdevs[h] == hostdev) {
-                virDomainHostdevRemove(def, h);
+        for (i = 0; i < def->nhostdevs; i++) {
+            if (def->hostdevs[i] == hostdev) {
+                virDomainHostdevRemove(def, i);
                 break;
             }
         }
     }
+}
+
+
+virDomainNetDefPtr
+virDomainNetRemove(virDomainDefPtr def, size_t i)
+{
+    virDomainNetDefPtr net = def->nets[i];
+
+    virDomainNetRemoveHostdev(def, net);
+
     if (def->nnets > 1) {
         memmove(def->nets + i,
                 def->nets + i + 1,

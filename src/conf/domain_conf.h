@@ -2371,6 +2371,7 @@ int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetRemove(virDomainDefPtr def, size_t i);
+void virDomainNetRemoveHostdev(virDomainDefPtr def, virDomainNetDefPtr net);
 
 int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);
 virDomainHostdevDefPtr
