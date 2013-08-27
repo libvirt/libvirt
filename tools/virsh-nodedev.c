@@ -207,7 +207,7 @@ vshNodeDeviceListFree(vshNodeDeviceListPtr list)
 {
     size_t i;
 
-    if (list && list->ndevices) {
+    if (list && list->devices) {
         for (i = 0; i < list->ndevices; i++) {
             if (list->devices[i])
                 virNodeDeviceFree(list->devices[i]);

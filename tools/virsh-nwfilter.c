@@ -242,7 +242,7 @@ vshNWFilterListFree(vshNWFilterListPtr list)
 {
     size_t i;
 
-    if (list && list->nfilters) {
+    if (list && list->filters) {
         for (i = 0; i < list->nfilters; i++) {
             if (list->filters[i])
                 virNWFilterFree(list->filters[i]);

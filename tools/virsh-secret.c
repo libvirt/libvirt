@@ -370,7 +370,7 @@ vshSecretListFree(vshSecretListPtr list)
 {
     size_t i;
 
-    if (list && list->nsecrets) {
+    if (list && list->secrets) {
         for (i = 0; i < list->nsecrets; i++) {
             if (list->secrets[i])
                 virSecretFree(list->secrets[i]);

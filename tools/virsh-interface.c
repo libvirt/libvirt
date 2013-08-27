@@ -174,7 +174,7 @@ vshInterfaceListFree(vshInterfaceListPtr list)
 {
     size_t i;
 
-    if (list && list->nifaces) {
+    if (list && list->ifaces) {
         for (i = 0; i < list->nifaces; i++) {
             if (list->ifaces[i])
                 virInterfaceFree(list->ifaces[i]);
