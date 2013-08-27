@@ -17,4 +17,5 @@
 EXTRA_DIST=						\
 	README						\
 	consolecallback.py				\
+	topoology.py					\
 	dominfo.py domrestore.py domsave.py domstart.py esxlist.py
