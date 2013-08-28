@@ -35,6 +35,7 @@
 #include "virthread.h"
 #include "virutil.h"
 #include "virstring.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
@@ -142,12 +143,21 @@ virIdentityPtr virIdentityGetSystem(void)
     security_context_t con;
 #endif
     char *processid = NULL;
+    unsigned long long timestamp;
+    char *processtime = NULL;
 
     if (virAsprintf(&processid, "%llu",
                     (unsigned long long)getpid()) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+
+    if (virProcessGetStartTime(getpid(), &timestamp) < 0)
+        goto cleanup;
+
+    if (timestamp != 0 &&
+        virAsprintf(&processtime, "%llu", timestamp) < 0)
+        goto cleanup;
 
     if (!(username = virGetUserName(getuid())))
         goto cleanup;
@@ -200,6 +210,11 @@ virIdentityPtr virIdentityGetSystem(void)
                            VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
                            processid) < 0)
         goto error;
+    if (processtime &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                           processtime) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(username);
@@ -208,6 +223,7 @@ cleanup:
     VIR_FREE(groupid);
     VIR_FREE(seccontext);
     VIR_FREE(processid);
+    VIR_FREE(processtime);
     return ret;
 
 error:
