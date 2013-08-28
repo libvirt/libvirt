@@ -9634,8 +9634,8 @@ qemuBuildChrDeviceStr(char **deviceStr,
  * on space
  */
 static int qemuStringToArgvEnv(const char *args,
-                               const char ***retenv,
-                               const char ***retargv)
+                               char ***retenv,
+                               char ***retargv)
 {
     char **arglist = NULL;
     int argcount = 0;
@@ -9644,8 +9644,8 @@ static int qemuStringToArgvEnv(const char *args,
     size_t i;
     const char *curr = args;
     const char *start;
-    const char **progenv = NULL;
-    const char **progargv = NULL;
+    char **progenv = NULL;
+    char **progargv = NULL;
 
     /* Iterate over string, splitting on sequences of ' ' */
     while (curr && *curr != '\0') {
@@ -9726,12 +9726,8 @@ static int qemuStringToArgvEnv(const char *args,
     return 0;
 
 error:
-    for (i = 0; progenv && progenv[i]; i++)
-        VIR_FREE(progenv[i]);
-    VIR_FREE(progenv);
-    for (i = 0; i < argcount; i++)
-        VIR_FREE(arglist[i]);
-    VIR_FREE(arglist);
+    virStringFreeList(progenv);
+    virStringFreeList(arglist);
     return -1;
 }
 
@@ -9739,7 +9735,7 @@ error:
 /*
  * Search for a named env variable, and return the value part
  */
-static const char *qemuFindEnv(const char **progenv,
+static const char *qemuFindEnv(char **progenv,
                                const char *name)
 {
     size_t i;
@@ -10885,13 +10881,14 @@ qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str) {
  * virDomainDefPtr representing these settings as closely
  * as is practical. This is not an exact science....
  */
-virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
-                                     virDomainXMLOptionPtr xmlopt,
-                                     const char **progenv,
-                                     const char **progargv,
-                                     char **pidfile,
-                                     virDomainChrSourceDefPtr *monConfig,
-                                     bool *monJSON)
+static virDomainDefPtr
+qemuParseCommandLine(virCapsPtr qemuCaps,
+                     virDomainXMLOptionPtr xmlopt,
+                     char **progenv,
+                     char **progargv,
+                     char **pidfile,
+                     virDomainChrSourceDefPtr *monConfig,
+                     bool *monJSON)
 {
     virDomainDefPtr def;
     size_t i;
@@ -11847,10 +11844,9 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON)
 {
-    const char **progenv = NULL;
-    const char **progargv = NULL;
+    char **progenv = NULL;
+    char **progargv = NULL;
     virDomainDefPtr def = NULL;
-    size_t i;
 
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
@@ -11859,13 +11855,8 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
                                pidfile, monConfig, monJSON);
 
 cleanup:
-    for (i = 0; progargv && progargv[i]; i++)
-        VIR_FREE(progargv[i]);
-    VIR_FREE(progargv);
-
-    for (i = 0; progenv && progenv[i]; i++)
-        VIR_FREE(progenv[i]);
-    VIR_FREE(progenv);
+    virStringFreeList(progargv);
+    virStringFreeList(progenv);
 
     return def;
 }
@@ -11873,7 +11864,7 @@ cleanup:
 
 static int qemuParseProcFileStrings(int pid_value,
                                     const char *name,
-                                    const char ***list)
+                                    char ***list)
 {
     char *path = NULL;
     int ret = -1;
@@ -11882,7 +11873,6 @@ static int qemuParseProcFileStrings(int pid_value,
     char *tmp;
     size_t nstr = 0;
     char **str = NULL;
-    size_t i;
 
     if (virAsprintf(&path, "/proc/%d/%s", pid_value, name) < 0)
         goto cleanup;
@@ -11909,14 +11899,11 @@ static int qemuParseProcFileStrings(int pid_value,
     str[nstr-1] = NULL;
 
     ret = nstr-1;
-    *list = (const char **) str;
+    *list = str;
 
 cleanup:
-    if (ret < 0) {
-        for (i = 0; str && str[i]; i++)
-            VIR_FREE(str[i]);
-        VIR_FREE(str);
-    }
+    if (ret < 0)
+        virStringFreeList(str);
     VIR_FREE(data);
     VIR_FREE(path);
     return ret;
@@ -11930,11 +11917,10 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
                                         bool *monJSON)
 {
     virDomainDefPtr def = NULL;
-    const char **progargv = NULL;
-    const char **progenv = NULL;
+    char **progargv = NULL;
+    char **progenv = NULL;
     char *exepath = NULL;
     char *emulator;
-    size_t i;
 
     /* The parser requires /proc/pid, which only exists on platforms
      * like Linux where pid_t fits in int.  */
@@ -11961,11 +11947,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
 
 cleanup:
     VIR_FREE(exepath);
-    for (i = 0; progargv && progargv[i]; i++)
-        VIR_FREE(progargv[i]);
-    VIR_FREE(progargv);
-    for (i = 0; progenv && progenv[i]; i++)
-        VIR_FREE(progenv[i]);
-    VIR_FREE(progenv);
+    virStringFreeList(progargv);
+    virStringFreeList(progenv);
     return def;
 }

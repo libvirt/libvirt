@@ -205,13 +205,6 @@ int qemuNetworkPrepareDevices(virDomainDefPtr def);
  * NB: def->name can be NULL upon return and the caller
  * *must* decide how to fill in a name in this case
  */
-virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
-                                     virDomainXMLOptionPtr xmlopt,
-                                     const char **progenv,
-                                     const char **progargv,
-                                     char **pidfile,
-                                     virDomainChrSourceDefPtr *monConfig,
-                                     bool *monJSON);
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
