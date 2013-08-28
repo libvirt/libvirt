@@ -6,11 +6,10 @@
 virVMXConvertToUTF8;
 virVMXDomainXMLConfInit;
 virVMXEscapeHex;
-virVMXFormatCDROM;
 virVMXFormatConfig;
+virVMXFormatDisk;
 virVMXFormatEthernet;
 virVMXFormatFloppy;
-virVMXFormatHardDisk;
 virVMXFormatParallel;
 virVMXFormatSerial;
 virVMXFormatVNC;

@@ -115,11 +115,8 @@ char *virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
 
 int virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);
 
-int virVMXFormatHardDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
-                         virBufferPtr buffer);
-
-int virVMXFormatCDROM(virVMXContext *ctx, virDomainDiskDefPtr def,
-                      virBufferPtr buffer);
+int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
+                     virBufferPtr buffer);
 
 int virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
                        virBufferPtr buffer, bool floppy_present[2]);
