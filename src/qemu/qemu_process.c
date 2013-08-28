@@ -4362,6 +4362,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     const char *model;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
+    bool active = false;
 
     VIR_DEBUG("Beginning VM attach process");
 
@@ -4373,7 +4374,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        goto error;
 
     /* Do this upfront, so any part of the startup process can add
      * runtime state to vm->def that won't be persisted. This let's us
@@ -4381,60 +4382,59 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
-        goto cleanup;
+        goto error;
 
     vm->def->id = qemuDriverAllocateID(driver);
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
+    active = true;
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              cfg->logDir);
-        goto cleanup;
+        goto error;
     }
 
     VIR_FREE(priv->pidfile);
     if (VIR_STRDUP(priv->pidfile, pidfile) < 0)
-        goto cleanup;
+        goto error;
 
     VIR_DEBUG("Detect security driver config");
     sec_managers = virSecurityManagerGetNested(driver->securityManager);
-    if (sec_managers == NULL) {
-        goto cleanup;
-    }
+    if (sec_managers == NULL)
+        goto error;
 
     for (i = 0; sec_managers[i]; i++) {
         model = virSecurityManagerGetModel(sec_managers[i]);
         seclabeldef = virDomainDefGetSecurityLabelDef(vm->def, model);
-        if (seclabeldef == NULL) {
-            goto cleanup;
-        }
+        if (seclabeldef == NULL)
+            goto error;
         seclabeldef->type = VIR_DOMAIN_SECLABEL_STATIC;
         if (VIR_ALLOC(seclabel) < 0)
-            goto cleanup;
+            goto error;
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
                                               vm->def, vm->pid, seclabel) < 0)
-            goto cleanup;
+            goto error;
 
         if (VIR_STRDUP(seclabeldef->model, model) < 0)
-            goto cleanup;
+            goto error;
 
         if (VIR_STRDUP(seclabeldef->label, seclabel->label) < 0)
-            goto cleanup;
+            goto error;
         VIR_FREE(seclabel);
     }
 
     VIR_DEBUG("Creating domain log file");
     if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
-        goto cleanup;
+        goto error;
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
                                                       vm->def->emulator)))
-        goto cleanup;
+        goto error;
 
     VIR_DEBUG("Preparing monitor state");
     priv->monConfig = monConfig;
@@ -4453,11 +4453,11 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
         if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
-            goto cleanup;
+            goto error;
     }
 
     if ((timestamp = virTimeStringNow()) == NULL) {
-        goto cleanup;
+        goto error;
     } else {
         if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
             safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
@@ -4474,7 +4474,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, -1) < 0)
-        goto cleanup;
+        goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
     if (qemuConnectAgent(driver, vm) < 0) {
@@ -4486,34 +4486,34 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
-        goto cleanup;
+        goto error;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
-            goto cleanup;
+            goto error;
     }
 
     VIR_DEBUG("Getting initial memory amount");
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorGetBalloonInfo(priv->mon, &vm->def->mem.cur_balloon) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
+        goto error;
     }
     if (qemuMonitorGetStatus(priv->mon, &running, &reason) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
+        goto error;
     }
     if (qemuMonitorGetVirtType(priv->mon, &vm->def->virtType) < 0) {
         qemuDomainObjExitMonitor(driver, vm);
-        goto cleanup;
+        goto error;
     }
     qemuDomainObjExitMonitor(driver, vm);
 
     if (!virDomainObjIsActive(vm))
-        goto cleanup;
+        goto error;
 
     if (running) {
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
@@ -4530,7 +4530,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
+        goto error;
 
     /* Run an hook to allow admins to do some magic */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -4546,7 +4546,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
          * If the script raised an error abort the launch
          */
         if (hookret < 0)
-            goto cleanup;
+            goto error;
     }
 
     VIR_FORCE_CLOSE(logfile);
@@ -4557,10 +4557,13 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return 0;
 
-cleanup:
-    /* We jump here if we failed to start the VM for any reason, or
-     * if we failed to initialize the now running VM. kill it off and
-     * pretend we never started it */
+error:
+    /* We jump here if we failed to attach to the VM for any reason.
+     * Leave the domain running, but pretend we never attempted to
+     * attach to it.  */
+    if (active && virAtomicIntDecAndTest(&driver->nactive) &&
+        driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
     VIR_FORCE_CLOSE(logfile);
     VIR_FREE(seclabel);
     VIR_FREE(sec_managers);
