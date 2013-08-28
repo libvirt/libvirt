@@ -74,8 +74,12 @@ static char *
 virAccessDriverPolkitFormatProcess(const char *actionid)
 {
     virIdentityPtr identity = virIdentityGetCurrent();
-    const char *process = NULL;
+    const char *callerPid = NULL;
+    const char *callerTime = NULL;
+    const char *callerUid = NULL;
     char *ret = NULL;
+    bool supportsuid = false;
+    static bool polkitInsecureWarned;
 
     if (!identity) {
         virAccessError(VIR_ERR_ACCESS_DENIED,
@@ -83,17 +87,43 @@ virAccessDriverPolkitFormatProcess(const char *actionid)
                        actionid);
         return NULL;
     }
-    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_PROCESS_ID, &process) < 0)
+    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_PROCESS_ID, &callerPid) < 0)
+        goto cleanup;
+    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME, &callerTime) < 0)
+        goto cleanup;
+    if (virIdentityGetAttr(identity, VIR_IDENTITY_ATTR_UNIX_USER_ID, &callerUid) < 0)
         goto cleanup;
 
-    if (!process) {
+    if (!callerPid) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No UNIX process ID available"));
         goto cleanup;
     }
-
-    if (VIR_STRDUP(ret, process) < 0)
+    if (!callerTime) {
+        virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No UNIX process start time available"));
         goto cleanup;
+    }
+    if (!callerUid) {
+        virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No UNIX caller UID available"));
+        goto cleanup;
+    }
+
+#ifdef PKCHECK_SUPPORTS_UID
+    supportsuid = true;
+#endif
+    if (supportsuid) {
+        if (virAsprintf(&ret, "%s,%s,%s", callerPid, callerTime, callerUid) < 0)
+            goto cleanup;
+    } else {
+        if (!polkitInsecureWarned) {
+            VIR_WARN("No support for caller UID with pkcheck. This deployment is known to be insecure.");
+            polkitInsecureWarned = true;
+        }
+        if (virAsprintf(&ret, "%s,%s", callerPid, callerTime) < 0)
+            goto cleanup;
+    }
 
 cleanup:
     virObjectUnref(identity);
