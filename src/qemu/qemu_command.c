@@ -11352,35 +11352,42 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 VIR_FREE(def->name);
         } else if (STREQ(arg, "-M") ||
                    STREQ(arg, "-machine")) {
-            char *params;
+            char **list;
+            char *param;
+            size_t j = 0;
+
+            /* -machine [type=]name[,prop[=value][,...]]
+             * Set os.machine only if first parameter lacks '=' or
+             * contains explicit type='...' */
             WANT_VALUE();
-            params = strchr(val, ',');
-            if (params == NULL) {
-                if (VIR_STRDUP(def->os.machine, val) < 0)
-                    goto error;
-            } else {
-                if (VIR_STRNDUP(def->os.machine, val, params - val) < 0)
-                    goto error;
+            list = virStringSplit(val, ",", 0);
+            param = list[0];
 
-                while (params++) {
-                    /* prepared for more "-machine" parameters */
-                    char *tmp = params;
-                    params = strchr(params, ',');
+            if (STRPREFIX(param, "type="))
+                param += strlen("type=");
+            if (!strchr(param, '=')) {
+                if (VIR_STRDUP(def->os.machine, param) < 0) {
+                    virStringFreeList(list);
+                    goto error;
+                }
+                j++;
+            }
 
-                    if (STRPREFIX(tmp, "dump-guest-core=")) {
-                        tmp += strlen("dump-guest-core=");
-                        if (params && VIR_STRNDUP(tmp, tmp, params - tmp) < 0)
-                            goto error;
-                        def->mem.dump_core = virDomainMemDumpTypeFromString(tmp);
-                        if (def->mem.dump_core <= 0)
-                            def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
-                        if (params)
-                            VIR_FREE(tmp);
-                    } else if (STRPREFIX(tmp, "mem-merge=off")) {
-                        def->mem.nosharepages = true;
-                    }
+            /* handle all remaining "-machine" parameters */
+            while ((param = list[j++])) {
+                if (STRPREFIX(param, "dump-guest-core=")) {
+                    param += strlen("dump-guest-core=");
+                    def->mem.dump_core = virDomainMemDumpTypeFromString(param);
+                    if (def->mem.dump_core <= 0)
+                        def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
+                } else if (STRPREFIX(param, "mem-merge=off")) {
+                    def->mem.nosharepages = true;
+                } else if (STRPREFIX(param, "accel=kvm")) {
+                    def->virtType = VIR_DOMAIN_VIRT_KVM;
+                    def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
                 }
             }
+            virStringFreeList(list);
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
