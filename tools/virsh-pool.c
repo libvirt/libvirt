@@ -964,6 +964,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     const char *type = NULL;
     bool details = vshCommandOptBool(cmd, "details");
     bool inactive, all;
+    char *outputStr = NULL;
 
     inactive = vshCommandOptBool(cmd, "inactive");
     all = vshCommandOptBool(cmd, "all");
@@ -1264,7 +1265,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Create the output template.  Each column is sized according to
      * the longest string.
      */
-    char *outputStr = NULL;
     ret = virAsprintf(&outputStr,
               "%%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
               (unsigned long) nameStrLength,
