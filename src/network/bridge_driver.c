@@ -112,6 +112,27 @@ static int networkUnplugBandwidth(virNetworkObjPtr net,
 
 static virNetworkDriverStatePtr driverState = NULL;
 
+static virNetworkObjPtr
+networkObjFromNetwork(virNetworkPtr net)
+{
+    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
+    virNetworkObjPtr network;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    networkDriverLock(driver);
+    network = virNetworkFindByUUID(&driver->networks, net->uuid);
+    networkDriverUnlock(driver);
+
+    if (!network) {
+        virUUIDFormat(net->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("no network with matching uuid '%s' (%s)"),
+                       uuidstr, net->name);
+    }
+
+    return network;
+}
+
 static char *
 networkDnsmasqLeaseFileNameDefault(const char *netname)
 {
@@ -2260,17 +2281,11 @@ cleanup:
 
 static int networkIsActive(virNetworkPtr net)
 {
-    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
-    networkDriverLock(driver);
-    obj = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
-        goto cleanup;
-    }
+    if (!(obj = networkObjFromNetwork(net)))
+        return ret;
 
     if (virNetworkIsActiveEnsureACL(net->conn, obj->def) < 0)
         goto cleanup;
@@ -2285,17 +2300,11 @@ cleanup:
 
 static int networkIsPersistent(virNetworkPtr net)
 {
-    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
-    networkDriverLock(driver);
-    obj = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
-        goto cleanup;
-    }
+    if (!(obj = networkObjFromNetwork(net)))
+        return ret;
 
     if (virNetworkIsPersistentEnsureACL(net->conn, obj->def) < 0)
         goto cleanup;
@@ -2832,22 +2841,14 @@ cleanup:
 static char *networkGetXMLDesc(virNetworkPtr net,
                                unsigned int flags)
 {
-    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     virNetworkDefPtr def;
     char *ret = NULL;
 
     virCheckFlags(VIR_NETWORK_XML_INACTIVE, NULL);
 
-    networkDriverLock(driver);
-    network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
-
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
-        goto cleanup;
-    }
+    if (!(network = networkObjFromNetwork(net)))
+        return ret;
 
     if (virNetworkGetXMLDescEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
@@ -2866,19 +2867,11 @@ cleanup:
 }
 
 static char *networkGetBridgeName(virNetworkPtr net) {
-    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     char *bridge = NULL;
 
-    networkDriverLock(driver);
-    network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
-
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching id"));
-        goto cleanup;
-    }
+    if (!(network = networkObjFromNetwork(net)))
+        return bridge;
 
     if (virNetworkGetBridgeNameEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
@@ -2900,18 +2893,11 @@ cleanup:
 
 static int networkGetAutostart(virNetworkPtr net,
                              int *autostart) {
-    virNetworkDriverStatePtr driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
 
-    networkDriverLock(driver);
-    network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
-        goto cleanup;
-    }
+    if (!(network = networkObjFromNetwork(net)))
+        return ret;
 
     if (virNetworkGetAutostartEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
