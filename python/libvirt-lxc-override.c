@@ -80,7 +80,7 @@ libvirt_lxc_virDomainLxcOpenNamespace(PyObject *self ATTRIBUTE_UNUSED,
     if (c_retval < 0)
         return VIR_PY_NONE;
 
-    py_retval = PyList_New(c_retval);
+    py_retval = PyList_New(0);
     for (i = 0; i < c_retval; i++) {
         PyObject *item = NULL;
 
