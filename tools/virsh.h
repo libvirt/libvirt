@@ -358,6 +358,7 @@ void vshSaveLibvirtError(void);
 bool vshTTYIsInterruptCharacter(vshControl *ctl, const char chr);
 int vshTTYDisableInterrupt(vshControl *ctl);
 int vshTTYRestore(vshControl *ctl);
+int vshTTYMakeRaw(vshControl *ctl, bool report_errors);
 
 /* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);

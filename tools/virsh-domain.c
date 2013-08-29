@@ -2263,7 +2263,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
     vshPrintExtra(ctl, _("Escape character is %s\n"), ctl->escapeChar);
     fflush(stdout);
-    if (vshRunConsole(dom, name, ctl->escapeChar, flags) == 0)
+    if (vshRunConsole(ctl, dom, name, flags) == 0)
         ret = true;
 
  cleanup:

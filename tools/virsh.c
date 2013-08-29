@@ -458,14 +458,13 @@ int
 vshAskReedit(vshControl *ctl, const char *msg)
 {
     int c = -1;
-    struct termios ttyattr;
 
     if (!isatty(STDIN_FILENO))
         return -1;
 
     vshReportError(ctl);
 
-    if (vshMakeStdinRaw(&ttyattr, false) < 0)
+    if (vshTTYMakeRaw(ctl, false) < 0)
         return -1;
 
     while (true) {
@@ -488,7 +487,7 @@ vshAskReedit(vshControl *ctl, const char *msg)
         }
     }
 
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &ttyattr);
+    vshTTYRestore(ctl);
 
     vshPrint(ctl, "\r\n");
     return c;
@@ -2255,6 +2254,49 @@ vshTTYRestore(vshControl *ctl)
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &ctl->termattr) < 0)
         return -1;
+
+    return 0;
+}
+
+
+#ifndef HAVE_CFMAKERAW
+/* provide fallback in case cfmakeraw isn't available */
+static void
+cfmakeraw(struct termios *attr)
+{
+    attr->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
+                         | INLCR | IGNCR | ICRNL | IXON);
+    attr->c_oflag &= ~OPOST;
+    attr->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+    attr->c_cflag &= ~(CSIZE | PARENB);
+    attr->c_cflag |= CS8;
+}
+#endif /* !HAVE_CFMAKERAW */
+
+
+int
+vshTTYMakeRaw(vshControl *ctl, bool report_errors)
+{
+    struct termios rawattr = ctl->termattr;
+    char ebuf[1024];
+
+    if (!ctl->istty) {
+        if (report_errors) {
+            vshError(ctl, "%s",
+                     _("unable to make terminal raw: console isn't a tty"));
+        }
+
+        return -1;
+    }
+
+    cfmakeraw(&rawattr);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
+        if (report_errors)
+            vshError(ctl, _("unable to set tty attributes: %s"),
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+        return -1;
+    }
 
     return 0;
 }

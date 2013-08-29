@@ -26,14 +26,12 @@
 
 # ifndef WIN32
 
-#  include <termios.h>
+#  include <virsh.h>
 
-int vshRunConsole(virDomainPtr dom,
+int vshRunConsole(vshControl *ctl,
+                  virDomainPtr dom,
                   const char *dev_name,
-                  const char *escape_seq,
                   unsigned int flags);
-
-int vshMakeStdinRaw(struct termios *ttyattr, bool report_errors);
 
 # endif /* !WIN32 */
 

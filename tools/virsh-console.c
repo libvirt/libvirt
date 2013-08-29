@@ -38,6 +38,7 @@
 # include <c-ctype.h>
 
 # include "internal.h"
+# include "virsh.h"
 # include "virsh-console.h"
 # include "virlog.h"
 # include "virfile.h"
@@ -84,20 +85,6 @@ virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
 {
     got_signal = 1;
 }
-
-
-# ifndef HAVE_CFMAKERAW
-static void
-cfmakeraw(struct termios *attr)
-{
-    attr->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
-                         | INLCR | IGNCR | ICRNL | IXON);
-    attr->c_oflag &= ~OPOST;
-    attr->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-    attr->c_cflag &= ~(CSIZE | PARENB);
-    attr->c_cflag |= CS8;
-}
-# endif /* !HAVE_CFMAKERAW */
 
 
 static void
@@ -320,40 +307,12 @@ vshGetEscapeChar(const char *s)
 
 
 int
-vshMakeStdinRaw(struct termios *ttyattr, bool report_errors)
-{
-    struct termios rawattr;
-    char ebuf[1024];
-
-    if (tcgetattr(STDIN_FILENO, ttyattr) < 0) {
-        if (report_errors)
-            VIR_ERROR(_("unable to get tty attributes: %s"),
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
-        return -1;
-    }
-
-    rawattr = *ttyattr;
-    cfmakeraw(&rawattr);
-
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
-        if (report_errors)
-            VIR_ERROR(_("unable to set tty attributes: %s"),
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-int
-vshRunConsole(virDomainPtr dom,
+vshRunConsole(vshControl *ctl,
+              virDomainPtr dom,
               const char *dev_name,
-              const char *escape_seq,
               unsigned int flags)
 {
     int ret = -1;
-    struct termios ttyattr;
     void (*old_sigquit)(int);
     void (*old_sigterm)(int);
     void (*old_sigint)(int);
@@ -366,7 +325,7 @@ vshRunConsole(virDomainPtr dom,
        result in it being echoed back already), and
        also ensure Ctrl-C, etc is blocked, and misc
        other bits */
-    if (vshMakeStdinRaw(&ttyattr, true) < 0)
+    if (vshTTYMakeRaw(ctl, true) < 0)
         goto resettty;
 
     /* Trap all common signals so that we can safely restore
@@ -383,7 +342,7 @@ vshRunConsole(virDomainPtr dom,
     if (VIR_ALLOC(con) < 0)
         goto cleanup;
 
-    con->escapeChar = vshGetEscapeChar(escape_seq);
+    con->escapeChar = vshGetEscapeChar(ctl->escapeChar);
     con->st = virStreamNew(virDomainGetConnect(dom),
                            VIR_STREAM_NONBLOCK);
     if (!con->st)
@@ -434,7 +393,7 @@ cleanup:
 resettty:
     /* Put STDIN back into the (sane?) state we found
        it in before starting */
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &ttyattr);
+    vshTTYRestore(ctl);
 
     return ret;
 }
