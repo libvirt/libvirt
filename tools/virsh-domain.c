@@ -3522,13 +3522,15 @@ vshWatchJob(vshControl *ctl,
 {
     struct sigaction sig_action;
     struct sigaction old_sig_action;
-    struct pollfd pollfd;
+    struct pollfd pollfd[2] = {{.fd = pipe_fd, .events = POLLIN, .revents = 0},
+                               {.fd = STDIN_FILENO, .events = POLLIN, .revents = 0}};
     struct timeval start, curr;
     virDomainJobInfo jobinfo;
     int ret = -1;
     char retchar;
     bool functionReturn = false;
     sigset_t sigmask, oldsigmask;
+    bool jobStarted = false;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -3539,16 +3541,21 @@ vshWatchJob(vshControl *ctl,
     sigemptyset(&sig_action.sa_mask);
     sigaction(SIGINT, &sig_action, &old_sig_action);
 
-    pollfd.fd = pipe_fd;
-    pollfd.events = POLLIN;
-    pollfd.revents = 0;
-
     GETTIMEOFDAY(&start);
     while (1) {
-repoll:
-        ret = poll(&pollfd, 1, 500);
+        ret = poll((struct pollfd *)&pollfd, 2, 500);
         if (ret > 0) {
-            if (pollfd.revents & POLLIN &&
+            if (pollfd[1].revents & POLLIN &&
+                saferead(STDIN_FILENO, &retchar, sizeof(retchar)) > 0) {
+                if (vshTTYIsInterruptCharacter(ctl, retchar)) {
+                    virDomainAbortJob(dom);
+                    goto cleanup;
+                } else {
+                    continue;
+                }
+            }
+
+            if (pollfd[0].revents & POLLIN &&
                 saferead(pipe_fd, &retchar, sizeof(retchar)) > 0 &&
                 retchar == '0') {
                 if (verbose) {
@@ -3566,7 +3573,7 @@ repoll:
                     virDomainAbortJob(dom);
                     intCaught = 0;
                 } else {
-                    goto repoll;
+                    continue;
                 }
             }
             goto cleanup;
@@ -3583,13 +3590,24 @@ repoll:
             timeout = 0;
         }
 
-        if (verbose) {
+        if (verbose || !jobStarted) {
             pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
             ret = virDomainGetJobInfo(dom, &jobinfo);
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-            if (ret == 0)
-                vshPrintJobProgress(label, jobinfo.dataRemaining,
-                                    jobinfo.dataTotal);
+            if (ret == 0) {
+                if (verbose)
+                    vshPrintJobProgress(label, jobinfo.dataRemaining,
+                                        jobinfo.dataTotal);
+
+                if (!jobStarted &&
+                    (jobinfo.type == VIR_DOMAIN_JOB_BOUNDED ||
+                     jobinfo.type == VIR_DOMAIN_JOB_UNBOUNDED)) {
+                    vshTTYDisableInterrupt(ctl);
+                    jobStarted = true;
+                }
+            } else {
+                vshResetLibvirtError();
+            }
         }
     }
 
@@ -3597,6 +3615,7 @@ repoll:
 
 cleanup:
     sigaction(SIGINT, &old_sig_action, NULL);
+    vshTTYRestore(ctl);
     return functionReturn;
 }
 
