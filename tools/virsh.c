@@ -2213,6 +2213,53 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
 }
 
 
+bool
+vshTTYIsInterruptCharacter(vshControl *ctl,
+                           const char chr)
+{
+    if (ctl->istty &&
+        ctl->termattr.c_cc[VINTR] == chr)
+        return true;
+
+    return false;
+}
+
+
+int
+vshTTYDisableInterrupt(vshControl *ctl)
+{
+    struct termios termset = ctl->termattr;
+
+    if (!ctl->istty)
+        return -1;
+
+    /* check if we need to set the terminal */
+    if (termset.c_cc[VINTR] == _POSIX_VDISABLE)
+        return 0;
+
+    termset.c_cc[VINTR] = _POSIX_VDISABLE;
+    termset.c_lflag &= ~ICANON;
+
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &termset) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+vshTTYRestore(vshControl *ctl)
+{
+    if (!ctl->istty)
+        return 0;
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &ctl->termattr) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 void
 vshError(vshControl *ctl, const char *format, ...)
 {
@@ -3155,6 +3202,13 @@ main(int argc, char **argv)
     if (!textdomain(PACKAGE)) {
         perror("textdomain");
         return EXIT_FAILURE;
+    }
+
+    if (isatty(STDIN_FILENO)) {
+        ctl->istty = true;
+
+        if (tcgetattr(STDIN_FILENO, &ctl->termattr) < 0)
+            ctl->istty = false;
     }
 
     if (virMutexInit(&ctl->lock) < 0) {

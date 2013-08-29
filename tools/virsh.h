@@ -32,6 +32,7 @@
 # include <unistd.h>
 # include <sys/stat.h>
 # include <inttypes.h>
+# include <termios.h>
 
 # include "internal.h"
 # include "virerror.h"
@@ -240,6 +241,9 @@ struct _vshControl {
 
     const char *escapeChar;     /* String representation of
                                    console escape character */
+
+    struct termios termattr;    /* settings of the tty terminal */
+    bool istty;                 /* is the terminal a tty */
 };
 
 struct _vshCmdGrp {
@@ -349,6 +353,11 @@ extern virErrorPtr last_error;
 void vshReportError(vshControl *ctl);
 void vshResetLibvirtError(void);
 void vshSaveLibvirtError(void);
+
+/* terminal modifications */
+bool vshTTYIsInterruptCharacter(vshControl *ctl, const char chr);
+int vshTTYDisableInterrupt(vshControl *ctl);
+int vshTTYRestore(vshControl *ctl);
 
 /* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
