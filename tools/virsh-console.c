@@ -312,32 +312,34 @@ vshRunConsole(vshControl *ctl,
               const char *dev_name,
               unsigned int flags)
 {
-    int ret = -1;
-    void (*old_sigquit)(int);
-    void (*old_sigterm)(int);
-    void (*old_sigint)(int);
-    void (*old_sighup)(int);
-    void (*old_sigpipe)(int);
     virConsolePtr con = NULL;
+    int ret = -1;
 
-    /* Put STDIN into raw mode so that stuff typed
-       does not echo to the screen (the TTY reads will
-       result in it being echoed back already), and
-       also ensure Ctrl-C, etc is blocked, and misc
-       other bits */
+    struct sigaction old_sigquit;
+    struct sigaction old_sigterm;
+    struct sigaction old_sigint;
+    struct sigaction old_sighup;
+    struct sigaction old_sigpipe;
+    struct sigaction sighandler = {.sa_handler = virConsoleHandleSignal,
+                                   .sa_flags = SA_SIGINFO };
+
+    sigemptyset(&sighandler.sa_mask);
+
+    /* Put STDIN into raw mode so that stuff typed does not echo to the screen
+     * (the TTY reads will result in it being echoed back already), and also
+     * ensure Ctrl-C, etc is blocked, and misc other bits */
     if (vshTTYMakeRaw(ctl, true) < 0)
         goto resettty;
 
-    /* Trap all common signals so that we can safely restore
-       the original terminal settings on STDIN before the
-       process exits - people don't like being left with a
-       messed up terminal ! */
-    old_sigquit = signal(SIGQUIT, virConsoleHandleSignal);
-    old_sigterm = signal(SIGTERM, virConsoleHandleSignal);
-    old_sigint = signal(SIGINT, virConsoleHandleSignal);
-    old_sighup = signal(SIGHUP, virConsoleHandleSignal);
-    old_sigpipe = signal(SIGPIPE, virConsoleHandleSignal);
+    /* Trap all common signals so that we can safely restore the original
+     * terminal settings on STDIN before the process exits - people don't like
+     * being left with a messed up terminal ! */
     got_signal = 0;
+    sigaction(SIGQUIT, &sighandler, &old_sigquit);
+    sigaction(SIGTERM, &sighandler, &old_sigterm);
+    sigaction(SIGINT,  &sighandler, &old_sigint);
+    sigaction(SIGHUP,  &sighandler, &old_sighup);
+    sigaction(SIGPIPE, &sighandler, &old_sigpipe);
 
     if (VIR_ALLOC(con) < 0)
         goto cleanup;
@@ -384,11 +386,11 @@ cleanup:
     virConsoleFree(con);
 
     /* Restore original signal handlers */
-    signal(SIGPIPE, old_sigpipe);
-    signal(SIGHUP, old_sighup);
-    signal(SIGINT, old_sigint);
-    signal(SIGTERM, old_sigterm);
-    signal(SIGQUIT, old_sigquit);
+    sigaction(SIGQUIT, &old_sigquit, NULL);
+    sigaction(SIGTERM, &old_sigterm, NULL);
+    sigaction(SIGINT,  &old_sigint,  NULL);
+    sigaction(SIGHUP,  &old_sighup,  NULL);
+    sigaction(SIGPIPE, &old_sigpipe, NULL);
 
 resettty:
     /* Put STDIN back into the (sane?) state we found
