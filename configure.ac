@@ -848,9 +848,23 @@ fi
 dnl
 dnl check for kernel headers required by src/bridge.c
 dnl
-if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
-  AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
-                   AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support]))
+if test "$with_linux" = "yes"; then
+  if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
+    AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
+      [AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support])],
+      [[/* The kernel folks broke their headers when used with particular
+         * glibc versions; although the structs are ABI compatible, the
+         * C type system doesn't like struct redefinitions.  We work around
+         * the problem here in the same manner as in virnetdevbridge.c.  */
+        #include <netinet/in.h>
+        #define in6_addr in6_addr_
+        #define sockaddr_in6 sockaddr_in6_
+        #define ipv6_mreq ipv6_mreq_
+        #define in6addr_any in6addr_any_
+        #define in6addr_loopback in6addr_loopback_
+        #include <linux/in6.h>
+      ]])
+  fi
 fi
 
 
