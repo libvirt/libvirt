@@ -64,7 +64,7 @@ bootstrap_hash()
 # like to run 'git clean -x -f po' to fix it; but only ./bootstrap regenerates
 # the required file po/Makevars.
 # Only run bootstrap from a git checkout, never from a tarball.
-if test -d .git || -f .git; then
+if test -d .git || test -f .git; then
     curr_status=.git-module-status t=
     if test "$no_git"; then
         t=no-git
