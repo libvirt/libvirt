@@ -150,4 +150,16 @@ int
 libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainObjPtr vm, libxl_domain_config *d_config);
 
+static inline void
+libxlDriverLock(libxlDriverPrivatePtr driver)
+{
+    virMutexLock(&driver->lock);
+}
+
+static inline void
+libxlDriverUnlock(libxlDriverPrivatePtr driver)
+{
+    virMutexUnlock(&driver->lock);
+}
+
 #endif /* LIBXL_CONF_H */

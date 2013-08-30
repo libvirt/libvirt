@@ -77,18 +77,6 @@ static int
 libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
              bool start_paused, int restore_fd);
 
-static void
-libxlDriverLock(libxlDriverPrivatePtr driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-static void
-libxlDriverUnlock(libxlDriverPrivatePtr driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 /* driver must be locked before calling */
 static void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
