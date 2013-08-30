@@ -1110,7 +1110,12 @@ error:
 libxlDriverConfigPtr
 libxlDriverConfigGet(libxlDriverPrivatePtr driver)
 {
-    return virObjectRef(driver->config);
+    libxlDriverConfigPtr cfg;
+
+    libxlDriverLock(driver);
+    cfg = virObjectRef(driver->config);
+    libxlDriverUnlock(driver);
+    return cfg;
 }
 
 virCapsPtr
