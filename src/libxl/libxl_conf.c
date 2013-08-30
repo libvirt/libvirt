@@ -395,7 +395,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 }
 
 static int
-libxlMakeDomCreateInfo(libxlDriverPrivatePtr driver,
+libxlMakeDomCreateInfo(libxl_ctx *ctx,
                        virDomainDefPtr def,
                        libxl_domain_create_info *c_info)
 {
@@ -413,7 +413,7 @@ libxlMakeDomCreateInfo(libxlDriverPrivatePtr driver,
 
     if (def->nseclabels &&
         def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_STATIC) {
-        if (libxl_flask_context_to_sid(driver->ctx,
+        if (libxl_flask_context_to_sid(ctx,
                                        def->seclabels[0]->label,
                                        strlen(def->seclabels[0]->label),
                                        &c_info->ssidref)) {
@@ -1024,10 +1024,11 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainObjPtr vm, libxl_domain_config *d_config)
 {
     virDomainDefPtr def = vm->def;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
 
     libxl_domain_config_init(d_config);
 
-    if (libxlMakeDomCreateInfo(driver, def, &d_config->c_info) < 0)
+    if (libxlMakeDomCreateInfo(priv->ctx, def, &d_config->c_info) < 0)
         return -1;
 
     if (libxlMakeDomBuildInfo(vm, d_config) < 0)
