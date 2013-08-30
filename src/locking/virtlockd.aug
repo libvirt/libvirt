@@ -1,6 +1,6 @@
-(* /etc/libvirt/libvirtd.conf *)
+(* /etc/libvirt/virtlockd.conf *)
 
-module Libvirtd =
+module Virtlockd =
    autoload xfm
 
    let eol   = del /[ \t]*\n/ "\n"
