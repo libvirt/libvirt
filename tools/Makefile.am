@@ -60,10 +60,10 @@ EXTRA_DIST = \
 DISTCLEANFILES =
 
 confdir = $(sysconfdir)/libvirt
-conf_DATA = virt-login-shell.conf
+conf_DATA =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh virt-host-validate virt-login-shell
+bin_PROGRAMS = virsh virt-host-validate
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -71,12 +71,20 @@ sbin_SCRIPTS = virt-sanlock-cleanup
 DISTCLEANFILES += virt-sanlock-cleanup
 endif
 
+if WITH_LXC
+conf_DATA += virt-login-shell.conf
+bin_PROGRAMS += virt-login-shell
+endif WITH_LXC
+
+
 dist_man1_MANS = \
 		virt-host-validate.1 \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
-		virt-login-shell.1 \
 		virsh.1
+if WITH_LXC
+dist_man1_MANS += virt-login-shell.1
+endif WITH_LXC
 if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
 endif
