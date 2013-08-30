@@ -288,6 +288,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 
 
 check-local: all
+dist-local: all
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
