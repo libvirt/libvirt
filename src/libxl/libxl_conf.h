@@ -51,10 +51,13 @@
 
 typedef struct _libxlDriverPrivate libxlDriverPrivate;
 typedef libxlDriverPrivate *libxlDriverPrivatePtr;
-struct _libxlDriverPrivate {
-    virMutex lock;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
+
+typedef struct _libxlDriverConfig libxlDriverConfig;
+typedef libxlDriverConfig *libxlDriverConfigPtr;
+
+struct _libxlDriverConfig {
+    virObject parent;
+
     const libxl_version_info *verInfo;
     unsigned int version;
 
@@ -64,20 +67,12 @@ struct _libxlDriverPrivate {
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 
-    virPortAllocatorPtr reservedVNCPorts;
-
     /* Controls automatic ballooning of domain0. If true, attempt to get
      * memory for new domains from domain0. */
     bool autoballoon;
 
-    size_t nactive;
-    virStateInhibitCallback inhibitCallback;
-    void *inhibitOpaque;
-
-    virDomainObjListPtr domains;
-
-    virDomainEventStatePtr domainEventState;
-    virSysinfoDefPtr hostsysinfo;
+    /* Once created, caps are immutable */
+    virCapsPtr caps;
 
     char *configDir;
     char *autostartDir;
@@ -85,6 +80,30 @@ struct _libxlDriverPrivate {
     char *stateDir;
     char *libDir;
     char *saveDir;
+};
+
+
+struct _libxlDriverPrivate {
+    virMutex lock;
+
+    /* Require lock to get reference on 'config',
+     * then lockless thereafter */
+    libxlDriverConfigPtr config;
+
+    size_t nactive;
+
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
+
+    virDomainObjListPtr domains;
+
+    virDomainXMLOptionPtr xmlopt;
+
+    virDomainEventStatePtr domainEventState;
+
+    virPortAllocatorPtr reservedVNCPorts;
+
+    virSysinfoDefPtr hostsysinfo;
 };
 
 typedef struct _libxlEventHookInfo libxlEventHookInfo;
@@ -103,8 +122,11 @@ struct _libxlSavefileHeader {
     uint32_t unused[10];
 };
 
-bool
-libxlGetAutoballoonConf(libxlDriverPrivatePtr driver);
+libxlDriverConfigPtr
+libxlDriverConfigNew(void);
+
+libxlDriverConfigPtr
+libxlDriverConfigGet(libxlDriverPrivatePtr driver);
 
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);

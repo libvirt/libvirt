@@ -64,6 +64,41 @@ static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x
 static regex_t xen_cap_rec;
 
 
+static virClassPtr libxlDriverConfigClass;
+static void libxlDriverConfigDispose(void *obj);
+
+static int libxlConfigOnceInit(void)
+{
+    if (!(libxlDriverConfigClass = virClassNew(virClassForObject(),
+                                               "libxlDriverConfig",
+                                               sizeof(libxlDriverConfig),
+                                               libxlDriverConfigDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(libxlConfig)
+
+static void
+libxlDriverConfigDispose(void *obj)
+{
+    libxlDriverConfigPtr cfg = obj;
+
+    virObjectUnref(cfg->caps);
+    libxl_ctx_free(cfg->ctx);
+    xtl_logger_destroy(cfg->logger);
+    if (cfg->logger_file)
+        VIR_FORCE_FCLOSE(cfg->logger_file);
+
+    VIR_FREE(cfg->configDir);
+    VIR_FREE(cfg->autostartDir);
+    VIR_FREE(cfg->logDir);
+    VIR_FREE(cfg->stateDir);
+    VIR_FREE(cfg->libDir);
+    VIR_FREE(cfg->saveDir);
+}
+
 static int
 libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 {
@@ -978,8 +1013,8 @@ error:
     return -1;
 }
 
-bool
-libxlGetAutoballoonConf(libxlDriverPrivatePtr driver)
+static bool
+libxlGetAutoballoonConf(libxlDriverConfigPtr cfg)
 {
     regex_t regex;
     int ret;
@@ -990,9 +1025,92 @@ libxlGetAutoballoonConf(libxlDriverPrivatePtr driver)
     if (ret)
         return true;
 
-    ret = regexec(&regex, driver->verInfo->commandline, 0, NULL, 0);
+    ret = regexec(&regex, cfg->verInfo->commandline, 0, NULL, 0);
     regfree(&regex);
     return ret == REG_NOMATCH;
+}
+
+libxlDriverConfigPtr
+libxlDriverConfigNew(void)
+{
+    libxlDriverConfigPtr cfg;
+    char *log_file = NULL;
+    char ebuf[1024];
+    unsigned int free_mem;
+
+    if (libxlConfigInitialize() < 0)
+        return NULL;
+
+    if (!(cfg = virObjectNew(libxlDriverConfigClass)))
+        return NULL;
+
+    if (VIR_STRDUP(cfg->configDir, LIBXL_CONFIG_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->autostartDir, LIBXL_AUTOSTART_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->logDir, LIBXL_LOG_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->stateDir, LIBXL_STATE_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->libDir, LIBXL_LIB_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->saveDir, LIBXL_SAVE_DIR) < 0)
+        goto error;
+
+    if (virAsprintf(&log_file, "%s/libxl-driver.log", cfg->logDir) < 0)
+        goto error;
+
+    if ((cfg->logger_file = fopen(log_file, "a")) == NULL)  {
+        VIR_ERROR(_("Failed to create log file '%s': %s"),
+                  log_file, virStrerror(errno, ebuf, sizeof(ebuf)));
+        goto error;
+    }
+    VIR_FREE(log_file);
+
+    cfg->logger =
+        (xentoollog_logger *)xtl_createlogger_stdiostream(cfg->logger_file,
+                                                          XTL_DEBUG, 0);
+    if (!cfg->logger) {
+        VIR_ERROR(_("cannot create logger for libxenlight, disabling driver"));
+        goto error;
+    }
+
+    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, cfg->logger)) {
+        VIR_ERROR(_("cannot initialize libxenlight context, probably not "
+                    "running in a Xen Dom0, disabling driver"));
+        goto error;
+    }
+
+    if ((cfg->verInfo = libxl_get_version_info(cfg->ctx)) == NULL) {
+        VIR_ERROR(_("cannot version information from libxenlight, "
+                    "disabling driver"));
+        goto error;
+    }
+    cfg->version = (cfg->verInfo->xen_version_major * 1000000) +
+        (cfg->verInfo->xen_version_minor * 1000);
+
+    /* This will fill xenstore info about free and dom0 memory if missing,
+     * should be called before starting first domain */
+    if (libxl_get_free_memory(cfg->ctx, &free_mem)) {
+        VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
+        goto error;
+    }
+
+    /* setup autoballoon */
+    cfg->autoballoon = libxlGetAutoballoonConf(cfg);
+
+    return cfg;
+
+error:
+    VIR_FREE(log_file);
+    virObjectUnref(cfg);
+    return NULL;
+}
+
+libxlDriverConfigPtr
+libxlDriverConfigGet(libxlDriverPrivatePtr driver)
+{
+    return virObjectRef(driver->config);
 }
 
 virCapsPtr
