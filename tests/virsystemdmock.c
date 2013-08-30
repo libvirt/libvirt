@@ -65,22 +65,32 @@ dbus_bool_t dbus_message_set_reply_serial(DBusMessage *message ATTRIBUTE_UNUSED,
 }
 
 DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connection ATTRIBUTE_UNUSED,
-                                                       DBusMessage *message,
+                                                       DBusMessage *message ATTRIBUTE_UNUSED,
                                                        int timeout_milliseconds ATTRIBUTE_UNUSED,
                                                        DBusError *error)
 {
     DBusMessage *reply = NULL;
 
-    if (getenv("FAIL_BAD_SERVICE"))
-        reply = dbus_message_new_error(message,
-                                       "org.freedesktop.systemd.badthing",
-                                       "Something went wrong creating the machine");
-    else if (getenv("FAIL_NO_SERVICE"))
+    if (getenv("FAIL_BAD_SERVICE")) {
+        DBusMessageIter iter;
+        const char *error_message = "Something went wrong creating the machine";
+        if (!(reply = dbus_message_new(DBUS_MESSAGE_TYPE_ERROR)))
+            return NULL;
+        dbus_message_set_error_name(reply, "org.freedesktop.systemd.badthing");
+        dbus_message_iter_init_append(reply, &iter);
+        if (!dbus_message_iter_append_basic(&iter,
+                                            DBUS_TYPE_STRING,
+                                            &error_message)) {
+            dbus_message_unref(reply);
+            return NULL;
+        }
+    } else if (getenv("FAIL_NO_SERVICE")) {
         dbus_set_error(error,
                        "org.freedesktop.DBus.Error.ServiceUnknown",
                        "%s", "The name org.freedesktop.machine1 was not provided by any .service files");
-    else
-        reply = dbus_message_new_method_return(message);
+    } else {
+        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
+    }
 
     return reply;
 }
