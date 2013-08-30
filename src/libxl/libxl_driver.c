@@ -50,6 +50,7 @@
 #include "virstring.h"
 #include "virsysinfo.h"
 #include "viraccessapicheck.h"
+#include "viratomic.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -264,8 +265,7 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     }
 
-    driver->nactive--;
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     if ((vm->def->ngraphics == 1) &&
@@ -654,9 +654,8 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         goto error;
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
     event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
                                      restore_fd < 0 ?
@@ -726,9 +725,8 @@ libxlReconnectDomain(virDomainObjPtr vm,
     vm->def->id = d_info.domid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNKNOWN);
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
     /* Recreate domain death et. al. events */
     libxlCreateDomEvents(vm);

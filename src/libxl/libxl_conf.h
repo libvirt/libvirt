@@ -90,7 +90,7 @@ struct _libxlDriverPrivate {
      * then lockless thereafter */
     libxlDriverConfigPtr config;
 
-    size_t nactive;
+    unsigned int nactive;
 
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
