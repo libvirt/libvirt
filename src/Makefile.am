@@ -657,6 +657,7 @@ XENAPI_DRIVER_SOURCES =						\
 
 LIBXL_DRIVER_SOURCES =						\
 		libxl/libxl_conf.c libxl/libxl_conf.h		\
+		libxl/libxl_domain.c libxl/libxl_domain.h       \
 		libxl/libxl_driver.c libxl/libxl_driver.h
 
 UML_DRIVER_SOURCES =						\
