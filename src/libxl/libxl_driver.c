@@ -1207,29 +1207,6 @@ libxlStateCleanup(void)
     return 0;
 }
 
-static bool
-libxlGetAutoballoon(libxlDriverPrivatePtr driver)
-{
-    const libxl_version_info *info;
-    regex_t regex;
-    int ret;
-
-    info = libxl_get_version_info(driver->ctx);
-    if (!info)
-        return true; /* default to on */
-
-    ret = regcomp(&regex,
-            "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
-            REG_NOSUB | REG_EXTENDED);
-    if (ret)
-        return true;
-
-    ret = regexec(&regex, info->commandline, 0, NULL, 0);
-    regfree(&regex);
-    return ret == REG_NOMATCH;
-}
-
-
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -1376,7 +1353,7 @@ libxlStateInitialize(bool privileged,
     }
 
     /* setup autoballoon */
-    libxl_driver->autoballoon = libxlGetAutoballoon(libxl_driver);
+    libxl_driver->autoballoon = libxlGetAutoballoonConf(libxl_driver);
 
     /* Load running domains first. */
     if (virDomainObjListLoadAllConfigs(libxl_driver->domains,

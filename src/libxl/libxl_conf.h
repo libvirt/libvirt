@@ -120,6 +120,9 @@ struct _libxlSavefileHeader {
     uint32_t unused[10];
 };
 
+bool
+libxlGetAutoballoonConf(libxlDriverPrivatePtr driver);
+
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 
