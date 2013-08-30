@@ -1835,6 +1835,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     libxl_dominfo d_info;
+    libxlDomainObjPrivatePtr priv;
     int ret = -1;
 
     libxlDriverLock(driver);
@@ -1850,12 +1851,13 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    priv = vm->privateData;
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
         info->memory = vm->def->mem.cur_balloon;
         info->maxMem = vm->def->mem.max_balloon;
     } else {
-        if (libxl_domain_info(driver->ctx, &d_info, dom->id) != 0) {
+        if (libxl_domain_info(priv->ctx, &d_info, dom->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxl_domain_info failed for domain '%d'"), dom->id);
             goto cleanup;
