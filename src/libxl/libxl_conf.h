@@ -90,19 +90,26 @@ struct _libxlDriverPrivate {
      * then lockless thereafter */
     libxlDriverConfigPtr config;
 
+    /* Atomic inc/dec only */
     unsigned int nactive;
 
+    /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
 
+    /* Immutable pointer, immutable object */
     virDomainXMLOptionPtr xmlopt;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainEventStatePtr domainEventState;
 
+    /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr reservedVNCPorts;
 
+    /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 };
 
