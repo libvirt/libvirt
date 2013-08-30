@@ -125,18 +125,11 @@ static int
 libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 {
     libxl_physinfo phy_info;
-    const libxl_version_info* ver_info;
     virArch hostarch = virArchFromHost();
 
     if (libxl_get_physinfo(driver->ctx, &phy_info)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxl_get_physinfo_info failed"));
-        return -1;
-    }
-
-    if ((ver_info = libxl_get_version_info(driver->ctx)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libxl_get_version_info failed"));
         return -1;
     }
 
@@ -147,7 +140,7 @@ libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
         return -1;
     }
 
-    info->memory = phy_info.total_pages * (ver_info->pagesize / 1024);
+    info->memory = phy_info.total_pages * (driver->verInfo->pagesize / 1024);
     info->cpus = phy_info.nr_cpus;
     info->nodes = phy_info.nr_nodes;
     info->cores = phy_info.cores_per_socket;
@@ -931,8 +924,9 @@ libxlStateInitialize(bool privileged,
                        _("failed to get version information from libxenlight"));
         goto error;
     }
+    libxl_driver->verInfo = ver_info;
     libxl_driver->version = (ver_info->xen_version_major * 1000000) +
-            (ver_info->xen_version_minor * 1000);
+        (ver_info->xen_version_minor * 1000);
 
     if ((libxl_driver->caps =
          libxlMakeCapabilities(libxl_driver->ctx)) == NULL) {
@@ -2728,7 +2722,6 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
                                 unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    const libxl_version_info *ver_info;
     virDomainDefPtr def = NULL;
     virConfPtr conf = NULL;
     char *xml = NULL;
@@ -2744,15 +2737,12 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
     }
 
-    if ((ver_info = libxl_get_version_info(driver->ctx)) == NULL) {
-        VIR_ERROR(_("cannot get version information from libxenlight"));
-        goto cleanup;
-    }
-
     if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
         goto cleanup;
 
-    if (!(def = xenParseXM(conf, ver_info->xen_version_major, driver->caps))) {
+    if (!(def = xenParseXM(conf,
+                           driver->verInfo->xen_version_major,
+                           driver->caps))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("parsing xm config failed"));
         goto cleanup;
     }
@@ -2773,7 +2763,6 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
                               unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    const libxl_version_info *ver_info;
     virDomainDefPtr def = NULL;
     virConfPtr conf = NULL;
     int len = MAX_CONFIG_SIZE;
@@ -2790,17 +2779,12 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
     }
 
-    if ((ver_info = libxl_get_version_info(driver->ctx)) == NULL) {
-        VIR_ERROR(_("cannot get version information from libxenlight"));
-        goto cleanup;
-    }
-
     if (!(def = virDomainDefParseString(domainXml,
                                         driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN, 0)))
         goto cleanup;
 
-    if (!(conf = xenFormatXM(conn, def, ver_info->xen_version_major)))
+    if (!(conf = xenFormatXM(conn, def, driver->verInfo->xen_version_major)))
         goto cleanup;
 
     if (VIR_ALLOC_N(ret, len) < 0)
@@ -3702,7 +3686,6 @@ static unsigned long long
 libxlNodeGetFreeMemory(virConnectPtr conn)
 {
     libxl_physinfo phy_info;
-    const libxl_version_info* ver_info;
     libxlDriverPrivatePtr driver = conn->privateData;
 
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
@@ -3714,13 +3697,7 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
         return 0;
     }
 
-    if ((ver_info = libxl_get_version_info(driver->ctx)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libxl_get_version_info failed"));
-        return 0;
-    }
-
-    return phy_info.free_pages * ver_info->pagesize;
+    return phy_info.free_pages * driver->verInfo->pagesize;
 }
 
 static int

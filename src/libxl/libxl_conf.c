@@ -981,13 +981,8 @@ error:
 bool
 libxlGetAutoballoonConf(libxlDriverPrivatePtr driver)
 {
-    const libxl_version_info *info;
     regex_t regex;
     int ret;
-
-    info = libxl_get_version_info(driver->ctx);
-    if (!info)
-        return true; /* default to on */
 
     ret = regcomp(&regex,
             "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
@@ -995,7 +990,7 @@ libxlGetAutoballoonConf(libxlDriverPrivatePtr driver)
     if (ret)
         return true;
 
-    ret = regexec(&regex, info->commandline, 0, NULL, 0);
+    ret = regexec(&regex, driver->verInfo->commandline, 0, NULL, 0);
     regfree(&regex);
     return ret == REG_NOMATCH;
 }

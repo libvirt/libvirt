@@ -55,6 +55,7 @@ struct _libxlDriverPrivate {
     virMutex lock;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
+    const libxl_version_info *verInfo;
     unsigned int version;
 
     /* log stream for driver-wide libxl ctx */
