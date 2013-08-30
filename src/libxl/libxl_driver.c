@@ -775,6 +775,40 @@ libxlStateCleanup(void)
     return 0;
 }
 
+static bool
+libxlDriverShouldLoad(bool privileged)
+{
+    bool ret = false;
+    virCommandPtr cmd;
+    int status;
+
+    /* Don't load if non-root */
+    if (!privileged) {
+        VIR_INFO("Not running privileged, disabling libxenlight driver");
+        return ret;
+    }
+
+    /* Don't load if not running on a Xen control domain (dom0) */
+    if (!virFileExists("/proc/xen/capabilities")) {
+        VIR_INFO("No Xen capabilities detected, probably not running "
+                 "in a Xen Dom0.  Disabling libxenlight driver");
+
+        return ret;
+    }
+
+    /* Don't load if legacy xen toolstack (xend) is in use */
+    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
+    if (virCommandRun(cmd, &status) == 0 && status == 0) {
+        VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
+                  "libxenlight driver.");
+    } else {
+        ret = true;
+    }
+    virCommandFree(cmd);
+
+    return ret;
+}
+
 static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
@@ -782,32 +816,19 @@ libxlStateInitialize(bool privileged,
 {
     const libxl_version_info *ver_info;
     char *log_file = NULL;
-    virCommandPtr cmd;
-    int status, ret = 0;
+    int ret = 0;
     unsigned int free_mem;
     char ebuf[1024];
 
-    /* Disable libxl driver if non-root */
-    if (!privileged) {
-        VIR_INFO("Not running privileged, disabling libxenlight driver");
+    if (!libxlDriverShouldLoad(privileged))
         return 0;
-    }
-
-    /* Disable driver if legacy xen toolstack (xend) is in use */
-    cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-    if (virCommandRun(cmd, &status) == 0 && status == 0) {
-        VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
-                  "libxenlight driver.");
-        virCommandFree(cmd);
-        return 0;
-    }
-    virCommandFree(cmd);
 
     if (VIR_ALLOC(libxl_driver) < 0)
         return -1;
 
     if (virMutexInit(&libxl_driver->lock) < 0) {
-        VIR_ERROR(_("cannot initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
         VIR_FREE(libxl_driver);
         return -1;
     }
@@ -841,23 +862,31 @@ libxlStateInitialize(bool privileged,
         goto error;
 
     if (virFileMakePath(libxl_driver->logDir) < 0) {
-        VIR_ERROR(_("Failed to create log dir '%s': %s"),
-                  libxl_driver->logDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create log dir '%s': %s"),
+                       libxl_driver->logDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->stateDir) < 0) {
-        VIR_ERROR(_("Failed to create state dir '%s': %s"),
-                  libxl_driver->stateDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create state dir '%s': %s"),
+                       libxl_driver->stateDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->libDir) < 0) {
-        VIR_ERROR(_("Failed to create lib dir '%s': %s"),
-                  libxl_driver->libDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create lib dir '%s': %s"),
+                       libxl_driver->libDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
     if (virFileMakePath(libxl_driver->saveDir) < 0) {
-        VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  libxl_driver->saveDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create save dir '%s': %s"),
+                       libxl_driver->saveDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 
@@ -883,28 +912,32 @@ libxlStateInitialize(bool privileged,
     libxl_driver->logger =
             (xentoollog_logger *)xtl_createlogger_stdiostream(libxl_driver->logger_file, XTL_DEBUG, 0);
     if (!libxl_driver->logger) {
-        VIR_INFO("cannot create logger for libxenlight, disabling driver");
-        goto fail;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("failed to create logger for libxenlight"));
+        goto error;
     }
 
     if (libxl_ctx_alloc(&libxl_driver->ctx,
                        LIBXL_VERSION, 0,
                        libxl_driver->logger)) {
-        VIR_INFO("cannot initialize libxenlight context, probably not running "
-                 "in a Xen Dom0, disabling driver");
-        goto fail;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("failed to initialize libxenlight context"));
+        goto error;
     }
 
     if ((ver_info = libxl_get_version_info(libxl_driver->ctx)) == NULL) {
-        VIR_INFO("cannot version information from libxenlight, disabling driver");
-        goto fail;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("failed to get version information from libxenlight"));
+        goto error;
     }
     libxl_driver->version = (ver_info->xen_version_major * 1000000) +
             (ver_info->xen_version_minor * 1000);
 
     if ((libxl_driver->caps =
          libxlMakeCapabilities(libxl_driver->ctx)) == NULL) {
-        VIR_ERROR(_("cannot create capabilities for libxenlight"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot create capabilities for libxenlight"));
         goto error;
     }
 
@@ -916,7 +949,10 @@ libxlStateInitialize(bool privileged,
     /* This will fill xenstore info about free and dom0 memory if missing,
      * should be called before starting first domain */
     if (libxl_get_free_memory(libxl_driver->ctx, &free_mem)) {
-        VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Unable to configure libxl's memory management "
+                         "parameters"));
         goto error;
     }
 
@@ -956,7 +992,6 @@ libxlStateInitialize(bool privileged,
 
 error:
     ret = -1;
-fail:
     VIR_FREE(log_file);
     if (libxl_driver)
         libxlDriverUnlock(libxl_driver);
