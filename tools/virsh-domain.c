@@ -661,7 +661,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (virBufferError(&buf)) {
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
-        return false;
+        goto cleanup;
     }
 
     xml = virBufferContentAndReset(&buf);
