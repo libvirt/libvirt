@@ -683,7 +683,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr orig_disk = NULL;
     virDomainDeviceDefPtr dev_copy = NULL;
     virDomainDiskDefPtr tmp = NULL;
-    virCgroupPtr cgroup = NULL;
     virCapsPtr caps = NULL;
     int ret = -1;
 
@@ -773,10 +772,10 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         break;
     }
 
-    if (ret != 0 && cgroup) {
-        if (qemuTeardownDiskCgroup(vm, disk) < 0)
-            VIR_WARN("Failed to teardown cgroup for disk path %s",
-                     NULLSTR(disk->src));
+    if (ret != 0 &&
+        qemuTeardownDiskCgroup(vm, disk) < 0) {
+        VIR_WARN("Failed to teardown cgroup for disk path %s",
+                 NULLSTR(disk->src));
     }
 
 end:
