@@ -2046,14 +2046,16 @@ virtlockd.8: $(srcdir)/virtlockd.8.in
 	    < $< > $@-t && \
 	mv $@-t $@
 
+if WITH_LIBVIRTD
 man8_MANS = virtlockd.8
 
 conf_DATA += locking/virtlockd.conf
 
 augeas_DATA += locking/virtlockd.aug
 augeastest_DATA += test_virtlockd.aug
+endif WITH_LIBVIRTD
 
-CLEANFILES += test_virtlockd.aug
+CLEANFILES += test_virtlockd.aug virtlockd.8
 MAINTAINERCLEANFILES += $(srcdir)/virtlockd.8.in
 
 EXTRA_DIST += \
