@@ -1000,7 +1000,7 @@ libvirt_driver_xen_la_LIBADD = libvirt_driver_xen_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_xen.la
 libvirt_driver_xen_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_xen_la_LDFLAGS = -module -avoid-version
+libvirt_driver_xen_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_xen.la
 # Stateful, so linked to daemon instead
@@ -1050,7 +1050,7 @@ libvirt_driver_vbox_la_LIBADD = libvirt_driver_vbox_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_vbox.la
 libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version
+libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
 # GPLv2-only license requries that it be linked into
@@ -1083,7 +1083,7 @@ libvirt_driver_libxl_la_LIBADD = libvirt_driver_libxl_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_libxl.la
 libvirt_driver_libxl_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_libxl_la_LDFLAGS = -module -avoid-version
+libvirt_driver_libxl_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_libxl.la
 # Stateful, so linked to daemon instead
@@ -1108,7 +1108,7 @@ libvirt_driver_qemu_la_LIBADD = libvirt_driver_qemu_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_qemu.la
 libvirt_driver_qemu_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_qemu_la_LDFLAGS = -module -avoid-version
+libvirt_driver_qemu_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_qemu.la
 # Stateful, so linked to daemon instead
@@ -1184,7 +1184,7 @@ libvirt_driver_uml_la_LIBADD = libvirt_driver_uml_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_uml.la
 libvirt_driver_uml_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_uml_la_LDFLAGS = -module -avoid-version
+libvirt_driver_uml_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_uml.la
 # Stateful, so linked to daemon instead
@@ -1361,7 +1361,7 @@ libvirt_driver_storage_la_LIBADD = libvirt_driver_storage_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
 libvirt_driver_storage_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_storage_la_LDFLAGS = -module -avoid-version
+libvirt_driver_storage_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_storage.la
 # Stateful, so linked to daemon instead
@@ -2114,7 +2114,7 @@ if WITH_SANLOCK
 lockdriver_LTLIBRARIES += sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
-sanlock_la_LDFLAGS = -module -avoid-version
+sanlock_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 sanlock_la_LIBADD = -lsanlock_client \
 		../gnulib/lib/libgnu.la
 
