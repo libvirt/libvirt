@@ -1455,7 +1455,7 @@ libvirt_driver_nwfilter_la_CFLAGS = \
 		-I$(top_srcdir)/src/access \
 		-I$(top_srcdir)/src/conf \
 		$(AM_CFLAGS)
-libvirt_driver_nwfilter_la_LDFLAGS = $(LD_AMFLAGS)
+libvirt_driver_nwfilter_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_nwfilter_la_LIBADD = $(LIBPCAP_LIBS) $(LIBNL_LIBS) $(DBUS_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_nwfilter_la_LIBADD += ../gnulib/lib/libgnu.la
