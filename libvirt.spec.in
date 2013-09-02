@@ -2105,6 +2105,22 @@ fi
 %endif
 
 %changelog
+* Mon Sep  2 2013 Daniel Veillard <veillard@redhat.com> - 1.1.2-1
+- various improvements to libxl driver
+- systemd integration improvements
+- Add flag to BaselineCPU API to return detailed CPU features
+- Introduce a virt-login-shell binary
+- conf: add startupPolicy attribute for harddisk
+- various bug fixes and improvements including localizations
+
+* Tue Jul 30 2013 Daniel Veillard <veillard@redhat.com> - 1.1.1-1
+- Adding device removal or deletion events
+- Introduce new domain create APIs to pass pre-opened FDs to LXC
+- Add interface versions for Xen 4.3
+- Add new public API virDomainSetMemoryStatsPeriod
+- Various LXC improvements
+- various bug fixes and improvements including localizations
+
 * Mon Jul  1 2013 Daniel Veillard <veillard@redhat.com> - 1.1.0-1
 - CVE-2013-2218: Fix crash listing network interfaces with filters
 - Fine grained ACL support for the API

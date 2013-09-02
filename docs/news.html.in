@@ -9,6 +9,308 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.1.2: Sep 2 2013</h3>
+    <ul>
+      <li>Features:<br/>
+      various improvements to libxl driver (Jim Fehlig, Bamvor Jian Zhang),<br/>
+      systemd integration improvements (Daniel P. Berrange, Mooli Tayer),<br/>
+      Add flag to BaselineCPU API to return detailed CPU features (Don Dugger),<br/>
+      Introduce a virt-login-shell binary (Dan Walsh),<br/>
+      conf: add startupPolicy attribute for harddisk (Guannan Ren)<br/>
+      </li>
+
+      <li>Security:<br/>
+      provide supplemental groups even when parsing label (CVE-2013-4291) (Eric Blake),<br/>
+      Add bounds checking on virDomainMigrate*Params RPC calls (CVE-2013-4292) (Daniel P. Berrange),<br/>
+      CVE-2013-5651 virbitmap: Refactor virBitmapParse to avoid access beyond bounds of array (Peter Krempa),<br/>
+      CVE-2013-4239 xen: fix memory corruption in legacy driver (Jim Fehlig)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Reformat &lt;disk&gt; attribute description in formatdomain (John Ferlan),<br/>
+      Update iSCSI storage pool example (John Ferlan),<br/>
+      Update formatsecrets to include more examples of each type (John Ferlan),<br/>
+      Update the formatdomain disk examples (John Ferlan),<br/>
+      Clean 09adfdc62de2b up (Michal Privoznik),<br/>
+      virt-pki-validate: add --help/--version option (Eric Blake),<br/>
+      virt-xml-validate: add --help/--version option (Eric Blake),<br/>
+      Discourage users to set hard_limit (Michal Privoznik),<br/>
+      Update polkit examples to use 'lookup' method (Daniel P. Berrange),<br/>
+      fix usb node device sub-element names (Xuesong Zhang),<br/>
+      virt-login-shell: improve error message grammar (Ruben Kerkhof),<br/>
+      storage pool permission copy-paste fix (Philipp Hahn),<br/>
+      mention VIR_TEST_RANGE (Eric Blake),<br/>
+      Document use of systemd socket activation (Daniel P. Berrange),<br/>
+      Remove leftovers from hyperv spinlocks documentation (Ján Tomko),<br/>
+      Fix typo in domain name in polkit acl example (Daniel P. Berrange),<br/>
+      Add documentation for access control system (Daniel P. Berrange),<br/>
+      Add an example config file for virtlockd (Daniel P. Berrange),<br/>
+      Add a man page for virtlockd daemon (Daniel P. Berrange),<br/>
+      Add info about access control checks into API reference (Daniel P. Berrange),<br/>
+      Fix minor typos in messages and docs (Yuri Chornoivan)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      build: fix virtlockd file distribution (Eric Blake),<br/>
+      build: shipped files must not depend on BUILT_SOURCES (Eric Blake),<br/>
+      build: only create virt-login-shell for lxc builds (Eric Blake),<br/>
+      qemu: Only setup vhost if virtType == "kvm" (Cole Robinson),<br/>
+      Process virtlockd.conf instead of libvirtd.conf (Guido Günther),<br/>
+      Change way we fake dbus method calls (Daniel P. Berrange),<br/>
+      random: don't mix RAND_MAX with random_r (Eric Blake),<br/>
+      tests: skip schema validation tests if xmllint is missing (Eric Blake),<br/>
+      Check for --no-copy-dt-needed linker flag (Guido Günther),<br/>
+      Simplify RELRO_LDFLAGS (Guido Günther),<br/>
+      tests: fix building without xattr support (Claudio Bley),<br/>
+      nwfilter: Don't fail to start if DBus isn't available (Peter Krempa),<br/>
+      virsystemd: Don't fail to start VM if DBus isn't available or compiled in (Peter Krempa),<br/>
+      tools: Make sure to distribute conf_DATA, fix RPM build (Cole Robinson),<br/>
+      Directly link against needed libraries (Guido Günther),<br/>
+      Directly link against needed libraries (Guido Günther),<br/>
+      build: avoid -lgcrypt with newer gnutls (Eric Blake),<br/>
+      build: more workarounds for if_bridge.h (Eric Blake),<br/>
+      tests: avoid too-large constants (Eric Blake),<br/>
+      tests: work with older dbus (Eric Blake),<br/>
+      build: fix compilation of virt-login-shell.c (Jim Fehlig),<br/>
+      maint: the compiler is not always named gcc (Eric Blake),<br/>
+      build: fix qemuagenttest build with -O0 in fedora 19. (Jincheng Miao),<br/>
+      spec: RHEL-7 does not have sanlock on i686 (Jiri Denemark),<br/>
+      spec: Disable libssh2 support for RHEL (Peter Krempa)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      qemu_hotplug: Resolve DEADCODE coverity error (John Ferlan),<br/>
+      Fix memory leak in cmdAttachDisk (Hongwei Bi),<br/>
+      python: Fix a PyList usage mistake (Guan Qiang),<br/>
+      qemu: Remove hostdev entry when freeing the depending network entry (Peter Krempa),<br/>
+      virsh: detect programming errors with option parsing (Eric Blake),<br/>
+      virt-sanlock-cleanup; Fix augtool usage (Jiri Denemark),<br/>
+      virsh: Fix debugging (Martin Kletzander),<br/>
+      virsh: free the caps list properly if one of them is invalid (Ján Tomko),<br/>
+      virsh: free the formatting string when listing pool details (Ján Tomko),<br/>
+      virsh: free the list from ListAll APIs even for 0 items (Ján Tomko),<br/>
+      virsh: free messages after logging them to a file (Ján Tomko),<br/>
+      Test network update XML parsing (Ján Tomko),<br/>
+      Always specify qcow2 compat level on qemu-img command line (Ján Tomko),<br/>
+      virsh: fix return value error of cpu-stats (Guannan Ren),<br/>
+      Don't free NULL network in cmdNetworkUpdate (Ján Tomko),<br/>
+      schema: Allow dots in device aliases (Jiri Denemark),<br/>
+      qemu: Don't update count of vCPUs if hot-plug fails silently (Peter Krempa),<br/>
+      tests: Add URI precedence checking (Martin Kletzander),<br/>
+      Fix URI connect precedence (Martin Kletzander),<br/>
+      libxl: fix libvirtd crash when reconnecting domains (Jim Fehlig),<br/>
+      migration: do not restore labels on failed migration (Eric Blake),<br/>
+      storage: Fix the use-after-free memory bug (Osier Yang),<br/>
+      storage: Fix coverity warning (Osier Yang),<br/>
+      qemu_conf: Fix broken logic for adding passthrough iscsi lun (Osier Yang),<br/>
+      libxl: Resolve possible NULL dereference (John Ferlan),<br/>
+      virsh: Don't leak list of volumes when undefining domain with storage (Peter Krempa),<br/>
+      virbitmaptest: Shut coverity up in case of broken test (Peter Krempa),<br/>
+      storage: Update pool metadata after adding/removing/resizing volume (Osier Yang),<br/>
+      virbitmaptest: Add test for out of bounds condition (Peter Krempa),<br/>
+      virsh-domain: Fix memleak in cmdCPUBaseline (Peter Krempa),<br/>
+      libxl: unref DomainObjPrivate on error path (Jim Fehlig),<br/>
+      virsh-domain: Fix memleak in cmdUndefine with storage (Peter Krempa),<br/>
+      Fix qemuProcessReadLog with non-zero offset (Ján Tomko),<br/>
+      network: permit upstream forwarding of unqualified DNS names (Laine Stump),<br/>
+      virsh-domain: Flip logic in cmdSetvcpus (Peter Krempa),<br/>
+      Don't crash in qemuBuildDeviceAddressStr (Guido Günther),<br/>
+      libxl: fix libvirtd segfault (Jim Fehlig),<br/>
+      Make check for /dev/loop device names stricter to avoid /dev/loop-control (Daniel P. Berrange),<br/>
+      libxl: fix node ranges in libxlNodeGetCellsFreeMemory() (Dario Faggioli),<br/>
+      Fix double-free and broken logic in virt-login-shell (Daniel P. Berrange),<br/>
+      virnettlscontext: Resolve Coverity warnings (UNINIT) (John Ferlan),<br/>
+      remote: Fix a segfault in remoteDomainCreateWithFlags (Alex Jia),<br/>
+      qemu: Allow hotplug of multiple SCSI devices (Eric Farman),<br/>
+      Fix validation of CA certificate chains (Daniel P. Berrange),<br/>
+      Reverse logic allowing partial DHCP host XML (Ján Tomko),<br/>
+      xen: Use internal interfaces in xenDomainUsedCpus (Stefan Bader),<br/>
+      qemu_migration: Don't error on tunelled migration with --copy-storage (Michal Privoznik),<br/>
+      build: fix missing max_queued_clients in augeas test file for libvirtd.conf (Laine Stump),<br/>
+      Fix crashing upgrading from older libvirts with running guests (Daniel P. Berrange),<br/>
+      Avoid crash if NULL is passed for filename/funcname in logging (Daniel P. Berrange),<br/>
+      qemumonitortestutils: Don't skip va_end() on error path (Peter Krempa),<br/>
+      tests: Coverity found new NULL_RETURNS (John Ferlan),<br/>
+      Configuring systemd to restart libvirt on failure (Mooli Tayer),<br/>
+      xen: Avoid double free of virDomainDef in xenDaemonCreateXML (Stefan Bader)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      build: fix 'make distcheck' out of the box (Eric Blake),<br/>
+      virsh-domain: rename print_job_progress to vshPrintJobProgress (Peter Krempa),<br/>
+      Prohibit unbounded arrays in XDR protocols (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllSecrets RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllNWFilters RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllNodeDevices RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllInterfaces RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllNetworks RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virStoragePoolListAllVolumes RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllStoragePools RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virConnectListAllDomains RPC call (Daniel P. Berrange),<br/>
+      Add bounds checking on virDomain{SnapshotListAllChildren,ListAllSnapshots} RPC calls (Daniel P. Berrange),<br/>
+      Add bounds checking on virDomainGetJobStats RPC call (Daniel P. Berrange),<br/>
+      autogen.sh: Correctly detect .git as a file (Michal Privoznik),<br/>
+      bridge_driver: Introduce networkObjFromNetwork (Michal Privoznik),<br/>
+      virsh-pool.c: Don't jump over variable declaration (Michal Privoznik),<br/>
+      Remove the space before the slash in network XML (Ján Tomko),<br/>
+      Build QEMU command line for pcihole64 (Ján Tomko),<br/>
+      Add pcihole64 element to root PCI controllers (Ján Tomko),<br/>
+      Allow controller XML parsing to use XPath context (Ján Tomko),<br/>
+      Move virDomainParseScaledValue earlier (Ján Tomko),<br/>
+      Add ftp protocol support for cdrom disk (Aline Manera),<br/>
+      Add http protocol support for cdrom disk (Aline Manera),<br/>
+      virsh: C99 style for info_domfstrim and opts_lxc_enter_namespace (Tomas Meszaros),<br/>
+      qemuDomainAttachHostPciDevice: Fall back to mem balloon if there's no hard_limit (Michal Privoznik),<br/>
+      qemuhotplugtest: Add tests for virtio SCSI disk hotplug (Jiri Denemark),<br/>
+      qemuhotplugtest: Add tests for USB disk hotplug (Jiri Denemark),<br/>
+      qemuhotplugtest: Add tests for async virtio disk detach (Jiri Denemark),<br/>
+      qemuhotplugtest: Add support for DEVICE_DELETED event (Jiri Denemark),<br/>
+      qemu: Let tests override waiting time for device unplug (Jiri Denemark),<br/>
+      qemu: Export qemuProcessHandleDeviceDeleted for tests (Jiri Denemark),<br/>
+      tests: Add support for passing driver to qemu monitor (Jiri Denemark),<br/>
+      tests: Add support for passing vm to qemu monitor (Jiri Denemark),<br/>
+      qemuhotplugtest: Add tests for virtio disk hotplug (Jiri Denemark),<br/>
+      qemuxml2argvtest: Add XML for testing device hotplug (Jiri Denemark),<br/>
+      qemuhotplugtest: Define QMP_OK for the most common reply (Jiri Denemark),<br/>
+      qemuhotplugtest: Compare domain XML after device hotplug (Jiri Denemark),<br/>
+      qemuhotplugtest: Generate better output (Jiri Denemark),<br/>
+      qemu: Move qemuDomainDetachDeviceDiskLive to qemu_hotplug.c (Jiri Denemark),<br/>
+      qemu: Move qemuDomainAttachDeviceDiskLive to qemu_hotplug.c (Jiri Denemark),<br/>
+      qemu: Avoid using global qemu_driver in event handlers (Jiri Denemark),<br/>
+      qemu: Typedef monitor callbacks (Jiri Denemark),<br/>
+      python: simplify complicated conditional assignment (Claudio Bley),<br/>
+      Test for object identity when checking for None in Python (Claudio Bley),<br/>
+      qemuagenttest.c: Missing documentation (Timeout) (Nehal J Wani),<br/>
+      python: Use RELRO_LDFLAGS and NO_INDIRECT_LDFLAGS (Guido Günther),<br/>
+      Set security label on FD for virDomainOpenGraphics (Daniel P. Berrange),<br/>
+      qemuBuildNicDevStr: Add mq=on for multiqueue networking (Michal Privoznik),<br/>
+      virBitmapParse: Fix behavior in case of error and fix up callers (Peter Krempa),<br/>
+      VMX: Improve disk parse error for unknown values (Doug Goldstein),<br/>
+      bridge driver: implement networkEnableIpForwarding for BSD (Roman Bogorodskiy),<br/>
+      BSD: implement virNetDev(Set|Clear)IPv4Address (Roman Bogorodskiy),<br/>
+      Test handling of non-existent x509 certs (Daniel P. Berrange),<br/>
+      Report secret usage error message similarly (John Ferlan),<br/>
+      virsh: Print cephx and iscsi usage (John Ferlan),<br/>
+      selinux: enhance test to cover nfs label failure (Eric Blake),<br/>
+      selinux: distinguish failure to label from request to avoid label (Eric Blake),<br/>
+      virsh-pool: Improve error message in cmdPoolList (Peter Krempa),<br/>
+      virsh: modify vshStringToArray to duplicate the elements too (Peter Krempa),<br/>
+      qemuBuildCommandLine: Fall back to mem balloon if there's no hard_limit (Michal Privoznik),<br/>
+      qemuSetupMemoryCgroup: Handle hard_limit properly (Michal Privoznik),<br/>
+      virt-xml-validate: add missing schemas (Eric Blake),<br/>
+      libxl: implement NUMA capabilities reporting (Jim Fehlig),<br/>
+      virdbus: Add virDBusHasSystemBus() (Peter Krempa),<br/>
+      Make max_clients in virtlockd configurable (David Weber),<br/>
+      snapshot_conf: Allow parsing an XML node (Cole Robinson),<br/>
+      test: Unify object XML parsing (Cole Robinson),<br/>
+      test: Simplify args passed to testDomainStartState (Cole Robinson),<br/>
+      test: Split object parsing into their own functions (Cole Robinson),<br/>
+      maint: slightly reduce configure size (Eric Blake),<br/>
+      libxl: refactor capabilities code (Jim Fehlig),<br/>
+      virbitmaptest: Fix function header formatting (Peter Krempa),<br/>
+      maint: update gnulib submodule (Eric Blake),<br/>
+      maint: fix typo for 'switch' (Eric Blake),<br/>
+      examples: support crash events in event-test.py (Giuseppe Scrivano),<br/>
+      cpu: Add Power7+ and Power8 CPU definition in map.xml (Li Zhang),<br/>
+      Ensure that /dev exists in the container root filesystem (Daniel P. Berrange),<br/>
+      Properly handle -h / -V for --help/--version aliases in virtlockd/libvirtd (Daniel P. Berrange),<br/>
+      Address missed feedback from review of virt-login-shell (Daniel P. Berrange),<br/>
+      Honour root prefix in lxcContainerMountFSBlockAuto (Daniel P. Berrange),<br/>
+      tests: Fix parallel runs of TLS test suites (Martin Kletzander),<br/>
+      cgroup macros refactoring, part 5 (Roman Bogorodskiy),<br/>
+      cgroup macros refactoring, part 4 (Roman Bogorodskiy),<br/>
+      cgroup macros refactoring, part 3 (Roman Bogorodskiy),<br/>
+      cgroup macros refactoring, part 2 (Roman Bogorodskiy),<br/>
+      cgroup macros refactoring, part 1 (Roman Bogorodskiy),<br/>
+      cgroup: functional sort (Eric Blake),<br/>
+      cgroup: topological sort (Eric Blake),<br/>
+      cgroup: use consistent formatting (Eric Blake),<br/>
+      Add missing ATTRIBUTE_UNUSED (Guido Günther),<br/>
+      virsh: nicer abort of blockcopy (Eric Blake),<br/>
+      tests: Skip virsh-all test as expensive (Peter Krempa),<br/>
+      qemuagenttest: Test timeout of agent commands (Peter Krempa),<br/>
+      tests: add helper to determine when to skip expensive tests (Eric Blake),<br/>
+      build: add configure option to disable gnulib tests (Eric Blake),<br/>
+      qemuagenttest: Test arbitrary command passthrough (Peter Krempa),<br/>
+      Record the where the auto-generated data comes from (Daniel P. Berrange),<br/>
+      tests: test negative number through dbus (Eric Blake),<br/>
+      libxl: Create per-domain log file (Jim Fehlig),<br/>
+      Fix parallel runs of TLS test suites (Daniel P. Berrange),<br/>
+      configure: fix formatting of missing pkg-config modules error (Giuseppe Scrivano),<br/>
+      Ensure securityfs is mounted readonly in container (Dan Walsh),<br/>
+      Change data passed into TLS test cases (Daniel P. Berrange),<br/>
+      Avoid re-generating certs every time (Daniel P. Berrange),<br/>
+      Split TLS test into two separate tests (Daniel P. Berrange),<br/>
+      maint: avoid C99 loop declaration (Eric Blake),<br/>
+      qemu: support to drop disk with 'optional' startupPolicy (Guannan Ren),<br/>
+      nwfilter: Use -m conntrack rather than -m state (Stefan Berger),<br/>
+      virGetGroupList: always include the primary group (Guido Günther),<br/>
+      qemu: improve error reporting during PCI address validation (Laine Stump),<br/>
+      qemu: enable using implicit sata controller in q35 machines (Laine Stump),<br/>
+      qemu: properly set/use device alias for pci controllers (Laine Stump),<br/>
+      qemu: fix handling of default/implicit devices for q35 (Laine Stump),<br/>
+      qemu: add dmi-to-pci-bridge controller (Laine Stump),<br/>
+      qemu: add pcie-root controller (Laine Stump),<br/>
+      qemu: enable auto-allocate of all PCI addresses (Laine Stump),<br/>
+      Introduce max_queued_clients (Michal Privoznik),<br/>
+      RPC: Don't accept client if it would overcommit max_clients (Michal Privoznik),<br/>
+      qemu: eliminate almost-duplicate code in qemu_command.c (Laine Stump),<br/>
+      qemu: rename some functions in qemu_command.c (Laine Stump),<br/>
+      conf: add default USB controller in qemu post-parse callback (Laine Stump),<br/>
+      spec: Explicitly claim ownership of channel subdir (Jiri Denemark),<br/>
+      Ensure LXC/QEMU APIs set the filename for errors (Daniel P. Berrange),<br/>
+      Remove reference to python/tests from RPM %doc (Daniel P. Berrange),<br/>
+      qemuagenttest: Check invalid response in shutdown test (Peter Krempa),<br/>
+      qemuagenttest: Fix checking of shutdown mode (Peter Krempa),<br/>
+      bridge driver: extract platform specifics (Roman Bogorodskiy),<br/>
+      valgrind: Adjust filter for _dl_allocate_tls (John Ferlan),<br/>
+      maint: use modern autoconf idioms (Eric Blake),<br/>
+      qemu: check presence of each disk and its backing file as well (Guannan Ren),<br/>
+      qemu: add helper functions for diskchain checking (Guannan Ren),<br/>
+      qemu: refactor qemuDomainCheckDiskPresence for only disk presence check (Guannan Ren),<br/>
+      Enable support for systemd-machined in cgroups creation (Daniel P. Berrange),<br/>
+      Cope with races while killing processes (Daniel P. Berrange),<br/>
+      Add support for systemd cgroup mount (Daniel P. Berrange),<br/>
+      Add APIs for formatting systemd slice/scope names (Daniel P. Berrange),<br/>
+      qemuagenttest: Add tests for CPU plug functions and helpers (Peter Krempa),<br/>
+      qemuagenttest: Introduce testing of shutdown commands (Peter Krempa),<br/>
+      qemuagenttest: Add testing of agent suspend modes (Peter Krempa),<br/>
+      qemuagenttest: Test the filesystem trimming (Peter Krempa),<br/>
+      tests: Add qemuagenttest (Peter Krempa),<br/>
+      qemumonitortestutils: Add the ability to check arguments of commands (Peter Krempa),<br/>
+      qemumonitortestutils: Improve error reporting from mock qemu monitor (Peter Krempa),<br/>
+      qemumonitortestutils: Add instrumentation for guest agent testing (Peter Krempa),<br/>
+      qemumonitortestutils: Split lines on \n instead of \r\n (Peter Krempa),<br/>
+      qemumonitortestutils: Refactor the test helpers to allow reuse (Peter Krempa),<br/>
+      qemumonitortestutils: Split up creation of the test to allow reuse (Peter Krempa),<br/>
+      qemumonitortestutils: Don't crash on non fully initialized test (Peter Krempa),<br/>
+      qemumonitortestutils: remove multiline function calls (Peter Krempa),<br/>
+      qemumonitortestutils: Use VIR_DELETE_ELEMENT and VIR_APPEND_ELEMENT (Peter Krempa),<br/>
+      qemumonitortestutils: Use consistent header style and line spacing (Peter Krempa),<br/>
+      qemu_agent: Remove obvious comments (Peter Krempa),<br/>
+      qemu_agent: Move updater function for VCPU hotplug into qemu_agent.c (Peter Krempa),<br/>
+      qemu_agent: Output newline at the end of the sync JSON message (Peter Krempa),<br/>
+      conf: Export virDomainChrSourceDefClear() (Peter Krempa),<br/>
+      add console support in libxl (Bamvor Jian Zhang),<br/>
+      util: add virGetUserDirectoryByUID (Dan Walsh),<br/>
+      maint: fix typo for SENTINEL (Eric Blake),<br/>
+      spec: Don't mix commands with macro definitions (Jiri Denemark),<br/>
+      spec: Use --enable-werror on RHEL (Jiri Denemark),<br/>
+      tests: Put a mock library at the start of LD_PRELOAD (Jiri Denemark),<br/>
+      Support apparmor in RPM spec (Daniel P. Berrange),<br/>
+      Delete obsolete / unused python test files (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      qemu_hotplug: Fix whitespace around addition in argument (Peter Krempa),<br/>
+      qemu: Drop qemuDomainMemoryLimit (Michal Privoznik),<br/>
+      maint: avoid bootstrap warning (Eric Blake),<br/>
+      libxl: remove unnecessary curly braces (Jim Fehlig),<br/>
+      virtio-rng: Remove double space in error message (Peter Krempa),<br/>
+      Don't mark parentIndex with ATTRIBUTE_UNUSED (Ján Tomko)<br/>
+      </li>
+    </ul>
+
     <h3>1.1.1: July 30 2013</h3>
     <ul>
       <li>Features:<br/>
