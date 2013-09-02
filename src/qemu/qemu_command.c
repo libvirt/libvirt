@@ -406,7 +406,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 cleanup:
     if (ret < 0) {
         size_t i;
-        for (i = 0; i < *tapfdSize; i++)
+        for (i = 0; i < *tapfdSize && tapfd[i] >= 0; i++)
             VIR_FORCE_CLOSE(tapfd[i]);
         if (template_ifname)
             VIR_FREE(net->ifname);
@@ -7338,6 +7338,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
             goto cleanup;
 
+        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
+
         if (qemuNetworkIfaceConnect(def, conn, driver, net,
                                     qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
@@ -7364,6 +7366,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0 ||
             VIR_ALLOC_N(vhostfdName, vhostfdSize))
             goto cleanup;
+
+        memset(vhostfd, -1, vhostfdSize * sizeof(vhostfd[0]));
 
         if (qemuOpenVhostNet(def, net, qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
@@ -7424,13 +7428,13 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 cleanup:
     if (ret < 0)
         virDomainConfNWFilterTeardown(net);
-    for (i = 0; tapfd && i < tapfdSize; i++) {
+    for (i = 0; tapfd && i < tapfdSize && tapfd[i] >= 0; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(tapfd[i]);
         if (tapfdName)
             VIR_FREE(tapfdName[i]);
     }
-    for (i = 0; vhostfd && i < vhostfdSize; i++) {
+    for (i = 0; vhostfd && i < vhostfdSize && vhostfd[i] >= 0; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(vhostfd[i]);
         if (vhostfdName)
