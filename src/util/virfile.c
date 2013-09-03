@@ -728,7 +728,7 @@ int virFileNBDDeviceAssociate(const char *file,
                               char **dev)
 {
     char *nbddev;
-    char *qemunbd;
+    char *qemunbd = NULL;
     virCommandPtr cmd = NULL;
     int ret = -1;
     const char *fmtstr = NULL;
