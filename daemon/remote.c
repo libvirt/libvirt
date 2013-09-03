@@ -1139,7 +1139,7 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                                 remote_domain_memory_stats_ret *ret)
 {
     virDomainPtr dom = NULL;
-    struct _virDomainMemoryStat *stats;
+    struct _virDomainMemoryStat *stats = NULL;
     int nr_stats;
     size_t i;
     int rv = -1;
