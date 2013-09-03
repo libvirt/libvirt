@@ -1,0 +1,4 @@
+<cpu match='exact'>
+  <model fallback='forbid'>POWER7_v2.1</model>
+  <topology sockets='2' cores='4' threads='1'/>
+</cpu>

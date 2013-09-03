@@ -1,0 +1,4 @@
+<cpu match='exact'>
+  <model>POWER8_v1.0</model>
+  <topology sockets='2' cores='4' threads='1'/>
+</cpu>

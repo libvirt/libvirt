@@ -1,0 +1,7 @@
+<cpuTest>
+<cpu>
+  <arch>ppc64</arch>
+  <model>POWER7_v2.3</model>
+  <topology sockets='2' cores='4' threads='1'/>
+</cpu>
+</cpuTest>

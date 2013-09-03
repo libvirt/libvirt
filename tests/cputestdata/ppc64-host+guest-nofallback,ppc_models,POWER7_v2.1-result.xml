@@ -1,0 +1,5 @@
+<cpu mode='custom' match='exact'>
+  <arch>ppc64</arch>
+  <model fallback='forbid'>POWER7_v2.1</model>
+  <vendor>IBM</vendor>
+</cpu>

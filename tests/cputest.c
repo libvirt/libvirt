@@ -493,6 +493,7 @@ cpuTestRun(const char *name, const struct data *data)
 static const char *model486[]   = { "486" };
 static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
+static const char *ppc_models[]     = { "POWER7", "POWER7_v2.1", "POWER8_v1.0"};
 
 static int
 mymain(void)
@@ -584,6 +585,9 @@ mymain(void)
     DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("x86", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
 
+    DO_TEST_COMPARE("ppc64", "host", "strict", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "exact", VIR_CPU_COMPARE_INCOMPATIBLE);
+
     /* guest updates for migration
      * automatically compares host CPU with the result */
     DO_TEST_UPDATE("x86", "host", "min", VIR_CPU_COMPARE_IDENTICAL);
@@ -601,6 +605,8 @@ mymain(void)
     DO_TEST_BASELINE("x86", "2", 0, 0);
     DO_TEST_BASELINE("x86", "3", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
 
+    DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
+    DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);
     /* CPU features */
     DO_TEST_HASFEATURE("x86", "host", "vmx", YES);
     DO_TEST_HASFEATURE("x86", "host", "lm", YES);
@@ -626,6 +632,9 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
     DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback",
                       models, "Penryn", -1);
+
+    DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);
 
     VIR_FREE(map);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
