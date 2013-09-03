@@ -11,7 +11,7 @@ B<virt-login-shell>
 The B<virt-login-shell> program is a setuid shell that is used to join
 an LXC container that matches the user's name.  If the container is not
 running, virt-login-shell will attempt to start the container.
-virt-sandbox-shell is not allowed to be run by root.  Normal users will get
+virt-login-shell is not allowed to be run by root.  Normal users will get
 added to a container that matches their username, if it exists, and they are
 configured in /etc/libvirt/virt-login-shell.conf.
 
