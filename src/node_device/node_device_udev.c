@@ -367,7 +367,7 @@ udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
                 va_list args)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *format = NULL;
+    char *format = NULL;
 
     virBufferAdd(&buf, fmt, -1);
     virBufferTrim(&buf, "\n", -1);

@@ -1383,7 +1383,7 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainDefPtr ret = NULL;
     virCapsPtr caps = NULL;
-    const char *xml = NULL;
+    char *xml = NULL;
 
     if (qemuDomainDefFormatBuf(driver, src, flags, &buf) < 0)
         goto cleanup;

@@ -931,7 +931,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                unsigned int flags)
 {
     int ret = -1;
-    const char *create_tool;
+    char *create_tool;
     int imgformat;
     virCommandPtr cmd;
 

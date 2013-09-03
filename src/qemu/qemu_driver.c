@@ -14658,7 +14658,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
     virDomainBlockIoTuneInfo *oldinfo;
-    const char *device = NULL;
+    char *device = NULL;
     int ret = -1;
     size_t i;
     int idx = -1;
@@ -14836,7 +14836,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo reply;
-    const char *device = NULL;
+    char *device = NULL;
     int ret = -1;
     size_t i;
     virCapsPtr caps = NULL;

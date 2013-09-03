@@ -405,6 +405,7 @@ virExec(virCommandPtr cmd)
     int childout = -1;
     int childerr = -1;
     int tmpfd;
+    char *binarystr = NULL;
     const char *binary = NULL;
     int forkRet, ret;
     struct sigaction waxon, waxoff;
@@ -412,7 +413,7 @@ virExec(virCommandPtr cmd)
     int ngroups;
 
     if (cmd->args[0][0] != '/') {
-        if (!(binary = virFindFileInPath(cmd->args[0]))) {
+        if (!(binary = binarystr = virFindFileInPath(cmd->args[0]))) {
             virReportSystemError(ENOENT,
                                  _("Cannot find '%s' in path"),
                                  cmd->args[0]);
@@ -506,8 +507,7 @@ virExec(virCommandPtr cmd)
 
         cmd->pid = pid;
 
-        if (binary != cmd->args[0])
-            VIR_FREE(binary);
+        VIR_FREE(binarystr);
         VIR_FREE(groups);
 
         return 0;
@@ -713,8 +713,7 @@ virExec(virCommandPtr cmd)
        should never jump here on error */
 
     VIR_FREE(groups);
-    if (binary != cmd->args[0])
-        VIR_FREE(binary);
+    VIR_FREE(binarystr);
 
     /* NB we don't virReportError() on any failures here
        because the code which jumped here already raised

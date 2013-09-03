@@ -2346,8 +2346,8 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *iface;
     const char *state;
-    const char *value;
-    const char *desc;
+    char *value;
+    char *desc;
     virMacAddr macaddr;
     const char *element;
     const char *attr;
@@ -6186,7 +6186,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     char *buffer;
     char *result = NULL;
-    const char **list = NULL;
+    char **list = NULL;
     unsigned int flags = 0;
     int count = 0;
 
@@ -6243,7 +6243,8 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
         list[i] = vshStrdup(ctl, (const char *)xmlBufferContent(xml_buf));
     }
 
-    result = virConnectBaselineCPU(ctl->conn, list, count, flags);
+    result = virConnectBaselineCPU(ctl->conn,
+                                   (const char **)list, count, flags);
 
     if (result) {
         vshPrint(ctl, "%s", result);
@@ -6398,7 +6399,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
                              params[pos].value.ul / 1000000000,
                              params[pos].value.ul % 1000000000);
                 } else {
-                    const char *s = vshGetTypedParamValue(ctl, &params[pos]);
+                    char *s = vshGetTypedParamValue(ctl, &params[pos]);
                     vshPrint(ctl, _("%s\n"), s);
                     VIR_FREE(s);
                 }
@@ -9874,8 +9875,8 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
 {
     xmlNodePtr cur = NULL;
     xmlBufferPtr xml_buf = NULL;
-    const char *disk_type = NULL;
-    const char *device_type = NULL;
+    char *disk_type = NULL;
+    char *device_type = NULL;
     xmlNodePtr new_node = NULL;
     char *ret = NULL;
 
@@ -10211,9 +10212,9 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *source = NULL;
     const char *path = NULL;
-    const char *doc = NULL;
+    char *doc = NULL;
     xmlNodePtr disk_node = NULL;
-    const char *disk_xml = NULL;
+    char *disk_xml = NULL;
     bool ret = false;
     int prepare_type = 0;
     const char *action = NULL;

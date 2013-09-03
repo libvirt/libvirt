@@ -94,7 +94,7 @@ static regex_t *virLogRegex = NULL;
  * based on a matching pattern (currently a substring)
  */
 struct _virLogFilter {
-    const char *match;
+    char *match;
     virLogPriority priority;
     unsigned int flags;
 };
@@ -115,7 +115,7 @@ struct _virLogOutput {
     virLogCloseFunc c;
     virLogPriority priority;
     virLogDestination dest;
-    const char *name;
+    char *name;
 };
 typedef struct _virLogOutput virLogOutput;
 typedef virLogOutput *virLogOutputPtr;

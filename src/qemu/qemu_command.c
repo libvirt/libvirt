@@ -6147,7 +6147,8 @@ static char *qemuBuildTPMBackendStr(const virDomainDefPtr def,
     const virDomainTPMDefPtr tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type = virDomainTPMBackendTypeToString(tpm->type);
-    const char *cancel_path, *tpmdev;
+    char *cancel_path;
+    const char *tpmdev;
 
     virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
 
@@ -7772,7 +7773,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC)) {
-        const char *rtcopt;
+        char *rtcopt;
         virCommandAddArg(cmd, "-rtc");
         if (!(rtcopt = qemuBuildClockArgStr(&def->clock)))
             goto error;

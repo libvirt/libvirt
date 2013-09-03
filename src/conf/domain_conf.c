@@ -6777,9 +6777,9 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
 {
     int ret = -1;
     unsigned int port;
-    const char *targetType = virXMLPropString(cur, "type");
-    const char *addrStr = NULL;
-    const char *portStr = NULL;
+    char *targetType = virXMLPropString(cur, "type");
+    char *addrStr = NULL;
+    char *portStr = NULL;
 
     if ((def->targetType =
          virDomainChrTargetTypeFromString(def, def->deviceType,
@@ -8193,7 +8193,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE) {
                 if (xmlStrEqual(cur->name, BAD_CAST "channel")) {
-                    const char *name, *mode;
+                    char *name, *mode;
                     int nameval, modeval;
                     name = virXMLPropString(cur, "name");
                     mode = virXMLPropString(cur, "mode");
@@ -8227,7 +8227,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.channels[nameval] = modeval;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "image")) {
-                    const char *compression = virXMLPropString(cur, "compression");
+                    char *compression = virXMLPropString(cur, "compression");
                     int compressionVal;
 
                     if (!compression) {
@@ -8248,7 +8248,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.image = compressionVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "jpeg")) {
-                    const char *compression = virXMLPropString(cur, "compression");
+                    char *compression = virXMLPropString(cur, "compression");
                     int compressionVal;
 
                     if (!compression) {
@@ -8269,7 +8269,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.jpeg = compressionVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "zlib")) {
-                    const char *compression = virXMLPropString(cur, "compression");
+                    char *compression = virXMLPropString(cur, "compression");
                     int compressionVal;
 
                     if (!compression) {
@@ -8290,7 +8290,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.zlib = compressionVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {
-                    const char *compression = virXMLPropString(cur, "compression");
+                    char *compression = virXMLPropString(cur, "compression");
                     int compressionVal;
 
                     if (!compression) {
@@ -8311,7 +8311,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.playback = compressionVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "streaming")) {
-                    const char *mode = virXMLPropString(cur, "mode");
+                    char *mode = virXMLPropString(cur, "mode");
                     int modeVal;
 
                     if (!mode) {
@@ -8331,7 +8331,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.streaming = modeVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "clipboard")) {
-                    const char *copypaste = virXMLPropString(cur, "copypaste");
+                    char *copypaste = virXMLPropString(cur, "copypaste");
                     int copypasteVal;
 
                     if (!copypaste) {
@@ -8351,7 +8351,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
                     def->data.spice.copypaste = copypasteVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
-                    const char *mode = virXMLPropString(cur, "mode");
+                    char *mode = virXMLPropString(cur, "mode");
                     int modeVal;
 
                     if (!mode) {
@@ -8543,9 +8543,9 @@ virDomainRNGDefParseXML(const xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         unsigned int flags)
 {
-    const char *model = NULL;
-    const char *backend = NULL;
-    const char *type = NULL;
+    char *model = NULL;
+    char *backend = NULL;
+    char *type = NULL;
     virDomainRNGDefPtr def;
     xmlNodePtr save = ctxt->node;
     xmlNodePtr *backends = NULL;
@@ -15220,7 +15220,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                 return -1;
             }
 
-            const char *addr = virSocketAddrFormat(def->target.addr);
+            char *addr = virSocketAddrFormat(def->target.addr);
             if (addr == NULL)
                 return -1;
 

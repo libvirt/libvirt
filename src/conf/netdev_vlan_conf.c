@@ -36,8 +36,8 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
 {
     int ret = -1;
     xmlNodePtr save = ctxt->node;
-    const char *trunk = NULL;
-    const char *nativeMode = NULL;
+    char *trunk = NULL;
+    char *nativeMode = NULL;
     xmlNodePtr *tagNodes = NULL;
     int nTags;
     size_t i;

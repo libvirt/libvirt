@@ -499,7 +499,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
             for (j = 0; j < rule->nVarAccess; j++) {
                 if (!virNWFilterVarAccessIsAvailable(rule->varAccess[j],
                                                      vars)) {
-                    const char *varAccess;
+                    char *varAccess;
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
                     virNWFilterVarAccessPrint(rule->varAccess[j], &buf);

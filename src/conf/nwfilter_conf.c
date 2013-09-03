@@ -2432,7 +2432,8 @@ static const char *
 virNWFilterIsAllowedChain(const char *chainname)
 {
     enum virNWFilterChainSuffixType i;
-    const char *name, *msg;
+    const char *name;
+    char *msg;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool printed = false;
 

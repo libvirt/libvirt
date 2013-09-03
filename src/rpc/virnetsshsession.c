@@ -268,8 +268,9 @@ virNetSSHKbIntCb(const char *name ATTRIBUTE_UNUSED,
 cleanup:
     if (askcred) {
         for (i = 0; i < num_prompts; i++) {
+            char *prompt = (char *)askcred[i].prompt;
             VIR_FREE(askcred[i].result);
-            VIR_FREE(askcred[i].prompt);
+            VIR_FREE(prompt);
         }
     }
 
@@ -291,6 +292,8 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
     int ret;
     const char *key;
     const char *keyhash;
+    char *keyhashstr;
+    char *tmp;
     int keyType;
     size_t keyLength;
     char *errmsg;
@@ -364,7 +367,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
              * Sadly, there's no constant to describe the hash length, so
              * we have to use a *MAGIC* constant. */
             for (i = 0; i < 16; i++)
-                    virBufferAsprintf(&buff, "%02hhX:", keyhash[i]);
+                virBufferAsprintf(&buff, "%02hhX:", keyhash[i]);
             virBufferTrim(&buff, ":", 1);
 
             if (virBufferError(&buff) != 0) {
@@ -372,16 +375,16 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
                 return -1;
             }
 
-            keyhash = virBufferContentAndReset(&buff);
+            keyhashstr = virBufferContentAndReset(&buff);
 
             askKey.type = VIR_CRED_ECHOPROMPT;
             if (virAsprintf((char **)&askKey.prompt,
                             _("Accept SSH host key with hash '%s' for "
                               "host '%s:%d' (%s/%s)?"),
-                            keyhash,
+                            keyhashstr,
                             sess->hostname, sess->port,
                             "y", "n") < 0) {
-                VIR_FREE(keyhash);
+                VIR_FREE(keyhashstr);
                 return -1;
             }
 
@@ -389,23 +392,25 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
                 virReportError(VIR_ERR_SSH, "%s",
                                _("failed to retrieve decision to accept "
                                  "host key"));
-                VIR_FREE(askKey.prompt);
-                VIR_FREE(keyhash);
+                tmp = (char*)askKey.prompt;
+                VIR_FREE(tmp);
+                VIR_FREE(keyhashstr);
                 return -1;
             }
 
-            VIR_FREE(askKey.prompt);
+            tmp = (char*)askKey.prompt;
+            VIR_FREE(tmp);
 
             if (!askKey.result ||
                 STRCASENEQ(askKey.result, "y")) {
                 virReportError(VIR_ERR_SSH,
                                _("SSH host key for '%s' (%s) was not accepted"),
-                               sess->hostname, keyhash);
-                VIR_FREE(keyhash);
+                               sess->hostname, keyhashstr);
+                VIR_FREE(keyhashstr);
                 VIR_FREE(askKey.result);
                 return -1;
             }
-            VIR_FREE(keyhash);
+            VIR_FREE(keyhashstr);
             VIR_FREE(askKey.result);
         }
 
@@ -590,6 +595,7 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
     size_t i;
     char *errmsg;
     int ret;
+    char *tmp;
 
     /* try open the key with no password */
     if ((ret = libssh2_userauth_publickey_fromfile(sess->session,
@@ -644,11 +650,13 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
         virReportError(VIR_ERR_SSH, "%s",
                        _("failed to retrieve private key passphrase: "
                          "callback has failed"));
-        VIR_FREE(retr_passphrase.prompt);
+        tmp = (char *)retr_passphrase.prompt;
+        VIR_FREE(tmp);
         return -1;
     }
 
-    VIR_FREE(retr_passphrase.prompt);
+    tmp = (char *)retr_passphrase.prompt;
+    VIR_FREE(tmp);
 
     ret = libssh2_userauth_publickey_fromfile(sess->session,
                                               priv->username,
