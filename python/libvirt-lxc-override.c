@@ -92,6 +92,7 @@ libvirt_lxc_virDomainLxcOpenNamespace(PyObject *self ATTRIBUTE_UNUSED,
             goto error;
         }
     }
+    VIR_FREE(fdlist);
     return py_retval;
 
 error:

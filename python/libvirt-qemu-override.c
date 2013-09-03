@@ -21,6 +21,7 @@
 #include <libvirt/virterror.h>
 #include "typewrappers.h"
 #include "libvirt-qemu.h"
+#include "viralloc.h"
 
 #ifndef __CYGWIN__
 extern void initlibvirtmod_qemu(void);
@@ -79,6 +80,7 @@ libvirt_qemu_virDomainQemuMonitorCommand(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
 
     py_retval = PyString_FromString(result);
+    VIR_FREE(result);
     return py_retval;
 }
 
@@ -108,6 +110,7 @@ libvirt_qemu_virDomainQemuAgentCommand(PyObject *self ATTRIBUTE_UNUSED, PyObject
         return VIR_PY_NONE;
 
     py_retval = PyString_FromString(result);
+    VIR_FREE(result);
     return py_retval;
 }
 /************************************************************************
