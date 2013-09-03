@@ -3852,13 +3852,13 @@ cleanup:
     return rv;
 }
 
-static int remoteDispatchDomainGetDiskErrors(
-    virNetServerPtr server ATTRIBUTE_UNUSED,
-    virNetServerClientPtr client,
-    virNetMessagePtr msg ATTRIBUTE_UNUSED,
-    virNetMessageErrorPtr rerr,
-    remote_domain_get_disk_errors_args *args,
-    remote_domain_get_disk_errors_ret *ret)
+static int
+remoteDispatchDomainGetDiskErrors(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                  virNetServerClientPtr client,
+                                  virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                  virNetMessageErrorPtr rerr,
+                                  remote_domain_get_disk_errors_args *args,
+                                  remote_domain_get_disk_errors_ret *ret)
 {
     int rv = -1;
     virDomainPtr dom = NULL;
@@ -4674,13 +4674,12 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainMigrateBegin3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client ATTRIBUTE_UNUSED,
-        virNetMessagePtr msg ATTRIBUTE_UNUSED,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_begin3_params_args *args,
-        remote_domain_migrate_begin3_params_ret *ret)
+remoteDispatchDomainMigrateBegin3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                        virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                        virNetMessageErrorPtr rerr,
+                                        remote_domain_migrate_begin3_params_args *args,
+                                        remote_domain_migrate_begin3_params_ret *ret)
 {
     char *xml = NULL;
     virDomainPtr dom = NULL;
@@ -4733,13 +4732,12 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainMigratePrepare3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client ATTRIBUTE_UNUSED,
-        virNetMessagePtr msg ATTRIBUTE_UNUSED,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_prepare3_params_args *args,
-        remote_domain_migrate_prepare3_params_ret *ret)
+remoteDispatchDomainMigratePrepare3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                          virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                          virNetMessageErrorPtr rerr,
+                                          remote_domain_migrate_prepare3_params_args *args,
+                                          remote_domain_migrate_prepare3_params_ret *ret)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -4794,13 +4792,12 @@ cleanup:
 }
 
 static int
-remoteDispatchDomainMigratePrepareTunnel3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client,
-        virNetMessagePtr msg,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_prepare_tunnel3_params_args *args,
-        remote_domain_migrate_prepare_tunnel3_params_ret *ret)
+remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                virNetServerClientPtr client,
+                                                virNetMessagePtr msg,
+                                                virNetMessageErrorPtr rerr,
+                                                remote_domain_migrate_prepare_tunnel3_params_args *args,
+                                                remote_domain_migrate_prepare_tunnel3_params_ret *ret)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -4865,13 +4862,12 @@ cleanup:
 
 
 static int
-remoteDispatchDomainMigratePerform3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client ATTRIBUTE_UNUSED,
-        virNetMessagePtr msg ATTRIBUTE_UNUSED,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_perform3_params_args *args,
-        remote_domain_migrate_perform3_params_ret *ret)
+remoteDispatchDomainMigratePerform3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                          virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                          virNetMessageErrorPtr rerr,
+                                          remote_domain_migrate_perform3_params_args *args,
+                                          remote_domain_migrate_perform3_params_ret *ret)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -4928,13 +4924,12 @@ cleanup:
 
 
 static int
-remoteDispatchDomainMigrateFinish3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client ATTRIBUTE_UNUSED,
-        virNetMessagePtr msg ATTRIBUTE_UNUSED,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_finish3_params_args *args,
-        remote_domain_migrate_finish3_params_ret *ret)
+remoteDispatchDomainMigrateFinish3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                         virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_domain_migrate_finish3_params_args *args,
+                                         remote_domain_migrate_finish3_params_ret *ret)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -4990,12 +4985,11 @@ cleanup:
 
 
 static int
-remoteDispatchDomainMigrateConfirm3Params(
-        virNetServerPtr server ATTRIBUTE_UNUSED,
-        virNetServerClientPtr client ATTRIBUTE_UNUSED,
-        virNetMessagePtr msg ATTRIBUTE_UNUSED,
-        virNetMessageErrorPtr rerr,
-        remote_domain_migrate_confirm3_params_args *args)
+remoteDispatchDomainMigrateConfirm3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                          virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                          virNetMessageErrorPtr rerr,
+                                          remote_domain_migrate_confirm3_params_args *args)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -5042,13 +5036,13 @@ cleanup:
 }
 
 
-static int remoteDispatchDomainCreateXMLWithFiles(
-    virNetServerPtr server ATTRIBUTE_UNUSED,
-    virNetServerClientPtr client,
-    virNetMessagePtr msg ATTRIBUTE_UNUSED,
-    virNetMessageErrorPtr rerr,
-    remote_domain_create_xml_with_files_args *args,
-    remote_domain_create_xml_with_files_ret *ret)
+static int
+remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                       virNetServerClientPtr client,
+                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                       virNetMessageErrorPtr rerr,
+                                       remote_domain_create_xml_with_files_args *args,
+                                       remote_domain_create_xml_with_files_ret *ret)
 {
     int rv = -1;
     virDomainPtr dom = NULL;
@@ -5092,13 +5086,12 @@ cleanup:
 }
 
 
-static int remoteDispatchDomainCreateWithFiles(
-    virNetServerPtr server ATTRIBUTE_UNUSED,
-    virNetServerClientPtr client,
-    virNetMessagePtr msg ATTRIBUTE_UNUSED,
-    virNetMessageErrorPtr rerr,
-    remote_domain_create_with_files_args *args,
-    remote_domain_create_with_files_ret *ret)
+static int remoteDispatchDomainCreateWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                               virNetServerClientPtr client,
+                                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                               virNetMessageErrorPtr rerr,
+                                               remote_domain_create_with_files_args *args,
+                                               remote_domain_create_with_files_ret *ret)
 {
     int rv = -1;
     virDomainPtr dom = NULL;
