@@ -39,6 +39,7 @@ confdir = $(sysconfdir)/libvirt
 
 NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
 
+if WITH_NWFILTER
 install-data-local:
 	$(MKDIR_P) "$(NWFILTER_DIR)"
 	for f in $(FILTERS); do \
@@ -50,3 +51,4 @@ uninstall-local::
 		rm -f "$(NWFILTER_DIR)/$$f"; \
 	done
 	-test -z $(shell ls $(NWFILTER_DIR)) || rmdir $(NWFILTER_DIR)
+endif WITH_NWFILTER
