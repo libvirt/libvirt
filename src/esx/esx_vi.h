@@ -330,9 +330,6 @@ int esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
  *  - 'get' functions get information from a local object
  */
 
-int esxVI_Alloc(void **ptrptr, size_t size, const char *file,
-                const char *function, size_t linenr);
-
 int esxVI_BuildSelectSet
       (esxVI_SelectionSpec **selectSet, const char *name,
        const char *type, const char *path, const char *selectSetNames);

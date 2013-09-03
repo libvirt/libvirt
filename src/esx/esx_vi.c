@@ -51,8 +51,14 @@
     int                                                                       \
     esxVI_##_type##_Alloc(esxVI_##_type **ptrptr)                             \
     {                                                                         \
-        return esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##_type),            \
-                           __FILE__, __FUNCTION__, __LINE__);                 \
+        if (ptrptr == NULL || *ptrptr != NULL) {                              \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
+            return -1;                                                  \
+        }                                                               \
+                                                                        \
+        if (VIR_ALLOC(*ptrptr) < 0)                                     \
+            return -1;                                                  \
+        return 0;                                                       \
     }
 
 
@@ -1734,21 +1740,6 @@ esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
  *  - 'lookup' functions query the ESX or vCenter for information
  *  - 'get' functions get information from a local object
  */
-
-int
-esxVI_Alloc(void **ptrptr, size_t size, const char *file,
-            const char *function, size_t linenr)
-{
-    if (ptrptr == NULL || *ptrptr != NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    return virAllocN(ptrptr, size, 1, true, VIR_FROM_THIS,
-                     file, function, linenr);
-}
-
-
 
 int
 esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,

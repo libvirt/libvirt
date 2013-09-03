@@ -43,10 +43,13 @@
     int                                                                       \
     esxVI_##__type##_Alloc(esxVI_##__type **ptrptr)                           \
     {                                                                         \
-        if (esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##__type),              \
-                        __FILE__, __FUNCTION__, __LINE__) < 0) {              \
-            return -1;                                                        \
-        }                                                                     \
+        if (ptrptr == NULL || *ptrptr != NULL) {                              \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
+            return -1;                                                  \
+        }                                                               \
+                                                                        \
+        if (VIR_ALLOC(*ptrptr) < 0)                                     \
+            return -1;                                                  \
                                                                               \
         (*ptrptr)->_type = esxVI_Type_##__type;                               \
                                                                               \
