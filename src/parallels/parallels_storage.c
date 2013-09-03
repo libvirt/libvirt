@@ -173,9 +173,6 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
     if (!(def->name = parallelsMakePoolName(conn, path)))
         goto error;
 
-    if (VIR_ALLOC_N(def->uuid, VIR_UUID_BUFLEN))
-        goto error;
-
     if (virUUIDGenerate(def->uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Can't generate UUID"));
