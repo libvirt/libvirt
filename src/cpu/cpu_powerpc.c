@@ -99,6 +99,23 @@ ppcModelFindPVR(const struct ppc_map *map,
     return NULL;
 }
 
+static struct ppc_model *
+ppcModelCopy(const struct ppc_model *model)
+{
+    struct ppc_model *copy;
+
+    if (VIR_ALLOC(copy) < 0 ||
+        VIR_STRDUP(copy->name, model->name) < 0) {
+        ppcModelFree(copy);
+        return NULL;
+    }
+
+    copy->data.pvr = model->data.pvr;
+    copy->vendor = model->vendor;
+
+    return copy;
+}
+
 static struct ppc_vendor *
 ppcVendorFind(const struct ppc_map *map,
               const char *name)
@@ -125,6 +142,29 @@ ppcVendorFree(struct ppc_vendor *vendor)
     VIR_FREE(vendor->name);
     VIR_FREE(vendor);
 }
+
+static struct ppc_model *
+ppcModelFromCPU(const virCPUDefPtr cpu,
+                const struct ppc_map *map)
+{
+    struct ppc_model *model = NULL;
+
+    if ((model = ppcModelFind(map, cpu->model)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown CPU model %s"), cpu->model);
+        goto error;
+    }
+
+    if ((model = ppcModelCopy(model)) == NULL)
+        goto error;
+
+    return model;
+
+error:
+    ppcModelFree(model);
+    return NULL;
+}
+
 
 static int
 ppcVendorLoad(xmlXPathContextPtr ctxt,
@@ -288,6 +328,111 @@ error:
     return NULL;
 }
 
+static virCPUDataPtr
+ppcMakeCPUData(virArch arch, struct cpuPPCData *data)
+{
+    virCPUDataPtr cpuData;
+
+    if (VIR_ALLOC(cpuData) < 0)
+        return NULL;
+
+    cpuData->arch = arch;
+    cpuData->data.ppc = *data;
+    data = NULL;
+
+    return cpuData;
+}
+
+static virCPUCompareResult
+ppcCompute(virCPUDefPtr host,
+             const virCPUDefPtr cpu,
+             virCPUDataPtr *guestData,
+             char **message)
+
+{
+    struct ppc_map *map = NULL;
+    struct ppc_model *host_model = NULL;
+    struct ppc_model *guest_model = NULL;
+
+    int ret = 0;
+    virArch arch;
+    size_t i;
+
+    if (cpu->arch != VIR_ARCH_NONE) {
+        bool found = false;
+
+        for (i = 0; i < ARRAY_CARDINALITY(archs); i++) {
+            if (archs[i] == cpu->arch) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            VIR_DEBUG("CPU arch %s does not match host arch",
+                      virArchToString(cpu->arch));
+            if (message &&
+                virAsprintf(message,
+                            _("CPU arch %s does not match host arch"),
+                            virArchToString(cpu->arch)) < 0)
+                goto error;
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
+        arch = cpu->arch;
+    } else {
+        arch = host->arch;
+    }
+
+    if (cpu->vendor &&
+        (!host->vendor || STRNEQ(cpu->vendor, host->vendor))) {
+        VIR_DEBUG("host CPU vendor does not match required CPU vendor %s",
+                  cpu->vendor);
+        if (message &&
+            virAsprintf(message,
+                        _("host CPU vendor does not match required "
+                        "CPU vendor %s"),
+                        cpu->vendor) < 0)
+            goto error;
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
+
+    if (!(map = ppcLoadMap()) ||
+        !(host_model = ppcModelFromCPU(host, map)) ||
+        !(guest_model = ppcModelFromCPU(cpu, map)))
+        goto error;
+
+    if (guestData != NULL) {
+        if (cpu->type == VIR_CPU_TYPE_GUEST &&
+            cpu->match == VIR_CPU_MATCH_STRICT &&
+            STRNEQ(guest_model->name, host_model->name)) {
+            VIR_DEBUG("host CPU model does not match required CPU model %s",
+                      guest_model->name);
+            if (message &&
+                virAsprintf(message,
+                            _("host CPU model does not match required "
+                            "CPU model %s"),
+                            guest_model->name) < 0)
+                goto error;
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
+
+        if (!(*guestData = ppcMakeCPUData(arch, &guest_model->data)))
+            goto error;
+    }
+
+    ret = VIR_CPU_COMPARE_IDENTICAL;
+
+out:
+    ppcMapFree(map);
+    ppcModelFree(host_model);
+    ppcModelFree(guest_model);
+    return ret;
+
+error:
+    ret = VIR_CPU_COMPARE_ERROR;
+    goto out;
+}
+
 static virCPUCompareResult
 ppcCompare(virCPUDefPtr host,
            virCPUDefPtr cpu)
@@ -371,11 +516,36 @@ ppcNodeData(virArch arch)
     return cpuData;
 }
 
-static int
-ppcUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
-          const virCPUDefPtr host ATTRIBUTE_UNUSED)
+static virCPUCompareResult
+ppcGuestData(virCPUDefPtr host,
+             virCPUDefPtr guest,
+             virCPUDataPtr *data,
+             char **message)
 {
-   return 0;
+    return ppcCompute(host, guest, data, message);
+}
+
+static int
+ppcUpdate(virCPUDefPtr guest,
+          const virCPUDefPtr host)
+{
+    switch ((enum virCPUMode) guest->mode) {
+    case VIR_CPU_MODE_HOST_MODEL:
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
+        guest->match = VIR_CPU_MATCH_EXACT;
+        virCPUDefFreeModel(guest);
+        return virCPUDefCopyModel(guest, host, true);
+
+    case VIR_CPU_MODE_CUSTOM:
+        return 0;
+
+    case VIR_CPU_MODE_LAST:
+        break;
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unexpected CPU mode: %d"), guest->mode);
+    return -1;
 }
 
 static virCPUDefPtr
@@ -477,7 +647,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .encode     = NULL,
     .free       = ppcDataFree,
     .nodeData   = ppcNodeData,
-    .guestData  = NULL,
+    .guestData  = ppcGuestData,
     .baseline   = ppcBaseline,
     .update     = ppcUpdate,
     .hasFeature = NULL,
