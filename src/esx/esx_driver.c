@@ -3393,7 +3393,6 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
     esxVI_AutoStartPowerInfo *powerInfoList = NULL;
     esxVI_AutoStartPowerInfo *powerInfo = NULL;
     esxVI_AutoStartPowerInfo *newPowerInfo = NULL;
-    bool newPowerInfo_isAppended = false;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
@@ -3468,7 +3467,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
         goto cleanup;
     }
 
-    newPowerInfo_isAppended = true;
+    newPowerInfo = NULL;
 
     if (esxVI_ReconfigureAutostart
           (priv->primary,
@@ -3491,9 +3490,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
     esxVI_AutoStartDefaults_Free(&defaults);
     esxVI_AutoStartPowerInfo_Free(&powerInfoList);
 
-    if (!newPowerInfo_isAppended) {
-        esxVI_AutoStartPowerInfo_Free(&newPowerInfo);
-    }
+    esxVI_AutoStartPowerInfo_Free(&newPowerInfo);
 
     return result;
 }
@@ -3640,6 +3637,7 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Shares level has unknown value %d"),
                                (int)sharesInfo->level);
+                esxVI_SharesInfo_Free(&sharesInfo);
                 goto cleanup;
             }
 
@@ -3743,6 +3741,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
             }
 
             spec->cpuAllocation->shares = sharesInfo;
+            sharesInfo = NULL;
 
             if (params[i].value.i >= 0) {
                 spec->cpuAllocation->shares->level = esxVI_SharesLevel_Custom;
@@ -3796,6 +3795,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     result = 0;
 
   cleanup:
+    esxVI_SharesInfo_Free(&sharesInfo);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
