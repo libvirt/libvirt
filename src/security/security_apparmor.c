@@ -683,7 +683,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def, virDomainDiskDefPtr disk)
 {
     int rc = -1;
-    char *profile_name;
+    char *profile_name = NULL;
     const virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
