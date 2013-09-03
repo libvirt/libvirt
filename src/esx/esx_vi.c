@@ -3524,6 +3524,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                esxVI_FileQuery_DynamicCast(folderFileQuery)) < 0) {
             goto cleanup;
         }
+        folderFileQuery = NULL;
     } else {
         if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
             esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
@@ -3538,6 +3539,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
         vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
         vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
         vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+        vmDiskFileQuery = NULL;
 
         if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
             esxVI_FileQuery_AppendToList
@@ -3545,6 +3547,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
             goto cleanup;
         }
+        isoImageFileQuery = NULL;
 
         if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
             esxVI_FileQuery_AppendToList
@@ -3552,6 +3555,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
             goto cleanup;
         }
+        floppyImageFileQuery = NULL;
     }
 
     if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
@@ -3621,6 +3625,10 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
+    esxVI_FolderFileQuery_Free(&folderFileQuery);
+    esxVI_VmDiskFileQuery_Free(&vmDiskFileQuery);
+    esxVI_IsoImageFileQuery_Free(&isoImageFileQuery);
+    esxVI_FloppyImageFileQuery_Free(&floppyImageFileQuery);
 
     return result;
 }
@@ -3685,6 +3693,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
     vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
     vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+    vmDiskFileQuery = NULL;
 
     if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
         esxVI_FileQuery_AppendToList
@@ -3692,6 +3701,7 @@ esxVI_LookupDatastoreContentByDatastoreName
            esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
         goto cleanup;
     }
+    isoImageFileQuery = NULL;
 
     if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
         esxVI_FileQuery_AppendToList
@@ -3699,6 +3709,7 @@ esxVI_LookupDatastoreContentByDatastoreName
            esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
         goto cleanup;
     }
+    floppyImageFileQuery = NULL;
 
     /* Search datastore for files */
     if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0)
@@ -3737,6 +3748,9 @@ esxVI_LookupDatastoreContentByDatastoreName
     esxVI_ManagedObjectReference_Free(&task);
     VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
+    esxVI_VmDiskFileQuery_Free(&vmDiskFileQuery);
+    esxVI_IsoImageFileQuery_Free(&isoImageFileQuery);
+    esxVI_FloppyImageFileQuery_Free(&floppyImageFileQuery);
 
     return result;
 }
