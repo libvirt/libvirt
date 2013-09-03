@@ -6,6 +6,7 @@ datarootdir=@datarootdir@
 
 libvirt_api=@datadir@/libvirt/api/libvirt-api.xml
 libvirt_qemu_api=@datadir@/libvirt/api/libvirt-qemu-api.xml
+libvirt_lxc_api=@datadir@/libvirt/api/libvirt-lxc-api.xml
 
 Name: libvirt
 Version: @VERSION@
