@@ -128,9 +128,12 @@ test_programs = virshtest sockettest \
         virportallocatortest \
 	sysinfotest \
 	virstoragetest \
-        fdstreamtest \
         fchosttest \
 	$(NULL)
+
+if WITH_LIBVIRTD
+test_programs += fdstreamtest
+endif WITH_LIBVIRTD
 
 if WITH_DBUS
 test_programs += virdbustest \
