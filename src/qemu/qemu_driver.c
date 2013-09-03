@@ -9973,6 +9973,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9990,7 +9991,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
@@ -9998,9 +9999,10 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                     st, &def, flags);
+                                     st, &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
@@ -10022,6 +10024,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10043,7 +10046,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare2EnsureACL(dconn, def) < 0)
@@ -10056,9 +10059,10 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     &def, flags);
+                                     &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
@@ -10235,6 +10239,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10249,7 +10254,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
@@ -10259,9 +10264,10 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, flags);
+                                     &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
@@ -10282,6 +10288,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10309,7 +10316,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
@@ -10319,9 +10326,10 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, flags);
+                                     &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
@@ -10341,6 +10349,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10351,7 +10360,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
@@ -10360,9 +10369,10 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
-                                     st, &def, flags);
+                                     st, &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
@@ -10382,6 +10392,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     virDomainDefPtr def = NULL;
     const char *dom_xml = NULL;
     const char *dname = NULL;
+    char *origname = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10402,7 +10413,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
@@ -10411,9 +10422,10 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
-                                     st, &def, flags);
+                                     st, &def, origname, flags);
 
 cleanup:
+    VIR_FREE(origname);
     virDomainDefFree(def);
     return ret;
 }
