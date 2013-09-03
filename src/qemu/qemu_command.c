@@ -6447,7 +6447,6 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
         virCPUCompareResult cmp;
         const char *preferred;
-        int hasSVM;
 
         if (!host ||
             !host->model ||
@@ -6487,10 +6486,13 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
         /* Only 'svm' requires --enable-nesting. The nested
          * 'vmx' patches now simply hook off the CPU features
          */
-        hasSVM = cpuHasFeature(data, "svm");
-        if (hasSVM < 0)
-            goto cleanup;
-        *hasHwVirt = hasSVM > 0 ? true : false;
+        if (def->os.arch == VIR_ARCH_X86_64 ||
+            def->os.arch == VIR_ARCH_I686) {
+            int hasSVM = cpuHasFeature(data, "svm");
+            if (hasSVM < 0)
+                goto cleanup;
+            *hasHwVirt = hasSVM > 0 ? true : false;
+        }
 
         if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
             const char *mode = virCPUModeTypeToString(cpu->mode);
