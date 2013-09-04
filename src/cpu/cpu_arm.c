@@ -31,11 +31,15 @@
 static const virArch archs[] = { VIR_ARCH_ARMV7L };
 
 static virCPUDataPtr
-ArmNodeData(void)
+ArmNodeData(virArch arch)
 {
     virCPUDataPtr data;
 
-    ignore_value(VIR_ALLOC(data));
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    data->arch = arch;
+
     return data;
 }
 

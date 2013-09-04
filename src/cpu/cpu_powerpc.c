@@ -353,21 +353,23 @@ ppcDataFree(virCPUDataPtr data)
     VIR_FREE(data);
 }
 
-#if defined(__powerpc__) || defined(__powerpc64__)
 static virCPUDataPtr
-ppcNodeData(void)
+ppcNodeData(virArch arch)
 {
     virCPUDataPtr cpuData;
 
     if (VIR_ALLOC(cpuData) < 0)
         return NULL;
 
+    cpuData->arch = arch;
+
+#if defined(__powerpc__) || defined(__powerpc64__)
     asm("mfpvr %0"
         : "=r" (cpuData->data.ppc.pvr));
+#endif
 
     return cpuData;
 }
-#endif
 
 static int
 ppcUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
@@ -474,11 +476,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .decode     = ppcDecode,
     .encode     = NULL,
     .free       = ppcDataFree,
-#if defined(__powerpc__) || defined(__powerpc64__)
     .nodeData   = ppcNodeData,
-#else
-    .nodeData   = NULL,
-#endif
     .guestData  = NULL,
     .baseline   = ppcBaseline,
     .update     = ppcUpdate,

@@ -32,12 +32,14 @@
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
 static virCPUDataPtr
-s390NodeData(void)
+s390NodeData(virArch arch)
 {
     virCPUDataPtr data;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
+
+    data->arch = arch;
 
     return data;
 }

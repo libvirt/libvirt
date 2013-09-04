@@ -1675,7 +1675,7 @@ cpuidSet(uint32_t base, struct cpuX86cpuid **set)
 
 
 static virCPUDataPtr
-x86NodeData(void)
+x86NodeData(virArch arch)
 {
     virCPUDataPtr cpuData = NULL;
     struct cpuX86Data *data;
@@ -1692,7 +1692,7 @@ x86NodeData(void)
         goto error;
     data->extended_len = ret;
 
-    if (!(cpuData = x86MakeCPUData(virArchFromHost(), &data)))
+    if (!(cpuData = x86MakeCPUData(arch, &data)))
         goto error;
 
     return cpuData;

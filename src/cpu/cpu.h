@@ -70,7 +70,7 @@ typedef void
 (*cpuArchDataFree)  (virCPUDataPtr data);
 
 typedef virCPUDataPtr
-(*cpuArchNodeData)  (void);
+(*cpuArchNodeData)  (virArch arch);
 
 typedef virCPUCompareResult
 (*cpuArchGuestData) (virCPUDefPtr host,

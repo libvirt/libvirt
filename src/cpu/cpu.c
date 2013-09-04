@@ -244,7 +244,7 @@ cpuNodeData(virArch arch)
         return NULL;
     }
 
-    return driver->nodeData();
+    return driver->nodeData(arch);
 }
 
 
