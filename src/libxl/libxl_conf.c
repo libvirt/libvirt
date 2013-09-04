@@ -61,8 +61,7 @@ struct guest_arch {
     int ia64_be;
 };
 
-static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64|powerpc64)(p|be)?";
-static regex_t xen_cap_rec;
+#define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
 
 static virClassPtr libxlDriverConfigClass;
@@ -103,19 +102,8 @@ libxlDriverConfigDispose(void *obj)
 static int
 libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 {
-    int err;
     libxl_physinfo phy_info;
     int host_pae;
-
-    err = regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
-    if (err != 0) {
-        char error[100];
-        regerror(err, &xen_cap_rec, error, sizeof(error));
-        regfree(&xen_cap_rec);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"), error);
-        return -1;
-    }
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -249,6 +237,8 @@ static int
 libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 {
     const libxl_version_info *ver_info;
+    int err;
+    regex_t regex;
     char *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
@@ -265,6 +255,16 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
                        _("Failed to get version info from libxenlight"));
         return -1;
     }
+
+    err = regcomp(&regex, XEN_CAP_REGEX, REG_EXTENDED);
+    if (err != 0) {
+        char error[100];
+        regerror(err, &regex, error, sizeof(error));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"), error);
+        return -1;
+    }
+
     /* Format of capabilities string is documented in the code in
      * xen-unstable.hg/xen/arch/.../setup.c.
      *
@@ -294,7 +294,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
          nr_guest_archs < sizeof(guest_archs) / sizeof(guest_archs[0])
                  && (token = strtok_r(str, " ", &saveptr)) != NULL;
          str = NULL) {
-        if (regexec(&xen_cap_rec, token, sizeof(subs) / sizeof(subs[0]),
+        if (regexec(&regex, token, sizeof(subs) / sizeof(subs[0]),
                     subs, 0) == 0) {
             int hvm = STRPREFIX(&token[subs[1].rm_so], "hvm");
             virArch arch;
@@ -353,6 +353,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
                 guest_archs[i].ia64_be = ia64_be;
         }
     }
+    regfree(&regex);
 
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuestPtr guest;
