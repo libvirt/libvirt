@@ -21,8 +21,9 @@ AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-dnl Make automake keep quiet about wildcards & other GNUmake-isms
-AM_INIT_AUTOMAKE([-Wno-portability tar-ustar])
+dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
+dnl quiet about the fact that we intentionally cater to automake 1.9
+AM_INIT_AUTOMAKE([-Wno-portability -Wno-obsolete tar-ustar])
 AM_MAINTAINER_MODE([enable])
 
 # Maintainer note - comment this line out if you plan to rerun
@@ -30,9 +31,11 @@ AM_MAINTAINER_MODE([enable])
 # Leave it uncommented for normal releases, for faster ./configure.
 gl_ASSERT_NO_GNULIB_POSIXCHECK
 
-# Use the silent-rules feature when possible.
-m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
-AM_SILENT_RULES([yes])
+# Default to using the silent-rules feature when possible.  Formatting
+# chosen to bypass 'grep' checks that cause older automake to warn.
+# Users (include rpm) can still change the default at configure time.
+m4_ifndef([AM_SILENT_RULES],
+ [m4_define([AM_SILENT_RULES],[])])AM_SILENT_RULES([yes])
 
 AC_CANONICAL_HOST
 
