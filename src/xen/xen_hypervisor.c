@@ -1787,7 +1787,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (errcode != 0) {
         char error[100];
         regerror(errcode, &flags_hvm_rec, error, sizeof(error));
-        regfree(&flags_hvm_rec);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", error);
         return -1;
     }
@@ -1795,7 +1794,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (errcode != 0) {
         char error[100];
         regerror(errcode, &flags_pae_rec, error, sizeof(error));
-        regfree(&flags_pae_rec);
         regfree(&flags_hvm_rec);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", error);
         return -1;
@@ -1804,7 +1802,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
     if (errcode != 0) {
         char error[100];
         regerror(errcode, &xen_cap_rec, error, sizeof(error));
-        regfree(&xen_cap_rec);
         regfree(&flags_pae_rec);
         regfree(&flags_hvm_rec);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", error);

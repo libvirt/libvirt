@@ -1579,7 +1579,7 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
             regerror(err, &reg[i], error, sizeof(error));
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to compile regex %s"), error);
-            for (j = 0; j <= i; j++)
+            for (j = 0; j < i; j++)
                 regfree(&reg[j]);
             VIR_FREE(reg);
             return -1;
