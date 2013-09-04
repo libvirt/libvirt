@@ -41,12 +41,12 @@ AM_CFLAGS = \
 if WITH_DRIVER_MODULES
 INCLUDES += \
 	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
-endif
+endif WITH_DRIVER_MODULES
 
 PROBES_O =
 if WITH_DTRACE_PROBES
 PROBES_O += ../src/libvirt_probes.lo
-endif
+endif WITH_DTRACE_PROBES
 
 LDADDS = \
         $(WARN_CFLAGS) \
@@ -135,24 +135,24 @@ test_programs = virshtest sockettest \
 if WITH_DBUS
 test_programs += virdbustest \
                  virsystemdtest
-endif
+endif WITH_DBUS
 
 if WITH_GNUTLS
 test_programs += virnettlscontexttest virnettlssessiontest
-endif
+endif WITH_GNUTLS
 
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
 test_programs += securityselinuxtest
 if WITH_QEMU
 test_programs += securityselinuxlabeltest
-endif
-endif
-endif
+endif WITH_QEMU
+endif WITH_ATTR
+endif WITH_SECDRIVER_SELINUX
 
 if WITH_DRIVER_MODULES
 test_programs += virdrivermoduletest
-endif
+endif WITH_DRIVER_MODULES
 
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
@@ -161,53 +161,53 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 if WITH_XEN
 test_programs += xml2sexprtest sexpr2xmltest \
 	xmconfigtest xencapstest statstest reconnect
-endif
+endif WITH_XEN
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest
-endif
+endif WITH_QEMU
 
 if WITH_LXC
 test_programs += lxcxml2xmltest
-endif
+endif WITH_LXC
 
 if WITH_OPENVZ
 test_programs += openvzutilstest
-endif
+endif WITH_OPENVZ
 
 if WITH_ESX
 test_programs += esxutilstest
-endif
+endif WITH_ESX
 
 if WITH_VMX
 test_programs += vmx2xmltest xml2vmxtest
-endif
+endif WITH_VMX
 
 if WITH_CIL
 test_programs += object-locking
-endif
+endif WITH_CIL
 
 if WITH_YAJL
 test_programs += jsontest
-endif
+endif WITH_YAJL
 
 test_programs += networkxml2xmltest networkxml2xmlupdatetest
 
 if WITH_NETWORK
 test_programs += networkxml2conftest
-endif
+endif WITH_NETWORK
 
 if WITH_STORAGE_SHEEPDOG
 test_programs += storagebackendsheepdogtest
-endif
+endif WITH_STORAGE_SHEEPDOG
 
 test_programs += nwfilterxml2xmltest
 
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
-endif
+endif WITH_STORAGE
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
 
@@ -251,7 +251,7 @@ test_scripts +=				\
 test_programs += 			\
 	eventtest			\
 	libvirtdconftest
-else
+else ! WITH_LIBVIRTD
 EXTRA_DIST += 				\
 	test_conf.sh			\
 	cpuset				\
@@ -269,13 +269,13 @@ EXTRA_DIST += 				\
 	virsh-synopsis			\
 	virsh-undefine			\
 	$(NULL)
-endif
+endif ! WITH_LIBVIRTD
 
 if WITH_SECDRIVER_APPARMOR
 test_scripts += virt-aa-helper-test
-else
+else ! WITH_SECDRIVER_APPARMOR
 EXTRA_DIST += virt-aa-helper-test
-endif
+endif ! WITH_SECDRIVER_APPARMOR
 
 EXTRA_DIST += $(test_scripts)
 
@@ -285,19 +285,19 @@ test_libraries = libshunload.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
-endif
+endif WITH_QEMU
 
 if WITH_DBUS
 test_libraries += virsystemdmock.la
-endif
+endif WITH_DBUS
 
 if WITH_TESTS
 noinst_PROGRAMS = $(test_programs) $(test_helpers)
 noinst_LTLIBRARIES = $(test_libraries)
-else
+else ! WITH_TESTS
 check_PROGRAMS = $(test_programs) $(test_helpers)
 check_LTLIBRARIES = $(test_libraries)
-endif
+endif ! WITH_TESTS
 
 TESTS = $(test_programs) \
 	$(test_scripts)
@@ -369,11 +369,11 @@ statstest_SOURCES = \
 	statstest.c testutils.h testutils.c
 statstest_LDADD = $(xen_LDADDS)
 
-else
+else ! WITH_XEN
 EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
 	xencapstest.c reconnect.c \
 	testutilsxen.c testutilsxen.h
-endif
+endif ! WITH_XEN
 
 QEMUMONITORTESTUTILS_SOURCES = \
 	qemumonitortestutils.c \
@@ -387,10 +387,10 @@ libqemumonitortestutils_la_SOURCES = $(QEMUMONITORTESTUTILS_SOURCES)
 qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
 if WITH_NETWORK
 qemu_LDADDS += ../src/libvirt_driver_network_impl.la
-endif
+endif WITH_NETWORK
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
-endif
+endif WITH_DTRACE_PROBES
 qemu_LDADDS += $(LDADDS)
 
 qemuxml2argvtest_SOURCES = \
@@ -444,39 +444,39 @@ domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
-else
+else ! WITH_QEMU
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuxmlnstest.c qemuhelptest.c domainsnapshotxml2xmltest.c \
 	qemumonitortest.c testutilsqemu.c testutilsqemu.h \
 	qemumonitorjsontest.c qemuhotplugtest.c \
 	qemuagenttest.c \
 	$(QEMUMONITORTESTUTILS_SOURCES)
-endif
+endif ! WITH_QEMU
 
 if WITH_LXC
 
 lxc_LDADDS = ../src/libvirt_driver_lxc_impl.la
 if WITH_NETWORK
 lxc_LDADDS += ../src/libvirt_driver_network_impl.la
-endif
+endif WITH_NETWORK
 lxc_LDADDS += $(LDADDS)
 
 lxcxml2xmltest_SOURCES = \
 	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
 	testutils.c testutils.h
 lxcxml2xmltest_LDADD = $(lxc_LDADDS)
-else
+else ! WITH_LXC
 EXTRA_DIST += lxcxml2xmltest.c testutilslxc.c testutilslxc.h
-endif
+endif ! WITH_LXC
 
 if WITH_OPENVZ
 openvzutilstest_SOURCES = \
 	openvzutilstest.c \
 	testutils.c testutils.h
 openvzutilstest_LDADD = $(LDADDS)
-else
+else ! WITH_OPENVZ
 EXTRA_DIST += openvzutilstest.c
-endif
+endif ! WITH_OPENVZ
 EXTRA_DIST += openvzutilstest.conf
 
 if WITH_ESX
@@ -484,9 +484,9 @@ esxutilstest_SOURCES = \
 	esxutilstest.c \
 	testutils.c testutils.h
 esxutilstest_LDADD = $(LDADDS)
-else
+else ! WITH_ESX
 EXTRA_DIST += esxutilstest.c
-endif
+endif ! WITH_ESX
 
 if WITH_VMX
 vmx2xmltest_SOURCES = \
@@ -498,9 +498,9 @@ xml2vmxtest_SOURCES = \
 	xml2vmxtest.c \
 	testutils.c testutils.h
 xml2vmxtest_LDADD = $(LDADDS)
-else
+else ! WITH_VMX
 EXTRA_DIST += vmx2xmltest.c xml2vmxtest.c
-endif
+endif ! WITH_VMX
 
 networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
@@ -517,9 +517,9 @@ networkxml2conftest_SOURCES = \
 	networkxml2conftest.c \
 	testutils.c testutils.h
 networkxml2conftest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
-else
+else ! WITH_NETWORK
 EXTRA_DIST += networkxml2conftest.c
-endif
+endif !	WITH_NETWORK
 
 if WITH_STORAGE_SHEEPDOG
 storagebackendsheepdogtest_SOURCES = \
@@ -527,9 +527,9 @@ storagebackendsheepdogtest_SOURCES = \
 	testutils.c testutils.h
 storagebackendsheepdogtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la $(LDADDS)
-else
+else ! WITH_STORAGE_SHEEPDOG
 EXTRA_DIST += storagebackendsheepdogtest.c
-endif
+endif ! WITH_STORAGE_SHEEPDOG
 
 nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
@@ -542,9 +542,9 @@ storagevolxml2argvtest_SOURCES = \
     testutils.c testutils.h
 storagevolxml2argvtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la $(LDADDS)
-else
+else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c
-endif
+endif ! WITH_STORAGE
 
 storagevolxml2xmltest_SOURCES = \
 	storagevolxml2xmltest.c \
@@ -598,9 +598,9 @@ libvirtdconftest_SOURCES = \
 	libvirtdconftest.c testutils.h testutils.c \
 	../daemon/libvirtd-config.c
 libvirtdconftest_LDADD = $(LDADDS)
-else
+else ! WITH_LIBVIRTD
 EXTRA_DIST += libvirtdconftest.c
-endif
+endif ! WITH_LIBVIRTD
 
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
@@ -627,15 +627,15 @@ virnettlscontexttest_SOURCES += pkix_asn1_tab.c
 virnettlscontexttest_LDADD += -ltasn1
 virnettlssessiontest_SOURCES += pkix_asn1_tab.c
 virnettlssessiontest_LDADD += -ltasn1
-else
+else ! HAVE_LIBTASN1
 EXTRA_DIST += pkix_asn1_tab.c
-endif
-else
+endif ! HAVE_LIBTASN1
+else ! WITH_GNUTLS
 EXTRA_DIST += \
 	virnettlscontexttest.c virnettlssessiontest.c \
 	virnettlshelpers.h virnettlshelpers.c \
 	testutils.h testutils.c pkix_asn1_tab.c
-endif
+endif ! WITH_GNUTLS
 
 virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
@@ -698,9 +698,9 @@ virsystemdmock_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virsystemdmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
-else
+else ! WITH_DBUS
 EXTRA_DIST += virdbustest.c virsystemdtest.c virsystemdmock.c
-endif
+endif ! WITH_DBUS
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
@@ -722,9 +722,9 @@ if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
 if WITH_TESTS
 noinst_LTLIBRARIES += libsecurityselinuxhelper.la
-else
+else ! WITH_TESTS
 check_LTLIBRARIES += libsecurityselinuxhelper.la
-endif
+endif ! WITH_TESTS
 
 libsecurityselinuxhelper_la_SOURCES = \
 	securityselinuxhelper.c
@@ -744,9 +744,9 @@ securityselinuxlabeltest_SOURCES = \
 securityselinuxlabeltest_LDADD = $(qemu_LDADDS) $(SELINUX_LIBS)
 securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
-endif
-endif
-endif
+endif WITH_QEMU
+endif WITH_ATTR
+endif WITH_SECDRIVER_SELINUX
 EXTRA_DIST += securityselinuxtest.c securityselinuxlabeltest.c \
 	securityselinuxhelper.c
 
@@ -782,13 +782,13 @@ if WITH_DRIVER_MODULES
 virdrivermoduletest_SOURCES = \
 	virdrivermoduletest.c testutils.h testutils.c
 virdrivermoduletest_LDADD = $(LDADDS)
-endif
+endif WITH_DRIVER_MODULES
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
 	eventtest.c testutils.h testutils.c
 eventtest_LDADD = -lrt $(LDADDS)
-endif
+endif WITH_LIBVIRTD
 
 libshunload_la_SOURCES = shunloadhelper.c
 libshunload_la_LIBADD = ../src/libvirt.la
@@ -830,9 +830,9 @@ object-locking: object-locking.cmx object-locking-files.txt
 object-locking-files.txt:
 	find $(top_builddir)/src/ -name '*.i' > $@
 
-else
+else ! WITH_CIL
 EXTRA_DIST += object-locking.ml
-endif
+endif ! WITH_CIL
 
 CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.cmi *.cmx \
 	object-locking-files.txt

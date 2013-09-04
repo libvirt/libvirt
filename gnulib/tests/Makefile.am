@@ -26,7 +26,7 @@ if WITH_EXPENSIVE_TESTS
 ## Automake requires that at least one conditional call out all tests to
 ## be run, for those tests to be shipped in the tarball
 TESTS = $(GNULIB_TESTS)
-endif
+endif WITH_EXPENSIVE_TESTS
 ## However, we want to change the set of tests based on the make environment,
 ## where the default was set at configure time.  Use GNU make constructs to
 ## hide our actions from Automake, so we don't get it too confused.

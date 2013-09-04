@@ -69,7 +69,7 @@ libexec_SCRIPTS = libvirt-guests.sh
 if WITH_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
 DISTCLEANFILES += virt-sanlock-cleanup
-endif
+endif WITH_SANLOCK
 
 if WITH_LXC
 conf_DATA += virt-login-shell.conf
@@ -87,7 +87,7 @@ dist_man1_MANS += virt-login-shell.1
 endif WITH_LXC
 if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
-endif
+endif WITH_SANLOCK
 
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
@@ -229,7 +229,7 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	$(AM_V_GEN)$(WINDRES) \
 	  --input-format rc --input $< \
 	  --output-format coff --output $@
-endif
+endif WITH_WIN_ICON
 
 virt-login-shell.1: virt-login-shell.pod $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
@@ -270,10 +270,10 @@ if LIBVIRT_INIT_SCRIPT_RED_HAT
 BUILT_SOURCES += libvirt-guests.init
 install-init: install-sysconfig install-initscript
 uninstall-init: uninstall-sysconfig uninstall-initscript
-else
+else ! LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init:
 uninstall-init:
-endif # LIBVIRT_INIT_SCRIPT_RED_HAT
+endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
 
 libvirt-guests.sh: libvirt-guests.sh.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed						\
@@ -311,10 +311,10 @@ uninstall-systemd: uninstall-sysconfig
 
 BUILT_SOURCES += libvirt-guests.service
 
-else
+else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-systemd:
 uninstall-systemd:
-endif # LIBVIRT_INIT_SCRIPT_SYSTEMD
+endif ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed						\

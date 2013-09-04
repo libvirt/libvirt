@@ -692,6 +692,14 @@ sc_spec_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
 	fi
 
+# Nested conditionals are easier to understand if we enforce that endifs
+# can be paired back to the if
+sc_makefile_conditionals:
+	@prohibit='(else|endif)($$| *#)'				\
+	in_vc_files='Makefile\.am'					\
+	halt='match "if FOO" with "endif FOO" in Makefiles'		\
+	  $(_sc_search_regexp)
+
 # Long lines can be harder to diff; too long, and git send-email chokes.
 # For now, only enforce line length on files where we have intentionally
 # fixed things and don't want to regress.

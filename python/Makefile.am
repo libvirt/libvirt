@@ -162,9 +162,9 @@ uninstall-local:
 CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED) $(GENERATE).stamp \
 	*.pyc
 
-else
+else ! WITH_PYTHON
 all:
-endif
+endif ! WITH_PYTHON
 
 dummy:
 
