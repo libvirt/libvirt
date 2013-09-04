@@ -873,8 +873,7 @@ libxlStateInitialize(bool privileged,
     }
 
     /* read the host sysinfo */
-    if (privileged)
-        libxl_driver->hostsysinfo = virSysinfoRead();
+    libxl_driver->hostsysinfo = virSysinfoRead();
 
     libxl_driver->domainEventState = virDomainEventStateNew();
     if (!libxl_driver->domainEventState)
