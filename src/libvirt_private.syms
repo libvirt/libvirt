@@ -2092,6 +2092,7 @@ virUUIDParse;
 
 # util/virxml.h
 virXMLChildElementCount;
+virXMLNodeToString;
 virXMLParseHelper;
 virXMLPickShellSafeComment;
 virXMLPropString;

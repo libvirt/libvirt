@@ -895,3 +895,36 @@ virXMLChildElementCount(xmlNodePtr node)
     }
     return ret;
 }
+
+
+/**
+ * virXMLNodeToString: convert an XML node ptr to an XML string
+ *
+ * Returns the XML string of the document or NULL on error.
+ * The caller has to free the string.
+ */
+char *
+virXMLNodeToString(xmlDocPtr doc,
+                   xmlNodePtr node)
+{
+     xmlBufferPtr xmlbuf = NULL;
+     char *ret = NULL;
+
+     if (!(xmlbuf = xmlBufferCreate())) {
+         virReportOOMError();
+         return NULL;
+     }
+
+     if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
+         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("failed to convert the XML node tree"));
+         goto cleanup;
+     }
+
+     ignore_value(VIR_STRDUP(ret, (const char *)xmlBufferContent(xmlbuf)));
+
+cleanup:
+     xmlBufferFree(xmlbuf);
+
+     return ret;
+}

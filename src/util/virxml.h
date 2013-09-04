@@ -163,4 +163,6 @@ int virXMLSaveFile(const char *path,
                    const char *warnCommand,
                    const char *xml);
 
+char *virXMLNodeToString(xmlDocPtr doc, xmlNodePtr node);
+
 #endif                          /* __VIR_XML_H__ */
