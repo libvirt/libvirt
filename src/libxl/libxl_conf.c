@@ -1014,21 +1014,28 @@ error:
     return -1;
 }
 
-static bool
-libxlGetAutoballoonConf(libxlDriverConfigPtr cfg)
+static int
+libxlGetAutoballoonConf(libxlDriverConfigPtr cfg, bool *autoballoon)
 {
     regex_t regex;
-    int ret;
+    int res;
 
-    ret = regcomp(&regex,
-            "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
-            REG_NOSUB | REG_EXTENDED);
-    if (ret)
-        return true;
+    if ((res = regcomp(&regex,
+                      "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
+                       REG_NOSUB | REG_EXTENDED)) != 0) {
+        char error[100];
+        regerror(res, &regex, error, sizeof(error));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"),
+                       error);
 
-    ret = regexec(&regex, cfg->verInfo->commandline, 0, NULL, 0);
+        return -1;
+    }
+
+    res = regexec(&regex, cfg->verInfo->commandline, 0, NULL, 0);
     regfree(&regex);
-    return ret == REG_NOMATCH;
+    *autoballoon = res == REG_NOMATCH;
+    return 0;
 }
 
 libxlDriverConfigPtr
@@ -1098,7 +1105,8 @@ libxlDriverConfigNew(void)
     }
 
     /* setup autoballoon */
-    cfg->autoballoon = libxlGetAutoballoonConf(cfg);
+    if (libxlGetAutoballoonConf(cfg, &cfg->autoballoon) < 0)
+        goto error;
 
     return cfg;
 
