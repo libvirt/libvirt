@@ -242,7 +242,9 @@ struct _vshControl {
     const char *escapeChar;     /* String representation of
                                    console escape character */
 
+# ifndef WIN32
     struct termios termattr;    /* settings of the tty terminal */
+# endif
     bool istty;                 /* is the terminal a tty */
 };
 

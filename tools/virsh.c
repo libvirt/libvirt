@@ -2213,20 +2213,23 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
 
 
 bool
-vshTTYIsInterruptCharacter(vshControl *ctl,
-                           const char chr)
+vshTTYIsInterruptCharacter(vshControl *ctl ATTRIBUTE_UNUSED,
+                           const char chr ATTRIBUTE_UNUSED)
 {
+#ifndef WIN32
     if (ctl->istty &&
         ctl->termattr.c_cc[VINTR] == chr)
         return true;
+#endif
 
     return false;
 }
 
 
 int
-vshTTYDisableInterrupt(vshControl *ctl)
+vshTTYDisableInterrupt(vshControl *ctl ATTRIBUTE_UNUSED)
 {
+#ifndef WIN32
     struct termios termset = ctl->termattr;
 
     if (!ctl->istty)
@@ -2241,25 +2244,28 @@ vshTTYDisableInterrupt(vshControl *ctl)
 
     if (tcsetattr(STDIN_FILENO, TCSANOW, &termset) < 0)
         return -1;
+#endif
 
     return 0;
 }
 
 
 int
-vshTTYRestore(vshControl *ctl)
+vshTTYRestore(vshControl *ctl ATTRIBUTE_UNUSED)
 {
+#ifndef WIN32
     if (!ctl->istty)
         return 0;
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &ctl->termattr) < 0)
         return -1;
+#endif
 
     return 0;
 }
 
 
-#ifndef HAVE_CFMAKERAW
+#if !defined(WIN32) && !defined(HAVE_CFMAKERAW)
 /* provide fallback in case cfmakeraw isn't available */
 static void
 cfmakeraw(struct termios *attr)
@@ -2271,12 +2277,14 @@ cfmakeraw(struct termios *attr)
     attr->c_cflag &= ~(CSIZE | PARENB);
     attr->c_cflag |= CS8;
 }
-#endif /* !HAVE_CFMAKERAW */
+#endif /* !WIN32 && !HAVE_CFMAKERAW */
 
 
 int
-vshTTYMakeRaw(vshControl *ctl, bool report_errors)
+vshTTYMakeRaw(vshControl *ctl ATTRIBUTE_UNUSED,
+              bool report_errors ATTRIBUTE_UNUSED)
 {
+#ifndef WIN32
     struct termios rawattr = ctl->termattr;
     char ebuf[1024];
 
@@ -2297,6 +2305,7 @@ vshTTYMakeRaw(vshControl *ctl, bool report_errors)
                      virStrerror(errno, ebuf, sizeof(ebuf)));
         return -1;
     }
+#endif
 
     return 0;
 }
@@ -3249,8 +3258,10 @@ main(int argc, char **argv)
     if (isatty(STDIN_FILENO)) {
         ctl->istty = true;
 
+#ifndef WIN32
         if (tcgetattr(STDIN_FILENO, &ctl->termattr) < 0)
             ctl->istty = false;
+#endif
     }
 
     if (virMutexInit(&ctl->lock) < 0) {
