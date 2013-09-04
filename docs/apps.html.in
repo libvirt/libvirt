@@ -244,6 +244,15 @@
         integrates libvirt for VM monitoring, live migration, and life-cycle
         management.
       </dd>
+
+      <dt><a href="http://www.openstack.org">OpenStack</a></dt>
+      <dd>
+        OpenStack is a "cloud operating system" usable for both public
+        and private clouds.  Its various parts take care of compute,
+        storage and networking resources and interface with the user
+        using a dashboard.  Compute part uses libvirt to manage VM
+        life-cycle, monitoring and so on.
+      </dd>
     </dl>
 
     <h2><a name="libraries">Libraries</a></h2>
