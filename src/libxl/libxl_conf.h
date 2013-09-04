@@ -1,6 +1,8 @@
-/*---------------------------------------------------------------------------*/
-/*  Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
- *  Copyright (C) 2011 Univention GmbH.
+/*
+ * libxl_conf.h: libxl configuration management
+ *
+ * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +22,6 @@
  *     Jim Fehlig <jfehlig@novell.com>
  *     Markus Groß <gross@univention.de>
  */
-/*---------------------------------------------------------------------------*/
 
 #ifndef LIBXL_CONF_H
 # define LIBXL_CONF_H

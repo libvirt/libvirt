@@ -1,6 +1,8 @@
-/*---------------------------------------------------------------------------*/
-/* Copyright (C) 2012 Red Hat, Inc.
- * Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+/*
+ * libxl_conf.c: libxl configuration management
+ *
+ * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (c) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +23,6 @@
  *     Jim Fehlig <jfehlig@novell.com>
  *     Markus Groß <gross@univention.de>
  */
-/*---------------------------------------------------------------------------*/
 
 #include <config.h>
 

@@ -1,7 +1,9 @@
-/*---------------------------------------------------------------------------*/
-/*  Copyright (C) 2006-2013 Red Hat, Inc.
- *  Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
- *  Copyright (C) 2011 Univention GmbH.
+/*
+ * libxl_driver.c: core driver methods for managing libxenlight domains
+ *
+ * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +24,6 @@
  *     Markus Groß <gross@univention.de>
  *     Daniel P. Berrange <berrange@redhat.com>
  */
-/*---------------------------------------------------------------------------*/
 
 #include <config.h>
 

@@ -1,5 +1,7 @@
-/*---------------------------------------------------------------------------*/
-/*  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+/*
+ * libxl_driver.h: core driver methods for managing libxenlight domains
+ *
+ * Copyright (c) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +20,6 @@
  * Authors:
  *     Jim Fehlig <jfehlig@novell.com>
  */
-/*---------------------------------------------------------------------------*/
 
 #ifndef LIBXL_DRIVER_H
 # define LIBXL_DRIVER_H
