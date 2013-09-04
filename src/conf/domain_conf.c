@@ -17875,6 +17875,7 @@ virDomainNetGetActualHostdev(virDomainNetDefPtr iface)
     if (iface->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
         return &iface->data.hostdev.def;
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
         iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         return &iface->data.network.actual->data.hostdev.def;
     }
