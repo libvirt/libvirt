@@ -1999,17 +1999,16 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
         event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-    }
-
-    if ((flags & VIR_DUMP_CRASH) && !vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
     }
 
     ret = 0;
 
 cleanup_unpause:
-    if (virDomainObjIsActive(vm) && paused) {
+    if (vm && virDomainObjIsActive(vm) && paused) {
         if (libxl_domain_unpause(priv->ctx, dom->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("After dumping core, failed to resume domain '%d' with"
