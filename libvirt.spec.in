@@ -15,8 +15,9 @@
 
 # A client only build will create a libvirt.so only containing
 # the generic RPC driver, and test driver and no libvirtd
-# Default to a full server + client build
-%define client_only        0
+# Default to a full server + client build, but with the possibility
+# of a command-line or ~/.rpmmacros override for client-only.
+%{!?client_only:%define client_only 0}
 
 # Now turn off server build in certain cases
 
