@@ -2359,7 +2359,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur = NULL;
-    xmlBufferPtr xml_buf = NULL;
+    char *xml_buf = NULL;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -2464,18 +2464,13 @@ hit:
             goto cleanup;
     }
 
-    xml_buf = xmlBufferCreate();
-    if (!xml_buf) {
-        vshError(ctl, _("Failed to allocate memory"));
-        goto cleanup;
-    }
-
-    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
+    if (!(xml_buf = virXMLNodeToString(xml, obj->nodesetval->nodeTab[i]))) {
+        vshSaveLibvirtError();
         vshError(ctl, _("Failed to create XML"));
         goto cleanup;
     }
 
-    if (virDomainUpdateDeviceFlags(dom, (char *)xmlBufferContent(xml_buf), flags) < 0) {
+    if (virDomainUpdateDeviceFlags(dom, xml_buf, flags) < 0) {
         vshError(ctl, _("Failed to update interface link state"));
         goto cleanup;
     } else {
@@ -2487,10 +2482,8 @@ cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    xmlBufferFree(xml_buf);
-
-    if (dom)
-        virDomainFree(dom);
+    VIR_FREE(xml_buf);
+    virDomainFree(dom);
 
     return ret;
 }
@@ -6043,11 +6036,10 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     char *buffer;
     int result;
-    const char *snippet;
+    char *snippet = NULL;
 
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlBufferPtr xml_buf = NULL;
     xmlNodePtr node;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -6063,17 +6055,10 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if ((node = virXPathNode("/cpu|"
                              "/domain/cpu|"
                               "/capabilities/host/cpu", ctxt))) {
-        if (!(xml_buf = xmlBufferCreate())) {
-            vshError(ctl, _("Can't create XML buffer to extract CPU element."));
+        if (!(snippet = virXMLNodeToString(xml, node))) {
+            vshSaveLibvirtError();
             goto cleanup;
         }
-
-        if (xmlNodeDump(xml_buf, xml, node, 0, 0) < 0) {
-            vshError(ctl, _("Failed to extract CPU element snippet from domain XML."));
-            goto cleanup;
-        }
-
-        snippet = (const char *) xmlBufferContent(xml_buf);
     } else {
         vshError(ctl, _("File '%s' does not contain a <cpu> element or is not "
                         "a valid domain or capabilities XML"), from);
@@ -6109,7 +6094,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     VIR_FREE(buffer);
-    xmlBufferFree(xml_buf);
+    VIR_FREE(snippet);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
 
@@ -6156,7 +6141,6 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml = NULL;
     xmlNodePtr *node_list = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlBufferPtr xml_buf = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
@@ -6192,18 +6176,11 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 
     list = vshCalloc(ctl, count, sizeof(const char *));
 
-    if (!(xml_buf = xmlBufferCreate()))
-        goto no_memory;
-
     for (i = 0; i < count; i++) {
-        xmlBufferEmpty(xml_buf);
-
-        if (xmlNodeDump(xml_buf, xml,  node_list[i], 0, 0) < 0) {
-            vshError(ctl, _("Failed to extract <cpu> element"));
+        if (!(list[i] = virXMLNodeToString(xml, node_list[i]))) {
+            vshSaveLibvirtError();
             goto cleanup;
         }
-
-        list[i] = vshStrdup(ctl, (const char *)xmlBufferContent(xml_buf));
     }
 
     result = virConnectBaselineCPU(ctl->conn,
@@ -6217,7 +6194,6 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    xmlBufferFree(xml_buf);
     VIR_FREE(result);
     if (list != NULL && count > 0) {
         for (i = 0; i < count; i++)
@@ -9593,7 +9569,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     xmlXPathObjectPtr obj=NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
-    xmlBufferPtr xml_buf = NULL;
+    char *detach_xml = NULL;
     const char *mac =NULL, *type = NULL;
     char *doc = NULL;
     char buf[64];
@@ -9686,25 +9662,16 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
- hit:
-    xml_buf = xmlBufferCreate();
-    if (!xml_buf) {
-        vshError(ctl, "%s", _("Failed to allocate memory"));
+hit:
+    if (!(detach_xml = virXMLNodeToString(xml, matchNode))) {
+        vshSaveLibvirtError();
         goto cleanup;
     }
 
-    if (xmlNodeDump(xml_buf, xml, matchNode, 0, 0) < 0) {
-        vshError(ctl, "%s", _("Failed to create XML"));
-        goto cleanup;
-    }
-
-    if (flags != 0) {
-        ret = virDomainDetachDeviceFlags(dom,
-                                         (char *)xmlBufferContent(xml_buf),
-                                         flags);
-    } else {
-        ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
-    }
+    if (flags != 0)
+        ret = virDomainDetachDeviceFlags(dom, detach_xml, flags);
+    else
+        ret = virDomainDetachDevice(dom, detach_xml);
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to detach interface"));
@@ -9713,13 +9680,13 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         functionReturn = true;
     }
 
- cleanup:
+cleanup:
     VIR_FREE(doc);
+    VIR_FREE(detach_xml);
     virDomainFree(dom);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    xmlBufferFree(xml_buf);
     return functionReturn;
 }
 
@@ -9837,20 +9804,13 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
                   int type)
 {
     xmlNodePtr cur = NULL;
-    xmlBufferPtr xml_buf = NULL;
-    char *disk_type = NULL;
-    char *device_type = NULL;
+    const char *disk_type = NULL;
+    const char *device_type = NULL;
     xmlNodePtr new_node = NULL;
     char *ret = NULL;
 
     if (!disk_node)
         return NULL;
-
-    xml_buf = xmlBufferCreate();
-    if (!xml_buf) {
-        vshError(NULL, "%s", _("Failed to allocate memory"));
-        return NULL;
-    }
 
     device_type = virXMLPropString(disk_node, "device");
 
@@ -9873,7 +9833,7 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
             if (type == VSH_PREPARE_DISK_XML_EJECT) {
                 vshError(NULL, _("The disk device '%s' doesn't have media"),
                          path);
-                goto error;
+                goto cleanup;
             }
 
             if (source) {
@@ -9885,10 +9845,10 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
                 xmlAddChild(disk_node, new_node);
             } else if (type == VSH_PREPARE_DISK_XML_INSERT) {
                 vshError(NULL, _("No source is specified for inserting media"));
-                goto error;
+                goto cleanup;
             } else if (type == VSH_PREPARE_DISK_XML_UPDATE) {
                 vshError(NULL, _("No source is specified for updating media"));
-                goto error;
+                goto cleanup;
             }
         }
 
@@ -9896,7 +9856,7 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
             if (type == VSH_PREPARE_DISK_XML_INSERT) {
                 vshError(NULL, _("The disk device '%s' already has media"),
                          path);
-                goto error;
+                goto cleanup;
             }
 
             /* Remove the source if it tends to eject/update media. */
@@ -9912,30 +9872,15 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
         }
     }
 
-    if (xmlNodeDump(xml_buf, NULL, disk_node, 0, 0) < 0) {
-        vshError(NULL, "%s", _("Failed to create XML"));
-        goto error;
+    if (!(ret = virXMLNodeToString(NULL, disk_node))) {
+        vshSaveLibvirtError();
+        goto cleanup;
     }
-
-    goto cleanup;
 
 cleanup:
     VIR_FREE(device_type);
     VIR_FREE(disk_type);
-    if (xml_buf) {
-        int len = xmlBufferLength(xml_buf);
-        if (VIR_ALLOC_N(ret, len + 1) < 0)
-            return NULL;
-        memcpy(ret, (char *)xmlBufferContent(xml_buf), len);
-        ret[len] = '\0';
-        xmlBufferFree(xml_buf);
-    }
     return ret;
-
-error:
-    xmlBufferFree(xml_buf);
-    xml_buf = NULL;
-    goto cleanup;
 }
 
 
