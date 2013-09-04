@@ -1497,7 +1497,9 @@ if WITH_POLKIT1
 libvirt_driver_access_la_SOURCES += $(ACCESS_DRIVER_POLKIT_SOURCES)
 
 polkitactiondir = $(datadir)/polkit-1/actions
+if WITH_LIBVIRTD
 polkitaction_DATA = $(ACCESS_DRIVER_POLKIT_POLICY)
+endif WITH_LIBVIRTD
 
 $(ACCESS_DRIVER_POLKIT_POLICY): $(srcdir)/access/viraccessperm.h \
     $(srcdir)/access/genpolkit.pl Makefile.am
