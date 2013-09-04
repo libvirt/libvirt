@@ -1166,6 +1166,18 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
         return -1;
     }
 
+    if (cr.cr_version != XUCRED_VERSION) {
+        virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                       _("Failed to get valid client socket identity"));
+        return -1;
+    }
+
+    if (cr.cr_ngroups == 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                       _("Failed to get valid client socket identity groups"));
+        return -1;
+    }
+
     *pid = -1;
     *uid = cr.cr_uid;
     *gid = cr.cr_gid;
