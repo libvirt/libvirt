@@ -155,7 +155,7 @@
   &lt;/forward&gt;
 ...</pre>
             <p>
-            An singe IPv4 address can be set by setting
+            A single IPv4 address can be set by setting
             <code>start</code> and <code>end</code> attributes to
             the same value.
             </p>
