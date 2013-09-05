@@ -2552,7 +2552,7 @@ virNetworkDefFormatInternal(virBufferPtr buf,
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     size_t i;
-    int shortforward;
+    bool shortforward;
 
     virBufferAddLit(buf, "<network");
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0)) {
