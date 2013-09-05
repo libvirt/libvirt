@@ -921,6 +921,18 @@ if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
             AC_MSG_ERROR([Required kernel features for LXC were not found])
         fi
     ])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM(
+    [[
+        #include <sched.h>
+        #include <linux/loop.h>
+        #include <sys/epoll.h>
+    ]], [[
+        unshare(!(LOOP_CTL_GET_FREE));
+    ]])], [
+       AC_DEFINE([HAVE_DECL_LOOP_CTL_GET_FREE], [1],
+         [Define to 1 if you have the declaration of `LOOP_CTL_GET_FREE',
+         and to 0 if you don't.])
+    ])
 fi
 if test "$with_lxc" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_LXC], 1, [whether LXC driver is enabled])

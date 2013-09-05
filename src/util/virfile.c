@@ -528,7 +528,56 @@ int virFileUpdatePerm(const char *path,
 
 
 #if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
-static int virFileLoopDeviceOpen(char **dev_name)
+
+# if HAVE_DECL_LOOP_CTL_GET_FREE
+
+/* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occured
+ * while in the process of allocating or opening the loop device.  On success
+ * we return 0 and modify the fd to the appropriate file descriptor.
+ * If /dev/loop-control does not exist, we return 0 and do not set fd. */
+
+static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
+{
+    int devnr;
+    int ctl_fd;
+    char *looppath = NULL;
+
+    VIR_DEBUG("Opening loop-control device");
+    if ((ctl_fd = open("/dev/loop-control", O_RDWR)) < 0) {
+        if (errno == ENOENT)
+            return 0;
+
+        virReportSystemError(errno, "%s",
+                             _("Unable to open /dev/loop-control"));
+        return -1;
+    }
+
+    if ((devnr = ioctl(ctl_fd, LOOP_CTL_GET_FREE)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get free loop device via ioctl"));
+        close(ctl_fd);
+        return -1;
+    }
+    close(ctl_fd);
+
+    VIR_DEBUG("Found free loop device number %i", devnr);
+
+    if (virAsprintf(&looppath, "/dev/loop%i", devnr) < 0)
+        return -1;
+
+    if ((*fd = open(looppath, O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                _("Unable to open %s"), looppath);
+        VIR_FREE(looppath);
+        return -1;
+    }
+
+    *dev_name = looppath;
+    return 0;
+}
+# endif /* HAVE_DECL_LOOP_CTL_GET_FREE */
+
+static int virFileLoopDeviceOpenSearch(char **dev_name)
 {
     int fd = -1;
     DIR *dh = NULL;
@@ -601,6 +650,25 @@ cleanup:
     return fd;
 }
 
+static int virFileLoopDeviceOpen(char **dev_name)
+{
+    int loop_fd = -1;
+
+# if HAVE_DECL_LOOP_CTL_GET_FREE
+    if (virFileLoopDeviceOpenLoopCtl(dev_name, &loop_fd) < 0)
+        return -1;
+
+    VIR_DEBUG("Return from loop-control got fd %d\n", loop_fd);
+
+    if (loop_fd >= 0)
+        return loop_fd;
+# endif /* HAVE_DECL_LOOP_CTL_GET_FREE */
+
+    /* Without the loop control device we just use the old technique. */
+    loop_fd = virFileLoopDeviceOpenSearch(dev_name);
+
+    return loop_fd;
+}
 
 int virFileLoopDeviceAssociate(const char *file,
                                char **dev)
