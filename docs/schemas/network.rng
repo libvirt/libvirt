@@ -160,6 +160,32 @@
                   <empty/>
                 </element>
               </optional>
+              <optional>
+                <element name='nat'>
+                  <interleave>
+                    <optional>
+                      <element name='address'>
+                        <attribute name='start'>
+                          <ref name='ipv4Addr'/>
+                        </attribute>
+                        <attribute name='end'>
+                          <ref name='ipv4Addr'/>
+                        </attribute>
+                      </element>
+                    </optional>
+                    <optional>
+                      <element name='port'>
+                        <attribute name='start'>
+                          <ref name='port'/>
+                        </attribute>
+                        <attribute name='end'>
+                          <ref name='port'/>
+                        </attribute>
+                      </element>
+                    </optional>
+                  </interleave>
+                </element>
+              </optional>
             </interleave>
           </element>
         </optional>

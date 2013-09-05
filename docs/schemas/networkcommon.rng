@@ -217,4 +217,11 @@
       </oneOrMore>
     </element>
   </define>
+
+  <define name='port'>
+    <data type='integer'>
+      <param name='minInclusive'>1</param>
+      <param name='maxInclusive'>65535</param>
+    </data>
+  </define>
 </grammar>
