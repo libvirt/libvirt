@@ -22,8 +22,8 @@ AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[
                     [aa_change_profile], [sys/apparmor.h])
 
   AC_ARG_WITH([apparmor_mount],
-    AC_HELP_STRING([--with-apparmor-mount],
-                   [set AppArmor mount point @<:@default=check@:>@]),
+    [AS_HELP_STRING([--with-apparmor-mount],
+                   [set AppArmor mount point @<:@default=check@:>@])],
     [],
     [with_apparmor_mount=check])
 

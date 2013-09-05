@@ -361,11 +361,11 @@ AC_DEFINE_UNQUOTED([SCRUB],["$SCRUB"],
         [Location or name of the scrub program (for wiping algorithms)])
 
 dnl Specific dir for HTML output ?
-AC_ARG_WITH([html-dir], [AC_HELP_STRING([--with-html-dir=path],
+AC_ARG_WITH([html-dir], [AS_HELP_STRING([--with-html-dir=path],
             [path to base html directory, default $datadir/doc/html])],
             [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
 
-AC_ARG_WITH([html-subdir], [AC_HELP_STRING([--with-html-subdir=path],
+AC_ARG_WITH([html-subdir], [AS_HELP_STRING([--with-html-subdir=path],
             [directory used under html-dir, default $PACKAGE-$VERSION/html])],
             [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
             [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
@@ -373,7 +373,7 @@ AC_SUBST([HTML_DIR])
 
 dnl Specific XML catalog file for validation of generated html
 AC_ARG_WITH([xml-catalog-file],
-            [AC_HELP_STRING([--with-xml-catalog-file=path],
+            [AS_HELP_STRING([--with-xml-catalog-file=path],
                 [path to XML catalog file for validating
                  generated html, default /etc/xml/catalog])],
             [XML_CATALOG_FILE=$withval],
@@ -431,46 +431,77 @@ AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
-  AC_HELP_STRING([--with-xen], [add XEN support @<:@default=check@:>@]),[],[with_xen=check])
+  [AS_HELP_STRING([--with-xen],
+    [add XEN support @<:@default=check@:>@])],
+  [],[with_xen=check])
 AC_ARG_WITH([xen-inotify],
-  AC_HELP_STRING([--with-xen-inotify], [add XEN inotify support @<:@default=check@:>@]),[],[with_xen_inotify=check])
+  [AS_HELP_STRING([--with-xen-inotify],
+    [add XEN inotify support @<:@default=check@:>@])],
+  [],[with_xen_inotify=check])
 AC_ARG_WITH([qemu],
-  AC_HELP_STRING([--with-qemu], [add QEMU/KVM support @<:@default=yes@:>@]),[],[with_qemu=yes])
+  [AS_HELP_STRING([--with-qemu],
+    [add QEMU/KVM support @<:@default=yes@:>@])],
+  [],[with_qemu=yes])
 AC_ARG_WITH([uml],
-  AC_HELP_STRING([--with-uml], [add UML support @<:@default=check@:>@]),[],[with_uml=check])
+  [AS_HELP_STRING([--with-uml],
+    [add UML support @<:@default=check@:>@])],
+  [],[with_uml=check])
 AC_ARG_WITH([openvz],
-  AC_HELP_STRING([--with-openvz], [add OpenVZ support @<:@default=check@:>@]),[],[with_openvz=check])
+  [AS_HELP_STRING([--with-openvz],
+    [add OpenVZ support @<:@default=check@:>@])],
+  [],[with_openvz=check])
 AC_ARG_WITH([vmware],
-  AC_HELP_STRING([--with-vmware], [add VMware support @<:@default=yes@:>@]),[],[with_vmware=yes])
+  [AS_HELP_STRING([--with-vmware],
+    [add VMware support @<:@default=yes@:>@])],
+  [],[with_vmware=yes])
 AC_ARG_WITH([phyp],
-  AC_HELP_STRING([--with-phyp], [add PHYP support @<:@default=check@:>@]),[],[with_phyp=check])
+  [AS_HELP_STRING([--with-phyp],
+    [add PHYP support @<:@default=check@:>@])],
+  [],[with_phyp=check])
 AC_ARG_WITH([xenapi],
-  AC_HELP_STRING([--with-xenapi], [add XenAPI support @<:@default=check@:>@]),[],[with_xenapi=check])
+  [AS_HELP_STRING([--with-xenapi],
+    [add XenAPI support @<:@default=check@:>@])],
+  [],[with_xenapi=check])
 AC_ARG_WITH([libxl],
-  AC_HELP_STRING([--with-libxl], [add libxenlight support @<:@default=check@:>@]),[],[with_libxl=check])
+  [AS_HELP_STRING([--with-libxl],
+    [add libxenlight support @<:@default=check@:>@])],
+  [],[with_libxl=check])
 AC_ARG_WITH([vbox],
-  AC_HELP_STRING([--with-vbox=@<:@PFX@:>@],
-                 [VirtualBox XPCOMC location @<:@default=yes@:>@]),[],
-                 [with_vbox=yes])
+  [AS_HELP_STRING([--with-vbox=@<:@PFX@:>@],
+    [VirtualBox XPCOMC location @<:@default=yes@:>@])],
+  [],[with_vbox=yes])
 AC_ARG_WITH([lxc],
-  AC_HELP_STRING([--with-lxc], [add Linux Container support @<:@default=check@:>@]),[],[with_lxc=check])
+  [AS_HELP_STRING([--with-lxc],
+    [add Linux Container support @<:@default=check@:>@])],
+  [],[with_lxc=check])
 AC_ARG_WITH([esx],
-  AC_HELP_STRING([--with-esx], [add ESX support @<:@default=check@:>@]),[],[with_esx=check])
+  [AS_HELP_STRING([--with-esx],
+    [add ESX support @<:@default=check@:>@])],
+  [],[with_esx=check])
 AC_ARG_WITH([hyperv],
-  AC_HELP_STRING([--with-hyperv], [add Hyper-V support @<:@default=check@:>@]),[],[with_hyperv=check])
+  [AS_HELP_STRING([--with-hyperv],
+    [add Hyper-V support @<:@default=check@:>@])],
+  [],[with_hyperv=check])
 AC_ARG_WITH([parallels],
-  AC_HELP_STRING([--with-parallels], [add Parallels Cloud Server support @<:@default=check@:>@]),[],[with_parallels=check])
+  [AS_HELP_STRING([--with-parallels],
+    [add Parallels Cloud Server support @<:@default=check@:>@])],
+  [],[with_parallels=check])
 AC_ARG_WITH([test],
-  AC_HELP_STRING([--with-test], [add test driver support @<:@default=yes@:>@]),[],[with_test=yes])
+  [AS_HELP_STRING([--with-test],
+    [add test driver support @<:@default=yes@:>@])],
+  [],[with_test=yes])
 AC_ARG_WITH([remote],
-  AC_HELP_STRING([--with-remote], [add remote driver support @<:@default=yes@:>@]),[],[with_remote=yes])
+  [AS_HELP_STRING([--with-remote],
+    [add remote driver support @<:@default=yes@:>@])],
+  [],[with_remote=yes])
 AC_ARG_WITH([libvirtd],
-  AC_HELP_STRING([--with-libvirtd], [add libvirtd support @<:@default=yes@:>@]),[],[with_libvirtd=yes])
+  [AS_HELP_STRING([--with-libvirtd],
+    [add libvirtd support @<:@default=yes@:>@])],
+  [],[with_libvirtd=yes])
 AC_ARG_WITH([chrdev-lock-files],
-  AC_HELP_STRING([--with-chrdev-lock-files],
-                 [location for UUCP style lock files for character devices
-                  (use auto for default paths on some platforms)
-                  @<:@default=auto@:>@]),
+  [AS_HELP_STRING([--with-chrdev-lock-files],
+    [location for UUCP style lock files for character devices
+     (use auto for default paths on some platforms) @<:@default=auto@:>@])],
   [],[with_chrdev_lock_files=auto])
 
 dnl
@@ -482,8 +513,9 @@ AC_SUBST([STATIC_BINARIES])
 
 dnl --enable-debug=(yes|no)
 AC_ARG_ENABLE([debug],
-              [AC_HELP_STRING([--enable-debug=@<:@no|yes@:>@],
-                             [enable debugging output @<:@default=yes@:>@])],[],[enable_debug=yes])
+              [AS_HELP_STRING([--enable-debug=@<:@no|yes@:>@],
+                             [enable debugging output @<:@default=yes@:>@])],
+  [],[enable_debug=yes])
 AM_CONDITIONAL([ENABLE_DEBUG], test x"$enable_debug" = x"yes")
 if test x"$enable_debug" = x"yes"; then
    AC_DEFINE([ENABLE_DEBUG], [], [whether debugging is enabled])
@@ -496,9 +528,10 @@ dnl init script flavor
 dnl
 AC_MSG_CHECKING([for init script flavor])
 AC_ARG_WITH([init-script],
-            [AC_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
-                            [Style of init script to install: redhat, systemd, systemd+redhat,
-                             upstart, check, none @<:@default=check@:>@])],[],[with_init_script=check])
+  [AS_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
+    [Style of init script to install: redhat, systemd, systemd+redhat,
+     upstart, check, none @<:@default=check@:>@])],
+  [],[with_init_script=check])
 init_redhat=no
 init_systemd=no
 init_upstart=no
@@ -536,9 +569,9 @@ AC_MSG_RESULT($with_init_script)
 
 AC_MSG_CHECKING([for whether to install sysctl config])
 AC_ARG_WITH([sysctl],
-            [AC_HELP_STRING([--with-sysctl@<:@=yes/no@:>@],
-                            [Whether to install sysctl configs @<:@default=check@:>@])],
-                            [],[with_sysctl=check])
+            [AS_HELP_STRING([--with-sysctl@<:@=yes/no@:>@],
+               [Whether to install sysctl configs @<:@default=check@:>@])],
+            [],[with_sysctl=check])
 
 if test "$with_sysctl" = "yes" || test "$with_sysctl" = "check"
 then
@@ -560,7 +593,7 @@ AC_MSG_RESULT($with_sysctl)
 
 dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
 AC_ARG_WITH([rhel5-api],
-	[AC_HELP_STRING([--with-rhel5-api=@<:@ARG@:>@],
+	[AS_HELP_STRING([--with-rhel5-api=@<:@ARG@:>@],
 		[build for the RHEL-5 API @<:@default=no@:>@])])
 if test x"$with_rhel5_api" = x"yes"; then
    AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
@@ -1048,7 +1081,8 @@ LIBXML_CFLAGS=""
 LIBXML_LIBS=""
 LIBXML_FOUND="no"
 
-AC_ARG_WITH([libxml], AC_HELP_STRING([--with-libxml=@<:@PFX@:>@], [libxml2 location]))
+AC_ARG_WITH([libxml], [AS_HELP_STRING([--with-libxml=@<:@PFX@:>@],
+   [libxml2 location])])
 if test "x$with_libxml" = "xno" ; then
     AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR([libxml2 >= $LIBXML_REQUIRED is required for libvirt])
@@ -1092,7 +1126,8 @@ LIBS="$old_libs"
 
 dnl GnuTLS library
 AC_ARG_WITH([gnutls],
-  AC_HELP_STRING([--with-gnutls], [use GNUTLS for encryption @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-gnutls],
+    [use GNUTLS for encryption @<:@default=check@:>@])],
   [],
   [with_gnutls=check])
 
@@ -1188,7 +1223,8 @@ POLKIT_CFLAGS=
 POLKIT_LIBS=
 PKCHECK_PATH=
 AC_ARG_WITH([polkit],
-  AC_HELP_STRING([--with-polkit], [use PolicyKit for UNIX socket access checks @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-polkit],
+     [use PolicyKit for UNIX socket access checks @<:@default=check@:>@])],
   [],
   [with_polkit=check])
 
@@ -1246,7 +1282,8 @@ AC_SUBST([POLKIT_LIBS])
 
 dnl firewalld
 AC_ARG_WITH([firewalld],
-  AC_HELP_STRING([--with-firewalld], [enable firewalld support @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-firewalld],
+    [enable firewalld support @<:@default=check@:>@])],
   [],
   [with_firewalld=check])
 if test "x$with_firewalld" = "xcheck" ; then
@@ -1283,7 +1320,8 @@ AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "
 
 
 AC_ARG_WITH([secdriver-selinux],
-  AC_HELP_STRING([--with-secdriver-selinux], [use SELinux security driver @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-secdriver-selinux],
+    [use SELinux security driver @<:@default=check@:>@])],
   [],
   [with_secdriver_selinux=check])
 
@@ -1322,7 +1360,8 @@ AM_CONDITIONAL([WITH_SECDRIVER_SELINUX], [test "$with_secdriver_selinux" != "no"
 
 
 AC_ARG_WITH([secdriver-apparmor],
-  AC_HELP_STRING([--with-secdriver-apparmor], [use AppArmor security driver @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-secdriver-apparmor],
+    [use AppArmor security driver @<:@default=check@:>@])],
   [],
   [with_secdriver_apparmor=check])
 
@@ -1342,7 +1381,8 @@ AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "n
 
 dnl DTrace static probes
 AC_ARG_WITH([dtrace],
-  AC_HELP_STRING([--with-dtrace], [use dtrace for static probing @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-dtrace],
+    [use dtrace for static probing @<:@default=check@:>@])],
   [],
   [with_dtrace=check])
 
@@ -1366,7 +1406,8 @@ AM_CONDITIONAL([WITH_DTRACE_PROBES], [test "$with_dtrace" != "no"])
 
 dnl numad
 AC_ARG_WITH([numad],
-  AC_HELP_STRING([--with-numad], [use numad to manage CPU placement dynamically @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-numad],
+    [use numad to manage CPU placement dynamically @<:@default=check@:>@])],
   [],
   [with_numad=check])
 
@@ -1403,7 +1444,8 @@ LIBPCAP_CFLAGS=""
 LIBPCAP_LIBS=""
 LIBPCAP_FOUND="no"
 
-AC_ARG_WITH([libpcap], AC_HELP_STRING([--with-libpcap=@<:@PFX@:>@], [libpcap location]))
+AC_ARG_WITH([libpcap], [AS_HELP_STRING([--with-libpcap=@<:@PFX@:>@],
+  [libpcap location])])
 if test "$with_qemu" = "yes"; then
   case $with_libpcap in
     no)     LIBPCAP_CONFIG= ;;
@@ -1525,7 +1567,9 @@ AC_SUBST([VIRSH_LIBS])
 dnl check if the network driver should be compiled
 
 AC_ARG_WITH([network],
-  AC_HELP_STRING([--with-network], [with virtual network driver @<:@default=yes@:>@]),[],[with_network=yes])
+  [AS_HELP_STRING([--with-network],
+    [with virtual network driver @<:@default=yes@:>@])],
+  [],[with_network=yes])
 
 dnl there's no use compiling the network driver without the libvirt
 dnl daemon, nor compiling it for MacOS X, where it breaks the compile
@@ -1548,7 +1592,9 @@ AM_CONDITIONAL([WITH_BRIDGE], [test "$with_bridge" = "yes"])
 
 
 AC_ARG_WITH([secrets],
-  AC_HELP_STRING([--with-secrets], [with local secrets management driver @<:@default=yes@:>@]),[],[with_secrets=yes])
+  [AS_HELP_STRING([--with-secrets],
+    [with local secrets management driver @<:@default=yes@:>@])],
+  [],[with_secrets=yes])
 
 if test "$with_libvirtd" = "no"; then
   with_secrets=no
@@ -1560,23 +1606,42 @@ AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
 AC_ARG_WITH([storage-dir],
-  AC_HELP_STRING([--with-storage-dir], [with directory backend for the storage driver @<:@default=yes@:>@]),[],[with_storage_dir=yes])
+  [AS_HELP_STRING([--with-storage-dir],
+    [with directory backend for the storage driver @<:@default=yes@:>@])],
+  [],[with_storage_dir=yes])
 AC_ARG_WITH([storage-fs],
-  AC_HELP_STRING([--with-storage-fs], [with FileSystem backend for the storage driver @<:@default=check@:>@]),[],[with_storage_fs=check])
+  [AS_HELP_STRING([--with-storage-fs],
+    [with FileSystem backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_fs=check])
 AC_ARG_WITH([storage-lvm],
-  AC_HELP_STRING([--with-storage-lvm], [with LVM backend for the storage driver @<:@default=check@:>@]),[],[with_storage_lvm=check])
+  [AS_HELP_STRING([--with-storage-lvm],
+    [with LVM backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_lvm=check])
 AC_ARG_WITH([storage-iscsi],
-  AC_HELP_STRING([--with-storage-iscsi], [with iSCSI backend for the storage driver @<:@default=check@:>@]),[],[with_storage_iscsi=check])
+  [AS_HELP_STRING([--with-storage-iscsi],
+    [with iSCSI backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_iscsi=check])
 AC_ARG_WITH([storage-scsi],
-  AC_HELP_STRING([--with-storage-scsi], [with SCSI backend for the storage driver @<:@default=check@:>@]),[],[with_storage_scsi=check])
+  [AS_HELP_STRING([--with-storage-scsi],
+    [with SCSI backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_scsi=check])
 AC_ARG_WITH([storage-mpath],
-  AC_HELP_STRING([--with-storage-mpath], [with mpath backend for the storage driver @<:@default=check@:>@]),[],[with_storage_mpath=check])
+  [AS_HELP_STRING([--with-storage-mpath],
+    [with mpath backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_mpath=check])
 AC_ARG_WITH([storage-disk],
-  AC_HELP_STRING([--with-storage-disk], [with GPartd Disk backend for the storage driver @<:@default=check@:>@]),[],[with_storage_disk=check])
+  [AS_HELP_STRING([--with-storage-disk],
+    [with GPartd Disk backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_disk=check])
 AC_ARG_WITH([storage-rbd],
-  AC_HELP_STRING([--with-storage-rbd], [with RADOS Block Device backend for the storage driver @<:@default=check@:>@]),[],[with_storage_rbd=check])
+  [AS_HELP_STRING([--with-storage-rbd],
+    [with RADOS Block Device backend for the storage driver
+     @<:@default=check@:>@])],
+  [],[with_storage_rbd=check])
 AC_ARG_WITH([storage-sheepdog],
-  AC_HELP_STRING([--with-storage-sheepdog], [with Sheepdog backend for the storage driver @<:@default=check@:>@]),[],[with_storage_sheepdog=check])
+  [AS_HELP_STRING([--with-storage-sheepdog],
+    [with Sheepdog backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_sheepdog=check])
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -1951,7 +2016,9 @@ dnl check for python
 dnl
 
 AC_ARG_WITH([python],
-  AC_HELP_STRING([--with-python], [Build python bindings @<:@default=yes@:>@]),[],[with_python=yes])
+  [AS_HELP_STRING([--with-python],
+    [Build python bindings @<:@default=yes@:>@])],
+  [],[with_python=yes])
 
 if test "$enable_shared:$with_python" = no:yes; then
   AC_MSG_WARN([Disabling shared libraries is incompatible with building Python extensions.])
@@ -2025,7 +2092,8 @@ dnl Allow perl overrides
 AC_PATH_PROG([PERL], [perl])
 
 AC_ARG_ENABLE([with-test-suite],
-              AC_HELP_STRING([--with-test-suite], [build test suite by default @<:@default=check@:>@]),
+              [AS_HELP_STRING([--with-test-suite],
+                 [build test suite by default @<:@default=check@:>@])],
               [case "${withval}" in
                  yes|no|check) ;;
                  *)      AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
@@ -2044,7 +2112,7 @@ AC_MSG_RESULT([$withval])
 AM_CONDITIONAL([WITH_TESTS], [test "$withval" = "yes"])
 
 AC_ARG_ENABLE([expensive-tests],
-  [AC_HELP_STRING([--enable-expensive-tests],
+  [AS_HELP_STRING([--enable-expensive-tests],
     [set the default for enabling expensive tests (gnulib and long timeouts) ]
     [@<:@default=check@:>@; use VIR_TEST_EXPENSIVE to override during make])],
   [case $enableval in
@@ -2065,7 +2133,8 @@ AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
 AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
 
 AC_ARG_ENABLE([test-coverage],
-  AC_HELP_STRING([--enable-test-coverage], [turn on code coverage instrumentation @<:@default=no@:>@]),
+  [AS_HELP_STRING([--enable-test-coverage],
+    [turn on code coverage instrumentation @<:@default=no@:>@])],
 [case "${enableval}" in
    yes|no) ;;
    *)      AC_MSG_ERROR([bad value ${enableval} for test-coverage option]) ;;
@@ -2085,7 +2154,8 @@ if test "${enable_coverage}" = yes; then
 fi
 
 AC_ARG_ENABLE([test-oom],
-  AC_HELP_STRING([--enable-test-oom], [memory allocation failure checking @<:@default=no@:>@]),
+  [AS_HELP_STRING([--enable-test-oom],
+    [memory allocation failure checking @<:@default=no@:>@])],
 [case "${enableval}" in
    yes|no) ;;
    *)      AC_MSG_ERROR([bad value ${enableval} for test-oom option]) ;;
@@ -2105,7 +2175,8 @@ fi
 
 
 AC_ARG_ENABLE([test-locking],
-  AC_HELP_STRING([--enable-test-locking], [thread locking tests using CIL @<:@default=no@:>@]),
+  [AS_HELP_STRING([--enable-test-locking],
+    [thread locking tests using CIL @<:@default=no@:>@])],
 [case "${enableval}" in
    yes|no) ;;
    *)      AC_MSG_ERROR([bad value ${enableval} for test-locking option]) ;;
@@ -2228,8 +2299,8 @@ AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 dnl Driver-Modules library
 AC_ARG_WITH([driver-modules],
-  AC_HELP_STRING([--with-driver-modules],
-  [build drivers as loadable modules @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-driver-modules],
+    [build drivers as loadable modules @<:@default=check@:>@])],
   [],
   [with_driver_modules=check])
 
@@ -2294,9 +2365,9 @@ AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
 dnl check if the interface driver should be compiled
 AC_ARG_WITH([interface],
-  AC_HELP_STRING([--with-interface],
-    [with host interface driver @<:@default=check@:>@]), [],
-    [with_interface=check])
+  [AS_HELP_STRING([--with-interface],
+    [with host interface driver @<:@default=check@:>@])],
+  [],[with_interface=check])
 
 dnl Don't compile the interface driver without libvirtd
 if test "$with_libvirtd" = "no" ; then
@@ -2326,13 +2397,15 @@ else
 fi
 
 AC_ARG_WITH([qemu-user],
-  AC_HELP_STRING([--with-qemu-user],
-  [username to run QEMU system instance as @<:@default=platform dependent@:>@]),
+  [AS_HELP_STRING([--with-qemu-user],
+    [username to run QEMU system instance as
+     @<:@default=platform dependent@:>@])],
   [QEMU_USER=${withval}],
   [QEMU_USER=${default_qemu_user}])
 AC_ARG_WITH([qemu-group],
-  AC_HELP_STRING([--with-qemu-group],
-  [groupname to run QEMU system instance as @<:@default=platform dependent@:>@]),
+  [AS_HELP_STRING([--with-qemu-group],
+    [groupname to run QEMU system instance as
+     @<:@default=platform dependent@:>@])],
   [QEMU_GROUP=${withval}],
   [QEMU_GROUP=${default_qemu_group}])
 AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
@@ -2340,7 +2413,8 @@ AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
 
 
 AC_ARG_WITH([macvtap],
-  AC_HELP_STRING([--with-macvtap],[enable macvtap device @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-macvtap],
+    [enable macvtap device @<:@default=check@:>@])],
   [with_macvtap=${withval}],
   [with_macvtap=check])
 
@@ -2373,7 +2447,8 @@ fi
 
 
 AC_ARG_WITH([virtualport],
-  AC_HELP_STRING([--with-virtualport],[enable virtual port support @<:@default=check@:>@]),
+  [AS_HELP_STRING([--with-virtualport],
+    [enable virtual port support @<:@default=check@:>@])],
   [with_virtualport=${withval}],
   [with_virtualport=check])
 

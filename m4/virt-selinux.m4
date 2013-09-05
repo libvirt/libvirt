@@ -22,7 +22,8 @@ AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
                     [fgetfilecon_raw], [selinux/selinux.h])
 
   AC_ARG_WITH([selinux_mount],
-    AC_HELP_STRING([--with-selinux-mount], [set SELinux mount point @<:@default=check@:>@]),
+    [AS_HELP_STRING([--with-selinux-mount],
+      [set SELinux mount point @<:@default=check@:>@])],
     [],
     [with_selinux_mount=check])
 
