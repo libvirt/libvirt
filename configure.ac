@@ -432,77 +432,77 @@ AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
   [AS_HELP_STRING([--with-xen],
-    [add XEN support @<:@default=check@:>@])],
-  [],[with_xen=check])
+    [add XEN support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_xen=check])
 AC_ARG_WITH([xen-inotify],
   [AS_HELP_STRING([--with-xen-inotify],
-    [add XEN inotify support @<:@default=check@:>@])],
-  [],[with_xen_inotify=check])
+    [add XEN inotify support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_xen_inotify=check])
 AC_ARG_WITH([qemu],
   [AS_HELP_STRING([--with-qemu],
-    [add QEMU/KVM support @<:@default=yes@:>@])],
-  [],[with_qemu=yes])
+    [add QEMU/KVM support @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_qemu=yes])
 AC_ARG_WITH([uml],
   [AS_HELP_STRING([--with-uml],
-    [add UML support @<:@default=check@:>@])],
-  [],[with_uml=check])
+    [add UML support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_uml=check])
 AC_ARG_WITH([openvz],
   [AS_HELP_STRING([--with-openvz],
-    [add OpenVZ support @<:@default=check@:>@])],
-  [],[with_openvz=check])
+    [add OpenVZ support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_openvz=check])
 AC_ARG_WITH([vmware],
   [AS_HELP_STRING([--with-vmware],
-    [add VMware support @<:@default=yes@:>@])],
-  [],[with_vmware=yes])
+    [add VMware support @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_vmware=yes])
 AC_ARG_WITH([phyp],
   [AS_HELP_STRING([--with-phyp],
-    [add PHYP support @<:@default=check@:>@])],
-  [],[with_phyp=check])
+    [add PHYP support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_phyp=check])
 AC_ARG_WITH([xenapi],
   [AS_HELP_STRING([--with-xenapi],
-    [add XenAPI support @<:@default=check@:>@])],
-  [],[with_xenapi=check])
+    [add XenAPI support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_xenapi=check])
 AC_ARG_WITH([libxl],
   [AS_HELP_STRING([--with-libxl],
-    [add libxenlight support @<:@default=check@:>@])],
-  [],[with_libxl=check])
+    [add libxenlight support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_libxl=check])
 AC_ARG_WITH([vbox],
   [AS_HELP_STRING([--with-vbox=@<:@PFX@:>@],
-    [VirtualBox XPCOMC location @<:@default=yes@:>@])],
-  [],[with_vbox=yes])
+    [VirtualBox XPCOMC location @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_vbox=yes])
 AC_ARG_WITH([lxc],
   [AS_HELP_STRING([--with-lxc],
-    [add Linux Container support @<:@default=check@:>@])],
-  [],[with_lxc=check])
+    [add Linux Container support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_lxc=check])
 AC_ARG_WITH([esx],
   [AS_HELP_STRING([--with-esx],
-    [add ESX support @<:@default=check@:>@])],
-  [],[with_esx=check])
+    [add ESX support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_esx=check])
 AC_ARG_WITH([hyperv],
   [AS_HELP_STRING([--with-hyperv],
-    [add Hyper-V support @<:@default=check@:>@])],
-  [],[with_hyperv=check])
+    [add Hyper-V support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_hyperv=check])
 AC_ARG_WITH([parallels],
   [AS_HELP_STRING([--with-parallels],
-    [add Parallels Cloud Server support @<:@default=check@:>@])],
-  [],[with_parallels=check])
+    [add Parallels Cloud Server support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_parallels=check])
 AC_ARG_WITH([test],
   [AS_HELP_STRING([--with-test],
-    [add test driver support @<:@default=yes@:>@])],
-  [],[with_test=yes])
+    [add test driver support @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_test=yes])
 AC_ARG_WITH([remote],
   [AS_HELP_STRING([--with-remote],
-    [add remote driver support @<:@default=yes@:>@])],
-  [],[with_remote=yes])
+    [add remote driver support @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_remote=yes])
 AC_ARG_WITH([libvirtd],
   [AS_HELP_STRING([--with-libvirtd],
-    [add libvirtd support @<:@default=yes@:>@])],
-  [],[with_libvirtd=yes])
+    [add libvirtd support @<:@default=yes@:>@])])
+m4_divert_text([DEFAULTS], [with_libvirtd=yes])
 AC_ARG_WITH([chrdev-lock-files],
   [AS_HELP_STRING([--with-chrdev-lock-files],
     [location for UUCP style lock files for character devices
-     (use auto for default paths on some platforms) @<:@default=auto@:>@])],
-  [],[with_chrdev_lock_files=auto])
+     (use auto for default paths on some platforms) @<:@default=auto@:>@])])
+m4_divert_text([DEFAULTS], [with_chrdev_lock_files=auto])
 
 dnl
 dnl in case someone want to build static binaries
