@@ -16996,8 +16996,6 @@ virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
     int t = dev->type;
     if ((t == VIR_DOMAIN_DEVICE_DISK &&
          dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) ||
-        (t == VIR_DOMAIN_DEVICE_CONTROLLER &&
-         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) ||
         (t == VIR_DOMAIN_DEVICE_INPUT &&
          dev->data.input->type == VIR_DOMAIN_INPUT_BUS_USB) ||
         (t == VIR_DOMAIN_DEVICE_HOSTDEV &&
