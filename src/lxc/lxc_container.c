@@ -750,7 +750,7 @@ err:
 }
 
 
-static int lxcContainerMountBasicFS(void)
+static int lxcContainerMountBasicFS(bool userns_enabled)
 {
     const struct {
         const char *src;
@@ -800,6 +800,9 @@ static int lxcContainerMountBasicFS(void)
             !is_selinux_enabled())
             continue;
 #endif
+
+        if (STREQ(mnts[i].src, "securityfs") && userns_enabled)
+            continue;
 
         if (virFileMakePath(mnts[i].dst) < 0) {
             virReportSystemError(errno,
@@ -1530,7 +1533,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS() < 0)
+    if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap) < 0)
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
