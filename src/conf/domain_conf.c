@@ -18587,87 +18587,80 @@ cleanup:
     return ret;
 }
 
-int
-virDomainObjSetMetadata(virDomainObjPtr vm,
+
+static int
+virDomainDefSetMetadata(virDomainDefPtr def,
                         int type,
                         const char *metadata,
                         const char *key ATTRIBUTE_UNUSED,
-                        const char *uri ATTRIBUTE_UNUSED,
-                        virCapsPtr caps,
-                        virDomainXMLOptionPtr xmlopt,
-                        const char *configDir,
-                        unsigned int flags)
+                        const char *uri ATTRIBUTE_UNUSED)
 {
-    virDomainDefPtr persistentDef;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+    switch ((virDomainMetadataType) type) {
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        VIR_FREE(def->description);
+        if (VIR_STRDUP(def->description, metadata) < 0)
+            goto cleanup;
+        break;
 
-    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    case VIR_DOMAIN_METADATA_TITLE:
+        VIR_FREE(def->title);
+        if (VIR_STRDUP(def->title, metadata) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("<metadata> element is not supported"));
         goto cleanup;
+        break;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        switch ((virDomainMetadataType) type) {
-        case VIR_DOMAIN_METADATA_DESCRIPTION:
-            VIR_FREE(vm->def->description);
-            if (VIR_STRDUP(vm->def->description, metadata) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_METADATA_TITLE:
-            VIR_FREE(vm->def->title);
-            if (VIR_STRDUP(vm->def->title, metadata) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_METADATA_ELEMENT:
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("<metadata> element is not supported"));
-            goto cleanup;
-            break;
-
-        default:
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("unknown metadata type"));
-            goto cleanup;
-            break;
-        }
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        switch ((virDomainMetadataType) type) {
-        case VIR_DOMAIN_METADATA_DESCRIPTION:
-            VIR_FREE(persistentDef->description);
-            if (VIR_STRDUP(persistentDef->description, metadata) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_METADATA_TITLE:
-            VIR_FREE(persistentDef->title);
-            if (VIR_STRDUP(persistentDef->title, metadata) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_METADATA_ELEMENT:
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("<metadata> element is not supported"));
-            goto cleanup;
-
-         default:
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("unknown metadata type"));
-            goto cleanup;
-            break;
-        }
-
-        if (virDomainSaveConfig(configDir, persistentDef) < 0)
-            goto cleanup;
+    default:
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("unknown metadata type"));
+        goto cleanup;
+        break;
     }
 
     ret = 0;
 
 cleanup:
     return ret;
+}
+
+
+int
+virDomainObjSetMetadata(virDomainObjPtr vm,
+                        int type,
+                        const char *metadata,
+                        const char *key,
+                        const char *uri,
+                        virCapsPtr caps,
+                        virDomainXMLOptionPtr xmlopt,
+                        const char *configDir,
+                        unsigned int flags)
+{
+    virDomainDefPtr persistentDef;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        return -1;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+        if (virDomainDefSetMetadata(vm->def, type, metadata, key, uri) < 0)
+            return -1;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (virDomainDefSetMetadata(persistentDef, type, metadata, key, uri) < 0)
+            return -1;
+
+        if (virDomainSaveConfig(configDir, persistentDef) < 0)
+            return -1;
+    }
+
+    return 0;
 }
