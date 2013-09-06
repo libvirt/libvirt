@@ -4549,6 +4549,74 @@ lxcNodeSuspendForDuration(virConnectPtr conn,
 }
 
 
+static int
+lxcDomainSetMetadata(virDomainPtr dom,
+                      int type,
+                      const char *metadata,
+                      const char *key,
+                      const char *uri,
+                      unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virLXCDriverConfigPtr cfg = NULL;
+    virCapsPtr caps = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return -1;
+
+    cfg = virLXCDriverGetConfig(driver);
+
+    if (virDomainSetMetadataEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
+                                  driver->xmlopt, cfg->configDir, flags);
+
+cleanup:
+    virObjectUnlock(vm);
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+static char *
+lxcDomainGetMetadata(virDomainPtr dom,
+                      int type,
+                      const char *uri,
+                      unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virCapsPtr caps = NULL;
+    virDomainObjPtr vm;
+    char *ret = NULL;
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return NULL;
+
+    if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    ret = virDomainObjGetMetadata(vm, type, uri, caps, driver->xmlopt, flags);
+
+cleanup:
+    virObjectUnlock(vm);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -4623,6 +4691,8 @@ static virDriver lxcDriver = {
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = lxcConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = lxcNodeSuspendForDuration, /* 0.9.8 */
+    .domainSetMetadata = lxcDomainSetMetadata, /* 1.1.3 */
+    .domainGetMetadata = lxcDomainGetMetadata, /* 1.1.3 */
     .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
