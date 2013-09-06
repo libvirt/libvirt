@@ -1148,7 +1148,7 @@ lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
 #endif /* ! WITH_BLKID */
 
 /*
- * This functions attempts to do automatic detection of filesystem
+ * This function attempts to do automatic detection of filesystem
  * type following the same rules as the util-linux 'mount' binary.
  *
  * The main difference is that we don't (currently) try to use
@@ -1603,7 +1603,7 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 }
 
 /*
- * This is running as the 'init' process insid the container.
+ * This is running as the 'init' process inside the container.
  * It removes some capabilities that could be dangerous to
  * host system, since they are not currently "containerized"
  */
@@ -1753,7 +1753,7 @@ static int lxcContainerChild(void *data)
 
     if (lxcContainerSendContinue(argv->handshakefd) < 0) {
         virReportSystemError(errno, "%s",
-                            _("failed to send continue signal to controller"));
+                            _("Failed to send continue signal to controller"));
         goto cleanup;
     }
 
