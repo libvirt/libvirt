@@ -154,12 +154,12 @@ UTIL_SOURCES =							\
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
 
-BUILT_SOURCES += $(srcdir)/util/virkeymaps.h
+BUILT_SOURCES += util/virkeymaps.h
 
-$(srcdir)/util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
+util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py \
-	  <$(srcdir)/util/keymaps.csv >$@
+	  <$(srcdir)/util/keymaps.csv >$(srcdir)/util/virkeymaps.h
 
 EXTRA_DIST += util/virthreadpthread.c util/virthreadwin32.c
 
@@ -185,8 +185,8 @@ LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 		locking/sanlock_helper.c
 
 LOCK_PROTOCOL_GENERATED = \
-		$(srcdir)/locking/lock_protocol.h \
-		$(srcdir)/locking/lock_protocol.c \
+		locking/lock_protocol.h \
+		locking/lock_protocol.c \
 		$(NULL)
 
 LOCK_PROTOCOL = $(srcdir)/locking/lock_protocol.x
@@ -216,11 +216,11 @@ LOCK_DAEMON_SOURCES = \
 		locking/lock_daemon_dispatch.h \
 		$(NULL)
 
-$(srcdir)/locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
+locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
 		$(srcdir)/rpc/gendispatch.pl Makefile.am
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
-	    $(LOCK_PROTOCOL) > $@
+	    $(LOCK_PROTOCOL) > $(srcdir)/locking/lock_daemon_dispatch_stubs.h
 
 
 NETDEV_CONF_SOURCES =						\
@@ -302,35 +302,39 @@ CONF_SOURCES =							\
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \
-		$(srcdir)/remote/remote_protocol.c		\
-		$(srcdir)/remote/remote_protocol.h		\
-		$(srcdir)/remote/remote_client_bodies.h		\
-		$(srcdir)/remote/lxc_protocol.c			\
-		$(srcdir)/remote/lxc_protocol.h			\
-		$(srcdir)/remote/lxc_client_bodies.h		\
-		$(srcdir)/remote/qemu_protocol.c		\
-		$(srcdir)/remote/qemu_protocol.h		\
-		$(srcdir)/remote/qemu_client_bodies.h
+		remote/remote_protocol.c		\
+		remote/remote_protocol.h		\
+		remote/remote_client_bodies.h		\
+		remote/lxc_protocol.c			\
+		remote/lxc_protocol.h			\
+		remote/lxc_client_bodies.h		\
+		remote/qemu_protocol.c			\
+		remote/qemu_protocol.h			\
+		remote/qemu_client_bodies.h		\
+		$(NULL)
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
 REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL) $(LXC_PROTOCOL)
 
-$(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  remote REMOTE $(REMOTE_PROTOCOL) > $@
+	  remote REMOTE $(REMOTE_PROTOCOL) \
+	  > $(srcdir)/remote/remote_client_bodies.h
 
-$(srcdir)/remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  lxc LXC $(LXC_PROTOCOL) > $@
+	  lxc LXC $(LXC_PROTOCOL) \
+	  > $(srcdir)/remote/lxc_client_bodies.h
 
-$(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  qemu QEMU $(QEMU_PROTOCOL) > $@
+	  qemu QEMU $(QEMU_PROTOCOL) \
+	  > $(srcdir)/remote/qemu_client_bodies.h
 
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
@@ -534,16 +538,16 @@ XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
 endif WITH_XEN_INOTIFY
 
 LXC_MONITOR_PROTOCOL_GENERATED = \
-	$(srcdir)/lxc/lxc_monitor_protocol.h \
-	$(srcdir)/lxc/lxc_monitor_protocol.c \
+	lxc/lxc_monitor_protocol.h \
+	lxc/lxc_monitor_protocol.c \
 	$(NULL)
 
 LXC_MONITOR_GENERATED = \
-	$(srcdir)/lxc/lxc_monitor_dispatch.h \
+	lxc/lxc_monitor_dispatch.h \
 	$(NULL)
 
 LXC_CONTROLLER_GENERATED = \
-	$(srcdir)/lxc/lxc_controller_dispatch.h \
+	lxc/lxc_controller_dispatch.h \
 	$(NULL)
 
 LXC_GENERATED = \
@@ -554,15 +558,17 @@ LXC_GENERATED = \
 
 LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 
-$(srcdir)/lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
+lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_MONITOR_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
+	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
+	  $(srcdir)/lxc/lxc_monitor_dispatch.h
 
-$(srcdir)/lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
+lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
+	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
+	  $(srcdir)/lxc/lxc_controller_dispatch.h
 
 EXTRA_DIST += \
 	$(LXC_MONITOR_PROTOCOL) \
@@ -824,12 +830,13 @@ SECURITY_DRIVER_APPARMOR_SOURCES =				\
 		security/security_apparmor.h security/security_apparmor.c
 
 ACCESS_DRIVER_GENERATED = \
-		$(srcdir)/access/viraccessapicheck.h \
-		$(srcdir)/access/viraccessapicheck.c \
-		$(srcdir)/access/viraccessapicheckqemu.h \
-		$(srcdir)/access/viraccessapicheckqemu.c \
-		$(srcdir)/access/viraccessapichecklxc.h \
-		$(srcdir)/access/viraccessapichecklxc.c
+		access/viraccessapicheck.h \
+		access/viraccessapicheck.c \
+		access/viraccessapicheckqemu.h \
+		access/viraccessapicheckqemu.c \
+		access/viraccessapichecklxc.h \
+		access/viraccessapichecklxc.c \
+		$(NULL)
 
 ACCESS_DRIVER_SYM_FILES = \
 		libvirt_access.syms \
@@ -1541,32 +1548,38 @@ libvirt_access_lxc.xml: $(srcdir)/rpc/gendispatch.pl \
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclapi \
 	  lxc LXC $(LXC_PROTOCOL) > $@
 
-$(srcdir)/access/viraccessapicheck.h: $(srcdir)/rpc/gendispatch.pl \
+access/viraccessapicheck.h: $(srcdir)/rpc/gendispatch.pl \
 			$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
-	  remote REMOTE $(REMOTE_PROTOCOL) > $@
-$(srcdir)/access/viraccessapicheck.c: $(srcdir)/rpc/gendispatch.pl \
+	  remote REMOTE $(REMOTE_PROTOCOL) \
+	  > $(srcdir)/access/viraccessapicheck.h
+access/viraccessapicheck.c: $(srcdir)/rpc/gendispatch.pl \
 			$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
-	  remote REMOTE $(REMOTE_PROTOCOL) access/viraccessapicheck.h > $@
+	  remote REMOTE $(REMOTE_PROTOCOL) access/viraccessapicheck.h \
+	  > $(srcdir)/access/viraccessapicheck.c
 
-$(srcdir)/access/viraccessapicheckqemu.h: $(srcdir)/rpc/gendispatch.pl \
+access/viraccessapicheckqemu.h: $(srcdir)/rpc/gendispatch.pl \
 			$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
-	  qemu QEMU $(QEMU_PROTOCOL) > $@
-$(srcdir)/access/viraccessapicheckqemu.c: $(srcdir)/rpc/gendispatch.pl \
+	  qemu QEMU $(QEMU_PROTOCOL) \
+	  > $(srcdir)/access/viraccessapicheckqemu.h
+access/viraccessapicheckqemu.c: $(srcdir)/rpc/gendispatch.pl \
 			$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
-	  qemu QEMU $(QEMU_PROTOCOL) access/viraccessapicheckqemu.h > $@
+	  qemu QEMU $(QEMU_PROTOCOL) access/viraccessapicheckqemu.h \
+	  > $(srcdir)/access/viraccessapicheckqemu.c
 
-$(srcdir)/access/viraccessapichecklxc.h: $(srcdir)/rpc/gendispatch.pl \
+access/viraccessapichecklxc.h: $(srcdir)/rpc/gendispatch.pl \
 			$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
-	  lxc LXC $(LXC_PROTOCOL) > $@
-$(srcdir)/access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
+	  lxc LXC $(LXC_PROTOCOL) \
+	  > $(srcdir)/access/viraccessapichecklxc.h
+access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 			$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
-	  lxc LXC $(LXC_PROTOCOL) access/viraccessapichecklxc.h > $@
+	  lxc LXC $(LXC_PROTOCOL) access/viraccessapichecklxc.h \
+	  > $(srcdir)/access/viraccessapichecklxc.c
 
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\
