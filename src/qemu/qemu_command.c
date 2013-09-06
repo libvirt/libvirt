@@ -10645,6 +10645,14 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*feature == '\0')
                 goto syntax;
 
+            if (dom->os.arch != VIR_ARCH_X86_64 &&
+                dom->os.arch != VIR_ARCH_I686) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("%s platform doesn't support CPU features'"),
+                               virArchToString(dom->os.arch));
+                goto cleanup;
+             }
+
             if (STREQ(feature, "kvmclock")) {
                 bool present = (policy == VIR_CPU_FEATURE_REQUIRE);
                 size_t j;
