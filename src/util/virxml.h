@@ -165,4 +165,11 @@ int virXMLSaveFile(const char *path,
 
 char *virXMLNodeToString(xmlDocPtr doc, xmlNodePtr node);
 
+xmlNodePtr virXMLFindChildNodeByNs(xmlNodePtr root,
+                                   const char *uri);
+
+int virXMLExtractNamespaceXML(xmlNodePtr root,
+                              const char *uri,
+                              char **doc);
+
 #endif                          /* __VIR_XML_H__ */

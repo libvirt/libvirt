@@ -18542,7 +18542,6 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
                         unsigned int flags)
 {
     virDomainDefPtr def;
-    char *field = NULL;
     char *ret = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -18557,17 +18556,21 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
-        field = def->description;
+        if (VIR_STRDUP(ret, def->description) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_METADATA_TITLE:
-        field = def->title;
+        if (VIR_STRDUP(ret, def->title) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_METADATA_ELEMENT:
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("<metadata> element is not yet supported"));
-        goto cleanup;
+        if (!def->metadata)
+            break;
+
+        if (virXMLExtractNamespaceXML(def->metadata, uri, &ret) < 0)
+            goto cleanup;
         break;
 
     default:
@@ -18577,11 +18580,9 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
         break;
     }
 
-    if (!field)
+    if (!ret)
         virReportError(VIR_ERR_NO_DOMAIN_METADATA, "%s",
                        _("Requested metadata element is not present"));
-
-    ignore_value(VIR_STRDUP(ret, field));
 
 cleanup:
     return ret;

@@ -928,3 +928,125 @@ cleanup:
 
      return ret;
 }
+
+typedef int (*virXMLForeachCallback)(xmlNodePtr node,
+                                     void *opaque);
+
+static int
+virXMLForeachNode(xmlNodePtr root,
+                  virXMLForeachCallback cb,
+                  void *opaque);
+
+static int
+virXMLForeachNode(xmlNodePtr root,
+                  virXMLForeachCallback cb,
+                  void *opaque)
+{
+    xmlNodePtr next;
+    int ret;
+
+    for (next = root; next; next = next->next) {
+        if ((ret = cb(next, opaque)) != 0)
+            return ret;
+
+        /* recurse into children */
+        if (next->children) {
+            if ((ret = virXMLForeachNode(next->children, cb, opaque)) != 0)
+                return ret;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virXMLRemoveElementNamespace(xmlNodePtr node,
+                             void *opaque)
+{
+    const char *uri = opaque;
+
+    if (node->ns &&
+        STREQ_NULLABLE((const char *)node->ns->href, uri))
+        xmlSetNs(node, NULL);
+    return 0;
+}
+
+
+xmlNodePtr
+virXMLFindChildNodeByNs(xmlNodePtr root,
+                        const char *uri)
+{
+    xmlNodePtr next;
+
+    for (next = root->children; next; next = next->next) {
+        if (next->ns &&
+            STREQ_NULLABLE((const char *) next->ns->href, uri))
+            return next;
+    }
+
+    return NULL;
+}
+
+
+/**
+ * virXMLExtractNamespaceXML: extract a sub-namespace of XML as string
+ */
+int
+virXMLExtractNamespaceXML(xmlNodePtr root,
+                          const char *uri,
+                          char **doc)
+{
+    xmlNodePtr node;
+    xmlNodePtr nodeCopy = NULL;
+    xmlNsPtr actualNs;
+    xmlNsPtr prevNs = NULL;
+    char *xmlstr = NULL;
+    int ret = -1;
+
+    if (!(node = virXMLFindChildNodeByNs(root, uri))) {
+        /* node not found */
+        ret = 1;
+        goto cleanup;
+    }
+
+    /* copy the node so that we can modify the namespace */
+    if (!(nodeCopy = xmlCopyNode(node, 1))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to copy XML node"));
+        goto cleanup;
+    }
+
+    virXMLForeachNode(nodeCopy, virXMLRemoveElementNamespace,
+                      (void *)uri);
+
+    /* remove the namespace declaration
+     *  - it's only a single linked list ... doh */
+    for (actualNs = nodeCopy->nsDef; actualNs; actualNs = actualNs->next) {
+        if (STREQ_NULLABLE((const char *)actualNs->href, uri)) {
+
+            /* unlink */
+            if (prevNs)
+                prevNs->next = actualNs->next;
+            else
+                nodeCopy->nsDef = actualNs->next;
+
+            /* discard */
+            xmlFreeNs(actualNs);
+            break;
+        }
+
+        prevNs = actualNs;
+    }
+
+    if (!(xmlstr = virXMLNodeToString(nodeCopy->doc, nodeCopy)))
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    if (doc)
+        *doc = xmlstr;
+    xmlFreeNode(nodeCopy);
+    return ret;
+}
