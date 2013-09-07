@@ -19,6 +19,7 @@
 *~
 .#*
 .deps
+.dirstamp
 .gdb_history
 .git
 .git-module-status

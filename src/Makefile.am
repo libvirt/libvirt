@@ -367,12 +367,13 @@ r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 struct_prefix = (remote_|qemu_|lxc_|keepalive|vir(Net|LockSpace|LXCMonitor))
 
 # Depending on configure options, libtool creates one or both of
-# {,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want the
-# newest of the two, in case configure options changed and a stale
+# remote/{,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want
+# the newest of the two, in case configure options changed and a stale
 # file is left around from an earlier build.
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  o=`ls -t $(<:.lo=.$(OBJEXT)) .libs/$(<:.lo=.$(OBJEXT))	\
+	  o=`ls -t $(<:.lo=.$(OBJEXT))					\
+	     $(subst /,/.libs/,$(<:.lo=.$(OBJEXT)))			\
 	    2>/dev/null | sed -n 1p`;					\
 	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; };	\
 	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2;			\
@@ -445,16 +446,16 @@ check-protocol: $(PROTOCOL_STRUCTS) $(PROTOCOL_STRUCTS:structs=struct)
 $(srcdir)/remote_protocol-struct \
 	$(srcdir)/qemu_protocol-struct \
 	$(srcdir)/lxc_protocol-struct: \
-		$(srcdir)/%-struct: libvirt_driver_remote_la-%.lo
+		$(srcdir)/%-struct: remote/libvirt_driver_remote_la-%.lo
 	$(PDWTAGS)
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
-		$(srcdir)/%-struct: libvirt_net_rpc_la-%.lo
+		$(srcdir)/%-struct: rpc/libvirt_net_rpc_la-%.lo
 	$(PDWTAGS)
 $(srcdir)/lxc_monitor_protocol-struct: \
-		$(srcdir)/%-struct: libvirt_driver_lxc_impl_la-%.lo
+		$(srcdir)/%-struct: lxc/libvirt_driver_lxc_impl_la-%.lo
 	$(PDWTAGS)
 $(srcdir)/lock_protocol-struct: \
-		$(srcdir)/%-struct: lockd_la-%.lo
+		$(srcdir)/%-struct: locking/lockd_la-%.lo
 	$(PDWTAGS)
 
 else !WITH_REMOTE
