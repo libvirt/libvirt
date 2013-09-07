@@ -364,10 +364,10 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 # The alternation of the following regexps matches both cases.
 r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
-struct_prefix = (remote_|qemu_|lxc_|virNet|keepalive_)
+struct_prefix = (remote_|qemu_|lxc_|keepalive|vir(Net|LockSpace|LXCMonitor))
 
 # Depending on configure options, libtool creates one or both of
-# {,.libs/}libvirt_remote_driver_la-remote_protocol.o.  We want the
+# {,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want the
 # newest of the two, in case configure options changed and a stale
 # file is left around from an earlier build.
 PDWTAGS = \
@@ -376,7 +376,7 @@ PDWTAGS = \
 	    2>/dev/null | sed -n 1p`;					\
 	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; };	\
 	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2;			\
-	  if test -s $(@F)-t2; then					\
+	  if test ! -s $(@F)-t1 && test -s $(@F)-t2; then		\
 	    rm -rf $(@F)-t?;						\
 	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
 	  else								\
@@ -426,12 +426,17 @@ check-symsorting:
 		$(srcdir) $(SYM_FILES)
 EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
+# Keep this list synced with RPC_PROBE_FILES
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
 	$(srcdir)/lxc_protocol-structs \
 	$(srcdir)/qemu_protocol-structs \
 	$(srcdir)/virnetprotocol-structs \
-	$(srcdir)/virkeepaliveprotocol-structs
+	$(srcdir)/virkeepaliveprotocol-structs \
+	$(srcdir)/lxc_monitor_protocol-structs \
+	$(srcdir)/lock_protocol-structs \
+	$(NULL)
+
 if WITH_REMOTE
 check-protocol: $(PROTOCOL_STRUCTS) $(PROTOCOL_STRUCTS:structs=struct)
 
@@ -445,6 +450,13 @@ $(srcdir)/remote_protocol-struct \
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
 		$(srcdir)/%-struct: libvirt_net_rpc_la-%.lo
 	$(PDWTAGS)
+$(srcdir)/lxc_monitor_protocol-struct: \
+		$(srcdir)/%-struct: libvirt_driver_lxc_impl_la-%.lo
+	$(PDWTAGS)
+$(srcdir)/lock_protocol-struct: \
+		$(srcdir)/%-struct: lockd_la-%.lo
+	$(PDWTAGS)
+
 else !WITH_REMOTE
 # The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be
 # re-generated when configured --without-remote.
@@ -1886,6 +1898,7 @@ tapset_DATA = libvirt_probes.stp libvirt_qemu_probes.stp libvirt_functions.stp
 	  "non_pic_object='$<'" \
 	> $@
 
+# Keep this list synced with PROTOCOL_STRUCTS
 RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/rpc/virkeepaliveprotocol.x \
 		  $(srcdir)/remote/remote_protocol.x \

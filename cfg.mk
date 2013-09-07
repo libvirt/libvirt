@@ -33,8 +33,9 @@ gnulib_dir = $(srcdir)/.gnulib
 # This is all gnulib files, as well as generated files for RPC code.
 generated_files = \
   $(srcdir)/daemon/*_dispatch.h \
+  $(srcdir)/src/*/*_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
-  $(srcdir)/src/remote/*_protocol.[ch] \
+  $(srcdir)/src/*/*_protocol.[ch] \
   $(srcdir)/gnulib/lib/*.[ch]
 
 # We haven't converted all scripts to using gnulib's init.sh yet.

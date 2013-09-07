@@ -1,0 +1,55 @@
+/* -*- c -*- */
+struct virLockSpaceProtocolOwner {
+        virLockSpaceProtocolUUID   uuid;
+        virLockSpaceProtocolNonNullString name;
+        u_int                      id;
+        u_int                      pid;
+};
+struct virLockSpaceProtocolRegisterArgs {
+        virLockSpaceProtocolOwner  owner;
+        u_int                      flags;
+};
+struct virLockSpaceProtocolRestrictArgs {
+        u_int                      flags;
+};
+struct virLockSpaceProtocolNewArgs {
+        virLockSpaceProtocolNonNullString path;
+        u_int                      flags;
+};
+struct virLockSpaceProtocolCreateResourceArgs {
+        virLockSpaceProtocolNonNullString path;
+        virLockSpaceProtocolNonNullString name;
+        u_int                      flags;
+};
+struct virLockSpaceProtocolDeleteResourceArgs {
+        virLockSpaceProtocolNonNullString path;
+        virLockSpaceProtocolNonNullString name;
+        u_int                      flags;
+};
+enum virLockSpaceProtocolAcquireResourceFlags {
+        VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED = 1,
+        VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE = 2,
+};
+struct virLockSpaceProtocolAcquireResourceArgs {
+        virLockSpaceProtocolNonNullString path;
+        virLockSpaceProtocolNonNullString name;
+        u_int                      flags;
+};
+struct virLockSpaceProtocolReleaseResourceArgs {
+        virLockSpaceProtocolNonNullString path;
+        virLockSpaceProtocolNonNullString name;
+        u_int                      flags;
+};
+struct virLockSpaceProtocolCreateLockSpaceArgs {
+        virLockSpaceProtocolNonNullString path;
+};
+enum virLockSpaceProtocolProcedure {
+        VIR_LOCK_SPACE_PROTOCOL_PROC_REGISTER = 1,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_RESTRICT = 2,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_NEW = 3,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_RESOURCE = 4,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_DELETE_RESOURCE = 5,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_ACQUIRE_RESOURCE = 6,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE = 7,
+        VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_LOCKSPACE = 8,
+};

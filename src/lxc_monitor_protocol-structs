@@ -1,0 +1,16 @@
+/* -*- c -*- */
+enum virLXCMonitorExitStatus {
+        VIR_LXC_MONITOR_EXIT_STATUS_ERROR = 0,
+        VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN = 1,
+        VIR_LXC_MONITOR_EXIT_STATUS_REBOOT = 2,
+};
+struct virLXCMonitorExitEventMsg {
+        enum virLXCMonitorExitStatus status;
+};
+struct virLXCMonitorInitEventMsg {
+        uint64_t                   initpid;
+};
+enum virLXCMonitorProcedure {
+        VIR_LXC_MONITOR_PROC_EXIT_EVENT = 1,
+        VIR_LXC_MONITOR_PROC_INIT_EVENT = 2,
+};
