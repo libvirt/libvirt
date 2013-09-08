@@ -37,13 +37,11 @@ DAEMON_GENERATED =			\
 
 DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
-		libvirtd-config.c libvirtd-config.h	\
 		remote.c remote.h			\
 		stream.c stream.h			\
-		../src/remote/remote_protocol.c		\
-		../src/remote/lxc_protocol.c		\
-		../src/remote/qemu_protocol.c		\
 		$(DAEMON_GENERATED)
+
+LIBVIRTD_CONF_SOURCES = libvirtd-config.c libvirtd-config.h
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
@@ -67,7 +65,9 @@ EXTRA_DIST =						\
 	THREADS.txt					\
 	libvirtd.pod.in					\
 	libvirtd.8.in					\
-	$(DAEMON_SOURCES)
+	$(DAEMON_SOURCES)				\
+	$(LIBVIRTD_CONF_SOURCES)			\
+	$(NULL)
 
 BUILT_SOURCES =
 
@@ -94,6 +94,22 @@ qemu_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 	  > $(srcdir)/qemu_dispatch.h
 
 if WITH_LIBVIRTD
+
+# Build a convenience library, for reuse in tests/libvirtdconftest
+noinst_LTLIBRARIES = libvirtd_conf.la
+libvirtd_conf_la_SOURCES = $(LIBVIRTD_CONF_SOURCES)
+libvirtd_conf_la_CFLAGS = \
+	$(LIBXML_CFLAGS) \
+	$(WARN_CFLAGS) $(PIE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
+	$(NULL)
+libvirtd_conf_la_LDFLAGS =				\
+	$(RELRO_LDFLAGS)				\
+	$(PIE_LDFLAGS)					\
+	$(COVERAGE_LDFLAGS)				\
+	$(NO_INDIRECT_LDFLAGS)				\
+	$(NULL)
+libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
 
 man8_MANS = libvirtd.8
 
@@ -130,7 +146,6 @@ libvirtd_CFLAGS = \
 libvirtd_LDFLAGS =					\
 	$(RELRO_LDFLAGS)				\
 	$(PIE_LDFLAGS)					\
-	$(RELRO_LDFLAGS)				\
 	$(COVERAGE_LDFLAGS)				\
 	$(NO_INDIRECT_LDFLAGS)				\
 	$(NULL)
@@ -148,8 +163,11 @@ libvirtd_LDADD += ../src/libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
 libvirtd_LDADD += \
+	libvirtd_conf.la \
 	../src/libvirt-lxc.la \
-	../src/libvirt-qemu.la
+	../src/libvirt-qemu.la \
+	../src/libvirt_driver_remote.la \
+	$(NULL)
 
 if ! WITH_DRIVER_MODULES
 if WITH_QEMU

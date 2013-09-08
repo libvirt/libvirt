@@ -599,8 +599,8 @@ commandhelper_LDFLAGS = -static
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
 	libvirtdconftest.c testutils.h testutils.c \
-	../daemon/libvirtd-config.c
-libvirtdconftest_LDADD = $(LDADDS)
+	$(NULL)
+libvirtdconftest_LDADD = ../daemon/libvirtd_conf.la $(LDADDS)
 else ! WITH_LIBVIRTD
 EXTRA_DIST += libvirtdconftest.c
 endif ! WITH_LIBVIRTD
