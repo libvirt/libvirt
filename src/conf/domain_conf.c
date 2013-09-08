@@ -5218,9 +5218,11 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     /* Only CDROM and Floppy devices are allowed missing source path
-     * to indicate no media present */
+     * to indicate no media present. LUN is for raw access CD-ROMs
+     * that are not attached to a physical device presently */
     if (source == NULL && hosts == NULL && !def->srcpool &&
         def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        def->device != VIR_DOMAIN_DISK_DEVICE_LUN &&
         def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
