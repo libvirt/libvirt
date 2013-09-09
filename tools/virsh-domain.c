@@ -6670,7 +6670,7 @@ static const vshCmdOptDef opts_desc[] = {
 };
 
 static bool
-cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdDesc(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool config = vshCommandOptBool(cmd, "config");
