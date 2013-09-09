@@ -2585,6 +2585,72 @@ cleanup:
     return ret;
 }
 
+static char *testDomainGetMetadata(virDomainPtr dom,
+                                   int type,
+                                   const char *uri,
+                                   unsigned int flags)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr privdom;
+    char *ret = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, NULL);
+
+    testDriverLock(privconn);
+    privdom = virDomainObjListFindByName(privconn->domains,
+                                         dom->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    ret = virDomainObjGetMetadata(privdom, type, uri, privconn->caps,
+                                  privconn->xmlopt, flags);
+
+cleanup:
+    if (privdom)
+        virObjectUnlock(privdom);
+    return ret;
+}
+
+static int testDomainSetMetadata(virDomainPtr dom,
+                                 int type,
+                                 const char *metadata,
+                                 const char *key,
+                                 const char *uri,
+                                 unsigned int flags)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    testDriverLock(privconn);
+    privdom = virDomainObjListFindByName(privconn->domains,
+                                         dom->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    ret = virDomainObjSetMetadata(privdom, type, metadata, key, uri,
+                                  privconn->caps, privconn->xmlopt,
+                                  NULL, flags);
+
+cleanup:
+    if (privdom)
+        virObjectUnlock(privdom);
+    return ret;
+}
+
+
 static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       unsigned long long *freemems,
                                       int startCell, int maxCells) {
@@ -5872,6 +5938,8 @@ static virDriver testDriver = {
     .connectIsAlive = testConnectIsAlive, /* 0.9.8 */
     .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
     .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
+    .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
+    .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
 };
 
 static virNetworkDriver testNetworkDriver = {
