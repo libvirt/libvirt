@@ -6773,6 +6773,161 @@ cleanup:
     return ret;
 }
 
+
+static const vshCmdInfo info_metadata[] = {
+    {.name = "help",
+     .data = N_("show or set domain's custom XML metadata")
+    },
+    {.name = "desc",
+     .data = N_("Shows or modifies the XML metadata of a domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_metadata[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("modify/get running state")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("modify/get persistent configuration")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("modify/get current state configuration")
+    },
+    {.name = "edit",
+     .type = VSH_OT_BOOL,
+     .help = N_("use an editor to change the metadata")
+    },
+    {.name = "uri",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("URI of the namespace")
+    },
+    {.name = "key",
+     .type = VSH_OT_DATA,
+     .help = N_("key to be used as a namespace identifier"),
+    },
+    {.name = "set",
+     .type = VSH_OT_DATA,
+     .help = N_("new metadata to set"),
+    },
+    {.name = "remove",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove the metadata corresponding to an uri")
+    },
+    {.name = NULL}
+};
+
+
+/* helper to add new metadata using the --edit option */
+static char *
+vshDomainGetEditMetadata(vshControl *ctl,
+                         virDomainPtr dom,
+                         const char *uri,
+                         unsigned int flags)
+{
+    char *ret;
+
+    if (!(ret = virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
+                                     uri, flags))) {
+        vshResetLibvirtError();
+        ret = vshStrdup(ctl, "\n");
+    }
+
+    return ret;
+}
+
+
+static bool
+cmdMetadata(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool edit = vshCommandOptBool(cmd, "edit");
+    bool remove = vshCommandOptBool(cmd, "remove");
+    const char *set = NULL;
+    const char *uri = NULL;
+    const char *key = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool ret = false;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+    VSH_EXCLUSIVE_OPTIONS("edit", "set");
+    VSH_EXCLUSIVE_OPTIONS("remove", "set");
+    VSH_EXCLUSIVE_OPTIONS("remove", "edit");
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "uri", &uri) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "key", &key) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "set", &set) < 0)
+        goto cleanup;
+
+    if ((set || edit) && !key) {
+        vshError(ctl, "%s",
+                 _("namespace key is required when modifying metadata"));
+        goto cleanup;
+    }
+
+    if (set || remove) {
+        if (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
+                                 set, key, uri, flags))
+            goto cleanup;
+
+        if (remove)
+            vshPrint("%s\n", _("Metadata removed"));
+        else
+            vshPrint("%s\n", _("Metadata modified"));
+    } else if (edit) {
+#define EDIT_GET_XML \
+        vshDomainGetEditMetadata(ctl, dom, uri, flags)
+#define EDIT_NOT_CHANGED                                    \
+        vshPrint(ctl, "%s", _("Metadata not changed"));     \
+        ret = true;                                         \
+        goto edit_cleanup;
+#define EDIT_DEFINE                                                         \
+        (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT, doc_edited, \
+                              key, uri, flags) == 0)
+#define EDIT_FREE /* nothing */
+#include "virsh-edit.c"
+
+        vshPrint("%s\n", _("Metadata modified"));
+    } else {
+        char *data;
+        /* get */
+        if (!(data = virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
+                                          uri, flags)))
+            goto cleanup;
+
+        vshPrint(ctl, "%s\n", data);
+        VIR_FREE(data);
+    }
+
+    ret = true;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+
 /*
  * "inject-nmi" command
  */
@@ -10550,6 +10705,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdMemtune,
      .opts = opts_memtune,
      .info = info_memtune,
+     .flags = 0
+    },
+    {.name = "metadata",
+     .handler = cmdMetadata,
+     .opts = opts_metadata,
+     .info = info_metadata,
      .flags = 0
     },
     {.name = "migrate",
