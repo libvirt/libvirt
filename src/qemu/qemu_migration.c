@@ -2145,7 +2145,7 @@ endjob:
         if (qemuMigrationJobFinish(driver, vm) == 0)
             vm = NULL;
     } else {
-        if (qemuDomainObjEndJob(driver, vm) == 0)
+        if (!qemuDomainObjEndJob(driver, vm))
             vm = NULL;
     }
     goto cleanup;
@@ -2356,7 +2356,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                          VIR_QEMU_PROCESS_START_PAUSED |
                          VIR_QEMU_PROCESS_START_AUTODESTROY) < 0) {
         virDomainAuditStart(vm, "migrated", false);
-        if (qemuDomainObjEndJob(driver, vm) < 0)
+        if (!qemuDomainObjEndJob(driver, vm))
             vm = NULL;
         goto endjob;
     }
