@@ -193,6 +193,44 @@ cleanup:
 }
 
 /*
+ * "maxvcpus" command
+ */
+static const vshCmdInfo info_maxvcpus[] = {
+    {.name = "help",
+     .data = N_("connection vcpu maximum")
+    },
+    {.name = "desc",
+     .data = N_("Show maximum number of virtual CPUs for guests on this connection.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_maxvcpus[] = {
+    {.name = "type",
+     .type = VSH_OT_STRING,
+     .help = N_("domain type")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
+{
+    const char *type = NULL;
+    int vcpus;
+
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+        return false;
+
+    if ((vcpus = virConnectGetMaxVcpus(ctl->conn, type)) < 0)
+        return false;
+
+    vshPrint(ctl, "%d\n", vcpus);
+
+    return true;
+}
+
+/*
  * "nodeinfo" command
  */
 static const vshCmdInfo info_nodeinfo[] = {
@@ -861,6 +899,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdHostname,
      .opts = NULL,
      .info = info_hostname,
+     .flags = 0
+    },
+    {.name = "maxvcpus",
+     .handler = cmdMaxvcpus,
+     .opts = opts_maxvcpus,
+     .info = info_maxvcpus,
      .flags = 0
     },
     {.name = "node-memory-tune",
