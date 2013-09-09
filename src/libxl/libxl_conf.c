@@ -35,6 +35,7 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "datatypes.h"
+#include "virconf.h"
 #include "virfile.h"
 #include "virstring.h"
 #include "viralloc.h"
@@ -1348,11 +1349,32 @@ libxlMakeVfbList(virPortAllocatorPtr graphicsports,
     return -1;
 }
 
+/*
+ * Get domain0 autoballoon configuration.  Honor user-specified
+ * setting in libxl.conf first.  If not specified, autoballooning
+ * is disabled when domain0's memory is set with 'dom0_mem'.
+ * Otherwise autoballooning is enabled.
+ */
 static int
-libxlGetAutoballoonConf(libxlDriverConfigPtr cfg, bool *autoballoon)
+libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
+                        virConfPtr conf)
 {
+    virConfValuePtr p;
     regex_t regex;
     int res;
+
+    p = virConfGetValue(conf, "autoballoon");
+    if (p) {
+        if (p->type != VIR_CONF_ULONG) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s",
+                           _("Unexpected type for 'autoballoon' setting"));
+
+            return -1;
+        }
+        cfg->autoballoon = p->l != 0;
+        return 0;
+    }
 
     if ((res = regcomp(&regex,
                       "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
@@ -1368,7 +1390,7 @@ libxlGetAutoballoonConf(libxlDriverConfigPtr cfg, bool *autoballoon)
 
     res = regexec(&regex, cfg->verInfo->commandline, 0, NULL, 0);
     regfree(&regex);
-    *autoballoon = res == REG_NOMATCH;
+    cfg->autoballoon = res == REG_NOMATCH;
     return 0;
 }
 
@@ -1386,6 +1408,8 @@ libxlDriverConfigNew(void)
     if (!(cfg = virObjectNew(libxlDriverConfigClass)))
         return NULL;
 
+    if (VIR_STRDUP(cfg->configBaseDir, LIBXL_CONFIG_BASE_DIR) < 0)
+        goto error;
     if (VIR_STRDUP(cfg->configDir, LIBXL_CONFIG_DIR) < 0)
         goto error;
     if (VIR_STRDUP(cfg->autostartDir, LIBXL_AUTOSTART_DIR) < 0)
@@ -1448,10 +1472,6 @@ libxlDriverConfigNew(void)
         goto error;
     }
 
-    /* setup autoballoon */
-    if (libxlGetAutoballoonConf(cfg, &cfg->autoballoon) < 0)
-        goto error;
-
     return cfg;
 
  error:
@@ -1469,6 +1489,35 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
     cfg = virObjectRef(driver->config);
     libxlDriverUnlock(driver);
     return cfg;
+}
+
+int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
+                              const char *filename)
+{
+    virConfPtr conf = NULL;
+    int ret = -1;
+
+    /* Check the file is readable before opening it, otherwise
+     * libvirt emits an error.
+     */
+    if (access(filename, R_OK) == -1) {
+        VIR_INFO("Could not read libxl config file %s", filename);
+        return 0;
+    }
+
+    if (!(conf = virConfReadFile(filename, 0)))
+        goto cleanup;
+
+    /* setup autoballoon */
+    if (libxlGetAutoballoonConf(cfg, conf) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virConfFree(conf);
+    return ret;
+
 }
 
 int

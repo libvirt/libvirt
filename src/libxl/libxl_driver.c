@@ -504,6 +504,7 @@ libxlStateInitialize(bool privileged,
                      void *opaque ATTRIBUTE_UNUSED)
 {
     libxlDriverConfigPtr cfg;
+    char *driverConf = NULL;
     char ebuf[1024];
 
     if (!libxlDriverShouldLoad(privileged))
@@ -542,6 +543,13 @@ libxlStateInitialize(bool privileged,
 
     if (!(cfg = libxlDriverConfigNew()))
         goto error;
+
+    if (virAsprintf(&driverConf, "%s/libxl.conf", cfg->configBaseDir) < 0)
+        goto error;
+
+    if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
+        goto error;
+    VIR_FREE(driverConf);
 
     /* Register the callbacks providing access to libvirt's event loop */
     libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);
@@ -626,6 +634,7 @@ libxlStateInitialize(bool privileged,
     return 0;
 
  error:
+    VIR_FREE(driverConf);
     libxlStateCleanup();
     return -1;
 }

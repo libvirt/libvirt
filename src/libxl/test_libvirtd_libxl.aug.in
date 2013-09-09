@@ -1,0 +1,5 @@
+module Test_libvirtd_libxl =
+  ::CONFIG::
+
+   test Libvirtd_libxl.lns get conf =
+{ "autoballoon" = "1" }

@@ -46,6 +46,7 @@
 # define LIBXL_MIGRATION_PORT_MIN  49152
 # define LIBXL_MIGRATION_PORT_MAX  49216
 
+# define LIBXL_CONFIG_BASE_DIR SYSCONFDIR "/libvirt"
 # define LIBXL_CONFIG_DIR SYSCONFDIR "/libvirt/libxl"
 # define LIBXL_AUTOSTART_DIR LIBXL_CONFIG_DIR "/autostart"
 # define LIBXL_STATE_DIR LOCALSTATEDIR "/run/libvirt/libxl"
@@ -100,6 +101,7 @@ struct _libxlDriverConfig {
     /* Once created, caps are immutable */
     virCapsPtr caps;
 
+    char *configBaseDir;
     char *configDir;
     char *autostartDir;
     char *logDir;
@@ -166,6 +168,9 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver);
 int
 libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver,
                        virNodeInfoPtr info);
+
+int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
+                              const char *filename);
 
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);

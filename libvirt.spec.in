@@ -1592,6 +1592,11 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.qemu
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/lxc.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 %endif
+%if ! %{with_libxl}
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
+%endif
 %if ! %{with_uml}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
@@ -1997,9 +2002,12 @@ exit 0
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
         %endif
         %if %{with_libxl}
+%config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_localstatedir}/run/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
+%{_datadir}/augeas/lenses/libvirtd_libxl.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
         %endif
         %if %{with_xen}
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/xen/
