@@ -220,6 +220,8 @@ test_programs += interfacexml2xmltest
 
 test_programs += cputest
 
+test_programs += metadatatest
+
 test_scripts = \
 	capabilityschematest \
 	interfaceschematest \
@@ -573,6 +575,11 @@ cputest_SOURCES = \
 	cputest.c \
 	testutils.c testutils.h
 cputest_LDADD = $(LDADDS) $(LIBXML_LIBS)
+
+metadatatest_SOURCES = \
+	metadatatest.c \
+	testutils.c testutils.h
+metadatatest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 
 virshtest_SOURCES = \
 	virshtest.c \
