@@ -3766,7 +3766,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     virDomainHostdevDefPtr def = NULL;
     int idx, ret = -1;
     char *dst = NULL;
-    char *vroot;
+    char *vroot = NULL;
     virUSBDevicePtr usb = NULL;
 
     if ((idx = virDomainHostdevFind(vm->def,
@@ -3824,6 +3824,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
 cleanup:
     virUSBDeviceFree(usb);
     VIR_FREE(dst);
+    VIR_FREE(vroot);
     return ret;
 }
 
