@@ -6972,19 +6972,19 @@ static const vshCmdOptDef opts_send_process_signal[] = {
 VIR_ENUM_DECL(virDomainProcessSignal)
 VIR_ENUM_IMPL(virDomainProcessSignal,
               VIR_DOMAIN_PROCESS_SIGNAL_LAST,
-              "nop", "hup", "int", "quit", "ill", /* 0-4 */
-              "trap", "abrt", "bus", "fpe", "kill", /* 5-9 */
-              "usr1", "segv", "usr2", "pipe", "alrm", /* 10-14 */
-              "term", "stkflt", "chld", "cont", "stop", /* 15-19 */
-              "tstp", "ttin", "ttou", "urg", "xcpu", /* 20-24 */
+               "nop",    "hup",  "int",  "quit",  "ill", /* 0-4 */
+              "trap",   "abrt",  "bus",   "fpe", "kill", /* 5-9 */
+              "usr1",   "segv", "usr2",  "pipe", "alrm", /* 10-14 */
+              "term", "stkflt", "chld",  "cont", "stop", /* 15-19 */
+              "tstp",   "ttin", "ttou",   "urg", "xcpu", /* 20-24 */
               "xfsz", "vtalrm", "prof", "winch", "poll", /* 25-29 */
-              "pwr", "sys", "rt0","rt1", "rt2",  /* 30-34 */
-              "rt3", "rt4", "rt5", "rt6", "rt7",  /* 35-39 */
-              "rt8", "rt9", "rt10", "rt11", "rt12",  /* 40-44 */
-              "rt13", "rt14", "rt15", "rt16", "rt17",  /* 45-49 */
-              "rt18", "rt19", "rt20", "rt21", "rt22",  /* 50-54 */
-              "rt23", "rt24", "rt25", "rt26", "rt27",  /* 55-59 */
-              "rt28", "rt29", "rt30", "rt31", "rt32")  /* 60-64 */
+               "pwr",    "sys",  "rt0",   "rt1",  "rt2", /* 30-34 */
+               "rt3",    "rt4",  "rt5",   "rt6",  "rt7", /* 35-39 */
+               "rt8",    "rt9", "rt10",  "rt11", "rt12", /* 40-44 */
+              "rt13",   "rt14", "rt15",  "rt16", "rt17", /* 45-49 */
+              "rt18",   "rt19", "rt20",  "rt21", "rt22", /* 50-54 */
+              "rt23",   "rt24", "rt25",  "rt26", "rt27", /* 55-59 */
+              "rt28",   "rt29", "rt30",  "rt31", "rt32") /* 60-64 */
 
 static int getSignalNumber(vshControl *ctl, const char *signame)
 {
