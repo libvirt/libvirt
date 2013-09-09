@@ -345,16 +345,16 @@ ppcMakeCPUData(virArch arch, struct cpuPPCData *data)
 
 static virCPUCompareResult
 ppcCompute(virCPUDefPtr host,
-             const virCPUDefPtr cpu,
-             virCPUDataPtr *guestData,
-             char **message)
+           const virCPUDefPtr cpu,
+           virCPUDataPtr *guestData,
+           char **message)
 
 {
     struct ppc_map *map = NULL;
     struct ppc_model *host_model = NULL;
     struct ppc_model *guest_model = NULL;
 
-    int ret = 0;
+    virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
     virArch arch;
     size_t i;
 
@@ -375,8 +375,10 @@ ppcCompute(virCPUDefPtr host,
                 virAsprintf(message,
                             _("CPU arch %s does not match host arch"),
                             virArchToString(cpu->arch)) < 0)
-                goto error;
-            return VIR_CPU_COMPARE_INCOMPATIBLE;
+                goto cleanup;
+
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            goto cleanup;
         }
         arch = cpu->arch;
     } else {
@@ -392,14 +394,16 @@ ppcCompute(virCPUDefPtr host,
                         _("host CPU vendor does not match required "
                         "CPU vendor %s"),
                         cpu->vendor) < 0)
-            goto error;
-        return VIR_CPU_COMPARE_INCOMPATIBLE;
+            goto cleanup;
+
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        goto cleanup;
     }
 
     if (!(map = ppcLoadMap()) ||
         !(host_model = ppcModelFromCPU(host, map)) ||
         !(guest_model = ppcModelFromCPU(cpu, map)))
-        goto error;
+        goto cleanup;
 
     if (guestData != NULL) {
         if (cpu->type == VIR_CPU_TYPE_GUEST &&
@@ -412,25 +416,23 @@ ppcCompute(virCPUDefPtr host,
                             _("host CPU model does not match required "
                             "CPU model %s"),
                             guest_model->name) < 0)
-                goto error;
-            return VIR_CPU_COMPARE_INCOMPATIBLE;
+                goto cleanup;
+
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            goto cleanup;
         }
 
         if (!(*guestData = ppcMakeCPUData(arch, &guest_model->data)))
-            goto error;
+            goto cleanup;
     }
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
-out:
+cleanup:
     ppcMapFree(map);
     ppcModelFree(host_model);
     ppcModelFree(guest_model);
     return ret;
-
-error:
-    ret = VIR_CPU_COMPARE_ERROR;
-    goto out;
 }
 
 static virCPUCompareResult
