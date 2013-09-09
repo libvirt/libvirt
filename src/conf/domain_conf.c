@@ -14207,8 +14207,8 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
             }
             break;
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
-            virBufferEscapeString(buf, "      <source dev='%s'",
-                                  def->src);
+            virBufferAddLit(buf, "      <source");
+            virBufferEscapeString(buf, " dev='%s'", def->src);
             if (def->startupPolicy)
                 virBufferEscapeString(buf, " startupPolicy='%s'",
                                       startupPolicy);

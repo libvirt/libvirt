@@ -1140,9 +1140,11 @@
           <interleave>
             <optional>
               <element name="source">
-                <attribute name="dev">
-                  <ref name="absFilePath"/>
-                </attribute>
+                <optional>
+                  <attribute name="dev">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
                 <optional>
                   <ref name="startupPolicy"/>
                 </optional>
