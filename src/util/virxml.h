@@ -172,4 +172,8 @@ int virXMLExtractNamespaceXML(xmlNodePtr root,
                               const char *uri,
                               char **doc);
 
+int virXMLInjectNamespace(xmlNodePtr node,
+                          const char *uri,
+                          const char *key);
+
 #endif                          /* __VIR_XML_H__ */

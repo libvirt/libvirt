@@ -18593,9 +18593,12 @@ static int
 virDomainDefSetMetadata(virDomainDefPtr def,
                         int type,
                         const char *metadata,
-                        const char *key ATTRIBUTE_UNUSED,
-                        const char *uri ATTRIBUTE_UNUSED)
+                        const char *key,
+                        const char *uri)
 {
+    xmlDocPtr doc = NULL;
+    xmlNodePtr old;
+    xmlNodePtr new;
     int ret = -1;
 
     switch ((virDomainMetadataType) type) {
@@ -18612,9 +18615,42 @@ virDomainDefSetMetadata(virDomainDefPtr def,
         break;
 
     case VIR_DOMAIN_METADATA_ELEMENT:
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("<metadata> element is not supported"));
-        goto cleanup;
+        if (metadata) {
+            /* parse and modify the xml from the user */
+            if (!(doc = virXMLParseString(metadata, _("(metadata_xml)"))))
+                goto cleanup;
+
+            if (virXMLInjectNamespace(doc->children, uri, key) < 0)
+                goto cleanup;
+
+            /* create the root node if needed */
+            if (!def->metadata &&
+                !(def->metadata = xmlNewNode(NULL, (unsigned char *)"metadata"))) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if (!(new = xmlCopyNode(doc->children, 1))) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+
+        /* remove possible other nodes sharing the namespace */
+        while ((old = virXMLFindChildNodeByNs(def->metadata, uri))) {
+            xmlUnlinkNode(old);
+            xmlFreeNode(old);
+        }
+
+        /* just delete the metadata */
+        if (!metadata)
+            break;
+
+        if (!(xmlAddChild(def->metadata, new))) {
+            xmlFreeNode(new);
+            virReportOOMError();
+            goto cleanup;
+        }
         break;
 
     default:
@@ -18627,6 +18663,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
     ret = 0;
 
 cleanup:
+    xmlFreeDoc(doc);
     return ret;
 }
 

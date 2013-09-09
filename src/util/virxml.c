@@ -1050,3 +1050,35 @@ cleanup:
     xmlFreeNode(nodeCopy);
     return ret;
 }
+
+
+static int
+virXMLAddElementNamespace(xmlNodePtr node,
+                          void *opaque)
+{
+    xmlNsPtr ns = opaque;
+
+    if (!node->ns)
+        xmlSetNs(node, ns);
+
+    return 0;
+}
+
+
+int
+virXMLInjectNamespace(xmlNodePtr node,
+                      const char *uri,
+                      const char *key)
+{
+    xmlNsPtr ns;
+
+    if (!(ns = xmlNewNs(node, (const unsigned char *)uri, (const unsigned char *)key))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to create a new XML namespace"));
+        return -1;
+    }
+
+    virXMLForeachNode(node, virXMLAddElementNamespace, ns);
+
+    return 0;
+}
