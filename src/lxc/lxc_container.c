@@ -532,7 +532,6 @@ static int lxcContainerGetSubtree(const char *prefix,
     }
 
     while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
-        VIR_DEBUG("Got %s", mntent.mnt_dir);
         if (!STRPREFIX(mntent.mnt_dir, prefix))
             continue;
 
@@ -541,7 +540,6 @@ static int lxcContainerGetSubtree(const char *prefix,
         if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
             goto cleanup;
         nmounts++;
-        VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
     }
 
     if (mounts)
@@ -779,6 +777,74 @@ static const virLXCBasicMountInfo lxcBasicMounts[] = {
 };
 
 
+static bool lxcIsBasicMountLocation(const char *path)
+{
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
+        if (STREQ(path, lxcBasicMounts[i].dst))
+            return true;
+    }
+
+    return false;
+}
+
+
+static int lxcContainerSetReadOnly(void)
+{
+    FILE *procmnt;
+    struct mntent mntent;
+    char mntbuf[1024];
+    int ret = -1;
+    char **mounts = NULL;
+    size_t nmounts = 0;
+    size_t i;
+
+    if (!(procmnt = setmntent("/proc/mounts", "r"))) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to read /proc/mounts"));
+        return -1;
+    }
+
+    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        if (STREQ(mntent.mnt_dir, "/") ||
+            STREQ(mntent.mnt_dir, "/.oldroot") ||
+            STRPREFIX(mntent.mnt_dir, "/.oldroot/") ||
+            lxcIsBasicMountLocation(mntent.mnt_dir))
+            continue;
+
+        if (VIR_REALLOC_N(mounts, nmounts + 1) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
+            goto cleanup;
+        nmounts++;
+    }
+
+    if (mounts)
+        qsort(mounts, nmounts, sizeof(mounts[0]),
+              lxcContainerChildMountSort);
+
+    for (i = 0; i < nmounts; i++) {
+        VIR_DEBUG("Bind readonly %s", mounts[i]);
+        if (mount(mounts[i], mounts[i], NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to make mount %s readonly"),
+                                 mounts[i]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    for (i = 0; i < nmounts; i++)
+        VIR_FREE(mounts[i]);
+    VIR_FREE(mounts);
+    endmntent(procmnt);
+    return ret;
+
+}
+
+
 static int lxcContainerMountBasicFS(bool userns_enabled)
 {
     size_t i;
@@ -1006,6 +1072,8 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
     int ret = -1;
     struct stat st;
 
+    VIR_DEBUG("src=%s dst=%s", fs->src, fs->dst);
+
     if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
 
@@ -1060,6 +1128,13 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
+                                 fs->dst);
+        }
+    } else {
+        VIR_DEBUG("Binding %s readwrite", fs->dst);
+        if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to make directory %s readwrite"),
                                  fs->dst);
         }
     }
@@ -1335,6 +1410,8 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
     char *src = NULL;
     int ret = -1;
 
+    VIR_DEBUG("src=%s dst=%s", fs->src, fs->dst);
+
     if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
 
@@ -1353,6 +1430,8 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
 {
     int ret = -1;
     char *data = NULL;
+
+    VIR_DEBUG("usage=%lld sec=%s", fs->usage, sec_mount_options);
 
     if (virAsprintf(&data,
                     "size=%lldk%s", fs->usage, sec_mount_options) < 0)
@@ -1573,6 +1652,11 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap) < 0)
+        goto cleanup;
+
+    /* Ensure entire root filesystem (except /.oldroot) is readonly */
+    if (root->readonly &&
+        lxcContainerSetReadOnly() < 0)
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
