@@ -40,15 +40,11 @@ primary "host" OS environment, the libvirt LXC driver requires that
 certain kernel namespaces are compiled in. Libvirt currently requires
 the 'mount', 'ipc', 'pid', and 'uts' namespaces to be available. If
 separate network interfaces are desired, then the 'net' namespace is
-required. In the near future, the 'user' namespace will optionally be
-supported.
-</p>
-
-<p>
-<strong>NOTE: In the absence of support for the 'user' namespace,
-processes inside containers cannot be securely isolated from host
-process without the use of a mandatory access control technology
-such as SELinux or AppArmor.</strong>
+required. If the guest configuration declares a
+<a href="formatdomain.html#elementsOSContainer">UID or GID mapping</a>,
+the 'user' namespace will be enabled to apply these. <strong>A suitably
+configured UID/GID mapping is a pre-requisite to making containers
+secure, in the absence of sVirt confinement.</strong>
 </p>
 
 <h2><a name="init">Default container setup</a></h2>
