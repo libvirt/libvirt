@@ -342,10 +342,11 @@ virCgroupDetectMounts(virCgroupPtr group)
                                        entry.mnt_dir);
                         goto error;
                     }
-                    *tmp2 = '\0';
+
                     /* If it is a co-mount it has a filename like "cpu,cpuacct"
                      * and we must identify the symlink path */
                     if (strchr(tmp2 + 1, ',')) {
+                        *tmp2 = '\0';
                         if (virAsprintf(&linksrc, "%s/%s",
                                         entry.mnt_dir, typestr) < 0)
                             goto error;

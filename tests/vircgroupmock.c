@@ -103,6 +103,27 @@ const char *proccgroups =
     "blkio   8       4       1\n";
 
 
+const char *procmountsallinone =
+    "rootfs / rootfs rw 0 0\n"
+    "sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0\n"
+    "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0\n"
+    "udev /dev devtmpfs rw,relatime,size=16458560k,nr_inodes=4114640,mode=755 0 0\n"
+    "devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0\n"
+    "nfsd /proc/fs/nfsd nfsd rw,relatime 0 0\n"
+    "cgroup /not/really/sys/fs/cgroup cgroup rw,relatime,blkio,devices,memory,cpuacct,cpu,cpuset 0 0\n";
+
+const char *procselfcgroupsallinone =
+    "6:blkio,devices,memory,cpuacct,cpu,cpuset:/";
+
+const char *proccgroupsallinone =
+    "#subsys_name    hierarchy       num_cgroups     enabled\n"
+    "cpuset   6   1  1\n"
+    "cpu      6   1  1\n"
+    "cpuacct  6   1  1\n"
+    "memory   6   1  1\n"
+    "devices  6   1  1\n"
+    "blkio    6   1  1\n";
+
 static int make_file(const char *path,
                      const char *name,
                      const char *value)
@@ -378,11 +399,21 @@ static void init_sysfs(void)
 
 FILE *fopen(const char *path, const char *mode)
 {
+    const char *mock;
+    bool allinone = false;
     init_syms();
+
+    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    if (mock && STREQ(mock, "allinone"))
+        allinone = true;
 
     if (STREQ(path, "/proc/mounts")) {
         if (STREQ(mode, "r")) {
-            return fmemopen((void *)procmounts, strlen(procmounts), mode);
+            if (allinone)
+                return fmemopen((void *)procmountsallinone,
+                                strlen(procmountsallinone), mode);
+            else
+                return fmemopen((void *)procmounts, strlen(procmounts), mode);
         } else {
             errno = EACCES;
             return NULL;
@@ -390,7 +421,11 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/cgroups")) {
         if (STREQ(mode, "r")) {
-            return fmemopen((void *)proccgroups, strlen(proccgroups), mode);
+            if (allinone)
+                return fmemopen((void *)proccgroupsallinone,
+                                strlen(proccgroupsallinone), mode);
+            else
+                return fmemopen((void *)proccgroups, strlen(proccgroups), mode);
         } else {
             errno = EACCES;
             return NULL;
@@ -398,7 +433,11 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/self/cgroup")) {
         if (STREQ(mode, "r")) {
-            return fmemopen((void *)procselfcgroups, strlen(procselfcgroups), mode);
+            if (allinone)
+                return fmemopen((void *)procselfcgroupsallinone,
+                                strlen(procselfcgroupsallinone), mode);
+            else
+                return fmemopen((void *)procselfcgroups, strlen(procselfcgroups), mode);
         } else {
             errno = EACCES;
             return NULL;
