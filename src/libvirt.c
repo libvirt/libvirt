@@ -10739,7 +10739,8 @@ virDomainSetMetadata(virDomainPtr domain,
         break;
     case VIR_DOMAIN_METADATA_ELEMENT:
         virCheckNonNullArgGoto(uri, error);
-        virCheckNonNullArgGoto(key, error);
+        if (metadata)
+            virCheckNonNullArgGoto(key, error);
         break;
     default:
         /* For future expansion */
