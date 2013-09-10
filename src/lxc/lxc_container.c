@@ -750,45 +750,50 @@ err:
 }
 
 
+typedef struct {
+    const char *src;
+    const char *dst;
+    const char *type;
+    const char *opts;
+    int mflags;
+} virLXCBasicMountInfo;
+
+static const virLXCBasicMountInfo lxcBasicMounts[] = {
+    /* When we want to make a bind mount readonly, for unknown reasons,
+     * it is currently necessary to bind it once, and then remount the
+     * bind with the readonly flag. If this is not done, then the original
+     * mount point in the main OS becomes readonly too which is not what
+     * we want. Hence some things have two entries here.
+     */
+    { "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+    { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
+    { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+    { "sysfs", "/sys", "sysfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+    { "sysfs", "/sys", "sysfs", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+    { "securityfs", "/sys/kernel/security", "securityfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+    { "securityfs", "/sys/kernel/security", "securityfs", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+#if WITH_SELINUX
+    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
+    { SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+#endif
+};
+
+
 static int lxcContainerMountBasicFS(bool userns_enabled)
 {
-    const struct {
-        const char *src;
-        const char *dst;
-        const char *type;
-        const char *opts;
-        int mflags;
-    } mnts[] = {
-        /* When we want to make a bind mount readonly, for unknown reasons,
-         * it is currently necessary to bind it once, and then remount the
-         * bind with the readonly flag. If this is not done, then the original
-         * mount point in the main OS becomes readonly too which is not what
-         * we want. Hence some things have two entries here.
-         */
-        { "proc", "/proc", "proc", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND },
-        { "/proc/sys", "/proc/sys", NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { "sysfs", "/sys", "sysfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { "sysfs", "/sys", "sysfs", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-        { "securityfs", "/sys/kernel/security", "securityfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { "securityfs", "/sys/kernel/security", "securityfs", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-#if WITH_SELINUX
-        { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", NULL, MS_NOSUID|MS_NOEXEC|MS_NODEV },
-        { SELINUX_MOUNT, SELINUX_MOUNT, NULL, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-#endif
-    };
     size_t i;
     int rc = -1;
 
     VIR_DEBUG("Mounting basic filesystems");
 
-    for (i = 0; i < ARRAY_CARDINALITY(mnts); i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
+        virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
         const char *srcpath = NULL;
 
         VIR_DEBUG("Processing %s -> %s",
-                  mnts[i].src, mnts[i].dst);
+                  mnt->src, mnt->dst);
 
-        srcpath = mnts[i].src;
+        srcpath = mnt->src;
 
         /* Skip if mount doesn't exist in source */
         if ((srcpath[0] == '/') &&
@@ -796,34 +801,34 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
             continue;
 
 #if WITH_SELINUX
-        if (STREQ(mnts[i].src, SELINUX_MOUNT) &&
+        if (STREQ(mnt->src, SELINUX_MOUNT) &&
             !is_selinux_enabled())
             continue;
 #endif
 
-        if (STREQ(mnts[i].src, "securityfs") && userns_enabled)
+        if (STREQ(mnt->src, "securityfs") && userns_enabled)
             continue;
 
-        if (virFileMakePath(mnts[i].dst) < 0) {
+        if (virFileMakePath(mnt->dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
-                                 mnts[i].src);
+                                 mnt->src);
             goto cleanup;
         }
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
-                  srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
-        if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
+                  srcpath, mnt->dst, mnt->type, mnt->mflags, mnt->opts);
+        if (mount(srcpath, mnt->dst, mnt->type, mnt->mflags, mnt->opts) < 0) {
 #if WITH_SELINUX
-            if (STREQ(mnts[i].src, SELINUX_MOUNT) &&
+            if (STREQ(mnt->src, SELINUX_MOUNT) &&
                 (errno == EINVAL || errno == EPERM))
                 continue;
 #endif
 
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x opts=%s"),
-                                 srcpath, mnts[i].dst, NULLSTR(mnts[i].type),
-                                 mnts[i].mflags, NULLSTR(mnts[i].opts));
+                                 srcpath, mnt->dst, NULLSTR(mnt->type),
+                                 mnt->mflags, NULLSTR(mnt->opts));
             goto cleanup;
         }
     }
