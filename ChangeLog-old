@@ -5504,7 +5504,7 @@ Tue Nov 11 15:51:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 Mon Nov 10 12:05:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* src/openvz_conf.c: Read filesytem template name from config
+	* src/openvz_conf.c: Read filesystem template name from config
 	files. Increase buffer size when parsing vzctl version number
 
 Thu Nov  6 20:45:42 CET 2008 Jim Meyering <meyering@redhat.com>

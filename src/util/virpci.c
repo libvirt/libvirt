@@ -670,7 +670,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
         goto cleanup;
     }
 
-    /* otherwise, SRIOV allows VFs to be on different busses then their PFs.
+    /* otherwise, SRIOV allows VFs to be on different buses than their PFs.
      * In this case, what we need to do is look for the "best" match; i.e.
      * the most restrictive match that still satisfies all of the conditions.
      */

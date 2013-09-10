@@ -510,11 +510,11 @@ skip_function = (
     'virStreamRecv', # overridden in libvirt-override-virStream.py
     'virStreamSend', # overridden in libvirt-override-virStream.py
 
-    'virConnectUnregisterCloseCallback', # overriden in virConnect.py
-    'virConnectRegisterCloseCallback', # overriden in virConnect.py
+    'virConnectUnregisterCloseCallback', # overridden in virConnect.py
+    'virConnectRegisterCloseCallback', # overridden in virConnect.py
 
-    'virDomainCreateXMLWithFiles', # overriden in virConnect.py
-    'virDomainCreateWithFiles', # overriden in virDomain.py
+    'virDomainCreateXMLWithFiles', # overridden in virConnect.py
+    'virDomainCreateWithFiles', # overridden in virDomain.py
 
     # 'Ref' functions have no use for bindings users.
     "virConnectRef",

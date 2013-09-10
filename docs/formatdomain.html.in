@@ -254,7 +254,7 @@
         to the (optional) ramdisk image in the host OS.</dd>
       <dt><code>cmdline</code></dt>
       <dd>The contents of this element specify arguments to be passed to
-        the kernel (or installer) at boottime. This is often used to
+        the kernel (or installer) at boot time. This is often used to
         specify an alternate primary console (eg serial port), or the
         installation media source / kickstart file</dd>
       <dt><code>dtb</code></dt>
@@ -426,7 +426,7 @@
         process and virtual CPUs can be specified separately by
         <code>cputune</code>. If attribute <code>emulatorpin</code>
         of <code>cputune</code> is specified, <code>cpuset</code>
-        specified by <code>vcpu</code> here will be ingored; Similarly,
+        specified by <code>vcpu</code> here will be ignored; Similarly,
         For virtual CPUs which has <code>vcpupin</code> specified,
         <code>cpuset</code> specified by <code>cpuset</code> here
         will be ignored; For virtual CPUs which doesn't have
@@ -1235,7 +1235,7 @@
         </tr>
         <tr>
           <td>relaxed</td>
-          <td>Relax contstraints on timers</td>
+          <td>Relax constraints on timers</td>
           <td> on, off</td>
           <td><span class="since">1.0.0 (QEMU only)</span></td>
         </tr>
@@ -1358,7 +1358,7 @@
           <dd>
             <p>
             The <code>tickpolicy</code> attribute determines what
-            happens whens QEMU misses a deadline for injecting a
+            happens when QEMU misses a deadline for injecting a
             tick to the guest:
             </p>
             <dl>
@@ -2268,7 +2268,7 @@
 
       <dt><code>readonly</code></dt>
       <dd>
-        Enables exporting filesytem as a readonly mount for guest, by
+        Enables exporting filesystem as a readonly mount for guest, by
         default read-write access is given (currently only works for
         QEMU/KVM driver).
       </dd>
@@ -2385,7 +2385,7 @@
     <h4><a name="elementsControllers">Controllers</a></h4>
 
     <p>
-      Depending on the guest architecture, some device busses can
+      Depending on the guest architecture, some device buses can
       appear more than once, with a group of virtual devices tied to a
       virtual controller.  Normally, libvirt can automatically infer such
       controllers without requiring explicit XML markup, but sometimes
@@ -3773,7 +3773,7 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 1.1.0.</span> This uses the optional
       <code>nativeMode</code> attribute on the <code>&lt;tag&gt;</code>
       element: <code>nativeMode</code> may be set to 'tagged' or
-      'untagged'. The id atribute of the element sets the native vlan.
+      'untagged'. The id attribute of the element sets the native vlan.
     </p>
 
     <h5><a name="elementLink">Modifying virtual link state</a></h5>
@@ -4134,7 +4134,7 @@ qemu-kvm -net nic,model=? /dev/null
         "9216", and <code>heads</code> with value "1". By default, the first
         video device in domain xml is the primary one, but the optional
         attribute <code>primary</code> (<span class="since">since 1.0.2</span>)
-        with value 'yes' can be used to mark the primary in cases of mutiple
+        with value 'yes' can be used to mark the primary in cases of multiple
         video device. The non-primary must be type of "qxl". The optional
         attribute <code>ram</code> (<span class="since">since
         1.0.2</span>) is allowed for "qxl" type only and specifies

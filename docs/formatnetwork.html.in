@@ -478,7 +478,7 @@
       <span class="since">Since 1.1.0</span>. This uses the optional
       <code>nativeMode</code> attribute on the <code>&lt;tag&gt;</code>
       element: <code>nativeMode</code> may be set to 'tagged' or
-      'untagged'. The id atribute of the element sets the native vlan.
+      'untagged'. The id attribute of the element sets the native vlan.
     </p>
     <p>
       <code>&lt;vlan&gt;</code> elements can also be specified in
@@ -591,7 +591,7 @@
       This particular route would *not* be preferred if there was
       another existing rout on the system with the same address and
       prefix but with a lower value for the metric. If there is a
-      route in the host system configuration that should be overriden
+      route in the host system configuration that should be overridden
       by a route in a virtual network whenever the virtual network is
       running, the configuration for the system-defined route should
       be modified to have a higher metric, and the route on the

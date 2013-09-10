@@ -1989,7 +1989,7 @@ testDomainRestoreFlags(virConnectPtr conn,
         goto cleanup;
     if (saferead(fd, xml, len) != len) {
         virReportSystemError(errno,
-                             _("incomplete metdata in '%s'"), path);
+                             _("incomplete metadata in '%s'"), path);
         goto cleanup;
     }
     xml[len] = '\0';

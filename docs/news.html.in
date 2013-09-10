@@ -13327,7 +13327,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     <h3>0.1.5: Sep 5 2006</h3>
     <ul>
       <li>Support for new hypercalls change in Xen changeset 86d26e6ec89b</li>
-      <li>bug fixes: virParseUUID() was wrong, netwoking for paravirt guestsi
+      <li>bug fixes: virParseUUID() was wrong, networking for paravirt guests
       (Daniel Berrange), virsh on non-existent domains (Daniel Berrange),
       string cast bug when handling error in python (Pete Vetere), HTTP
       500 xend error code handling (Pete Vetere and Daniel Berrange)</li>

@@ -9058,7 +9058,7 @@ error:
  * Define a domain, but does not start it.
  * This definition is persistent, until explicitly undefined with
  * virDomainUndefine(). A previous definition for this domain would be
- * overriden if it already exists.
+ * overridden if it already exists.
  *
  * Some hypervisors may prevent this operation if there is a current
  * block copy operation on a transient domain with the same id as the
