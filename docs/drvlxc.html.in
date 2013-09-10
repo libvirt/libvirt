@@ -168,6 +168,109 @@ Further block or character devices will be made available to containers
 depending on their configuration.
 </p>
 
+<h2><a name="security">Security considerations</a></h2>
+
+<p>
+The libvirt LXC driver is fairly flexible in how it can be configured,
+and as such does not enforce a requirement for strict security
+separation between a container and the host. This allows it to be used
+in scenarios where only resource control capabilities are important,
+and resource sharing is desired. Applications wishing to ensure secure
+isolation between a container and the host must ensure that they are
+writing a suitable configuration.
+</p>
+
+<h3><a name="securenetworking">Network isolation</a></h3>
+
+<p>
+If the guest configuration does not list any network interfaces,
+the <code>network</code> namespace will not be activated, and thus
+the container will see all the host's network interfaces. This will
+allow apps in the container to bind to/connect from TCP/UDP addresses
+and ports from the host OS. It also allows applications to access
+UNIX domain sockets associated with the host OS, which are in the
+abstract namespace. If access to UNIX domains sockets in the abstract
+namespace is not wanted, then applications should set the
+<code>&lt;privnet/&gt;</code> flag in the
+<code>&lt;features&gt;....&lt;/features&gt;</code> element.
+</p>
+
+<h3><a name="securefs">Filesystem isolation</a></h3>
+
+<p>
+If the guest configuration does not list any filesystems, then
+the container will be set up with a root filesystem that matches
+the host's root filesystem. As noted earlier, only a few locations
+such as <code>/dev</code>, <code>/proc</code> and <code>/sys</code>
+will be altered. This means that, in the absence of restrictions
+from sVirt, a process running as user/group N:M inside the container
+will be able to access almost exactly the same files as a process
+running as user/group N:M in the host.
+</p>
+
+<p>
+There are multiple options for restricting this. It is possible to
+simply map the existing root filesystem through to the container in
+read-only mode. Alternatively a completely separate root filesystem
+can be configured for the guest. In both cases, further sub-mounts
+can be applied to customize the content that is made visible. Note
+that in the absence of sVirt controls, it is still possible for the
+root user in a container to unmount any sub-mounts applied. The user
+namespace feature can also be used to restrict access to files based
+on the UID/GID mappings.
+</p>
+
+<p>
+Sharing the host filesystem tree, also allows applications to access
+UNIX domains sockets associated with the host OS, which are in the
+filesystem namespaces. It should be noted that a number of init
+systems including at least <code>systemd</code> and <code>upstart</code>
+have UNIX domain socket which are used to control their operation.
+Thus, if the directory/filesystem holding their UNIX domain socket is
+exposed to the container, it will be possible for a user in the container
+to invoke operations on the init service in the same way it could if
+outside the container. This also applies to other applications in the
+host which use UNIX domain sockets in the filesystem, such as DBus,
+Libvirtd, and many more. If this is not desired, then applications
+should either specify the UID/GID mapping in the configuration to
+enable user namespaces and thus block access to the UNIX domain socket
+based on permissions, or should ensure the relevant directories have
+a bind mount to hide them. This is particularly important for the
+<code>/run</code> or <code>/var/run</code> directories.
+</p>
+
+
+<h3><a name="secureusers">User and group isolation</a></h3>
+
+<p>
+If the guest configuration does not list any ID mapping, then the
+user and group IDs used inside the container will match those used
+outside the container. In addition, the capabilities associated with
+a process in the container will infer the same privileges they would
+for a process in the host. This has obvious implications for security,
+since a root user inside the container will be able to access any
+file owned by root that is visible to the container, and perform more
+or less any privileged kernel operation. In the absence of additional
+protection from sVirt, this means that the root user inside a container
+is effectively as powerful as the root user in the host. There is no
+security isolation of the root user.
+</p>
+
+<p>
+The ID mapping facility was introduced to allow for stricter control
+over the privileges of users inside the container. It allows apps to
+define rules such as "user ID 0 in the container maps to user ID 1000
+in the host". In addition the privileges associated with capabilities
+are somewhat reduced so that they cannot be used to escape from the
+container environment. A full description of user namespaces is outside
+the scope of this document, however LWN has
+<a href="https://lwn.net/Articles/532593/">a good write-up on the topic</a>.
+From the libvirt point of view, the key thing to remember is that defining
+an ID mapping for users and groups in the container XML configuration
+causes libvirt to activate the user namespace feature.
+</p>
+
+
 <h2><a name="activation">Systemd Socket Activation Integration</a></h2>
 
 <p>
