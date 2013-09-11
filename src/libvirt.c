@@ -1581,7 +1581,11 @@ virConnectSupportsFeature(virConnectPtr conn, int feature)
  * virConnectGetType:
  * @conn: pointer to the hypervisor connection
  *
- * Get the name of the Hypervisor software used.
+ * Get the name of the Hypervisor driver used. This is merely the driver
+ * name; for example, both KVM and QEMU guests are serviced by the
+ * driver for the qemu:// URI, so a return of "QEMU" does not indicate
+ * whether KVM acceleration is present.  For more details about the
+ * hypervisor, use virConnectGetCapabilities().
  *
  * Returns NULL in case of error, a static zero terminated string otherwise.
  *
