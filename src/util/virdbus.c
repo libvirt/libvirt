@@ -1207,6 +1207,61 @@ int virDBusMessageRead(DBusMessage *msg,
     return ret;
 }
 
+/**
+ * virDBusIsServiceEnabled:
+ * @name: service name
+ *
+ * Retruns 0 if service is available, -1 on fatal error, or -2 if service is not available
+ */
+int virDBusIsServiceEnabled(const char *name)
+{
+    DBusConnection *conn;
+    DBusMessage *reply = NULL;
+    DBusMessageIter iter, sub;
+    int ret = -1;
+
+    if (!virDBusHasSystemBus())
+        return -2;
+
+    conn = virDBusGetSystemBus();
+
+    if (virDBusCallMethod(conn,
+                          &reply,
+                          "org.freedesktop.DBus",
+                          "/org/freedesktop/DBus",
+                          "org.freedesktop.DBus",
+                          "ListActivatableNames",
+                          DBUS_TYPE_INVALID) < 0)
+        return ret;
+
+    if (!dbus_message_iter_init(reply, &iter) ||
+        dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Reply message incorrect"));
+        goto cleanup;
+    }
+
+    ret = -2;
+    dbus_message_iter_recurse(&iter, &sub);
+    while (dbus_message_iter_get_arg_type(&sub) == DBUS_TYPE_STRING) {
+        const char *service = NULL;
+
+        dbus_message_iter_get_basic(&sub, &service);
+        dbus_message_iter_next(&sub);
+
+        if (STREQ(service, name)) {
+            ret = 0;
+            break;
+        }
+    }
+
+    VIR_DEBUG("Service %s is %s", name, ret ? "unavailable" : "available");
+
+ cleanup:
+    dbus_message_unref(reply);
+    return ret;
+}
+
 
 #else /* ! WITH_DBUS */
 DBusConnection *virDBusGetSystemBus(void)
@@ -1269,6 +1324,12 @@ int virDBusMessageDecode(DBusMessage* msg ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("DBus support not compiled into this binary"));
     return -1;
+}
+
+int virDBusIsServiceEnabled(const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("DBus support not compiled into this binary");
+    return -2;
 }
 
 #endif /* ! WITH_DBUS */

@@ -138,18 +138,20 @@ int virSystemdCreateMachine(const char *name,
                             bool iscontainer,
                             const char *partition)
 {
-    int ret = -1;
+    int ret;
     DBusConnection *conn;
     char *machinename = NULL;
     char *creatorname = NULL;
     char *username = NULL;
     char *slicename = NULL;
 
-    if (!virDBusHasSystemBus())
-        return -2;
+    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
+    if (ret < 0)
+        return ret;
 
     conn = virDBusGetSystemBus();
 
+    ret = -1;
     if (privileged) {
         if (virAsprintf(&machinename, "%s-%s", drivername, name) < 0)
             goto cleanup;
@@ -228,15 +230,8 @@ int virSystemdCreateMachine(const char *name,
                           (unsigned int)pidleader,
                           rootdir ? rootdir : "",
                           1, "Slice", "s",
-                          slicename) < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err->code == VIR_ERR_DBUS_SERVICE &&
-            STREQ(err->str2, "org.freedesktop.DBus.Error.ServiceUnknown")) {
-            virResetLastError();
-            ret = -2;
-        }
+                          slicename) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
