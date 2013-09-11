@@ -83,6 +83,9 @@ if [ -z "$TYPE" ]; then
      *secret*)
         TYPE="secret"
         ;;
+     *interface*)
+        TYPE="interface"
+        ;;
      *)
        echo "$0: cannot determine schema type for $XMLFILE" >&2
        exit 3
@@ -124,6 +127,10 @@ Valid schema names currently include
 
 =over 4
 
+=item C<domainsnapshot>
+
+The schema for the XML format used by domain snapshot configuration
+
 =item C<domain>
 
 The schema for the XML format used by guest domains configuration
@@ -147,6 +154,18 @@ The schema for the XML format used by node device descriptions
 =item C<capability>
 
 The schema for the XML format used to declare driver capabilities
+
+=item C<nwfilter>
+
+The schema for the XML format used by network traffic filters
+
+=item C<secret>
+
+The schema for the XML format used by secrets descriptions
+
+=item C<interface>
+
+The schema for the XML format used by physical host interfaces
 
 =back
 
