@@ -94,9 +94,11 @@ static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
                                       123,
                                       false,
                                       NULL)) == 0) {
+        unsetenv("FAIL_NO_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
+    unsetenv("FAIL_NO_SERVICE");
 
     if (rv != -2) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
@@ -126,9 +128,11 @@ static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
                                       123,
                                       false,
                                       NULL)) == 0) {
+        unsetenv("FAIL_BAD_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
+    unsetenv("FAIL_BAD_SERVICE");
 
     if (rv != -1) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
