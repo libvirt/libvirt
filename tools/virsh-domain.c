@@ -5003,6 +5003,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     case VIR_DOMAIN_JOB_NONE:
     default:
         vshPrint(ctl, "%-12s\n", _("None"));
+        ret = true;
         goto cleanup;
     }
 
