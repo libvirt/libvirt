@@ -109,6 +109,16 @@ const char *mountsAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup",
     [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
+const char *mountsLogind[VIR_CGROUP_CONTROLLER_LAST] = {
+    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
+    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
+    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
+    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
+    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
+    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+    [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/not/really/sys/fs/cgroup/systemd",
+};
 
 const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu",
@@ -122,6 +132,17 @@ const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
 };
 
 const char *linksAllInOne[VIR_CGROUP_CONTROLLER_LAST] = {
+    [VIR_CGROUP_CONTROLLER_CPU] = NULL,
+    [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
+    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
+    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
+    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
+    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+    [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
+};
+
+const char *linksLogind[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_CPU] = NULL,
     [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
     [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
@@ -466,6 +487,48 @@ cleanup:
 }
 
 
+static int testCgroupNewForSelfLogind(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPU] = NULL,
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = NULL,
+        [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
+        [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
+        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+        [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
+        [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+        [VIR_CGROUP_CONTROLLER_SYSTEMD] = "/",
+    };
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
+        goto cleanup;
+    }
+
+    ret = validateCgroup(cgroup, "", mountsLogind, linksLogind, placement);
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
+static int testCgroupAvailable(const void *args)
+{
+    bool got = virCgroupAvailable();
+    bool want = args == (void*)0x1;
+
+    if (got != want) {
+        fprintf(stderr, "Expected cgroup %savailable, but state was wrong\n",
+                want ? "" : "not ");
+        return -1;
+    }
+
+    return 0;
+}
+
 
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
@@ -505,8 +568,20 @@ mymain(void)
     if (virtTestRun("New cgroup for domain partition escaped", 1, testCgroupNewForPartitionDomainEscaped, NULL) < 0)
         ret = -1;
 
+    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+
     setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
     if (virtTestRun("New cgroup for self (allinone)", 1, testCgroupNewForSelfAllInOne, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+    unsetenv("VIR_CGROUP_MOCK_MODE");
+
+    setenv("VIR_CGROUP_MOCK_MODE", "logind", 1);
+    if (virtTestRun("New cgroup for self (logind)", 1, testCgroupNewForSelfLogind, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x0) < 0)
         ret = -1;
     unsetenv("VIR_CGROUP_MOCK_MODE");
 

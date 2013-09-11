@@ -91,7 +91,10 @@ virCgroupAvailable(void)
         return false;
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        if (STREQ(entry.mnt_type, "cgroup")) {
+        /* We're looking for at least one 'cgroup' fs mount,
+         * which is *not* a named mount. */
+        if (STREQ(entry.mnt_type, "cgroup") &&
+            !strstr(entry.mnt_opts, "name=")) {
             ret = true;
             break;
         }
