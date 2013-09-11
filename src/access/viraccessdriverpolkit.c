@@ -248,7 +248,7 @@ virAccessDriverPolkitCheckNodeDevice(virAccessManagerPtr manager,
     };
 
     return virAccessDriverPolkitCheck(manager,
-                                      "nodedevice",
+                                      "node-device",
                                       virAccessPermNodeDeviceTypeToString(perm),
                                       attrs);
 }
@@ -355,7 +355,7 @@ virAccessDriverPolkitCheckStoragePool(virAccessManagerPtr manager,
     virUUIDFormat(pool->uuid, uuidstr);
 
     return virAccessDriverPolkitCheck(manager,
-                                      "pool",
+                                      "storage-pool",
                                       virAccessPermStoragePoolTypeToString(perm),
                                       attrs);
 }
@@ -379,7 +379,7 @@ virAccessDriverPolkitCheckStorageVol(virAccessManagerPtr manager,
     virUUIDFormat(pool->uuid, uuidstr);
 
     return virAccessDriverPolkitCheck(manager,
-                                      "vol",
+                                      "storage-vol",
                                       virAccessPermStorageVolTypeToString(perm),
                                       attrs);
 }

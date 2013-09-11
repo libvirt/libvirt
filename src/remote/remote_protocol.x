@@ -3696,19 +3696,19 @@ enum remote_procedure {
 
     /**
      * @generate: server
-     * @acl: node_device:dettach
+     * @acl: node_device:detach
      */
     REMOTE_PROC_NODE_DEVICE_DETTACH = 118,
 
     /**
      * @generate: server
-     * @acl: node_device:dettach
+     * @acl: node_device:detach
      */
     REMOTE_PROC_NODE_DEVICE_RE_ATTACH = 119,
 
     /**
      * @generate: server
-     * @acl: node_device:dettach
+     * @acl: node_device:detach
      */
     REMOTE_PROC_NODE_DEVICE_RESET = 120,
 
@@ -4929,7 +4929,7 @@ enum remote_procedure {
 
     /**
      * @generate: server
-     * @acl: node_device:dettach
+     * @acl: node_device:detach
      */
     REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301,
 

@@ -427,7 +427,7 @@ typedef enum {
      * @desc: Detach node device
      * @message: Detaching node device driver requires authorization
      */
-    VIR_ACCESS_PERM_NODE_DEVICE_DETTACH,
+    VIR_ACCESS_PERM_NODE_DEVICE_DETACH,
 
     VIR_ACCESS_PERM_NODE_DEVICE_LAST
 } virAccessPermNodeDevice;
