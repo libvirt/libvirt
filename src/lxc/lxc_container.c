@@ -1472,6 +1472,60 @@ cleanup:
 }
 
 
+static int lxcContainerUnmountForSharedRoot(const char *stateDir,
+                                            const char *domain)
+{
+    int ret = -1;
+    char *tmp = NULL;
+
+#if WITH_SELINUX
+    /* Some versions of Linux kernel don't let you overmount
+     * the selinux filesystem, so make sure we kill it first
+     */
+    /* Filed coverity bug for false positive 'USE_AFTER_FREE' due to swap
+     * of root->src with root->dst and the VIR_FREE(root->src) prior to the
+     * reset of root->src in lxcContainerPrepareRoot()
+     */
+    /* coverity[deref_arg] */
+    if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
+        goto cleanup;
+#endif
+
+    /* These filesystems are created by libvirt temporarily, they
+     * shouldn't appear in container. */
+    if (virAsprintf(&tmp, "%s/%s.dev", stateDir, domain) < 0 ||
+        lxcContainerUnmountSubtree(tmp, false) < 0)
+        goto cleanup;
+
+    VIR_FREE(tmp);
+    if (virAsprintf(&tmp, "%s/%s.devpts", stateDir, domain) < 0 ||
+        lxcContainerUnmountSubtree(tmp, false) < 0)
+        goto cleanup;
+
+#if WITH_FUSE
+    VIR_FREE(tmp);
+    if (virAsprintf(&tmp, "%s/%s.fuse", stateDir, domain) < 0 ||
+        lxcContainerUnmountSubtree(tmp, false) < 0)
+        goto cleanup;
+#endif
+
+    /* If we have the root source being '/', then we need to
+     * get rid of any existing stuff under /proc, /sys & /tmp.
+     * We need new namespace aware versions of those. We must
+     * do /proc last otherwise we won't find /proc/mounts :-) */
+    if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
+        lxcContainerUnmountSubtree("/dev", false) < 0 ||
+        lxcContainerUnmountSubtree("/proc", false) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 /* Got a FS mapped to /, we're going the pivot_root
  * approach to do a better-chroot-than-chroot
  * this is based on this thread http://lkml.org/lkml/2008/3/5/29
@@ -1486,7 +1540,6 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     int ret = -1;
     char *sec_mount_options;
     char *stateDir = NULL;
-    char *tmp = NULL;
 
     VIR_DEBUG("Setup pivot root");
 
@@ -1509,48 +1562,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
-#if WITH_SELINUX
-    /* Some versions of Linux kernel don't let you overmount
-     * the selinux filesystem, so make sure we kill it first
-     */
-    /* Filed coverity bug for false positive 'USE_AFTER_FREE' due to swap
-     * of root->src with root->dst and the VIR_FREE(root->src) prior to the
-     * reset of root->src in lxcContainerPrepareRoot()
-     */
-    /* coverity[deref_arg] */
     if (STREQ(root->src, "/") &&
-        lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
-        goto cleanup;
-#endif
-
-    /* These filesystems are created by libvirt temporarily, they
-     * shouldn't appear in container. */
-    if (STREQ(root->src, "/")) {
-        if (virAsprintf(&tmp, "%s/%s.dev", stateDir, vmDef->name) < 0 ||
-            lxcContainerUnmountSubtree(tmp, false) < 0)
-            goto cleanup;
-
-        VIR_FREE(tmp);
-        if (virAsprintf(&tmp, "%s/%s.devpts", stateDir, vmDef->name) < 0 ||
-            lxcContainerUnmountSubtree(tmp, false) < 0)
-            goto cleanup;
-
-#if WITH_FUSE
-        VIR_FREE(tmp);
-        if (virAsprintf(&tmp, "%s/%s.fuse", stateDir, vmDef->name) < 0 ||
-            lxcContainerUnmountSubtree(tmp, false) < 0)
-            goto cleanup;
-#endif
-    }
-
-    /* If we have the root source being '/', then we need to
-     * get rid of any existing stuff under /proc, /sys & /tmp.
-     * We need new namespace aware versions of those. We must
-     * do /proc last otherwise we won't find /proc/mounts :-) */
-    if (STREQ(root->src, "/") &&
-        (lxcContainerUnmountSubtree("/sys", false) < 0 ||
-         lxcContainerUnmountSubtree("/dev", false) < 0 ||
-         lxcContainerUnmountSubtree("/proc", false) < 0))
+        lxcContainerUnmountForSharedRoot(stateDir, vmDef->name) < 0)
         goto cleanup;
 
     /* Mounts the core /proc, /sys, etc filesystems */
@@ -1592,7 +1605,6 @@ cleanup:
     VIR_FREE(stateDir);
     virCgroupFree(&cgroup);
     VIR_FREE(sec_mount_options);
-    VIR_FREE(tmp);
     return ret;
 }
 
