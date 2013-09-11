@@ -910,6 +910,7 @@ mymain(void)
     DO_TEST("blkiotune-device", QEMU_CAPS_NAME);
     DO_TEST("cputune", QEMU_CAPS_NAME);
     DO_TEST("numatune-memory", NONE);
+    DO_TEST("numatune-auto-nodeset-invalid", NONE);
     DO_TEST("numad", NONE);
     DO_TEST("numad-auto-vcpu-static-numatune", NONE);
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
