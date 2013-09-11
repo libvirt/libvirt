@@ -1486,6 +1486,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     int ret = -1;
     char *sec_mount_options;
     char *stateDir = NULL;
+    char *tmp = NULL;
 
     VIR_DEBUG("Setup pivot root");
 
@@ -1521,6 +1522,26 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
         goto cleanup;
 #endif
+
+    /* These filesystems are created by libvirt temporarily, they
+     * shouldn't appear in container. */
+    if (STREQ(root->src, "/")) {
+        if (virAsprintf(&tmp, "%s/%s.dev", stateDir, vmDef->name) < 0 ||
+            lxcContainerUnmountSubtree(tmp, false) < 0)
+            goto cleanup;
+
+        VIR_FREE(tmp);
+        if (virAsprintf(&tmp, "%s/%s.devpts", stateDir, vmDef->name) < 0 ||
+            lxcContainerUnmountSubtree(tmp, false) < 0)
+            goto cleanup;
+
+#if WITH_FUSE
+        VIR_FREE(tmp);
+        if (virAsprintf(&tmp, "%s/%s.fuse", stateDir, vmDef->name) < 0 ||
+            lxcContainerUnmountSubtree(tmp, false) < 0)
+            goto cleanup;
+#endif
+    }
 
     /* If we have the root source being '/', then we need to
      * get rid of any existing stuff under /proc, /sys & /tmp.
@@ -1571,6 +1592,7 @@ cleanup:
     VIR_FREE(stateDir);
     virCgroupFree(&cgroup);
     VIR_FREE(sec_mount_options);
+    VIR_FREE(tmp);
     return ret;
 }
 
