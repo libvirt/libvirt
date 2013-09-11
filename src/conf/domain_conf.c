@@ -11267,8 +11267,10 @@ virDomainDefParseXML(xmlDocPtr xml,
                     }
 
                     /* Ignore 'nodeset' if 'placement' is 'auto' finally */
-                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
+                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO) {
                         virBitmapFree(def->numatune.memory.nodemask);
+                        def->numatune.memory.nodemask = NULL;
+                    }
 
                     /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
                      * is not specified and 'placement' of <numatune> is specified.
