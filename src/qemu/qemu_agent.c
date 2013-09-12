@@ -224,7 +224,7 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
             break;
 
         if ((errno == ENOENT || errno == ECONNREFUSED) &&
-            virKillProcess(cpid, 0) == 0) {
+            virProcessKill(cpid, 0) == 0) {
             /* ENOENT       : Socket may not have shown up yet
              * ECONNREFUSED : Leftover socket hasn't been removed yet */
             continue;

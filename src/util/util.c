@@ -2133,7 +2133,7 @@ check_and_return:
 }
 
 /* send signal to a single process */
-int virKillProcess(pid_t pid, int sig)
+int virProcessKill(pid_t pid, int sig)
 {
     if (pid <= 1) {
         errno = ESRCH;

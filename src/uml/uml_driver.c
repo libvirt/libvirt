@@ -1101,7 +1101,7 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
     if (!virDomainObjIsActive(vm))
         return;
 
-    virKillProcess(vm->pid, SIGTERM);
+    virProcessKill(vm->pid, SIGTERM);
 
     VIR_FORCE_CLOSE(priv->monitor);
 
