@@ -528,10 +528,16 @@ check-aclrules:
 		$(REMOTE_PROTOCOL) \
 		$(addprefix $(srcdir)/,$(filter-out /%,$(STATEFUL_DRIVER_SOURCE_FILES)))
 
+check-aclperms:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclperms.pl \
+		$(srcdir)/access/viraccessperm.h \
+		$(srcdir)/access/viraccessperm.c
+
 EXTRA_DIST += check-driverimpls.pl check-aclrules.pl
 
 check-local: check-protocol check-symfile check-symsorting \
-	check-drivername check-driverimpls check-aclrules
+	check-drivername check-driverimpls check-aclrules \
+	check-aclperms
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
