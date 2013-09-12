@@ -61,6 +61,7 @@
 #include "locking/domain_lock.h"
 #include "network/bridge_driver.h"
 #include "uuid.h"
+#include "virprocess.h"
 #include "virtime.h"
 #include "virnetdevtap.h"
 

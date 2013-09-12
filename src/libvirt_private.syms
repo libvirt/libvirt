@@ -1453,6 +1453,9 @@ virPidFileDelete;
 virPidFileDeletePath;
 
 
+# virprocess.h
+virProcessKill;
+
 # virrandom.h
 virRandomBits;
 virRandomGenerateWWN;

@@ -39,6 +39,7 @@
 #include "virterror_internal.h"
 #include "json.h"
 #include "virfile.h"
+#include "virprocess.h"
 #include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

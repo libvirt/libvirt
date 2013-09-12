@@ -63,6 +63,7 @@
 #include "configmake.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
+#include "virprocess.h"
 #include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
