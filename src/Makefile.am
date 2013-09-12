@@ -106,6 +106,7 @@ UTIL_SOURCES =							\
 		util/virnetlink.c util/virnetlink.h		\
 		util/virrandom.h util/virrandom.c		\
 		util/virsocketaddr.h util/virsocketaddr.c \
+		util/virstring.h util/virstring.c \
 		util/virtime.h util/virtime.c \
 		util/viruri.h util/viruri.c
 

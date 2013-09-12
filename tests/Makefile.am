@@ -100,7 +100,9 @@ test_programs = virshtest sockettest \
 	virhashtest virnetmessagetest virnetsockettest \
 	utiltest virnettlscontexttest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
-	virauthconfigtest
+	virauthconfigtest \
+	virstringtest \
+	$(NULL)
 
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
@@ -484,6 +486,11 @@ virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
 virtimetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virtimetest_LDADD = ../src/libvirt-net-rpc.la $(LDADDS)
+
+virstringtest_SOURCES = \
+	virstringtest.c testutils.h testutils.c
+virstringtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virstringtest_LDADD = $(LDADDS)
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
