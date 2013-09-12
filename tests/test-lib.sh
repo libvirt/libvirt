@@ -41,6 +41,24 @@ test_intro()
   fi
 }
 
+test_skip_case()
+{
+  counter=$1
+  name=$2
+  reason=$3
+  if test "$verbose" = "0" ; then
+    mod=`expr \( $counter + 40 - 1 \) % 40`
+    if test "$counter" != 1 && test "$mod" = 0 ; then
+        printf " %-3d\n" `expr $counter - 1`
+        printf "      "
+    fi
+    printf "_"
+  else
+    printf "%3d) %-60s ... SKIP\n" "$counter" "$name"
+    printf "     case skipped: %s\n" "$reason"
+  fi
+}
+
 test_result()
 {
   counter=$1
