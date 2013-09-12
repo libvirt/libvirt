@@ -868,7 +868,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
 
 #if WITH_SELINUX
         if (STREQ(mnt->src, SELINUX_MOUNT) &&
-            !is_selinux_enabled())
+            (!is_selinux_enabled() || userns_enabled))
             continue;
 #endif
 
@@ -885,12 +885,6 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
                   srcpath, mnt->dst, mnt->type, mnt->mflags, mnt->opts);
         if (mount(srcpath, mnt->dst, mnt->type, mnt->mflags, mnt->opts) < 0) {
-#if WITH_SELINUX
-            if (STREQ(mnt->src, SELINUX_MOUNT) &&
-                (errno == EINVAL || errno == EPERM))
-                continue;
-#endif
-
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x opts=%s"),
                                  srcpath, mnt->dst, NULLSTR(mnt->type),
