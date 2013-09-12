@@ -1701,9 +1701,10 @@ error:
  * virConnectGetHostname:
  * @conn: pointer to a hypervisor connection
  *
- * This returns the system hostname on which the hypervisor is
- * running (the result of the gethostname system call).  If
- * we are connected to a remote system, then this returns the
+ * This returns a system hostname on which the hypervisor is
+ * running (based on the result of the gethostname system call, but
+ * possibly expanded to a fully-qualified domain name via getaddrinfo).
+ * If we are connected to a remote system, then this returns the
  * hostname of the remote system.
  *
  * Returns the hostname which must be freed by the caller, or
