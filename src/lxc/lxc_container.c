@@ -64,6 +64,7 @@
 #include "virfile.h"
 #include "command.h"
 #include "virnetdev.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

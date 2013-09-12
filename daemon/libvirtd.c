@@ -36,6 +36,7 @@
 #include "virterror_internal.h"
 #include "virfile.h"
 #include "virpidfile.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

@@ -35,6 +35,7 @@
 #include "logging.h"
 #include "command.h"
 #include "virrandom.h"
+#include "virprocess.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>

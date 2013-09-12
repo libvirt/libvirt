@@ -46,6 +46,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virdbus.h"
+#include "virprocess.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
 

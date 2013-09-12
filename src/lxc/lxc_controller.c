@@ -71,6 +71,7 @@
 #include "command.h"
 #include "processinfo.h"
 #include "nodeinfo.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
