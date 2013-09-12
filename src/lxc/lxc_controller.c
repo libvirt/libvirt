@@ -1626,7 +1626,7 @@ cleanup:
         VIR_FORCE_CLOSE(loopDevs[i]);
     VIR_FREE(loopDevs);
 
-    virPidAbort(container);
+    virProcessAbort(container);
 
     return rc;
 }

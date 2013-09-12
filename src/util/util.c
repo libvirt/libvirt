@@ -718,10 +718,10 @@ virFileAccessibleAs(const char *path, int mode,
     }
 
     if (pid) { /* parent */
-        if (virPidWait(pid, &status) < 0) {
-            /* virPidWait() already
+        if (virProcessWait(pid, &status) < 0) {
+            /* virProcessWait() already
              * reported error */
-                return -1;
+            return -1;
         }
 
         if (!WIFEXITED(status)) {

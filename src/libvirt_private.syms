@@ -144,8 +144,8 @@ virCommandTranslateStatus;
 virCommandWait;
 virCommandWriteArgLog;
 virFork;
-virPidAbort;
-virPidWait;
+virProcessAbort;
+virProcessWait;
 virRun;
 
 

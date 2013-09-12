@@ -1652,7 +1652,7 @@ virCommandToString(virCommandPtr cmd)
  * @status: child exit status to translate
  *
  * Translate an exit status into a malloc'd string.  Generic helper
- * for virCommandRun(), virCommandWait(), virRun(), and virPidWait()
+ * for virCommandRun(), virCommandWait(), virRun(), and virProcessWait()
  * status argument, as well as raw waitpid().
  */
 char *
@@ -2114,7 +2114,7 @@ virCommandHook(void *data)
  * for pid.  While cmd is still in scope, you may reap the child via
  * virCommandWait or virCommandAbort.  But after virCommandFree, if
  * you have not yet reaped the child, then it continues to run until
- * you call virPidWait or virPidAbort.
+ * you call virProcessWait or virProcessAbort.
  */
 int
 virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
@@ -2207,7 +2207,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 
 
 /**
- * virPidWait:
+ * virProcessWait:
  * @pid: child to wait on
  * @exitstatus: optional status collection
  *
@@ -2218,7 +2218,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
  * child must exit with status 0 for this to succeed.
  */
 int
-virPidWait(pid_t pid, int *exitstatus)
+virProcessWait(pid_t pid, int *exitstatus)
 {
     int ret;
     int status;
@@ -2288,13 +2288,13 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         return -1;
     }
 
-    /* If virPidWait reaps pid but then returns failure because
+    /* If virProcessWait reaps pid but then returns failure because
      * exitstatus was NULL, then a second virCommandWait would risk
      * calling waitpid on an unrelated process.  Besides, that error
      * message is not as detailed as what we can provide.  So, we
-     * guarantee that virPidWait only fails due to failure to wait,
+     * guarantee that virProcessWait only fails due to failure to wait,
      * and repeat the exitstatus check code ourselves.  */
-    ret = virPidWait(cmd->pid, exitstatus ? exitstatus : &status);
+    ret = virProcessWait(cmd->pid, exitstatus ? exitstatus : &status);
     if (ret == 0) {
         cmd->pid = -1;
         cmd->reap = false;
@@ -2316,7 +2316,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 
 #ifndef WIN32
 /**
- * virPidAbort:
+ * virProcessAbort:
  * @pid: child process to kill
  *
  * Abort a child process if PID is positive and that child is still
@@ -2326,7 +2326,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
  * this does nothing.
  */
 void
-virPidAbort(pid_t pid)
+virProcessAbort(pid_t pid)
 {
     int saved_errno;
     int ret;
@@ -2390,13 +2390,13 @@ virCommandAbort(virCommandPtr cmd)
 {
     if (!cmd || cmd->pid == -1)
         return;
-    virPidAbort(cmd->pid);
+    virProcessAbort(cmd->pid);
     cmd->pid = -1;
     cmd->reap = false;
 }
 #else /* WIN32 */
 void
-virPidAbort(pid_t pid)
+virProcessAbort(pid_t pid)
 {
     /* Not yet ported to mingw.  Any volunteers?  */
     VIR_DEBUG("failed to reap child %lld, abandoning it", (long long)pid);
@@ -2553,7 +2553,7 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
  *
  * Release all resources.  The only exception is that if you called
  * virCommandRunAsync with a non-null pid, then the asynchronous child
- * is not reaped, and you must call virPidWait() or virPidAbort() yourself.
+ * is not reaped, and you must call virProcessWait() or virProcessAbort() yourself.
  */
 void
 virCommandFree(virCommandPtr cmd)

@@ -752,7 +752,7 @@ void virNetSocketFree(virNetSocketPtr sock)
     VIR_FORCE_CLOSE(sock->fd);
     VIR_FORCE_CLOSE(sock->errfd);
 
-    virPidAbort(sock->pid);
+    virProcessAbort(sock->pid);
 
     VIR_FREE(sock->localAddrStr);
     VIR_FREE(sock->remoteAddrStr);

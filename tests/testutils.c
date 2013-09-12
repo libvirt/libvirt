@@ -314,7 +314,7 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
         VIR_FORCE_CLOSE(pipefd[1]);
         len = virFileReadLimFD(pipefd[0], maxlen, buf);
         VIR_FORCE_CLOSE(pipefd[0]);
-        if (virPidWait(pid, NULL) < 0)
+        if (virProcessWait(pid, NULL) < 0)
             return -1;
 
         return len;
@@ -684,7 +684,7 @@ int virtTestMain(int argc,
             } else {
                 int i, status;
                 for (i = 0 ; i < mp ; i++) {
-                    if (virPidWait(workers[i], NULL) < 0)
+                    if (virProcessWait(workers[i], NULL) < 0)
                         ret = EXIT_FAILURE;
                 }
                 VIR_FREE(workers);
