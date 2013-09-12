@@ -56,7 +56,11 @@ bad_uri="test:///default?bad_uri"
 good_uri="test:///default?good_uri"
 
 printf "uri_default=\"%s\"\n" "$good_uri" >"$XDG_CONFIG_HOME/libvirt/libvirt.conf"
-test_uri "User config file"
+if uid_is_privileged_; then
+    test_skip_case "$counter" "User config file" "must not be run as root"
+else
+    test_uri "User config file"
+fi
 
 printf "uri_default=\"%s\"\n" "$bad_uri" >"$XDG_CONFIG_HOME/libvirt/libvirt.conf"
 export LIBVIRT_DEFAULT_URI="$good_uri"
