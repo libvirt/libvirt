@@ -1648,7 +1648,7 @@ virCommandToString(virCommandPtr cmd)
 
 
 /**
- * virCommandTranslateStatus:
+ * virProcessTranslateStatus:
  * @status: child exit status to translate
  *
  * Translate an exit status into a malloc'd string.  Generic helper
@@ -1656,7 +1656,7 @@ virCommandToString(virCommandPtr cmd)
  * status argument, as well as raw waitpid().
  */
 char *
-virCommandTranslateStatus(int status)
+virProcessTranslateStatus(int status)
 {
     char *buf;
     if (WIFEXITED(status)) {
@@ -1986,7 +1986,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     if (virCommandWait(cmd, exitstatus) < 0)
         ret = -1;
 
-    str = (exitstatus ? virCommandTranslateStatus(*exitstatus)
+    str = (exitstatus ? virProcessTranslateStatus(*exitstatus)
            : (char *) "status 0");
     VIR_DEBUG("Result %s, stdout: '%s' stderr: '%s'",
               NULLSTR(str),
@@ -2241,7 +2241,7 @@ virProcessWait(pid_t pid, int *exitstatus)
 
     if (exitstatus == NULL) {
         if (status != 0) {
-            char *st = virCommandTranslateStatus(status);
+            char *st = virProcessTranslateStatus(status);
             virCommandError(VIR_ERR_INTERNAL_ERROR,
                             _("Child process (%lld) status unexpected: %s"),
                             (long long) pid, NULLSTR(st));
@@ -2300,10 +2300,14 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         cmd->reap = false;
         if (status) {
             char *str = virCommandToString(cmd);
-            char *st = virCommandTranslateStatus(status);
+            char *st = virProcessTranslateStatus(status);
+            bool haveErrMsg = cmd->errbuf && *cmd->errbuf && (*cmd->errbuf)[0];
+
             virCommandError(VIR_ERR_INTERNAL_ERROR,
-                            _("Child process (%s) status unexpected: %s"),
-                            str ? str : cmd->args[0], NULLSTR(st));
+                           _("Child process (%s) unexpected %s%s%s"),
+                           str ? str : cmd->args[0], NULLSTR(st),
+                           haveErrMsg ? ": " : "",
+                           haveErrMsg ? *cmd->errbuf : "");
             VIR_FREE(str);
             VIR_FREE(st);
             return -1;
@@ -2344,7 +2348,7 @@ virProcessAbort(pid_t pid)
     while ((ret = waitpid(pid, &status, WNOHANG)) == -1 &&
            errno == EINTR);
     if (ret == pid) {
-        tmp = virCommandTranslateStatus(status);
+        tmp = virProcessTranslateStatus(status);
         VIR_DEBUG("process has ended: %s", tmp);
         goto cleanup;
     } else if (ret == 0) {
@@ -2354,7 +2358,7 @@ virProcessAbort(pid_t pid)
         while ((ret = waitpid(pid, &status, WNOHANG)) == -1 &&
                errno == EINTR);
         if (ret == pid) {
-            tmp = virCommandTranslateStatus(status);
+            tmp = virProcessTranslateStatus(status);
             VIR_DEBUG("process has ended: %s", tmp);
             goto cleanup;
         } else if (ret == 0) {
@@ -2363,7 +2367,7 @@ virProcessAbort(pid_t pid)
             while ((ret = waitpid(pid, &status, 0)) == -1 &&
                    errno == EINTR);
             if (ret == pid) {
-                tmp = virCommandTranslateStatus(status);
+                tmp = virProcessTranslateStatus(status);
                 VIR_DEBUG("process has ended: %s", tmp);
                 goto cleanup;
             }
