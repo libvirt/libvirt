@@ -235,7 +235,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 %.php: %.php.tmp %.php.code.in
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Scripting $@"; \
-	    sed -e '/<a id="php_placeholder"><\/a>/r '"$(srcdir)/$@.code.in" \
+	    sed -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
 	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
 	    || { rm $(srcdir)/$@ && exit 1; }; fi
 
