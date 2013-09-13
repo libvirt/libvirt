@@ -1477,6 +1477,12 @@ virFileIsDir(const char *path)
     return (stat(path, &s) == 0) && S_ISDIR(s.st_mode);
 }
 
+/**
+ * virFileExists: Check for presence of file
+ * @path: Path of file to check
+ *
+ * Returns if the file exists. Preserves errno in case it does not exist.
+ */
 bool
 virFileExists(const char *path)
 {
