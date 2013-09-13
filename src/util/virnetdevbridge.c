@@ -39,22 +39,26 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/param.h>     /* HZ                 */
+# if NETINET_LINUX_WORKAROUND
 /* Depending on the version of kernel vs. glibc, there may be a collision
  * between <net/in.h> and kernel IPv6 structures.  The different types
  * are ABI compatible, but choke the C type system; work around it by
  * using temporary redefinitions.  */
-# define in6_addr in6_addr_
-# define sockaddr_in6 sockaddr_in6_
-# define ipv6_mreq ipv6_mreq_
-# define in6addr_any in6addr_any_
-# define in6addr_loopback in6addr_loopback_
+#  define in6_addr in6_addr_
+#  define sockaddr_in6 sockaddr_in6_
+#  define ipv6_mreq ipv6_mreq_
+#  define in6addr_any in6addr_any_
+#  define in6addr_loopback in6addr_loopback_
+# endif
 # include <linux/in6.h>
 # include <linux/if_bridge.h> /* SYSFS_BRIDGE_ATTR  */
-# undef in6_addr
-# undef sockaddr_in6
-# undef ipv6_mreq
-# undef in6addr_any
-# undef in6addr_loopback
+# if NETINET_LINUX_WORKAROUND
+#  undef in6_addr
+#  undef sockaddr_in6
+#  undef ipv6_mreq
+#  undef in6addr_any
+#  undef in6addr_loopback
+# endif
 
 # define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
