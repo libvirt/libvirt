@@ -995,18 +995,37 @@ dnl check for kernel headers required by src/bridge.c
 dnl
 if test "$with_linux" = "yes"; then
   if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
+    # Various kernel versions have headers that are not self-standing, but
+    # yet are incompatible with the corresponding glibc headers.  In order
+    # to guarantee compilation across a wide range of versions (from RHEL 5
+    # to rawhide), we first have to probe whether glibc and kernel can be
+    # used in tandem; and if not, provide workarounds that ensure that
+    # ABI-compatible IPv6 types are present for use by the kernel headers.
+    # These probes mirror the usage in virnetdevbridge.c
+    AC_CACHE_CHECK(
+      [whether <linux/*.h> and <netinet/*.h> headers are compatible],
+      [lv_cv_netinet_linux_compatible],
+      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <netinet/in.h>
+        #include <linux/in6.h>
+      ]])],
+      [lv_cv_netinet_linux_compatible=yes],
+      [lv_cv_netinet_linux_compatible=no])])
+    if test "x$lv_cv_netinet_linux_compatible" != xyes; then
+      AC_DEFINE([NETINET_LINUX_WORKAROUND], [1],
+        [define to 1 if Linux kernel headers require a workaround to avoid
+        compilation errors when mixed with glibc netinet headers])
+    fi
     AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
       [AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support])],
-      [[/* The kernel folks broke their headers when used with particular
-         * glibc versions; although the structs are ABI compatible, the
-         * C type system doesn't like struct redefinitions.  We work around
-         * the problem here in the same manner as in virnetdevbridge.c.  */
-        #include <netinet/in.h>
-        #define in6_addr in6_addr_
-        #define sockaddr_in6 sockaddr_in6_
-        #define ipv6_mreq ipv6_mreq_
-        #define in6addr_any in6addr_any_
-        #define in6addr_loopback in6addr_loopback_
+      [[#include <netinet/in.h>
+        #if NETINET_LINUX_WORKAROUND
+        # define in6_addr in6_addr_
+        # define sockaddr_in6 sockaddr_in6_
+        # define ipv6_mreq ipv6_mreq_
+        # define in6addr_any in6addr_any_
+        # define in6addr_loopback in6addr_loopback_
+        #endif
         #include <linux/in6.h>
       ]])
   fi
