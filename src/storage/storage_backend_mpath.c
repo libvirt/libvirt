@@ -287,13 +287,7 @@ virStorageBackendMpathCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                 bool *isActive)
 {
-    const char *path = "/dev/mpath";
-
-    *isActive = false;
-
-    if (access(path, F_OK) == 0)
-        *isActive = true;
-
+    *isActive = virFileExists("/dev/mpath");
     return 0;
 }
 

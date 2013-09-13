@@ -905,7 +905,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
         sa_assert(group->controllers[i].mountPoint);
 
         VIR_DEBUG("Make controller %s", path);
-        if (access(path, F_OK) != 0) {
+        if (!virFileExists(path)) {
             if (!create ||
                 mkdir(path, 0755) < 0) {
                 /* With a kernel that doesn't support multi-level directory

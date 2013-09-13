@@ -940,7 +940,7 @@ openvzLocateConfDir(void)
     char *ret = NULL;
 
     while (conf_dir_list[i]) {
-        if (!access(conf_dir_list[i], F_OK)) {
+        if (virFileExists(conf_dir_list[i])) {
             ignore_value(VIR_STRDUP(ret, conf_dir_list[i]));
             goto cleanup;
         }

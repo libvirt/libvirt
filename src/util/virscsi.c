@@ -216,7 +216,7 @@ virSCSIDeviceNew(const char *adapter,
         virAsprintf(&dev->sg_path, "/dev/%s", sg) < 0)
         goto cleanup;
 
-    if (access(dev->sg_path, F_OK) != 0) {
+    if (!virFileExists(dev->sg_path)) {
         virReportSystemError(errno,
                              _("SCSI device '%s': could not access %s"),
                              dev->name, dev->sg_path);

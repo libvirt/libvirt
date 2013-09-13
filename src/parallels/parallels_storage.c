@@ -362,7 +362,7 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
                                               "DiskDescriptor", ".xml")))
             goto cleanup;
 
-        if (access(diskDescPath, F_OK))
+        if (!virFileExists(diskDescPath))
             continue;
 
         /* here we know, that ent->d_name is a disk image directory */

@@ -700,8 +700,7 @@ virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virAsprintf(&path, "/sys/class/scsi_host/host%d", host) < 0)
         goto cleanup;
 
-    if (access(path, F_OK) == 0)
-        *isActive = true;
+    *isActive = virFileExists(path);
 
     ret = 0;
 cleanup:

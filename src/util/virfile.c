@@ -735,7 +735,7 @@ virFileNBDDeviceIsBusy(const char *devname)
                     devname) < 0)
         return -1;
 
-    if (access(path, F_OK) < 0) {
+    if (!virFileExists(path)) {
         if (errno == ENOENT)
             ret = 0;
         else

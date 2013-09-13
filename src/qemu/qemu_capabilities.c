@@ -731,13 +731,13 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     if (!binary)
         return 0;
 
-    if (access("/dev/kvm", F_OK) == 0 &&
+    if (virFileExists("/dev/kvm") &&
         (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KVM) ||
          virQEMUCapsGet(qemubinCaps, QEMU_CAPS_ENABLE_KVM) ||
          kvmbin))
         haskvm = true;
 
-    if (access("/dev/kqemu", F_OK) == 0 &&
+    if (virFileExists("/dev/kqemu") &&
         virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KQEMU))
         haskqemu = true;
 

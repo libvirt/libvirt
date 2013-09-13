@@ -3632,7 +3632,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         VIR_DEBUG("Checking for KVM availability");
-        if (access("/dev/kvm", F_OK) != 0) {
+        if (!virFileExists("/dev/kvm")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Domain requires KVM, but it is not available. "
                              "Check that virtualization is enabled in the host BIOS, "

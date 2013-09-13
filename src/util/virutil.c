@@ -1711,7 +1711,7 @@ virIsCapableFCHost(const char *sysfs_prefix,
                     host) < 0)
         return false;
 
-    if (access(sysfs_path, F_OK) == 0)
+    if (virFileExists(sysfs_path))
         ret = true;
 
     VIR_FREE(sysfs_path);
@@ -1740,8 +1740,8 @@ virIsCapableVport(const char *sysfs_prefix,
                     "vport_create") < 0)
         goto cleanup;
 
-    if ((access(fc_host_path, F_OK) == 0) ||
-        (access(scsi_host_path, F_OK) == 0))
+    if (virFileExists(fc_host_path) ||
+        virFileExists(scsi_host_path))
         ret = true;
 
 cleanup:

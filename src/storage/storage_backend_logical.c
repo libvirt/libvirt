@@ -453,7 +453,7 @@ virStorageBackendLogicalCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   bool *isActive)
 {
-    *isActive = (access(pool->def->target.path, F_OK) == 0);
+    *isActive = virFileExists(pool->def->target.path);
     return 0;
 }
 
