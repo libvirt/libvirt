@@ -108,6 +108,7 @@ mymain(void)
     DO_TEST("nat-network-dns-srv-record-minimal");
     DO_TEST("nat-network-dns-hosts");
     DO_TEST("nat-network-dns-forward-plain");
+    DO_TEST("nat-network-dns-forwarders");
     DO_TEST("nat-network-forward-nat-address");
     DO_TEST("8021Qbh-net");
     DO_TEST("direct-net");

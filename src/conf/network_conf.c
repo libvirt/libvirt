@@ -175,6 +175,11 @@ virNetworkDNSSrvDefClear(virNetworkDNSSrvDefPtr def)
 static void
 virNetworkDNSDefClear(virNetworkDNSDefPtr def)
 {
+    if (def->forwarders) {
+        while (def->nfwds)
+            VIR_FREE(def->forwarders[--def->nfwds]);
+        VIR_FREE(def->forwarders);
+    }
     if (def->txts) {
         while (def->ntxts)
             virNetworkDNSTxtDefClear(&def->txts[--def->ntxts]);
@@ -1037,8 +1042,9 @@ virNetworkDNSDefParseXML(const char *networkName,
     xmlNodePtr *hostNodes = NULL;
     xmlNodePtr *srvNodes = NULL;
     xmlNodePtr *txtNodes = NULL;
+    xmlNodePtr *fwdNodes = NULL;
     char *forwardPlainNames = NULL;
-    int nhosts, nsrvs, ntxts;
+    int nhosts, nsrvs, ntxts, nfwds;
     size_t i;
     int ret = -1;
     xmlNodePtr save = ctxt->node;
@@ -1055,6 +1061,30 @@ virNetworkDNSDefParseXML(const char *networkName,
                              "in network '%s'"),
                            forwardPlainNames, networkName);
             goto cleanup;
+        }
+    }
+
+    nfwds = virXPathNodeSet("./forwarder", ctxt, &fwdNodes);
+    if (nfwds < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <forwarder> element found in <dns> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+    if (nfwds > 0) {
+        if (VIR_ALLOC_N(def->forwarders, nfwds) < 0)
+            goto cleanup;
+
+        for (i = 0; i < nfwds; i++) {
+            def->forwarders[i] = virXMLPropString(fwdNodes[i], "addr");
+            if (virSocketAddrParse(NULL, def->forwarders[i], AF_UNSPEC) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid forwarder IP address '%s' "
+                             "in network '%s'"),
+                           def->forwarders[i], networkName);
+                goto cleanup;
+            }
+            def->nfwds++;
         }
     }
 
@@ -1121,6 +1151,7 @@ virNetworkDNSDefParseXML(const char *networkName,
     ret = 0;
 cleanup:
     VIR_FREE(forwardPlainNames);
+    VIR_FREE(fwdNodes);
     VIR_FREE(hostNodes);
     VIR_FREE(srvNodes);
     VIR_FREE(txtNodes);
@@ -2267,13 +2298,14 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     int result = 0;
     size_t i, j;
 
-    if (!(def->forwardPlainNames || def->nhosts || def->nsrvs || def->ntxts))
+    if (!(def->forwardPlainNames || def->forwarders || def->nhosts ||
+          def->nsrvs || def->ntxts))
         goto out;
 
     virBufferAddLit(buf, "<dns");
     if (def->forwardPlainNames) {
         virBufferAddLit(buf, " forwardPlainNames='yes'");
-        if (!(def->nhosts || def->nsrvs || def->ntxts)) {
+        if (!(def->forwarders || def->nhosts || def->nsrvs || def->ntxts)) {
             virBufferAddLit(buf, "/>\n");
             goto out;
         }
@@ -2281,6 +2313,11 @@ virNetworkDNSDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < def->nfwds; i++) {
+        virBufferAsprintf(buf, "<forwarder addr='%s'/>\n",
+                          def->forwarders[i]);
+    }
 
     for (i = 0; i < def->ntxts; i++) {
         virBufferAsprintf(buf, "<txt name='%s' value='%s'/>\n",

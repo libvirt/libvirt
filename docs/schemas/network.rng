@@ -233,15 +233,21 @@
         <!-- Define the DNS related elements like TXT records
              and other features in the <dns> element -->
         <optional>
-            <element name="dns">
-              <optional>
-                <attribute name="forwardPlainNames">
-                  <choice>
-                    <value>yes</value>
-                    <value>no</value>
-                  </choice>
-                </attribute>
-              </optional>
+          <element name="dns">
+            <optional>
+              <attribute name="forwardPlainNames">
+                <choice>
+                  <value>yes</value>
+                  <value>no</value>
+                </choice>
+              </attribute>
+            </optional>
+            <interleave>
+              <zeroOrMore>
+                <element name="forwarder">
+                  <attribute name="addr"><ref name="ipAddr"/></attribute>
+                </element>
+              </zeroOrMore>
               <zeroOrMore>
                 <element name="txt">
                   <attribute name="name"><ref name="dnsName"/></attribute>
@@ -251,13 +257,21 @@
               <zeroOrMore>
                 <element name="srv">
                   <attribute name="service"><text/></attribute>
-                  <attribute name="protocol"><ref name="protocol"/></attribute>
+                  <attribute name="protocol">
+                    <ref name="protocol"/>
+                  </attribute>
                   <optional>
                     <attribute name="domain"><ref name="dnsName"/></attribute>
                     <attribute name="target"><text/></attribute>
-                    <attribute name="port"><ref name="unsignedShort"/></attribute>
-                    <attribute name="priority"><ref name="unsignedShort"/></attribute>
-                    <attribute name="weight"><ref name="unsignedShort"/></attribute>
+                    <attribute name="port">
+                      <ref name="unsignedShort"/>
+                    </attribute>
+                    <attribute name="priority">
+                      <ref name="unsignedShort"/>
+                    </attribute>
+                    <attribute name="weight">
+                      <ref name="unsignedShort"/>
+                    </attribute>
                   </optional>
                 </element>
               </zeroOrMore>
@@ -269,24 +283,25 @@
                   </oneOrMore>
                 </element>
               </zeroOrMore>
-            </element>
+            </interleave>
+          </element>
         </optional>
-       <optional>
-         <ref name="bandwidth"/>
-       </optional>
-       <optional>
+        <optional>
+          <ref name="bandwidth"/>
+        </optional>
+        <optional>
          <ref name="vlan"/>
-       </optional>
-       <optional>
-         <element name="link">
-           <attribute name="state">
-             <choice>
-               <value>up</value>
-               <value>down</value>
-             </choice>
-           </attribute>
-           <empty/>
-         </element>
+        </optional>
+        <optional>
+          <element name="link">
+            <attribute name="state">
+              <choice>
+                <value>up</value>
+                <value>down</value>
+              </choice>
+            </attribute>
+            <empty/>
+          </element>
         </optional>
 
         <!-- <ip> element -->
