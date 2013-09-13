@@ -3061,6 +3061,36 @@ cleanup:
 }
 
 
+/**
+ * virCgroupSupportsCpuBW():
+ * Check whether the host supports CFS bandwidth.
+ *
+ * Return true when CFS bandwidth is supported,
+ * false when CFS bandwidth is not supported.
+ */
+bool
+virCgroupSupportsCpuBW(virCgroupPtr cgroup)
+{
+    char *path = NULL;
+    int ret = false;
+
+    if (!cgroup)
+        return false;
+
+    if (virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+                                  "cpu.cfs_period_us", &path) < 0) {
+        virResetLastError();
+        goto cleanup;
+    }
+
+    ret = virFileExists(path);
+
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
 #else /* !VIR_CGROUP_SUPPORTED */
 
 bool
@@ -3644,6 +3674,14 @@ virCgroupIsolateMount(virCgroupPtr group ATTRIBUTE_UNUSED,
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
     return -1;
+}
+
+
+bool
+virCgroupSupportsCpuBW(virCgroupPtr cgroup ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("Control groups not supported on this platform");
+    return false;
 }
 
 #endif /* !VIR_CGROUP_SUPPORTED */

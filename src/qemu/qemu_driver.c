@@ -7325,44 +7325,10 @@ cleanup:
 }
 
 
-/*
- * check whether the host supports CFS bandwidth
- *
- * Return 1 when CFS bandwidth is supported, 0 when CFS bandwidth is not
- * supported, -1 on error.
- */
-static int qemuGetCpuBWStatus(virCgroupPtr cgroup)
-{
-    char *cfs_period_path = NULL;
-    int ret = -1;
-
-    if (!cgroup)
-        return 0;
-
-    if (virCgroupPathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
-                                  "cpu.cfs_period_us", &cfs_period_path) < 0) {
-        VIR_INFO("cannot get the path of cgroup CPU controller");
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (access(cfs_period_path, F_OK) < 0) {
-        ret = 0;
-    } else {
-        ret = 1;
-    }
-
-cleanup:
-    VIR_FREE(cfs_period_path);
-    return ret;
-}
-
-
 static char *qemuDomainGetSchedulerType(virDomainPtr dom,
                                         int *nparams)
 {
     char *ret = NULL;
-    int rc;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
 
@@ -7389,13 +7355,10 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     }
 
     if (nparams) {
-        rc = qemuGetCpuBWStatus(priv->cgroup);
-        if (rc < 0)
-            goto cleanup;
-        else if (rc == 0)
-            *nparams = 1;
-        else
+        if (virCgroupSupportsCpuBW(priv->cgroup))
             *nparams = 5;
+        else
+            *nparams = 1;
     }
 
     ignore_value(VIR_STRDUP(ret, "posix"));
@@ -8728,12 +8691,8 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainGetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (*nparams > 1) {
-        rc = qemuGetCpuBWStatus(priv->cgroup);
-        if (rc < 0)
-            goto cleanup;
-        cpu_bw_status = !!rc;
-    }
+    if (*nparams > 1)
+        cpu_bw_status = virCgroupSupportsCpuBW(priv->cgroup);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;

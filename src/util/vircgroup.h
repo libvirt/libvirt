@@ -207,4 +207,6 @@ int virCgroupIsolateMount(virCgroupPtr group,
                           const char *oldroot,
                           const char *mountopts);
 
+bool virCgroupSupportsCpuBW(virCgroupPtr cgroup);
+
 #endif /* __VIR_CGROUP_H__ */
