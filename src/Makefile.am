@@ -2232,6 +2232,7 @@ libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
 			$(SASL_LIBS) \
 			$(SSH2_LIBS)\
+			$(SELINUX_LIBS) \
 			$(AM_LDFLAGS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
