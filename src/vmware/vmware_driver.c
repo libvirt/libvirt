@@ -35,8 +35,6 @@
 #include "vmware_driver.h"
 #include "virstring.h"
 
-static const char *vmw_types[] = { "player", "ws" };
-
 static void
 vmwareDriverLock(struct vmware_driver *driver)
 {
@@ -133,7 +131,7 @@ vmwareConnectOpen(virConnectPtr conn,
         goto cleanup;
 
     driver->type = STRNEQ(conn->uri->scheme, "vmwareplayer") ?
-      TYPE_WORKSTATION : TYPE_PLAYER;
+      VMWARE_DRIVER_WORKSTATION : VMWARE_DRIVER_PLAYER;
 
     if (!(driver->domains = virDomainObjListNew()))
         goto cleanup;
@@ -202,7 +200,8 @@ vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObjPtr vm)
     int newState;
     int ret = -1;
 
-    cmd = virCommandNewArgList(VMRUN, "-T", vmw_types[driver->type],
+    cmd = virCommandNewArgList(VMRUN, "-T",
+                               vmwareDriverTypeToString(driver->type),
                                "list", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
@@ -256,7 +255,7 @@ vmwareStopVM(struct vmware_driver *driver,
         PROGRAM_SENTINEL, "soft", NULL
     };
 
-    vmwareSetSentinal(cmd, vmw_types[driver->type]);
+    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
 
     if (virRun(cmd, NULL) < 0) {
@@ -284,7 +283,7 @@ vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
         return -1;
     }
 
-    vmwareSetSentinal(cmd, vmw_types[driver->type]);
+    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, vmxPath);
     if (!((vmwareDomainPtr) vm->privateData)->gui)
         vmwareSetSentinal(cmd, NOGUI);
@@ -451,7 +450,7 @@ vmwareDomainSuspend(virDomainPtr dom)
     };
     int ret = -1;
 
-    if (driver->type == TYPE_PLAYER) {
+    if (driver->type == VMWARE_DRIVER_PLAYER) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("vmplayer does not support libvirt suspend/resume"
                          " (vmware pause/unpause) operation "));
@@ -468,7 +467,7 @@ vmwareDomainSuspend(virDomainPtr dom)
         goto cleanup;
     }
 
-    vmwareSetSentinal(cmd, vmw_types[driver->type]);
+    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -500,7 +499,7 @@ vmwareDomainResume(virDomainPtr dom)
     };
     int ret = -1;
 
-    if (driver->type == TYPE_PLAYER) {
+    if (driver->type == VMWARE_DRIVER_PLAYER) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("vmplayer does not support libvirt suspend/resume "
                          "(vmware pause/unpause) operation "));
@@ -517,7 +516,7 @@ vmwareDomainResume(virDomainPtr dom)
         goto cleanup;
     }
 
-    vmwareSetSentinal(cmd, vmw_types[driver->type]);
+    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -562,7 +561,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
     vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
-    vmwareSetSentinal(cmd, vmw_types[driver->type]);
+    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
     vmwareSetSentinal(cmd, vmxPath);
 
     if (vmwareUpdateVMStatus(driver, vm) < 0)

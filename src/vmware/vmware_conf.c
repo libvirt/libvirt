@@ -35,6 +35,10 @@
 #include "vmware_conf.h"
 #include "virstring.h"
 
+VIR_ENUM_IMPL(vmwareDriver, VMWARE_DRIVER_LAST,
+              "player",
+              "ws");
+
 /* Free all memory associated with a vmware_driver structure */
 void
 vmwareFreeDriver(struct vmware_driver *driver)
@@ -141,7 +145,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
     ctx.parseFileName = vmwareCopyVMXFileName;
 
     cmd = virCommandNewArgList(VMRUN, "-T",
-                               driver->type == TYPE_PLAYER ? "player" : "ws",
+                               vmwareDriverTypeToString(driver->type),
                                "list", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
@@ -221,8 +225,9 @@ vmwareExtractVersion(struct vmware_driver *driver)
     int ret = -1;
     virCommandPtr cmd;
     char * outbuf = NULL;
-    const char * bin = (driver->type == TYPE_PLAYER) ? "vmplayer" : "vmware";
-    const char * pattern = (driver->type == TYPE_PLAYER) ?
+    const char * bin = (driver->type == VMWARE_DRIVER_PLAYER) ?
+                 "vmplayer" : "vmware";
+    const char * pattern = (driver->type == VMWARE_DRIVER_PLAYER) ?
                 "VMware Player " : "VMware Workstation ";
 
     cmd = virCommandNewArgList(bin, "-v", NULL);
