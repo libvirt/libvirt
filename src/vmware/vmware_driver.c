@@ -35,6 +35,13 @@
 #include "vmware_driver.h"
 #include "virstring.h"
 
+/* Various places we may find the "vmrun" binary,
+ * without a leading / it will be searched in PATH
+ */
+static const char * const vmrun_candidates[] = {
+    "vmrun",
+};
+
 static void
 vmwareDriverLock(struct vmware_driver *driver)
 {
@@ -85,7 +92,7 @@ vmwareConnectOpen(virConnectPtr conn,
                   unsigned int flags)
 {
     struct vmware_driver *driver;
-    char * vmrun = NULL;
+    size_t i;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -114,18 +121,25 @@ vmwareConnectOpen(virConnectPtr conn,
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */
 
-    vmrun = virFindFileInPath(VMRUN);
-
-    if (vmrun == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s utility is missing"), VMRUN);
-        return VIR_DRV_OPEN_ERROR;
-    } else {
-        VIR_FREE(vmrun);
-    }
-
     if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_OPEN_ERROR;
+
+    /* Find vmrun, which is what this driver uses to communicate to
+     * the VMware hypervisor. We look this up first since we use it
+     * for auto detection of the backend
+     */
+    for (i = 0; i < ARRAY_CARDINALITY(vmrun_candidates); i++) {
+        driver->vmrun = virFindFileInPath(vmrun_candidates[i]);
+        /* If we found one, we can stop looking */
+        if (driver->vmrun)
+            break;
+    }
+
+    if (driver->vmrun == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vmrun utility is missing"));
+        goto cleanup;
+    }
 
     if (virMutexInit(&driver->lock) < 0)
         goto cleanup;
@@ -200,7 +214,7 @@ vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObjPtr vm)
     int newState;
     int ret = -1;
 
-    cmd = virCommandNewArgList(VMRUN, "-T",
+    cmd = virCommandNewArgList(driver->vmrun, "-T",
                                vmwareDriverTypeToString(driver->type),
                                "list", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
@@ -251,7 +265,7 @@ vmwareStopVM(struct vmware_driver *driver,
              virDomainShutoffReason reason)
 {
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINEL, "stop",
+        driver->vmrun, "-T", PROGRAM_SENTINEL, "stop",
         PROGRAM_SENTINEL, "soft", NULL
     };
 
@@ -272,7 +286,7 @@ static int
 vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
 {
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINEL, "start",
+        driver->vmrun, "-T", PROGRAM_SENTINEL, "start",
         PROGRAM_SENTINEL, PROGRAM_SENTINEL, NULL
     };
     const char *vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
@@ -445,7 +459,7 @@ vmwareDomainSuspend(virDomainPtr dom)
 
     virDomainObjPtr vm;
     const char *cmd[] = {
-      VMRUN, "-T", PROGRAM_SENTINEL, "pause",
+      driver->vmrun, "-T", PROGRAM_SENTINEL, "pause",
       PROGRAM_SENTINEL, NULL
     };
     int ret = -1;
@@ -494,7 +508,7 @@ vmwareDomainResume(virDomainPtr dom)
 
     virDomainObjPtr vm;
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINEL, "unpause", PROGRAM_SENTINEL,
+        driver->vmrun, "-T", PROGRAM_SENTINEL, "unpause", PROGRAM_SENTINEL,
         NULL
     };
     int ret = -1;
@@ -543,7 +557,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
     const char * vmxPath = NULL;
     virDomainObjPtr vm;
     const char *cmd[] = {
-        VMRUN, "-T", PROGRAM_SENTINEL,
+        driver->vmrun, "-T", PROGRAM_SENTINEL,
         "reset", PROGRAM_SENTINEL, "soft", NULL
     };
     int ret = -1;

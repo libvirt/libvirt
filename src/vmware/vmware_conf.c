@@ -50,6 +50,7 @@ vmwareFreeDriver(struct vmware_driver *driver)
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
+    VIR_FREE(driver->vmrun);
     VIR_FREE(driver);
 }
 
@@ -144,7 +145,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
 
     ctx.parseFileName = vmwareCopyVMXFileName;
 
-    cmd = virCommandNewArgList(VMRUN, "-T",
+    cmd = virCommandNewArgList(driver->vmrun, "-T",
                                vmwareDriverTypeToString(driver->type),
                                "list", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);

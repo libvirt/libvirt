@@ -21,7 +21,6 @@
 #ifndef VMWARE_CONF_H
 # define VMWARE_CONF_H
 
-# define VMRUN "vmrun"
 # define NOGUI "nogui"
 
 # include "internal.h"
@@ -48,6 +47,7 @@ struct vmware_driver {
     virDomainObjListPtr domains;
     int version;
     int type;
+    char *vmrun;
 };
 
 typedef struct _vmwareDomain {
