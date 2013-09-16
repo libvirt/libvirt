@@ -1525,6 +1525,14 @@
       &lt;target dev='hdc' bus='ide' tray='open'/&gt;
       &lt;readonly/&gt;
     &lt;/disk&gt;
+    &lt;disk type='network' device='cdrom'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source protocol="ftps" name="url_path"&gt;
+        &lt;host name="hostname" port="990"/&gt;
+      &lt;/source&gt;
+      &lt;target dev='hdc' bus='ide' tray='open'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
     &lt;disk type='block' device='lun'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source dev='/dev/sda'/&gt;

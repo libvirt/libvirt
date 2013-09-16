@@ -449,6 +449,8 @@ mymain(void)
             QEMU_CAPS_DRIVE);
     DO_TEST("disk-cdrom-network-ftp", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE,
             QEMU_CAPS_DRIVE);
+    DO_TEST("disk-cdrom-network-ftps", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_DRIVE);
     DO_TEST("disk-cdrom-empty", QEMU_CAPS_DRIVE);
     DO_TEST("disk-cdrom-tray",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_TX_ALG);

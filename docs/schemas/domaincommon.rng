@@ -1233,6 +1233,7 @@
         <value>http</value>
         <value>https</value>
         <value>ftp</value>
+        <value>ftps</value>
       </choice>
     </attribute>
     <optional>
