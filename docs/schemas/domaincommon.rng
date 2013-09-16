@@ -1234,6 +1234,7 @@
         <value>https</value>
         <value>ftp</value>
         <value>ftps</value>
+        <value>tftp</value>
       </choice>
     </attribute>
     <optional>

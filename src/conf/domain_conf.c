@@ -267,7 +267,8 @@ VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
               "http",
               "https",
               "ftp",
-              "ftps")
+              "ftps",
+              "tftp")
 
 VIR_ENUM_IMPL(virDomainDiskProtocolTransport, VIR_DOMAIN_DISK_PROTO_TRANS_LAST,
               "tcp",

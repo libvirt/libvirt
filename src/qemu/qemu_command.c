@@ -3923,6 +3923,12 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   disk->hosts->port ? disk->hosts->port : "990");
                 virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 break;
+            case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+                virBufferAsprintf(&opt, "file=tftp://%s:%s",
+                                  disk->hosts->name,
+                                  disk->hosts->port ? disk->hosts->port : "69");
+                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
+                break;
             }
         } else if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
             if (qemuBuildVolumeString(conn, disk, &opt) < 0)
