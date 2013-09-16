@@ -12157,7 +12157,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
                                      JOB_MASK(QEMU_JOB_SUSPEND) |
                                      JOB_MASK(QEMU_JOB_MIGRATION_OP));
 
-        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, false)))
+        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)))
             goto endjob;
 
         if ((ret = qemuDomainSaveMemory(driver, vm, snap->def->file,
