@@ -3905,6 +3905,12 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   disk->hosts->port ? disk->hosts->port : "80");
                 virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 break;
+            case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+                virBufferAsprintf(&opt, "file=https://%s:%s",
+                                  disk->hosts->name,
+                                  disk->hosts->port ? disk->hosts->port : "443");
+                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
+                break;
             case VIR_DOMAIN_DISK_PROTOCOL_FTP:
                 virBufferAsprintf(&opt, "file=ftp://%s:%s",
                                   disk->hosts->name,

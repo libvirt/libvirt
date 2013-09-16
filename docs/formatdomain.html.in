@@ -1511,6 +1511,14 @@
     &lt;/disk&gt;
     &lt;disk type='network' device='cdrom'&gt;
       &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source protocol="https" name="url_path"&gt;
+        &lt;host name="hostname" port="443"/&gt;
+      &lt;/source&gt;
+      &lt;target dev='hdc' bus='ide' tray='open'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='network' device='cdrom'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
       &lt;source protocol="ftp" name="url_path"&gt;
         &lt;host name="hostname" port="21"/&gt;
       &lt;/source&gt;

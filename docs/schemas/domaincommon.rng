@@ -1231,6 +1231,7 @@
         <value>gluster</value>
         <value>iscsi</value>
         <value>http</value>
+        <value>https</value>
         <value>ftp</value>
       </choice>
     </attribute>
