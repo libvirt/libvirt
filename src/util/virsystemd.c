@@ -239,5 +239,6 @@ cleanup:
     VIR_FREE(username);
     VIR_FREE(creatorname);
     VIR_FREE(machinename);
+    VIR_FREE(slicename);
     return ret;
 }
