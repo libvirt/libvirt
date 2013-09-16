@@ -202,11 +202,8 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     if (!mig)
         return;
 
-    if (mig->flags & QEMU_MIGRATION_COOKIE_GRAPHICS)
-        qemuMigrationCookieGraphicsFree(mig->graphics);
-
-    if (mig->flags & QEMU_MIGRATION_COOKIE_NETWORK)
-        qemuMigrationCookieNetworkFree(mig->network);
+    qemuMigrationCookieGraphicsFree(mig->graphics);
+    qemuMigrationCookieNetworkFree(mig->network);
 
     VIR_FREE(mig->localHostname);
     VIR_FREE(mig->remoteHostname);
