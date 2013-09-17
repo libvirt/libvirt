@@ -166,6 +166,7 @@
 /tests/hashtest
 /tests/jsontest
 /tests/libvirtdconftest
+/tests/metadatatest
 /tests/networkxml2argvtest
 /tests/nodeinfotest
 /tests/nwfilterxml2xmltest
