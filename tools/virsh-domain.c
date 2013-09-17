@@ -6854,7 +6854,7 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     bool edit = vshCommandOptBool(cmd, "edit");
-    bool remove = vshCommandOptBool(cmd, "remove");
+    bool rem = vshCommandOptBool(cmd, "remove");
     const char *set = NULL;
     const char *uri = NULL;
     const char *key = NULL;
@@ -6886,12 +6886,12 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (set || remove) {
+    if (set || rem) {
         if (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
                                  set, key, uri, flags))
             goto cleanup;
 
-        if (remove)
+        if (rem)
             vshPrint("%s\n", _("Metadata removed"));
         else
             vshPrint("%s\n", _("Metadata modified"));
