@@ -229,6 +229,8 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
+    virtTestQuiesceLibvirtErrors(false);
+
     if (virtTestRun("Assign metadata ", 1, testAssignMetadata, &test) < 0)
         ret = EXIT_FAILURE;
     if (virtTestRun("Rewrite Metadata ", 1, testRewriteMetadata, &test) < 0)
