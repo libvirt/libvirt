@@ -160,6 +160,50 @@ VERSION_SCRIPT_FLAGS=-Wl,--version-script=
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
 AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
+dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
+dnl we're working on BSD)
+want_ifconfig=no
+
+dnl Make some notes about which OS we're compiling for, as the lxc and qemu
+dnl drivers require linux headers, and storage_mpath, dtrace, and nwfilter
+dnl are also linux specific.  The "network" and storage_fs drivers are known
+dnl to not work on MacOS X presently, so we also make a note if compiling
+dnl for that
+
+with_linux=no with_osx=no with_freebsd=no
+case $host in
+  *-*-linux*) with_linux=yes ;;
+  *-*-darwin*) with_osx=yes ;;
+  *-*-freebsd*) with_freebsd=yes ;;
+esac
+
+if test $with_linux = no; then
+    if test "x$with_lxc" != xyes
+    then
+        with_lxc=no
+    fi
+    with_dtrace=no
+fi
+
+if test $with_freebsd = yes; then
+   want_ifconfig=yes
+
+   with_firewalld=no
+fi
+
+if test $with_osx = yes; then
+   with_qemu=no
+fi
+
+AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
+AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
+
+if test "$with_libvirtd" = "no" ; then
+  with_qemu=no
+fi
+
+# Check for compiler and library settings.
+
 LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_COMPILE_PIE
 LIBVIRT_LINKER_RELRO
@@ -390,44 +434,6 @@ fi
 if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
-
-dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
-dnl we're working on BSD)
-want_ifconfig=no
-
-dnl Make some notes about which OS we're compiling for, as the lxc and qemu
-dnl drivers require linux headers, and storage_mpath, dtrace, and nwfilter
-dnl are also linux specific.  The "network" and storage_fs drivers are known
-dnl to not work on MacOS X presently, so we also make a note if compiling
-dnl for that
-
-with_linux=no with_osx=no with_freebsd=no
-case $host in
-  *-*-linux*) with_linux=yes ;;
-  *-*-darwin*) with_osx=yes ;;
-  *-*-freebsd*) with_freebsd=yes ;;
-esac
-
-if test $with_linux = no; then
-    if test "x$with_lxc" != xyes
-    then
-        with_lxc=no
-    fi
-    with_dtrace=no
-fi
-
-if test $with_freebsd = yes; then
-   want_ifconfig=yes
-
-   with_firewalld=no
-fi
-
-if test $with_osx = yes; then
-   with_qemu=no
-fi
-
-AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
-AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
@@ -721,9 +727,6 @@ if test "x$with_vbox" = "xyes"; then
 fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
 
-if test "$with_libvirtd" = "no" ; then
-  with_qemu=no
-fi
 if test "$with_qemu" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_QEMU], 1, [whether QEMU driver is enabled])
 fi
