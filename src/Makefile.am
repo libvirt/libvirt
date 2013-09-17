@@ -1014,11 +1014,11 @@ endif WITH_REMOTE
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
-	       $< $@
+	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
 %protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
-	       $< $@
+	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
 if WITH_XEN
 noinst_LTLIBRARIES += libvirt_driver_xen_impl.la
