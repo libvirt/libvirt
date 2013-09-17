@@ -18598,7 +18598,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
 {
     xmlDocPtr doc = NULL;
     xmlNodePtr old;
-    xmlNodePtr new;
+    xmlNodePtr new = NULL;
     char *tmp;
     int ret = -1;
 
@@ -18647,11 +18647,8 @@ virDomainDefSetMetadata(virDomainDefPtr def,
             xmlFreeNode(old);
         }
 
-        /* just delete the metadata */
-        if (!metadata)
-            break;
-
-        if (!(xmlAddChild(def->metadata, new))) {
+        if (new &&
+            !(xmlAddChild(def->metadata, new))) {
             xmlFreeNode(new);
             virReportOOMError();
             goto cleanup;
