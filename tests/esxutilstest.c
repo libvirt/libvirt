@@ -14,16 +14,6 @@
 # include "esx/esx_util.h"
 # include "esx/esx_vi_types.h"
 
-
-static void
-testQuietError(void *userData ATTRIBUTE_UNUSED,
-               virErrorPtr error ATTRIBUTE_UNUSED)
-{
-    /* nothing */
-}
-
-
-
 struct testPath {
     const char *datastorePath;
     int result;
@@ -259,7 +249,7 @@ mymain(void)
 {
     int result = 0;
 
-    virSetErrorFunc(NULL, testQuietError);
+    virtTestQuiesceLibvirtErrors(true);
 
 # define DO_TEST(_name)                                                       \
         do {                                                                  \

@@ -10,16 +10,6 @@
 #include "testutils.h"
 #include "virutil.h"
 
-
-static void
-testQuietError(void *userData ATTRIBUTE_UNUSED,
-               virErrorPtr error ATTRIBUTE_UNUSED)
-{
-    /* nothing */
-}
-
-
-
 static const char* diskNames[] = {
     "sda",  "sdb",  "sdc",  "sdd",  "sde",  "sdf",  "sdg",  "sdh",  "sdi",  "sdj",  "sdk",  "sdl",  "sdm",  "sdn",  "sdo",  "sdp",  "sdq",  "sdr",  "sds",  "sdt",  "sdu",  "sdv",  "sdw",  "sdx",  "sdy",  "sdz",
     "sdaa", "sdab", "sdac", "sdad", "sdae", "sdaf", "sdag", "sdah", "sdai", "sdaj", "sdak", "sdal", "sdam", "sdan", "sdao", "sdap", "sdaq", "sdar", "sdas", "sdat", "sdau", "sdav", "sdaw", "sdax", "sday", "sdaz",
@@ -160,7 +150,7 @@ mymain(void)
 {
     int result = 0;
 
-    virSetErrorFunc(NULL, testQuietError);
+    virtTestQuiesceLibvirtErrors(true);
 
 #define DO_TEST(_name)                                                  \
         do {                                                                  \

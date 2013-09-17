@@ -11,12 +11,6 @@
 #include "testutils.h"
 #include "vircommand.h"
 
-static void testQuietError(void *userData ATTRIBUTE_UNUSED,
-                           virErrorPtr error ATTRIBUTE_UNUSED)
-{
-    /* nada */
-}
-
 static int testDevice(const char *path, int expect)
 {
     int actual = xenLinuxDomainDeviceID(1, path);
@@ -67,8 +61,7 @@ mymain(void)
      * register a handler to stop error messages cluttering
      * up display
      */
-    if (!virTestGetDebug())
-        virSetErrorFunc(NULL, testQuietError);
+    virtTestQuiesceLibvirtErrors(false);
 
 #define DO_TEST(dev, num)                                              \
     do {                                                               \

@@ -8,10 +8,6 @@
 #include "testutils.h"
 #include "vircommand.h"
 
-static void errorHandler(void *userData ATTRIBUTE_UNUSED,
-                         virErrorPtr error ATTRIBUTE_UNUSED) {
-}
-
 static int
 mymain(void)
 {
@@ -36,7 +32,7 @@ mymain(void)
     }
     virCommandFree(cmd);
 
-    virSetErrorFunc(NULL, errorHandler);
+    virtTestQuiesceLibvirtErrors(true);
 
     conn = virConnectOpen(NULL);
     if (conn == NULL) {

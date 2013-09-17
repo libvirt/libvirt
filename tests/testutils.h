@@ -69,6 +69,8 @@ unsigned int virTestGetExpensive(void);
 
 char *virtTestLogContentAndReset(void);
 
+void virtTestQuiesceLibvirtErrors(bool always);
+
 int virtTestMain(int argc,
                  char **argv,
                  int (*func)(void));

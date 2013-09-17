@@ -30,12 +30,6 @@
 #include "virlog.h"
 #include "viralloc.h"
 
-static void testQuietError(void *userData ATTRIBUTE_UNUSED,
-                           virErrorPtr error ATTRIBUTE_UNUSED)
-{
-    /* nada */
-}
-
 static int testParse(virSocketAddr *addr, const char *addrstr, int family, bool pass)
 {
     int rc;
@@ -188,8 +182,7 @@ mymain(void)
      * register a handler to stop error messages cluttering
      * up display
      */
-    if (!virTestGetDebug())
-        virSetErrorFunc(NULL, testQuietError);
+    virtTestQuiesceLibvirtErrors(false);
 
 #define DO_TEST_PARSE(addrstr, family, pass)                            \
     do {                                                                \
