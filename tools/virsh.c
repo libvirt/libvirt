@@ -921,7 +921,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
 
         if (xml) {
             virBufferEscapeString(&xmlbuf, "%s", arg);
-            if (virBufferError(&buf)) {
+            if (virBufferError(&xmlbuf)) {
                 vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
                 return false;
             }
