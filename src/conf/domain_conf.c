@@ -18599,19 +18599,24 @@ virDomainDefSetMetadata(virDomainDefPtr def,
     xmlDocPtr doc = NULL;
     xmlNodePtr old;
     xmlNodePtr new;
+    char *tmp;
     int ret = -1;
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
-        VIR_FREE(def->description);
-        if (VIR_STRDUP(def->description, metadata) < 0)
+        if (VIR_STRDUP(tmp, metadata) < 0)
             goto cleanup;
+
+        VIR_FREE(def->description);
+        def->description = tmp;
         break;
 
     case VIR_DOMAIN_METADATA_TITLE:
-        VIR_FREE(def->title);
-        if (VIR_STRDUP(def->title, metadata) < 0)
+        if (VIR_STRDUP(tmp, metadata) < 0)
             goto cleanup;
+
+        VIR_FREE(def->title);
+        def->title = tmp;
         break;
 
     case VIR_DOMAIN_METADATA_ELEMENT:
