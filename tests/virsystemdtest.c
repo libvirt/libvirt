@@ -20,13 +20,16 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-
-#include "virsystemd.h"
-#include "virlog.h"
 #include "testutils.h"
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+#ifdef __linux__
+
+# include <stdlib.h>
+
+# include "virsystemd.h"
+# include "virlog.h"
+
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
 {
@@ -188,7 +191,7 @@ mymain(void)
     if (virtTestRun("Test create bad systemd ", 1, testCreateBadSystemd, NULL) < 0)
         ret = -1;
 
-#define TEST_SCOPE(name, partition, unitname)                           \
+# define TEST_SCOPE(name, partition, unitname)                          \
     do {                                                                \
         struct testScopeData data = {                                   \
             name, partition, unitname                                   \
@@ -209,3 +212,11 @@ mymain(void)
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virsystemdmock.so")
+
+#else
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
+#endif
