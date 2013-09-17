@@ -5274,6 +5274,8 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
             /* use the user provided XML */
             newdef = def2;
             def2 = NULL;
+        } else {
+            virDomainDefFree(def2);
         }
 
         virDomainDefFree(def);
