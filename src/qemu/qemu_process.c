@@ -1450,8 +1450,20 @@ error:
     return ret;
 }
 
-static int
-qemuProcessReadLog(int fd, char *buf, int buflen, int off)
+
+/**
+ * qemuProcessReadLog: Read log file of a qemu VM
+ * @fd: File descriptor of the log file
+ * @buf: buffer to store the read messages
+ * @buflen: allocated space available in @buf
+ * @off: Offset to start reading from
+ * @skipchar: Skip messages about created character devices
+ *
+ * Reads log of a qemu VM. Skips messages not produced by qemu or irrelevant
+ * messages. Returns length of the message stored in @buf, or -1 on error.
+ */
+int
+qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar)
 {
     char *filter_next = buf;
     ssize_t bytes;
@@ -1471,7 +1483,9 @@ qemuProcessReadLog(int fd, char *buf, int buflen, int off)
         /* Filter out debug messages from intermediate libvirt process */
         while ((eol = strchr(filter_next, '\n'))) {
             *eol = '\0';
-            if (virLogProbablyLogMessage(filter_next)) {
+            if (virLogProbablyLogMessage(filter_next) ||
+                (skipchar &&
+                 STRPREFIX(filter_next, "char device redirected to"))) {
                 memmove(filter_next, eol + 1, off - (eol - buf));
                 off -= eol + 1 - filter_next;
             } else {
@@ -1514,7 +1528,7 @@ qemuProcessReadLogOutput(virDomainObjPtr vm,
 
         isdead = kill(vm->pid, 0) == -1 && errno == ESRCH;
 
-        got = qemuProcessReadLog(fd, buf, buflen, got);
+        got = qemuProcessReadLog(fd, buf, buflen, got, false);
         if (got < 0) {
             virReportSystemError(errno,
                                  _("Failure while reading %s log output"),
@@ -1832,7 +1846,7 @@ cleanup:
         }
 
         len = strlen(buf);
-        qemuProcessReadLog(logfd, buf + len, buf_size - len - 1, 0);
+        qemuProcessReadLog(logfd, buf + len, buf_size - len - 1, 0, true);
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("process exited while connecting to monitor: %s"),
                        buf);

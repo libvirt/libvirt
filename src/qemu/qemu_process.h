@@ -101,4 +101,6 @@ bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
 virBitmapPtr qemuPrepareCpumap(virQEMUDriverPtr driver,
                                virBitmapPtr nodemask);
 
+int qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar);
+
 #endif /* __QEMU_PROCESS_H__ */
