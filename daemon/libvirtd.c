@@ -1063,9 +1063,9 @@ daemonUsage(const char *argv0, bool privileged)
                   "      %s/run/libvirt/libvirt-sock-ro\n"
                   "\n"
                   "    TLS:\n"
-                  "      CA certificate:     %s/pki/CA/cacert.pem\n"
-                  "      Server certificate: %s/pki/libvirt/servercert.pem\n"
-                  "      Server private key: %s/pki/libvirt/private/serverkey.pem\n"
+                  "      CA certificate:     %s\n"
+                  "      Server certificate: %s\n"
+                  "      Server private key: %s\n"
                   "\n"
                   "    PID file (unless overridden by -p):\n"
                   "      %s/run/libvirtd.pid\n"
@@ -1073,9 +1073,9 @@ daemonUsage(const char *argv0, bool privileged)
                 SYSCONFDIR,
                 LOCALSTATEDIR,
                 LOCALSTATEDIR,
-                SYSCONFDIR,
-                SYSCONFDIR,
-                SYSCONFDIR,
+                LIBVIRT_CACERT,
+                LIBVIRT_SERVERCERT,
+                LIBVIRT_SERVERKEY,
                 LOCALSTATEDIR);
     } else {
         fprintf(stderr, "%s",
