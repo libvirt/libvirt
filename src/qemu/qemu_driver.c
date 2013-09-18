@@ -14673,14 +14673,14 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
+    if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
-
-    if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
-        goto cleanup;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto endjob;
