@@ -942,6 +942,61 @@ cleanup:
     return ret;
 }
 
+static int
+testQemuMonitorJSONCPU(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    bool running = false;
+    virDomainPausedReason reason = 0;
+
+    if (qemuMonitorTestAddItem(test, "stop", "{\"return\": {}}") < 0 ||
+        qemuMonitorTestAddItem(test, "query-status",
+                               "{\"return\": {"
+                               "   \"status\": \"paused\","
+                               "   \"singlestep\": false,"
+                               "   \"running\": false}}") < 0 ||
+        qemuMonitorTestAddItem(test, "cont", "{\"return\": {}}") < 0 ||
+        qemuMonitorTestAddItem(test, "query-status",
+                               "{\"return\": {"
+                               "    \"status\": \"running\","
+                               "    \"singlestep\": false,"
+                               "    \"running\": true}}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONStopCPUs(qemuMonitorTestGetMonitor(test)) < 0)
+        goto cleanup;
+
+    if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
+                             &running, &reason) < 0)
+        goto cleanup;
+
+    if (running) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Running was not false");
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONStartCPUs(qemuMonitorTestGetMonitor(test), NULL) < 0)
+        goto cleanup;
+
+    if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
+                             &running, &reason) < 0)
+        goto cleanup;
+
+    if (!running) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Running was not true");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
 
 static int
 mymain(void)
@@ -977,6 +1032,7 @@ mymain(void)
     DO_TEST(GetObjectProperty);
     DO_TEST(SetObjectProperty);
     DO_TEST(GetDeviceAliases);
+    DO_TEST(CPU);
 
     virObjectUnref(xmlopt);
 
