@@ -3643,8 +3643,8 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * If 'ff' callbacks are invoked directly from the virEventRemoveHandleFunc
  * they will likely deadlock in libvirt.
  *
- * Returns a handle watch number to be used for updating
- * and unregistering for events
+ * Returns -1 if the file handle cannot be registered, otherwise a handle
+ * watch number to be used for updating and unregistering for events
  */
 typedef int (*virEventAddHandleFunc)(int fd, int event,
                                      virEventHandleCallback cb,

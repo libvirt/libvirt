@@ -48,7 +48,8 @@ static virEventRemoveTimeoutFunc removeTimeoutImpl = NULL;
  *
  * Register a callback for monitoring file handle events.
  *
- * Returns -1 if the file handle cannot be registered, 0 upon success
+ * Returns -1 if the file handle cannot be registered, otherwise a handle
+ * watch number to be used for updating and unregistering for events
  */
 int
 virEventAddHandle(int fd,
