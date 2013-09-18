@@ -1768,6 +1768,12 @@ else ! WITH_VMX
 SYM_FILES += $(srcdir)/libvirt_vmx.syms
 endif ! WITH_VMX
 
+if WITH_VMWARE
+USED_SYM_FILES += $(srcdir)/libvirt_vmware.syms
+else ! WITH_VMWARE
+SYM_FILES += $(srcdir)/libvirt_vmware.syms
+endif ! WITH_VMWARE
+
 if WITH_XENXS
 USED_SYM_FILES += $(srcdir)/libvirt_xenxs.syms
 else ! WITH_XENXS

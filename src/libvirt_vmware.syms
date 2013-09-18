@@ -1,0 +1,12 @@
+#
+# These symbols are dependent upon --with-vmware via WITH_VMWARE.
+#
+
+# vmware/vmware_conf.h
+vmwareDriverTypeFromString;
+vmwareParseVersionStr;
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:

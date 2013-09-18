@@ -107,6 +107,7 @@ EXTRA_DIST =		\
 	xmconfigdata \
 	xml2sexprdata \
 	xml2vmxdata \
+	vmwareverdata \
 	.valgrind.supp
 
 test_helpers = commandhelper ssh test_conf
@@ -187,6 +188,10 @@ endif WITH_ESX
 if WITH_VMX
 test_programs += vmx2xmltest xml2vmxtest
 endif WITH_VMX
+
+if WITH_VMWARE
+test_programs += vmwarevertest
+endif WITH_VMWARE
 
 if WITH_CIL
 test_programs += object-locking
@@ -506,6 +511,15 @@ xml2vmxtest_LDADD = $(LDADDS)
 else ! WITH_VMX
 EXTRA_DIST += vmx2xmltest.c xml2vmxtest.c
 endif ! WITH_VMX
+
+if WITH_VMWARE
+vmwarevertest_SOURCES = \
+    vmwarevertest.c \
+    testutils.c testutils.h
+vmwarevertest_LDADD = $(LDADDS)
+else ! WITH_VMWARE
+EXTRA_DIST += vmwarevertest.c
+endif ! WITH_VMWARE
 
 networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
