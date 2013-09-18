@@ -32,6 +32,8 @@
 #include "qemu_monitor.h"
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
+#include "qemu_domain.h"
+#include "qemu_process.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -331,6 +333,35 @@ qemuMonitorOpenPty(const char *monitor)
 }
 
 
+/* Get a possible error from qemu's log. This function closes the
+ * corresponding log fd */
+static char *
+qemuMonitorGetErrorFromLog(qemuMonitorPtr mon)
+{
+    int len;
+    char *logbuf = NULL;
+    int orig_errno = errno;
+
+    if (mon->logfd < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N_QUIET(logbuf, 4096) < 0)
+        goto error;
+
+    if ((len = qemuProcessReadLog(mon->logfd, logbuf, 4096 - 1, 0, true)) <= 0)
+        goto error;
+
+cleanup:
+    errno = orig_errno;
+    VIR_FORCE_CLOSE(mon->logfd);
+    return logbuf;
+
+error:
+    VIR_FREE(logbuf);
+    goto cleanup;
+}
+
+
 /* This method processes data that has been received
  * from the monitor. Looking for async events and
  * replies/errors.
@@ -564,6 +595,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     qemuMonitorPtr mon = opaque;
     bool error = false;
     bool eof = false;
+    bool hangup = false;
 
     virObjectRef(mon);
 
@@ -614,12 +646,14 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
             }
         }
 
-        if (!error &&
-            events & VIR_EVENT_HANDLE_HANGUP) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("End of file from monitor"));
-            eof = true;
-            events &= ~VIR_EVENT_HANDLE_HANGUP;
+        if (events & VIR_EVENT_HANDLE_HANGUP) {
+            hangup = true;
+            if (!error) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("End of file from monitor"));
+                eof = true;
+                events &= ~VIR_EVENT_HANDLE_HANGUP;
+            }
         }
 
         if (!error && !eof &&
@@ -638,6 +672,26 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     }
 
     if (error || eof) {
+        if (hangup) {
+            /* Check if an error message from qemu is available and if so, use
+             * it to overwrite the actual message. It's done only in early
+             * startup phases where the message from qemu is certainly more
+             * interesting than a "connection reset by peer" message.
+             */
+            char *qemuMessage;
+
+            if ((qemuMessage = qemuMonitorGetErrorFromLog(mon))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("early end of file from monitor: "
+                                 "possible problem:\n%s"),
+                               qemuMessage);
+                virCopyLastError(&mon->lastError);
+                virResetLastError();
+            }
+
+            VIR_FREE(qemuMessage);
+        }
+
         if (mon->lastError.code != VIR_ERR_OK) {
             /* Already have an error, so clear any new error */
             virResetLastError();
