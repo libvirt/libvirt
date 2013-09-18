@@ -1389,7 +1389,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
 };
 
 static int
-qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm)
+qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int logfd)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -1414,6 +1414,9 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm)
                           priv->monJSON,
                           &monitorCallbacks,
                           driver);
+
+    if (mon)
+        ignore_value(qemuMonitorSetDomainLog(mon, logfd));
 
     virObjectLock(vm);
     priv->monStart = 0;
@@ -1794,11 +1797,11 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     virHashTablePtr paths = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    if (!virQEMUCapsUsedQMP(qemuCaps)
-        && pos != -1) {
-        if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
-            return -1;
+    if (pos != -1 &&
+        (logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
+        return -1;
 
+    if (logfd != -1 && !virQEMUCapsUsedQMP(qemuCaps)) {
         if (VIR_ALLOC_N(buf, buf_size) < 0)
             goto closelog;
 
@@ -1809,9 +1812,8 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     }
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(driver, vm) < 0) {
+    if (qemuConnectMonitor(driver, vm, logfd) < 0)
         goto cleanup;
-    }
 
     /* Try to get the pty path mappings again via the monitor. This is much more
      * reliable if it's available.
@@ -1838,14 +1840,15 @@ cleanup:
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
         if (virQEMUCapsUsedQMP(qemuCaps)) {
-            if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
-                return -1;
-
             if (VIR_ALLOC_N(buf, buf_size) < 0)
                 goto closelog;
         }
 
         len = strlen(buf);
+        /* best effor seek - we need to reset to the original position, so that
+         * a possible read of the fd in the monitor code doesn't influence this
+         * error delivery option */
+        lseek(logfd, pos, SEEK_SET);
         qemuProcessReadLog(logfd, buf + len, buf_size - len - 1, 0, true);
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("process exited while connecting to monitor: %s"),
@@ -3080,7 +3083,7 @@ qemuProcessReconnect(void *opaque)
     virObjectRef(obj);
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj) < 0)
+    if (qemuConnectMonitor(driver, obj, -1) < 0)
         goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -4047,6 +4050,9 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    /* unset reporting errors from qemu log */
+    qemuMonitorSetDomainLog(priv->mon, -1);
+
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     virObjectUnref(cfg);
@@ -4062,6 +4068,8 @@ cleanup:
     virBitmapFree(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
+    if (priv->mon)
+        qemuMonitorSetDomainLog(priv->mon, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
     virObjectUnref(cfg);
     virObjectUnref(caps);
