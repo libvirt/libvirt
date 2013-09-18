@@ -4903,8 +4903,8 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;backend model='random'&gt;/dev/random&lt;/backend&gt;
       &lt;!-- OR --&gt;
       &lt;backend model='egd' type='udp'&gt;
-        &lt;source mode='bind' service='1234'&gt;
-        &lt;source mode='connect' host='1.2.3.4' service='1234'&gt;
+        &lt;source mode='bind' service='1234'/&gt;
+        &lt;source mode='connect' host='1.2.3.4' service='1234'/&gt;
       &lt;/backend&gt;
     &lt;/rng&gt;
   &lt;/devices&gt;
