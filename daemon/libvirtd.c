@@ -1063,7 +1063,7 @@ daemonUsage(const char *argv0, bool privileged)
                   "      %s/run/libvirt/libvirt-sock-ro\n"
                   "\n"
                   "    TLS:\n"
-                  "      CA certificate:     %s/pki/CA/caert.pem\n"
+                  "      CA certificate:     %s/pki/CA/cacert.pem\n"
                   "      Server certificate: %s/pki/libvirt/servercert.pem\n"
                   "      Server private key: %s/pki/libvirt/private/serverkey.pem\n"
                   "\n"
