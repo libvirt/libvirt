@@ -31,6 +31,15 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+typedef struct _testQemuMonitorJSONSimpleFuncData testQemuMonitorJSONSimpleFuncData;
+typedef testQemuMonitorJSONSimpleFuncData *testQemuMonitorJSONSimpleFuncDataPtr;
+struct _testQemuMonitorJSONSimpleFuncData {
+    const char *cmd;
+    int (* func) (qemuMonitorPtr mon);
+    virDomainXMLOptionPtr xmlopt;
+    const char *reply;
+};
+
 static int
 testQemuMonitorJSONGetStatus(const void *data)
 {
@@ -999,10 +1008,35 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONSimpleFunc(const void *opaque)
+{
+    const testQemuMonitorJSONSimpleFuncDataPtr data = (const testQemuMonitorJSONSimpleFuncDataPtr) opaque;
+    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    const char *reply = data->reply;
+    int ret = -1;
+
+    if (!reply)
+        reply = "{\"return\":{}}";
+
+    if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0)
+        goto cleanup;
+
+    if (data->func(qemuMonitorTestGetMonitor(test)) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
     virDomainXMLOptionPtr xmlopt;
+    testQemuMonitorJSONSimpleFuncData simpleFunc;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -1019,6 +1053,12 @@ mymain(void)
     if (virtTestRun(# name, 1, testQemuMonitorJSON ## name, xmlopt) < 0) \
         ret = -1
 
+#define DO_TEST_SIMPLE(CMD, FNC, ...) \
+    simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.cmd = CMD, .func = FNC, \
+                                              .xmlopt = xmlopt, __VA_ARGS__ }; \
+    if (virtTestRun(# FNC, 1, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0) \
+        ret = -1
+
     DO_TEST(GetStatus);
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
@@ -1033,6 +1073,13 @@ mymain(void)
     DO_TEST(SetObjectProperty);
     DO_TEST(GetDeviceAliases);
     DO_TEST(CPU);
+    DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
+    DO_TEST_SIMPLE("system_powerdown", qemuMonitorSystemPowerdown);
+    DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
+    DO_TEST_SIMPLE("migrate_cancel", qemuMonitorJSONMigrateCancel);
+    DO_TEST_SIMPLE("inject-nmi", qemuMonitorJSONInjectNMI);
+    DO_TEST_SIMPLE("system_wakeup", qemuMonitorJSONSystemWakeup);
+    DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
 
     virObjectUnref(xmlopt);
 
