@@ -88,6 +88,9 @@ struct _qemuMonitor {
     /* If found, path to the virtio memballoon driver */
     char *balloonpath;
     bool ballooninit;
+
+    /* Log file fd of the qemu process to dig for usable info */
+    int logfd;
 };
 
 static virClassPtr qemuMonitorClass;
@@ -254,6 +257,7 @@ static void qemuMonitorDispose(void *obj)
     VIR_FREE(mon->buffer);
     virJSONValueFree(mon->options);
     VIR_FREE(mon->balloonpath);
+    VIR_FORCE_CLOSE(mon->logfd);
 }
 
 
@@ -715,6 +719,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
         return NULL;
 
     mon->fd = -1;
+    mon->logfd = -1;
     if (virCondInit(&mon->notify) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize monitor condition"));
@@ -3842,4 +3847,26 @@ qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
     }
 
     return qemuMonitorJSONGetDeviceAliases(mon, aliases);
+}
+
+
+/**
+ * qemuMonitorSetDomainLog:
+ * Set the file descriptor of the open VM log file to report potential
+ * early startup errors of qemu.
+ *
+ * @mon: Monitor object to set the log file reading on
+ * @logfd: File descriptor of the already open log file
+ */
+int
+qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd)
+{
+    VIR_FORCE_CLOSE(mon->logfd);
+    if (logfd >= 0 &&
+        (mon->logfd = dup(logfd)) < 0) {
+        virReportSystemError(errno, "%s", _("failed to duplicate log fd"));
+        return -1;
+    }
+
+    return 0;
 }
