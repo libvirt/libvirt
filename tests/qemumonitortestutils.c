@@ -485,7 +485,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
         *tmp = '\0';
     }
 
-    if (STRNEQ(data->command_name, cmdname))
+    if (data->command_name && STRNEQ(data->command_name, cmdname))
         ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
     else
         ret = qemuMonitorTestAddReponse(test, data->response);
@@ -604,7 +604,8 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
         goto cleanup;
     }
 
-    if (STRNEQ(data->command_name, cmdname)) {
+    if (data->command_name &&
+        STRNEQ(data->command_name, cmdname)) {
         ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
         goto cleanup;
     }
@@ -612,7 +613,7 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
         ret = qemuMonitorReportError(test,
                                      "Missing arguments section for command '%s'",
-                                     data->command_name);
+                                     NULLSTR(data->command_name));
         goto cleanup;
     }
 
@@ -622,7 +623,8 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
         if (!(argobj = virJSONValueObjectGet(args, arg->argname))) {
             ret = qemuMonitorReportError(test,
                                          "Missing argument '%s' for command '%s'",
-                                         arg->argname, data->command_name);
+                                         arg->argname,
+                                         NULLSTR(data->command_name));
             goto cleanup;
         }
 
@@ -636,7 +638,8 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
                                          "Invalid value of argument '%s' "
                                          "of command '%s': "
                                          "expected '%s' got '%s'",
-                                         arg->argname, data->command_name,
+                                         arg->argname,
+                                         NULLSTR(data->command_name),
                                          arg->argval, argstr);
             goto cleanup;
         }
