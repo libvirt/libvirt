@@ -1134,6 +1134,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     int configfd = -1;
     char *configfd_name = NULL;
     bool releaseaddr = false;
+    int backend = hostdev->source.subsys.u.pci.backend;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         return -1;
@@ -1142,10 +1143,8 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
                                      &hostdev, 1) < 0)
         return -1;
 
-    if (hostdev->source.subsys.u.pci.backend
-        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-        unsigned long long memKB;
-
+    switch ((virDomainHostdevSubsysPciBackendType) backend) {
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VFIO PCI device assignment is not "
@@ -1157,11 +1156,18 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
          * In this case, the guest's memory may already be locked, but it
          * doesn't hurt to "change" the limit to the same value.
          */
-        vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-        memKB = vm->def->mem.hard_limit ?
-            vm->def->mem.hard_limit : vm->def->mem.max_balloon + 1024 * 1024;
-        virProcessSetMaxMemLock(vm->pid, memKB);
-        vm->def->hostdevs[vm->def->nhostdevs--] = NULL;
+        if (vm->def->mem.hard_limit)
+            virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit);
+        else
+            virProcessSetMaxMemLock(vm->pid,
+                                    vm->def->mem.max_balloon + (1024 * 1024));
+
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+        break;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -1170,8 +1176,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
             goto error;
         releaseaddr = true;
-        if ((hostdev->source.subsys.u.pci.backend
-             != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
+        if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {

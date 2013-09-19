@@ -5485,14 +5485,25 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (dev->source.subsys.u.pci.backend
-        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-        virBufferAddLit(&buf, "vfio-pci");
-    } else {
+    switch ((virDomainHostdevSubsysPciBackendType)
+            dev->source.subsys.u.pci.backend) {
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
         virBufferAddLit(&buf, "pci-assign");
         if (configfd && *configfd)
             virBufferAsprintf(&buf, ",configfd=%s", configfd);
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+        virBufferAddLit(&buf, "vfio-pci");
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("PCI passhthrough type needs to be specified"));
+        break;
     }
+
     virBufferAsprintf(&buf, ",host=%.2x:%.2x.%.1x",
                       dev->source.subsys.u.pci.addr.bus,
                       dev->source.subsys.u.pci.addr.slot,
@@ -9232,7 +9243,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         VIR_FREE(devstr);
     }
 
-
     /* Add host passthrough hardware */
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
@@ -9305,9 +9315,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         /* PCI */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            int backend = hostdev->source.subsys.u.pci.backend;
 
-            if (hostdev->source.subsys.u.pci.backend
-                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("VFIO PCI device assignment is not "
@@ -9321,8 +9331,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *configfd_name = NULL;
-                if ((hostdev->source.subsys.u.pci.backend
-                     != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
+                if ((backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
                     int configfd = qemuOpenPCIConfig(hostdev);
 
