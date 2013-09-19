@@ -176,6 +176,7 @@
 /tests/openvzutilstest
 /tests/qemuagenttest
 /tests/qemuargv2xmltest
+/tests/qemucapabilitiestest
 /tests/qemuhelptest
 /tests/qemuhotplugtest
 /tests/qemumonitorjsontest
