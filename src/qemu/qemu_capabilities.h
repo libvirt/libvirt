@@ -214,6 +214,9 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
                                        uid_t runUid,
                                        gid_t runGid);
 
+int virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
+                              qemuMonitorPtr mon);
+
 int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
                         qemuMonitorPtr mon);
 

@@ -2493,6 +2493,85 @@ cleanup:
     return ret;
 }
 
+int
+virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
+                          qemuMonitorPtr mon)
+{
+    int ret = -1;
+    int major, minor, micro;
+    char *package = NULL;
+
+    /* @mon is supposed to be locked by callee */
+
+    if (qemuMonitorSetCapabilities(mon) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_DEBUG("Failed to set monitor capabilities %s",
+                  err ? err->message : "<unknown problem>");
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (qemuMonitorGetVersion(mon,
+                              &major, &minor, &micro,
+                              &package) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_DEBUG("Failed to query monitor version %s",
+                  err ? err->message : "<unknown problem>");
+        ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Got version %d.%d.%d (%s)",
+              major, minor, micro, NULLSTR(package));
+
+    if (major < 1 || (major == 1 && minor < 2)) {
+        VIR_DEBUG("Not new enough for QMP capabilities detection");
+        ret = 0;
+        goto cleanup;
+    }
+
+    qemuCaps->version = major * 1000000 + minor * 1000 + micro;
+    qemuCaps->usedQMP = true;
+
+    virQEMUCapsInitQMPBasic(qemuCaps);
+
+    if (virQEMUCapsInitArchQMPBasic(qemuCaps, mon) < 0)
+        goto cleanup;
+
+    /* USB option is supported v1.3.0 onwards */
+    if (qemuCaps->version >= 1003000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
+
+    /* WebSockets were introduced between 1.3.0 and 1.3.1 */
+    if (qemuCaps->version >= 1003001)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);
+
+    if (qemuCaps->version >= 1006000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+
+    if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPObjects(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(package);
+    return ret;
+}
+
 static int
 virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                    const char *libDir,
@@ -2502,8 +2581,6 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     int ret = -1;
     virCommandPtr cmd = NULL;
     qemuMonitorPtr mon = NULL;
-    int major, minor, micro;
-    char *package = NULL;
     int status = 0;
     virDomainChrSourceDef config;
     char *monarg = NULL;
@@ -2583,67 +2660,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
 
     virObjectLock(mon);
 
-    if (qemuMonitorSetCapabilities(mon) < 0) {
-        virErrorPtr err = virGetLastError();
-        VIR_DEBUG("Failed to set monitor capabilities %s",
-                  err ? err->message : "<unknown problem>");
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (qemuMonitorGetVersion(mon,
-                              &major, &minor, &micro,
-                              &package) < 0) {
-        virErrorPtr err = virGetLastError();
-        VIR_DEBUG("Failed to query monitor version %s",
-                  err ? err->message : "<unknown problem>");
-        ret = 0;
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Got version %d.%d.%d (%s)",
-              major, minor, micro, NULLSTR(package));
-
-    if (major < 1 || (major == 1 && minor < 2)) {
-        VIR_DEBUG("Not new enough for QMP capabilities detection");
-        ret = 0;
-        goto cleanup;
-    }
-
-    qemuCaps->version = major * 1000000 + minor * 1000 + micro;
-    qemuCaps->usedQMP = true;
-
-    virQEMUCapsInitQMPBasic(qemuCaps);
-
-    if (virQEMUCapsInitArchQMPBasic(qemuCaps, mon) < 0)
-        goto cleanup;
-
-    /* USB option is supported v1.3.0 onwards */
-    if (qemuCaps->version >= 1003000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
-
-    /* WebSockets were introduced between 1.3.0 and 1.3.1 */
-    if (qemuCaps->version >= 1003001)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);
-
-    if (qemuCaps->version >= 1006000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-
-    if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPObjects(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
-        goto cleanup;
-    if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
+    if (virQEMUCapsInitQMPMonitor(qemuCaps, mon) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2656,7 +2673,6 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(monarg);
     VIR_FREE(monpath);
-    VIR_FREE(package);
 
     if (pid != 0) {
         char ebuf[1024];
