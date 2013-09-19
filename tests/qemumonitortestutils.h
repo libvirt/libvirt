@@ -61,12 +61,13 @@ int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
     ATTRIBUTE_SENTINEL;
 
 # define qemuMonitorTestNewSimple(json, xmlopt) \
-    qemuMonitorTestNew(json, xmlopt, NULL, NULL)
+    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL)
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt,
                                       virDomainObjPtr vm,
-                                      virQEMUDriverPtr driver);
+                                      virQEMUDriverPtr driver,
+                                      const char *greeting);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 

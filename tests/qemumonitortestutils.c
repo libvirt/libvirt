@@ -873,7 +873,8 @@ qemuMonitorTestPtr
 qemuMonitorTestNew(bool json,
                    virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr vm,
-                   virQEMUDriverPtr driver)
+                   virQEMUDriverPtr driver,
+                   const char *greeting)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -893,9 +894,10 @@ qemuMonitorTestNew(bool json,
 
     virObjectLock(test->mon);
 
-    if (qemuMonitorTestAddReponse(test, json ?
-                                  QEMU_JSON_GREETING :
-                                  QEMU_TEXT_GREETING) < 0)
+    if (!greeting)
+        greeting = json ? QEMU_JSON_GREETING : QEMU_TEXT_GREETING;
+
+    if (qemuMonitorTestAddReponse(test, greeting) < 0)
         goto error;
 
     if (qemuMonitorCommonTestInit(test) < 0)
