@@ -1544,6 +1544,10 @@ static const vshCmdOptDef opts_block_commit[] = {
      .type = VSH_OT_INT,
      .help = N_("with --wait, abort if copy exceeds timeout (in seconds)")
     },
+    {.name = "async",
+     .type = VSH_OT_BOOL,
+     .help = N_("with --wait, don't wait for cancel to finish")
+    },
     {.name = NULL}
 };
 
