@@ -2738,12 +2738,13 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     int status = -1;
     char *ident = NULL;
     bool authdismissed = 0;
-    bool supportsuid = false;
     char *pkout = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virCommandPtr cmd = NULL;
+# ifndef PKCHECK_SUPPORTS_UID
     static bool polkitInsecureWarned;
+# endif
 
     virMutexLock(&priv->lock);
     action = virNetServerClientGetReadonly(client) ?
@@ -2775,19 +2776,21 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
              (long long) callerPid, callerUid);
 
     virCommandAddArg(cmd, "--process");
+
 # ifdef PKCHECK_SUPPORTS_UID
-    supportsuid = true;
-# endif
-    if (supportsuid) {
-        virCommandAddArgFormat(cmd, "%lld,%llu,%lu",
-                               (long long) callerPid, timestamp, (unsigned long) callerUid);
-    } else {
-        if (!polkitInsecureWarned) {
-            VIR_WARN("No support for caller UID with pkcheck. This deployment is known to be insecure.");
-            polkitInsecureWarned = true;
-        }
-        virCommandAddArgFormat(cmd, "%lld,%llu", (long long) callerPid, timestamp);
+    virCommandAddArgFormat(cmd, "%lld,%llu,%lu",
+                           (long long) callerPid,
+                           timestamp,
+                           (unsigned long) callerUid);
+# else
+    if (!polkitInsecureWarned) {
+        VIR_WARN("No support for caller UID with pkcheck. "
+                 "This deployment is known to be insecure.");
+        polkitInsecureWarned = true;
     }
+    virCommandAddArgFormat(cmd, "%lld,%llu", (long long) callerPid, timestamp);
+# endif
+
     virCommandAddArg(cmd, "--allow-user-interaction");
 
     if (virAsprintf(&ident, "pid:%lld,uid:%d",
