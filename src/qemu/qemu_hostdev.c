@@ -23,6 +23,11 @@
 
 #include <config.h>
 
+#include <dirent.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+
 #include "qemu_hostdev.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -31,6 +36,7 @@
 #include "virusb.h"
 #include "virscsi.h"
 #include "virnetdev.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -486,6 +492,122 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
 }
 
 
+static bool
+qemuHostdevHostSupportsPassthroughVFIO(void)
+{
+    DIR *iommuDir = NULL;
+    struct dirent *iommuGroup = NULL;
+    bool ret = false;
+
+    /* condition 1 - /sys/kernel/iommu_groups/ contains entries */
+    if (!(iommuDir = opendir("/sys/kernel/iommu_groups/")))
+        goto cleanup;
+
+    while ((iommuGroup = readdir(iommuDir))) {
+        /* skip ./ ../ */
+        if (STRPREFIX(iommuGroup->d_name, "."))
+            continue;
+
+        /* assume we found a group */
+        break;
+    }
+
+    if (!iommuGroup)
+        goto cleanup;
+    /* okay, iommu is on and recognizes groups */
+
+    /* condition 2 - /dev/vfio/vfio exists */
+    if (!virFileExists("/dev/vfio/vfio"))
+        goto cleanup;
+
+    ret = true;
+
+cleanup:
+    if (iommuDir)
+        closedir(iommuDir);
+
+    return ret;
+}
+
+
+#if HAVE_LINUX_KVM_H
+# include <linux/kvm.h>
+static bool
+qemuHostdevHostSupportsPassthroughLegacy(void)
+{
+    int kvmfd = -1;
+    bool ret = false;
+
+    if ((kvmfd = open("/dev/kvm", O_RDONLY)) < 0)
+        goto cleanup;
+
+# ifdef KVM_CAP_IOMMU
+    if ((ioctl(kvmfd, KVM_CHECK_EXTENSION, KVM_CAP_IOMMU)) <= 0)
+        goto cleanup;
+
+    ret = true;
+# endif
+
+cleanup:
+    VIR_FORCE_CLOSE(kvmfd);
+
+    return ret;
+}
+#else
+static bool
+qemuHostdevHostSupportsPassthroughLegacy(void)
+{
+    return false;
+}
+#endif
+
+
+static bool
+qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
+                                  size_t nhostdevs)
+{
+    bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
+    bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    size_t i;
+
+    /* assign defaults for hostdev passthrough */
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        int *backend = &hostdev->source.subsys.u.pci.backend;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        switch ((virDomainHostdevSubsysPciBackendType) *backend) {
+        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
+            if (!supportsPassthroughVFIO) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support VFIO PCI passthrough"));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
+            if (!supportsPassthroughKVM) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support legacy PCI passthrough"));
+                return false;
+            }
+
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
+            break;
+        }
+    }
+
+    return true;
+}
+
+
 int
 qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                              const char *name,
@@ -498,6 +620,9 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     size_t i;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs))
+        goto cleanup;
 
     virObjectLock(driver->activePciHostdevs);
     virObjectLock(driver->inactivePciHostdevs);
