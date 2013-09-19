@@ -737,7 +737,7 @@ I<domif-setlink>) will accept the MAC address printed by this command.
 
 =item B<blockcommit> I<domain> I<path> [I<bandwidth>]
 {[I<base>] | [I<--shallow>]} [I<top>] [I<--delete>]
-[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>]]
+[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
 
 Reduce the length of a backing image chain, by committing changes at the
 top of the chain (snapshot or delta files) into backing images.  By
@@ -756,7 +756,10 @@ operation can be checked with B<blockjob>.  However, if I<--wait> is
 specified, then this command will block until the operation completes,
 or cancel the operation if the optional I<timeout> in seconds elapses
 or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
-with I<--wait> will produce periodic status updates.
+with I<--wait> will produce periodic status updates.  If job cancellation
+is triggered, I<--async> will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up.
 
 I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
