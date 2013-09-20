@@ -1598,7 +1598,10 @@ qemuMigrationWaitForSpice(virQEMUDriverPtr driver,
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
-        qemuDomainObjEnterMonitor(driver, vm);
+        if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+            return -1;
+
         if (qemuMonitorGetSpiceMigrationStatus(priv->mon,
                                                &spice_migrated) < 0) {
             qemuDomainObjExitMonitor(driver, vm);
