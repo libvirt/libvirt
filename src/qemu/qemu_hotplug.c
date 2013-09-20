@@ -1140,7 +1140,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
-                                     &hostdev, 1) < 0)
+                                     &hostdev, 1, priv->qemuCaps) < 0)
         return -1;
 
     switch ((virDomainHostdevSubsysPciBackendType) backend) {

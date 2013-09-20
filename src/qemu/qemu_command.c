@@ -5484,10 +5484,10 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int backend = dev->source.subsys.u.pci.backend;
 
-    switch ((virDomainHostdevSubsysPciBackendType)
-            dev->source.subsys.u.pci.backend) {
-    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    /* caller has to assign proper passthrough backend type */
+    switch ((virDomainHostdevSubsysPciBackendType) backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
         virBufferAddLit(&buf, "pci-assign");
         if (configfd && *configfd)
@@ -5498,9 +5498,11 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
         virBufferAddLit(&buf, "vfio-pci");
         break;
 
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("PCI passhthrough type needs to be specified"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid PCI passthrough type '%s'"),
+                       virDomainHostdevSubsysPciBackendTypeToString(backend));
         break;
     }
 

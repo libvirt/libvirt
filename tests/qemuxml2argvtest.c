@@ -98,6 +98,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virConnectPtr conn;
     char *log = NULL;
     virCommandPtr cmd = NULL;
+    size_t i;
 
     if (!(conn = virGetConnect()))
         goto out;
@@ -153,6 +154,16 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
         goto out;
+
+    for (i = 0; i < vmdef->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = vmdef->hostdevs[i];
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
+            hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
+        }
+    }
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,

@@ -262,6 +262,7 @@ virDomainHostdevFind;
 virDomainHostdevInsert;
 virDomainHostdevModeTypeToString;
 virDomainHostdevRemove;
+virDomainHostdevSubsysPciBackendTypeToString;
 virDomainHostdevSubsysTypeToString;
 virDomainHubTypeFromString;
 virDomainHubTypeToString;

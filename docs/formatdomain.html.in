@@ -2757,11 +2757,10 @@
         backend, which is compatible with UEFI SecureBoot) or "kvm"
         (for the legacy device assignment handled directly by the KVM
         kernel module)<span class="since">Since 1.0.5 (QEMU and KVM
-        only, requires kernel 3.6 or newer)</span>. Currently, "kvm"
-        is the default used by libvirt when not explicitly provided,
-        but since the two are functionally equivalent, this default
-        could be changed in the future with no impact to domains that
-        don't specify anything.
+        only, requires kernel 3.6 or newer)</span>. The default, when
+        the driver name is not explicitly specified, is to check wether
+        VFIO is available and use it if it's the case. If VFIO is not
+        available, the legacy "kvm" assignment is attempted.
       </dd>
       <dt><code>readonly</code></dt>
       <dd>Indicates that the device is readonly, only supported by SCSI host

@@ -564,7 +564,8 @@ qemuHostdevHostSupportsPassthroughLegacy(void)
 
 static bool
 qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
-                                  size_t nhostdevs)
+                                  size_t nhostdevs,
+                                  virQEMUCapsPtr qemuCaps)
 {
     bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
@@ -581,6 +582,23 @@ qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
             continue;
 
         switch ((virDomainHostdevSubsysPciBackendType) *backend) {
+        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+            if (supportsPassthroughVFIO &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
+            } else if (supportsPassthroughKVM &&
+                       (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE) ||
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+                *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support passthrough of "
+                                 "host PCI devices"));
+                return false;
+            }
+
+            break;
+
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
             if (!supportsPassthroughVFIO) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -589,7 +607,6 @@ qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
             }
             break;
 
-        case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
             if (!supportsPassthroughKVM) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -613,7 +630,8 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                              const char *name,
                              const unsigned char *uuid,
                              virDomainHostdevDefPtr *hostdevs,
-                             int nhostdevs)
+                             int nhostdevs,
+                             virQEMUCapsPtr qemuCaps)
 {
     virPCIDeviceListPtr pcidevs;
     int last_processed_hostdev_vf = -1;
@@ -621,7 +639,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs))
+    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
         goto cleanup;
 
     virObjectLock(driver->activePciHostdevs);
@@ -1142,13 +1160,15 @@ cleanup:
 int
 qemuPrepareHostDevices(virQEMUDriverPtr driver,
                        virDomainDefPtr def,
+                       virQEMUCapsPtr qemuCaps,
                        bool coldBoot)
 {
     if (!def->nhostdevs)
         return 0;
 
     if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
-                                     def->hostdevs, def->nhostdevs) < 0)
+                                     def->hostdevs, def->nhostdevs,
+                                     qemuCaps) < 0)
         return -1;
 
     if (qemuPrepareHostUSBDevices(driver, def, coldBoot) < 0)

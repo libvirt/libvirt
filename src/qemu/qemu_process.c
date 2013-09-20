@@ -3567,6 +3567,12 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    VIR_DEBUG("Determining emulator version");
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      vm->def->emulator)))
+        goto cleanup;
+
     /* network devices must be "prepared" before hostdevs, because
      * setting up a network device might create a new hostdev that
      * will need to be setup.
@@ -3577,7 +3583,8 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
-    if (qemuPrepareHostDevices(driver, vm->def, !migrateFrom) < 0)
+    if (qemuPrepareHostDevices(driver, vm->def, priv->qemuCaps,
+                               !migrateFrom) < 0)
         goto cleanup;
 
     VIR_DEBUG("Preparing chr devices");
@@ -3658,12 +3665,6 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
         }
     }
-
-    VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator)))
-        goto cleanup;
 
     if (!qemuValidateCpuMax(vm->def, priv->qemuCaps))
         goto cleanup;

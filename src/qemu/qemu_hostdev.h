@@ -37,7 +37,8 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs);
+                                 int nhostdevs,
+                                 virQEMUCapsPtr qemuCaps);
 int qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                              bool mandatory,
                              virUSBDevicePtr *usb);
@@ -50,6 +51,7 @@ int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
                                   int nhostdevs);
 int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
+                           virQEMUCapsPtr qemuCaps,
                            bool coldBoot);
 void qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
                                        const char *name,
