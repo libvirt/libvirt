@@ -1769,7 +1769,7 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
     virDomainPtr domain;
     PyObject *pyobj_domain, *pycpumaps = NULL;
     virDomainInfo dominfo;
-    unsigned char *cpumaps;
+    unsigned char *cpumaps = NULL;
     size_t cpumaplen, vcpu, pcpu;
     unsigned int flags;
     int i_retval, cpunum;
