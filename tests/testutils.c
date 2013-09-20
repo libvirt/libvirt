@@ -47,10 +47,6 @@
 #include "virprocess.h"
 #include "virstring.h"
 
-#if TEST_OOM_TRACE
-# include <execinfo.h>
-#endif
-
 #ifdef HAVE_PATHS_H
 # include <paths.h>
 #endif
@@ -68,7 +64,6 @@ static unsigned int testDebug = -1;
 static unsigned int testVerbose = -1;
 static unsigned int testExpensive = -1;
 
-static unsigned int testOOM = 0;
 static size_t testCounter = 0;
 static size_t testStart = 0;
 static size_t testEnd = 0;
@@ -151,10 +146,8 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
          testCounter > testEnd))
         return 0;
 
-    if (testOOM < 2) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "%2zu) %-65s ... ", testCounter, title);
-    }
+    if (virTestGetVerbose())
+        fprintf(stderr, "%2zu) %-65s ... ", testCounter, title);
 
     if (nloops > 1 && (VIR_ALLOC_N(ts, nloops) < 0))
         return -1;
@@ -182,30 +175,28 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
             ts[i] = DIFF_MSEC(&after, &before);
         }
     }
-    if (testOOM < 2) {
-        if (virTestGetVerbose()) {
-            if (ret == 0 && ts)
-                fprintf(stderr, "OK     [%.5f ms]\n",
-                        virtTestCountAverage(ts, nloops));
-            else if (ret == 0)
-                fprintf(stderr, "OK\n");
-            else if (ret == EXIT_AM_SKIP)
-                fprintf(stderr, "SKIP\n");
-            else
-                fprintf(stderr, "FAILED\n");
-        } else {
-            if (testCounter != 1 &&
-                !((testCounter-1) % 40)) {
-                fprintf(stderr, " %-3zu\n", (testCounter-1));
-                fprintf(stderr, "      ");
+    if (virTestGetVerbose()) {
+        if (ret == 0 && ts)
+            fprintf(stderr, "OK     [%.5f ms]\n",
+                    virtTestCountAverage(ts, nloops));
+        else if (ret == 0)
+            fprintf(stderr, "OK\n");
+        else if (ret == EXIT_AM_SKIP)
+            fprintf(stderr, "SKIP\n");
+        else
+            fprintf(stderr, "FAILED\n");
+    } else {
+        if (testCounter != 1 &&
+            !((testCounter-1) % 40)) {
+            fprintf(stderr, " %-3zu\n", (testCounter-1));
+            fprintf(stderr, "      ");
             }
-            if (ret == 0)
+        if (ret == 0)
                 fprintf(stderr, ".");
-            else if (ret == EXIT_AM_SKIP)
-                fprintf(stderr, "_");
-            else
-                fprintf(stderr, "!");
-        }
+        else if (ret == EXIT_AM_SKIP)
+            fprintf(stderr, "_");
+        else
+            fprintf(stderr, "!");
     }
 
     VIR_FREE(ts);
@@ -539,27 +530,6 @@ virtTestLogContentAndReset(void)
     return ret;
 }
 
-#if TEST_OOM_TRACE
-static void
-virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
-{
-    void *trace[30];
-    int ntrace = ARRAY_CARDINALITY(trace);
-    size_t i;
-    char **symbols = NULL;
-
-    ntrace = backtrace(trace, ntrace);
-    symbols = backtrace_symbols(trace, ntrace);
-    if (symbols) {
-        fprintf(stderr, "Failing allocation %d at:\n", n);
-        for (i = 0; i < ntrace; i++) {
-            if (symbols[i])
-                fprintf(stderr, "  TRACE:  %s\n", symbols[i]);
-        }
-        VIR_FREE(symbols);
-    }
-}
-#endif
 
 static unsigned int
 virTestGetFlag(const char *name) {
@@ -603,15 +573,6 @@ int virtTestMain(int argc,
     int ret;
     bool abs_srcdir_cleanup = false;
     char *testRange = NULL;
-#if TEST_OOM
-    int approxAlloc = 0;
-    int n;
-    char *oomStr = NULL;
-    int oomCount;
-    int mp = 0;
-    pid_t *workers;
-    int worker = 0;
-#endif
 
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir) {
@@ -672,112 +633,7 @@ int virtTestMain(int argc,
         }
     }
 
-#if TEST_OOM
-    if ((oomStr = getenv("VIR_TEST_OOM")) != NULL) {
-        if (virStrToLong_i(oomStr, NULL, 10, &oomCount) < 0)
-            oomCount = 0;
-
-        if (oomCount < 0)
-            oomCount = 0;
-        if (oomCount)
-            testOOM = 1;
-    }
-
-    if (getenv("VIR_TEST_MP") != NULL) {
-        mp = sysconf(_SC_NPROCESSORS_ONLN);
-        fprintf(stderr, "Using %d worker processes\n", mp);
-        if (VIR_ALLOC_N(workers, mp) < 0) {
-            ret = EXIT_FAILURE;
-            goto cleanup;
-        }
-    }
-
-    /* Run once to prime any static allocations & ensure it passes */
     ret = (func)();
-    if (ret != EXIT_SUCCESS)
-        goto cleanup;
-
-# if TEST_OOM_TRACE
-    if (virTestGetDebug())
-        virAllocTestHook(virtTestErrorHook, NULL);
-# endif
-
-    if (testOOM) {
-        /* Makes next test runs quiet... */
-        testOOM++;
-        virtTestQuiesceLibvirtErrors(true);
-
-        virAllocTestInit();
-
-        /* Run again to count allocs, and ensure it passes :-) */
-        ret = (func)();
-        if (ret != EXIT_SUCCESS)
-            goto cleanup;
-
-        approxAlloc = virAllocTestCount();
-        testCounter++;
-        if (virTestGetDebug())
-            fprintf(stderr, "%zu) OOM...\n", testCounter);
-        else
-            fprintf(stderr, "%zu) OOM of %d allocs ", testCounter, approxAlloc);
-
-        if (mp) {
-            size_t i;
-            for (i = 0; i < mp; i++) {
-                workers[i] = fork();
-                if (workers[i] == 0) {
-                    worker = i + 1;
-                    break;
-                }
-            }
-        }
-
-        /* Run once for each alloc, failing a different one
-           and validating that the test case failed */
-        for (n = 0; n < approxAlloc && (!mp || worker); n++) {
-            if (mp &&
-                (n % mp) != (worker - 1))
-                continue;
-            if (!virTestGetDebug()) {
-                if (mp)
-                    fprintf(stderr, "%d", worker);
-                else
-                    fprintf(stderr, ".");
-                fflush(stderr);
-            }
-            virAllocTestOOM(n+1, oomCount);
-
-            if (((func)()) != EXIT_FAILURE) {
-                ret = EXIT_FAILURE;
-                break;
-            }
-        }
-
-        if (mp) {
-            if (worker) {
-                _exit(ret);
-            } else {
-                size_t i;
-                for (i = 0; i < mp; i++) {
-                    if (virProcessWait(workers[i], NULL) < 0)
-                        ret = EXIT_FAILURE;
-                }
-                VIR_FREE(workers);
-            }
-        }
-
-        if (virTestGetDebug())
-            fprintf(stderr, " ... OOM of %d allocs", approxAlloc);
-
-        if (ret == EXIT_SUCCESS)
-            fprintf(stderr, " OK\n");
-        else
-            fprintf(stderr, " FAILED\n");
-    }
-cleanup:
-#else
-    ret = (func)();
-#endif
 
     if (abs_srcdir_cleanup)
         VIR_FREE(abs_srcdir);
