@@ -898,6 +898,13 @@ sc_prohibit_virConnectOpen_in_virsh:
 	halt='Use vshConnect() in virsh instead of virConnectOpen*'    \
 	  $(_sc_search_regexp)
 
+sc_curly_braces_style:
+	@files=$$($(VC_LIST_EXCEPT) | grep '\.[ch]$$');                \
+	$(GREP) -nHP                                                   \
+'^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{' \
+	$$files && { echo '$(ME): Non-K&R style used for curly'        \
+			  'braces around function body, see'           \
+			  'HACKING' 1>&2; exit 1; } || :
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
