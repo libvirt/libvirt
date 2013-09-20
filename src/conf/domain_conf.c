@@ -13354,6 +13354,72 @@ virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
     return true;
 }
 
+
+static bool
+virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
+                                      virDomainDefPtr dst)
+{
+    size_t i;
+
+    /* basic check */
+    if (src->features != dst->features) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain features %d does not match source %d"),
+                       dst->features, src->features);
+        return false;
+    }
+
+    /* APIC EOI */
+    if (src->apic_eoi != dst->apic_eoi) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("State of APIC EOI differs: "
+                         "source: '%s', destination: '%s'"),
+                       virDomainFeatureStateTypeToString(src->apic_eoi),
+                       virDomainFeatureStateTypeToString(dst->apic_eoi));
+        return false;
+    }
+
+    /* hyperv */
+    if (src->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+        for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+            switch ((enum virDomainHyperv) i) {
+            case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
+                if (src->hyperv_features[i] != dst->hyperv_features[i]) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("State of HyperV enlightenment "
+                                     "feature '%s' differs: "
+                                     "source: '%s', destination: '%s'"),
+                                   virDomainHypervTypeToString(i),
+                                   virDomainFeatureStateTypeToString(src->hyperv_features[i]),
+                                   virDomainFeatureStateTypeToString(dst->hyperv_features[i]));
+                    return false;
+                }
+
+                break;
+
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                /* spinlock count matters! */
+                if (src->hyperv_spinlocks != dst->hyperv_spinlocks) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("HyperV spinlock retry count differs: "
+                                     "source: '%u', destination: '%u'"),
+                                   src->hyperv_spinlocks,
+                                   dst->hyperv_spinlocks);
+                    return false;
+                }
+                break;
+
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+        }
+    }
+
+    return true;
+}
+
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -13455,12 +13521,8 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
-    if (src->features != dst->features) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain features %d does not match source %d"),
-                       dst->features, src->features);
+    if (!virDomainDefFeaturesCheckABIStability(src, dst))
         return false;
-    }
 
     if (src->clock.ntimers != dst->clock.ntimers) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
