@@ -25,18 +25,20 @@
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
+  <xsl:param name="builddir" select="'..'"/>
+
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
 
   <xsl:variable name="acls">
-    <xsl:copy-of select="document('../src/libvirt_access.xml')/aclinfo/api"/>
+    <xsl:copy-of select="document('{$builddir}/src/libvirt_access.xml')/aclinfo/api"/>
   </xsl:variable>
   <xsl:variable name="qemuacls">
-    <xsl:copy-of select="document('../src/libvirt_access_qemu.xml')/aclinfo/api"/>
+    <xsl:copy-of select="document('{$builddir}/src/libvirt_access_qemu.xml')/aclinfo/api"/>
   </xsl:variable>
   <xsl:variable name="lxcacls">
-    <xsl:copy-of select="document('../src/libvirt_access_lxc.xml')/aclinfo/api"/>
+    <xsl:copy-of select="document('{$builddir}/src/libvirt_access_lxc.xml')/aclinfo/api"/>
   </xsl:variable>
 
   <xsl:template name="aclinfo">
