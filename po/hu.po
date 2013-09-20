@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-08-01 17:46-0400\n"
+"POT-Creation-Date: 2013-09-20 16:29-0400\n"
 "PO-Revision-Date: 2013-01-28 14:11+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -147,7 +147,7 @@ msgid ""
 msgstr ""
 
 #: daemon/libvirtd.c:1108 daemon/libvirtd.c:1122
-#: src/locking/lock_daemon.c:1196 src/locking/sanlock_helper.c:76
+#: src/locking/lock_daemon.c:1198 src/locking/sanlock_helper.c:76
 #: src/lxc/lxc_controller.c:1547 src/security/virt-aa-helper.c:1186
 #: src/storage/parthelper.c:75 src/util/iohelper.c:237 src/util/iohelper.c:243
 #, c-format
@@ -177,20 +177,20 @@ msgstr ""
 msgid "%s: internal error: unknown flag: %c"
 msgstr ""
 
-#: daemon/libvirtd.c:1211 src/locking/lock_daemon.c:1249
+#: daemon/libvirtd.c:1211 src/locking/lock_daemon.c:1251
 msgid "Can't create initial configuration"
 msgstr ""
 
-#: daemon/libvirtd.c:1220 src/locking/lock_daemon.c:1258
+#: daemon/libvirtd.c:1220 src/locking/lock_daemon.c:1260
 msgid "Can't determine config path"
 msgstr ""
 
-#: daemon/libvirtd.c:1230 src/locking/lock_daemon.c:1268
+#: daemon/libvirtd.c:1230 src/locking/lock_daemon.c:1270
 #, c-format
 msgid "Can't load config file: %s: %s"
 msgstr ""
 
-#: daemon/libvirtd.c:1233 src/locking/lock_daemon.c:1271
+#: daemon/libvirtd.c:1233 src/locking/lock_daemon.c:1273
 #, c-format
 msgid "Can't load config file: %s"
 msgstr ""
@@ -204,33 +204,33 @@ msgstr ""
 msgid "invalid host UUID: %s"
 msgstr ""
 
-#: daemon/libvirtd.c:1250 src/locking/lock_daemon.c:1276
+#: daemon/libvirtd.c:1250 src/locking/lock_daemon.c:1278
 msgid "Can't initialize logging"
 msgstr ""
 
-#: daemon/libvirtd.c:1257 src/locking/lock_daemon.c:1283
+#: daemon/libvirtd.c:1257 src/locking/lock_daemon.c:1285
 msgid "Can't determine pid file path."
 msgstr ""
 
-#: daemon/libvirtd.c:1266 src/locking/lock_daemon.c:1290
+#: daemon/libvirtd.c:1266 src/locking/lock_daemon.c:1292
 msgid "Can't determine socket paths"
 msgstr ""
 
-#: daemon/libvirtd.c:1276 src/locking/lock_daemon.c:1300
+#: daemon/libvirtd.c:1276 src/locking/lock_daemon.c:1302
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr ""
 
-#: daemon/libvirtd.c:1282 src/locking/lock_daemon.c:1306
+#: daemon/libvirtd.c:1282 src/locking/lock_daemon.c:1308
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr ""
 
-#: daemon/libvirtd.c:1295 src/locking/lock_daemon.c:1320
+#: daemon/libvirtd.c:1295 src/locking/lock_daemon.c:1322
 msgid "Can't determine user directory"
 msgstr ""
 
-#: daemon/libvirtd.c:1311 src/locking/lock_daemon.c:1332
+#: daemon/libvirtd.c:1311 src/locking/lock_daemon.c:1334
 #, c-format
 msgid "unable to create rundir %s: %s"
 msgstr ""
@@ -243,17 +243,17 @@ msgstr ""
 #: daemon/remote.c:1674 daemon/remote.c:1729 daemon/remote.c:1815
 #: daemon/remote.c:1872 daemon/remote.c:1923 daemon/remote.c:1987
 #: daemon/remote.c:2051 daemon/remote.c:2116 daemon/remote.c:2194
-#: daemon/remote.c:2269 daemon/remote.c:2311 daemon/remote.c:3086
-#: daemon/remote.c:3139 daemon/remote.c:3180 daemon/remote.c:3258
-#: daemon/remote.c:3295 daemon/remote.c:3328 daemon/remote.c:3377
-#: daemon/remote.c:3423 daemon/remote.c:3464 daemon/remote.c:3515
-#: daemon/remote.c:3575 daemon/remote.c:3629 daemon/remote.c:3678
-#: daemon/remote.c:3725 daemon/remote.c:3765 daemon/remote.c:3810
-#: daemon/remote.c:3873 daemon/remote.c:3947 daemon/remote.c:4010
-#: daemon/remote.c:4071 daemon/remote.c:4135 daemon/remote.c:4190
-#: daemon/remote.c:4249 daemon/remote.c:4303 daemon/remote.c:4357
-#: daemon/remote.c:4411 daemon/remote.c:4465 daemon/remote.c:4520
-#: daemon/remote.c:4580 daemon/remote.c:4626 daemon/remote.c:4676
+#: daemon/remote.c:2269 daemon/remote.c:2311 daemon/remote.c:3108
+#: daemon/remote.c:3161 daemon/remote.c:3202 daemon/remote.c:3280
+#: daemon/remote.c:3317 daemon/remote.c:3350 daemon/remote.c:3399
+#: daemon/remote.c:3445 daemon/remote.c:3486 daemon/remote.c:3537
+#: daemon/remote.c:3597 daemon/remote.c:3651 daemon/remote.c:3700
+#: daemon/remote.c:3747 daemon/remote.c:3787 daemon/remote.c:3832
+#: daemon/remote.c:3895 daemon/remote.c:3969 daemon/remote.c:4032
+#: daemon/remote.c:4093 daemon/remote.c:4157 daemon/remote.c:4212
+#: daemon/remote.c:4271 daemon/remote.c:4325 daemon/remote.c:4379
+#: daemon/remote.c:4433 daemon/remote.c:4487 daemon/remote.c:4542
+#: daemon/remote.c:4602 daemon/remote.c:4648 daemon/remote.c:4698
 #: daemon/remote_dispatch.h:143 daemon/remote_dispatch.h:213
 #: daemon/remote_dispatch.h:347 daemon/remote_dispatch.h:397
 #: daemon/remote_dispatch.h:448 daemon/remote_dispatch.h:498
@@ -392,8 +392,8 @@ msgstr ""
 #: daemon/remote.c:924 daemon/remote.c:1015 daemon/remote.c:1123
 #: daemon/remote.c:1303 daemon/remote.c:1930 daemon/remote.c:1994
 #: daemon/remote.c:2058 daemon/remote.c:2123 daemon/remote.c:2201
-#: daemon/remote.c:2316 daemon/remote.c:3817 daemon/remote.c:3878
-#: daemon/remote.c:4527
+#: daemon/remote.c:2316 daemon/remote.c:3839 daemon/remote.c:3900
+#: daemon/remote.c:4549
 msgid "nparams too large"
 msgstr ""
 
@@ -426,107 +426,107 @@ msgstr ""
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr ""
 
-#: daemon/remote.c:2448
+#: daemon/remote.c:2449
 msgid "client tried invalid SASL init request"
 msgstr ""
 
-#: daemon/remote.c:2496 daemon/remote.c:2645 daemon/remote.c:2743
-#: daemon/remote.c:2759 daemon/remote.c:2773 daemon/remote.c:2787
-#: daemon/remote.c:2885 daemon/remote.c:3031 daemon/remote.c:3060
+#: daemon/remote.c:2497 daemon/remote.c:2646 daemon/remote.c:2744
+#: daemon/remote.c:2760 daemon/remote.c:2774 daemon/remote.c:2788
+#: daemon/remote.c:2907 daemon/remote.c:3053 daemon/remote.c:3082
 #: src/util/virerror.c:983
 msgid "authentication failed"
 msgstr ""
 
-#: daemon/remote.c:2523
+#: daemon/remote.c:2524
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
 
-#: daemon/remote.c:2576 daemon/remote.c:2674
+#: daemon/remote.c:2577 daemon/remote.c:2675
 msgid "client tried invalid SASL start request"
 msgstr ""
 
-#: daemon/remote.c:2594
+#: daemon/remote.c:2595
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr ""
 
-#: daemon/remote.c:2691
+#: daemon/remote.c:2692
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr ""
 
-#: daemon/remote.c:2826 daemon/remote.c:2936
+#: daemon/remote.c:2830 daemon/remote.c:2958
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
 
-#: daemon/remote.c:2854
+#: daemon/remote.c:2876
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d: %s"
 msgstr ""
 
-#: daemon/remote.c:2881
+#: daemon/remote.c:2903
 msgid "authentication cancelled by user"
 msgstr ""
 
-#: daemon/remote.c:2883
+#: daemon/remote.c:2905
 #, c-format
 msgid "polkit: %s"
 msgstr ""
 
-#: daemon/remote.c:2942
+#: daemon/remote.c:2964
 msgid "cannot get peer socket identity"
 msgstr ""
 
-#: daemon/remote.c:2960
+#: daemon/remote.c:2982
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr ""
 
-#: daemon/remote.c:2967
+#: daemon/remote.c:2989
 #, c-format
 msgid "Failed to create polkit action %s"
 msgstr ""
 
-#: daemon/remote.c:2977
+#: daemon/remote.c:2999
 #, c-format
 msgid "Failed to create polkit context %s"
 msgstr ""
 
-#: daemon/remote.c:2995
+#: daemon/remote.c:3017
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr ""
 
-#: daemon/remote.c:3009
+#: daemon/remote.c:3031
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr ""
 
-#: daemon/remote.c:3058
+#: daemon/remote.c:3080
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
-#: daemon/remote.c:3146 daemon/remote.c:3341
+#: daemon/remote.c:3168 daemon/remote.c:3363
 #, c-format
 msgid "domain event %d already registered"
 msgstr ""
 
-#: daemon/remote.c:3187 daemon/remote.c:3391
+#: daemon/remote.c:3209 daemon/remote.c:3413
 #, c-format
 msgid "domain event %d not registered"
 msgstr ""
 
-#: daemon/remote.c:3336 daemon/remote.c:3385
+#: daemon/remote.c:3358 daemon/remote.c:3407
 #, c-format
 msgid "unsupported event ID %d"
 msgstr ""
 
-#: daemon/remote.c:3882
+#: daemon/remote.c:3904
 msgid "ncpus too large"
 msgstr ""
 
-#: daemon/remote.c:3956
+#: daemon/remote.c:3978
 msgid "maxerrors too large"
 msgstr ""
 
@@ -3213,7 +3213,7 @@ msgstr ""
 
 #: src/conf/domain_conf.c:13950 src/conf/domain_conf.c:13983
 #: src/conf/domain_conf.c:15196 src/conf/domain_conf.c:15205
-#: src/qemu/qemu_hotplug.c:2553
+#: src/qemu/qemu_hotplug.c:2571
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr ""
@@ -7733,65 +7733,65 @@ msgstr ""
 msgid "Missing server data from JSON file"
 msgstr ""
 
-#: src/locking/lock_daemon.c:811 src/locking/lock_daemon.c:819
+#: src/locking/lock_daemon.c:813 src/locking/lock_daemon.c:821
 #, c-format
 msgid "Disallowing client %llu with uid %llu"
 msgstr ""
 
-#: src/locking/lock_daemon.c:850
+#: src/locking/lock_daemon.c:852
 msgid "Missing restricted data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:855
+#: src/locking/lock_daemon.c:857
 msgid "Missing ownerPid data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:861
+#: src/locking/lock_daemon.c:863
 msgid "Missing ownerId data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:866
+#: src/locking/lock_daemon.c:868
 msgid "Missing ownerName data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:875 src/locking/lock_daemon.c:880
+#: src/locking/lock_daemon.c:877 src/locking/lock_daemon.c:882
 msgid "Missing ownerUUID data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:904
+#: src/locking/lock_daemon.c:906
 msgid "Cannot set restricted data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:909
+#: src/locking/lock_daemon.c:911
 msgid "Cannot set ownerPid data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:914
+#: src/locking/lock_daemon.c:916
 msgid "Cannot set ownerId data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:919
+#: src/locking/lock_daemon.c:921
 msgid "Cannot set ownerName data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:925
+#: src/locking/lock_daemon.c:927
 msgid "Cannot set ownerUUID data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:985
+#: src/locking/lock_daemon.c:987
 msgid "Missing magic data in JSON document"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1085
+#: src/locking/lock_daemon.c:1087
 #, c-format
 msgid "Unable to save state file %s"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1092
+#: src/locking/lock_daemon.c:1094
 msgid "Unable to restart self"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1110
+#: src/locking/lock_daemon.c:1112
 #, c-format
 msgid ""
 "\n"
@@ -7808,7 +7808,7 @@ msgid ""
 "libvirt lock management daemon:\n"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1125
+#: src/locking/lock_daemon.c:1127
 #, c-format
 msgid ""
 "\n"
@@ -7825,7 +7825,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1142
+#: src/locking/lock_daemon.c:1144
 msgid ""
 "\n"
 "  Default paths:\n"
@@ -7841,7 +7841,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/locking/lock_daemon.c:1242
+#: src/locking/lock_daemon.c:1244
 #, c-format
 msgid "%s: internal error: unknown flag: %c\n"
 msgstr ""
@@ -9186,7 +9186,7 @@ msgstr ""
 
 #: src/lxc/lxc_driver.c:2942 src/lxc/lxc_driver.c:2998
 #: src/lxc/lxc_driver.c:3791 src/qemu/qemu_driver.c:6156
-#: src/qemu/qemu_hotplug.c:2585
+#: src/qemu/qemu_hotplug.c:2603
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr ""
@@ -9292,7 +9292,7 @@ msgid "device type '%s' cannot be attached"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:3737 src/libxl/libxl_driver.c:3331
-#: src/qemu/qemu_hotplug.c:2045 src/qemu/qemu_hotplug.c:2154
+#: src/qemu/qemu_hotplug.c:2063 src/qemu/qemu_hotplug.c:2172
 #: src/uml/uml_driver.c:2169
 #, c-format
 msgid "disk %s not found"
@@ -9304,7 +9304,7 @@ msgstr ""
 msgid "Unable to remove device %s"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3796 src/qemu/qemu_hotplug.c:2591
+#: src/lxc/lxc_driver.c:3796 src/qemu/qemu_hotplug.c:2609
 #, c-format
 msgid "network device %s not found"
 msgstr ""
@@ -13857,7 +13857,7 @@ msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:1112 src/util/iohelper.c:58 src/util/virfile.c:545
-#: src/util/virfile.c:600 src/util/virprocess.c:546
+#: src/util/virfile.c:600 src/util/virprocess.c:554
 #, c-format
 msgid "Unable to open %s"
 msgstr ""
@@ -14249,7 +14249,7 @@ msgstr ""
 msgid "Target already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6184 src/qemu/qemu_hotplug.c:2825
+#: src/qemu/qemu_driver.c:6184 src/qemu/qemu_hotplug.c:2843
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
@@ -15004,12 +15004,12 @@ msgstr ""
 msgid "guest unexpectedly quit during hotplug"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1193 src/qemu/qemu_hotplug.c:2525
+#: src/qemu/qemu_hotplug.c:1193 src/qemu/qemu_hotplug.c:2543
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1241 src/qemu/qemu_hotplug.c:2494
+#: src/qemu/qemu_hotplug.c:1241 src/qemu/qemu_hotplug.c:2512
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr ""
@@ -15114,140 +15114,148 @@ msgstr ""
 msgid "unable to change config on '%s' network type"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1853
+#: src/qemu/qemu_hotplug.c:1852
 msgid "cannot find existing graphics device to modify"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1868
-msgid "cannot change port settings on vnc graphics"
+#: src/qemu/qemu_hotplug.c:1858
+msgid "cannot change the number of listen addresses"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1873
+#: src/qemu/qemu_hotplug.c:1868
+msgid "cannot change the type of listen address"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:1877
 msgid "cannot change listen address setting on vnc graphics"
 msgstr ""
 
 #: src/qemu/qemu_hotplug.c:1878
-msgid "cannot change listen network setting on vnc graphics"
-msgstr ""
-
-#: src/qemu/qemu_hotplug.c:1883
-msgid "cannot change keymap setting on vnc graphics"
-msgstr ""
-
-#: src/qemu/qemu_hotplug.c:1923
-msgid "cannot change port settings on spice graphics"
-msgstr ""
-
-#: src/qemu/qemu_hotplug.c:1928
 msgid "cannot change listen address setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1933
+#: src/qemu/qemu_hotplug.c:1887
+msgid "cannot change listen network setting on vnc graphics"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:1888
 msgid "cannot change listen network setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1939
+#: src/qemu/qemu_hotplug.c:1906
+msgid "cannot change port settings on vnc graphics"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:1911
+msgid "cannot change keymap setting on vnc graphics"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:1951
+msgid "cannot change port settings on spice graphics"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:1957
 msgid "cannot change keymap setting on spice graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1980
+#: src/qemu/qemu_hotplug.c:1998
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2053 src/qemu/qemu_hotplug.c:2299
+#: src/qemu/qemu_hotplug.c:2071 src/qemu/qemu_hotplug.c:2317
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2063
+#: src/qemu/qemu_hotplug.c:2081
 msgid "device cannot be detached without a valid CCW address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2070
+#: src/qemu/qemu_hotplug.c:2088
 msgid "device cannot be detached without a valid PCI address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2160
+#: src/qemu/qemu_hotplug.c:2178
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2169
+#: src/qemu/qemu_hotplug.c:2187
 #, c-format
 msgid "disk '%s' is in an active block copy job"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2282
+#: src/qemu/qemu_hotplug.c:2300
 #, c-format
 msgid "controller %s:%d not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2293 src/qemu/qemu_hotplug.c:2367
-#: src/qemu/qemu_hotplug.c:2616
+#: src/qemu/qemu_hotplug.c:2311 src/qemu/qemu_hotplug.c:2385
+#: src/qemu/qemu_hotplug.c:2634
 msgid "device cannot be detached without a PCI address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2306
+#: src/qemu/qemu_hotplug.c:2324
 msgid "device cannot be detached: device is busy"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2358
+#: src/qemu/qemu_hotplug.c:2376
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2431
+#: src/qemu/qemu_hotplug.c:2449
 msgid "device cannot be detached without a device alias"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2437
+#: src/qemu/qemu_hotplug.c:2455
 msgid "device cannot be detached with this QEMU version"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2479
+#: src/qemu/qemu_hotplug.c:2497
 #, c-format
 msgid "device not found in hostdevs list (%zu entries)"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2536
+#: src/qemu/qemu_hotplug.c:2554
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2543
+#: src/qemu/qemu_hotplug.c:2561
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2547
+#: src/qemu/qemu_hotplug.c:2565
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2609
+#: src/qemu/qemu_hotplug.c:2627
 msgid "device cannot be detached without a CCW address"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2622
+#: src/qemu/qemu_hotplug.c:2640
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2630
+#: src/qemu/qemu_hotplug.c:2648
 msgid "unable to determine original VLAN"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2699
+#: src/qemu/qemu_hotplug.c:2717
 #, c-format
 msgid "failed to remove ebtables rule on '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2752
+#: src/qemu/qemu_hotplug.c:2770
 msgid "Graphics password only supported for VNC"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2778
+#: src/qemu/qemu_hotplug.c:2796
 msgid "Expiry of passwords is not supported"
 msgstr ""
 
@@ -17332,7 +17340,7 @@ msgstr ""
 
 #: src/rpc/virnetsocket.c:294 src/rpc/virnetsocket.c:421
 #: src/rpc/virnetsocket.c:492 src/rpc/virnetsocket.c:575
-#: src/rpc/virnetsocket.c:930 src/rpc/virnetsocket.c:1655
+#: src/rpc/virnetsocket.c:930 src/rpc/virnetsocket.c:1666
 msgid "Unable to get local socket name"
 msgstr ""
 
@@ -17445,66 +17453,66 @@ msgstr ""
 msgid "Unable to copy socket file handle"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1114 src/rpc/virnetsocket.c:1138
+#: src/rpc/virnetsocket.c:1117 src/rpc/virnetsocket.c:1148
 msgid "Failed to get client socket identity"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1158
+#: src/rpc/virnetsocket.c:1169
 msgid "Client socket identity not available"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1179
+#: src/rpc/virnetsocket.c:1190
 msgid "Unable to query peer security context"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1359
+#: src/rpc/virnetsocket.c:1370
 #, c-format
 msgid "Cannot recv data: %s"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1362
+#: src/rpc/virnetsocket.c:1373
 msgid "Cannot recv data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1367
+#: src/rpc/virnetsocket.c:1378
 #, c-format
 msgid "End of file while reading data: %s"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1370
+#: src/rpc/virnetsocket.c:1381
 msgid "End of file while reading data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1407
+#: src/rpc/virnetsocket.c:1418
 msgid "Cannot write data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1412
+#: src/rpc/virnetsocket.c:1423
 msgid "End of file while writing data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1557
+#: src/rpc/virnetsocket.c:1568
 msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1568
+#: src/rpc/virnetsocket.c:1579
 #, c-format
 msgid "Failed to send file descriptor %d"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1591
+#: src/rpc/virnetsocket.c:1602
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1601
+#: src/rpc/virnetsocket.c:1612
 msgid "Failed to recv file descriptor"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1618
+#: src/rpc/virnetsocket.c:1629
 msgid "Unable to listen on socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1649
+#: src/rpc/virnetsocket.c:1660
 msgid "Unable to accept client"
 msgstr ""
 
@@ -17650,7 +17658,7 @@ msgstr ""
 msgid "Missing privateData field in JSON state document"
 msgstr ""
 
-#: src/rpc/virnetserverclient.c:1076 src/rpc/virnetserverclient.c:1257
+#: src/rpc/virnetserverclient.c:1094 src/rpc/virnetserverclient.c:1275
 #, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr ""
@@ -18398,45 +18406,45 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:226
+#: src/security/security_dac.c:222
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:236
+#: src/security/security_dac.c:232
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:328
+#: src/security/security_dac.c:324
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:348
+#: src/security/security_dac.c:344
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr ""
 
-#: src/security/security_dac.c:1038 src/security/security_selinux.c:622
+#: src/security/security_dac.c:1034 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr ""
 
-#: src/security/security_dac.c:1046 src/security/security_selinux.c:629
+#: src/security/security_dac.c:1042 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr ""
 
-#: src/security/security_dac.c:1056
+#: src/security/security_dac.c:1052
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:1070 src/security/security_dac.c:1090
+#: src/security/security_dac.c:1066 src/security/security_dac.c:1086
 #, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:1080 src/security/security_selinux.c:700
+#: src/security/security_dac.c:1076 src/security/security_selinux.c:700
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr ""
@@ -21819,111 +21827,126 @@ msgstr ""
 msgid "Failed to release port %d"
 msgstr ""
 
-#: src/util/virprocess.c:58
+#: src/util/virprocess.c:66
 #, c-format
 msgid "exit status %d"
 msgstr ""
 
-#: src/util/virprocess.c:61
+#: src/util/virprocess.c:69
 #, c-format
 msgid "fatal signal %d"
 msgstr ""
 
-#: src/util/virprocess.c:64
+#: src/util/virprocess.c:72
 #, c-format
 msgid "invalid value %d"
 msgstr ""
 
-#: src/util/virprocess.c:159 src/util/virprocess.c:169
+#: src/util/virprocess.c:167 src/util/virprocess.c:177
 #, c-format
 msgid "unable to wait for process %lld"
 msgstr ""
 
-#: src/util/virprocess.c:178
+#: src/util/virprocess.c:186
 #, c-format
 msgid "Child process (%lld) unexpected %s"
 msgstr ""
 
-#: src/util/virprocess.c:294
+#: src/util/virprocess.c:302
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr ""
 
-#: src/util/virprocess.c:357 src/util/virprocess.c:375
+#: src/util/virprocess.c:365 src/util/virprocess.c:383
 #, c-format
 msgid "cannot set CPU affinity on process %d"
 msgstr ""
 
-#: src/util/virprocess.c:419 src/util/virprocess.c:440
+#: src/util/virprocess.c:427 src/util/virprocess.c:448
 #, c-format
 msgid "cannot get CPU affinity of process %d"
 msgstr ""
 
-#: src/util/virprocess.c:459
+#: src/util/virprocess.c:467
 msgid "setting process affinity isn't supported on FreeBSD yet"
 msgstr ""
 
-#: src/util/virprocess.c:486 src/util/virprocess.c:495
+#: src/util/virprocess.c:494 src/util/virprocess.c:503
 msgid "Process CPU affinity is not supported on this platform"
 msgstr ""
 
-#: src/util/virprocess.c:524
+#: src/util/virprocess.c:532
 #, c-format
 msgid "Cannot read directory %s"
 msgstr ""
 
-#: src/util/virprocess.c:580
+#: src/util/virprocess.c:588
 msgid "Expected at least one file descriptor"
 msgstr ""
 
-#: src/util/virprocess.c:586
+#: src/util/virprocess.c:594
 msgid "Unable to join domain namespace"
 msgstr ""
 
-#: src/util/virprocess.c:598
+#: src/util/virprocess.c:606
 #, c-format
 msgid "Cannot get namespaces for %llu"
 msgstr ""
 
-#: src/util/virprocess.c:608
+#: src/util/virprocess.c:616
 msgid "Cannot set namespaces"
 msgstr ""
 
-#: src/util/virprocess.c:643
+#: src/util/virprocess.c:651
 #, c-format
 msgid "cannot limit locked memory to %llu"
 msgstr ""
 
-#: src/util/virprocess.c:650
+#: src/util/virprocess.c:658
 #, c-format
 msgid "cannot limit locked memory of process %lld to %llu"
 msgstr ""
 
-#: src/util/virprocess.c:665 src/util/virprocess.c:706
-#: src/util/virprocess.c:754 src/util/virutil.c:3833 src/util/virutil.c:3841
+#: src/util/virprocess.c:673 src/util/virprocess.c:714
+#: src/util/virprocess.c:762 src/util/virutil.c:3833 src/util/virutil.c:3841
 #: src/util/virutil.c:3849 src/util/virutil.c:3859 src/util/virutil.c:3868
 #: src/util/virutil.c:3875
 msgid "Not supported on this platform"
 msgstr ""
 
-#: src/util/virprocess.c:684
+#: src/util/virprocess.c:692
 #, c-format
 msgid "cannot limit number of subprocesses to %u"
 msgstr ""
 
-#: src/util/virprocess.c:691
+#: src/util/virprocess.c:699
 #, c-format
 msgid "cannot limit number of subprocesses of process %lld to %u"
 msgstr ""
 
-#: src/util/virprocess.c:732
+#: src/util/virprocess.c:740
 #, c-format
 msgid "cannot limit number of open files to %u"
 msgstr ""
 
-#: src/util/virprocess.c:739
+#: src/util/virprocess.c:747
 #, c-format
 msgid "cannot limit number of open files of process %lld to %u"
+msgstr ""
+
+#: src/util/virprocess.c:798 src/util/virprocess.c:805
+#: src/util/virprocess.c:814
+#, fuzzy, c-format
+msgid "Cannot find start time in %s"
+msgstr "%s tartomány indítása nem sikerült"
+
+#: src/util/virprocess.c:824
+#, c-format
+msgid "Cannot parse start time %s in %s"
+msgstr ""
+
+#: src/util/virprocess.c:852
+msgid "Unable to query process ID start time"
 msgstr ""
 
 #: src/util/virrandom.c:159
@@ -26213,8 +26236,8 @@ msgstr ""
 #: tools/virsh-domain.c:8811 tools/virsh-domain.c:8884
 #: tools/virsh-domain.c:8944 tools/virsh-domain.c:9109
 #: tools/virsh-domain.c:9210 tools/virsh-domain.c:9312
-#: tools/virsh-domain.c:9712 tools/virsh-domain.c:9822
-#: tools/virsh-domain.c:9882 tools/virsh-domain.c:10033
+#: tools/virsh-domain.c:9714 tools/virsh-domain.c:9824
+#: tools/virsh-domain.c:9884 tools/virsh-domain.c:10035
 #: tools/virsh-snapshot.c:128 tools/virsh-snapshot.c:337
 #: tools/virsh-snapshot.c:529 tools/virsh-snapshot.c:651
 #: tools/virsh-snapshot.c:887 tools/virsh-snapshot.c:1444
@@ -26728,7 +26751,7 @@ msgstr ""
 #: tools/virsh-domain.c:7009 tools/virsh-domain.c:7118
 #: tools/virsh-domain.c:7309 tools/virsh-domain.c:9122
 #: tools/virsh-domain.c:9223 tools/virsh-domain.c:9329
-#: tools/virsh-domain.c:9725
+#: tools/virsh-domain.c:9727
 msgid "affect next boot"
 msgstr ""
 
@@ -26753,7 +26776,7 @@ msgstr ""
 msgid "source of disk device"
 msgstr ""
 
-#: tools/virsh-domain.c:258 tools/virsh-domain.c:9717
+#: tools/virsh-domain.c:258 tools/virsh-domain.c:9719
 msgid "target of disk device"
 msgstr ""
 
@@ -26981,7 +27004,7 @@ msgstr ""
 #: tools/virsh-domain.c:6916 tools/virsh-domain.c:7013
 #: tools/virsh-domain.c:7122 tools/virsh-domain.c:7313
 #: tools/virsh-domain.c:9126 tools/virsh-domain.c:9227
-#: tools/virsh-domain.c:9333 tools/virsh-domain.c:9729
+#: tools/virsh-domain.c:9333 tools/virsh-domain.c:9731
 msgid "affect running domain"
 msgstr ""
 
@@ -26991,7 +27014,7 @@ msgstr ""
 #: tools/virsh-domain.c:6920 tools/virsh-domain.c:7017
 #: tools/virsh-domain.c:7126 tools/virsh-domain.c:7317
 #: tools/virsh-domain.c:9130 tools/virsh-domain.c:9231
-#: tools/virsh-domain.c:9337 tools/virsh-domain.c:9733
+#: tools/virsh-domain.c:9337 tools/virsh-domain.c:9735
 msgid "affect current domain"
 msgstr ""
 
@@ -27402,7 +27425,7 @@ msgid "Failed to allocate memory"
 msgstr ""
 
 #: tools/virsh-domain.c:2393 tools/virsh-domain.c:9450
-#: tools/virsh-domain.c:9667
+#: tools/virsh-domain.c:9669
 msgid "Failed to create XML"
 msgstr ""
 
@@ -29238,7 +29261,7 @@ msgid "Detach device from an XML <file>"
 msgstr ""
 
 #: tools/virsh-domain.c:9118 tools/virsh-domain.c:9219
-#: tools/virsh-domain.c:9325 tools/virsh-domain.c:9721
+#: tools/virsh-domain.c:9325 tools/virsh-domain.c:9723
 msgid "make live change persistent"
 msgstr ""
 
@@ -29325,130 +29348,130 @@ msgstr ""
 msgid "The disk device '%s' doesn't have media"
 msgstr ""
 
-#: tools/virsh-domain.c:9638
+#: tools/virsh-domain.c:9640
 msgid "No source is specified for inserting media"
 msgstr ""
 
-#: tools/virsh-domain.c:9641
+#: tools/virsh-domain.c:9643
 msgid "No source is specified for updating media"
 msgstr ""
 
-#: tools/virsh-domain.c:9648
+#: tools/virsh-domain.c:9650
 #, c-format
 msgid "The disk device '%s' already has media"
 msgstr ""
 
-#: tools/virsh-domain.c:9700
+#: tools/virsh-domain.c:9702
 msgid "detach disk device"
 msgstr ""
 
-#: tools/virsh-domain.c:9703
+#: tools/virsh-domain.c:9705
 msgid "Detach disk device."
 msgstr ""
 
-#: tools/virsh-domain.c:9790
+#: tools/virsh-domain.c:9792
 msgid "Failed to detach disk"
 msgstr ""
 
-#: tools/virsh-domain.c:9794
+#: tools/virsh-domain.c:9796
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: tools/virsh-domain.c:9810
+#: tools/virsh-domain.c:9812
 msgid "edit XML configuration for a domain"
 msgstr ""
 
-#: tools/virsh-domain.c:9813
+#: tools/virsh-domain.c:9815
 msgid "Edit the XML configuration for a domain."
 msgstr ""
 
-#: tools/virsh-domain.c:9841
+#: tools/virsh-domain.c:9843
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr ""
 
-#: tools/virsh-domain.c:9851
+#: tools/virsh-domain.c:9853
 #, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr ""
 
-#: tools/virsh-domain.c:9870
+#: tools/virsh-domain.c:9872
 msgid "Change media of CD or floppy drive"
 msgstr ""
 
-#: tools/virsh-domain.c:9873
+#: tools/virsh-domain.c:9875
 msgid "Change media of CD or floppy drive."
 msgstr ""
 
-#: tools/virsh-domain.c:9887
+#: tools/virsh-domain.c:9889
 msgid "Fully-qualified path or target of disk device"
 msgstr ""
 
-#: tools/virsh-domain.c:9891
+#: tools/virsh-domain.c:9893
 msgid "source of the media"
 msgstr ""
 
-#: tools/virsh-domain.c:9895
+#: tools/virsh-domain.c:9897
 msgid "Eject the media"
 msgstr ""
 
-#: tools/virsh-domain.c:9899
+#: tools/virsh-domain.c:9901
 msgid "Insert the media"
 msgstr ""
 
-#: tools/virsh-domain.c:9903
+#: tools/virsh-domain.c:9905
 msgid "Update the media"
 msgstr ""
 
-#: tools/virsh-domain.c:9907
+#: tools/virsh-domain.c:9909
 msgid ""
 "can be either or both of --live and --config, depends on implementation of "
 "hypervisor driver"
 msgstr ""
 
-#: tools/virsh-domain.c:9912
+#: tools/virsh-domain.c:9914
 msgid "alter live configuration of running domain"
 msgstr ""
 
-#: tools/virsh-domain.c:9916
+#: tools/virsh-domain.c:9918
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
 
-#: tools/virsh-domain.c:9920
+#: tools/virsh-domain.c:9922
 msgid "force media changing"
 msgstr ""
 
-#: tools/virsh-domain.c:9985
+#: tools/virsh-domain.c:9987
 msgid "No disk source specified for inserting"
 msgstr ""
 
-#: tools/virsh-domain.c:10003
+#: tools/virsh-domain.c:10005
 #, c-format
 msgid "Failed to complete action %s on media"
 msgstr ""
 
-#: tools/virsh-domain.c:10007
+#: tools/virsh-domain.c:10009
 #, c-format
 msgid "succeeded to complete action %s on media\n"
 msgstr ""
 
-#: tools/virsh-domain.c:10021 tools/virsh-domain.c:10024
+#: tools/virsh-domain.c:10023 tools/virsh-domain.c:10026
 msgid "Invoke fstrim on domain's mounted filesystems."
 msgstr ""
 
-#: tools/virsh-domain.c:10037
+#: tools/virsh-domain.c:10039
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
 
-#: tools/virsh-domain.c:10042
+#: tools/virsh-domain.c:10044
 msgid "which mount point to trim"
 msgstr ""
 
-#: tools/virsh-domain.c:10059
+#: tools/virsh-domain.c:10061
 msgid "Unable to parse integer parameter minimum"
 msgstr ""
 
-#: tools/virsh-domain.c:10067
+#: tools/virsh-domain.c:10069
 msgid "Unable to invoke fstrim"
 msgstr ""
 
