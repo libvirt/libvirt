@@ -101,7 +101,7 @@ mymain(void)
         struct testInfo info = { in, out, name, version };             \
         virResetLastError();                                           \
         if (virtTestRun("Xen XML-2-SEXPR " in " -> " out,              \
-                        1, testCompareHelper, &info) < 0)     \
+                        testCompareHelper, &info) < 0)                 \
             ret = -1;                                                  \
     } while (0)
 

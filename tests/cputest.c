@@ -472,7 +472,7 @@ cpuTestRun(const char *name, const struct data *data)
     tmp = virtTestLogContentAndReset();
     VIR_FREE(tmp);
 
-    if (virtTestRun(label, 1, cpuTest[data->api], data) < 0) {
+    if (virtTestRun(label, cpuTest[data->api], data) < 0) {
         if (virTestGetDebug()) {
             char *log;
             if ((log = virtTestLogContentAndReset()) &&

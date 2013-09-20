@@ -167,50 +167,50 @@ mymain(void)
         return EXIT_FAILURE;
 
     if (virtTestRun("Capabilities for i686, no PAE, no HVM",
-                    1, testXeni686, NULL) != 0)
+                    testXeni686, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for i686, PAE, no HVM",
-                    1, testXeni686PAE, NULL) != 0)
+                    testXeni686PAE, NULL) != 0)
         ret = -1;
 
     /* No PAE + HVM is non-sensical - all VMX capable
        CPUs have PAE */
     /*if (virtTestRun("Capabilities for i686, no PAE, HVM",
-                    1, testXeni686HVM, NULL) != 0)
+                    testXeni686HVM, NULL) != 0)
         ret = -1;
     */
 
     if (virtTestRun("Capabilities for i686, PAE, HVM",
-                    1, testXeni686PAEHVM, NULL) != 0)
+                    testXeni686PAEHVM, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for x86_64, no HVM",
-                    1, testXenx86_64, NULL) != 0)
+                    testXenx86_64, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for x86_64, HVM",
-                    1, testXenx86_64HVM, NULL) != 0)
+                    testXenx86_64HVM, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for ia64, no HVM, LE",
-                    1, testXenia64, NULL) != 0)
+                    testXenia64, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for ia64, HVM, LE",
-                    1, testXenia64HVM, NULL) != 0)
+                    testXenia64HVM, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for ia64, no HVM, BE",
-                    1, testXenia64BE, NULL) != 0)
+                    testXenia64BE, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for ia64, HVM, BE",
-                    1, testXenia64BEHVM, NULL) != 0)
+                    testXenia64BEHVM, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("Capabilities for ppc64",
-                    1, testXenppc64, NULL) != 0)
+                    testXenppc64, NULL) != 0)
         ret = -1;
 
 

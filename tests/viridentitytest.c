@@ -164,9 +164,9 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Identity attributes ", 1, testIdentityAttrs, NULL) < 0)
+    if (virtTestRun("Identity attributes ", testIdentityAttrs, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Identity equality ", 1, testIdentityEqual, NULL) < 0)
+    if (virtTestRun("Identity equality ", testIdentityEqual, NULL) < 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

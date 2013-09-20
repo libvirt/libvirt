@@ -142,7 +142,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
+      if (virtTestRun(nodeData[i], linuxTestNodeInfo, nodeData[i]) != 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

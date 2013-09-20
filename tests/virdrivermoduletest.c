@@ -59,7 +59,7 @@ mymain(void)
 #define TEST(name, dep1)                                                \
     do  {                                                               \
         const struct testDriverData data = { name, dep1 };              \
-        if (virtTestRun("Test driver " # name,  1, testDriverModule, &data) < 0) \
+        if (virtTestRun("Test driver " # name, testDriverModule, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
 

@@ -231,11 +231,11 @@ mymain(void)
 
     virtTestQuiesceLibvirtErrors(false);
 
-    if (virtTestRun("Assign metadata ", 1, testAssignMetadata, &test) < 0)
+    if (virtTestRun("Assign metadata ", testAssignMetadata, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Rewrite Metadata ", 1, testRewriteMetadata, &test) < 0)
+    if (virtTestRun("Rewrite Metadata ", testRewriteMetadata, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Erase metadata ", 1, testEraseMetadata, &test) < 0)
+    if (virtTestRun("Erase metadata ", testEraseMetadata, &test) < 0)
         ret = EXIT_FAILURE;
 
     virDomainFree(test.dom);

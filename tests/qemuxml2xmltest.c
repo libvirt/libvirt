@@ -120,7 +120,7 @@ mymain(void)
     do {                                                                \
         const struct testInfo info = {name, is_different, when};        \
         if (virtTestRun("QEMU XML-2-XML " name,                         \
-                        1, testCompareXMLToXMLHelper, &info) < 0)       \
+                        testCompareXMLToXMLHelper, &info) < 0)          \
             ret = -1;                                                   \
     } while (0)
 

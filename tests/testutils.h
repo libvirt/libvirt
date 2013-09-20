@@ -40,13 +40,9 @@
 extern char *progname;
 extern char *abs_srcdir;
 
-double virtTestCountAverage(double *items,
-                            int nitems);
-
 void virtTestResult(const char *name, int ret, const char *msg, ...)
     ATTRIBUTE_FMT_PRINTF(3,4);
 int virtTestRun(const char *title,
-                int nloops,
                 int (*body)(const void *data),
                 const void *data);
 int virtTestLoadFile(const char *file, char **buf);

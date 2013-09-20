@@ -207,10 +207,10 @@ mymain(void)
         struct testInfo info0 = { name, version, 0 };                   \
         struct testInfo info1 = { name, version, 1 };                   \
         if (virtTestRun("Xen XM-2-XML Parse  " name,                    \
-                        1, testCompareHelper, &info0) < 0)              \
+                        testCompareHelper, &info0) < 0)                 \
             ret = -1;                                                   \
         if (virtTestRun("Xen XM-2-XML Format " name,                    \
-                        1, testCompareHelper, &info1) < 0)              \
+                        testCompareHelper, &info1) < 0)                 \
             ret = -1;                                                   \
     } while (0)
 

@@ -141,7 +141,7 @@ mymain(void)
             return EXIT_FAILURE;                                            \
         virQEMUCapsSetList(info.flags, __VA_ARGS__, QEMU_CAPS_LAST);        \
         if (virtTestRun("QEMU Help String Parsing " name,                   \
-                        1, testHelpStrParsing, &info) < 0)                  \
+                        testHelpStrParsing, &info) < 0)                     \
             ret = -1;                                                       \
         virObjectUnref(info.flags);                                         \
     } while (0)

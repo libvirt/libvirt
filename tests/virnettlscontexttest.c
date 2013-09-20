@@ -120,7 +120,7 @@ mymain(void)
         data.cacrt = _caCrt;                                            \
         data.crt = _crt;                                                \
         data.expectFail = _expectFail;                                  \
-        if (virtTestRun("TLS Context " #_caCrt  " + " #_crt, 1,         \
+        if (virtTestRun("TLS Context " #_caCrt  " + " #_crt,            \
                         testTLSContextInit, &data) < 0)                 \
             ret = -1;                                                   \
     } while (0)

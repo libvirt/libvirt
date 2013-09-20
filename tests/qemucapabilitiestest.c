@@ -229,7 +229,7 @@ mymain(void)
 
 #define DO_TEST(name) \
     data.base = name; \
-    if (virtTestRun(name, 1, testQemuCaps, &data) < 0) \
+    if (virtTestRun(name, testQemuCaps, &data) < 0) \
         ret = -1
 
     DO_TEST("caps_1.2.2-1");

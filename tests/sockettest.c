@@ -190,7 +190,7 @@ mymain(void)
         struct testParseData data = { &addr, addrstr, family, pass };   \
         memset(&addr, 0, sizeof(addr));                                 \
         if (virtTestRun("Test parse " addrstr,                          \
-                        1, testParseHelper, &data) < 0)                 \
+                        testParseHelper, &data) < 0)                    \
             ret = -1;                                                   \
     } while (0)
 
@@ -200,11 +200,11 @@ mymain(void)
         struct testParseData data = { &addr, addrstr, family, pass };   \
         memset(&addr, 0, sizeof(addr));                                 \
         if (virtTestRun("Test parse " addrstr " family " #family,       \
-                        1, testParseHelper, &data) < 0)                 \
+                        testParseHelper, &data) < 0)                    \
             ret = -1;                                                   \
         struct testFormatData data2 = { &addr, addrstr, pass };         \
         if (virtTestRun("Test format " addrstr " family " #family,      \
-                        1, testFormatHelper, &data2) < 0)               \
+                        testFormatHelper, &data2) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 
@@ -214,11 +214,11 @@ mymain(void)
         struct testParseData data = { &addr, addrstr, family, true};    \
         memset(&addr, 0, sizeof(addr));                                 \
         if (virtTestRun("Test parse " addrstr " family " #family,       \
-                        1, testParseHelper, &data) < 0)                 \
+                        testParseHelper, &data) < 0)                    \
             ret = -1;                                                   \
         struct testFormatData data2 = { &addr, addrformated, pass };    \
         if (virtTestRun("Test format " addrstr " family " #family,      \
-                        1, testFormatHelper, &data2) < 0)               \
+                        testFormatHelper, &data2) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 
@@ -226,7 +226,7 @@ mymain(void)
     do {                                                                \
         struct testRangeData data = { saddr, eaddr, size, pass };       \
         if (virtTestRun("Test range " saddr " -> " eaddr " size " #size, \
-                        1, testRangeHelper, &data) < 0)                 \
+                        testRangeHelper, &data) < 0)                    \
             ret = -1;                                                   \
     } while (0)
 
@@ -234,14 +234,14 @@ mymain(void)
     do {                                                                \
         struct testNetmaskData data = { addr1, addr2, netmask, pass };  \
         if (virtTestRun("Test netmask " addr1 " + " addr2 " in " netmask, \
-                        1, testNetmaskHelper, &data) < 0)               \
+                        testNetmaskHelper, &data) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 
 #define DO_TEST_WILDCARD(addr, pass)                                    \
     do {                                                                \
         struct testWildcardData data = { addr, pass};                   \
-        if (virtTestRun("Test wildcard " addr, 1,                       \
+        if (virtTestRun("Test wildcard " addr,                          \
                         testWildcardHelper, &data) < 0)                 \
             ret = -1;                                                   \
     } while (0)

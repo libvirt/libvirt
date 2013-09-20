@@ -502,23 +502,23 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("test1", 1, test1, NULL) < 0)
+    if (virtTestRun("test1", test1, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test2", 1, test2, NULL) < 0)
+    if (virtTestRun("test2", test2, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test3", 1, test3, NULL) < 0)
+    if (virtTestRun("test3", test3, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test4", 1, test4, NULL) < 0)
+    if (virtTestRun("test4", test4, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test5", 1, test5, NULL) < 0)
+    if (virtTestRun("test5", test5, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test6", 1, test6, NULL) < 0)
+    if (virtTestRun("test6", test6, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test7", 1, test7, NULL) < 0)
+    if (virtTestRun("test7", test7, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test8", 1, test8, NULL) < 0)
+    if (virtTestRun("test8", test8, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test9", 1, test9, NULL) < 0)
+    if (virtTestRun("test9", test9, NULL) < 0)
         ret = -1;
 
     return ret;

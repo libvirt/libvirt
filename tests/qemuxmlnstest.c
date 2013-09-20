@@ -225,7 +225,7 @@ mymain(void)
             return EXIT_FAILURE;                                        \
         virQEMUCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);\
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
-                        1, testCompareXMLToArgvHelper, &info) < 0)      \
+                        testCompareXMLToArgvHelper, &info) < 0)         \
             ret = -1;                                                   \
         virObjectUnref(info.extraFlags);                                \
     } while (0)

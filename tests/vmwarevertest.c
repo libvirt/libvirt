@@ -83,7 +83,7 @@ mymain(void)
             vmware_type, name, version                                  \
         };                                                              \
         if (virtTestRun("VMware Version String Parsing " name,          \
-                        1, testVerStrParse, &info) < 0)                 \
+                        testVerStrParse, &info) < 0)                    \
             ret = -1;                                                   \
     } while (0)
 

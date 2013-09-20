@@ -668,7 +668,7 @@ mymain(void)
 #define DO_TEST_FULL(name, cmd, data, count)                        \
     do {                                                            \
         struct testInfo info = { data, count };                     \
-        if (virtTestRun(name, 1, testHash ## cmd, &info) < 0)       \
+        if (virtTestRun(name, testHash ## cmd, &info) < 0)          \
             ret = -1;                                               \
     } while (0)
 

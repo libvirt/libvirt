@@ -1020,7 +1020,7 @@ mymain(void)
 
 # define DO_TEST(NAME)                                                \
     if (virtTestRun("Command Exec " #NAME " test",                    \
-                    1, NAME, NULL) < 0)                               \
+                    NAME, NULL) < 0)                                  \
         ret = -1
 
     DO_TEST(test0);

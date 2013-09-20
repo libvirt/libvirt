@@ -130,7 +130,7 @@ mymain(void)
                                       command, section, flags,              \
                                       parentIndex, expectFailure};          \
         if (virtTestRun("Network XML-2-XML " name,                          \
-                        1, testCompareXMLToXMLHelper, &info) < 0)           \
+                        testCompareXMLToXMLHelper, &info) < 0)              \
             ret = -1;                                                       \
     } while (0)
 

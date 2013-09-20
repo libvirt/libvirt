@@ -126,11 +126,11 @@ mymain(void)
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \
+# define DO_TEST_FULL(name, extraFlags, migrateFrom)                    \
     do {                                                                \
         const struct testInfo info = { name, extraFlags, migrateFrom }; \
         if (virtTestRun("QEMU ARGV-2-XML " name,                        \
-                        1, testCompareXMLToArgvHelper, &info) < 0)      \
+                        testCompareXMLToArgvHelper, &info) < 0)         \
             ret = -1;                                                   \
     } while (0)
 

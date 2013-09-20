@@ -594,8 +594,8 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST(name) \
-    if (virtTestRun(# name, 1, testQemuAgent ## name, xmlopt) < 0) \
+#define DO_TEST(name)                                           \
+    if (virtTestRun(# name, testQemuAgent ## name, xmlopt) < 0) \
         ret = -1
 
     DO_TEST(FSFreeze);

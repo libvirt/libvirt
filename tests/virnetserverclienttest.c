@@ -143,7 +143,7 @@ mymain(void)
     int ret = 0;
 
 
-    if (virtTestRun("Identity", 1,
+    if (virtTestRun("Identity",
                     testIdentity, NULL) < 0)
         ret = -1;
 

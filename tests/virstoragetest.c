@@ -311,7 +311,7 @@ mymain(void)
         struct testChainData data = {                                \
             start, format, chain, ARRAY_CARDINALITY(chain), flags,   \
         };                                                           \
-        if (virtTestRun("Storage backing chain " id, 1,              \
+        if (virtTestRun("Storage backing chain " id,                 \
                         testStorageChain, &data) < 0)                \
             ret = -1;                                                \
     } while (0)

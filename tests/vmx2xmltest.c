@@ -188,7 +188,7 @@ mymain(void)
         do {                                                                  \
             struct testInfo info = { _in, _out };                             \
             virResetLastError();                                              \
-            if (virtTestRun("VMware VMX-2-XML "_in" -> "_out, 1,              \
+            if (virtTestRun("VMware VMX-2-XML "_in" -> "_out,                 \
                             testCompareHelper, &info) < 0) {                  \
                 ret = -1;                                                     \
             }                                                                 \

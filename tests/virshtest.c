@@ -241,77 +241,77 @@ mymain(void)
         return EXIT_FAILURE;
 
     if (virtTestRun("virsh list (default)",
-                    1, testCompareListDefault, NULL) != 0)
+                    testCompareListDefault, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh list (custom)",
-                    1, testCompareListCustom, NULL) != 0)
+                    testCompareListCustom, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh nodeinfo (default)",
-                    1, testCompareNodeinfoDefault, NULL) != 0)
+                    testCompareNodeinfoDefault, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh nodeinfo (custom)",
-                    1, testCompareNodeinfoCustom, NULL) != 0)
+                    testCompareNodeinfoCustom, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by id)",
-                    1, testCompareDominfoByID, NULL) != 0)
+                    testCompareDominfoByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by uuid)",
-                    1, testCompareDominfoByUUID, NULL) != 0)
+                    testCompareDominfoByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by name)",
-                    1, testCompareDominfoByName, NULL) != 0)
+                    testCompareDominfoByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domid (by name)",
-                    1, testCompareDomidByName, NULL) != 0)
+                    testCompareDomidByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domid (by uuid)",
-                    1, testCompareDomidByUUID, NULL) != 0)
+                    testCompareDomidByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domuuid (by id)",
-                    1, testCompareDomuuidByID, NULL) != 0)
+                    testCompareDomuuidByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domuuid (by name)",
-                    1, testCompareDomuuidByName, NULL) != 0)
+                    testCompareDomuuidByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domname (by id)",
-                    1, testCompareDomnameByID, NULL) != 0)
+                    testCompareDomnameByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domname (by uuid)",
-                    1, testCompareDomnameByUUID, NULL) != 0)
+                    testCompareDomnameByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by id)",
-                    1, testCompareDomstateByID, NULL) != 0)
+                    testCompareDomstateByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by uuid)",
-                    1, testCompareDomstateByUUID, NULL) != 0)
+                    testCompareDomstateByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by name)",
-                    1, testCompareDomstateByName, NULL) != 0)
+                    testCompareDomstateByName, NULL) != 0)
         ret = -1;
 
     /* It's a bit awkward listing result before argument, but that's a
      * limitation of C99 vararg macros.  */
-# define DO_TEST(i, result, ...)                                         \
+# define DO_TEST(i, result, ...)                                        \
     do {                                                                \
         const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
         const struct testInfo info = { myargv, result };                \
         if (virtTestRun("virsh echo " #i,                               \
-                        1, testCompareEcho, &info) < 0)                 \
+                        testCompareEcho, &info) < 0)                    \
             ret = -1;                                                   \
     } while (0)
 

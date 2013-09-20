@@ -71,19 +71,6 @@ static size_t testEnd = 0;
 char *progname;
 char *abs_srcdir;
 
-double
-virtTestCountAverage(double *items, int nitems)
-{
-    long double sum = 0;
-    size_t i;
-
-    for (i=1; i < nitems; i++)
-        sum += items[i];
-
-    return (double) (sum / nitems);
-}
-
-
 void virtTestResult(const char *name, int ret, const char *msg, ...)
 {
     va_list vargs;
@@ -123,16 +110,15 @@ void virtTestResult(const char *name, int ret, const char *msg, ...)
 }
 
 /*
- * Runs test and count average time (if the nloops is grater than 1)
+ * Runs test
  *
  * returns: -1 = error, 0 = success
  */
 int
-virtTestRun(const char *title, int nloops, int (*body)(const void *data), const void *data)
+virtTestRun(const char *title,
+            int (*body)(const void *data), const void *data)
 {
     int ret = 0;
-    size_t i;
-    double *ts = NULL;
 
     if (testCounter == 0 && !virTestGetVerbose())
         fprintf(stderr, "      ");
@@ -149,37 +135,16 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
     if (virTestGetVerbose())
         fprintf(stderr, "%2zu) %-65s ... ", testCounter, title);
 
-    if (nloops > 1 && (VIR_ALLOC_N(ts, nloops) < 0))
-        return -1;
-
-    for (i=0; i < nloops; i++) {
-        struct timeval before, after;
-
-        if (ts)
-            GETTIMEOFDAY(&before);
-
-        virResetLastError();
-        ret = body(data);
-        virErrorPtr err = virGetLastError();
-        if (err) {
-            if (virTestGetVerbose() || virTestGetDebug())
-                virDispatchError(NULL);
-        }
-
-        if (ret != 0) {
-            break;
-        }
-
-        if (ts) {
-            GETTIMEOFDAY(&after);
-            ts[i] = DIFF_MSEC(&after, &before);
-        }
+    virResetLastError();
+    ret = body(data);
+    virErrorPtr err = virGetLastError();
+    if (err) {
+        if (virTestGetVerbose() || virTestGetDebug())
+            virDispatchError(NULL);
     }
+
     if (virTestGetVerbose()) {
-        if (ret == 0 && ts)
-            fprintf(stderr, "OK     [%.5f ms]\n",
-                    virtTestCountAverage(ts, nloops));
-        else if (ret == 0)
+        if (ret == 0)
             fprintf(stderr, "OK\n");
         else if (ret == EXIT_AM_SKIP)
             fprintf(stderr, "SKIP\n");
@@ -199,7 +164,6 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
             fprintf(stderr, "!");
     }
 
-    VIR_FREE(ts);
     return ret;
 }
 

@@ -253,7 +253,7 @@ mymain(void)
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
         if (virtTestRun("TLS Session " #_serverCrt " + " #_clientCrt,   \
-                        1, testTLSSessionInit, &data) < 0)              \
+                        testTLSSessionInit, &data) < 0)                 \
             ret = -1;                                                   \
     } while (0)
 
@@ -271,7 +271,7 @@ mymain(void)
         data.hostname = _hostname;                                      \
         data.wildcards = _wildcards;                                    \
         if (virtTestRun("TLS Session " #_serverCrt " + " #_clientCrt,   \
-                        1, testTLSSessionInit, &data) < 0)              \
+                        testTLSSessionInit, &data) < 0)                 \
             ret = -1;                                                   \
     } while (0)
 

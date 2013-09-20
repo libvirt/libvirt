@@ -291,7 +291,7 @@ mymain(void)
             user, role, imageRole, type, imageType,                     \
             sensMin, sensMax, catMin, catMax                            \
         };                                                              \
-        if (virtTestRun("GenLabel " # desc, 1, testSELinuxGenLabel, &data) < 0) \
+        if (virtTestRun("GenLabel " # desc, testSELinuxGenLabel, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
 

@@ -206,17 +206,17 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Test create container ", 1, testCreateContainer, NULL) < 0)
+    if (virtTestRun("Test create container ", testCreateContainer, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test terminate container ", 1, testTerminateContainer, NULL) < 0)
+    if (virtTestRun("Test terminate container ", testTerminateContainer, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test create machine ", 1, testCreateMachine, NULL) < 0)
+    if (virtTestRun("Test create machine ", testCreateMachine, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test terminate machine ", 1, testTerminateMachine, NULL) < 0)
+    if (virtTestRun("Test terminate machine ", testTerminateMachine, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test create no systemd ", 1, testCreateNoSystemd, NULL) < 0)
+    if (virtTestRun("Test create no systemd ", testCreateNoSystemd, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test create bad systemd ", 1, testCreateBadSystemd, NULL) < 0)
+    if (virtTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
         ret = -1;
 
 # define TEST_SCOPE(name, partition, unitname)                          \
@@ -224,7 +224,7 @@ mymain(void)
         struct testScopeData data = {                                   \
             name, partition, unitname                                   \
         };                                                              \
-        if (virtTestRun("Test scopename", 1, testScopeName, &data) < 0) \
+        if (virtTestRun("Test scopename", testScopeName, &data) < 0)    \
             ret = -1;                                                   \
     } while (0)
 

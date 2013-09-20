@@ -210,7 +210,7 @@ mymain(void)
 #define DO_TEST(msg, cb, data)                                         \
     do {                                                               \
         struct testInfo info = { data };                               \
-        if (virtTestRun("Buf: " msg, 1, cb, &info) < 0)                 \
+        if (virtTestRun("Buf: " msg, cb, &info) < 0)                   \
             ret = -1;                                                  \
     } while (0)
 

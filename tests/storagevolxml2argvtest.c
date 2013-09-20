@@ -212,7 +212,7 @@ mymain(void)
         struct testInfo info = { shouldFail, pool, vol, inputpool, inputvol, \
                                  cmdline, flags, imgformat };                \
         if (virtTestRun("Storage Vol XML-2-argv " cmdline,                   \
-                        1, testCompareXMLToArgvHelper, &info) < 0)           \
+                        testCompareXMLToArgvHelper, &info) < 0)              \
             ret = -1;                                                        \
        }                                                                     \
     while (0);

@@ -67,7 +67,7 @@ mymain(void)
     do {                                                               \
         struct testInfo info = { dev, num };                           \
         if (virtTestRun("Device " dev " -> " # num,                    \
-                        1, testDeviceHelper, &info) < 0)               \
+                        testDeviceHelper, &info) < 0)                  \
             ret = -1;                                                  \
     } while (0)
 

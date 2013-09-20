@@ -152,9 +152,9 @@ mymain(void)
 
     virtTestQuiesceLibvirtErrors(true);
 
-#define DO_TEST(_name)                                                  \
+#define DO_TEST(_name)                                                        \
         do {                                                                  \
-            if (virtTestRun("Util "#_name, 1, test##_name,                    \
+            if (virtTestRun("Util "#_name, test##_name,                       \
                             NULL) < 0) {                                      \
                 result = -1;                                                  \
             }                                                                 \

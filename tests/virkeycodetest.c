@@ -96,9 +96,9 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Keycode mapping ", 1, testKeycodeMapping, NULL) < 0)
+    if (virtTestRun("Keycode mapping ", testKeycodeMapping, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Keycode strings ", 1, testKeycodeStrings, NULL) < 0)
+    if (virtTestRun("Keycode strings ", testKeycodeStrings, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

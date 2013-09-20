@@ -169,15 +169,15 @@ mymain(void)
         goto cleanup;
     }
 
-    if (virtTestRun("test1", 1, test1, NULL) < 0)
+    if (virtTestRun("test1", test1, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test2", 1, test2, NULL) < 0)
+    if (virtTestRun("test2", test2, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test3", 1, test3, NULL) < 0)
+    if (virtTestRun("test3", test3, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test4", 1, test4, NULL) < 0)
+    if (virtTestRun("test4", test4, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test5", 1, test5, NULL) < 0)
+    if (virtTestRun("test5", test5, NULL) < 0)
         ret = -1;
 
 cleanup:

@@ -335,9 +335,9 @@ mymain(void)
     if (!(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
         return EXIT_FAILURE;
 
-#define DO_TEST_LABELING(name) \
-    if (virtTestRun("Labelling " # name, 1, testSELinuxLabeling, name) < 0) \
-        ret = -1;                                                       \
+#define DO_TEST_LABELING(name)                                           \
+    if (virtTestRun("Labelling " # name, testSELinuxLabeling, name) < 0) \
+        ret = -1;
 
     setcon((security_context_t)"system_r:system_u:libvirtd_t:s0:c0.c1023");
 

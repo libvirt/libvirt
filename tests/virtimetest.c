@@ -93,7 +93,7 @@ mymain(void)
                 .tm_isdst = 0,                                       \
             },                                                       \
         };                                                           \
-        if (virtTestRun("Test fields " #ts " " #year " ", 1, testTimeFields, &data) < 0) \
+        if (virtTestRun("Test fields " #ts " " #year " ", testTimeFields, &data) < 0) \
             ret = -1;                                                \
     } while (0)
 

@@ -249,9 +249,9 @@ mymain(void)
             .delim = del,                                               \
             .tokens = toks,                                             \
         };                                                              \
-        if (virtTestRun("Split " #str, 1, testSplit, &splitData) < 0)   \
+        if (virtTestRun("Split " #str, testSplit, &splitData) < 0)      \
             ret = -1;                                                   \
-        if (virtTestRun("Join " #str, 1, testJoin, &joinData) < 0)      \
+        if (virtTestRun("Join " #str, testJoin, &joinData) < 0)         \
             ret = -1;                                                   \
     } while (0)
 
@@ -276,10 +276,10 @@ mymain(void)
     const char *tokens7[] = { "The", "quick", "brown", "fox", "", NULL };
     TEST_SPLIT("The quick brown fox ", " ", 0, tokens7);
 
-    if (virtTestRun("strdup", 1, testStrdup, NULL) < 0)
+    if (virtTestRun("strdup", testStrdup, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("strdup", 1, testStrndupNegative, NULL) < 0)
+    if (virtTestRun("strdup", testStrndupNegative, NULL) < 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -372,7 +372,7 @@ mymain(void)
         data.mon = my_mon;                                                  \
         data.keep = kep;                                                    \
         data.deviceDeletedEvent = event;                                    \
-        if (virtTestRun(name, 1, testQemuHotplug, &data) < 0)               \
+        if (virtTestRun(name, testQemuHotplug, &data) < 0)                  \
             ret = -1;                                                       \
     } while (0)
 

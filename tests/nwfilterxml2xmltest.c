@@ -104,7 +104,7 @@ mymain(void)
             .expect_warning = EXPECT_WARN,                        \
         };                                                        \
         if (virtTestRun("NWFilter XML-2-XML " NAME,               \
-                        1, testCompareXMLToXMLHelper, (&tp)) < 0) \
+                        testCompareXMLToXMLHelper, (&tp)) < 0)    \
             ret = -1;                                             \
     } while (0)
 

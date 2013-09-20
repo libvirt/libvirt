@@ -550,38 +550,38 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_SYSFS_DIR", fakesysfsdir, 1);
 
-    if (virtTestRun("New cgroup for self", 1, testCgroupNewForSelf, NULL) < 0)
+    if (virtTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("New cgroup for partition", 1, testCgroupNewForPartition, NULL) < 0)
+    if (virtTestRun("New cgroup for partition", testCgroupNewForPartition, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("New cgroup for partition nested", 1, testCgroupNewForPartitionNested, NULL) < 0)
+    if (virtTestRun("New cgroup for partition nested", testCgroupNewForPartitionNested, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("New cgroup for partition nested deeply", 1, testCgroupNewForPartitionNestedDeep, NULL) < 0)
+    if (virtTestRun("New cgroup for partition nested deeply", testCgroupNewForPartitionNestedDeep, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("New cgroup for domain partition", 1, testCgroupNewForPartitionDomain, NULL) < 0)
+    if (virtTestRun("New cgroup for domain partition", testCgroupNewForPartitionDomain, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("New cgroup for domain partition escaped", 1, testCgroupNewForPartitionDomainEscaped, NULL) < 0)
+    if (virtTestRun("New cgroup for domain partition escaped", testCgroupNewForPartitionDomainEscaped, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x1) < 0)
+    if (virtTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
 
     setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
-    if (virtTestRun("New cgroup for self (allinone)", 1, testCgroupNewForSelfAllInOne, NULL) < 0)
+    if (virtTestRun("New cgroup for self (allinone)", testCgroupNewForSelfAllInOne, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x1) < 0)
+    if (virtTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
     unsetenv("VIR_CGROUP_MOCK_MODE");
 
     setenv("VIR_CGROUP_MOCK_MODE", "logind", 1);
-    if (virtTestRun("New cgroup for self (logind)", 1, testCgroupNewForSelfLogind, NULL) < 0)
+    if (virtTestRun("New cgroup for self (logind)", testCgroupNewForSelfLogind, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Cgroup available", 1, testCgroupAvailable, (void*)0x0) < 0)
+    if (virtTestRun("Cgroup available", testCgroupAvailable, (void*)0x0) < 0)
         ret = -1;
     unsetenv("VIR_CGROUP_MOCK_MODE");
 

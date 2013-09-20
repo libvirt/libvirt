@@ -96,7 +96,7 @@ mymain(void)
             config, hostname, service, credname, expect                 \
         };                                                              \
         if (virtTestRun("Test Lookup " hostname "-" service "-" credname, \
-                        1, testAuthLookup, &data) < 0)                   \
+                        testAuthLookup, &data) < 0)                     \
             ret = -1;                                                   \
     } while (0)
 

@@ -102,7 +102,7 @@ mymain(void)
     do {                                                                \
         const struct testInfo info = {name, uuid, internal};            \
         if (virtTestRun("SNAPSHOT XML-2-XML " name,                     \
-                        1, testCompareXMLToXMLHelper, &info) < 0)       \
+                        testCompareXMLToXMLHelper, &info) < 0)          \
             ret = -1;                                                   \
     } while (0)
 

@@ -253,7 +253,7 @@ mymain(void)
 
 # define DO_TEST(_name)                                                       \
         do {                                                                  \
-            if (virtTestRun("VMware "#_name, 1, test##_name,                  \
+            if (virtTestRun("VMware "#_name, test##_name,                     \
                             NULL) < 0) {                                      \
                 result = -1;                                                  \
             }                                                                 \

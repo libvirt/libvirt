@@ -149,7 +149,7 @@ mymain(void)
             uri, (uri_out) ? (uri_out) : (uri), scheme, server, port,   \
             path, query, fragment, user, params                         \
         };                                                              \
-        if (virtTestRun("Test URI " # uri,  1, testURIParse, &data) < 0) \
+        if (virtTestRun("Test URI " # uri, testURIParse, &data) < 0)    \
             ret = -1;                                                   \
     } while (0)
 #define TEST_PARSE(uri, scheme, server, port, path, query, fragment, user, params) \

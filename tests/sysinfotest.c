@@ -117,7 +117,7 @@ sysinfotest_run(const char *test,
         goto error;
     }
 
-    if (virtTestRun(test, 1, testSysinfo, &testdata) < 0)
+    if (virtTestRun(test, testSysinfo, &testdata) < 0)
         goto error;
 
     ret = EXIT_SUCCESS;
