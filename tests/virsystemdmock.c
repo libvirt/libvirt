@@ -82,10 +82,8 @@ DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connectio
             dbus_message_iter_init_append(reply, &iter);
             if (!dbus_message_iter_append_basic(&iter,
                                                 DBUS_TYPE_STRING,
-                                                &error_message)) {
-                dbus_message_unref(reply);
-                return NULL;
-            }
+                                                &error_message))
+                goto error;
         } else {
             reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
         }
@@ -98,19 +96,25 @@ DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connectio
         dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY,
                                          "s", &sub);
 
-        dbus_message_iter_append_basic(&sub,
+        if (!dbus_message_iter_append_basic(&sub,
                                        DBUS_TYPE_STRING,
-                                       &svc1);
-        if (!getenv("FAIL_NO_SERVICE"))
-            dbus_message_iter_append_basic(&sub,
-                                           DBUS_TYPE_STRING,
-                                           &svc2);
+                                            &svc1))
+            goto error;
+        if (!getenv("FAIL_NO_SERVICE") &&
+            !dbus_message_iter_append_basic(&sub,
+                                            DBUS_TYPE_STRING,
+                                            &svc2))
+            goto error;
         dbus_message_iter_close_container(&iter, &sub);
     } else {
         reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
     }
 
     return reply;
+
+ error:
+    dbus_message_unref(reply);
+    return NULL;
 }
 
 #else
