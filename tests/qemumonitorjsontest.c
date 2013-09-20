@@ -960,6 +960,9 @@ testQemuMonitorJSONCPU(const void *data)
     bool running = false;
     virDomainPausedReason reason = 0;
 
+    if (!test)
+        return -1;
+
     if (qemuMonitorTestAddItem(test, "stop", "{\"return\": {}}") < 0 ||
         qemuMonitorTestAddItem(test, "query-status",
                                "{\"return\": {"
@@ -1015,6 +1018,9 @@ testQemuMonitorJSONSimpleFunc(const void *opaque)
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     const char *reply = data->reply;
     int ret = -1;
+
+    if (!test)
+        return -1;
 
     if (!reply)
         reply = "{\"return\":{}}";
