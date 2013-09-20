@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-08-01 17:45-0400\n"
+"POT-Creation-Date: 2013-09-20 16:29-0400\n"
 "PO-Revision-Date: 2008-10-21 22:22+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian <trans-sr@lists.fedoraproject.org>\n"
@@ -247,16 +247,16 @@ msgstr "Неуспело прављење директоријума %s : %s"
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
-#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
-#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
-#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
-#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
-#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
-#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
-#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
-#: daemon/remote.c:4235 daemon/remote.c:4289 daemon/remote.c:4343
-#: daemon/remote.c:4397 daemon/remote.c:4451 daemon/remote.c:4506
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3091
+#: daemon/remote.c:3144 daemon/remote.c:3185 daemon/remote.c:3263
+#: daemon/remote.c:3300 daemon/remote.c:3333 daemon/remote.c:3382
+#: daemon/remote.c:3428 daemon/remote.c:3469 daemon/remote.c:3520
+#: daemon/remote.c:3580 daemon/remote.c:3634 daemon/remote.c:3683
+#: daemon/remote.c:3731 daemon/remote.c:3771 daemon/remote.c:3816
+#: daemon/remote.c:3880 daemon/remote.c:3955 daemon/remote.c:4018
+#: daemon/remote.c:4079 daemon/remote.c:4143 daemon/remote.c:4198
+#: daemon/remote.c:4257 daemon/remote.c:4311 daemon/remote.c:4365
+#: daemon/remote.c:4419 daemon/remote.c:4473 daemon/remote.c:4528
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -392,8 +392,8 @@ msgstr "непозната врста параметра"
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
-#: daemon/remote.c:4513
+#: daemon/remote.c:2296 daemon/remote.c:3823 daemon/remote.c:3885
+#: daemon/remote.c:4535
 msgid "nparams too large"
 msgstr "nparams превелики"
 
@@ -429,111 +429,111 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#: daemon/remote.c:2431
+#: daemon/remote.c:2432
 msgid "client tried invalid SASL init request"
 msgstr "клијент је предао неисправан SASL init захтев"
 
-#: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
-#: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
+#: daemon/remote.c:2478 daemon/remote.c:2629 daemon/remote.c:2727
+#: daemon/remote.c:2743 daemon/remote.c:2757 daemon/remote.c:2771
+#: daemon/remote.c:2890 daemon/remote.c:3036 daemon/remote.c:3065
 #: src/util/virterror.c:959
 msgid "authentication failed"
 msgstr "неуспела аутентификација"
 
-#: daemon/remote.c:2504
+#: daemon/remote.c:2505
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "преговарани SSF %d није био довољно јак"
 
-#: daemon/remote.c:2559 daemon/remote.c:2657
+#: daemon/remote.c:2560 daemon/remote.c:2658
 msgid "client tried invalid SASL start request"
 msgstr "клијент је покушао са неважећим SASL стартним упитом"
 
-#: daemon/remote.c:2577
+#: daemon/remote.c:2578
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "подаци одговора sasl покретања предуги %d "
 
-#: daemon/remote.c:2674
+#: daemon/remote.c:2675
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr "Подаци одговора sasl корака предуги %d"
 
-#: daemon/remote.c:2809 daemon/remote.c:2919
+#: daemon/remote.c:2813 daemon/remote.c:2941
 msgid "client tried invalid PolicyKit init request"
 msgstr "клијент је покушао са неважећим PolicyKit init захтевом"
 
-#: daemon/remote.c:2837
+#: daemon/remote.c:2859
 #, fuzzy, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d: %s"
 msgstr ""
 "Policy kit је одбио извршавање акције %s из pid %d, uid %d, резултат: %s\n"
 
-#: daemon/remote.c:2864
+#: daemon/remote.c:2886
 #, fuzzy
 msgid "authentication cancelled by user"
 msgstr "неуспела аутентификација: %s"
 
-#: daemon/remote.c:2866
+#: daemon/remote.c:2888
 #, fuzzy, c-format
 msgid "polkit: %s"
 msgstr "прикључак: %s"
 
-#: daemon/remote.c:2925
+#: daemon/remote.c:2947
 msgid "cannot get peer socket identity"
 msgstr "не могу да утврдим идентитет прикључка парњака"
 
-#: daemon/remote.c:2943
+#: daemon/remote.c:2965
 #, fuzzy, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "Неуспела потрага policy kit caller: %s"
 
-#: daemon/remote.c:2950
+#: daemon/remote.c:2972
 #, fuzzy, c-format
 msgid "Failed to create polkit action %s"
 msgstr "Неуспело прављење polkit акције %s\n"
 
-#: daemon/remote.c:2960
+#: daemon/remote.c:2982
 #, fuzzy, c-format
 msgid "Failed to create polkit context %s"
 msgstr "Неуспело прављење polkit контекста %s\n"
 
-#: daemon/remote.c:2978
+#: daemon/remote.c:3000
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "Policy kit није успео да провери овлашћење %d %s"
 
-#: daemon/remote.c:2992
+#: daemon/remote.c:3014
 #, fuzzy, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr ""
 "Policy kit је одбио извршавање акције %s из pid %d, uid %d, резултат: %s\n"
 
-#: daemon/remote.c:3041
+#: daemon/remote.c:3063
 msgid "client tried unsupported PolicyKit init request"
 msgstr "клијент је покушао са неважећим PolicyKit init захтевом"
 
-#: daemon/remote.c:3129 daemon/remote.c:3324
+#: daemon/remote.c:3151 daemon/remote.c:3346
 #, fuzzy, c-format
 msgid "domain event %d already registered"
 msgstr "регистровано је превише управљачких програма"
 
-#: daemon/remote.c:3170 daemon/remote.c:3374
+#: daemon/remote.c:3192 daemon/remote.c:3396
 #, fuzzy, c-format
 msgid "domain event %d not registered"
 msgstr "регистровано је превише управљачких програма"
 
-#: daemon/remote.c:3319 daemon/remote.c:3368
+#: daemon/remote.c:3341 daemon/remote.c:3390
 #, fuzzy, c-format
 msgid "unsupported event ID %d"
 msgstr "магистрала за унос %s није подржана"
 
-#: daemon/remote.c:3867
+#: daemon/remote.c:3889
 #, fuzzy
 msgid "ncpus too large"
 msgstr "nparams превелики"
 
-#: daemon/remote.c:3942
+#: daemon/remote.c:3964
 #, fuzzy
 msgid "maxerrors too large"
 msgstr "nparams превелики"
@@ -1336,7 +1336,7 @@ msgstr "недостаје домаћин извора"
 msgid "missing port for host"
 msgstr "недостаје домаћин извора"
 
-#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11769
+#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11771
 #, fuzzy, c-format
 msgid "unexpected disk type %s"
 msgstr "неочекивана врста домена %d"
@@ -2284,7 +2284,7 @@ msgstr "неочекивана врста домена %d"
 msgid "Failed to generate UUID"
 msgstr "Неуспешно прављење UUID"
 
-#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9848
+#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9850
 #: src/conf/network_conf.c:1260 src/conf/nwfilter_conf.c:2575
 #: src/conf/secret_conf.c:186 src/conf/storage_conf.c:776
 msgid "malformed uuid element"
@@ -2388,168 +2388,168 @@ msgstr "није подржана врста диска „%s“"
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8896
+#: src/conf/domain_conf.c:8898
 #, fuzzy, c-format
 msgid "unsupported XML element %s"
 msgstr "магистрала за унос %s није подржана"
 
-#: src/conf/domain_conf.c:8922
+#: src/conf/domain_conf.c:8924
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "неочекивани подаци „%s“"
 
-#: src/conf/domain_conf.c:8933
+#: src/conf/domain_conf.c:8935
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: %s"
 msgstr "непозната врста ауторизације %s"
 
-#: src/conf/domain_conf.c:8975
+#: src/conf/domain_conf.c:8977
 #, fuzzy, c-format
 msgid "unknown clock offset '%s'"
 msgstr "непознат домаћин %s"
 
-#: src/conf/domain_conf.c:8993
+#: src/conf/domain_conf.c:8995
 #, fuzzy, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr "непознат домаћин %s"
 
-#: src/conf/domain_conf.c:9021
+#: src/conf/domain_conf.c:9023
 #, fuzzy, c-format
 msgid "unknown clock basis '%s'"
 msgstr "непознат домаћин %s"
 
-#: src/conf/domain_conf.c:9034
+#: src/conf/domain_conf.c:9036
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9067
+#: src/conf/domain_conf.c:9069
 msgid "no OS type"
 msgstr "нема врсте ОС-а"
 
-#: src/conf/domain_conf.c:9094
+#: src/conf/domain_conf.c:9096
 #, fuzzy, c-format
 msgid "No guest options available for arch '%s'"
 msgstr "Нема доступних конзола за доме\n"
 
-#: src/conf/domain_conf.c:9103
+#: src/conf/domain_conf.c:9105
 #, fuzzy, c-format
 msgid "No os type '%s' available for arch '%s'"
 msgstr "Нема доступних конзола за доме\n"
 
-#: src/conf/domain_conf.c:9111 src/xenxs/xen_xm.c:295
+#: src/conf/domain_conf.c:9113 src/xenxs/xen_xm.c:295
 #, fuzzy, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "архитектура није подржана"
 
-#: src/conf/domain_conf.c:9152
+#: src/conf/domain_conf.c:9154
 #, fuzzy
 msgid "init binary must be specified"
 msgstr "Домену %s је укинута дефиниција\n"
 
-#: src/conf/domain_conf.c:9168
+#: src/conf/domain_conf.c:9170
 msgid "No data supplied for <initarg> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:9242 src/conf/domain_conf.c:9250
+#: src/conf/domain_conf.c:9244 src/conf/domain_conf.c:9252
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9271
+#: src/conf/domain_conf.c:9273
 #, fuzzy
 msgid "cannot extract device leases"
 msgstr "не могу да издвојим изворне уређаје"
 
-#: src/conf/domain_conf.c:9408
+#: src/conf/domain_conf.c:9410
 #, fuzzy
 msgid "cannot extract console devices"
 msgstr "не могу да издвојим изворне уређаје"
 
-#: src/conf/domain_conf.c:9448
+#: src/conf/domain_conf.c:9450
 msgid "Only the first console can be a serial port"
 msgstr ""
 
-#: src/conf/domain_conf.c:9547
+#: src/conf/domain_conf.c:9549
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
 
-#: src/conf/domain_conf.c:9652
+#: src/conf/domain_conf.c:9654
 #, fuzzy
 msgid "cannot determine default video type"
 msgstr "не могу да утврдим идентитет прикључка парњака"
 
-#: src/conf/domain_conf.c:9681
+#: src/conf/domain_conf.c:9683
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 
-#: src/conf/domain_conf.c:9697
+#: src/conf/domain_conf.c:9699
 msgid "only a single watchdog device is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:9717
+#: src/conf/domain_conf.c:9719
 msgid "only a single memory balloon device is supported"
 msgstr ""
 
-#: src/conf/domain_conf.c:9757
+#: src/conf/domain_conf.c:9759
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9781
+#: src/conf/domain_conf.c:9783
 msgid "Can't add redirected USB device: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9796
+#: src/conf/domain_conf.c:9798
 #, fuzzy
 msgid "only one set of redirection filter rule is supported"
 msgstr "неправилан тип система датотека"
 
-#: src/conf/domain_conf.c:9824
+#: src/conf/domain_conf.c:9826
 msgid "Maximum CPUs greater than topology limit"
 msgstr ""
 
-#: src/conf/domain_conf.c:9830
+#: src/conf/domain_conf.c:9832
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr ""
 
-#: src/conf/domain_conf.c:9855
+#: src/conf/domain_conf.c:9857
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr ""
 
-#: src/conf/domain_conf.c:9867
+#: src/conf/domain_conf.c:9869
 #, fuzzy, c-format
 msgid "unknown smbios mode '%s'"
 msgstr "непозната врста звучног модела"
 
-#: src/conf/domain_conf.c:9934
+#: src/conf/domain_conf.c:9936
 #, fuzzy
 msgid "no domain config"
 msgstr "списак домена за чвор"
 
-#: src/conf/domain_conf.c:9948
+#: src/conf/domain_conf.c:9950
 #, fuzzy
 msgid "missing domain state"
 msgstr "недостаје тип домена"
 
-#: src/conf/domain_conf.c:9953
+#: src/conf/domain_conf.c:9955
 #, fuzzy, c-format
 msgid "invalid domain state '%s'"
 msgstr "неисправан тип домена"
 
-#: src/conf/domain_conf.c:9962
+#: src/conf/domain_conf.c:9964
 #, fuzzy, c-format
 msgid "invalid domain state reason '%s'"
 msgstr "неисправан тип домена"
 
-#: src/conf/domain_conf.c:9973
+#: src/conf/domain_conf.c:9975
 #, fuzzy
 msgid "invalid pid"
 msgstr "неисправна путања"
 
-#: src/conf/domain_conf.c:9987
+#: src/conf/domain_conf.c:9989
 #, fuzzy, c-format
 msgid "Unknown taint flag %s"
 msgstr "непозната врста „%s“"
 
-#: src/conf/domain_conf.c:10021 src/security/virt-aa-helper.c:654
+#: src/conf/domain_conf.c:10023 src/security/virt-aa-helper.c:654
 #: tools/virsh-domain-monitor.c:97 tools/virsh-domain-monitor.c:430
 #: tools/virsh-domain-monitor.c:531 tools/virsh-domain-monitor.c:640
 #: tools/virsh-domain.c:1991 tools/virsh-domain.c:2591
@@ -2560,698 +2560,698 @@ msgstr "непозната врста „%s“"
 msgid "(domain_definition)"
 msgstr "подаци о домену"
 
-#: src/conf/domain_conf.c:10059
+#: src/conf/domain_conf.c:10061
 #, fuzzy, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:10092
+#: src/conf/domain_conf.c:10094
 #, fuzzy, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:10142
+#: src/conf/domain_conf.c:10144
 #, fuzzy, c-format
 msgid "Target timer %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10150
+#: src/conf/domain_conf.c:10152
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10158
+#: src/conf/domain_conf.c:10160
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr ""
 
-#: src/conf/domain_conf.c:10165
+#: src/conf/domain_conf.c:10167
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10186
+#: src/conf/domain_conf.c:10188
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10199
+#: src/conf/domain_conf.c:10201
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
 "%02x:%02x.%02x"
 msgstr ""
 
-#: src/conf/domain_conf.c:10214
+#: src/conf/domain_conf.c:10216
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10228
+#: src/conf/domain_conf.c:10230
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10241
+#: src/conf/domain_conf.c:10243
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10265
+#: src/conf/domain_conf.c:10267
 #, fuzzy, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:10273
+#: src/conf/domain_conf.c:10275
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10281
+#: src/conf/domain_conf.c:10283
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10288
+#: src/conf/domain_conf.c:10290
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10295
+#: src/conf/domain_conf.c:10297
 msgid "Target disk access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10316
+#: src/conf/domain_conf.c:10318
 #, fuzzy, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10324
+#: src/conf/domain_conf.c:10326
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10331
+#: src/conf/domain_conf.c:10333
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10339
+#: src/conf/domain_conf.c:10341
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10346
+#: src/conf/domain_conf.c:10348
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10369
+#: src/conf/domain_conf.c:10371
 #, fuzzy, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10376
+#: src/conf/domain_conf.c:10378
 msgid "Target filesystem access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10397
+#: src/conf/domain_conf.c:10399
 #, c-format
 msgid ""
 "Target network card mac %02x:%02x:%02x:%02x:%02x:%02x does not match source "
 "%02x:%02x:%02x:%02x:%02x:%02x"
 msgstr ""
 
-#: src/conf/domain_conf.c:10408
+#: src/conf/domain_conf.c:10410
 #, fuzzy, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10430
+#: src/conf/domain_conf.c:10432
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10438
+#: src/conf/domain_conf.c:10440
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10461
+#: src/conf/domain_conf.c:10463
 #, fuzzy, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10484
+#: src/conf/domain_conf.c:10486
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10492
+#: src/conf/domain_conf.c:10494
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10499
+#: src/conf/domain_conf.c:10501
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10507
+#: src/conf/domain_conf.c:10509
 msgid "Target video card acceleration does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10514
+#: src/conf/domain_conf.c:10516
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10521
+#: src/conf/domain_conf.c:10523
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10544
+#: src/conf/domain_conf.c:10546
 #, fuzzy, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10553
+#: src/conf/domain_conf.c:10555
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10592 src/conf/domain_conf.c:10614
+#: src/conf/domain_conf.c:10594 src/conf/domain_conf.c:10616
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10636
+#: src/conf/domain_conf.c:10638
 #, fuzzy, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10646
+#: src/conf/domain_conf.c:10648
 #, fuzzy, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10655
+#: src/conf/domain_conf.c:10657
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 msgstr ""
 
-#: src/conf/domain_conf.c:10666
+#: src/conf/domain_conf.c:10668
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10692
+#: src/conf/domain_conf.c:10694
 #, fuzzy, c-format
 msgid "Target console type %s does not match source %s"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10715
+#: src/conf/domain_conf.c:10717
 #, fuzzy, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10738
+#: src/conf/domain_conf.c:10740
 #, fuzzy, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10761
+#: src/conf/domain_conf.c:10763
 #, fuzzy, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10785
+#: src/conf/domain_conf.c:10787
 #, fuzzy, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:10796
+#: src/conf/domain_conf.c:10798
 #, fuzzy
 msgid "Target USB Class code does not match source"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10802
+#: src/conf/domain_conf.c:10804
 #, fuzzy
 msgid "Target USB vendor ID does not match source"
 msgstr "xen магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:10808
+#: src/conf/domain_conf.c:10810
 #, fuzzy
 msgid "Target USB product ID does not match source"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10814
+#: src/conf/domain_conf.c:10816
 #, fuzzy
 msgid "Target USB version does not match source"
 msgstr "xen магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:10820
+#: src/conf/domain_conf.c:10822
 #, fuzzy, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10844
+#: src/conf/domain_conf.c:10846
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10856
+#: src/conf/domain_conf.c:10858
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10863
+#: src/conf/domain_conf.c:10865
 #, fuzzy, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10869
+#: src/conf/domain_conf.c:10871
 #, fuzzy, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr ""
 "Назив датотеке мрежног подешавања „%s“ се не поклапа са називом мреже „%s“"
 
-#: src/conf/domain_conf.c:10875
+#: src/conf/domain_conf.c:10877
 #, fuzzy, c-format
 msgid "Target domain huge page backing %d does not match source %d"
 msgstr "складиште не подржава брисање диска"
 
-#: src/conf/domain_conf.c:10883
+#: src/conf/domain_conf.c:10885
 #, c-format
 msgid "Target domain vpu count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10889
+#: src/conf/domain_conf.c:10891
 #, c-format
 msgid "Target domain vpu max %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10896 src/conf/domain_conf.c:10908
+#: src/conf/domain_conf.c:10898 src/conf/domain_conf.c:10910
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10902
+#: src/conf/domain_conf.c:10904
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10915
+#: src/conf/domain_conf.c:10917
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10923
+#: src/conf/domain_conf.c:10925
 #, c-format
 msgid "Target domain features %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10930
+#: src/conf/domain_conf.c:10932
 msgid "Target domain timers do not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10947
+#: src/conf/domain_conf.c:10949
 #, c-format
 msgid "Target domain disk count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10958
+#: src/conf/domain_conf.c:10960
 #, c-format
 msgid "Target domain disk controller count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10969
+#: src/conf/domain_conf.c:10971
 #, c-format
 msgid "Target domain filesystem count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10980
+#: src/conf/domain_conf.c:10982
 #, c-format
 msgid "Target domain net card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10991
+#: src/conf/domain_conf.c:10993
 #, c-format
 msgid "Target domain input device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11002
+#: src/conf/domain_conf.c:11004
 #, c-format
 msgid "Target domain sound card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11013
+#: src/conf/domain_conf.c:11015
 #, c-format
 msgid "Target domain video card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11024
+#: src/conf/domain_conf.c:11026
 #, c-format
 msgid "Target domain host device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11035
+#: src/conf/domain_conf.c:11037
 #, c-format
 msgid "Target domain smartcard count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11046
+#: src/conf/domain_conf.c:11048
 #, c-format
 msgid "Target domain serial port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11057
+#: src/conf/domain_conf.c:11059
 #, c-format
 msgid "Target domain parallel port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11068
+#: src/conf/domain_conf.c:11070
 #, c-format
 msgid "Target domain channel count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11079
+#: src/conf/domain_conf.c:11081
 #, c-format
 msgid "Target domain console count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11090
+#: src/conf/domain_conf.c:11092
 #, fuzzy, c-format
 msgid "Target domain hub device count %d does not match source %d"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:11102
+#: src/conf/domain_conf.c:11104
 #, fuzzy, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
 
-#: src/conf/domain_conf.c:11114
+#: src/conf/domain_conf.c:11116
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11126
+#: src/conf/domain_conf.c:11128
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11465
+#: src/conf/domain_conf.c:11467
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11626
+#: src/conf/domain_conf.c:11628
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11631
+#: src/conf/domain_conf.c:11633
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11636
+#: src/conf/domain_conf.c:11638
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11641
+#: src/conf/domain_conf.c:11643
 #, fuzzy, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "неочекиван dict чвор"
 
-#: src/conf/domain_conf.c:11646
+#: src/conf/domain_conf.c:11648
 #, fuzzy, c-format
 msgid "unexpected disk io mode %d"
 msgstr "неочекиван dict чвор"
 
-#: src/conf/domain_conf.c:11888
+#: src/conf/domain_conf.c:11890
 #, fuzzy, c-format
 msgid "unexpected controller type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11897
+#: src/conf/domain_conf.c:11899
 #, fuzzy, c-format
 msgid "unexpected model type %d"
 msgstr "неочекивана врста складишта"
 
-#: src/conf/domain_conf.c:11966
+#: src/conf/domain_conf.c:11968
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:11972
+#: src/conf/domain_conf.c:11974
 #, fuzzy, c-format
 msgid "unexpected accessmode %d"
 msgstr "неочекиван чвор вредности"
 
-#: src/conf/domain_conf.c:12072
+#: src/conf/domain_conf.c:12074
 #, fuzzy
 msgid "PCI address Formatting failed"
 msgstr "неуспео наставак операције"
 
-#: src/conf/domain_conf.c:12090 src/conf/domain_conf.c:13163
+#: src/conf/domain_conf.c:12092 src/conf/domain_conf.c:13165
 #: src/qemu/qemu_hotplug.c:2196
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12114 src/conf/domain_conf.c:12184
-#: src/conf/domain_conf.c:12961
+#: src/conf/domain_conf.c:12116 src/conf/domain_conf.c:12186
+#: src/conf/domain_conf.c:12963
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12141
+#: src/conf/domain_conf.c:12143
 #, fuzzy, c-format
 msgid "unexpected source mode %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12159
+#: src/conf/domain_conf.c:12161
 #, fuzzy, c-format
 msgid "unexpected net type %s"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12349
+#: src/conf/domain_conf.c:12351
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12451
+#: src/conf/domain_conf.c:12453
 #, fuzzy, c-format
 msgid "unexpected char device type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12470
+#: src/conf/domain_conf.c:12472
 msgid "Could not format channel target type"
 msgstr ""
 
-#: src/conf/domain_conf.c:12480
+#: src/conf/domain_conf.c:12482
 #, fuzzy
 msgid "Unable to format guestfwd port"
 msgstr "Није могуће пронаћи VNC порт који није у употреби"
 
-#: src/conf/domain_conf.c:12548 src/conf/domain_conf.c:12579
+#: src/conf/domain_conf.c:12550 src/conf/domain_conf.c:12581
 #: src/qemu/qemu_command.c:5679
 #, fuzzy, c-format
 msgid "unexpected smartcard type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12596
+#: src/conf/domain_conf.c:12598
 #, fuzzy, c-format
 msgid "unexpected codec type %d"
 msgstr "неочекивана врста складишта"
 
-#: src/conf/domain_conf.c:12616 src/xenxs/xen_sxpr.c:2153
+#: src/conf/domain_conf.c:12618 src/xenxs/xen_sxpr.c:2153
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12658
+#: src/conf/domain_conf.c:12660
 #, fuzzy, c-format
 msgid "unexpected memballoon model %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12698
+#: src/conf/domain_conf.c:12700
 #, fuzzy, c-format
 msgid "unexpected watchdog model %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12704
+#: src/conf/domain_conf.c:12706
 #, fuzzy, c-format
 msgid "unexpected watchdog action %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12745
+#: src/conf/domain_conf.c:12747
 #, fuzzy, c-format
 msgid "unexpected video model %d"
 msgstr "неочекиван чвор вредности"
 
-#: src/conf/domain_conf.c:12782 src/xenxs/xen_sxpr.c:2190
+#: src/conf/domain_conf.c:12784 src/xenxs/xen_sxpr.c:2190
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12787
+#: src/conf/domain_conf.c:12789
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:12815
+#: src/conf/domain_conf.c:12817
 #, fuzzy, c-format
 msgid "unexpected timer name %d"
 msgstr "неочекивана mime врста"
 
-#: src/conf/domain_conf.c:12831
+#: src/conf/domain_conf.c:12833
 #, fuzzy, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "неочекивана mime врста"
 
-#: src/conf/domain_conf.c:12845
+#: src/conf/domain_conf.c:12847
 #, fuzzy, c-format
 msgid "unexpected timer track %d"
 msgstr "неочекивана mime врста"
 
-#: src/conf/domain_conf.c:12863
+#: src/conf/domain_conf.c:12865
 #, fuzzy, c-format
 msgid "unexpected timer mode %d"
 msgstr "неочекиван dict чвор"
 
-#: src/conf/domain_conf.c:13154
+#: src/conf/domain_conf.c:13156
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "неочекиван dict чвор"
 
-#: src/conf/domain_conf.c:13248
+#: src/conf/domain_conf.c:13250
 #, fuzzy, c-format
 msgid "unexpected hub type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:13301
+#: src/conf/domain_conf.c:13303
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:13474
+#: src/conf/domain_conf.c:13476
 #, fuzzy
 msgid "failed to format cpuset for vcpupin"
 msgstr "неуспело отварање %s за читање"
 
-#: src/conf/domain_conf.c:13490
+#: src/conf/domain_conf.c:13492
 #, fuzzy
 msgid "failed to format cpuset for emulator"
 msgstr "неуспело отварање %s за читање"
 
-#: src/conf/domain_conf.c:13519
+#: src/conf/domain_conf.c:13521
 #, fuzzy
 msgid "failed to format nodeset for NUMA memory tuning"
 msgstr "неуспело отварање %s за читање"
 
-#: src/conf/domain_conf.c:13583
+#: src/conf/domain_conf.c:13585
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:13617
+#: src/conf/domain_conf.c:13619
 #, fuzzy, c-format
 msgid "unexpected smbios mode %d"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:13632
+#: src/conf/domain_conf.c:13634
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "неочекиван чвор вредности"
 
-#: src/conf/domain_conf.c:13959
+#: src/conf/domain_conf.c:13961
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
 
-#: src/conf/domain_conf.c:13979 src/conf/network_conf.c:1996
+#: src/conf/domain_conf.c:13981 src/conf/network_conf.c:1996
 #: src/conf/nwfilter_conf.c:2728 src/util/dnsmasq.c:533
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "неуспело уписивање директоријума подешавања %s: %s"
 
-#: src/conf/domain_conf.c:14124
+#: src/conf/domain_conf.c:14126
 #, fuzzy, c-format
 msgid "unexpected domain %s already exists"
 msgstr "неочекивана врста домена %d"
 
-#: src/conf/domain_conf.c:14162 src/conf/network_conf.c:2114
+#: src/conf/domain_conf.c:14164 src/conf/network_conf.c:2114
 #: src/conf/nwfilter_conf.c:3118 src/conf/storage_conf.c:1597
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Неуспело отварање директоријума „%s“: %s"
 
-#: src/conf/domain_conf.c:14226
+#: src/conf/domain_conf.c:14228
 #, fuzzy, c-format
 msgid "cannot remove config %s"
 msgstr "не могу да уклоним подешавање за %s"
 
-#: src/conf/domain_conf.c:14332 src/xen/xm_internal.c:1079
+#: src/conf/domain_conf.c:14334 src/xen/xm_internal.c:1079
 #, fuzzy, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "домен је већ активан као „%s“"
 
-#: src/conf/domain_conf.c:14341
+#: src/conf/domain_conf.c:14343
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "домен је већ активан као „%s“"
 
-#: src/conf/domain_conf.c:14355
+#: src/conf/domain_conf.c:14357
 #, fuzzy, c-format
 msgid "domain '%s' already exists with uuid %s"
 msgstr "домен је већ активан као „%s“"
 
-#: src/conf/domain_conf.c:14585
+#: src/conf/domain_conf.c:14587
 #, fuzzy, c-format
 msgid "unknown disk format '%s' for %s"
 msgstr "неочекивана наредба: „%s“"
 
-#: src/conf/domain_conf.c:14594 src/qemu/qemu_driver.c:9224
+#: src/conf/domain_conf.c:14596 src/qemu/qemu_driver.c:9224
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr ""
 
-#: src/conf/domain_conf.c:14611
+#: src/conf/domain_conf.c:14613
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr ""
 
-#: src/conf/domain_conf.c:14623
+#: src/conf/domain_conf.c:14625
 #, fuzzy, c-format
 msgid "unable to open disk path %s"
 msgstr "Није могуће отворити путању надгледања %s"
 
-#: src/conf/domain_conf.c:14636
+#: src/conf/domain_conf.c:14638
 #, fuzzy, c-format
 msgid "could not close file %s"
 msgstr "не могу да се повежем са %s"
 
-#: src/conf/domain_conf.c:14740
+#: src/conf/domain_conf.c:14742
 #, fuzzy, c-format
 msgid "invalid domain state: %d"
 msgstr "неисправан тип домена"
 
-#: src/conf/domain_conf.c:15175
+#: src/conf/domain_conf.c:15177
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr ""
@@ -7385,7 +7385,7 @@ msgstr "Неуспело поновно покретање домена %s"
 msgid "Failed to pivot root"
 msgstr "Неуспело писање у "
 
-#: src/lxc/lxc_container.c:544
+#: src/lxc/lxc_container.c:551
 #, fuzzy, c-format
 msgid "Failed to mkdir %s"
 msgstr "Неуспело покретање '"
@@ -15707,7 +15707,7 @@ msgstr "Неуспело дефинисање складишта из %s"
 
 #: src/rpc/virnetsocket.c:293 src/rpc/virnetsocket.c:420
 #: src/rpc/virnetsocket.c:489 src/rpc/virnetsocket.c:572
-#: src/rpc/virnetsocket.c:1466
+#: src/rpc/virnetsocket.c:1475
 #, fuzzy
 msgid "Unable to get local socket name"
 msgstr "неуспело добављање имена домаћина"
@@ -15790,71 +15790,71 @@ msgstr ""
 msgid "Unable to copy socket file handle"
 msgstr "неуспело руковање складиштењем датотеке подешавања"
 
-#: src/rpc/virnetsocket.c:998
+#: src/rpc/virnetsocket.c:1001
 #, fuzzy
 msgid "Failed to get client socket identity"
 msgstr "нисам успео да направим прикључак"
 
-#: src/rpc/virnetsocket.c:1018
+#: src/rpc/virnetsocket.c:1027
 #, fuzzy
 msgid "Client socket identity not available"
 msgstr "cpu склоност није доступна"
 
-#: src/rpc/virnetsocket.c:1174
+#: src/rpc/virnetsocket.c:1183
 #, fuzzy, c-format
 msgid "Cannot recv data: %s"
 msgstr "не могу да прочитам %s: %s"
 
-#: src/rpc/virnetsocket.c:1177
+#: src/rpc/virnetsocket.c:1186
 #, fuzzy
 msgid "Cannot recv data"
 msgstr "не могу да упишем мета податак"
 
-#: src/rpc/virnetsocket.c:1182
+#: src/rpc/virnetsocket.c:1191
 #, fuzzy, c-format
 msgid "End of file while reading data: %s"
 msgstr "Нестало је простора током читања %s излаза покретања"
 
-#: src/rpc/virnetsocket.c:1185
+#: src/rpc/virnetsocket.c:1194
 #, fuzzy
 msgid "End of file while reading data"
 msgstr "Грешка током учитавања управљачких програма"
 
-#: src/rpc/virnetsocket.c:1218
+#: src/rpc/virnetsocket.c:1227
 #, fuzzy
 msgid "Cannot write data"
 msgstr "не могу да упишем мета податак"
 
-#: src/rpc/virnetsocket.c:1223
+#: src/rpc/virnetsocket.c:1232
 msgid "End of file while writing data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1368
+#: src/rpc/virnetsocket.c:1377
 #, fuzzy
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "овај qemu не подржава „info blockstats“"
 
-#: src/rpc/virnetsocket.c:1379
+#: src/rpc/virnetsocket.c:1388
 #, fuzzy, c-format
 msgid "Failed to send file descriptor %d"
 msgstr "Неуспело постављање неблокирајуће заставице описника датотека"
 
-#: src/rpc/virnetsocket.c:1402
+#: src/rpc/virnetsocket.c:1411
 #, fuzzy
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr "овај qemu не подржава „info blockstats“"
 
-#: src/rpc/virnetsocket.c:1412
+#: src/rpc/virnetsocket.c:1421
 #, fuzzy
 msgid "Failed to recv file descriptor"
 msgstr "неуспелорашчлањење описа домена"
 
-#: src/rpc/virnetsocket.c:1429
+#: src/rpc/virnetsocket.c:1438
 #, fuzzy
 msgid "Unable to listen on socket"
 msgstr "не могу да отворим tty %s: %s\n"
 
-#: src/rpc/virnetsocket.c:1460
+#: src/rpc/virnetsocket.c:1469
 #, fuzzy
 msgid "Unable to accept client"
 msgstr "Неуспело прављење цеви: %s"
@@ -15889,7 +15889,7 @@ msgstr "Неуспело читање из цеви сигнала: %s"
 msgid "Failed to register shutdown timeout"
 msgstr "Неуспело писање у "
 
-#: src/rpc/virnetserverclient.c:773 src/rpc/virnetserverclient.c:954
+#: src/rpc/virnetserverclient.c:777 src/rpc/virnetserverclient.c:958
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "неочекивана врста домена %d"
@@ -16670,56 +16670,56 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "не могу да одредим максималне vcpus за домен"
 
-#: src/security/security_dac.c:190
+#: src/security/security_dac.c:186
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "Неуспело настављање домена %s"
 
-#: src/security/security_dac.c:211
+#: src/security/security_dac.c:207
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:221
+#: src/security/security_dac.c:217
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:313
+#: src/security/security_dac.c:309
 #, fuzzy, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "не могу да поставим tty атрибуте: %s\n"
 
-#: src/security/security_dac.c:333
+#: src/security/security_dac.c:329
 #, fuzzy, c-format
 msgid "cannot resolve symlink %s"
 msgstr "Не могу да разрешим адресе %d: %s"
 
-#: src/security/security_dac.c:904 src/security/security_selinux.c:601
+#: src/security/security_dac.c:900 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "неисправан тип домена"
 
-#: src/security/security_dac.c:915 src/security/security_selinux.c:622
+#: src/security/security_dac.c:911 src/security/security_selinux.c:622
 #, fuzzy
 msgid "security image label already defined for VM"
 msgstr "веза је већ отворена"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:629
+#: src/security/security_dac.c:919 src/security/security_selinux.c:629
 #, fuzzy, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "Врста мреже %d није подржана"
 
-#: src/security/security_dac.c:933
+#: src/security/security_dac.c:929
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:945 src/security/security_dac.c:965
+#: src/security/security_dac.c:941 src/security/security_dac.c:961
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "не могу да прикачим уређај на неактивни домен"
 
-#: src/security/security_dac.c:955 src/security/security_selinux.c:703
+#: src/security/security_dac.c:951 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "неочекивана врста домена %d"
@@ -17285,19 +17285,19 @@ msgstr "не могу да затворим датотеку „%s“: %s"
 msgid "cannot create path '%s'"
 msgstr "не могу да направим путању „%s“: %s"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
-#: src/util/util.c:1217
+#: src/storage/storage_backend.c:278 src/util/util.c:806 src/util/util.c:1117
+#: src/util/util.c:1221
 #, fuzzy, c-format
 msgid "stat of '%s' failed"
 msgstr "читање fd %d није успело: %s"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
+#: src/storage/storage_backend.c:287 src/util/util.c:817 src/util/util.c:1123
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr ""
 
 #: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
-#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
+#: src/util/util.c:828 src/util/util.c:1131 src/util/util.c:1234
 #, fuzzy, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "не могу да поставим режим датотеке „%s“: %s"
@@ -19386,200 +19386,200 @@ msgstr ""
 msgid "Target sysinfo %s %s does not match source %s"
 msgstr ""
 
-#: src/util/util.c:335
+#: src/util/util.c:339
 msgid "Unknown poll response."
 msgstr ""
 
-#: src/util/util.c:369
+#: src/util/util.c:373
 #, fuzzy
 msgid "poll error"
 msgstr "грешка"
 
-#: src/util/util.c:458
+#: src/util/util.c:462
 #, fuzzy, c-format
 msgid "Failed to open file '%s'"
 msgstr "Неуспело отварање pid датотеке „%s“: %s"
 
-#: src/util/util.c:465
+#: src/util/util.c:469
 #, fuzzy, c-format
 msgid "Failed to read file '%s'"
 msgstr "неуспело прављење „%s“"
 
-#: src/util/util.c:860
+#: src/util/util.c:864
 #, fuzzy, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "Неуспело прављење диска %s"
 
-#: src/util/util.c:891
+#: src/util/util.c:895
 #, fuzzy, c-format
 msgid "child process failed to create file '%s'"
 msgstr "неуспело прављење „%s“"
 
-#: src/util/util.c:908
+#: src/util/util.c:912
 #, fuzzy
 msgid "child process failed to send fd to parent"
 msgstr "неуспело уписивање датотеке дневника"
 
-#: src/util/util.c:951 src/util/util.c:1177
+#: src/util/util.c:955 src/util/util.c:1181
 #, fuzzy, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "неуспело чекање на команду: %s"
 
-#: src/util/util.c:1061
+#: src/util/util.c:1065
 #, fuzzy, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "не могу да одредим максималне vcpus за домен"
 
-#: src/util/util.c:1087
+#: src/util/util.c:1091
 #, fuzzy, c-format
 msgid "failed to create file '%s'"
 msgstr "неуспело прављење „%s“"
 
-#: src/util/util.c:1088
+#: src/util/util.c:1092
 #, fuzzy, c-format
 msgid "failed to open file '%s'"
 msgstr "Неуспело отварање pid датотеке „%s“: %s"
 
-#: src/util/util.c:1106
+#: src/util/util.c:1110
 #, fuzzy, c-format
 msgid "failed to create directory '%s'"
 msgstr "Неуспело прављење директоријума %s : %s"
 
-#: src/util/util.c:1207
+#: src/util/util.c:1211
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "Неуспело прављење директоријума %s : %s"
 
-#: src/util/util.c:1223
+#: src/util/util.c:1227
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr ""
 
-#: src/util/util.c:1261
+#: src/util/util.c:1265
 #, fuzzy
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "%s: није реализовано\n"
 
-#: src/util/util.c:1273
+#: src/util/util.c:1277
 msgid "virDirCreate is not implemented for WIN32"
 msgstr ""
 
-#: src/util/util.c:1775
+#: src/util/util.c:1779
 #, fuzzy, c-format
 msgid "invalid scale %llu"
 msgstr "Неисправна вредност границе"
 
-#: src/util/util.c:1791 src/util/util.c:1816
+#: src/util/util.c:1795 src/util/util.c:1820
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
 msgstr "непозната величина јединица %s"
 
-#: src/util/util.c:1822
+#: src/util/util.c:1826
 #, fuzzy, c-format
 msgid "value too large: %llu%s"
 msgstr "не могу да отворим tty %s: %s\n"
 
-#: src/util/util.c:2207
+#: src/util/util.c:2211
 #, c-format
 msgid "Disk index %d is negative"
 msgstr ""
 
-#: src/util/util.c:2263
+#: src/util/util.c:2267
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "неуспело добављање имена домаћина"
 
-#: src/util/util.c:2359
+#: src/util/util.c:2363
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "Неуспело проналажење записа корисника за uid „%d“: %s"
 
-#: src/util/util.c:2418
+#: src/util/util.c:2422
 #, fuzzy, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Неуспело проналажење записа корисника за uid „%d“: %s"
 
-#: src/util/util.c:2539
+#: src/util/util.c:2543
 #, fuzzy, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "Неуспело проналажење записа корисника за uid „%d“: %s"
 
-#: src/util/util.c:2588
+#: src/util/util.c:2592
 #, fuzzy, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "Неуспело проналажење записа корисника за uid „%d“: %s"
 
-#: src/util/util.c:2673
+#: src/util/util.c:2677
 #, fuzzy, c-format
 msgid "cannot change to '%u' group"
 msgstr "не могу да променим cdrom медијум"
 
-#: src/util/util.c:2681
+#: src/util/util.c:2685
 #, fuzzy
 msgid "cannot set supplemental groups"
 msgstr "не могу да поставим режим датотеке „%s“: %s"
 
-#: src/util/util.c:2688
+#: src/util/util.c:2692
 #, fuzzy, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "не могу да направим путању „%s“: %s"
 
-#: src/util/util.c:2800
+#: src/util/util.c:2804
 #, fuzzy
 msgid "Unable to determine home directory"
 msgstr "не могу да се повежем са %s"
 
-#: src/util/util.c:2816 src/util/util.c:2831
+#: src/util/util.c:2820 src/util/util.c:2835
 #, fuzzy
 msgid "Unable to determine config directory"
 msgstr "Неуспело дефинисање домена из %s"
 
-#: src/util/util.c:2847
+#: src/util/util.c:2851
 #, fuzzy
 msgid "virGetUserDirectory is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2856
+#: src/util/util.c:2860
 #, fuzzy
 msgid "virGetUserConfigDirectory is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2865
+#: src/util/util.c:2869
 #, fuzzy
 msgid "virGetUserCacheDirectory is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2874
+#: src/util/util.c:2878
 #, fuzzy
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2884
+#: src/util/util.c:2888
 #, fuzzy
 msgid "virGetUserName is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2893
+#: src/util/util.c:2897
 #, fuzzy
 msgid "virGetUserID is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2903
+#: src/util/util.c:2907
 #, fuzzy
 msgid "virGetGroupID is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2915
+#: src/util/util.c:2919
 #, fuzzy
 msgid "virSetUIDGID is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:2923
+#: src/util/util.c:2927
 #, fuzzy
 msgid "virGetGroupName is not available"
 msgstr "cpu склоност није доступна"
 
-#: src/util/util.c:3058
+#: src/util/util.c:3062
 #, fuzzy, c-format
 msgid "Malformed wwn: %s"
 msgstr "Лоша величина %s"
@@ -20391,30 +20391,46 @@ msgstr "неуспело прављење „%s“"
 msgid "Failed to write to pid file '%s'"
 msgstr "Неуспело писање у pid датотеку „%s“: %s"
 
-#: src/util/virprocess.c:50
+#: src/util/virprocess.c:58
 #, c-format
 msgid "exit status %d"
 msgstr ""
 
-#: src/util/virprocess.c:53
+#: src/util/virprocess.c:61
 #, c-format
 msgid "fatal signal %d"
 msgstr ""
 
-#: src/util/virprocess.c:56
+#: src/util/virprocess.c:64
 #, fuzzy, c-format
 msgid "invalid value %d"
 msgstr "Неисправна вредност границе"
 
-#: src/util/virprocess.c:151 src/util/virprocess.c:161
+#: src/util/virprocess.c:159 src/util/virprocess.c:169
 #, fuzzy, c-format
 msgid "unable to wait for process %lld"
 msgstr "неуспело чекање на команду: %s"
 
-#: src/util/virprocess.c:170
+#: src/util/virprocess.c:178
 #, c-format
 msgid "Child process (%lld) unexpected %s"
 msgstr ""
+
+#: src/util/virprocess.c:279 src/util/virprocess.c:286
+#: src/util/virprocess.c:295
+#, fuzzy, c-format
+msgid "Cannot find start time in %s"
+msgstr "Не могу да пронађем QEMU binary %s: %s"
+
+#: src/util/virprocess.c:305
+#, fuzzy, c-format
+msgid "Cannot parse start time %s in %s"
+msgstr "не могу да прочитам директоријум %s: %s"
+
+#: src/util/virprocess.c:333
+#, fuzzy
+msgid "Unable to query process ID start time"
+msgstr "Није могуће затворити датотеку дневника %d: %s"
 
 #: src/util/virrandom.c:159
 #, fuzzy
@@ -24440,8 +24456,8 @@ msgstr "Добавља статистику блок уређаја за тек�
 #: tools/virsh-domain.c:6962 tools/virsh-domain.c:7135
 #: tools/virsh-domain.c:7200 tools/virsh-domain.c:7252
 #: tools/virsh-domain.c:7538 tools/virsh-domain.c:7599
-#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8015
-#: tools/virsh-domain.c:8088 tools/virsh-domain.c:8140 tools/virsh-host.c:530
+#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8017
+#: tools/virsh-domain.c:8090 tools/virsh-domain.c:8142 tools/virsh-host.c:530
 #: tools/virsh-host.c:636 tools/virsh-snapshot.c:120
 #: tools/virsh-snapshot.c:256 tools/virsh-snapshot.c:394
 #: tools/virsh-snapshot.c:502 tools/virsh-snapshot.c:671
@@ -25001,7 +25017,7 @@ msgstr "XML датотека"
 #: tools/virsh-domain.c:5969 tools/virsh-domain.c:6057
 #: tools/virsh-domain.c:6254 tools/virsh-domain.c:7541
 #: tools/virsh-domain.c:7602 tools/virsh-domain.c:7670
-#: tools/virsh-domain.c:8018
+#: tools/virsh-domain.c:8020
 msgid "affect next boot"
 msgstr ""
 
@@ -25026,7 +25042,7 @@ msgstr "Прикачи нови уређај диска."
 msgid "source of disk device"
 msgstr "извор уређаја диска"
 
-#: tools/virsh-domain.c:203 tools/virsh-domain.c:8016
+#: tools/virsh-domain.c:203 tools/virsh-domain.c:8018
 msgid "target of disk device"
 msgstr "циљ уређаја диска"
 
@@ -25281,7 +25297,7 @@ msgstr "Чување текућег домена."
 #: tools/virsh-domain.c:5051 tools/virsh-domain.c:5656
 #: tools/virsh-domain.c:5911 tools/virsh-domain.c:5990
 #: tools/virsh-domain.c:6104 tools/virsh-domain.c:6277
-#: tools/virsh-domain.c:8202 tools/virsh-network.c:852
+#: tools/virsh-domain.c:8204 tools/virsh-network.c:852
 msgid "--current must be specified exclusively"
 msgstr ""
 
@@ -25731,7 +25747,7 @@ msgid "Failed to allocate memory"
 msgstr "Неуспело заузимање меморије"
 
 #: tools/virsh-domain.c:2071 tools/virsh-domain.c:7757
-#: tools/virsh-domain.c:7977
+#: tools/virsh-domain.c:7979
 msgid "Failed to create XML"
 msgstr "Неуспело прављење XML-а"
 
@@ -27612,122 +27628,122 @@ msgstr "Није пронађен диск чији је циљ %s"
 msgid "The disk device '%s' doesn't have media"
 msgstr "ps2 магистрала не подржава %s уређај за унос"
 
-#: tools/virsh-domain.c:7948
+#: tools/virsh-domain.c:7950
 #, fuzzy
 msgid "No source is specified for inserting media"
 msgstr "не постоји складиште са датим именом"
 
-#: tools/virsh-domain.c:7951
+#: tools/virsh-domain.c:7953
 #, fuzzy
 msgid "No source is specified for updating media"
 msgstr "не постоји складиште са датим именом"
 
-#: tools/virsh-domain.c:7958
+#: tools/virsh-domain.c:7960
 #, fuzzy, c-format
 msgid "The disk device '%s' already has media"
 msgstr "диск складиштења већ постоји"
 
-#: tools/virsh-domain.c:8009
+#: tools/virsh-domain.c:8011
 msgid "detach disk device"
 msgstr "откачи уређај диска"
 
-#: tools/virsh-domain.c:8010
+#: tools/virsh-domain.c:8012
 msgid "Detach disk device."
 msgstr "Откачи уређај диска."
 
-#: tools/virsh-domain.c:8063
+#: tools/virsh-domain.c:8065
 #, fuzzy
 msgid "Failed to detach disk"
 msgstr "Неуспело откачињање уређаја из %s"
 
-#: tools/virsh-domain.c:8065
+#: tools/virsh-domain.c:8067
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: tools/virsh-domain.c:8082
+#: tools/virsh-domain.c:8084
 #, fuzzy
 msgid "edit XML configuration for a domain"
 msgstr "Укидање дефиниције подешавања за неактиван домен."
 
-#: tools/virsh-domain.c:8083
+#: tools/virsh-domain.c:8085
 #, fuzzy
 msgid "Edit the XML configuration for a domain."
 msgstr "Укидање дефиниције подешавања за неактиван домен."
 
-#: tools/virsh-domain.c:8106
+#: tools/virsh-domain.c:8108
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr ""
 
-#: tools/virsh-domain.c:8116
+#: tools/virsh-domain.c:8118
 #, fuzzy, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "неуспело читање датотеке подешавања"
 
-#: tools/virsh-domain.c:8134
+#: tools/virsh-domain.c:8136
 msgid "Change media of CD or floppy drive"
 msgstr ""
 
-#: tools/virsh-domain.c:8135
+#: tools/virsh-domain.c:8137
 msgid "Change media of CD or floppy drive."
 msgstr ""
 
-#: tools/virsh-domain.c:8141
+#: tools/virsh-domain.c:8143
 #, fuzzy
 msgid "Fully-qualified path or target of disk device"
 msgstr "циљ уређаја диска"
 
-#: tools/virsh-domain.c:8143
+#: tools/virsh-domain.c:8145
 #, fuzzy
 msgid "source of the media"
 msgstr "извор уређаја диска"
 
-#: tools/virsh-domain.c:8144
+#: tools/virsh-domain.c:8146
 msgid "Eject the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8145
+#: tools/virsh-domain.c:8147
 msgid "Insert the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8146
+#: tools/virsh-domain.c:8148
 msgid "Update the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8147
+#: tools/virsh-domain.c:8149
 msgid ""
 "can be either or both of --live and --config, depends on implementation of "
 "hypervisor driver"
 msgstr ""
 
-#: tools/virsh-domain.c:8149
+#: tools/virsh-domain.c:8151
 #, fuzzy
 msgid "alter live configuration of running domain"
 msgstr "Укидање дефиниције подешавања за неактиван домен."
 
-#: tools/virsh-domain.c:8150
+#: tools/virsh-domain.c:8152
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
 
-#: tools/virsh-domain.c:8151
+#: tools/virsh-domain.c:8153
 msgid "force media changing"
 msgstr ""
 
-#: tools/virsh-domain.c:8180
+#: tools/virsh-domain.c:8182
 msgid "--eject, --insert, and --update must be specified exclusively."
 msgstr ""
 
-#: tools/virsh-domain.c:8226
+#: tools/virsh-domain.c:8228
 #, fuzzy
 msgid "No disk source specified for inserting"
 msgstr "недостаје uuid параметар подешавања"
 
-#: tools/virsh-domain.c:8244
+#: tools/virsh-domain.c:8246
 #, fuzzy, c-format
 msgid "Failed to complete action %s on media"
 msgstr "Неуспело прављење polkit акције %s\n"
 
-#: tools/virsh-domain.c:8248
+#: tools/virsh-domain.c:8250
 #, c-format
 msgid "succeeded to complete action %s on media\n"
 msgstr ""

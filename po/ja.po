@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-08-01 17:45-0400\n"
+"POT-Creation-Date: 2013-09-20 16:29-0400\n"
 "PO-Revision-Date: 2012-09-21 10:02+0000\n"
 "Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -296,16 +296,16 @@ msgstr "実行ディレクトリー %s を作成できません: %s"
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
-#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
-#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
-#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
-#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
-#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
-#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
-#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
-#: daemon/remote.c:4235 daemon/remote.c:4289 daemon/remote.c:4343
-#: daemon/remote.c:4397 daemon/remote.c:4451 daemon/remote.c:4506
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3091
+#: daemon/remote.c:3144 daemon/remote.c:3185 daemon/remote.c:3263
+#: daemon/remote.c:3300 daemon/remote.c:3333 daemon/remote.c:3382
+#: daemon/remote.c:3428 daemon/remote.c:3469 daemon/remote.c:3520
+#: daemon/remote.c:3580 daemon/remote.c:3634 daemon/remote.c:3683
+#: daemon/remote.c:3731 daemon/remote.c:3771 daemon/remote.c:3816
+#: daemon/remote.c:3880 daemon/remote.c:3955 daemon/remote.c:4018
+#: daemon/remote.c:4079 daemon/remote.c:4143 daemon/remote.c:4198
+#: daemon/remote.c:4257 daemon/remote.c:4311 daemon/remote.c:4365
+#: daemon/remote.c:4419 daemon/remote.c:4473 daemon/remote.c:4528
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -441,8 +441,8 @@ msgstr "未知のパラメーター形式: %d"
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
-#: daemon/remote.c:4513
+#: daemon/remote.c:2296 daemon/remote.c:3823 daemon/remote.c:3885
+#: daemon/remote.c:4535
 msgid "nparams too large"
 msgstr "nparams が大きすぎます"
 
@@ -475,107 +475,107 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#: daemon/remote.c:2431
+#: daemon/remote.c:2432
 msgid "client tried invalid SASL init request"
 msgstr "クライアントは無効な SASL init 要求を試行しました"
 
-#: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
-#: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
+#: daemon/remote.c:2478 daemon/remote.c:2629 daemon/remote.c:2727
+#: daemon/remote.c:2743 daemon/remote.c:2757 daemon/remote.c:2771
+#: daemon/remote.c:2890 daemon/remote.c:3036 daemon/remote.c:3065
 #: src/util/virterror.c:959
 msgid "authentication failed"
 msgstr "認証に失敗しました"
 
-#: daemon/remote.c:2504
+#: daemon/remote.c:2505
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "交渉済みの SSF %d の強度は十分ではありません"
 
-#: daemon/remote.c:2559 daemon/remote.c:2657
+#: daemon/remote.c:2560 daemon/remote.c:2658
 msgid "client tried invalid SASL start request"
 msgstr "クライアントは無効な SASL 開始要求を試しました"
 
-#: daemon/remote.c:2577
+#: daemon/remote.c:2578
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "SASL 開始の応答データが長すぎます %d"
 
-#: daemon/remote.c:2674
+#: daemon/remote.c:2675
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr "SASL 手順の応答データが長すぎます %d"
 
-#: daemon/remote.c:2809 daemon/remote.c:2919
+#: daemon/remote.c:2813 daemon/remote.c:2941
 msgid "client tried invalid PolicyKit init request"
 msgstr "クライアントは無効な PolicyKit init 要求を試しました"
 
-#: daemon/remote.c:2837
+#: daemon/remote.c:2859
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d: %s"
 msgstr "PolicyKit がアクション %s (PID %lld, UID %d) を拒否しました: %s"
 
-#: daemon/remote.c:2864
+#: daemon/remote.c:2886
 msgid "authentication cancelled by user"
 msgstr "利用者により認証が取り消されました"
 
-#: daemon/remote.c:2866
+#: daemon/remote.c:2888
 #, c-format
 msgid "polkit: %s"
 msgstr ""
 
-#: daemon/remote.c:2925
+#: daemon/remote.c:2947
 msgid "cannot get peer socket identity"
 msgstr "ピアソケット ID を取得できません"
 
-#: daemon/remote.c:2943
+#: daemon/remote.c:2965
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "PolicyKit コーラーのルックアップに失敗: %s"
 
-#: daemon/remote.c:2950
+#: daemon/remote.c:2972
 #, c-format
 msgid "Failed to create polkit action %s"
 msgstr "PolicyKit アクション %s を作成できません"
 
-#: daemon/remote.c:2960
+#: daemon/remote.c:2982
 #, c-format
 msgid "Failed to create polkit context %s"
 msgstr "PolicyKit コンテキスト %s を作成できません"
 
-#: daemon/remote.c:2978
+#: daemon/remote.c:3000
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "PolicyKit は認証 %d %s の確認に失敗しました"
 
-#: daemon/remote.c:2992
+#: daemon/remote.c:3014
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr "PolicyKit がアクション %s (PID %lld, UID %d) を拒否しました。結果: %s"
 
-#: daemon/remote.c:3041
+#: daemon/remote.c:3063
 msgid "client tried unsupported PolicyKit init request"
 msgstr "クライアントはサポートされていない PolicyKit init 要求を試行しました"
 
-#: daemon/remote.c:3129 daemon/remote.c:3324
+#: daemon/remote.c:3151 daemon/remote.c:3346
 #, c-format
 msgid "domain event %d already registered"
 msgstr "ドメインイベント %d がすでに登録されています"
 
-#: daemon/remote.c:3170 daemon/remote.c:3374
+#: daemon/remote.c:3192 daemon/remote.c:3396
 #, c-format
 msgid "domain event %d not registered"
 msgstr "ドメインイベント %d が登録されていません"
 
-#: daemon/remote.c:3319 daemon/remote.c:3368
+#: daemon/remote.c:3341 daemon/remote.c:3390
 #, c-format
 msgid "unsupported event ID %d"
 msgstr "予期されないイベント ID %d"
 
-#: daemon/remote.c:3867
+#: daemon/remote.c:3889
 msgid "ncpus too large"
 msgstr "ncpus が大きすぎます"
 
-#: daemon/remote.c:3942
+#: daemon/remote.c:3964
 msgid "maxerrors too large"
 msgstr "maxerrors が大きすぎます"
 
@@ -1316,7 +1316,7 @@ msgstr "ホストの名前がありません"
 msgid "missing port for host"
 msgstr "ホストのポートがありません"
 
-#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11769
+#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11771
 #, c-format
 msgid "unexpected disk type %s"
 msgstr "予期しないディスク形式 %s です"
@@ -2249,7 +2249,7 @@ msgstr "予期しないドメイン形式 %s です、次のどれかが期待�
 msgid "Failed to generate UUID"
 msgstr "UUID の生成に失敗しました"
 
-#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9848
+#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9850
 #: src/conf/network_conf.c:1260 src/conf/nwfilter_conf.c:2575
 #: src/conf/secret_conf.c:186 src/conf/storage_conf.c:776
 msgid "malformed uuid element"
@@ -2350,165 +2350,165 @@ msgstr ""
 "'placement' が 'static' ならば、NUMA メモリーチューニングのノードセットが設定"
 "されている必要があります。"
 
-#: src/conf/domain_conf.c:8896
+#: src/conf/domain_conf.c:8898
 #, c-format
 msgid "unsupported XML element %s"
 msgstr "サポートされない XML 要素 %s"
 
-#: src/conf/domain_conf.c:8922
+#: src/conf/domain_conf.c:8924
 #, c-format
 msgid "unexpected feature %s"
 msgstr "予期しない機能 '%s'"
 
-#: src/conf/domain_conf.c:8933
+#: src/conf/domain_conf.c:8935
 #, c-format
 msgid "unknown value for attribute eoi: %s"
 msgstr "未知の eoi 属性値: %s"
 
-#: src/conf/domain_conf.c:8975
+#: src/conf/domain_conf.c:8977
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr "未知のクロックオフセット '%s'"
 
-#: src/conf/domain_conf.c:8993
+#: src/conf/domain_conf.c:8995
 #, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr "未知のクロック調整 '%s'"
 
-#: src/conf/domain_conf.c:9021
+#: src/conf/domain_conf.c:9023
 #, c-format
 msgid "unknown clock basis '%s'"
 msgstr "未知のクロック基準 '%s'"
 
-#: src/conf/domain_conf.c:9034
+#: src/conf/domain_conf.c:9036
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "offset='timezone' を持つクロックに対して 'timezone' 属性がありません"
 
-#: src/conf/domain_conf.c:9067
+#: src/conf/domain_conf.c:9069
 msgid "no OS type"
 msgstr "OS タイプがありません"
 
-#: src/conf/domain_conf.c:9094
+#: src/conf/domain_conf.c:9096
 #, c-format
 msgid "No guest options available for arch '%s'"
 msgstr "アーキテクチャー '%s' に対して利用可能なゲストオプションがありません"
 
-#: src/conf/domain_conf.c:9103
+#: src/conf/domain_conf.c:9105
 #, c-format
 msgid "No os type '%s' available for arch '%s'"
 msgstr "OS の種類 '%s' はアーキテクチャー '%s' に対して利用可能ではありません"
 
-#: src/conf/domain_conf.c:9111 src/xenxs/xen_xm.c:295
+#: src/conf/domain_conf.c:9113 src/xenxs/xen_xm.c:295
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "OS タイプ '%s' に対してサポートされたアーキテクチャーがありません"
 
-#: src/conf/domain_conf.c:9152
+#: src/conf/domain_conf.c:9154
 msgid "init binary must be specified"
 msgstr "init バイナリが指定されなければいけません"
 
-#: src/conf/domain_conf.c:9168
+#: src/conf/domain_conf.c:9170
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> 要素にデータがありません"
 
-#: src/conf/domain_conf.c:9242 src/conf/domain_conf.c:9250
+#: src/conf/domain_conf.c:9244 src/conf/domain_conf.c:9252
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 "他の USB コントローラーを追加できません: このドメインの USB が無効化されてい"
 "ます"
 
-#: src/conf/domain_conf.c:9271
+#: src/conf/domain_conf.c:9273
 msgid "cannot extract device leases"
 msgstr "デバイスのリースを抽出できません"
 
-#: src/conf/domain_conf.c:9408
+#: src/conf/domain_conf.c:9410
 msgid "cannot extract console devices"
 msgstr "コンソールデバイスを抽出できません"
 
-#: src/conf/domain_conf.c:9448
+#: src/conf/domain_conf.c:9450
 msgid "Only the first console can be a serial port"
 msgstr "最初のコンソールのみがシリアルポートになれます"
 
-#: src/conf/domain_conf.c:9547
+#: src/conf/domain_conf.c:9549
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr "USB 入力デバイスを追加できません。USB バスが無効化されています。"
 
-#: src/conf/domain_conf.c:9652
+#: src/conf/domain_conf.c:9654
 msgid "cannot determine default video type"
 msgstr "デフォルトのビデオ形式を決められません"
 
-#: src/conf/domain_conf.c:9681
+#: src/conf/domain_conf.c:9683
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "ホスト USB デバイスを追加できません: このホストの USB が無効化されています"
 
-#: src/conf/domain_conf.c:9697
+#: src/conf/domain_conf.c:9699
 msgid "only a single watchdog device is supported"
 msgstr "watchdog デバイスは1つのみサポートされます"
 
-#: src/conf/domain_conf.c:9717
+#: src/conf/domain_conf.c:9719
 msgid "only a single memory balloon device is supported"
 msgstr "メモリーバルーンデバイスは1つのみサポートされます"
 
-#: src/conf/domain_conf.c:9757
+#: src/conf/domain_conf.c:9759
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB ハブを追加できません: このドメインの USB が無効化されています"
 
-#: src/conf/domain_conf.c:9781
+#: src/conf/domain_conf.c:9783
 msgid "Can't add redirected USB device: USB is disabled for this domain"
 msgstr ""
 "リダイレクト USB デバイスを追加できません: このドメインの USB が無効化されて"
 "います"
 
-#: src/conf/domain_conf.c:9796
+#: src/conf/domain_conf.c:9798
 msgid "only one set of redirection filter rule is supported"
 msgstr "リダイレクションフィルタールールは 1 セットのみがサポートされます"
 
-#: src/conf/domain_conf.c:9824
+#: src/conf/domain_conf.c:9826
 msgid "Maximum CPUs greater than topology limit"
 msgstr "最大 CPU がトポロジーの制限より大きいです"
 
-#: src/conf/domain_conf.c:9830
+#: src/conf/domain_conf.c:9832
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "<numa> にある CPU 数が <vcpu> カウントを超えています"
 
-#: src/conf/domain_conf.c:9855
+#: src/conf/domain_conf.c:9857
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID が <uuid> と <sysinfo> で一致しません"
 
-#: src/conf/domain_conf.c:9867
+#: src/conf/domain_conf.c:9869
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr "未知の smbios モード '%s'"
 
-#: src/conf/domain_conf.c:9934
+#: src/conf/domain_conf.c:9936
 msgid "no domain config"
 msgstr "ドメイン設定がありません"
 
-#: src/conf/domain_conf.c:9948
+#: src/conf/domain_conf.c:9950
 msgid "missing domain state"
 msgstr "ドメインの state がありません"
 
-#: src/conf/domain_conf.c:9953
+#: src/conf/domain_conf.c:9955
 #, c-format
 msgid "invalid domain state '%s'"
 msgstr "無効なドメインの state '%s'"
 
-#: src/conf/domain_conf.c:9962
+#: src/conf/domain_conf.c:9964
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr "無効なドメインの state reason '%s'"
 
-#: src/conf/domain_conf.c:9973
+#: src/conf/domain_conf.c:9975
 msgid "invalid pid"
 msgstr "無効な pid"
 
-#: src/conf/domain_conf.c:9987
+#: src/conf/domain_conf.c:9989
 #, c-format
 msgid "Unknown taint flag %s"
 msgstr "未知の汚染フラグ %s"
 
-#: src/conf/domain_conf.c:10021 src/security/virt-aa-helper.c:654
+#: src/conf/domain_conf.c:10023 src/security/virt-aa-helper.c:654
 #: tools/virsh-domain-monitor.c:97 tools/virsh-domain-monitor.c:430
 #: tools/virsh-domain-monitor.c:531 tools/virsh-domain-monitor.c:640
 #: tools/virsh-domain.c:1991 tools/virsh-domain.c:2591
@@ -2518,42 +2518,42 @@ msgstr "未知の汚染フラグ %s"
 msgid "(domain_definition)"
 msgstr "(ドメイン定義)"
 
-#: src/conf/domain_conf.c:10059
+#: src/conf/domain_conf.c:10061
 #, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr "予期しないルート要素 <%s> です、<domain> が期待されます"
 
-#: src/conf/domain_conf.c:10092
+#: src/conf/domain_conf.c:10094
 #, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr "予期しないルート要素 <%s> です、<domstatus> が期待されます"
 
-#: src/conf/domain_conf.c:10142
+#: src/conf/domain_conf.c:10144
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr "ターゲットのタイマー %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10150
+#: src/conf/domain_conf.c:10152
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr "ターゲットのタイマープレゼンス %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10158
+#: src/conf/domain_conf.c:10160
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr "ターゲットの TSC 周波数 %lu がソースの %lu と一致しません"
 
-#: src/conf/domain_conf.c:10165
+#: src/conf/domain_conf.c:10167
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr "ターゲットの TSC モード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10186
+#: src/conf/domain_conf.c:10188
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "ターゲットのデバイスアドレス形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10199
+#: src/conf/domain_conf.c:10201
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
@@ -2562,14 +2562,14 @@ msgstr ""
 "ターゲットデバイスの PCI アドレス %04x:%02x:%02x.%02x がソースの %04x:%02x:"
 "%02x.%02x と一致しません"
 
-#: src/conf/domain_conf.c:10214
+#: src/conf/domain_conf.c:10216
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 "ターゲットデバイスのドライブアドレス %d:%d:%d がソースの %d:%d:%d と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:10228
+#: src/conf/domain_conf.c:10230
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
@@ -2577,73 +2577,73 @@ msgstr ""
 "ターゲットデバイスの virtio シリアルアドレス %d:%d:%d がソースの %d:%d:%d と"
 "一致しません"
 
-#: src/conf/domain_conf.c:10241
+#: src/conf/domain_conf.c:10243
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
 "ターゲットデバイスの CCID アドレス %d:%d がソースの %d:%d と一致しません"
 
-#: src/conf/domain_conf.c:10265
+#: src/conf/domain_conf.c:10267
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr "ターゲットのディスクデバイス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10273
+#: src/conf/domain_conf.c:10275
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr "ターゲットディスクのバス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10281
+#: src/conf/domain_conf.c:10283
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr "ターゲットのディスク %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10288
+#: src/conf/domain_conf.c:10290
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr "ターゲットディスクのシリアル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10295
+#: src/conf/domain_conf.c:10297
 msgid "Target disk access mode does not match source"
 msgstr "ターゲットディスクのアクセスモードがソースと一致しません"
 
-#: src/conf/domain_conf.c:10316
+#: src/conf/domain_conf.c:10318
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr "ターゲットコントローラーの種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10324
+#: src/conf/domain_conf.c:10326
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr "ターゲットコントローラーのインデックス %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10331
+#: src/conf/domain_conf.c:10333
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr "ターゲットコントローラーのモデル %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10339
+#: src/conf/domain_conf.c:10341
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr "ターゲットコントローラーのポート %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10346
+#: src/conf/domain_conf.c:10348
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ターゲットコントローラーのベクター %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10369
+#: src/conf/domain_conf.c:10371
 #, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 "ターゲットのファイルシステムのゲストターゲット %s がソースの %s と一致しませ"
 "ん"
 
-#: src/conf/domain_conf.c:10376
+#: src/conf/domain_conf.c:10378
 msgid "Target filesystem access mode does not match source"
 msgstr "ターゲットのファイルシステムのアクセスモードがソースと一致しません"
 
-#: src/conf/domain_conf.c:10397
+#: src/conf/domain_conf.c:10399
 #, c-format
 msgid ""
 "Target network card mac %02x:%02x:%02x:%02x:%02x:%02x does not match source "
@@ -2652,85 +2652,85 @@ msgstr ""
 "ターゲットのネットワークカードの MAC %02x:%02x:%02x:%02x:%02x:%02x がソース"
 "の %02x:%02x:%02x:%02x:%02x:%02x と一致しません"
 
-#: src/conf/domain_conf.c:10408
+#: src/conf/domain_conf.c:10410
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr "ターゲットのネットワークカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10430
+#: src/conf/domain_conf.c:10432
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr "ターゲットの入力デバイスの種類 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10438
+#: src/conf/domain_conf.c:10440
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr "ターゲットの入力デバイスのバス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10461
+#: src/conf/domain_conf.c:10463
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr "ターゲットのサウンドカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10484
+#: src/conf/domain_conf.c:10486
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr "ターゲットのビデオカードのモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10492
+#: src/conf/domain_conf.c:10494
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr "ターゲットのビデオカードの VRAM  %u がソースの %u と一致しません"
 
-#: src/conf/domain_conf.c:10499
+#: src/conf/domain_conf.c:10501
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr "ターゲットのビデオカードのヘッド %u がソースの %u と一致しません"
 
-#: src/conf/domain_conf.c:10507
+#: src/conf/domain_conf.c:10509
 msgid "Target video card acceleration does not match source"
 msgstr "ターゲットのビデオカードのアクセラレーションが一致しません"
 
-#: src/conf/domain_conf.c:10514
+#: src/conf/domain_conf.c:10516
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 "ターゲットのビデオカードの 2D アクセラレーション %u がソースの %u と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:10521
+#: src/conf/domain_conf.c:10523
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 "ターゲットのビデオカードの 3D アクセラレーション %u がソースの %u と一致しま"
 "せん"
 
-#: src/conf/domain_conf.c:10544
+#: src/conf/domain_conf.c:10546
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr "ターゲットホストのデバイスモード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10553
+#: src/conf/domain_conf.c:10555
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr "ターゲットホストのデバイスサブシステム %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10592 src/conf/domain_conf.c:10614
+#: src/conf/domain_conf.c:10594 src/conf/domain_conf.c:10616
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr "ターゲットのシリアルポート %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10636
+#: src/conf/domain_conf.c:10638
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr "ターゲットのチャネル形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10646
+#: src/conf/domain_conf.c:10648
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr "ターゲットのチャネル名 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10655
+#: src/conf/domain_conf.c:10657
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
@@ -2738,483 +2738,483 @@ msgstr ""
 "デバイス種別を spicevmc から、または spicevmc に変更することにより、標準の"
 "ターゲットチャネル名を変更できます"
 
-#: src/conf/domain_conf.c:10666
+#: src/conf/domain_conf.c:10668
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr "ターゲットのチャネルアドレス %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10692
+#: src/conf/domain_conf.c:10694
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr "ターゲットのコンソール種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10715
+#: src/conf/domain_conf.c:10717
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr "ターゲットの watchdog モデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10738
+#: src/conf/domain_conf.c:10740
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr "ターゲットのバルーンモデル %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10761
+#: src/conf/domain_conf.c:10763
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr "ターゲットのハブデバイス種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10785
+#: src/conf/domain_conf.c:10787
 #, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr ""
 "ターゲットの USB リダイレクションフィルターのルール数 %zu がソース %zu と一致"
 "しません"
 
-#: src/conf/domain_conf.c:10796
+#: src/conf/domain_conf.c:10798
 msgid "Target USB Class code does not match source"
 msgstr "ターゲットの USB クラスコードがソースと一致しません"
 
-#: src/conf/domain_conf.c:10802
+#: src/conf/domain_conf.c:10804
 msgid "Target USB vendor ID does not match source"
 msgstr "ターゲットの USB ベンダー ID がソースと一致しません"
 
-#: src/conf/domain_conf.c:10808
+#: src/conf/domain_conf.c:10810
 msgid "Target USB product ID does not match source"
 msgstr "ターゲットの USB プロダクト ID がソースと一致しません"
 
-#: src/conf/domain_conf.c:10814
+#: src/conf/domain_conf.c:10816
 msgid "Target USB version does not match source"
 msgstr "ターゲットの USB バージョンがソースと一致しません"
 
-#: src/conf/domain_conf.c:10820
+#: src/conf/domain_conf.c:10822
 #, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
 msgstr "ターゲットの USB allow '%s' がソースの '%s' と一致しません"
 
-#: src/conf/domain_conf.c:10844
+#: src/conf/domain_conf.c:10846
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr "ターゲットドメインの仮想化形式 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10856
+#: src/conf/domain_conf.c:10858
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr "ターゲットドメインの UUID %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10863
+#: src/conf/domain_conf.c:10865
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr "ターゲットドメインの最大メモリー %lld がソースの %lld と一致しません"
 
-#: src/conf/domain_conf.c:10869
+#: src/conf/domain_conf.c:10871
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr "ターゲットドメインの現在メモリー %lld がソースの %lld と一致しません"
 
-#: src/conf/domain_conf.c:10875
+#: src/conf/domain_conf.c:10877
 #, c-format
 msgid "Target domain huge page backing %d does not match source %d"
 msgstr ""
 "ターゲットドメインのヒュージページバッキング %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10883
+#: src/conf/domain_conf.c:10885
 #, c-format
 msgid "Target domain vpu count %d does not match source %d"
 msgstr "ターゲットドメインの仮想 CPU 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10889
+#: src/conf/domain_conf.c:10891
 #, c-format
 msgid "Target domain vpu max %d does not match source %d"
 msgstr "ターゲットドメインの最大仮想 CPU 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10896 src/conf/domain_conf.c:10908
+#: src/conf/domain_conf.c:10898 src/conf/domain_conf.c:10910
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr "ターゲットドメインの OS 種別 %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10902
+#: src/conf/domain_conf.c:10904
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr "ターゲットドメインのアーキテクチャー %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10915
+#: src/conf/domain_conf.c:10917
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "ターゲットドメインの SMBIOS モード %s がソースの %s と一致しません"
 
-#: src/conf/domain_conf.c:10923
+#: src/conf/domain_conf.c:10925
 #, c-format
 msgid "Target domain features %d does not match source %d"
 msgstr "ターゲットドメインの機能 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10930
+#: src/conf/domain_conf.c:10932
 msgid "Target domain timers do not match source"
 msgstr "ターゲットドメインのタイマーがソースと一致しません"
 
-#: src/conf/domain_conf.c:10947
+#: src/conf/domain_conf.c:10949
 #, c-format
 msgid "Target domain disk count %d does not match source %d"
 msgstr "ターゲットドメインのディスク数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10958
+#: src/conf/domain_conf.c:10960
 #, c-format
 msgid "Target domain disk controller count %d does not match source %d"
 msgstr ""
 "ターゲットドメインのディスクコントローラー数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10969
+#: src/conf/domain_conf.c:10971
 #, c-format
 msgid "Target domain filesystem count %d does not match source %d"
 msgstr "ターゲットドメインのファイルシステム数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10980
+#: src/conf/domain_conf.c:10982
 #, c-format
 msgid "Target domain net card count %d does not match source %d"
 msgstr ""
 "ターゲットドメインのネットワークカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:10991
+#: src/conf/domain_conf.c:10993
 #, c-format
 msgid "Target domain input device count %d does not match source %d"
 msgstr "ターゲットドメインの入力デバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11002
+#: src/conf/domain_conf.c:11004
 #, c-format
 msgid "Target domain sound card count %d does not match source %d"
 msgstr "ターゲットドメインのサウンドカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11013
+#: src/conf/domain_conf.c:11015
 #, c-format
 msgid "Target domain video card count %d does not match source %d"
 msgstr "ターゲットドメインのビデオカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11024
+#: src/conf/domain_conf.c:11026
 #, c-format
 msgid "Target domain host device count %d does not match source %d"
 msgstr "ターゲットドメインのホストデバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11035
+#: src/conf/domain_conf.c:11037
 #, c-format
 msgid "Target domain smartcard count %d does not match source %d"
 msgstr "ターゲットドメインのスマートカード数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11046
+#: src/conf/domain_conf.c:11048
 #, c-format
 msgid "Target domain serial port count %d does not match source %d"
 msgstr "ターゲットドメインのシリアルポート数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11057
+#: src/conf/domain_conf.c:11059
 #, c-format
 msgid "Target domain parallel port count %d does not match source %d"
 msgstr "ターゲットドメインのパラレルポート数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11068
+#: src/conf/domain_conf.c:11070
 #, c-format
 msgid "Target domain channel count %d does not match source %d"
 msgstr "ターゲットドメインのチャネル数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11079
+#: src/conf/domain_conf.c:11081
 #, c-format
 msgid "Target domain console count %d does not match source %d"
 msgstr "ターゲットドメインのコンソール数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11090
+#: src/conf/domain_conf.c:11092
 #, c-format
 msgid "Target domain hub device count %d does not match source %d"
 msgstr "ターゲットドメインのハブデバイス数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11102
+#: src/conf/domain_conf.c:11104
 #, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 "ターゲットドメインの USB リダイレクションフィルター数 %d がソースの %d と一致"
 "しません"
 
-#: src/conf/domain_conf.c:11114
+#: src/conf/domain_conf.c:11116
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr "ターゲットドメインの watchdog 数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11126
+#: src/conf/domain_conf.c:11128
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr "ターゲットドメインのメモリーバルーン数 %d がソースの %d と一致しません"
 
-#: src/conf/domain_conf.c:11465
+#: src/conf/domain_conf.c:11467
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "予期しないライフサイクルタイプ %d"
 
-#: src/conf/domain_conf.c:11626
+#: src/conf/domain_conf.c:11628
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "予期しないディスクタイプ %d"
 
-#: src/conf/domain_conf.c:11631
+#: src/conf/domain_conf.c:11633
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "予期しないディスクデバイス %d"
 
-#: src/conf/domain_conf.c:11636
+#: src/conf/domain_conf.c:11638
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "予期しないディスクバス %d"
 
-#: src/conf/domain_conf.c:11641
+#: src/conf/domain_conf.c:11643
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "予期しないディスクキャッシュモード %d"
 
-#: src/conf/domain_conf.c:11646
+#: src/conf/domain_conf.c:11648
 #, c-format
 msgid "unexpected disk io mode %d"
 msgstr "予期しないディスク I/O モード %d"
 
-#: src/conf/domain_conf.c:11888
+#: src/conf/domain_conf.c:11890
 #, c-format
 msgid "unexpected controller type %d"
 msgstr "予期しないコントローラー種別 %d"
 
-#: src/conf/domain_conf.c:11897
+#: src/conf/domain_conf.c:11899
 #, c-format
 msgid "unexpected model type %d"
 msgstr "予期しないモデルの種類 %d"
 
-#: src/conf/domain_conf.c:11966
+#: src/conf/domain_conf.c:11968
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "予期しないファイルシステム形式 %d"
 
-#: src/conf/domain_conf.c:11972
+#: src/conf/domain_conf.c:11974
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr "予期しないアクセスモード %d"
 
-#: src/conf/domain_conf.c:12072
+#: src/conf/domain_conf.c:12074
 msgid "PCI address Formatting failed"
 msgstr "PCI アドレスの初期化に失敗しました"
 
-#: src/conf/domain_conf.c:12090 src/conf/domain_conf.c:13163
+#: src/conf/domain_conf.c:12092 src/conf/domain_conf.c:13165
 #: src/qemu/qemu_hotplug.c:2196
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "予期しない hostdev タイプ %d"
 
-#: src/conf/domain_conf.c:12114 src/conf/domain_conf.c:12184
-#: src/conf/domain_conf.c:12961
+#: src/conf/domain_conf.c:12116 src/conf/domain_conf.c:12186
+#: src/conf/domain_conf.c:12963
 #, c-format
 msgid "unexpected net type %d"
 msgstr "予期しないネットワーク形式 %d"
 
-#: src/conf/domain_conf.c:12141
+#: src/conf/domain_conf.c:12143
 #, c-format
 msgid "unexpected source mode %d"
 msgstr "予期しないソースモード %d"
 
-#: src/conf/domain_conf.c:12159
+#: src/conf/domain_conf.c:12161
 #, c-format
 msgid "unexpected net type %s"
 msgstr "予期しないネットタイプ %s"
 
-#: src/conf/domain_conf.c:12349
+#: src/conf/domain_conf.c:12351
 #, c-format
 msgid "unexpected char type %d"
 msgstr "予期しない文字タイプ %d"
 
-#: src/conf/domain_conf.c:12451
+#: src/conf/domain_conf.c:12453
 #, c-format
 msgid "unexpected char device type %d"
 msgstr "予期しないキャラクターデバイス形式 %d"
 
-#: src/conf/domain_conf.c:12470
+#: src/conf/domain_conf.c:12472
 msgid "Could not format channel target type"
 msgstr "チャネルターゲット形式をフォーマットできませんでした"
 
-#: src/conf/domain_conf.c:12480
+#: src/conf/domain_conf.c:12482
 msgid "Unable to format guestfwd port"
 msgstr "guestfwd ポートをフォーマットできません"
 
-#: src/conf/domain_conf.c:12548 src/conf/domain_conf.c:12579
+#: src/conf/domain_conf.c:12550 src/conf/domain_conf.c:12581
 #: src/qemu/qemu_command.c:5679
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "予期しないスマートカード種別 %d"
 
-#: src/conf/domain_conf.c:12596
+#: src/conf/domain_conf.c:12598
 #, c-format
 msgid "unexpected codec type %d"
 msgstr "予期しないコーデック形式 %d"
 
-#: src/conf/domain_conf.c:12616 src/xenxs/xen_sxpr.c:2153
+#: src/conf/domain_conf.c:12618 src/xenxs/xen_sxpr.c:2153
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "予期しないサウンドモデル %d"
 
-#: src/conf/domain_conf.c:12658
+#: src/conf/domain_conf.c:12660
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr "予期しないメモリーバルーンモデル %d"
 
-#: src/conf/domain_conf.c:12698
+#: src/conf/domain_conf.c:12700
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr "予期しないウォッチドッグモデル %d"
 
-#: src/conf/domain_conf.c:12704
+#: src/conf/domain_conf.c:12706
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr "予期しないウォッチドッグアクション %d"
 
-#: src/conf/domain_conf.c:12745
+#: src/conf/domain_conf.c:12747
 #, c-format
 msgid "unexpected video model %d"
 msgstr "予期しないビデオモデル %d"
 
-#: src/conf/domain_conf.c:12782 src/xenxs/xen_sxpr.c:2190
+#: src/conf/domain_conf.c:12784 src/xenxs/xen_sxpr.c:2190
 #, c-format
 msgid "unexpected input type %d"
 msgstr "予期しない入力タイプ %d"
 
-#: src/conf/domain_conf.c:12787
+#: src/conf/domain_conf.c:12789
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "予期しない入力バスタイプ %d"
 
-#: src/conf/domain_conf.c:12815
+#: src/conf/domain_conf.c:12817
 #, c-format
 msgid "unexpected timer name %d"
 msgstr "予期しないタイマー名 %d"
 
-#: src/conf/domain_conf.c:12831
+#: src/conf/domain_conf.c:12833
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "予期しない timer tickpolicy %d"
 
-#: src/conf/domain_conf.c:12845
+#: src/conf/domain_conf.c:12847
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "予期しない timer track %d"
 
-#: src/conf/domain_conf.c:12863
+#: src/conf/domain_conf.c:12865
 #, c-format
 msgid "unexpected timer mode %d"
 msgstr "予期しないタイマーモード %d"
 
-#: src/conf/domain_conf.c:13154
+#: src/conf/domain_conf.c:13156
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "予期しない hostdev モード %d"
 
-#: src/conf/domain_conf.c:13248
+#: src/conf/domain_conf.c:13250
 #, c-format
 msgid "unexpected hub type %d"
 msgstr "予期しない hub 形式 %d"
 
-#: src/conf/domain_conf.c:13301
+#: src/conf/domain_conf.c:13303
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "予期しないドメイン形式 %d"
 
-#: src/conf/domain_conf.c:13474
+#: src/conf/domain_conf.c:13476
 msgid "failed to format cpuset for vcpupin"
 msgstr "vcpupin の cpuset のフォーマットに失敗しました"
 
-#: src/conf/domain_conf.c:13490
+#: src/conf/domain_conf.c:13492
 msgid "failed to format cpuset for emulator"
 msgstr "エミュレーターの cpuset の初期化に失敗しました"
 
-#: src/conf/domain_conf.c:13519
+#: src/conf/domain_conf.c:13521
 msgid "failed to format nodeset for NUMA memory tuning"
 msgstr "NUMA メモリーチューニングのノードセットをフォーマットできませんでした"
 
-#: src/conf/domain_conf.c:13583
+#: src/conf/domain_conf.c:13585
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "予期しないブートデバイス形式 %d"
 
-#: src/conf/domain_conf.c:13617
+#: src/conf/domain_conf.c:13619
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr "サポートされない smbios モード %d です"
 
-#: src/conf/domain_conf.c:13632
+#: src/conf/domain_conf.c:13634
 #, c-format
 msgid "unexpected feature %d"
 msgstr "予期しない機能 %d"
 
-#: src/conf/domain_conf.c:13959
+#: src/conf/domain_conf.c:13961
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
 "デバイス設定の互換性がありません: ドメインは USB バスをサポートしていません"
 
-#: src/conf/domain_conf.c:13979 src/conf/network_conf.c:1996
+#: src/conf/domain_conf.c:13981 src/conf/network_conf.c:1996
 #: src/conf/nwfilter_conf.c:2728 src/util/dnsmasq.c:533
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "設定ディレクトリー %s を作成できません"
 
-#: src/conf/domain_conf.c:14124
+#: src/conf/domain_conf.c:14126
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "予期しないドメイン %s がすでに存在します"
 
-#: src/conf/domain_conf.c:14162 src/conf/network_conf.c:2114
+#: src/conf/domain_conf.c:14164 src/conf/network_conf.c:2114
 #: src/conf/nwfilter_conf.c:3118 src/conf/storage_conf.c:1597
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "ディレクトリー '%s' を開けませんでした"
 
-#: src/conf/domain_conf.c:14226
+#: src/conf/domain_conf.c:14228
 #, c-format
 msgid "cannot remove config %s"
 msgstr "設定 %s を削除できません"
 
-#: src/conf/domain_conf.c:14332 src/xen/xm_internal.c:1079
+#: src/conf/domain_conf.c:14334 src/xen/xm_internal.c:1079
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "ドメイン '%s' がすでに UUID %s を用いて定義されています"
 
-#: src/conf/domain_conf.c:14341
+#: src/conf/domain_conf.c:14343
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "ドメインはすでに '%s' としてアクティブです"
 
-#: src/conf/domain_conf.c:14355
+#: src/conf/domain_conf.c:14357
 #, c-format
 msgid "domain '%s' already exists with uuid %s"
 msgstr "ドメイン '%s' がすでに UUID %s を用いて存在します"
 
-#: src/conf/domain_conf.c:14585
+#: src/conf/domain_conf.c:14587
 #, c-format
 msgid "unknown disk format '%s' for %s"
 msgstr "未知のディスクフォーマット '%s' が %s にあります"
 
-#: src/conf/domain_conf.c:14594 src/qemu/qemu_driver.c:9224
+#: src/conf/domain_conf.c:14596 src/qemu/qemu_driver.c:9224
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s のディスクフォーマットがなく、かつプローブが無効です"
 
-#: src/conf/domain_conf.c:14611
+#: src/conf/domain_conf.c:14613
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr "%s のバッキングストアが自己参照しています"
 
-#: src/conf/domain_conf.c:14623
+#: src/conf/domain_conf.c:14625
 #, c-format
 msgid "unable to open disk path %s"
 msgstr "ディスクパス %s を開けません"
 
-#: src/conf/domain_conf.c:14636
+#: src/conf/domain_conf.c:14638
 #, c-format
 msgid "could not close file %s"
 msgstr "ファイル %s を閉じることができませんでした"
 
-#: src/conf/domain_conf.c:14740
+#: src/conf/domain_conf.c:14742
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "無効なドメイン状態: %d"
 
-#: src/conf/domain_conf.c:15175
+#: src/conf/domain_conf.c:15177
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "'%d' 形式の定義のコピーはまだ実装されていません。"
@@ -7351,7 +7351,7 @@ msgstr "%s の中に chroot できませんでした"
 msgid "Failed to pivot root"
 msgstr "root のピボットに失敗しました"
 
-#: src/lxc/lxc_container.c:544
+#: src/lxc/lxc_container.c:551
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "ディレクトリー %s の作成に失敗しました"
@@ -15421,7 +15421,7 @@ msgstr "ポートを"
 
 #: src/rpc/virnetsocket.c:293 src/rpc/virnetsocket.c:420
 #: src/rpc/virnetsocket.c:489 src/rpc/virnetsocket.c:572
-#: src/rpc/virnetsocket.c:1466
+#: src/rpc/virnetsocket.c:1475
 msgid "Unable to get local socket name"
 msgstr "ローカルのソケット名を取得できません"
 
@@ -15497,62 +15497,62 @@ msgstr "libssh2 転送サポートが有効化されていませんでした"
 msgid "Unable to copy socket file handle"
 msgstr "ソケットのファイルハンドルをコピーできません"
 
-#: src/rpc/virnetsocket.c:998
+#: src/rpc/virnetsocket.c:1001
 msgid "Failed to get client socket identity"
 msgstr "クライアントソケット識別子の取得に失敗しました"
 
-#: src/rpc/virnetsocket.c:1018
+#: src/rpc/virnetsocket.c:1027
 msgid "Client socket identity not available"
 msgstr "クライアントソケット識別子が利用可能ではありません"
 
-#: src/rpc/virnetsocket.c:1174
+#: src/rpc/virnetsocket.c:1183
 #, c-format
 msgid "Cannot recv data: %s"
 msgstr "データを受信できません: %s"
 
-#: src/rpc/virnetsocket.c:1177
+#: src/rpc/virnetsocket.c:1186
 msgid "Cannot recv data"
 msgstr "データを受信できません"
 
-#: src/rpc/virnetsocket.c:1182
+#: src/rpc/virnetsocket.c:1191
 #, c-format
 msgid "End of file while reading data: %s"
 msgstr "データの読み込み中に EOF がありました: %s"
 
-#: src/rpc/virnetsocket.c:1185
+#: src/rpc/virnetsocket.c:1194
 msgid "End of file while reading data"
 msgstr "データの読み込み中に EOF がありました"
 
-#: src/rpc/virnetsocket.c:1218
+#: src/rpc/virnetsocket.c:1227
 msgid "Cannot write data"
 msgstr "データを書き込みできません"
 
-#: src/rpc/virnetsocket.c:1223
+#: src/rpc/virnetsocket.c:1232
 msgid "End of file while writing data"
 msgstr "データの書き込み中に EOF がありました"
 
-#: src/rpc/virnetsocket.c:1368
+#: src/rpc/virnetsocket.c:1377
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "ファイルディスクリプターの送信はこのソケットにおいてサポートされません"
 
-#: src/rpc/virnetsocket.c:1379
+#: src/rpc/virnetsocket.c:1388
 #, c-format
 msgid "Failed to send file descriptor %d"
 msgstr "ファイルディスクリプター %d の送信に失敗しました"
 
-#: src/rpc/virnetsocket.c:1402
+#: src/rpc/virnetsocket.c:1411
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr "ファイルディスクリプターの受信はこのソケットにおいてサポートされません"
 
-#: src/rpc/virnetsocket.c:1412
+#: src/rpc/virnetsocket.c:1421
 msgid "Failed to recv file descriptor"
 msgstr "ファイル記述子の受信に失敗しました"
 
-#: src/rpc/virnetsocket.c:1429
+#: src/rpc/virnetsocket.c:1438
 msgid "Unable to listen on socket"
 msgstr "ソケットにおいてリッスンできません"
 
-#: src/rpc/virnetsocket.c:1460
+#: src/rpc/virnetsocket.c:1469
 msgid "Unable to accept client"
 msgstr "クライアントを受け取れません"
 
@@ -15582,7 +15582,7 @@ msgstr "シグナルハンドルウォッチの追加に失敗しました"
 msgid "Failed to register shutdown timeout"
 msgstr "期待されるパラメーターを持つネットリンク応答を見つけられませんでした"
 
-#: src/rpc/virnetserverclient.c:773 src/rpc/virnetserverclient.c:954
+#: src/rpc/virnetserverclient.c:777 src/rpc/virnetserverclient.c:958
 #, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "予期しない 0/負の長さを持つリクエスト %lld です"
@@ -16344,55 +16344,55 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "ドメイン '%s' のスナップショット一覧を取得できませんでした"
 
-#: src/security/security_dac.c:190
+#: src/security/security_dac.c:186
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "ドメイン %s の管理保存イメージの削除に失敗しました"
 
-#: src/security/security_dac.c:211
+#: src/security/security_dac.c:207
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:221
+#: src/security/security_dac.c:217
 #, fuzzy, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr "ドメイン '%s' のスナップショット一覧を取得できませんでした"
 
-#: src/security/security_dac.c:313
+#: src/security/security_dac.c:309
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "ユーザーとグループを '%ld:%ld' ('%s') に設定できません"
 
-#: src/security/security_dac.c:333
+#: src/security/security_dac.c:329
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "symlink %s を解決できません"
 
-#: src/security/security_dac.c:904 src/security/security_selinux.c:601
+#: src/security/security_dac.c:900 src/security/security_selinux.c:601
 msgid "invalid security driver"
 msgstr "無効なセキュリティドライバー"
 
-#: src/security/security_dac.c:915 src/security/security_selinux.c:622
+#: src/security/security_dac.c:911 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr "セキュリティイメージラベルがすでに仮想マシンに対して定義されています"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:629
+#: src/security/security_dac.c:919 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "セキュリティラベルモデル %s は SELinux をサポートしていません"
 
-#: src/security/security_dac.c:933
+#: src/security/security_dac.c:929
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 "ドメイン %s における静的セキュリティドライバーに対するラベルがありません"
 
-#: src/security/security_dac.c:945 src/security/security_dac.c:965
+#: src/security/security_dac.c:941 src/security/security_dac.c:961
 #, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "ドメイン %s に対して DAC ユーザー ID とグループ ID を生成できません"
 
-#: src/security/security_dac.c:955 src/security/security_selinux.c:703
+#: src/security/security_dac.c:951 src/security/security_selinux.c:703
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr "予期しないセキュリティラベル形式 '%s'"
@@ -16935,19 +16935,19 @@ msgstr "ファイル '%s' を閉じれません"
 msgid "cannot create path '%s'"
 msgstr "パス '%s' を作成できません"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
-#: src/util/util.c:1217
+#: src/storage/storage_backend.c:278 src/util/util.c:806 src/util/util.c:1117
+#: src/util/util.c:1221
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s' の統計に失敗しました"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
+#: src/storage/storage_backend.c:287 src/util/util.c:817 src/util/util.c:1123
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "'%s' を (%u, %u) に所有者を変更できません"
 
 #: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
-#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
+#: src/util/util.c:828 src/util/util.c:1131 src/util/util.c:1234
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "'%s' のモードを %04o に設定できません"
@@ -18951,185 +18951,185 @@ msgstr "ターゲットのシステム情報 %s がソースの %s と一致し�
 msgid "Target sysinfo %s %s does not match source %s"
 msgstr "ターゲットのシステム情報 %s %s がソースの %s と一致しません"
 
-#: src/util/util.c:335
+#: src/util/util.c:339
 msgid "Unknown poll response."
 msgstr "不明な投票反応"
 
-#: src/util/util.c:369
+#: src/util/util.c:373
 msgid "poll error"
 msgstr "ポーリングエラー"
 
-#: src/util/util.c:458
+#: src/util/util.c:462
 #, c-format
 msgid "Failed to open file '%s'"
 msgstr "ファイル '%s' を開けません"
 
-#: src/util/util.c:465
+#: src/util/util.c:469
 #, c-format
 msgid "Failed to read file '%s'"
 msgstr "ファイル '%s' を読み込めません"
 
-#: src/util/util.c:860
+#: src/util/util.c:864
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "'%s' に必要なソケットを作成できません"
 
-#: src/util/util.c:891
+#: src/util/util.c:895
 #, c-format
 msgid "child process failed to create file '%s'"
 msgstr "子プロセスがファイル '%s' の作成に失敗しました"
 
-#: src/util/util.c:908
+#: src/util/util.c:912
 msgid "child process failed to send fd to parent"
 msgstr "子プロセスが親へのファイル記述子の送信に失敗しました"
 
-#: src/util/util.c:951 src/util/util.c:1177
+#: src/util/util.c:955 src/util/util.c:1181
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "'%s' を作成中に子の待ち合わせに失敗しました"
 
-#: src/util/util.c:1061
+#: src/util/util.c:1065
 #, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "'%s' を含むマウントのファイルシステム形式を決定できませんでした"
 
-#: src/util/util.c:1087
+#: src/util/util.c:1091
 #, c-format
 msgid "failed to create file '%s'"
 msgstr "ファイル '%s' を作成できません"
 
-#: src/util/util.c:1088
+#: src/util/util.c:1092
 #, c-format
 msgid "failed to open file '%s'"
 msgstr "ファイル '%s' のオープンに失敗しました"
 
-#: src/util/util.c:1106
+#: src/util/util.c:1110
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "ディレクトリー '%s' の作成に失敗しました"
 
-#: src/util/util.c:1207
+#: src/util/util.c:1211
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "子がディレクトリー '%s' の作成に失敗しました"
 
-#: src/util/util.c:1223
+#: src/util/util.c:1227
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "'%s' をグループ %u に所有者を変更できません"
 
-#: src/util/util.c:1261
+#: src/util/util.c:1265
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs は WIN32 に対して実装されていません"
 
-#: src/util/util.c:1273
+#: src/util/util.c:1277
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate は WIN32 に対して実装されません"
 
-#: src/util/util.c:1775
+#: src/util/util.c:1779
 #, c-format
 msgid "invalid scale %llu"
 msgstr "無効なスケール %llu"
 
-#: src/util/util.c:1791 src/util/util.c:1816
+#: src/util/util.c:1795 src/util/util.c:1820
 #, c-format
 msgid "unknown suffix '%s'"
 msgstr "未知の接尾辞 '%s'"
 
-#: src/util/util.c:1822
+#: src/util/util.c:1826
 #, c-format
 msgid "value too large: %llu%s"
 msgstr "値が大きすぎます: %llu%s"
 
-#: src/util/util.c:2207
+#: src/util/util.c:2211
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "ディスクインデックス %d が負です"
 
-#: src/util/util.c:2263
+#: src/util/util.c:2267
 msgid "failed to determine host name"
 msgstr "ホスト名の決定に失敗しました"
 
-#: src/util/util.c:2359
+#: src/util/util.c:2363
 #, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "UID '%u' のユーザー記録を見つけることができませんでした"
 
-#: src/util/util.c:2418
+#: src/util/util.c:2422
 #, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "GID '%u' のグループ記録を見つけられませんでした"
 
-#: src/util/util.c:2539
+#: src/util/util.c:2543
 #, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "名前 '%s' のユーザー記録を見つけることができませんでした"
 
-#: src/util/util.c:2588
+#: src/util/util.c:2592
 #, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "名前 '%s' のグループ記録を見つけることができませんでした"
 
-#: src/util/util.c:2673
+#: src/util/util.c:2677
 #, fuzzy, c-format
 msgid "cannot change to '%u' group"
 msgstr "'%d' グループに変更できません"
 
-#: src/util/util.c:2681
+#: src/util/util.c:2685
 #, fuzzy
 msgid "cannot set supplemental groups"
 msgstr "ファイルモード'%s' をセットできません"
 
-#: src/util/util.c:2688
+#: src/util/util.c:2692
 #, fuzzy, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "UID を '%d' に変更できません"
 
-#: src/util/util.c:2800
+#: src/util/util.c:2804
 msgid "Unable to determine home directory"
 msgstr "ホームディレクトリーを決定できません"
 
-#: src/util/util.c:2816 src/util/util.c:2831
+#: src/util/util.c:2820 src/util/util.c:2835
 msgid "Unable to determine config directory"
 msgstr "設定ディレクトリーを決定できません"
 
-#: src/util/util.c:2847
+#: src/util/util.c:2851
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory が利用できません"
 
-#: src/util/util.c:2856
+#: src/util/util.c:2860
 msgid "virGetUserConfigDirectory is not available"
 msgstr "virGetUserConfigDirectory が利用可能ではありません"
 
-#: src/util/util.c:2865
+#: src/util/util.c:2869
 msgid "virGetUserCacheDirectory is not available"
 msgstr "virGetUserCacheDirectory が利用可能ではありません"
 
-#: src/util/util.c:2874
+#: src/util/util.c:2878
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory が利用可能ではありません"
 
-#: src/util/util.c:2884
+#: src/util/util.c:2888
 msgid "virGetUserName is not available"
 msgstr "virGetUserName が利用できません"
 
-#: src/util/util.c:2893
+#: src/util/util.c:2897
 msgid "virGetUserID is not available"
 msgstr "virGetUserID が利用できません"
 
-#: src/util/util.c:2903
+#: src/util/util.c:2907
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID が利用できません"
 
-#: src/util/util.c:2915
+#: src/util/util.c:2919
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID が利用できません"
 
-#: src/util/util.c:2923
+#: src/util/util.c:2927
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName が利用できません"
 
-#: src/util/util.c:3058
+#: src/util/util.c:3062
 #, c-format
 msgid "Malformed wwn: %s"
 msgstr "不正な形式の WWN: %s"
@@ -19906,30 +19906,46 @@ msgstr "PID ファイル '%s' の取得に失敗しました"
 msgid "Failed to write to pid file '%s'"
 msgstr "プロセス ID ファイル '%s' に書き込めません"
 
-#: src/util/virprocess.c:50
+#: src/util/virprocess.c:58
 #, c-format
 msgid "exit status %d"
 msgstr "終了ステータス %d"
 
-#: src/util/virprocess.c:53
+#: src/util/virprocess.c:61
 #, c-format
 msgid "fatal signal %d"
 msgstr "致命的なシグナル %d"
 
-#: src/util/virprocess.c:56
+#: src/util/virprocess.c:64
 #, c-format
 msgid "invalid value %d"
 msgstr "無効な値 %d"
 
-#: src/util/virprocess.c:151 src/util/virprocess.c:161
+#: src/util/virprocess.c:159 src/util/virprocess.c:169
 #, c-format
 msgid "unable to wait for process %lld"
 msgstr "プロセス %lld を待ち合わせできません"
 
-#: src/util/virprocess.c:170
+#: src/util/virprocess.c:178
 #, c-format
 msgid "Child process (%lld) unexpected %s"
 msgstr "子プロセス (%lld) の予期しない %s"
+
+#: src/util/virprocess.c:279 src/util/virprocess.c:286
+#: src/util/virprocess.c:295
+#, fuzzy, c-format
+msgid "Cannot find start time in %s"
+msgstr "UML カーネル %s を見つけられません"
+
+#: src/util/virprocess.c:305
+#, fuzzy, c-format
+msgid "Cannot parse start time %s in %s"
+msgstr "%s のカテゴリーを構文解析できません"
+
+#: src/util/virprocess.c:333
+#, fuzzy
+msgid "Unable to query process ID start time"
+msgstr "セクター容量 %s を問い合わせできません"
 
 #: src/util/virrandom.c:159
 msgid "argument virt_type must not be NULL"
@@ -23920,8 +23936,8 @@ msgstr "実行しているドメインのメモリー統計情報を取得しま
 #: tools/virsh-domain.c:6962 tools/virsh-domain.c:7135
 #: tools/virsh-domain.c:7200 tools/virsh-domain.c:7252
 #: tools/virsh-domain.c:7538 tools/virsh-domain.c:7599
-#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8015
-#: tools/virsh-domain.c:8088 tools/virsh-domain.c:8140 tools/virsh-host.c:530
+#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8017
+#: tools/virsh-domain.c:8090 tools/virsh-domain.c:8142 tools/virsh-host.c:530
 #: tools/virsh-host.c:636 tools/virsh-snapshot.c:120
 #: tools/virsh-snapshot.c:256 tools/virsh-snapshot.c:394
 #: tools/virsh-snapshot.c:502 tools/virsh-snapshot.c:671
@@ -24434,7 +24450,7 @@ msgstr "XML ファイル"
 #: tools/virsh-domain.c:5969 tools/virsh-domain.c:6057
 #: tools/virsh-domain.c:6254 tools/virsh-domain.c:7541
 #: tools/virsh-domain.c:7602 tools/virsh-domain.c:7670
-#: tools/virsh-domain.c:8018
+#: tools/virsh-domain.c:8020
 msgid "affect next boot"
 msgstr "次回起動時に有効になります"
 
@@ -24459,7 +24475,7 @@ msgstr "新しいディスクデバイスを接続します。"
 msgid "source of disk device"
 msgstr "ディスクデバイスのソース"
 
-#: tools/virsh-domain.c:203 tools/virsh-domain.c:8016
+#: tools/virsh-domain.c:203 tools/virsh-domain.c:8018
 msgid "target of disk device"
 msgstr "ディスクデバイスのターゲット"
 
@@ -24703,7 +24719,7 @@ msgstr "カレントドメインに有効になります"
 #: tools/virsh-domain.c:5051 tools/virsh-domain.c:5656
 #: tools/virsh-domain.c:5911 tools/virsh-domain.c:5990
 #: tools/virsh-domain.c:6104 tools/virsh-domain.c:6277
-#: tools/virsh-domain.c:8202 tools/virsh-network.c:852
+#: tools/virsh-domain.c:8204 tools/virsh-network.c:852
 msgid "--current must be specified exclusively"
 msgstr "--current は他のオプションと併用できません"
 
@@ -25135,7 +25151,7 @@ msgid "Failed to allocate memory"
 msgstr "メモリーの割り当てに失敗しました"
 
 #: tools/virsh-domain.c:2071 tools/virsh-domain.c:7757
-#: tools/virsh-domain.c:7977
+#: tools/virsh-domain.c:7979
 msgid "Failed to create XML"
 msgstr "XML の作成に失敗しました"
 
@@ -26940,82 +26956,82 @@ msgstr "ソースパスまたはターゲットパスが %s のディスクが�
 msgid "The disk device '%s' doesn't have media"
 msgstr "ディスクデバイス '%s' にメディアがありません"
 
-#: tools/virsh-domain.c:7948
+#: tools/virsh-domain.c:7950
 msgid "No source is specified for inserting media"
 msgstr "挿入するメディアのソースが指定されていません"
 
-#: tools/virsh-domain.c:7951
+#: tools/virsh-domain.c:7953
 msgid "No source is specified for updating media"
 msgstr "更新するメディアのソースが指定されていません"
 
-#: tools/virsh-domain.c:7958
+#: tools/virsh-domain.c:7960
 #, c-format
 msgid "The disk device '%s' already has media"
 msgstr "ディスクデバイス '%s' にすでにメディアがあります"
 
-#: tools/virsh-domain.c:8009
+#: tools/virsh-domain.c:8011
 msgid "detach disk device"
 msgstr "ディスクデバイスの切断"
 
-#: tools/virsh-domain.c:8010
+#: tools/virsh-domain.c:8012
 msgid "Detach disk device."
 msgstr "ディスクデバイスを切断します。"
 
-#: tools/virsh-domain.c:8063
+#: tools/virsh-domain.c:8065
 msgid "Failed to detach disk"
 msgstr "ディスクの切断に失敗しました"
 
-#: tools/virsh-domain.c:8065
+#: tools/virsh-domain.c:8067
 msgid "Disk detached successfully\n"
 msgstr "ディスクが正常に切断されました\n"
 
-#: tools/virsh-domain.c:8082
+#: tools/virsh-domain.c:8084
 msgid "edit XML configuration for a domain"
 msgstr "ドメインの XML 設定の編集"
 
-#: tools/virsh-domain.c:8083
+#: tools/virsh-domain.c:8085
 msgid "Edit the XML configuration for a domain."
 msgstr "ドメインの XML 設定を編集します。"
 
-#: tools/virsh-domain.c:8106
+#: tools/virsh-domain.c:8108
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr "ドメインの %s XML 設定は変更されていません \n"
 
-#: tools/virsh-domain.c:8116
+#: tools/virsh-domain.c:8118
 #, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "ドメイン %s XML の設定は編集されました \n"
 
-#: tools/virsh-domain.c:8134
+#: tools/virsh-domain.c:8136
 msgid "Change media of CD or floppy drive"
 msgstr "CD またはフロッピードライブのメディアの変更"
 
-#: tools/virsh-domain.c:8135
+#: tools/virsh-domain.c:8137
 msgid "Change media of CD or floppy drive."
 msgstr "CD またはフロッピードライブのメディアを変更します。"
 
-#: tools/virsh-domain.c:8141
+#: tools/virsh-domain.c:8143
 msgid "Fully-qualified path or target of disk device"
 msgstr "ディスクデバイスの完全修飾パスまたはターゲット"
 
-#: tools/virsh-domain.c:8143
+#: tools/virsh-domain.c:8145
 msgid "source of the media"
 msgstr "メディアのソース"
 
-#: tools/virsh-domain.c:8144
+#: tools/virsh-domain.c:8146
 msgid "Eject the media"
 msgstr "メディアの取り出し"
 
-#: tools/virsh-domain.c:8145
+#: tools/virsh-domain.c:8147
 msgid "Insert the media"
 msgstr "メディアの挿入"
 
-#: tools/virsh-domain.c:8146
+#: tools/virsh-domain.c:8148
 msgid "Update the media"
 msgstr "メディアの更新"
 
-#: tools/virsh-domain.c:8147
+#: tools/virsh-domain.c:8149
 msgid ""
 "can be either or both of --live and --config, depends on implementation of "
 "hypervisor driver"
@@ -27023,33 +27039,33 @@ msgstr ""
 "--live または --config のどちらか、または両方を設定できます、ハイパーバイザー"
 "のドライバーの実装に依存します"
 
-#: tools/virsh-domain.c:8149
+#: tools/virsh-domain.c:8151
 msgid "alter live configuration of running domain"
 msgstr "実行中のドメインの動作中設定を変更します"
 
-#: tools/virsh-domain.c:8150
+#: tools/virsh-domain.c:8152
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr "永続的な設定を変更します、次回起動時に反映されます"
 
-#: tools/virsh-domain.c:8151
+#: tools/virsh-domain.c:8153
 msgid "force media changing"
 msgstr "メディアを強制的に変更しています"
 
-#: tools/virsh-domain.c:8180
+#: tools/virsh-domain.c:8182
 msgid "--eject, --insert, and --update must be specified exclusively."
 msgstr ""
 "--eject, --insert, および --update は相互排他に指定する必要があります。"
 
-#: tools/virsh-domain.c:8226
+#: tools/virsh-domain.c:8228
 msgid "No disk source specified for inserting"
 msgstr "挿入するディスクソースが指定されていません"
 
-#: tools/virsh-domain.c:8244
+#: tools/virsh-domain.c:8246
 #, c-format
 msgid "Failed to complete action %s on media"
 msgstr "メディアにおいてアクション %s の完了に失敗しました"
 
-#: tools/virsh-domain.c:8248
+#: tools/virsh-domain.c:8250
 #, c-format
 msgid "succeeded to complete action %s on media\n"
 msgstr "メディアにおいてアクション %s の完了に成功しました\n"

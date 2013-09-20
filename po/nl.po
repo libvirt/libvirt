@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-08-01 17:45-0400\n"
+"POT-Creation-Date: 2013-09-20 16:29-0400\n"
 "PO-Revision-Date: 2011-12-30 03:35+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Dutch (http://www.transifex.net/projects/p/libvirt/team/nl/)\n"
@@ -243,16 +243,16 @@ msgstr "niet in staat om rundir %s aan te maken: %s"
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
-#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
-#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
-#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
-#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
-#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
-#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
-#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
-#: daemon/remote.c:4235 daemon/remote.c:4289 daemon/remote.c:4343
-#: daemon/remote.c:4397 daemon/remote.c:4451 daemon/remote.c:4506
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3091
+#: daemon/remote.c:3144 daemon/remote.c:3185 daemon/remote.c:3263
+#: daemon/remote.c:3300 daemon/remote.c:3333 daemon/remote.c:3382
+#: daemon/remote.c:3428 daemon/remote.c:3469 daemon/remote.c:3520
+#: daemon/remote.c:3580 daemon/remote.c:3634 daemon/remote.c:3683
+#: daemon/remote.c:3731 daemon/remote.c:3771 daemon/remote.c:3816
+#: daemon/remote.c:3880 daemon/remote.c:3955 daemon/remote.c:4018
+#: daemon/remote.c:4079 daemon/remote.c:4143 daemon/remote.c:4198
+#: daemon/remote.c:4257 daemon/remote.c:4311 daemon/remote.c:4365
+#: daemon/remote.c:4419 daemon/remote.c:4473 daemon/remote.c:4528
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -388,8 +388,8 @@ msgstr ""
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
-#: daemon/remote.c:4513
+#: daemon/remote.c:2296 daemon/remote.c:3823 daemon/remote.c:3885
+#: daemon/remote.c:4535
 msgid "nparams too large"
 msgstr "nparams te groot"
 
@@ -423,109 +423,109 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#: daemon/remote.c:2431
+#: daemon/remote.c:2432
 msgid "client tried invalid SASL init request"
 msgstr "Cliënt probeerde ongeldig SASL init verzoek"
 
-#: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
-#: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
+#: daemon/remote.c:2478 daemon/remote.c:2629 daemon/remote.c:2727
+#: daemon/remote.c:2743 daemon/remote.c:2757 daemon/remote.c:2771
+#: daemon/remote.c:2890 daemon/remote.c:3036 daemon/remote.c:3065
 #: src/util/virterror.c:959
 msgid "authentication failed"
 msgstr "authenticatie faalde"
 
-#: daemon/remote.c:2504
+#: daemon/remote.c:2505
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "overeengekomen SSF %d was niet sterk genoeg"
 
-#: daemon/remote.c:2559 daemon/remote.c:2657
+#: daemon/remote.c:2560 daemon/remote.c:2658
 msgid "client tried invalid SASL start request"
 msgstr "cliënt probeerde ongeldig SASL start verzoek"
 
-#: daemon/remote.c:2577
+#: daemon/remote.c:2578
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl start antwoord data te lang %d"
 
-#: daemon/remote.c:2674
+#: daemon/remote.c:2675
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr "sasl stap antwoord data te lang %d"
 
-#: daemon/remote.c:2809 daemon/remote.c:2919
+#: daemon/remote.c:2813 daemon/remote.c:2941
 msgid "client tried invalid PolicyKit init request"
 msgstr "cliënt probeerde ongeldig PolicyKit init verzoek"
 
-#: daemon/remote.c:2837
+#: daemon/remote.c:2859
 #, fuzzy, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d: %s"
 msgstr "PolicyKit weigerde actie %s van pid %d, uid %d, resultaat: %s"
 
-#: daemon/remote.c:2864
+#: daemon/remote.c:2886
 #, fuzzy
 msgid "authentication cancelled by user"
 msgstr "authenticatie faalde: %s"
 
-#: daemon/remote.c:2866
+#: daemon/remote.c:2888
 #, c-format
 msgid "polkit: %s"
 msgstr ""
 
-#: daemon/remote.c:2925
+#: daemon/remote.c:2947
 msgid "cannot get peer socket identity"
 msgstr "kan gelijke socket identiteit niet verkrijgen"
 
-#: daemon/remote.c:2943
+#: daemon/remote.c:2965
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "Opzoeken PolicyKit aanvrager mislukte: %s"
 
-#: daemon/remote.c:2950
+#: daemon/remote.c:2972
 #, c-format
 msgid "Failed to create polkit action %s"
 msgstr "Aanmaken polkit actie %s mislukte"
 
-#: daemon/remote.c:2960
+#: daemon/remote.c:2982
 #, c-format
 msgid "Failed to create polkit context %s"
 msgstr "Aanmaken polkit context %s mislukte"
 
-#: daemon/remote.c:2978
+#: daemon/remote.c:3000
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "PolicyKit faalde bij controle autorisatie %d %s"
 
-#: daemon/remote.c:2992
+#: daemon/remote.c:3014
 #, fuzzy, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr "PolicyKit weigerde actie %s van pid %d, uid %d, resultaat: %s"
 
-#: daemon/remote.c:3041
+#: daemon/remote.c:3063
 msgid "client tried unsupported PolicyKit init request"
 msgstr "cliënt probeerde niet-ondersteunde PolicyKit init verzoek"
 
-#: daemon/remote.c:3129 daemon/remote.c:3324
+#: daemon/remote.c:3151 daemon/remote.c:3346
 #, c-format
 msgid "domain event %d already registered"
 msgstr "domein gebeurtenis %d al geregistreerd"
 
-#: daemon/remote.c:3170 daemon/remote.c:3374
+#: daemon/remote.c:3192 daemon/remote.c:3396
 #, c-format
 msgid "domain event %d not registered"
 msgstr "domein gebeurtenis %d niet geregistreerd"
 
-#: daemon/remote.c:3319 daemon/remote.c:3368
+#: daemon/remote.c:3341 daemon/remote.c:3390
 #, c-format
 msgid "unsupported event ID %d"
 msgstr "niet-ondersteunde gebeurtenis ID %d"
 
-#: daemon/remote.c:3867
+#: daemon/remote.c:3889
 #, fuzzy
 msgid "ncpus too large"
 msgstr "nparams te groot"
 
-#: daemon/remote.c:3942
+#: daemon/remote.c:3964
 #, fuzzy
 msgid "maxerrors too large"
 msgstr "nparams te groot"
@@ -1281,7 +1281,7 @@ msgstr "ontbrekende naam voor host"
 msgid "missing port for host"
 msgstr "ontbrekende poort voor host"
 
-#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11769
+#: src/conf/domain_conf.c:3593 src/conf/domain_conf.c:11771
 #, c-format
 msgid "unexpected disk type %s"
 msgstr "onverwacht schijf type %s"
@@ -2208,7 +2208,7 @@ msgstr ""
 msgid "Failed to generate UUID"
 msgstr "UUID genereren mislukte"
 
-#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9848
+#: src/conf/domain_conf.c:8541 src/conf/domain_conf.c:9850
 #: src/conf/network_conf.c:1260 src/conf/nwfilter_conf.c:2575
 #: src/conf/secret_conf.c:186 src/conf/storage_conf.c:776
 msgid "malformed uuid element"
@@ -2310,161 +2310,161 @@ msgstr "niet-ondersteunde spicevmc doel naam '%s'"
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8896
+#: src/conf/domain_conf.c:8898
 #, fuzzy, c-format
 msgid "unsupported XML element %s"
 msgstr "niet-ondersteunde gebeurtenis ID %d"
 
-#: src/conf/domain_conf.c:8922
+#: src/conf/domain_conf.c:8924
 #, c-format
 msgid "unexpected feature %s"
 msgstr "onverwachte eigenschap %s"
 
-#: src/conf/domain_conf.c:8933
+#: src/conf/domain_conf.c:8935
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: %s"
 msgstr "onbekend volume formaat type %s"
 
-#: src/conf/domain_conf.c:8975
+#: src/conf/domain_conf.c:8977
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr "onbekende klok offset '%s'"
 
-#: src/conf/domain_conf.c:8993
+#: src/conf/domain_conf.c:8995
 #, fuzzy, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr "onbekende klok offset '%s'"
 
-#: src/conf/domain_conf.c:9021
+#: src/conf/domain_conf.c:9023
 #, fuzzy, c-format
 msgid "unknown clock basis '%s'"
 msgstr "onbekende klok offset '%s'"
 
-#: src/conf/domain_conf.c:9034
+#: src/conf/domain_conf.c:9036
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "ontbrekend 'timezone' attribuut voor klok met offset='timezone'"
 
-#: src/conf/domain_conf.c:9067
+#: src/conf/domain_conf.c:9069
 msgid "no OS type"
 msgstr "geen OS type"
 
-#: src/conf/domain_conf.c:9094
+#: src/conf/domain_conf.c:9096
 #, fuzzy, c-format
 msgid "No guest options available for arch '%s'"
 msgstr "geen verbinding driver beschikbaar voor %s"
 
-#: src/conf/domain_conf.c:9103
+#: src/conf/domain_conf.c:9105
 #, c-format
 msgid "No os type '%s' available for arch '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9111 src/xenxs/xen_xm.c:295
+#: src/conf/domain_conf.c:9113 src/xenxs/xen_xm.c:295
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "geen ondersteunde architectuur voor os type '%s'"
 
-#: src/conf/domain_conf.c:9152
+#: src/conf/domain_conf.c:9154
 msgid "init binary must be specified"
 msgstr ""
 
-#: src/conf/domain_conf.c:9168
+#: src/conf/domain_conf.c:9170
 msgid "No data supplied for <initarg> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:9242 src/conf/domain_conf.c:9250
+#: src/conf/domain_conf.c:9244 src/conf/domain_conf.c:9252
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9271
+#: src/conf/domain_conf.c:9273
 msgid "cannot extract device leases"
 msgstr ""
 
-#: src/conf/domain_conf.c:9408
+#: src/conf/domain_conf.c:9410
 msgid "cannot extract console devices"
 msgstr ""
 
-#: src/conf/domain_conf.c:9448
+#: src/conf/domain_conf.c:9450
 msgid "Only the first console can be a serial port"
 msgstr ""
 
-#: src/conf/domain_conf.c:9547
+#: src/conf/domain_conf.c:9549
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
 
-#: src/conf/domain_conf.c:9652
+#: src/conf/domain_conf.c:9654
 msgid "cannot determine default video type"
 msgstr "kan standaard video type niet bepalen"
 
-#: src/conf/domain_conf.c:9681
+#: src/conf/domain_conf.c:9683
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 
-#: src/conf/domain_conf.c:9697
+#: src/conf/domain_conf.c:9699
 msgid "only a single watchdog device is supported"
 msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 
-#: src/conf/domain_conf.c:9717
+#: src/conf/domain_conf.c:9719
 msgid "only a single memory balloon device is supported"
 msgstr "slechts een geheugen ballon apparaat wordt ondersteund"
 
-#: src/conf/domain_conf.c:9757
+#: src/conf/domain_conf.c:9759
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9781
+#: src/conf/domain_conf.c:9783
 msgid "Can't add redirected USB device: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9796
+#: src/conf/domain_conf.c:9798
 #, fuzzy
 msgid "only one set of redirection filter rule is supported"
 msgstr "slechts één bestandssysteem ondersteund"
 
-#: src/conf/domain_conf.c:9824
+#: src/conf/domain_conf.c:9826
 msgid "Maximum CPUs greater than topology limit"
 msgstr ""
 
-#: src/conf/domain_conf.c:9830
+#: src/conf/domain_conf.c:9832
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr ""
 
-#: src/conf/domain_conf.c:9855
+#: src/conf/domain_conf.c:9857
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID mismatch tussen <uuid> en <sysinfo>"
 
-#: src/conf/domain_conf.c:9867
+#: src/conf/domain_conf.c:9869
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr "onbekende smbios mode '%s'"
 
-#: src/conf/domain_conf.c:9934
+#: src/conf/domain_conf.c:9936
 msgid "no domain config"
 msgstr "geen domein configuratie"
 
-#: src/conf/domain_conf.c:9948
+#: src/conf/domain_conf.c:9950
 msgid "missing domain state"
 msgstr "domein toestand ontbreekt"
 
-#: src/conf/domain_conf.c:9953
+#: src/conf/domain_conf.c:9955
 #, c-format
 msgid "invalid domain state '%s'"
 msgstr "ongeldige domein toestand '%s'"
 
-#: src/conf/domain_conf.c:9962
+#: src/conf/domain_conf.c:9964
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9973
+#: src/conf/domain_conf.c:9975
 msgid "invalid pid"
 msgstr "ongeldig pid"
 
-#: src/conf/domain_conf.c:9987
+#: src/conf/domain_conf.c:9989
 #, c-format
 msgid "Unknown taint flag %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10021 src/security/virt-aa-helper.c:654
+#: src/conf/domain_conf.c:10023 src/security/virt-aa-helper.c:654
 #: tools/virsh-domain-monitor.c:97 tools/virsh-domain-monitor.c:430
 #: tools/virsh-domain-monitor.c:531 tools/virsh-domain-monitor.c:640
 #: tools/virsh-domain.c:1991 tools/virsh-domain.c:2591
@@ -2474,684 +2474,684 @@ msgstr ""
 msgid "(domain_definition)"
 msgstr ""
 
-#: src/conf/domain_conf.c:10059
+#: src/conf/domain_conf.c:10061
 #, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr ""
 
-#: src/conf/domain_conf.c:10092
+#: src/conf/domain_conf.c:10094
 #, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr ""
 
-#: src/conf/domain_conf.c:10142
+#: src/conf/domain_conf.c:10144
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10150
+#: src/conf/domain_conf.c:10152
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10158
+#: src/conf/domain_conf.c:10160
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr ""
 
-#: src/conf/domain_conf.c:10165
+#: src/conf/domain_conf.c:10167
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10186
+#: src/conf/domain_conf.c:10188
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10199
+#: src/conf/domain_conf.c:10201
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
 "%02x:%02x.%02x"
 msgstr ""
 
-#: src/conf/domain_conf.c:10214
+#: src/conf/domain_conf.c:10216
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10228
+#: src/conf/domain_conf.c:10230
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10241
+#: src/conf/domain_conf.c:10243
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10265
+#: src/conf/domain_conf.c:10267
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10273
+#: src/conf/domain_conf.c:10275
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10281
+#: src/conf/domain_conf.c:10283
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10288
+#: src/conf/domain_conf.c:10290
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10295
+#: src/conf/domain_conf.c:10297
 msgid "Target disk access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10316
+#: src/conf/domain_conf.c:10318
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10324
+#: src/conf/domain_conf.c:10326
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10331
+#: src/conf/domain_conf.c:10333
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10339
+#: src/conf/domain_conf.c:10341
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10346
+#: src/conf/domain_conf.c:10348
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10369
+#: src/conf/domain_conf.c:10371
 #, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10376
+#: src/conf/domain_conf.c:10378
 msgid "Target filesystem access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10397
+#: src/conf/domain_conf.c:10399
 #, c-format
 msgid ""
 "Target network card mac %02x:%02x:%02x:%02x:%02x:%02x does not match source "
 "%02x:%02x:%02x:%02x:%02x:%02x"
 msgstr ""
 
-#: src/conf/domain_conf.c:10408
+#: src/conf/domain_conf.c:10410
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10430
+#: src/conf/domain_conf.c:10432
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10438
+#: src/conf/domain_conf.c:10440
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10461
+#: src/conf/domain_conf.c:10463
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10484
+#: src/conf/domain_conf.c:10486
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10492
+#: src/conf/domain_conf.c:10494
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10499
+#: src/conf/domain_conf.c:10501
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10507
+#: src/conf/domain_conf.c:10509
 msgid "Target video card acceleration does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10514
+#: src/conf/domain_conf.c:10516
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10521
+#: src/conf/domain_conf.c:10523
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10544
+#: src/conf/domain_conf.c:10546
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10553
+#: src/conf/domain_conf.c:10555
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10592 src/conf/domain_conf.c:10614
+#: src/conf/domain_conf.c:10594 src/conf/domain_conf.c:10616
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10636
+#: src/conf/domain_conf.c:10638
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10646
+#: src/conf/domain_conf.c:10648
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10655
+#: src/conf/domain_conf.c:10657
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 msgstr ""
 
-#: src/conf/domain_conf.c:10666
+#: src/conf/domain_conf.c:10668
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10692
+#: src/conf/domain_conf.c:10694
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10715
+#: src/conf/domain_conf.c:10717
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10738
+#: src/conf/domain_conf.c:10740
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10761
+#: src/conf/domain_conf.c:10763
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10785
+#: src/conf/domain_conf.c:10787
 #, fuzzy, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10796
+#: src/conf/domain_conf.c:10798
 #, fuzzy
 msgid "Target USB Class code does not match source"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10802
+#: src/conf/domain_conf.c:10804
 #, fuzzy
 msgid "Target USB vendor ID does not match source"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10808
+#: src/conf/domain_conf.c:10810
 #, fuzzy
 msgid "Target USB product ID does not match source"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10814
+#: src/conf/domain_conf.c:10816
 #, fuzzy
 msgid "Target USB version does not match source"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10820
+#: src/conf/domain_conf.c:10822
 #, fuzzy, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10844
+#: src/conf/domain_conf.c:10846
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10856
+#: src/conf/domain_conf.c:10858
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10863
+#: src/conf/domain_conf.c:10865
 #, fuzzy, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10869
+#: src/conf/domain_conf.c:10871
 #, fuzzy, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10875
+#: src/conf/domain_conf.c:10877
 #, fuzzy, c-format
 msgid "Target domain huge page backing %d does not match source %d"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:10883
+#: src/conf/domain_conf.c:10885
 #, c-format
 msgid "Target domain vpu count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10889
+#: src/conf/domain_conf.c:10891
 #, c-format
 msgid "Target domain vpu max %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10896 src/conf/domain_conf.c:10908
+#: src/conf/domain_conf.c:10898 src/conf/domain_conf.c:10910
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10902
+#: src/conf/domain_conf.c:10904
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10915
+#: src/conf/domain_conf.c:10917
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10923
+#: src/conf/domain_conf.c:10925
 #, c-format
 msgid "Target domain features %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10930
+#: src/conf/domain_conf.c:10932
 msgid "Target domain timers do not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10947
+#: src/conf/domain_conf.c:10949
 #, c-format
 msgid "Target domain disk count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10958
+#: src/conf/domain_conf.c:10960
 #, c-format
 msgid "Target domain disk controller count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10969
+#: src/conf/domain_conf.c:10971
 #, c-format
 msgid "Target domain filesystem count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10980
+#: src/conf/domain_conf.c:10982
 #, c-format
 msgid "Target domain net card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10991
+#: src/conf/domain_conf.c:10993
 #, c-format
 msgid "Target domain input device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11002
+#: src/conf/domain_conf.c:11004
 #, c-format
 msgid "Target domain sound card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11013
+#: src/conf/domain_conf.c:11015
 #, c-format
 msgid "Target domain video card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11024
+#: src/conf/domain_conf.c:11026
 #, c-format
 msgid "Target domain host device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11035
+#: src/conf/domain_conf.c:11037
 #, c-format
 msgid "Target domain smartcard count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11046
+#: src/conf/domain_conf.c:11048
 #, c-format
 msgid "Target domain serial port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11057
+#: src/conf/domain_conf.c:11059
 #, c-format
 msgid "Target domain parallel port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11068
+#: src/conf/domain_conf.c:11070
 #, c-format
 msgid "Target domain channel count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11079
+#: src/conf/domain_conf.c:11081
 #, c-format
 msgid "Target domain console count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11090
+#: src/conf/domain_conf.c:11092
 #, c-format
 msgid "Target domain hub device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11102
+#: src/conf/domain_conf.c:11104
 #, fuzzy, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "CPU modellen komen niet overeen: '%s' != '%s'"
 
-#: src/conf/domain_conf.c:11114
+#: src/conf/domain_conf.c:11116
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11126
+#: src/conf/domain_conf.c:11128
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11465
+#: src/conf/domain_conf.c:11467
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "onverwacht levenscyclus type %d"
 
-#: src/conf/domain_conf.c:11626
+#: src/conf/domain_conf.c:11628
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "onverwacht schijf type %d"
 
-#: src/conf/domain_conf.c:11631
+#: src/conf/domain_conf.c:11633
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "onverwacht schijf apparaat %d"
 
-#: src/conf/domain_conf.c:11636
+#: src/conf/domain_conf.c:11638
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "onverwachte schijf bus %d"
 
-#: src/conf/domain_conf.c:11641
+#: src/conf/domain_conf.c:11643
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "onverwachte schijf cache mode %d"
 
-#: src/conf/domain_conf.c:11646
+#: src/conf/domain_conf.c:11648
 #, c-format
 msgid "unexpected disk io mode %d"
 msgstr "onverwachte schijf io mode %d"
 
-#: src/conf/domain_conf.c:11888
+#: src/conf/domain_conf.c:11890
 #, c-format
 msgid "unexpected controller type %d"
 msgstr "onverwacht controller type %d"
 
-#: src/conf/domain_conf.c:11897
+#: src/conf/domain_conf.c:11899
 #, c-format
 msgid "unexpected model type %d"
 msgstr "onverwacht model type %d"
 
-#: src/conf/domain_conf.c:11966
+#: src/conf/domain_conf.c:11968
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "onverwacht bestandssysteem type %d"
 
-#: src/conf/domain_conf.c:11972
+#: src/conf/domain_conf.c:11974
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr "onverwachte toegangsmode %d"
 
-#: src/conf/domain_conf.c:12072
+#: src/conf/domain_conf.c:12074
 #, fuzzy
 msgid "PCI address Formatting failed"
 msgstr "hervatten operatie mislukte"
 
-#: src/conf/domain_conf.c:12090 src/conf/domain_conf.c:13163
+#: src/conf/domain_conf.c:12092 src/conf/domain_conf.c:13165
 #: src/qemu/qemu_hotplug.c:2196
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "onverwacht hostdev type %d"
 
-#: src/conf/domain_conf.c:12114 src/conf/domain_conf.c:12184
-#: src/conf/domain_conf.c:12961
+#: src/conf/domain_conf.c:12116 src/conf/domain_conf.c:12186
+#: src/conf/domain_conf.c:12963
 #, c-format
 msgid "unexpected net type %d"
 msgstr "onverwacht netwerk type %d"
 
-#: src/conf/domain_conf.c:12141
+#: src/conf/domain_conf.c:12143
 #, c-format
 msgid "unexpected source mode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:12159
+#: src/conf/domain_conf.c:12161
 #, c-format
 msgid "unexpected net type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:12349
+#: src/conf/domain_conf.c:12351
 #, c-format
 msgid "unexpected char type %d"
 msgstr "onverwacht karakter type %d"
 
-#: src/conf/domain_conf.c:12451
+#: src/conf/domain_conf.c:12453
 #, c-format
 msgid "unexpected char device type %d"
 msgstr "onverwacht char apparaat type %d"
 
-#: src/conf/domain_conf.c:12470
+#: src/conf/domain_conf.c:12472
 msgid "Could not format channel target type"
 msgstr "Kan kanaal doel type niet formatteren"
 
-#: src/conf/domain_conf.c:12480
+#: src/conf/domain_conf.c:12482
 msgid "Unable to format guestfwd port"
 msgstr "Kan guestfwd poort niet formatteren"
 
-#: src/conf/domain_conf.c:12548 src/conf/domain_conf.c:12579
+#: src/conf/domain_conf.c:12550 src/conf/domain_conf.c:12581
 #: src/qemu/qemu_command.c:5679
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "onverwacht smartcard type %d"
 
-#: src/conf/domain_conf.c:12596
+#: src/conf/domain_conf.c:12598
 #, fuzzy, c-format
 msgid "unexpected codec type %d"
 msgstr "onverwacht model type %d"
 
-#: src/conf/domain_conf.c:12616 src/xenxs/xen_sxpr.c:2153
+#: src/conf/domain_conf.c:12618 src/xenxs/xen_sxpr.c:2153
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "onverwacht geluid model %d"
 
-#: src/conf/domain_conf.c:12658
+#: src/conf/domain_conf.c:12660
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr "onverwacht geheugen ballon model %d"
 
-#: src/conf/domain_conf.c:12698
+#: src/conf/domain_conf.c:12700
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr "onverwacht bewaker model %d"
 
-#: src/conf/domain_conf.c:12704
+#: src/conf/domain_conf.c:12706
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr "onverwachte bewaker actie %d"
 
-#: src/conf/domain_conf.c:12745
+#: src/conf/domain_conf.c:12747
 #, c-format
 msgid "unexpected video model %d"
 msgstr "onverwacht video model %d"
 
-#: src/conf/domain_conf.c:12782 src/xenxs/xen_sxpr.c:2190
+#: src/conf/domain_conf.c:12784 src/xenxs/xen_sxpr.c:2190
 #, c-format
 msgid "unexpected input type %d"
 msgstr "onverwacht input type %d"
 
-#: src/conf/domain_conf.c:12787
+#: src/conf/domain_conf.c:12789
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "onverwacht input bus type %d"
 
-#: src/conf/domain_conf.c:12815
+#: src/conf/domain_conf.c:12817
 #, c-format
 msgid "unexpected timer name %d"
 msgstr "onverwachte timer naam %d"
 
-#: src/conf/domain_conf.c:12831
+#: src/conf/domain_conf.c:12833
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "onverwachte timer tickpolicy %d"
 
-#: src/conf/domain_conf.c:12845
+#: src/conf/domain_conf.c:12847
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "onverwachte timer track %d"
 
-#: src/conf/domain_conf.c:12863
+#: src/conf/domain_conf.c:12865
 #, c-format
 msgid "unexpected timer mode %d"
 msgstr "onverwachte timer mode %d"
 
-#: src/conf/domain_conf.c:13154
+#: src/conf/domain_conf.c:13156
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "onverwachte hostdev mode %d"
 
-#: src/conf/domain_conf.c:13248
+#: src/conf/domain_conf.c:13250
 #, c-format
 msgid "unexpected hub type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:13301
+#: src/conf/domain_conf.c:13303
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "onverwacht domein type %d"
 
-#: src/conf/domain_conf.c:13474
+#: src/conf/domain_conf.c:13476
 msgid "failed to format cpuset for vcpupin"
 msgstr ""
 
-#: src/conf/domain_conf.c:13490
+#: src/conf/domain_conf.c:13492
 #, fuzzy
 msgid "failed to format cpuset for emulator"
 msgstr "AppArmor sjabloon lezen mislukte"
 
-#: src/conf/domain_conf.c:13519
+#: src/conf/domain_conf.c:13521
 msgid "failed to format nodeset for NUMA memory tuning"
 msgstr ""
 
-#: src/conf/domain_conf.c:13583
+#: src/conf/domain_conf.c:13585
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "onverwacht opstart apparaat type %d"
 
-#: src/conf/domain_conf.c:13617
+#: src/conf/domain_conf.c:13619
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr "onverwachte smbios mode %d"
 
-#: src/conf/domain_conf.c:13632
+#: src/conf/domain_conf.c:13634
 #, c-format
 msgid "unexpected feature %d"
 msgstr "onverwachte eigenschap %d"
 
-#: src/conf/domain_conf.c:13959
+#: src/conf/domain_conf.c:13961
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
 
-#: src/conf/domain_conf.c:13979 src/conf/network_conf.c:1996
+#: src/conf/domain_conf.c:13981 src/conf/network_conf.c:1996
 #: src/conf/nwfilter_conf.c:2728 src/util/dnsmasq.c:533
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "kan configuratie map '%s' niet aanmaken"
 
-#: src/conf/domain_conf.c:14124
+#: src/conf/domain_conf.c:14126
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "onverwacht domein %s bestaat reeds"
 
-#: src/conf/domain_conf.c:14162 src/conf/network_conf.c:2114
+#: src/conf/domain_conf.c:14164 src/conf/network_conf.c:2114
 #: src/conf/nwfilter_conf.c:3118 src/conf/storage_conf.c:1597
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "openen van map '%s' mislukte"
 
-#: src/conf/domain_conf.c:14226
+#: src/conf/domain_conf.c:14228
 #, c-format
 msgid "cannot remove config %s"
 msgstr "kan configuratie %s niet verwijderen"
 
-#: src/conf/domain_conf.c:14332 src/xen/xm_internal.c:1079
+#: src/conf/domain_conf.c:14334 src/xen/xm_internal.c:1079
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "domein '%s' is al gedefinieerd met uuid %s"
 
-#: src/conf/domain_conf.c:14341
+#: src/conf/domain_conf.c:14343
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "domein is al actief als '%s'"
 
-#: src/conf/domain_conf.c:14355
+#: src/conf/domain_conf.c:14357
 #, c-format
 msgid "domain '%s' already exists with uuid %s"
 msgstr "domein '%s' bestaat al met uuid %s"
 
-#: src/conf/domain_conf.c:14585
+#: src/conf/domain_conf.c:14587
 #, c-format
 msgid "unknown disk format '%s' for %s"
 msgstr "onbekend schijf formaat '%s' voor %s"
 
-#: src/conf/domain_conf.c:14594 src/qemu/qemu_driver.c:9224
+#: src/conf/domain_conf.c:14596 src/qemu/qemu_driver.c:9224
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "geen schijf formaat voor %s en onderzoeken is uitgezet"
 
-#: src/conf/domain_conf.c:14611
+#: src/conf/domain_conf.c:14613
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr "steun archief voor %s is zelf-referentieel"
 
-#: src/conf/domain_conf.c:14623
+#: src/conf/domain_conf.c:14625
 #, c-format
 msgid "unable to open disk path %s"
 msgstr "kan schijf pad %s niet openen"
 
-#: src/conf/domain_conf.c:14636
+#: src/conf/domain_conf.c:14638
 #, c-format
 msgid "could not close file %s"
 msgstr "kon bestand %s niet sluiten"
 
-#: src/conf/domain_conf.c:14740
+#: src/conf/domain_conf.c:14742
 #, c-format
 msgid "invalid domain state: %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:15175
+#: src/conf/domain_conf.c:15177
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr ""
@@ -7213,7 +7213,7 @@ msgstr "Chroot naar %s mislukte"
 msgid "Failed to pivot root"
 msgstr "Root draaien mislukte"
 
-#: src/lxc/lxc_container.c:544
+#: src/lxc/lxc_container.c:551
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s mislukte"
@@ -15215,7 +15215,7 @@ msgstr ""
 
 #: src/rpc/virnetsocket.c:293 src/rpc/virnetsocket.c:420
 #: src/rpc/virnetsocket.c:489 src/rpc/virnetsocket.c:572
-#: src/rpc/virnetsocket.c:1466
+#: src/rpc/virnetsocket.c:1475
 msgid "Unable to get local socket name"
 msgstr ""
 
@@ -15291,62 +15291,62 @@ msgstr ""
 msgid "Unable to copy socket file handle"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:998
+#: src/rpc/virnetsocket.c:1001
 msgid "Failed to get client socket identity"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1018
+#: src/rpc/virnetsocket.c:1027
 msgid "Client socket identity not available"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1174
+#: src/rpc/virnetsocket.c:1183
 #, c-format
 msgid "Cannot recv data: %s"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1177
+#: src/rpc/virnetsocket.c:1186
 msgid "Cannot recv data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1182
+#: src/rpc/virnetsocket.c:1191
 #, c-format
 msgid "End of file while reading data: %s"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1185
+#: src/rpc/virnetsocket.c:1194
 msgid "End of file while reading data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1218
+#: src/rpc/virnetsocket.c:1227
 msgid "Cannot write data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1223
+#: src/rpc/virnetsocket.c:1232
 msgid "End of file while writing data"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1368
+#: src/rpc/virnetsocket.c:1377
 msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1379
+#: src/rpc/virnetsocket.c:1388
 #, c-format
 msgid "Failed to send file descriptor %d"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1402
+#: src/rpc/virnetsocket.c:1411
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1412
+#: src/rpc/virnetsocket.c:1421
 msgid "Failed to recv file descriptor"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1429
+#: src/rpc/virnetsocket.c:1438
 msgid "Unable to listen on socket"
 msgstr ""
 
-#: src/rpc/virnetsocket.c:1460
+#: src/rpc/virnetsocket.c:1469
 msgid "Unable to accept client"
 msgstr ""
 
@@ -15376,7 +15376,7 @@ msgstr ""
 msgid "Failed to register shutdown timeout"
 msgstr "Registratie van shutdown timeout mislukte"
 
-#: src/rpc/virnetserverclient.c:773 src/rpc/virnetserverclient.c:954
+#: src/rpc/virnetserverclient.c:777 src/rpc/virnetserverclient.c:958
 #, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr ""
@@ -16141,55 +16141,55 @@ msgstr ""
 msgid "DAC seclabel couldn't be determined for domain '%s'"
 msgstr "kan max vcpus voor het domein niet bepalen"
 
-#: src/security/security_dac.c:190
+#: src/security/security_dac.c:186
 #, fuzzy, c-format
 msgid "failed to parse DAC imagelabel '%s' for domain '%s'"
 msgstr "Verwijderen van beheerde opslag image voor domein %s mislukte"
 
-#: src/security/security_dac.c:211
+#: src/security/security_dac.c:207
 msgid "Failed to determine default DAC imagelabel for an unknown object"
 msgstr ""
 
-#: src/security/security_dac.c:221
+#: src/security/security_dac.c:217
 #, c-format
 msgid "DAC imagelabel couldn't be determined for domain '%s'"
 msgstr ""
 
-#: src/security/security_dac.c:313
+#: src/security/security_dac.c:309
 #, fuzzy, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "kan gebruiker en groep niet instellen op '%d:%d' op '%s'"
 
-#: src/security/security_dac.c:333
+#: src/security/security_dac.c:329
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "kan symlink %s niet oplossen"
 
-#: src/security/security_dac.c:904 src/security/security_selinux.c:601
+#: src/security/security_dac.c:900 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "ongeldig beveiliging type"
 
-#: src/security/security_dac.c:915 src/security/security_selinux.c:622
+#: src/security/security_dac.c:911 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr ""
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:629
+#: src/security/security_dac.c:919 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr ""
 
-#: src/security/security_dac.c:933
+#: src/security/security_dac.c:929
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:945 src/security/security_dac.c:965
+#: src/security/security_dac.c:941 src/security/security_dac.c:961
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "kan geen willekeurige uuid genereren voor instanceid"
 
-#: src/security/security_dac.c:955 src/security/security_selinux.c:703
+#: src/security/security_dac.c:951 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "onverwacht geheim gebruik type %d"
@@ -16734,19 +16734,19 @@ msgstr "kan bestand '%s' niet sluiten"
 msgid "cannot create path '%s'"
 msgstr "kan pad '%s' niet aanmaken"
 
-#: src/storage/storage_backend.c:278 src/util/util.c:802 src/util/util.c:1113
-#: src/util/util.c:1217
+#: src/storage/storage_backend.c:278 src/util/util.c:806 src/util/util.c:1117
+#: src/util/util.c:1221
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "stat van '%s' mislukte"
 
-#: src/storage/storage_backend.c:287 src/util/util.c:813 src/util/util.c:1119
+#: src/storage/storage_backend.c:287 src/util/util.c:817 src/util/util.c:1123
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "kan niet chown '%s' naar (%u, %u)"
 
 #: src/storage/storage_backend.c:293 src/storage/storage_backend.c:617
-#: src/util/util.c:824 src/util/util.c:1127 src/util/util.c:1230
+#: src/util/util.c:828 src/util/util.c:1131 src/util/util.c:1234
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "kan mode van '%s' niet instellen op %04o"
@@ -18755,191 +18755,191 @@ msgstr ""
 msgid "Target sysinfo %s %s does not match source %s"
 msgstr ""
 
-#: src/util/util.c:335
+#: src/util/util.c:339
 msgid "Unknown poll response."
 msgstr "Onbekend poll antwoord."
 
-#: src/util/util.c:369
+#: src/util/util.c:373
 msgid "poll error"
 msgstr "poll fout"
 
-#: src/util/util.c:458
+#: src/util/util.c:462
 #, c-format
 msgid "Failed to open file '%s'"
 msgstr "Openen van bestand '%s' mislukte"
 
-#: src/util/util.c:465
+#: src/util/util.c:469
 #, c-format
 msgid "Failed to read file '%s'"
 msgstr "Lezen van bestand '%s' mislukte"
 
-#: src/util/util.c:860
+#: src/util/util.c:864
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr ""
 
-#: src/util/util.c:891
+#: src/util/util.c:895
 #, fuzzy, c-format
 msgid "child process failed to create file '%s'"
 msgstr "aanmaken van bestand '%s' mislukte"
 
-#: src/util/util.c:908
+#: src/util/util.c:912
 msgid "child process failed to send fd to parent"
 msgstr ""
 
-#: src/util/util.c:951 src/util/util.c:1177
+#: src/util/util.c:955 src/util/util.c:1181
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "wachten totdat kind '%s' aanmaakt mislukte"
 
-#: src/util/util.c:1061
+#: src/util/util.c:1065
 #, fuzzy, c-format
 msgid "couldn't determine fs type of mount containing '%s'"
 msgstr "kan max vcpus voor het domein niet bepalen"
 
-#: src/util/util.c:1087
+#: src/util/util.c:1091
 #, c-format
 msgid "failed to create file '%s'"
 msgstr "aanmaken van bestand '%s' mislukte"
 
-#: src/util/util.c:1088
+#: src/util/util.c:1092
 #, fuzzy, c-format
 msgid "failed to open file '%s'"
 msgstr "Openen van bestand '%s' mislukte"
 
-#: src/util/util.c:1106
+#: src/util/util.c:1110
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "aanmaken van map '%s' mislukte"
 
-#: src/util/util.c:1207
+#: src/util/util.c:1211
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "kind faalde om map '%s' aan te maken"
 
-#: src/util/util.c:1223
+#: src/util/util.c:1227
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "kan niet chown '%s' naar groep %u"
 
-#: src/util/util.c:1261
+#: src/util/util.c:1265
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr ""
 
-#: src/util/util.c:1273
+#: src/util/util.c:1277
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate is niet geïmplementeerd voor WIN32"
 
-#: src/util/util.c:1775
+#: src/util/util.c:1779
 #, fuzzy, c-format
 msgid "invalid scale %llu"
 msgstr "Ongeldige aanroep"
 
-#: src/util/util.c:1791 src/util/util.c:1816
+#: src/util/util.c:1795 src/util/util.c:1820
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
 msgstr "onbekende grootte eenheden '%s'"
 
-#: src/util/util.c:1822
+#: src/util/util.c:1826
 #, fuzzy, c-format
 msgid "value too large: %llu%s"
 msgstr "Aanvrager PID was te groot %d"
 
-#: src/util/util.c:2207
+#: src/util/util.c:2211
 #, c-format
 msgid "Disk index %d is negative"
 msgstr "Schijf index %d is negatief"
 
-#: src/util/util.c:2263
+#: src/util/util.c:2267
 msgid "failed to determine host name"
 msgstr "bepalen van host naam mislukte"
 
-#: src/util/util.c:2359
+#: src/util/util.c:2363
 #, c-format
 msgid "Failed to find user record for uid '%u'"
 msgstr "Vinden van gebruiker record voor uid '%u' mislukte"
 
-#: src/util/util.c:2418
+#: src/util/util.c:2422
 #, fuzzy, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Vinden van groep record voor naam '%s' mislukte"
 
-#: src/util/util.c:2539
+#: src/util/util.c:2543
 #, c-format
 msgid "Failed to find user record for name '%s'"
 msgstr "Vinden van gebruiker record voor naam '%s' mislukte"
 
-#: src/util/util.c:2588
+#: src/util/util.c:2592
 #, c-format
 msgid "Failed to find group record for name '%s'"
 msgstr "Vinden van groep record voor naam '%s' mislukte"
 
-#: src/util/util.c:2673
+#: src/util/util.c:2677
 #, fuzzy, c-format
 msgid "cannot change to '%u' group"
 msgstr "kan niet veranderen naar '%d' groep"
 
-#: src/util/util.c:2681
+#: src/util/util.c:2685
 #, fuzzy
 msgid "cannot set supplemental groups"
 msgstr "kan bestand mode '%s' niet instellen"
 
-#: src/util/util.c:2688
+#: src/util/util.c:2692
 #, fuzzy, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "kan uid niet veranderen naar '%d'"
 
-#: src/util/util.c:2800
+#: src/util/util.c:2804
 #, fuzzy
 msgid "Unable to determine home directory"
 msgstr "Kan geheugen van domein niet bepalen."
 
-#: src/util/util.c:2816 src/util/util.c:2831
+#: src/util/util.c:2820 src/util/util.c:2835
 #, fuzzy
 msgid "Unable to determine config directory"
 msgstr "Kan geheugen van domein niet bepalen."
 
-#: src/util/util.c:2847
+#: src/util/util.c:2851
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory is niet beschikbaar"
 
-#: src/util/util.c:2856
+#: src/util/util.c:2860
 #, fuzzy
 msgid "virGetUserConfigDirectory is not available"
 msgstr "virGetUserDirectory is niet beschikbaar"
 
-#: src/util/util.c:2865
+#: src/util/util.c:2869
 #, fuzzy
 msgid "virGetUserCacheDirectory is not available"
 msgstr "virGetUserDirectory is niet beschikbaar"
 
-#: src/util/util.c:2874
+#: src/util/util.c:2878
 #, fuzzy
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserDirectory is niet beschikbaar"
 
-#: src/util/util.c:2884
+#: src/util/util.c:2888
 msgid "virGetUserName is not available"
 msgstr "virGetUserName is niet beschikbaar"
 
-#: src/util/util.c:2893
+#: src/util/util.c:2897
 msgid "virGetUserID is not available"
 msgstr "virGetUserID is niet beschikbaar"
 
-#: src/util/util.c:2903
+#: src/util/util.c:2907
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID is niet beschikbaar"
 
-#: src/util/util.c:2915
+#: src/util/util.c:2919
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID is niet beschikbaar"
 
-#: src/util/util.c:2923
+#: src/util/util.c:2927
 #, fuzzy
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupID is niet beschikbaar"
 
-#: src/util/util.c:3058
+#: src/util/util.c:3062
 #, fuzzy, c-format
 msgid "Malformed wwn: %s"
 msgstr "Ongeldige grootte %s"
@@ -19722,30 +19722,46 @@ msgstr ""
 msgid "Failed to write to pid file '%s'"
 msgstr ""
 
-#: src/util/virprocess.c:50
+#: src/util/virprocess.c:58
 #, c-format
 msgid "exit status %d"
 msgstr ""
 
-#: src/util/virprocess.c:53
+#: src/util/virprocess.c:61
 #, c-format
 msgid "fatal signal %d"
 msgstr ""
 
-#: src/util/virprocess.c:56
+#: src/util/virprocess.c:64
 #, c-format
 msgid "invalid value %d"
 msgstr ""
 
-#: src/util/virprocess.c:151 src/util/virprocess.c:161
+#: src/util/virprocess.c:159 src/util/virprocess.c:169
 #, fuzzy, c-format
 msgid "unable to wait for process %lld"
 msgstr "wachten op proces %d mislukte"
 
-#: src/util/virprocess.c:170
+#: src/util/virprocess.c:178
 #, c-format
 msgid "Child process (%lld) unexpected %s"
 msgstr ""
+
+#: src/util/virprocess.c:279 src/util/virprocess.c:286
+#: src/util/virprocess.c:295
+#, fuzzy, c-format
+msgid "Cannot find start time in %s"
+msgstr "Kan UML kernel %s niet vinden"
+
+#: src/util/virprocess.c:305
+#, fuzzy, c-format
+msgid "Cannot parse start time %s in %s"
+msgstr "Kan controller index %s niet ontleden"
+
+#: src/util/virprocess.c:333
+#, fuzzy
+msgid "Unable to query process ID start time"
+msgstr "Kan geen toegang weigeren voor schijf pad %s"
 
 #: src/util/virrandom.c:159
 #, fuzzy
@@ -23700,8 +23716,8 @@ msgstr "Geheugen statistiek verkrijgen voor een draaiend domein."
 #: tools/virsh-domain.c:6962 tools/virsh-domain.c:7135
 #: tools/virsh-domain.c:7200 tools/virsh-domain.c:7252
 #: tools/virsh-domain.c:7538 tools/virsh-domain.c:7599
-#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8015
-#: tools/virsh-domain.c:8088 tools/virsh-domain.c:8140 tools/virsh-host.c:530
+#: tools/virsh-domain.c:7666 tools/virsh-domain.c:8017
+#: tools/virsh-domain.c:8090 tools/virsh-domain.c:8142 tools/virsh-host.c:530
 #: tools/virsh-host.c:636 tools/virsh-snapshot.c:120
 #: tools/virsh-snapshot.c:256 tools/virsh-snapshot.c:394
 #: tools/virsh-snapshot.c:502 tools/virsh-snapshot.c:671
@@ -24241,7 +24257,7 @@ msgstr "XML bestand"
 #: tools/virsh-domain.c:5969 tools/virsh-domain.c:6057
 #: tools/virsh-domain.c:6254 tools/virsh-domain.c:7541
 #: tools/virsh-domain.c:7602 tools/virsh-domain.c:7670
-#: tools/virsh-domain.c:8018
+#: tools/virsh-domain.c:8020
 msgid "affect next boot"
 msgstr "beïnvloed volgende opstart"
 
@@ -24266,7 +24282,7 @@ msgstr "Nieuw schijf apparaat aankoppelen."
 msgid "source of disk device"
 msgstr "bron van schijf apparaat"
 
-#: tools/virsh-domain.c:203 tools/virsh-domain.c:8016
+#: tools/virsh-domain.c:203 tools/virsh-domain.c:8018
 msgid "target of disk device"
 msgstr "doel van schijf apparaat"
 
@@ -24510,7 +24526,7 @@ msgstr ""
 #: tools/virsh-domain.c:5051 tools/virsh-domain.c:5656
 #: tools/virsh-domain.c:5911 tools/virsh-domain.c:5990
 #: tools/virsh-domain.c:6104 tools/virsh-domain.c:6277
-#: tools/virsh-domain.c:8202 tools/virsh-network.c:852
+#: tools/virsh-domain.c:8204 tools/virsh-network.c:852
 msgid "--current must be specified exclusively"
 msgstr ""
 
@@ -24947,7 +24963,7 @@ msgid "Failed to allocate memory"
 msgstr "Toewijzen van geheugen mislukte"
 
 #: tools/virsh-domain.c:2071 tools/virsh-domain.c:7757
-#: tools/virsh-domain.c:7977
+#: tools/virsh-domain.c:7979
 msgid "Failed to create XML"
 msgstr "Aanmaken van XML mislukte"
 
@@ -26753,117 +26769,117 @@ msgstr "Geen schijf schijf waarvan het doel %s is"
 msgid "The disk device '%s' doesn't have media"
 msgstr "geheim '%s' heeft geen waarde"
 
-#: tools/virsh-domain.c:7948
+#: tools/virsh-domain.c:7950
 msgid "No source is specified for inserting media"
 msgstr ""
 
-#: tools/virsh-domain.c:7951
+#: tools/virsh-domain.c:7953
 msgid "No source is specified for updating media"
 msgstr ""
 
-#: tools/virsh-domain.c:7958
+#: tools/virsh-domain.c:7960
 #, c-format
 msgid "The disk device '%s' already has media"
 msgstr ""
 
-#: tools/virsh-domain.c:8009
+#: tools/virsh-domain.c:8011
 msgid "detach disk device"
 msgstr "schijf apparaat loskoppelen"
 
-#: tools/virsh-domain.c:8010
+#: tools/virsh-domain.c:8012
 msgid "Detach disk device."
 msgstr "Schijf apparaat loskoppelen."
 
-#: tools/virsh-domain.c:8063
+#: tools/virsh-domain.c:8065
 msgid "Failed to detach disk"
 msgstr "Loskoppelen van schijf mislukte"
 
-#: tools/virsh-domain.c:8065
+#: tools/virsh-domain.c:8067
 msgid "Disk detached successfully\n"
 msgstr "Schijf met succes losgekoppeld\n"
 
-#: tools/virsh-domain.c:8082
+#: tools/virsh-domain.c:8084
 msgid "edit XML configuration for a domain"
 msgstr "bewerk XML configuratie voor een domein"
 
-#: tools/virsh-domain.c:8083
+#: tools/virsh-domain.c:8085
 msgid "Edit the XML configuration for a domain."
 msgstr "Bewerk de XML configuratie voor een domein."
 
-#: tools/virsh-domain.c:8106
+#: tools/virsh-domain.c:8108
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr "Domein %s XML configuratie niet gewijzigd.\n"
 
-#: tools/virsh-domain.c:8116
+#: tools/virsh-domain.c:8118
 #, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "Domein %s XML configuratie bewerkt.\n"
 
-#: tools/virsh-domain.c:8134
+#: tools/virsh-domain.c:8136
 msgid "Change media of CD or floppy drive"
 msgstr ""
 
-#: tools/virsh-domain.c:8135
+#: tools/virsh-domain.c:8137
 msgid "Change media of CD or floppy drive."
 msgstr ""
 
-#: tools/virsh-domain.c:8141
+#: tools/virsh-domain.c:8143
 #, fuzzy
 msgid "Fully-qualified path or target of disk device"
 msgstr "doel van schijf apparaat"
 
-#: tools/virsh-domain.c:8143
+#: tools/virsh-domain.c:8145
 #, fuzzy
 msgid "source of the media"
 msgstr "bron van schijf apparaat"
 
-#: tools/virsh-domain.c:8144
+#: tools/virsh-domain.c:8146
 msgid "Eject the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8145
+#: tools/virsh-domain.c:8147
 msgid "Insert the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8146
+#: tools/virsh-domain.c:8148
 msgid "Update the media"
 msgstr ""
 
-#: tools/virsh-domain.c:8147
+#: tools/virsh-domain.c:8149
 msgid ""
 "can be either or both of --live and --config, depends on implementation of "
 "hypervisor driver"
 msgstr ""
 
-#: tools/virsh-domain.c:8149
+#: tools/virsh-domain.c:8151
 #, fuzzy
 msgid "alter live configuration of running domain"
 msgstr "bewerk XML configuratie voor een domein"
 
-#: tools/virsh-domain.c:8150
+#: tools/virsh-domain.c:8152
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
 
-#: tools/virsh-domain.c:8151
+#: tools/virsh-domain.c:8153
 msgid "force media changing"
 msgstr ""
 
-#: tools/virsh-domain.c:8180
+#: tools/virsh-domain.c:8182
 msgid "--eject, --insert, and --update must be specified exclusively."
 msgstr ""
 
-#: tools/virsh-domain.c:8226
+#: tools/virsh-domain.c:8228
 #, fuzzy
 msgid "No disk source specified for inserting"
 msgstr "schijf bron pad ontbreekt"
 
-#: tools/virsh-domain.c:8244
+#: tools/virsh-domain.c:8246
 #, fuzzy, c-format
 msgid "Failed to complete action %s on media"
 msgstr "Aanmaken polkit actie %s mislukte"
 
-#: tools/virsh-domain.c:8248
+#: tools/virsh-domain.c:8250
 #, c-format
 msgid "succeeded to complete action %s on media\n"
 msgstr ""
