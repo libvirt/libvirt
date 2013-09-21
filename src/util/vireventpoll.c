@@ -358,7 +358,10 @@ static int virEventPollCalculateTimeout(int *timeout) {
         *timeout = -1;
     }
 
-    EVENT_DEBUG("Timeout at %llu due in %d ms", then, *timeout);
+    if (*timeout > -1)
+        EVENT_DEBUG("Timeout at %llu due in %d ms", then, *timeout);
+    else
+        EVENT_DEBUG("%s", "No timeout is pending");
 
     return 0;
 }
