@@ -164,11 +164,13 @@ virConnectDispose(void *obj)
 
     virURIFree(conn->uri);
 
-    virObjectLock(conn->closeCallback);
-    conn->closeCallback->callback = NULL;
-    virObjectUnlock(conn->closeCallback);
+    if (conn->closeCallback) {
+        virObjectLock(conn->closeCallback);
+        conn->closeCallback->callback = NULL;
+        virObjectUnlock(conn->closeCallback);
 
-    virObjectUnref(conn->closeCallback);
+        virObjectUnref(conn->closeCallback);
+    }
 
     virMutexUnlock(&conn->lock);
     virMutexDestroy(&conn->lock);
