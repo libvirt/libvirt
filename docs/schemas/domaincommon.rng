@@ -4119,17 +4119,17 @@
       <interleave>
         <optional>
           <element name="relaxed">
-            <ref name="hypervtristate"/>
+            <ref name="featurestate"/>
           </element>
         </optional>
         <optional>
           <element name="vapic">
-            <ref name="hypervtristate"/>
+            <ref name="featurestate"/>
           </element>
         </optional>
         <optional>
           <element name="spinlocks">
-            <ref name="hypervtristate"/>
+            <ref name="featurestate"/>
             <optional>
               <attribute name="retries">
                 <data type="unsignedInt"/>
@@ -4141,7 +4141,7 @@
     </element>
   </define>
 
-  <define name="hypervtristate">
+  <define name="featurestate">
     <attribute name="state">
       <choice>
         <value>on</value>
