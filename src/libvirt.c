@@ -18525,6 +18525,57 @@ error:
 
 
 /**
+ * virConnectGetCPUModelNames:
+ *
+ * @conn: virConnect connection
+ * @arch: Architecture
+ * @models: Pointer to a variable to store the NULL-terminated array of the
+ *          CPU models supported for the specified architecture.  Each element
+ *          and the array itself must be freed by the caller with free.  Pass
+ *          NULL if only the list length is needed.
+ * @flags: extra flags; not used yet, so callers should always pass 0.
+ *
+ * Get the list of supported CPU models for a specific architecture.
+ *
+ * Returns -1 on error, number of elements in @models on success.
+ */
+int
+virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
+                           unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, arch=%s, models=%p, flags=%x",
+              conn, arch, models, flags);
+    virResetLastError();
+
+    if (models)
+        *models = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    virCheckNonNullArgReturn(arch, -1);
+
+    if (conn->driver->connectGetCPUModelNames) {
+        int ret;
+
+        ret = conn->driver->connectGetCPUModelNames(conn, arch, models, flags);
+        if (ret < 0)
+            goto error;
+
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virConnectBaselineCPU:
  *
  * @conn: virConnect connection

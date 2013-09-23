@@ -682,6 +682,12 @@ typedef char *
                             unsigned int flags);
 
 typedef int
+(*virDrvConnectGetCPUModelNames)(virConnectPtr conn,
+                                 const char *args,
+                                 char ***models,
+                                 unsigned int flags);
+
+typedef int
 (*virDrvDomainGetJobInfo)(virDomainPtr domain,
                           virDomainJobInfoPtr info);
 
@@ -1332,6 +1338,7 @@ struct _virDriver {
     virDrvDomainMigratePerform3Params domainMigratePerform3Params;
     virDrvDomainMigrateFinish3Params domainMigrateFinish3Params;
     virDrvDomainMigrateConfirm3Params domainMigrateConfirm3Params;
+    virDrvConnectGetCPUModelNames connectGetCPUModelNames;
 };
 
 

@@ -4006,6 +4006,10 @@ int virConnectCompareCPU(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);
 
+int virConnectGetCPUModelNames(virConnectPtr conn,
+                               const char *arch,
+                               char ***models,
+                               unsigned int flags);
 
 /**
  * virConnectBaselineCPUFlags
