@@ -11416,10 +11416,10 @@ virDomainDefParseXML(xmlDocPtr xml,
                            _("unexpected feature '%s'"), nodes[i]->name);
             goto error;
         }
-        def->features |= (1 << val);
-        if (val == VIR_DOMAIN_FEATURE_APIC) {
-            tmp = virXPathString("string(./features/apic/@eoi)", ctxt);
-            if (tmp) {
+
+        switch ((enum virDomainFeature) val) {
+        case VIR_DOMAIN_FEATURE_APIC:
+            if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
                 int eoi;
                 if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -11430,11 +11430,23 @@ virDomainDefParseXML(xmlDocPtr xml,
                 def->apic_eoi = eoi;
                 VIR_FREE(tmp);
             }
+            /* fallthrough */
+        case VIR_DOMAIN_FEATURE_ACPI:
+        case VIR_DOMAIN_FEATURE_PAE:
+        case VIR_DOMAIN_FEATURE_HAP:
+        case VIR_DOMAIN_FEATURE_VIRIDIAN:
+        case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_HYPERV:
+            def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+            break;
+
+        case VIR_DOMAIN_FEATURE_LAST:
+            break;
         }
     }
     VIR_FREE(nodes);
 
-    if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
         int feature;
         int value;
         node = ctxt->node;
@@ -13406,12 +13418,16 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
 {
     size_t i;
 
-    /* basic check */
-    if (src->features != dst->features) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain features %d does not match source %d"),
-                       dst->features, src->features);
-        return false;
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        if (src->features[i] != dst->features[i]) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("State of feature '%s' differs: "
+                             "source: '%s', destination: '%s'"),
+                           virDomainFeatureTypeToString(i),
+                           virDomainFeatureStateTypeToString(src->features[i]),
+                           virDomainFeatureStateTypeToString(dst->features[i]));
+            return false;
+        }
     }
 
     /* APIC EOI */
@@ -13425,7 +13441,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
     }
 
     /* hyperv */
-    if (src->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+    if (src->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((enum virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
@@ -16748,58 +16764,99 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "  </idmap>\n");
     }
 
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        if (def->features[i] != VIR_DOMAIN_FEATURE_STATE_DEFAULT)
+            break;
+    }
 
-    if (def->features) {
+    if (i != VIR_DOMAIN_FEATURE_LAST) {
         virBufferAddLit(buf, "  <features>\n");
-        for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
-            if (def->features & (1 << i) && i != VIR_DOMAIN_FEATURE_HYPERV) {
-                const char *name = virDomainFeatureTypeToString(i);
-                if (!name) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("unexpected feature %zu"), i);
-                    goto error;
-                }
-                virBufferAsprintf(buf, "    <%s", name);
-                if (i == VIR_DOMAIN_FEATURE_APIC && def->apic_eoi) {
-                    virBufferAsprintf(buf,
-                                      " eoi='%s'",
-                                      virDomainFeatureStateTypeToString(def->apic_eoi));
-                }
-                virBufferAddLit(buf, "/>\n");
-            }
-        }
 
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
-            virBufferAddLit(buf, "    <hyperv>\n");
-            for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-                switch ((enum virDomainHyperv) i) {
-                case VIR_DOMAIN_HYPERV_RELAXED:
-                case VIR_DOMAIN_HYPERV_VAPIC:
-                    if (def->hyperv_features[i])
-                        virBufferAsprintf(buf, "      <%s state='%s'/>\n",
-                                          virDomainHypervTypeToString(i),
-                                          virDomainFeatureStateTypeToString(
-                                              def->hyperv_features[i]));
+        for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+            const char *name = virDomainFeatureTypeToString(i);
+            size_t j;
+
+            if (!name) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected feature %zu"), i);
+                goto error;
+            }
+
+            switch ((enum virDomainFeature) i) {
+            case VIR_DOMAIN_FEATURE_ACPI:
+            case VIR_DOMAIN_FEATURE_PAE:
+            case VIR_DOMAIN_FEATURE_HAP:
+            case VIR_DOMAIN_FEATURE_VIRIDIAN:
+            case VIR_DOMAIN_FEATURE_PRIVNET:
+                switch ((enum virDomainFeatureState) def->features[i]) {
+                case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
                     break;
 
-                case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                    if (def->hyperv_features[i] == 0)
+                case VIR_DOMAIN_FEATURE_STATE_ON:
+                   virBufferAsprintf(buf, "    <%s/>\n", name);
+                   break;
+
+                case VIR_DOMAIN_FEATURE_STATE_LAST:
+                case VIR_DOMAIN_FEATURE_STATE_OFF:
+                   virReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("Unexpected state of feature '%s'"), name);
+
+                   goto error;
+                   break;
+                }
+
+                break;
+
+            case VIR_DOMAIN_FEATURE_APIC:
+                if (def->features[i] == VIR_DOMAIN_FEATURE_STATE_ON) {
+                    virBufferAddLit(buf, "    <apic");
+                    if (def->apic_eoi) {
+                        virBufferAsprintf(buf, " eoi='%s'",
+                                          virDomainFeatureStateTypeToString(def->apic_eoi));
+                    }
+                    virBufferAddLit(buf, "/>\n");
+                }
+                break;
+
+            case VIR_DOMAIN_FEATURE_HYPERV:
+                if (def->features[i] != VIR_DOMAIN_FEATURE_STATE_ON)
+                    break;
+
+                virBufferAddLit(buf, "    <hyperv>\n");
+                for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
+                    switch ((enum virDomainHyperv) j) {
+                    case VIR_DOMAIN_HYPERV_RELAXED:
+                    case VIR_DOMAIN_HYPERV_VAPIC:
+                        if (def->hyperv_features[j])
+                            virBufferAsprintf(buf, "      <%s state='%s'/>\n",
+                                              virDomainHypervTypeToString(j),
+                                              virDomainFeatureStateTypeToString(
+                                                  def->hyperv_features[j]));
                         break;
 
-                    virBufferAsprintf(buf, "      <spinlocks state='%s'",
-                                      virDomainFeatureStateTypeToString(
-                                          def->hyperv_features[i]));
-                    if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
-                        virBufferAsprintf(buf, " retries='%d'",
-                                          def->hyperv_spinlocks);
-                    virBufferAddLit(buf, "/>\n");
-                    break;
+                    case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                        if (def->hyperv_features[j] == 0)
+                            break;
 
-                case VIR_DOMAIN_HYPERV_LAST:
-                    break;
+                        virBufferAsprintf(buf, "      <spinlocks state='%s'",
+                                          virDomainFeatureStateTypeToString(
+                                              def->hyperv_features[j]));
+                        if (def->hyperv_features[j] == VIR_DOMAIN_FEATURE_STATE_ON)
+                            virBufferAsprintf(buf, " retries='%d'",
+                                              def->hyperv_spinlocks);
+                        virBufferAddLit(buf, "/>\n");
+                        break;
+
+                    case VIR_DOMAIN_HYPERV_LAST:
+                        break;
+                    }
                 }
+                virBufferAddLit(buf, "    </hyperv>\n");
+                break;
+
+            case VIR_DOMAIN_FEATURE_LAST:
+                break;
             }
-            virBufferAddLit(buf, "    </hyperv>\n");
         }
 
         virBufferAddLit(buf, "  </features>\n");

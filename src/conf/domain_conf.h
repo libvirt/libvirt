@@ -1988,7 +1988,7 @@ struct _virDomainDef {
 
     virDomainOSDef os;
     char *emulator;
-    int features;
+    int features[VIR_DOMAIN_FEATURE_LAST];
     /* enum virDomainFeatureState */
     int apic_eoi;
     /* These options are of type virDomainFeatureState */

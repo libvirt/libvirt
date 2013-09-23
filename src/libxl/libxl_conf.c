@@ -603,11 +603,14 @@ libxlMakeDomBuildInfo(virDomainObjPtr vm, libxl_domain_config *d_config)
         char bootorder[VIR_DOMAIN_BOOT_LAST + 1];
 
         libxl_defbool_set(&b_info->u.hvm.pae,
-                          def->features & (1 << VIR_DOMAIN_FEATURE_PAE));
+                          def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                          VIR_DOMAIN_FEATURE_STATE_ON);
         libxl_defbool_set(&b_info->u.hvm.apic,
-                          def->features & (1 << VIR_DOMAIN_FEATURE_APIC));
+                          def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                          VIR_DOMAIN_FEATURE_STATE_ON);
         libxl_defbool_set(&b_info->u.hvm.acpi,
-                          def->features & (1 << VIR_DOMAIN_FEATURE_ACPI));
+                          def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                          VIR_DOMAIN_FEATURE_STATE_ON);
         for (i = 0; i < def->clock.ntimers; i++) {
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present == 1) {

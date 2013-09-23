@@ -1489,15 +1489,15 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         for (i = 0; i < result->size; i++) {
             if (STREQ(result->contents[i].val, "true")) {
                 if (STREQ(result->contents[i].key, "acpi"))
-                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_ACPI);
+                    defPtr->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
                 else if (STREQ(result->contents[i].key, "apic"))
-                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_APIC);
+                    defPtr->features[VIR_DOMAIN_FEATURE_APIC] = VIR_DOMAIN_FEATURE_STATE_ON;
                 else if (STREQ(result->contents[i].key, "pae"))
-                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_PAE);
+                    defPtr->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
                 else if (STREQ(result->contents[i].key, "hap"))
-                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_HAP);
+                    defPtr->features[VIR_DOMAIN_FEATURE_HAP] = VIR_DOMAIN_FEATURE_STATE_ON;
                 else if (STREQ(result->contents[i].key, "viridian"))
-                    defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_VIRIDIAN);
+                    defPtr->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_DOMAIN_FEATURE_STATE_ON;
             }
         }
         xen_string_string_map_free(result);

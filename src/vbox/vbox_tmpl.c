@@ -2337,7 +2337,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 }
             }
 
-            def->features = 0;
 #if VBOX_API_VERSION < 3001
             machine->vtbl->GetPAEEnabled(machine, &PAEEnabled);
 #elif VBOX_API_VERSION == 3001
@@ -2345,21 +2344,18 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 #elif VBOX_API_VERSION >= 3002
             machine->vtbl->GetCPUProperty(machine, CPUPropertyType_PAE, &PAEEnabled);
 #endif
-            if (PAEEnabled) {
-                def->features = def->features | (1 << VIR_DOMAIN_FEATURE_PAE);
-            }
+            if (PAEEnabled)
+                def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
 
             machine->vtbl->GetBIOSSettings(machine, &bios);
             if (bios) {
                 bios->vtbl->GetACPIEnabled(bios, &ACPIEnabled);
-                if (ACPIEnabled) {
-                    def->features = def->features | (1 << VIR_DOMAIN_FEATURE_ACPI);
-                }
+                if (ACPIEnabled)
+                    def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
 
                 bios->vtbl->GetIOAPICEnabled(bios, &IOAPICEnabled);
-                if (IOAPICEnabled) {
-                    def->features = def->features | (1 << VIR_DOMAIN_FEATURE_APIC);
-                }
+                if (IOAPICEnabled)
+                    def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_DOMAIN_FEATURE_STATE_ON;
 
                 VBOX_RELEASE(bios);
             }
@@ -5076,40 +5072,43 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     }
 
 #if VBOX_API_VERSION < 3001
-    rc = machine->vtbl->SetPAEEnabled(machine, (def->features) &
-                                      (1 << VIR_DOMAIN_FEATURE_PAE));
+    rc = machine->vtbl->SetPAEEnabled(machine,
+                                      def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                                      VIR_DOMAIN_FEATURE_STATE_ON);
 #elif VBOX_API_VERSION == 3001
     rc = machine->vtbl->SetCpuProperty(machine, CpuPropertyType_PAE,
-                                       (def->features) &
-                                       (1 << VIR_DOMAIN_FEATURE_PAE));
+                                       def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                                       VIR_DOMAIN_FEATURE_STATE_ON);
 #elif VBOX_API_VERSION >= 3002
     rc = machine->vtbl->SetCPUProperty(machine, CPUPropertyType_PAE,
-                                       (def->features) &
-                                       (1 << VIR_DOMAIN_FEATURE_PAE));
+                                       def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                                       VIR_DOMAIN_FEATURE_STATE_ON);
 #endif
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("could not change PAE status to: %s, rc=%08x"),
-                       ((def->features) & (1 << VIR_DOMAIN_FEATURE_PAE))
+                       (def->features[VIR_DOMAIN_FEATURE_PAE] == VIR_DOMAIN_FEATURE_STATE_ON)
                        ? _("Enabled") : _("Disabled"), (unsigned)rc);
     }
 
     machine->vtbl->GetBIOSSettings(machine, &bios);
     if (bios) {
-        rc = bios->vtbl->SetACPIEnabled(bios, (def->features) &
-                                        (1 << VIR_DOMAIN_FEATURE_ACPI));
+        rc = bios->vtbl->SetACPIEnabled(bios,
+                                        def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                                        VIR_DOMAIN_FEATURE_STATE_ON);
         if (NS_FAILED(rc)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not change ACPI status to: %s, rc=%08x"),
-                           ((def->features) & (1 << VIR_DOMAIN_FEATURE_ACPI))
+                           (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_DOMAIN_FEATURE_STATE_ON)
                            ? _("Enabled") : _("Disabled"), (unsigned)rc);
         }
-        rc = bios->vtbl->SetIOAPICEnabled(bios, (def->features) &
-                                          (1 << VIR_DOMAIN_FEATURE_APIC));
+        rc = bios->vtbl->SetIOAPICEnabled(bios,
+                                          def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                                          VIR_DOMAIN_FEATURE_STATE_ON);
         if (NS_FAILED(rc)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not change APIC status to: %s, rc=%08x"),
-                           ((def->features) & (1 << VIR_DOMAIN_FEATURE_APIC))
+                           (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_DOMAIN_FEATURE_STATE_ON)
                            ? _("Enabled") : _("Disabled"), (unsigned)rc);
         }
         VBOX_RELEASE(bios);

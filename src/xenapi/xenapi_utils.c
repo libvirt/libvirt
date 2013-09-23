@@ -511,18 +511,16 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     if (def->onCrash)
         (*record)->actions_after_crash = actionCrashLibvirt2XenapiEnum(def->onCrash);
 
-    if (def->features) {
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_ACPI))
-            allocStringMap(&strings, (char *)"acpi", (char *)"true");
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_APIC))
-            allocStringMap(&strings, (char *)"apic", (char *)"true");
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_PAE))
-            allocStringMap(&strings, (char *)"pae", (char *)"true");
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_HAP))
-            allocStringMap(&strings, (char *)"hap", (char *)"true");
-        if (def->features & (1 << VIR_DOMAIN_FEATURE_VIRIDIAN))
-            allocStringMap(&strings, (char *)"viridian", (char *)"true");
-    }
+    if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_DOMAIN_FEATURE_STATE_ON)
+        allocStringMap(&strings, (char *)"acpi", (char *)"true");
+    if (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_DOMAIN_FEATURE_STATE_ON)
+        allocStringMap(&strings, (char *)"apic", (char *)"true");
+    if (def->features[VIR_DOMAIN_FEATURE_PAE] == VIR_DOMAIN_FEATURE_STATE_ON)
+        allocStringMap(&strings, (char *)"pae", (char *)"true");
+    if (def->features[VIR_DOMAIN_FEATURE_HAP] == VIR_DOMAIN_FEATURE_STATE_ON)
+        allocStringMap(&strings, (char *)"hap", (char *)"true");
+    if (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] == VIR_DOMAIN_FEATURE_STATE_ON)
+        allocStringMap(&strings, (char *)"viridian", (char *)"true");
     if (strings != NULL)
         (*record)->platform = strings;
 

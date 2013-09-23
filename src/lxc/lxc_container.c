@@ -1887,8 +1887,8 @@ static int lxcContainerChild(void *data)
     }
 
     /* rename and enable interfaces */
-    if (lxcContainerRenameAndEnableInterfaces(!!(vmDef->features &
-                                                 (1 << VIR_DOMAIN_FEATURE_PRIVNET)),
+    if (lxcContainerRenameAndEnableInterfaces(vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
+                                              VIR_DOMAIN_FEATURE_STATE_ON,
                                               argv->nveths,
                                               argv->veths) < 0) {
         goto cleanup;
@@ -1978,7 +1978,7 @@ lxcNeedNetworkNamespace(virDomainDefPtr def)
     size_t i;
     if (def->nets != NULL)
         return true;
-    if (def->features & (1 << VIR_DOMAIN_FEATURE_PRIVNET))
+    if (def->features[VIR_DOMAIN_FEATURE_PRIVNET] == VIR_DOMAIN_FEATURE_STATE_ON)
         return true;
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&

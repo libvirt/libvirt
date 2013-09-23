@@ -398,23 +398,23 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         if (xenXMConfigGetBool(conf, "pae", &val, 0) < 0)
             goto cleanup;
         else if (val)
-            def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (xenXMConfigGetBool(conf, "acpi", &val, 0) < 0)
             goto cleanup;
         else if (val)
-            def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI);
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (xenXMConfigGetBool(conf, "apic", &val, 0) < 0)
             goto cleanup;
         else if (val)
-            def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
+            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (xenXMConfigGetBool(conf, "hap", &val, 0) < 0)
             goto cleanup;
         else if (val)
-            def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
+            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (xenXMConfigGetBool(conf, "viridian", &val, 0) < 0)
             goto cleanup;
         else if (val)
-            def->features |= (1 << VIR_DOMAIN_FEATURE_VIRIDIAN);
+            def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_DOMAIN_FEATURE_STATE_ON;
 
         if (xenXMConfigGetBool(conf, "hpet", &val, -1) < 0)
             goto cleanup;
@@ -1571,29 +1571,29 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             goto cleanup;
 
         if (xenXMConfigSetInt(conf, "pae",
-                              (def->features &
-                               (1 << VIR_DOMAIN_FEATURE_PAE)) ? 1 : 0) < 0)
+                              (def->features[VIR_DOMAIN_FEATURE_PAE] ==
+                               VIR_DOMAIN_FEATURE_STATE_ON) ? 1 : 0) < 0)
             goto cleanup;
 
         if (xenXMConfigSetInt(conf, "acpi",
-                              (def->features &
-                               (1 << VIR_DOMAIN_FEATURE_ACPI)) ? 1 : 0) < 0)
+                              (def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                               VIR_DOMAIN_FEATURE_STATE_ON) ? 1 : 0) < 0)
             goto cleanup;
 
         if (xenXMConfigSetInt(conf, "apic",
-                              (def->features &
-                               (1 << VIR_DOMAIN_FEATURE_APIC)) ? 1 : 0) < 0)
+                              (def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                               VIR_DOMAIN_FEATURE_STATE_ON) ? 1 : 0) < 0)
             goto cleanup;
 
         if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4) {
             if (xenXMConfigSetInt(conf, "hap",
-                                  (def->features &
-                                   (1 << VIR_DOMAIN_FEATURE_HAP)) ? 1 : 0) < 0)
+                                  (def->features[VIR_DOMAIN_FEATURE_HAP] ==
+                                   VIR_DOMAIN_FEATURE_STATE_ON) ? 1 : 0) < 0)
                 goto cleanup;
 
             if (xenXMConfigSetInt(conf, "viridian",
-                                  (def->features &
-                                   (1 << VIR_DOMAIN_FEATURE_VIRIDIAN)) ? 1 : 0) < 0)
+                                  (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==
+                                   VIR_DOMAIN_FEATURE_STATE_ON) ? 1 : 0) < 0)
                 goto cleanup;
         }
 

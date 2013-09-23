@@ -1202,15 +1202,15 @@ xenParseSxpr(const struct sexpr *root,
 
     if (hvm) {
         if (sexpr_int(root, "domain/image/hvm/acpi"))
-            def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI);
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (sexpr_int(root, "domain/image/hvm/apic"))
-            def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
+            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (sexpr_int(root, "domain/image/hvm/pae"))
-            def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (sexpr_int(root, "domain/image/hvm/hap"))
-            def->features |= (1 << VIR_DOMAIN_FEATURE_HAP);
+            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_DOMAIN_FEATURE_STATE_ON;
         if (sexpr_int(root, "domain/image/hvm/viridian"))
-            def->features |= (1 << VIR_DOMAIN_FEATURE_VIRIDIAN);
+            def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_DOMAIN_FEATURE_STATE_ON;
     }
 
     /* 12aaf4a2486b (3.0.3) added a second low-priority 'localtime' setting */
@@ -2333,15 +2333,15 @@ xenFormatSxpr(virConnectPtr conn,
                 }
             }
 
-            if (def->features & (1 << VIR_DOMAIN_FEATURE_ACPI))
+            if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_DOMAIN_FEATURE_STATE_ON)
                 virBufferAddLit(&buf, "(acpi 1)");
-            if (def->features & (1 << VIR_DOMAIN_FEATURE_APIC))
+            if (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_DOMAIN_FEATURE_STATE_ON)
                 virBufferAddLit(&buf, "(apic 1)");
-            if (def->features & (1 << VIR_DOMAIN_FEATURE_PAE))
+            if (def->features[VIR_DOMAIN_FEATURE_PAE] == VIR_DOMAIN_FEATURE_STATE_ON)
                 virBufferAddLit(&buf, "(pae 1)");
-            if (def->features & (1 << VIR_DOMAIN_FEATURE_HAP))
+            if (def->features[VIR_DOMAIN_FEATURE_HAP] == VIR_DOMAIN_FEATURE_STATE_ON)
                 virBufferAddLit(&buf, "(hap 1)");
-            if (def->features & (1 << VIR_DOMAIN_FEATURE_VIRIDIAN))
+            if (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] == VIR_DOMAIN_FEATURE_STATE_ON)
                 virBufferAddLit(&buf, "(viridian 1)");
 
             virBufferAddLit(&buf, "(usb 1)");

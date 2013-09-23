@@ -6718,7 +6718,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         have_cpu = true;
     }
 
-    if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
         if (!have_cpu) {
             virBufferAdd(&buf, default_model, -1);
             have_cpu = true;
@@ -8067,7 +8067,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
-        if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
+        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_DOMAIN_FEATURE_STATE_ON)
             virCommandAddArg(cmd, "-no-acpi");
     }
 
@@ -10866,7 +10866,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*feature == '\0')
                 goto syntax;
 
-            dom->features |= (1 << VIR_DOMAIN_FEATURE_HYPERV);
+            dom->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_DOMAIN_FEATURE_STATE_ON;
 
             if ((f = virDomainHypervTypeFromString(feature)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -11120,7 +11120,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             goto error;
         if (strstr(path, "kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_KVM;
-            def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
         }
     }
 
@@ -11133,8 +11133,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
     if ((def->os.arch == VIR_ARCH_I686) ||
         (def->os.arch == VIR_ARCH_X86_64))
-        def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI)
-        /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
+        def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_ON;
 
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
@@ -11428,7 +11427,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             def->disks[def->ndisks++] = disk;
             disk = NULL;
         } else if (STREQ(arg, "-no-acpi")) {
-            def->features &= ~(1 << VIR_DOMAIN_FEATURE_ACPI);
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_DOMAIN_FEATURE_STATE_DEFAULT;
         } else if (STREQ(arg, "-no-reboot")) {
             def->onReboot = VIR_DOMAIN_LIFECYCLE_DESTROY;
         } else if (STREQ(arg, "-no-kvm")) {
@@ -11547,7 +11546,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                     def->mem.nosharepages = true;
                 } else if (STRPREFIX(param, "accel=kvm")) {
                     def->virtType = VIR_DOMAIN_VIRT_KVM;
-                    def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
+                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_DOMAIN_FEATURE_STATE_ON;
                 }
             }
             virStringFreeList(list);
