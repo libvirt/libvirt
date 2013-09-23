@@ -115,7 +115,7 @@ test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest \
-	viratomictest \
+	viratomictest virnetserverclienttest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
@@ -291,6 +291,7 @@ EXTRA_DIST += $(test_scripts)
 
 test_libraries = libshunload.la \
 		libvirportallocatormock.la \
+		virnetserverclientmock.la \
 		vircgroupmock.la \
 		$(NULL)
 if WITH_QEMU
@@ -634,6 +635,17 @@ virnetmessagetest_LDADD = $(LDADDS)
 virnetsockettest_SOURCES = \
 	virnetsockettest.c testutils.h testutils.c
 virnetsockettest_LDADD = $(LDADDS)
+
+virnetserverclienttest_SOURCES = \
+	virnetserverclienttest.c \
+	testutils.h testutils.c
+virnetserverclienttest_LDADD = $(LDADDS)
+
+virnetserverclientmock_la_SOURCES = \
+	virnetserverclientmock.c
+virnetserverclientmock_la_CFLAGS = $(AM_CFLAGS)
+virnetserverclientmock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
