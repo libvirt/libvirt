@@ -2316,6 +2316,18 @@ struct remote_domain_event_device_removed_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      devAlias;
 };
+struct remote_connect_get_cpu_model_names_args {
+        remote_nonnull_string      arch;
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_get_cpu_model_names_ret {
+        struct {
+                u_int              models_len;
+                remote_nonnull_string * models_val;
+        } models;
+        int                        ret;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -2628,4 +2640,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CREATE_XML_WITH_FILES = 309,
         REMOTE_PROC_DOMAIN_CREATE_WITH_FILES = 310,
         REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED = 311,
+        REMOTE_PROC_CONNECT_GET_CPU_MODEL_NAMES = 312,
 };

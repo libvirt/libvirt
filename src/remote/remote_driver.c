@@ -5541,6 +5541,68 @@ done:
 
 
 static int
+remoteConnectGetCPUModelNames(virConnectPtr conn,
+                              const char *arch,
+                              char ***models,
+                              unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    char **retmodels = NULL;
+    remote_connect_get_cpu_model_names_args args;
+    remote_connect_get_cpu_model_names_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.arch = (char *) arch;
+    args.need_results = !!models;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_CONNECT_GET_CPU_MODEL_NAMES,
+             (xdrproc_t) xdr_remote_connect_get_cpu_model_names_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_get_cpu_model_names_ret,
+             (char *) &ret) < 0)
+        goto done;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.models.models_len > REMOTE_CONNECT_CPU_MODELS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many model names '%d' for limit '%d'"),
+                       ret.models.models_len,
+                       REMOTE_CONNECT_CPU_MODELS_MAX);
+        goto cleanup;
+    }
+
+    if (models) {
+        if (VIR_ALLOC_N(retmodels, ret.models.models_len + 1) < 0)
+            goto cleanup;
+
+        for (i = 0; i < ret.models.models_len; i++) {
+            retmodels[i] = ret.models.models_val[i];
+            ret.models.models_val[i] = NULL;
+        }
+        *models = retmodels;
+        retmodels = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    virStringFreeList(retmodels);
+
+    xdr_free((xdrproc_t) xdr_remote_connect_get_cpu_model_names_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
 remoteDomainOpenGraphics(virDomainPtr dom,
                          unsigned int idx,
                          int fd,
@@ -6933,6 +6995,7 @@ static virDriver remote_driver = {
     .domainMigratePerform3Params = remoteDomainMigratePerform3Params, /* 1.1.0 */
     .domainMigrateFinish3Params = remoteDomainMigrateFinish3Params, /* 1.1.0 */
     .domainMigrateConfirm3Params = remoteDomainMigrateConfirm3Params, /* 1.1.0 */
+    .connectGetCPUModelNames = remoteConnectGetCPUModelNames, /* 1.1.3 */
 };
 
 static virNetworkDriver network_driver = {

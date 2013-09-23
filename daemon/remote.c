@@ -5056,6 +5056,58 @@ cleanup:
 
 
 static int
+remoteDispatchConnectGetCPUModelNames(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                      virNetMessageErrorPtr rerr,
+                                      remote_connect_get_cpu_model_names_args *args,
+                                      remote_connect_get_cpu_model_names_ret *ret)
+{
+    int len, rv = -1;
+    char **models = NULL;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    len = virConnectGetCPUModelNames(priv->conn, args->arch,
+                                     args->need_results ? &models : NULL,
+                                     args->flags);
+    if (len < 0)
+        goto cleanup;
+
+    if (len > REMOTE_CONNECT_CPU_MODELS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many CPU models '%d' for limit '%d'"),
+                       len, REMOTE_CONNECT_CPU_MODELS_MAX);
+        goto cleanup;
+    }
+
+    if (len && models) {
+        ret->models.models_val = models;
+        ret->models.models_len = len;
+        models = NULL;
+    } else {
+        ret->models.models_val = NULL;
+        ret->models.models_len = 0;
+    }
+
+    ret->ret = len;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virStringFreeList(models);
+    return rv;
+}
+
+
+static int
 remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
                                        virNetServerClientPtr client,
                                        virNetMessagePtr msg ATTRIBUTE_UNUSED,

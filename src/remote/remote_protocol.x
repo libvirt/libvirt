@@ -232,6 +232,9 @@ const REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX = 64;
 /* Upper limit on number of job stats */
 const REMOTE_DOMAIN_JOB_STATS_MAX = 16;
 
+/* Upper limit on number of CPU models */
+const REMOTE_CONNECT_CPU_MODELS_MAX = 8192;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -2835,6 +2838,17 @@ struct remote_domain_event_device_removed_msg {
     remote_nonnull_string devAlias;
 };
 
+struct remote_connect_get_cpu_model_names_args {
+    remote_nonnull_string arch;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_get_cpu_model_names_ret {
+    remote_nonnull_string models<REMOTE_CONNECT_CPU_MODELS_MAX>;
+    int ret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -4998,5 +5012,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED = 311
+    REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED = 311,
+
+    /**
+     * @generate: none
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_GET_CPU_MODEL_NAMES = 312
 };
