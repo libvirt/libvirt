@@ -54,6 +54,7 @@
 #include "virtypedparam.h"
 #include "virrandom.h"
 #include "virstring.h"
+#include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -5867,6 +5868,15 @@ testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
     return ret;
 }
 
+static int
+testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            const char *arch,
+                            char ***models,
+                            unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return cpuGetModels(arch, models);
+}
 
 static virDriver testDriver = {
     .no = VIR_DRV_TEST,
@@ -5940,6 +5950,7 @@ static virDriver testDriver = {
     .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
+    .connectGetCPUModelNames = testConnectGetCPUModelNames, /* 1.1.3 */
 };
 
 static virNetworkDriver testNetworkDriver = {
