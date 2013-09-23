@@ -1696,6 +1696,7 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 {
     char *newroot;
     size_t i;
+    char ebuf[1024];
 
     VIR_DEBUG("Resolving symlinks");
 
@@ -1703,6 +1704,13 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
         virDomainFSDefPtr fs = vmDef->fss[i];
         if (!fs->src)
             continue;
+
+        if (access(fs->src, F_OK)) {
+            VIR_DEBUG("Failed to access '%s': %s", fs->src,
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
+            return -1;
+        }
+
         VIR_DEBUG("Resolving '%s'", fs->src);
         if (virFileResolveAllLinks(fs->src, &newroot) < 0) {
             VIR_DEBUG("Failed to resolve symlink at %s", fs->src);
