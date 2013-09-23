@@ -159,6 +159,8 @@ mymain(void)
     DO_TEST("cpu-eoi-enabled");
     DO_TEST("eoi-disabled");
     DO_TEST("eoi-enabled");
+    DO_TEST("pv-spinlock-disabled");
+    DO_TEST("pv-spinlock-enabled");
 
     DO_TEST("hyperv");
     DO_TEST("hyperv-off");

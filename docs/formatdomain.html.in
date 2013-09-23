@@ -1193,6 +1193,7 @@
       &lt;vapic state='on'/&gt;
       &lt;spinlocks state='on' retries='4096'/&gt;
     &lt;/hyperv&gt;
+    &lt;pvspinlock/&gt;
 
   &lt;/features&gt;
   ...</pre>
@@ -1264,6 +1265,13 @@
         </tr>
       </table>
       </dd>
+      <dt><code>pvspinlock</code></dt>
+      <dd>Notify the guest that the host supports paravirtual spinlocks
+          for example by exposing the pvticketlocks mechanism. This feature
+          can be explicitly disabled by using <code>state='off'</code>
+          attribute.
+      </dd>
+
     </dl>
 
     <h3><a name="elementsTime">Time keeping</a></h3>

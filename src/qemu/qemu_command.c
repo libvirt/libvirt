@@ -6718,6 +6718,19 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         have_cpu = true;
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
+        char sign;
+        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_DOMAIN_FEATURE_STATE_ON)
+            sign = '+';
+        else
+            sign = '-';
+
+        virBufferAsprintf(&buf, "%s,%ckvm_pv_unhalt",
+                          have_cpu ? "" : default_model,
+                          sign);
+        have_cpu = true;
+    }
+
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_FEATURE_STATE_ON) {
         if (!have_cpu) {
             virBufferAdd(&buf, default_model, -1);

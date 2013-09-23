@@ -448,6 +448,8 @@ mymain(void)
             QEMU_CAPS_CHARDEV_SPICEVMC, QEMU_CAPS_SPICE, QEMU_CAPS_HDA_DUPLEX);
     DO_TEST("eoi-disabled", NONE);
     DO_TEST("eoi-enabled", NONE);
+    DO_TEST("pv-spinlock-disabled", NONE);
+    DO_TEST("pv-spinlock-enabled", NONE);
     DO_TEST("kvmclock+eoi-disabled", QEMU_CAPS_ENABLE_KVM);
 
     DO_TEST("hyperv", NONE);

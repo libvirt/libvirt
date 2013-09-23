@@ -3561,7 +3561,7 @@
   </define>
   <!--
       A set of optional features: PAE, APIC, ACPI,
-      HyperV Enlightenment and HAP support
+      HyperV Enlightenment, paravirtual spinlocks  and HAP support
     -->
   <define name="features">
     <optional>
@@ -3604,6 +3604,14 @@
           </optional>
           <optional>
             <element name="privnet">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="pvspinlock">
+              <optional>
+                <ref name="featurestate"/>
+              </optional>
               <empty/>
             </element>
           </optional>

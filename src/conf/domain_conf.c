@@ -142,7 +142,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "hap",
               "viridian",
               "privnet",
-              "hyperv")
+              "hyperv",
+              "pvspinlock")
 
 VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
               "default",
@@ -11440,6 +11441,22 @@ virDomainDefParseXML(xmlDocPtr xml,
             def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
             break;
 
+        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+            node = ctxt->node;
+            ctxt->node = nodes[i];
+            if ((tmp = virXPathString("string(./@state)", ctxt))) {
+                if ((def->features[val] = virDomainFeatureStateTypeFromString(tmp)) == -1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown state atribute '%s' of feature '%s'"),
+                                   tmp, virDomainFeatureTypeToString(val));
+                    goto error;
+                }
+            } else {
+                def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
+            }
+            ctxt->node = node;
+            break;
+
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -16802,6 +16819,23 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                  _("Unexpected state of feature '%s'"), name);
 
                    goto error;
+                   break;
+                }
+
+                break;
+
+            case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+                switch ((enum virDomainFeatureState) def->features[i]) {
+                case VIR_DOMAIN_FEATURE_STATE_LAST:
+                case VIR_DOMAIN_FEATURE_STATE_DEFAULT:
+                    break;
+
+                case VIR_DOMAIN_FEATURE_STATE_ON:
+                   virBufferAsprintf(buf, "    <%s state='on'/>\n", name);
+                   break;
+
+                case VIR_DOMAIN_FEATURE_STATE_OFF:
+                   virBufferAsprintf(buf, "    <%s state='off'/>\n", name);
                    break;
                 }
 
