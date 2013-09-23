@@ -683,7 +683,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
             goto cleanup;
         if (!(groupname = virGetGroupName(gid)))
             goto cleanup;
-        if (virAsprintf(&userid, "%d", (int)gid) < 0)
+        if (virAsprintf(&groupid, "%d", (int)gid) < 0)
             goto cleanup;
         if (virAsprintf(&processid, "%llu",
                         (unsigned long long)pid) < 0) {
