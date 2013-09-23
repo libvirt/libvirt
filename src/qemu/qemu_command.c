@@ -3232,9 +3232,8 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
     size_t skip;
     char **parts;
 
-    disk->nhosts++;
-    if (VIR_REALLOC_N(disk->hosts, disk->nhosts) < 0)
-        goto error;
+    if (VIR_EXPAND_N(disk->hosts, disk->nhosts, 1) < 0)
+        return -1;
 
     if ((port = strchr(hostport, ']'))) {
         /* ipv6, strip brackets */
