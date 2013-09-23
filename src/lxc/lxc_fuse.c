@@ -165,43 +165,43 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
 
             if (STREQ(line, "MemTotal") &&
                 (def->mem.hard_limit || def->mem.max_balloon))
-                virBufferAsprintf(new_meminfo, "MemTotal:       %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
                                   meminfo.memtotal);
             else if (STREQ(line, "MemFree") &&
                        (def->mem.hard_limit || def->mem.max_balloon))
-                virBufferAsprintf(new_meminfo, "MemFree:        %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                                   (meminfo.memtotal - meminfo.memusage));
             else if (STREQ(line, "Buffers"))
-                virBufferAsprintf(new_meminfo, "Buffers:        %8d KB\n", 0);
+                virBufferAsprintf(new_meminfo, "Buffers:        %8d kB\n", 0);
             else if (STREQ(line, "Cached"))
-                virBufferAsprintf(new_meminfo, "Cached:         %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Cached:         %8llu kB\n",
                                   meminfo.cached);
             else if (STREQ(line, "Active"))
-                virBufferAsprintf(new_meminfo, "Active:         %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Active:         %8llu kB\n",
                                   (meminfo.active_anon + meminfo.active_file));
             else if (STREQ(line, "Inactive"))
-                virBufferAsprintf(new_meminfo, "Inactive:       %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Inactive:       %8llu kB\n",
                                   (meminfo.inactive_anon + meminfo.inactive_file));
             else if (STREQ(line, "Active(anon)"))
-                virBufferAsprintf(new_meminfo, "Active(anon):   %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Active(anon):   %8llu kB\n",
                                   meminfo.active_anon);
             else if (STREQ(line, "Inactive(anon)"))
-                virBufferAsprintf(new_meminfo, "Inactive(anon): %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Inactive(anon): %8llu kB\n",
                                   meminfo.inactive_anon);
             else if (STREQ(line, "Active(file)"))
-                virBufferAsprintf(new_meminfo, "Active(file):   %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Active(file):   %8llu kB\n",
                                   meminfo.active_file);
             else if (STREQ(line, "Inactive(file)"))
-                virBufferAsprintf(new_meminfo, "Inactive(file): %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Inactive(file): %8llu kB\n",
                                   meminfo.inactive_file);
             else if (STREQ(line, "Unevictable"))
-                virBufferAsprintf(new_meminfo, "Unevictable:    %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "Unevictable:    %8llu kB\n",
                                   meminfo.unevictable);
             else if (STREQ(line, "SwapTotal") && def->mem.swap_hard_limit)
-                virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal));
             else if (STREQ(line, "SwapFree") && def->mem.swap_hard_limit)
-                virBufferAsprintf(new_meminfo, "SwapFree:       %8llu KB\n",
+                virBufferAsprintf(new_meminfo, "SwapFree:       %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal -
                                    meminfo.swapusage + meminfo.memusage));
             else {
