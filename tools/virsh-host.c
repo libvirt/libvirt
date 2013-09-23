@@ -665,6 +665,54 @@ cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "cpu-models" command
+ */
+static const vshCmdInfo info_cpu_models[] = {
+    {.name = "help",
+     .data = N_("CPU models")
+    },
+    {.name = "desc",
+     .data = N_("Get the CPU models for an arch.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_cpu_models[] = {
+    {.name = "arch",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("architecture")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdCPUModelNames(vshControl *ctl, const vshCmd *cmd)
+{
+    char **models;
+    size_t i;
+    int nmodels;
+    const char *arch = NULL;
+
+    if (vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0)
+        return false;
+
+    nmodels = virConnectGetCPUModelNames(ctl->conn, arch, &models, 0);
+    if (nmodels < 0) {
+        vshError(ctl, "%s", _("failed to get CPU model names"));
+        return false;
+    }
+
+    for (i = 0; i < nmodels; i++) {
+        vshPrint(ctl, "%s\n", models[i]);
+        VIR_FREE(models[i]);
+    }
+    VIR_FREE(models);
+
+    return true;
+}
+
+/*
  * "version" command
  */
 static const vshCmdInfo info_version[] = {
@@ -887,6 +935,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdCapabilities,
      .opts = NULL,
      .info = info_capabilities,
+     .flags = 0
+    },
+    {.name = "cpu-models",
+     .handler = cmdCPUModelNames,
+     .opts = opts_cpu_models,
+     .info = info_cpu_models,
      .flags = 0
     },
     {.name = "freecell",

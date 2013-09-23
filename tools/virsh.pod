@@ -163,6 +163,7 @@ group as an option.  For example:
 
   Host and Hypervisor (help keyword 'host'):
      capabilities                   capabilities
+     cpu-models                     show the CPU models for an architecture
      connect                        (re)connect to hypervisor
      freecell                       NUMA free memory
      hostname                       print the hypervisor hostname
@@ -357,6 +358,10 @@ The State field lists 8 states for a domain, and which ones the
 current domain is in.
 
 =over 4
+
+=item B<cpu-models> I<arch>
+
+Print the list of CPU models known for the specified architecture.
 
 =item B<running>
 
