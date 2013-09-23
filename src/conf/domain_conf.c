@@ -11188,7 +11188,8 @@ virDomainDefParseXML(xmlDocPtr xml,
             if (VIR_ALLOC(vcpupin) < 0)
                 goto error;
 
-            vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
+            if (!(vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN)))
+                goto error;
             virBitmapCopy(vcpupin->cpumask, def->cpumask);
             vcpupin->vcpuid = i;
             def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
