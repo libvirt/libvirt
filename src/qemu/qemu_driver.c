@@ -15767,6 +15767,19 @@ qemuNodeSuspendForDuration(virConnectPtr conn,
     return nodeSuspendForDuration(target, duration, flags);
 }
 
+static int
+qemuConnectGetCPUModelNames(virConnectPtr conn,
+                            const char *arch,
+                            char ***models,
+                            unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    if (virConnectGetCPUModelNamesEnsureACL(conn) < 0)
+        return -1;
+
+    return cpuGetModels(arch, models);
+}
+
 
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
@@ -15954,6 +15967,7 @@ static virDriver qemuDriver = {
     .domainMigratePerform3Params = qemuDomainMigratePerform3Params, /* 1.1.0 */
     .domainMigrateFinish3Params = qemuDomainMigrateFinish3Params, /* 1.1.0 */
     .domainMigrateConfirm3Params = qemuDomainMigrateConfirm3Params, /* 1.1.0 */
+    .connectGetCPUModelNames = qemuConnectGetCPUModelNames, /* 1.1.3 */
 };
 
 
