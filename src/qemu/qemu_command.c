@@ -11387,7 +11387,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
              * Set os.machine only if first parameter lacks '=' or
              * contains explicit type='...' */
             WANT_VALUE();
-            list = virStringSplit(val, ",", 0);
+            if (!(list = virStringSplit(val, ",", 0)))
+                goto error;
             param = list[0];
 
             if (STRPREFIX(param, "type="))
