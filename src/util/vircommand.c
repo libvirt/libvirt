@@ -1279,9 +1279,10 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
     if (!cmd || cmd->has_error)
         return;
 
-    /* Attempt to Pre-allocate; allocation failure will be detected
-     * later during virCommandAdd*.  */
-    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9));
+    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9) < 0) {
+        cmd->has_error = ENOMEM;
+        return;
+    }
 
     virCommandAddEnvPair(cmd, "LC_ALL", "C");
 
