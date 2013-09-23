@@ -533,9 +533,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     if (!(ret = virJSONValueNewObject()))
         goto error;
 
-    nkeywords = qemuParseKeywords(str, &keywords, &values, 1);
-
-    if (nkeywords < 0)
+    if (qemuParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
         goto error;
 
     for (i = 0; i < nkeywords; i++) {

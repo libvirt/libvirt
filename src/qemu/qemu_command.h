@@ -296,6 +296,7 @@ int
 qemuParseKeywords(const char *str,
                   char ***retkeywords,
                   char ***retvalues,
+                  int *retnkeywords,
                   int allowEmptyValue);
 
 #endif /* __QEMU_COMMAND_H__*/

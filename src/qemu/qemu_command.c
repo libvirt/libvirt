@@ -9776,6 +9776,7 @@ int
 qemuParseKeywords(const char *str,
                   char ***retkeywords,
                   char ***retvalues,
+                  int *retnkeywords,
                   int allowEmptyValue)
 {
     int keywordCount = 0;
@@ -9788,6 +9789,7 @@ qemuParseKeywords(const char *str,
 
     *retkeywords = NULL;
     *retvalues = NULL;
+    *retnkeywords = 0;
     end = start + strlen(str);
 
     while (start) {
@@ -9857,8 +9859,8 @@ qemuParseKeywords(const char *str,
 
     *retkeywords = keywords;
     *retvalues = values;
-
-    return keywordCount;
+    *retnkeywords = keywordCount;
+    return 0;
 
 error:
     for (i = 0; i < keywordCount; i++) {
@@ -9893,9 +9895,11 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     int unitid = -1;
     int trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
 
-    if ((nkeywords = qemuParseKeywords(val,
-                                       &keywords,
-                                       &values, 0)) < 0)
+    if (qemuParseKeywords(val,
+                          &keywords,
+                          &values,
+                          &nkeywords,
+                          0) < 0)
         return NULL;
 
     if (VIR_ALLOC(def) < 0)
@@ -10244,9 +10248,11 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     tmp = strchr(val, ',');
 
     if (tmp) {
-        if ((nkeywords = qemuParseKeywords(tmp+1,
-                                           &keywords,
-                                           &values, 0)) < 0)
+        if (qemuParseKeywords(tmp+1,
+                              &keywords,
+                              &values,
+                              &nkeywords,
+                              0) < 0)
             return NULL;
     } else {
         nkeywords = 0;
@@ -10314,9 +10320,11 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(values);
 
     if (STRPREFIX(nic, "nic,")) {
-        if ((nkeywords = qemuParseKeywords(nic + strlen("nic,"),
-                                           &keywords,
-                                           &values, 0)) < 0) {
+        if (qemuParseKeywords(nic + strlen("nic,"),
+                              &keywords,
+                              &values,
+                              &nkeywords,
+                              0) < 0) {
             virDomainNetDefFree(def);
             def = NULL;
             goto cleanup;
@@ -10820,8 +10828,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     char *end;
     int ret;
 
-    nkws = qemuParseKeywords(val, &kws, &vals, 1);
-    if (nkws < 0)
+    if (qemuParseKeywords(val, &kws, &vals, &nkws, 1) < 0)
         return -1;
 
     for (i = 0; i < nkws; i++) {
