@@ -2361,7 +2361,8 @@ int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                              bool allow_ambiguous);
 const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
-                        virDomainDiskDefPtr disk);
+                        virDomainDiskDefPtr disk)
+    ATTRIBUTE_RETURN_CHECK;
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 int virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
@@ -2415,7 +2416,8 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 
 int virDomainControllerInsert(virDomainDefPtr def,
-                              virDomainControllerDefPtr controller);
+                              virDomainControllerDefPtr controller)
+    ATTRIBUTE_RETURN_CHECK;
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
 int virDomainControllerFind(virDomainDefPtr def, int type, int idx);
@@ -2425,7 +2427,8 @@ int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease);
 int virDomainLeaseInsert(virDomainDefPtr def,
                          virDomainLeaseDefPtr lease);
-int virDomainLeaseInsertPreAlloc(virDomainDefPtr def);
+int virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
+    ATTRIBUTE_RETURN_CHECK;
 void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
                                     virDomainLeaseDefPtr lease);
 virDomainLeaseDefPtr
