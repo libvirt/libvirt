@@ -9656,9 +9656,9 @@ static int qemuStringToArgvEnv(const char *args,
                                char ***retargv)
 {
     char **arglist = NULL;
-    int argcount = 0;
-    int argalloc = 0;
-    int envend;
+    size_t argcount = 0;
+    size_t argalloc = 0;
+    size_t envend;
     size_t i;
     const char *curr = args;
     const char *start;
@@ -9695,15 +9695,13 @@ static int qemuStringToArgvEnv(const char *args,
         if (next && (*next == '\'' || *next == '"'))
             next++;
 
-        if (argalloc == argcount) {
-            if (VIR_REALLOC_N(arglist, argalloc+10) < 0) {
-                VIR_FREE(arg);
-                goto error;
-            }
-            argalloc+=10;
+        if (VIR_RESIZE_N(arglist, argalloc, argcount, 2) < 0) {
+            VIR_FREE(arg);
+            goto error;
         }
 
         arglist[argcount++] = arg;
+        arglist[argcount] = NULL;
 
         while (next && c_isspace(*next))
             next++;
