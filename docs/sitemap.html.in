@@ -342,6 +342,10 @@
                 <a href="internals/locking.html">Lock managers</a>
                 <span>Use lock managers to protect disk content</span>
               </li>
+              <li>
+                <a href="internals/oomtesting.html">Out of memory testing</a>
+                <span>Simulating OOM conditions in the test suite</span>
+              </li>
             </ul>
           </li>
           <li>

@@ -422,6 +422,8 @@ AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([SCRUB], [scrub], [scrub],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([ADDR2LINE], [addr2line], [addr2line],
+        [/sbin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH])
 
 AC_DEFINE_UNQUOTED([DMIDECODE],["$DMIDECODE"],
         [Location or name of the dmidecode program])
@@ -452,6 +454,8 @@ if test -n "$RMMOD"; then
 fi
 AC_DEFINE_UNQUOTED([SCRUB],["$SCRUB"],
         [Location or name of the scrub program (for wiping algorithms)])
+AC_DEFINE_UNQUOTED([ADDR2LINE],["$ADDR2LINE"],
+        [Location of addr2line program])
 
 dnl Specific dir for HTML output ?
 AC_ARG_WITH([html-dir], [AS_HELP_STRING([--with-html-dir=path],

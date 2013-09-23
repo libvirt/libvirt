@@ -42,7 +42,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *cmd = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
-    char *log;
 
     if (virtTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
@@ -53,13 +52,16 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                              cmd, NULL, NULL, NULL)))
         goto fail;
 
-    if ((log = virtTestLogContentAndReset()) == NULL)
-        goto fail;
-    if ((*log != '\0') != expect_warning) {
+    if (!virtTestOOMActive()) {
+        char *log;
+        if ((log = virtTestLogContentAndReset()) == NULL)
+            goto fail;
+        if ((*log != '\0') != expect_warning) {
+            VIR_FREE(log);
+            goto fail;
+        }
         VIR_FREE(log);
-        goto fail;
     }
-    VIR_FREE(log);
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);

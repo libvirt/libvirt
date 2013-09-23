@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Out of memory testing</h1>
+
+    <ul id="toc"></ul>
+
+
+    <p>
+      This page describes how to use the test suite todo out of memory
+      testing.
+    </p>
+
+    <h2>Building with OOM testing</h2>
+
+    <p>
+      Since OOM testing requires hooking into the malloc APIs, it is
+      not enabled by default. The flag <code>--enable-test-oom</code>
+      must be given to <code>configure</code>. When this is done the
+      libvirt allocation APIs will have some hooks enabled.
+    </p>
+
+    <pre>
+$ ./configure --enable-test-oom
+</pre>
+
+
+    <h2><a name="basicoom">Basic OOM testing support</a></h2>
+
+    <p>
+      The first step in validating OOM usage is to run a test suite
+      with full OOM testing enabled. This is done by setting the
+      <code>VIR_TEST_OOM=1</code> environment variable. The way this
+      works is that it runs the test once normally to "prime" any
+      static memory allocations. Then it runs it once more counting
+      the total number of memory allocations. Then it runs it in a
+      loop failing a different memory allocation each time. For every
+      memory allocation failure triggered, it expects the test case
+      to return an error. OOM testing is quite slow requiring each
+      test case to be executed O(n) times, where 'n' is the total
+      number of memory allocations. This results in a total number
+      of memory allocations of '(n * (n + 1) ) / 2'
+    </p>
+
+    <pre>
+$ VIR_TEST_OOM=1 ./qemuxml2argvtest
+ 1) QEMU XML-2-ARGV minimal                                           ... OK
+    Test OOM for nalloc=42 .......................................... OK
+ 2) QEMU XML-2-ARGV minimal-s390                                      ... OK
+    Test OOM for nalloc=28 ............................ OK
+ 3) QEMU XML-2-ARGV machine-aliases1                                  ... OK
+    Test OOM for nalloc=38 ...................................... OK
+ 4) QEMU XML-2-ARGV machine-aliases2                                  ... OK
+    Test OOM for nalloc=38 ...................................... OK
+ 5) QEMU XML-2-ARGV machine-core-on                                   ... OK
+    Test OOM for nalloc=37 ..................................... OK
+...snip...
+</pre>
+
+    <p>
+      In this output, the first line shows the normal execution and
+      the test number, and the second line shows the total number
+      of memory allocations from that test case.
+    </p>
+
+    <h3><a name="valgrind">Tracking failures with valgrind</a></h3>
+
+    <p>
+      The test suite should obviously *not* crash during OOM testing.
+      If it does crash, then to assist in tracking down the problem
+      it is worth using valgrind and only running a single test case.
+      For example, supposing test case 5 crashed. Then re-run the
+      test with
+    </p>
+
+    <pre>
+$ VIR_TEST_OOM=1 VIR_TEST_RANGE=5 ../run valgrind ./qemuxml2argvtest
+...snip...
+ 5) QEMU XML-2-ARGV machine-core-on                                   ... OK
+    Test OOM for nalloc=37 ..................................... OK
+...snip...
+    </pre>
+
+    <p>
+      Valgrind should report the cause of the crash - for example a
+      double free or use of uninitialized memory or NULL pointer
+      access.
+    </p>
+
+    <h3><a name="stacktraces">Tracking failures with stack traces</a></h3>
+
+    <p>
+      With some really difficult bugs valgrind is not sufficient to
+      identify the cause. In this case, it is useful to identify the
+      precise allocation which was failed, to allow the code path
+      to the error to be traced. The <code>VIR_TEST_OOM</code>
+      env variable can be given a range of memory allocations to
+      test. So if a test case has 150 allocations, it can be told
+      to only test allocation numbers 7-10. The <code>VIR_TEST_OOM_TRACE</code>
+      variable can be used to print out stack traces.
+    </p>
+
+    <pre>
+$ VIR_TEST_OOM_TRACE=2 VIR_TEST_OOM=1:7-10 VIR_TEST_RANGE=5 \
+    ../run valgrind ./qemuxml2argvtest
+ 5) QEMU XML-2-ARGV machine-core-on                                   ... OK
+    Test OOM for nalloc=37 !virAllocN
+/home/berrange/src/virt/libvirt/src/util/viralloc.c:180
+virDomainDefParseXML
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:11786 (discriminator 1)
+virDomainDefParseNode
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12677
+virDomainDefParse
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12621
+testCompareXMLToArgvFiles
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:107
+virtTestRun
+/home/berrange/src/virt/libvirt/tests/testutils.c:266
+mymain
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:388 (discriminator 2)
+virtTestMain
+/home/berrange/src/virt/libvirt/tests/testutils.c:791
+__libc_start_main
+??:?
+_start
+??:?
+!virAlloc
+/home/berrange/src/virt/libvirt/src/util/viralloc.c:133
+virDomainDiskDefParseXML
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:4790
+virDomainDefParseXML
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:11797
+virDomainDefParseNode
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12677
+virDomainDefParse
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12621
+testCompareXMLToArgvFiles
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:107
+virtTestRun
+/home/berrange/src/virt/libvirt/tests/testutils.c:266
+mymain
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:388 (discriminator 2)
+virtTestMain
+/home/berrange/src/virt/libvirt/tests/testutils.c:791
+__libc_start_main
+??:?
+_start
+??:?
+!virAllocN
+/home/berrange/src/virt/libvirt/src/util/viralloc.c:180
+virXPathNodeSet
+/home/berrange/src/virt/libvirt/src/util/virxml.c:609
+virDomainDefParseXML
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:11805
+virDomainDefParseNode
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12677
+virDomainDefParse
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12621
+testCompareXMLToArgvFiles
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:107
+virtTestRun
+/home/berrange/src/virt/libvirt/tests/testutils.c:266
+mymain
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:388 (discriminator 2)
+virtTestMain
+/home/berrange/src/virt/libvirt/tests/testutils.c:791
+__libc_start_main
+??:?
+_start
+??:?
+!virAllocN
+/home/berrange/src/virt/libvirt/src/util/viralloc.c:180
+virDomainDefParseXML
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:11808 (discriminator 1)
+virDomainDefParseNode
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12677
+virDomainDefParse
+/home/berrange/src/virt/libvirt/src/conf/domain_conf.c:12621
+testCompareXMLToArgvFiles
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:107
+virtTestRun
+/home/berrange/src/virt/libvirt/tests/testutils.c:266
+mymain
+/home/berrange/src/virt/libvirt/tests/qemuxml2argvtest.c:388 (discriminator 2)
+virtTestMain
+/home/berrange/src/virt/libvirt/tests/testutils.c:791
+__libc_start_main
+??:?
+_start
+??:?
+    </pre>
+
+    <h3><a name="noncrash">Non-crash related problems</a></h3>
+
+    <p>
+      Not all memory allocation bugs result in code crashing. Sometimes
+      the code will be silently ignoring the allocation failure, resulting
+      in incorrect data being produced. For example the XML parser may
+      mistakenly treat an allocation failure as indicating that an XML
+      attribute was not set in the input document. It is hard to identify
+      these problems from the test suite automatically. For this, the
+      test suites should be run with <code>VIR_TEST_DEBUG=1</code> set
+      and then stderr analysed for any unexpected data. For example,
+      the XML conversion may show an embedded "(null)" literal, or the
+      test suite might complain about missing elements / attributes
+      in the actual vs expected data. These are all signs of bugs in
+      OOM handling. In the future the OOM tests will be enhanced to
+      validate that an error VIR_ERR_NO_MEMORY is returned for each
+      allocation failed, rather than some other error.
+    </p>
+  </body>
+</html>

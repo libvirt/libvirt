@@ -122,15 +122,17 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      &testCallbacks)))
         goto fail;
 
-    if (!!virGetLastError() != expectError) {
-        if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
-            fprintf(stderr, "\n%s", log);
-        goto fail;
-    }
+    if (!virtTestOOMActive()) {
+        if (!!virGetLastError() != expectError) {
+            if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
+                fprintf(stderr, "\n%s", log);
+            goto fail;
+        }
 
-    if (expectError) {
-        /* need to suppress the errors */
-        virResetLastError();
+        if (expectError) {
+            /* need to suppress the errors */
+            virResetLastError();
+        }
     }
 
     if (!(actualargv = virCommandToString(cmd)))

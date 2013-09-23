@@ -949,7 +949,7 @@ exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
-  ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c)$$
+  ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
 exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
 

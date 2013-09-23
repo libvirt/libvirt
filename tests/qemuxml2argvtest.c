@@ -284,7 +284,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE))) {
-        if (flags & FLAG_EXPECT_PARSE_ERROR)
+        if (!virtTestOOMActive() &&
+            (flags & FLAG_EXPECT_PARSE_ERROR))
             goto ok;
         goto out;
     }
@@ -357,7 +358,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks))) {
-        if (flags & FLAG_EXPECT_FAILURE) {
+        if (!virtTestOOMActive() &&
+            (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;
             if (virTestGetDebug() > 1)
                 fprintf(stderr, "Got expected error: %s\n",
@@ -371,7 +373,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
-    if (!!virGetLastError() != !!(flags & FLAG_EXPECT_ERROR)) {
+    if (!virtTestOOMActive() &&
+        (!!virGetLastError() != !!(flags & FLAG_EXPECT_ERROR))) {
         if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
             fprintf(stderr, "\n%s", log);
         goto out;
@@ -392,7 +395,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
  ok:
-    if (flags & FLAG_EXPECT_ERROR) {
+    if (!virtTestOOMActive() &&
+        (flags & FLAG_EXPECT_ERROR)) {
         /* need to suppress the errors */
         virResetLastError();
     }

@@ -44,6 +44,8 @@ extern char *progname;
 #  error Fix Makefile.am
 # endif
 
+bool virtTestOOMActive(void);
+
 void virtTestResult(const char *name, int ret, const char *msg, ...)
     ATTRIBUTE_FMT_PRINTF(3,4);
 int virtTestRun(const char *title,
