@@ -476,6 +476,13 @@
       <arg name='xmlCPUs' type='const char **' info='array of XML descriptions of host CPUs'/>
       <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
     </function>
+    <function name='virConnectGetCPUModelNames' file='python'>
+      <info>Get the list of supported CPU models.</info>
+      <return type='char *' info='list of supported CPU models'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='arch' type='const char *' info='arch'/>
+      <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
+    </function>
     <function name='virDomainSnapshotListNames' file='python'>
       <info>collect the list of snapshot names for the given domain</info>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>

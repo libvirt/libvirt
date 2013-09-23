@@ -2276,6 +2276,58 @@ libvirt_virConnectGetVersion(PyObject *self ATTRIBUTE_UNUSED,
     return PyInt_FromLong(hvVersion);
 }
 
+PyObject *
+libvirt_virConnectGetCPUModelNames(PyObject *self ATTRIBUTE_UNUSED,
+                                   PyObject *args)
+{
+    int c_retval;
+    virConnectPtr conn;
+    PyObject *rv = NULL, *pyobj_conn;
+    char **models = NULL;
+    size_t i;
+    int flags = 0;
+    const char *arch = NULL;
+
+    if (!PyArg_ParseTuple(args, (char *)"Osi:virConnectGetCPUModelNames",
+                          &pyobj_conn, &arch, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
+    c_retval = virConnectGetCPUModelNames(conn, arch, &models, flags);
+
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == -1)
+        return VIR_PY_INT_FAIL;
+
+    if ((rv = PyList_New(c_retval)) == NULL)
+        goto error;
+
+    for (i = 0; i < c_retval; i++) {
+        PyObject *str;
+        if ((str = PyString_FromString(models[i])) == NULL)
+            goto error;
+
+        PyList_SET_ITEM(rv, i, str);
+    }
+
+done:
+    if (models) {
+        for (i = 0; i < c_retval; i++)
+            VIR_FREE(models[i]);
+        VIR_FREE(models);
+    }
+
+    return rv;
+
+error:
+    Py_XDECREF(rv);
+    rv = VIR_PY_INT_FAIL;
+    goto done;
+}
+
 static PyObject *
 libvirt_virConnectGetLibVersion(PyObject *self ATTRIBUTE_UNUSED,
                                 PyObject *args)
@@ -7171,6 +7223,7 @@ static PyMethodDef libvirtMethods[] = {
 #include "libvirt-export.c"
     {(char *) "virGetVersion", libvirt_virGetVersion, METH_VARARGS, NULL},
     {(char *) "virConnectGetVersion", libvirt_virConnectGetVersion, METH_VARARGS, NULL},
+    {(char *) "virConnectGetCPUModelNames", libvirt_virConnectGetCPUModelNames, METH_VARARGS, NULL},
     {(char *) "virConnectGetLibVersion", libvirt_virConnectGetLibVersion, METH_VARARGS, NULL},
     {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},

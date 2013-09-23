@@ -207,3 +207,14 @@ def virEventAddTimeout(timeout, cb, opaque):
     ret = libvirtmod.virEventAddTimeout(timeout, cbData)
     if ret == -1: raise libvirtError ('virEventAddTimeout() failed')
     return ret
+
+def getCPUModelNames(conn, arch, flags=0):
+    """
+    get the list of supported CPU models.
+    @conn: virConnect connection
+    @arch: Architecture
+    @flags: extra flags; not used yet, so callers should always pass 0.
+    """
+    ret = libvirtmod.virConnectGetCPUModelNames(conn._o, arch, flags)
+    if ret == None: raise libvirtError ('virConnectGetCPUModelNames() failed', conn=self)
+    return ret
