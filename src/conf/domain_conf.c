@@ -4507,7 +4507,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                                   int nvmSeclabels, xmlXPathContextPtr ctxt,
                                   unsigned int flags)
 {
-    virSecurityDeviceLabelDefPtr *seclabels;
+    virSecurityDeviceLabelDefPtr *seclabels = NULL;
     size_t nseclabels = 0;
     int n;
     size_t i, j;
