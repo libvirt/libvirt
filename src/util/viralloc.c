@@ -132,6 +132,9 @@ int virAlloc(void *ptrptr,
 #if TEST_OOM
     if (virAllocTestFail()) {
         *(void **)ptrptr = NULL;
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        errno = ENOMEM;
         return -1;
     }
 #endif
@@ -176,6 +179,9 @@ int virAllocN(void *ptrptr,
 #if TEST_OOM
     if (virAllocTestFail()) {
         *(void **)ptrptr = NULL;
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        errno = ENOMEM;
         return -1;
     }
 #endif
@@ -220,8 +226,12 @@ int virReallocN(void *ptrptr,
 {
     void *tmp;
 #if TEST_OOM
-    if (virAllocTestFail())
+    if (virAllocTestFail()) {
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        errno = ENOMEM;
         return -1;
+    }
 #endif
 
     if (xalloc_oversized(count, size)) {
@@ -529,8 +539,12 @@ int virAllocVar(void *ptrptr,
     size_t alloc_size = 0;
 
 #if TEST_OOM
-    if (virAllocTestFail())
+    if (virAllocTestFail()) {
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        errno = ENOMEM;
         return -1;
+    }
 #endif
 
     if (VIR_ALLOC_VAR_OVERSIZED(struct_size, count, element_size)) {
