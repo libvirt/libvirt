@@ -884,6 +884,24 @@ int virNetSocketNewConnectExternal(const char **cmdargv,
 }
 
 
+int virNetSocketNewConnectSockFD(int sockfd,
+                                 virNetSocketPtr *retsock)
+{
+    virSocketAddr localAddr;
+
+    localAddr.len = sizeof(localAddr.data);
+    if (getsockname(sockfd, &localAddr.data.sa, &localAddr.len) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to get local socket name"));
+        return -1;
+    }
+
+    if (!(*retsock = virNetSocketNew(&localAddr, NULL, true, sockfd, -1, -1)))
+        return -1;
+
+    return 0;
+}
+
+
 virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object)
 {
     virSocketAddr localAddr;

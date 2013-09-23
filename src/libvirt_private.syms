@@ -1011,6 +1011,7 @@ virNetSocketLocalAddrString;
 virNetSocketNewConnectCommand;
 virNetSocketNewConnectExternal;
 virNetSocketNewConnectLibSSH2;
+virNetSocketNewConnectSockFD;
 virNetSocketNewConnectSSH;
 virNetSocketNewConnectTCP;
 virNetSocketNewConnectUNIX;

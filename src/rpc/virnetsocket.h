@@ -97,6 +97,8 @@ int virNetSocketNewConnectLibSSH2(const char *host,
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *addr);
 
+int virNetSocketNewConnectSockFD(int sockfd,
+                                 virNetSocketPtr *retsock);
 
 virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object);
 
