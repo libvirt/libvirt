@@ -1261,10 +1261,10 @@ qemuDomainCCWAddressSetCreate(void)
      qemuDomainCCWAddressSetPtr addrs = NULL;
 
     if (VIR_ALLOC(addrs) < 0)
-        goto cleanup;
+        goto error;
 
     if (!(addrs->defined = virHashCreate(10, qemuDomainCCWAddressSetFreeEntry)))
-        goto cleanup;
+        goto error;
 
     /* must use cssid = 0xfe (254) for virtio-ccw devices */
     addrs->next.cssid = 254;
@@ -1273,9 +1273,9 @@ qemuDomainCCWAddressSetCreate(void)
     addrs->next.assigned = 0;
     return addrs;
 
-cleanup:
+error:
     qemuDomainCCWAddressSetFree(addrs);
-    return addrs;
+    return NULL;
 }
 
 /*
