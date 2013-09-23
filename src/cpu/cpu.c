@@ -1,7 +1,7 @@
 /*
  * cpu.c: internal functions for CPU manipulation
  *
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,11 +27,13 @@
 #include "viralloc.h"
 #include "virxml.h"
 #include "cpu.h"
+#include "cpu_map.h"
 #include "cpu_x86.h"
 #include "cpu_powerpc.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
 #include "cpu_generic.h"
+#include "util/virstring.h"
 
 
 #define NR_DRIVERS ARRAY_CARDINALITY(drivers)
@@ -455,4 +457,82 @@ cpuModelIsAllowed(const char *model,
             return true;
     }
     return false;
+}
+
+struct cpuGetModelsData
+{
+    char **data;
+    size_t len;  /* It includes the last element of DATA, which is NULL. */
+};
+
+static int
+cpuGetArchModelsCb(enum cpuMapElement element,
+                   xmlXPathContextPtr ctxt,
+                   void *cbdata)
+{
+    char *name;
+    struct cpuGetModelsData *data = cbdata;
+    if (element != CPU_MAP_ELEMENT_MODEL)
+        return 0;
+
+    name = virXPathString("string(@name)", ctxt);
+    if (name == NULL)
+        return -1;
+
+    if (!data->data) {
+        VIR_FREE(name);
+        data->len++;
+        return 0;
+    }
+
+    return VIR_INSERT_ELEMENT(data->data, data->len - 1, data->len, name);
+}
+
+
+static int
+cpuGetArchModels(const char *arch, struct cpuGetModelsData *data)
+{
+    return cpuMapLoad(arch, cpuGetArchModelsCb, data);
+}
+
+
+int
+cpuGetModels(const char *archName, char ***models)
+{
+    struct cpuGetModelsData data;
+    virArch arch;
+    struct cpuArchDriver *driver;
+    data.data = NULL;
+    data.len = 1;
+
+    arch = virArchFromString(archName);
+    if (arch == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find architecture %s"),
+                       archName);
+        goto error;
+    }
+
+    driver = cpuGetSubDriver(arch);
+    if (driver == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find a driver for the architecture %s"),
+                       archName);
+        goto error;
+    }
+
+    if (models && VIR_ALLOC_N(data.data, data.len) < 0)
+        goto error;
+
+    if (cpuGetArchModels(driver->name, &data) < 0)
+        goto error;
+
+    if (models)
+        *models = data.data;
+
+    return data.len - 1;
+
+error:
+    virStringFreeList(data.data);
+    return -1;
 }

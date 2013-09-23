@@ -1,7 +1,7 @@
 /*
  * cpu.h: internal functions for CPU manipulation
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -174,5 +174,8 @@ bool
 cpuModelIsAllowed(const char *model,
                   const char **models,
                   unsigned int nmodels);
+
+extern int
+cpuGetModels(const char *arch, char ***models);
 
 #endif /* __VIR_CPU_H__ */
