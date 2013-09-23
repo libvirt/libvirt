@@ -8057,6 +8057,11 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (boot_nparams > 0) {
             virCommandAddArg(cmd, "-boot");
 
+            if (virBufferError(&boot_buf)) {
+                virReportOOMError();
+                goto error;
+            }
+
             if (boot_nparams < 2 || emitBootindex) {
                 virCommandAddArgBuffer(cmd, &boot_buf);
                 virBufferFreeAndReset(&boot_buf);
