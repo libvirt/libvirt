@@ -5269,13 +5269,18 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
         goto error;
     }
 
-    /* Hack for weirdly unusual devices name in QEMU */
-    if (STREQ(model, "es1370"))
+    /* Hack for devices with different names in QEMU and libvirt */
+    switch (sound->model) {
+    case VIR_DOMAIN_SOUND_MODEL_ES1370:
         model = "ES1370";
-    else if (STREQ(model, "ac97"))
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_AC97:
         model = "AC97";
-    else if (STREQ(model, "ich6"))
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_ICH6:
         model = "intel-hda";
+        break;
+    }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, sound->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, def, &sound->info, qemuCaps) < 0)
