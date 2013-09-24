@@ -468,6 +468,14 @@ sc_correct_id_types:
 	halt="use pid_t for pid, uid_t for uid, gid_t for gid"		\
 	  $(_sc_search_regexp)
 
+# "const fooPtr a" is the same as "foo * const a", even though it is
+# usually desired to have "foo const *a".  It's easier to just prevent
+# the confusing mix of typedef vs. const placement.
+sc_forbid_const_pointer_typedef:
+	@prohibit='(^|[^"])const \w*Ptr'				\
+	halt='"const fooPtr var" does not declare what you meant'	\
+	  $(_sc_search_regexp)
+
 # Forbid sizeof foo or sizeof (foo), require sizeof(foo)
 sc_size_of_brackets:
 	@prohibit='sizeof\s'						\
