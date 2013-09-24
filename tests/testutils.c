@@ -717,9 +717,9 @@ int virtTestMain(int argc,
         approxAlloc = virAllocTestCount();
         testCounter++;
         if (virTestGetDebug())
-            fprintf(stderr, "%d) OOM...\n", testCounter);
+            fprintf(stderr, "%zu) OOM...\n", testCounter);
         else
-            fprintf(stderr, "%d) OOM of %d allocs ", testCounter, approxAlloc);
+            fprintf(stderr, "%zu) OOM of %d allocs ", testCounter, approxAlloc);
 
         if (mp) {
             size_t i;
