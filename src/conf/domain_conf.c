@@ -10616,8 +10616,10 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
         int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
 
         if (virBitmapParse(set, 0, &def->cpumask,
-                           cpumasklen) < 0)
-           goto error;
+                           cpumasklen) < 0) {
+            VIR_FREE(tmp);
+            goto error;
+        }
         VIR_FREE(tmp);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
