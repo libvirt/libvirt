@@ -8472,8 +8472,10 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
 
             for (i = 0; i < ncodecs; i++) {
                 virDomainSoundCodecDefPtr codec = virDomainSoundCodecDefParseXML(codecNodes[i]);
-                if (codec == NULL)
+                if (codec == NULL) {
+                    VIR_FREE(codecNodes);
                     goto error;
+                }
 
                 codec->cad = def->ncodecs; /* that will do for now */
                 def->codecs[def->ncodecs++] = codec;
