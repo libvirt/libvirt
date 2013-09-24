@@ -333,7 +333,7 @@ virNetworkObjAssignDef(virNetworkObjPtr network,
  * def. For an existing network, use "live" and current state of the
  * network to determine which to replace.
  *
- * Returns -1 on failure, 0 on success.
+ * Returns NULL on error, virNetworkObjPtr on success.
  */
 virNetworkObjPtr
 virNetworkAssignDef(virNetworkObjListPtr nets,
