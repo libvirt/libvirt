@@ -1854,7 +1854,7 @@ virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
 {
     size_t i;
 
-    if (!def || !nvcpupin)
+    if (!def)
         return;
 
     for (i = 0; i < nvcpupin; i++) {
