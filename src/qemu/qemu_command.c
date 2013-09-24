@@ -11725,8 +11725,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             ctldef->type = VIR_DOMAIN_CONTROLLER_TYPE_USB;
             ctldef->idx = 0;
             ctldef->model = -1;
-            if (virDomainControllerInsert(def, ctldef) < 0)
+            if (virDomainControllerInsert(def, ctldef) < 0) {
+                VIR_FREE(ctldef);
                 goto error;
+            }
         } else if (STREQ(arg, "-pidfile")) {
             WANT_VALUE();
             if (pidfile)
