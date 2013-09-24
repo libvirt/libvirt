@@ -10030,8 +10030,10 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                     if (VIR_STRDUP(def->src, p + strlen("rbd:")) < 0)
                         goto error;
                     /* old-style CEPH_ARGS env variable is parsed later */
-                    if (!old_style_ceph_args && qemuParseRBDString(def) < 0)
-                        goto cleanup;
+                    if (!old_style_ceph_args && qemuParseRBDString(def) < 0) {
+                        VIR_FREE(p);
+                        goto error;
+                    }
 
                     VIR_FREE(p);
                 } else if (STRPREFIX(def->src, "gluster:") ||
@@ -10055,17 +10057,20 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG;
                     if (VIR_STRDUP(def->src, p + strlen("sheepdog:")) < 0)
                         goto error;
+                    VIR_FREE(p);
 
                     /* def->src must be [vdiname] or [host]:[port]:[vdiname] */
                     port = strchr(def->src, ':');
                     if (port) {
-                        *port++ = '\0';
-                        vdi = strchr(port, ':');
+                        *port = '\0';
+                        vdi = strchr(port + 1, ':');
                         if (!vdi) {
+                            *port = ':';
                             virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("cannot parse sheepdog filename '%s'"), p);
+                                           _("cannot parse sheepdog filename '%s'"), def->src);
                             goto error;
                         }
+                        port++;
                         *vdi++ = '\0';
                         if (VIR_ALLOC(def->hosts) < 0)
                             goto error;
@@ -10078,8 +10083,6 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                         if (VIR_STRDUP(def->src, vdi) < 0)
                             goto error;
                     }
-
-                    VIR_FREE(p);
                 } else
                     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
             } else {
