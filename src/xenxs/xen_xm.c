@@ -1601,7 +1601,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present != -1 &&
                 xenXMConfigSetInt(conf, "hpet", def->clock.timers[i]->present) < 0)
-                    break;
+                goto cleanup;
         }
 
         if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
