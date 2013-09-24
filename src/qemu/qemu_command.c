@@ -1731,37 +1731,44 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     /* Change flags according to differing requirements of different
      * devices.
      */
-    if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        switch (device->data.controller->model) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-            /* pci-bridge needs a PCI slot, but it isn't
-             * hot-pluggable, so it doesn't need a hot-pluggable slot.
-             */
-            flags = QEMU_PCI_CONNECT_TYPE_PCI;
+    switch (device->type) {
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        switch (device->data.controller->type) {
+        case  VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+            switch (device->data.controller->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+                /* pci-bridge needs a PCI slot, but it isn't
+                 * hot-pluggable, so it doesn't need a hot-pluggable slot.
+                 */
+                flags = QEMU_PCI_CONNECT_TYPE_PCI;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+                /* pci-bridge needs a PCIe slot, but it isn't
+                 * hot-pluggable, so it doesn't need a hot-pluggable slot.
+                 */
+                flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+                break;
+            default:
+                break;
+            }
             break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-            /* pci-bridge needs a PCIe slot, but it isn't
-             * hot-pluggable, so it doesn't need a hot-pluggable slot.
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+            /* SATA controllers aren't hot-plugged, and can be put in
+             * either a PCI or PCIe slot
              */
-            flags = QEMU_PCI_CONNECT_TYPE_PCIE;
-            break;
-        default:
+            flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
             break;
         }
-    }
-    /* SATA controllers aren't hot-plugged, and can be put in either a
-     * PCI or PCIe slot
-     */
-    if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA)
-        flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+        break;
 
-    /* video cards aren't hot-plugged, and can be put in either a PCI
-     * or PCIe slot
-     */
-    if (device->type == VIR_DOMAIN_DEVICE_VIDEO)
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        /* video cards aren't hot-plugged, and can be put in either a
+         * PCI or PCIe slot
+         */
         flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+        break;
+    }
 
     /* Ignore implicit controllers on slot 0:0:1.0:
      * implicit IDE controller on 0:0:1.1 (no qemu command line)
