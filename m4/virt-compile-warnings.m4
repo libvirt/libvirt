@@ -187,8 +187,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     esac
     wantwarn="$wantwarn -fexceptions"
     wantwarn="$wantwarn -fasynchronous-unwind-tables"
-    wantwarn="$wantwarn -fdiagnostics-show-option"
-    wantwarn="$wantwarn -funit-at-a-time"
 
     # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
     # fire even without -O.
