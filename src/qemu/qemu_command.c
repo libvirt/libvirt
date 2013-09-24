@@ -11963,13 +11963,13 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         def->namespaceData = cmd;
     }
     else
-        VIR_FREE(cmd);
+        qemuDomainCmdlineDefFree(cmd);
 
     return def;
 
 error:
     virDomainDiskDefFree(disk);
-    VIR_FREE(cmd);
+    qemuDomainCmdlineDefFree(cmd);
     virDomainDefFree(def);
     VIR_FREE(nics);
     if (monConfig) {

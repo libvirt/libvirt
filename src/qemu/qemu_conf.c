@@ -87,6 +87,24 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
+void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    for (i = 0; i < def->num_args; i++)
+        VIR_FREE(def->args[i]);
+    for (i = 0; i < def->num_env; i++) {
+        VIR_FREE(def->env_name[i]);
+        VIR_FREE(def->env_value[i]);
+    }
+    VIR_FREE(def->args);
+    VIR_FREE(def->env_name);
+    VIR_FREE(def->env_value);
+    VIR_FREE(def);
+}
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 {

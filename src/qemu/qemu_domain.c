@@ -535,21 +535,8 @@ static void
 qemuDomainDefNamespaceFree(void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
-    size_t i;
 
-    if (!cmd)
-        return;
-
-    for (i = 0; i < cmd->num_args; i++)
-        VIR_FREE(cmd->args[i]);
-    for (i = 0; i < cmd->num_env; i++) {
-        VIR_FREE(cmd->env_name[i]);
-        VIR_FREE(cmd->env_value[i]);
-    }
-    VIR_FREE(cmd->args);
-    VIR_FREE(cmd->env_name);
-    VIR_FREE(cmd->env_value);
-    VIR_FREE(cmd);
+    qemuDomainCmdlineDefFree(cmd);
 }
 
 static int

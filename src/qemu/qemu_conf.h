@@ -247,6 +247,8 @@ struct _qemuDomainCmdlineDef {
 # define QEMUD_MIGRATION_NUM_PORTS 64
 
 
+void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def);
+
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
