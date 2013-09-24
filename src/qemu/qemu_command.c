@@ -10163,6 +10163,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             if ((def->iomode = virDomainDiskIoTypeFromString(values[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse io mode '%s'"), values[i]);
+                goto error;
             }
         } else if (STREQ(keywords[i], "cyls")) {
             if (virStrToLong_ui(values[i], NULL, 10,
@@ -10172,6 +10173,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse cylinders value'%s'"),
                                values[i]);
+                goto error;
             }
         } else if (STREQ(keywords[i], "heads")) {
             if (virStrToLong_ui(values[i], NULL, 10,
@@ -10181,6 +10183,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse heads value'%s'"),
                                values[i]);
+                goto error;
             }
         } else if (STREQ(keywords[i], "secs")) {
             if (virStrToLong_ui(values[i], NULL, 10,
@@ -10190,6 +10193,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse sectors value'%s'"),
                                values[i]);
+                goto error;
             }
         } else if (STREQ(keywords[i], "trans")) {
             def->geometry.trans =
@@ -10201,6 +10205,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse translation value'%s'"),
                                values[i]);
+                goto error;
             }
         }
     }
