@@ -3404,9 +3404,9 @@ static int qemuParseRBDString(virDomainDiskDefPtr disk)
                         break;
                     }
                 }
-                if (qemuAddRBDHost(disk, h) < 0) {
-                    return -1;
-                }
+                if (qemuAddRBDHost(disk, h) < 0)
+                    goto error;
+
                 h = sep;
             }
         }
