@@ -37,7 +37,8 @@
 
 VIR_ENUM_IMPL(vmwareDriver, VMWARE_DRIVER_LAST,
               "player",
-              "ws");
+              "ws",
+              "fusion");
 
 /* Free all memory associated with a vmware_driver structure */
 void
@@ -231,6 +232,9 @@ vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
         case VMWARE_DRIVER_WORKSTATION:
             pattern = "VMware Workstation ";
             break;
+        case VMWARE_DRIVER_FUSION:
+            pattern = "\nVMware Fusion Information:\nVMware Fusion ";
+            break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid driver type: %d"), type);
@@ -273,6 +277,11 @@ vmwareExtractVersion(struct vmware_driver *driver)
 
         case VMWARE_DRIVER_WORKSTATION:
             if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware"))
+                goto cleanup;
+            break;
+
+        case VMWARE_DRIVER_FUSION:
+            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware-vmx"))
                 goto cleanup;
             break;
 

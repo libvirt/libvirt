@@ -2,10 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
-        <h1>VMware Workstation / Player hypervisors driver</h1>
+        <h1>VMware Workstation / Player / Fusion hypervisors driver</h1>
         <p>
-        The libvirt VMware Workstation driver should be able to manage any Workstation and
-        Player version supported by the VMware VIX API. See the compatibility list
+        The libvirt VMware driver should be able to manage any Workstation,
+        Player, Fusion version supported by the VMware VIX API. See the
+        compatibility list
         <a href="http://www.vmware.com/support/developer/vix-api/vix110_reference/">here</a>.
     </p>
     <p>
@@ -21,17 +22,22 @@
         The <a href="http://www.vmware.com/">VMware Workstation and
         Player</a> hypervisors
       </li>
+      <li>
+        The <a href="http://www.vmware.com/fusion">VMware Fusion</a>
+        hypervisor
+      </li>
     </ul>
 
     <h2>Connections to VMware driver</h2>
 
     <p>
     The libvirt VMware driver provides per-user drivers (the "session" instance).
-    Two uris are available:
+    Three uris are available:
     </p>
     <ul>
       <li>"vmwareplayer" for VMware Player</li>
       <li>"vmwarews" for VMware Workstation</li>
+      <li>"vmwarefusion" for VMware Fusion</li>
     </ul>
     <p>
     Some example connection URIs for the driver are:
@@ -40,6 +46,7 @@
 <pre>
 vmwareplayer:///session                  (local access to VMware Player per-user instance)
 vmwarews:///session                      (local access to VMware Workstation per-user instance)
+vmwarefusion:///session                      (local access to VMware Fusion per-user instance)
 vmwarews+tcp://user@example.com/session  (remote access to VMware Workstation, SASl/Kerberos)
 vmwarews+ssh://user@example.com/session  (remote access to VMware Workstation, SSH tunnelled)
 </pre>

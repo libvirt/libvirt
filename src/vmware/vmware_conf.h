@@ -33,6 +33,7 @@
 enum vmwareDriverType {
     VMWARE_DRIVER_PLAYER      = 0, /* VMware Player */
     VMWARE_DRIVER_WORKSTATION = 1, /* VMware Workstation */
+    VMWARE_DRIVER_FUSION      = 2, /* VMware Fusion */
 
     VMWARE_DRIVER_LAST,            /* required last item */
 };

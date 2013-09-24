@@ -40,6 +40,10 @@
  */
 static const char * const vmrun_candidates[] = {
     "vmrun",
+#ifdef __APPLE__
+    "/Applications/VMware Fusion.app/Contents/Library/vmrun",
+    "/Library/Application Support/VMware Fusion/vmrun",
+#endif /* __APPLE__ */
 };
 
 static void
@@ -103,7 +107,8 @@ vmwareConnectOpen(virConnectPtr conn,
     } else {
         if (conn->uri->scheme == NULL ||
             (STRNEQ(conn->uri->scheme, "vmwareplayer") &&
-             STRNEQ(conn->uri->scheme, "vmwarews")))
+             STRNEQ(conn->uri->scheme, "vmwarews") &&
+             STRNEQ(conn->uri->scheme, "vmwarefusion")))
             return VIR_DRV_OPEN_DECLINED;
 
         /* If server name is given, its for remote driver */
@@ -113,7 +118,7 @@ vmwareConnectOpen(virConnectPtr conn,
         /* If path isn't /session, then they typoed, so tell them correct path */
         if (conn->uri->path == NULL || STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected VMware URI path '%s', try vmwareplayer:///session or vmwarews:///session"),
+                           _("unexpected VMware URI path '%s', try vmwareplayer:///session, vmwarews:///session or vmwarefusion:///session"),
                            NULLSTR(conn->uri->path));
             return VIR_DRV_OPEN_ERROR;
         }
