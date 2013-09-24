@@ -1496,12 +1496,16 @@ qemuDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
 {
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
+    qemuDomainPCIConnectFlags flagsMatchMask = QEMU_PCI_CONNECT_TYPES_MASK;
+
+    if (fromConfig)
+       flagsMatchMask |= QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG;
 
     /* If this bus doesn't allow the type of connection (PCI
      * vs. PCIe) required by the device, or if the device requires
      * hot-plug and this bus doesn't have it, return false.
      */
-    if (!(devFlags & busFlags & QEMU_PCI_CONNECT_TYPES_MASK)) {
+    if (!(devFlags & busFlags & flagsMatchMask)) {
         if (reportError) {
             if (devFlags & QEMU_PCI_CONNECT_TYPE_PCI) {
                 virReportError(errType,
@@ -1620,8 +1624,12 @@ qemuDomainPCIAddressBusSetModel(qemuDomainPCIAddressBusPtr bus,
         bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-        /* slots 1 - 31, PCIe devices only, no hotplug */
-        bus->flags = QEMU_PCI_CONNECT_TYPE_PCIE;
+        /* slots 1 - 31, no hotplug, PCIe only unless the address was
+         * specified in user config *and* the particular device being
+         * attached also allows it
+         */
+        bus->flags = (QEMU_PCI_CONNECT_TYPE_PCIE |
+                      QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
         bus->minSlot = 1;
         bus->maxSlot = QEMU_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -1758,6 +1766,42 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
              * either a PCI or PCIe slot
              */
             flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+           /* allow UHCI and EHCI controllers to be manually placed on
+            * the PCIe bus (but don't put them there automatically)
+            */
+           switch (device->data.controller->model) {
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
+              flags = (QEMU_PCI_CONNECT_TYPE_PCI |
+                       QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+              break;
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+              /* should this be PCIE-only? Or do we need to allow PCI
+               * for backward compatibility?
+               */
+              flags = QEMU_PCI_CONNECT_TYPE_PCI | QEMU_PCI_CONNECT_TYPE_PCIE;
+              break;
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
+           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
+              /* Allow these for PCI only */
+              break;
+           }
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_SOUND:
+        switch (device->data.sound->model) {
+        case VIR_DOMAIN_SOUND_MODEL_ICH6:
+            flags = (QEMU_PCI_CONNECT_TYPE_PCI |
+                     QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
             break;
         }
         break;
