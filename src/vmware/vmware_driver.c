@@ -93,6 +93,7 @@ vmwareConnectOpen(virConnectPtr conn,
 {
     struct vmware_driver *driver;
     size_t i;
+    char *tmp;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -144,8 +145,25 @@ vmwareConnectOpen(virConnectPtr conn,
     if (virMutexInit(&driver->lock) < 0)
         goto cleanup;
 
-    driver->type = STRNEQ(conn->uri->scheme, "vmwareplayer") ?
-      VMWARE_DRIVER_WORKSTATION : VMWARE_DRIVER_PLAYER;
+    if ((tmp = STRSKIP(conn->uri->scheme, "vmware")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unable to parse URI "
+                       "scheme '%s'"), conn->uri->scheme);
+        goto cleanup;
+    }
+
+    driver->type = -1;
+    for (i = 0; i < VMWARE_DRIVER_LAST; i++) {
+        if (STREQ(tmp, vmwareDriverTypeToString(i))) {
+            driver->type = i;
+	    break;
+	}
+    }
+
+    if (driver->type == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unable to find valid "
+                       "requested VMware backend '%s'"), tmp);
+        goto cleanup;
+    }
 
     if (!(driver->domains = virDomainObjListNew()))
         goto cleanup;
