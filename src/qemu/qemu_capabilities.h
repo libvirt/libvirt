@@ -196,6 +196,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_USB_STORAGE = 155, /* -device usb-storage */
     QEMU_CAPS_USB_STORAGE_REMOVABLE = 156, /* usb-storage.removable */
     QEMU_CAPS_DEVICE_VIRTIO_MMIO = 157, /* -device virtio-mmio */
+    QEMU_CAPS_DEVICE_ICH9_INTEL_HDA = 158, /* -device ich9-intel-hda */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

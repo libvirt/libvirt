@@ -462,7 +462,8 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "es1370",
               "pcspk",
               "ac97",
-              "ich6")
+              "ich6",
+              "ich9")
 
 VIR_ENUM_IMPL(virDomainMemDump, VIR_DOMAIN_MEM_DUMP_LAST,
               "default",
@@ -8451,7 +8452,8 @@ virDomainSoundDefParseXML(const xmlNodePtr node,
         goto error;
     }
 
-    if (def->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+    if (def->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+        def->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
         int ncodecs;
         xmlNodePtr *codecNodes = NULL;
 

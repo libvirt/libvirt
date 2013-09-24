@@ -31,6 +31,11 @@
       <codec type='micro'/>
       <codec type='duplex'/>
     </sound>
+    <sound model='ich9'/>
+    <sound model='ich9'>
+      <codec type='micro'/>
+      <codec type='duplex'/>
+    </sound>
     <memballoon model='virtio'/>
   </devices>
 </domain>

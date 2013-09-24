@@ -1800,6 +1800,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     case VIR_DOMAIN_DEVICE_SOUND:
         switch (device->data.sound->model) {
         case VIR_DOMAIN_SOUND_MODEL_ICH6:
+        case VIR_DOMAIN_SOUND_MODEL_ICH9:
             flags = (QEMU_PCI_CONNECT_TYPE_PCI |
                      QEMU_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
             break;
@@ -5279,6 +5280,15 @@ qemuBuildSoundDevStr(virDomainDefPtr def,
         break;
     case VIR_DOMAIN_SOUND_MODEL_ICH6:
         model = "intel-hda";
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_ICH9:
+        model = "ich9-intel-hda";
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ICH9_INTEL_HDA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The ich9-intel-hda audio controller "
+                             "is not supported in this QEMU binary"));
+            goto error;
+        }
         break;
     }
 
@@ -9065,7 +9075,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                     virCommandAddArg(cmd, str);
 
-                    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+                    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+                        sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
                         char *codecstr = NULL;
 
                         for (j = 0; j < sound->ncodecs; j++) {
@@ -9111,7 +9122,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                     goto error;
                 }
 
-                if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6) {
+                if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+                    sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
                     VIR_FREE(modstr);
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("this QEMU binary lacks hda support"));
