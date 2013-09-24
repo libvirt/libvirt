@@ -2246,12 +2246,12 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 
     /* Start the search at the last used bus and slot */
     for (a.slot++; a.bus < addrs->nbuses; a.bus++) {
-        addrStr = NULL;
         if (!(addrStr = qemuDomainPCIAddressAsString(&a)))
             goto error;
         if (!qemuDomainPCIAddressFlagsCompatible(&a, addrStr,
                                                  addrs->buses[a.bus].flags,
                                                  flags, false, false)) {
+            VIR_FREE(addrStr);
             VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
                       a.domain, a.bus);
             continue;
@@ -2264,6 +2264,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
                       a.domain, a.bus, a.slot);
         }
         a.slot = 1;
+        VIR_FREE(addrStr);
     }
 
     /* There were no free slots after the last used one */
