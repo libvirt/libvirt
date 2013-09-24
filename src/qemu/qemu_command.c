@@ -3556,9 +3556,9 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
     virURIPtr uri = NULL;
 
     if (strstr(disk->src, "://")) {
-        uri = virURIParse(disk->src);
-        if (uri)
-            return qemuParseDriveURIString(disk, uri, "nbd");
+        if (!(uri = virURIParse(disk->src)))
+            return -1;
+        return qemuParseDriveURIString(disk, uri, "nbd");
     }
 
     if (VIR_ALLOC(h) < 0)
