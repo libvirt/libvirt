@@ -9102,7 +9102,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                         goto error;
 
                     virCommandAddArg(cmd, str);
-
+                    VIR_FREE(str);
                     if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
                         sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
                         char *codecstr = NULL;
@@ -9130,8 +9130,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                             VIR_FREE(codecstr);
                         }
                     }
-
-                    VIR_FREE(str);
                 }
             }
         } else {
