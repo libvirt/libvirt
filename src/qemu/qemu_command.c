@@ -9819,10 +9819,8 @@ static int qemuStringToArgvEnv(const char *args,
     if (envend > 0) {
         if (VIR_REALLOC_N(progenv, envend+1) < 0)
             goto error;
-        for (i = 0; i < envend; i++) {
+        for (i = 0; i < envend; i++)
             progenv[i] = arglist[i];
-            arglist[i] = NULL;
-        }
         progenv[i] = NULL;
     }
 
@@ -9841,7 +9839,8 @@ static int qemuStringToArgvEnv(const char *args,
     return 0;
 
 error:
-    virStringFreeList(progenv);
+    VIR_FREE(progenv);
+    VIR_FREE(progargv);
     virStringFreeList(arglist);
     return -1;
 }
