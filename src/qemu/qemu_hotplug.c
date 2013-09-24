@@ -358,7 +358,7 @@ int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool releaseaddr = false;
 
-    if (virDomainControllerFind(vm->def, controller->type, controller->idx) > 0) {
+    if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("target %s:%d already exists"),
                        type, controller->idx);

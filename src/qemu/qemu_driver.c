@@ -6626,7 +6626,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         controller = dev->data.controller;
         if (virDomainControllerFind(vmdef, controller->type,
-                                    controller->idx) > 0) {
+                                    controller->idx) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Target already exists"));
             return -1;
