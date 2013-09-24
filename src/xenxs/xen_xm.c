@@ -1080,8 +1080,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 if (!(chr = xenParseSxprChar(port, NULL)))
                     goto cleanup;
 
-                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0)
+                if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                    virDomainChrDefFree(chr);
                     goto cleanup;
+                }
 
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = portnum;
