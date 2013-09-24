@@ -1959,8 +1959,10 @@ virConfPtr xenFormatXM(virConnectPtr conn,
                             break;
                         }
                     }
-                    if (xenFormatXMSerial(serialVal, chr) < 0)
+                    if (xenFormatXMSerial(serialVal, chr) < 0) {
+                        virConfFreeValue(serialVal);
                         goto cleanup;
+                    }
                 }
 
                 if (serialVal->list != NULL) {
