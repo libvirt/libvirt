@@ -1112,9 +1112,9 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             }
         }
     } else {
-        def->nconsoles = 1;
         if (VIR_ALLOC_N(def->consoles, 1) < 0)
             goto cleanup;
+        def->nconsoles = 1;
         if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
             goto cleanup;
         def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
