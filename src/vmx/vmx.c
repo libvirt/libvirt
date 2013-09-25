@@ -3096,7 +3096,8 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:description -> vmx:annotation */
     if (def->description != NULL) {
-        annotation = virVMXEscapeHexPipe(def->description);
+        if (!(annotation = virVMXEscapeHexPipe(def->description)))
+            goto cleanup;
 
         virBufferAsprintf(&buffer, "annotation = \"%s\"\n", annotation);
     }
