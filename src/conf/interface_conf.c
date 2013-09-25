@@ -309,9 +309,8 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        ret = virInterfaceDefParseDhcp(def, dhcp, ctxt);
-        if (ret != 0)
-           return ret;
+        if (virInterfaceDefParseDhcp(def, dhcp, ctxt) < 0)
+            return -1;
     }
 
     nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
@@ -332,8 +331,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
             goto error;
 
         ctxt->node = ipNodes[i];
-        ret = virInterfaceDefParseIp(ip, ctxt);
-        if (ret != 0) {
+        if (virInterfaceDefParseIp(ip, ctxt) < 0) {
             virInterfaceIpDefFree(ip);
             goto error;
         }
@@ -365,9 +363,8 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        ret = virInterfaceDefParseDhcp(def, dhcp, ctxt);
-        if (ret != 0)
-           return ret;
+        if (virInterfaceDefParseDhcp(def, dhcp, ctxt) < 0)
+            return -1;
     }
 
     nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
@@ -388,8 +385,7 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
             goto error;
 
         ctxt->node = ipNodes[i];
-        ret = virInterfaceDefParseIp(ip, ctxt);
-        if (ret != 0) {
+        if (virInterfaceDefParseIp(ip, ctxt) < 0) {
             virInterfaceIpDefFree(ip);
             goto error;
         }
