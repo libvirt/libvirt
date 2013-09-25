@@ -1014,6 +1014,7 @@ cleanup:
         for (i = 0; i < parser.nstate; i++) {
             VIR_FREE(parser.state[i].key);
         }
+        VIR_FREE(parser.state);
     }
 
     VIR_DEBUG("result=%p", parser.head);
