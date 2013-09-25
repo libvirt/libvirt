@@ -44,7 +44,8 @@ static int testLockSpaceCreate(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -65,7 +66,8 @@ static int testLockSpaceResourceLifecycle(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -98,7 +100,8 @@ static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -143,7 +146,8 @@ static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -180,7 +184,8 @@ static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -233,7 +238,8 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(LOCKSPACE_DIR);
+    if (!(lockspace = virLockSpaceNew(LOCKSPACE_DIR)))
+        goto cleanup;
 
     if (!virFileIsDir(LOCKSPACE_DIR))
         goto cleanup;
@@ -292,7 +298,8 @@ static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
 
     rmdir(LOCKSPACE_DIR);
 
-    lockspace = virLockSpaceNew(NULL);
+    if (!(lockspace = virLockSpaceNew(NULL)))
+        goto cleanup;
 
     if (mkdir(LOCKSPACE_DIR, 0700) < 0)
         goto cleanup;
