@@ -594,11 +594,11 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     if ((n = virXPathNodeSet("./host", ctxt, &nodeset)) < 0)
         goto cleanup;
-    source->nhost = n;
 
-    if (source->nhost) {
-        if (VIR_ALLOC_N(source->hosts, source->nhost) < 0)
+    if (n) {
+        if (VIR_ALLOC_N(source->hosts, n) < 0)
             goto cleanup;
+        source->nhost = n;
 
         for (i = 0; i < source->nhost; i++) {
             name = virXMLPropString(nodeset[i], "name");
