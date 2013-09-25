@@ -589,7 +589,10 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
     if (VIR_STRNDUP(comm, base, ctxt->cur - base) < 0)
         return -1;
-    virConfAddEntry(ctxt->conf, NULL, NULL, comm);
+    if (virConfAddEntry(ctxt->conf, NULL, NULL, comm) == NULL) {
+        VIR_FREE(comm);
+        return -1;
+    }
     return 0;
 }
 
