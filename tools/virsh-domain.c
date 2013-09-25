@@ -4610,7 +4610,8 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    st = virStreamNew(ctl->conn, 0);
+    if (!(st = virStreamNew(ctl->conn, 0)))
+        goto cleanup;
 
     mime = virDomainScreenshot(dom, st, screen, flags);
     if (!mime) {
@@ -4619,8 +4620,8 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!file) {
-        if (!(file=vshGenFileName(ctl, dom, mime)))
-            return false;
+        if (!(file = vshGenFileName(ctl, dom, mime)))
+            goto cleanup;
         generated = true;
     }
 
