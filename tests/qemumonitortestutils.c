@@ -793,6 +793,7 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
     src->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     src->data.nix.path = (char *)path;
     src->data.nix.listen = false;
+    path = NULL;
 
     if (virNetSocketListen(test->server, 1) < 0)
         goto error;
@@ -801,6 +802,7 @@ cleanup:
     return test;
 
 error:
+    VIR_FREE(path);
     VIR_FREE(tmpdir_template);
     qemuMonitorTestFree(test);
     test = NULL;
