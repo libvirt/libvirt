@@ -862,7 +862,6 @@ static int virJSONParserHandleStartMap(void *ctx)
 
     if (VIR_REALLOC_N(parser->state,
                       parser->nstate + 1) < 0) {
-        virJSONValueFree(value);
         return 0;
     }
 
