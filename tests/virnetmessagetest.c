@@ -327,6 +327,8 @@ static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
     };
     int ret = -1;
 
+    memset(&err, 0, sizeof(err));
+
     if (!msg)
         return -1;
 
@@ -334,7 +336,6 @@ static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
     if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
         goto cleanup;
     memcpy(msg->buffer, input_buffer, msg->bufferLength);
-    memset(&err, 0, sizeof(err));
 
     if (virNetMessageDecodeLength(msg) < 0) {
         VIR_DEBUG("Failed to decode message header");
