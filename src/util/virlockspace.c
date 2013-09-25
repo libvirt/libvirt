@@ -102,6 +102,7 @@ static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
         }
     }
 
+    VIR_FREE(res->owners);
     VIR_FORCE_CLOSE(res->fd);
     VIR_FREE(res->path);
     VIR_FREE(res->name);
