@@ -73,51 +73,38 @@ testCapsInit(void)
 static int
 testCompareFiles(const char *vmx, const char *xml)
 {
-    int result = -1;
+    int ret = -1;
     char *vmxData = NULL;
     char *xmlData = NULL;
     char *formatted = NULL;
     virDomainDefPtr def = NULL;
-    virErrorPtr err = NULL;
 
-    if (virtTestLoadFile(vmx, &vmxData) < 0) {
-        goto failure;
-    }
+    if (virtTestLoadFile(vmx, &vmxData) < 0)
+        goto cleanup;
 
-    if (virtTestLoadFile(xml, &xmlData) < 0) {
-        goto failure;
-    }
+    if (virtTestLoadFile(xml, &xmlData) < 0)
+        goto cleanup;
 
-    def = virVMXParseConfig(&ctx, xmlopt, vmxData);
+    if (!(def = virVMXParseConfig(&ctx, xmlopt, vmxData)))
+        goto cleanup;
 
-    if (def == NULL) {
-        err = virGetLastError();
-        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
-        goto failure;
-    }
-
-    formatted = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
-
-    if (formatted == NULL) {
-        err = virGetLastError();
-        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
-        goto failure;
-    }
+    if (!(formatted = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
+        goto cleanup;
 
     if (STRNEQ(xmlData, formatted)) {
         virtTestDifference(stderr, xmlData, formatted);
-        goto failure;
+        goto cleanup;
     }
 
-    result = 0;
+    ret = 0;
 
-  failure:
+  cleanup:
     VIR_FREE(vmxData);
     VIR_FREE(xmlData);
     VIR_FREE(formatted);
     virDomainDefFree(def);
 
-    return result;
+    return ret;
 }
 
 struct testInfo {
@@ -128,7 +115,7 @@ struct testInfo {
 static int
 testCompareHelper(const void *data)
 {
-    int result = -1;
+    int ret = -1;
     const struct testInfo *info = data;
     char *vmx = NULL;
     char *xml = NULL;
@@ -140,13 +127,13 @@ testCompareHelper(const void *data)
         goto cleanup;
     }
 
-    result = testCompareFiles(vmx, xml);
+    ret = testCompareFiles(vmx, xml);
 
   cleanup:
     VIR_FREE(vmx);
     VIR_FREE(xml);
 
-    return result;
+    return ret;
 }
 
 static char *
@@ -195,7 +182,7 @@ testParseVMXFileName(const char *fileName, void *opaque ATTRIBUTE_UNUSED)
 static int
 mymain(void)
 {
-    int result = 0;
+    int ret = 0;
 
 # define DO_TEST(_in, _out)                                                   \
         do {                                                                  \
@@ -203,7 +190,7 @@ mymain(void)
             virResetLastError();                                              \
             if (virtTestRun("VMware VMX-2-XML "_in" -> "_out, 1,              \
                             testCompareHelper, &info) < 0) {                  \
-                result = -1;                                                  \
+                ret = -1;                                                     \
             }                                                                 \
         } while (0)
 
@@ -299,7 +286,7 @@ mymain(void)
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 
-    return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIRT_TEST_MAIN(mymain)
