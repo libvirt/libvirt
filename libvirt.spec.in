@@ -1723,6 +1723,8 @@ fi
 
 %files docs
 %defattr(-, root, root)
+%doc AUTHORS ChangeLog.gz NEWS README TODO
+
 # Website
 %dir %{_datadir}/doc/libvirt-docs-%{version}
 %dir %{_datadir}/doc/libvirt-docs-%{version}/html
@@ -1739,7 +1741,6 @@ fi
 %files daemon
 %defattr(-, root, root)
 
-%doc AUTHORS ChangeLog.gz NEWS README COPYING COPYING.LESSER TODO
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
     %if %{with_network}
@@ -2011,7 +2012,7 @@ fi
 
 %files client -f %{name}.lang
 %defattr(-, root, root)
-%doc AUTHORS ChangeLog.gz NEWS README COPYING COPYING.LESSER TODO
+%doc COPYING COPYING.LESSER
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %if %{with_lxc}
@@ -2101,7 +2102,6 @@ fi
 %files python
 %defattr(-, root, root)
 
-%doc AUTHORS NEWS README COPYING COPYING.LESSER
 %{_libdir}/python*/site-packages/libvirt.py*
 %{_libdir}/python*/site-packages/libvirt_qemu.py*
 %{_libdir}/python*/site-packages/libvirt_lxc.py*
