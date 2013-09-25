@@ -878,6 +878,8 @@ qemuMonitorTestNew(bool json,
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
 
+    memset(&src, 0, sizeof(src));
+
     if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
         goto error;
 
@@ -914,6 +916,8 @@ qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
+
+    memset(&src, 0, sizeof(src));
 
     if (!(test = qemuMonitorCommonTestNew(xmlopt, NULL, &src)))
         goto error;
