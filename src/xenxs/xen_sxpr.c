@@ -1055,10 +1055,8 @@ xenParseSxprPCI(virDomainDefPtr def,
         dev->source.subsys.u.pci.addr.slot = slotID;
         dev->source.subsys.u.pci.addr.function = funcID;
 
-        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
-            virDomainHostdevDefFree(dev);
+        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0)
             goto error;
-        }
 
         def->hostdevs[def->nhostdevs++] = dev;
     }
