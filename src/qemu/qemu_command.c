@@ -2560,6 +2560,28 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                 }
             }
             break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+            if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE &&
+                def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                /* Try to assign this bridge to 00:1E.0 (because that
+                * is its standard location on real hardware) unless
+                * it's already taken, but don't insist on it.
+                */
+                memset(&tmp_addr, 0, sizeof(tmp_addr));
+                tmp_addr.slot = 0x1E;
+                if (!qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
+                    if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr,
+                                                        flags, true, false) < 0)
+                        goto cleanup;
+                    def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                    def->controllers[i]->info.addr.pci.domain = 0;
+                    def->controllers[i]->info.addr.pci.bus = 0;
+                    def->controllers[i]->info.addr.pci.slot = 0x1E;
+                    def->controllers[i]->info.addr.pci.function = 0;
+                }
+            }
+            break;
         }
     }
 
