@@ -50,7 +50,8 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (virMutexInit(&priv.lock) < 0)
       goto fail;
 
-  id = xenGetDomIdFromSxprString(sexprData, xendConfigVersion);
+  if (xenGetDomIdFromSxprString(sexprData, xendConfigVersion, &id) < 0)
+      goto fail;
   xenUnifiedLock(&priv);
   tty = xenStoreDomainGetConsolePath(conn, id);
   vncport = xenStoreDomainGetVNCPort(conn, id);

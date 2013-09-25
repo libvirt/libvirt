@@ -40,30 +40,33 @@
 #include "virstring.h"
 
 /* Get a domain id from a S-expression string */
-int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion)
+int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id)
 {
     struct sexpr *root = string2sexpr(sexpr);
+    int ret;
+
+    *id = -1;
 
     if (!root)
         return -1;
 
-    int id = xenGetDomIdFromSxpr(root, xendConfigVersion);
+    ret = xenGetDomIdFromSxpr(root, xendConfigVersion, id);
     sexpr_free(root);
-    return id;
+    return ret;
 }
 
 /* Get a domain id from a S-expression */
-int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion)
+int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion, int *id)
 {
-    int id = -1;
     const char * tmp = sexpr_node(root, "domain/domid");
     if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("domain information incomplete, missing id"));
+        return -1;
     } else {
-      id = tmp ? sexpr_int(root, "domain/domid") : -1;
+        *id = tmp ? sexpr_int(root, "domain/domid") : -1;
+        return 0;
     }
-    return id;
 }
 
 /*****************************************************************

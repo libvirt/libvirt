@@ -1604,7 +1604,8 @@ xenUnifiedConnectDomainXMLFromNative(virConnectPtr conn,
 
         def = xenParseXM(conf, priv->xendConfigVersion, priv->caps);
     } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
-        id = xenGetDomIdFromSxprString(config, priv->xendConfigVersion);
+        if (xenGetDomIdFromSxprString(config, priv->xendConfigVersion, &id) < 0)
+            goto cleanup;
         xenUnifiedLock(priv);
         tty = xenStoreDomainGetConsolePath(conn, id);
         vncport = xenStoreDomainGetVNCPort(conn, id);

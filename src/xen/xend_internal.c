@@ -1561,7 +1561,7 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
 {
     struct sexpr *root;
     xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainDefPtr def;
+    virDomainDefPtr def = NULL;
     int id;
     char * tty;
     int vncport;
@@ -1573,7 +1573,8 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
     if (root == NULL)
         return NULL;
 
-    id = xenGetDomIdFromSxpr(root, priv->xendConfigVersion);
+    if (xenGetDomIdFromSxpr(root, priv->xendConfigVersion, &id) < 0)
+        goto cleanup;
     xenUnifiedLock(priv);
     if (sexpr_lookup(root, "domain/image/hvm"))
         tty = xenStoreDomainGetSerialConsolePath(conn, id);
@@ -3224,7 +3225,7 @@ xenDaemonDomainBlockPeek(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root = NULL;
     int fd = -1, ret = -1;
-    virDomainDefPtr def;
+    virDomainDefPtr def = NULL;
     int id;
     char * tty;
     int vncport;
@@ -3249,7 +3250,8 @@ xenDaemonDomainBlockPeek(virConnectPtr conn,
         return -1;
     }
 
-    id = xenGetDomIdFromSxpr(root, priv->xendConfigVersion);
+    if (xenGetDomIdFromSxpr(root, priv->xendConfigVersion, &id) < 0)
+        goto cleanup;
     xenUnifiedLock(priv);
     tty = xenStoreDomainGetConsolePath(conn, id);
     vncport = xenStoreDomainGetVNCPort(conn, id);

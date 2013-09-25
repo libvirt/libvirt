@@ -40,8 +40,8 @@ typedef enum {
 } xenConfigVersionEnum;
 
 /* helper functions to get the dom id from a sexpr */
-int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion);
-int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion);
+int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id);
+int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion, int *id);
 
 virDomainDefPtr xenParseSxprString(const char *sexpr, int xendConfigVersion,
                                    char *tty, int vncport);
