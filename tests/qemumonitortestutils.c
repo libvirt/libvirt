@@ -849,7 +849,6 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
     return 0;
 
 error:
-    qemuMonitorTestFree(test);
     return -1;
 }
 
