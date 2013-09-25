@@ -33,15 +33,12 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
 
     virResetLastError();
 
-    if (!(dev = virNWFilterDefParseString(NULL, inXmlData)))
+    if (!(dev = virNWFilterDefParseString(NULL, inXmlData))) {
+        if (expect_error) {
+            virResetLastError();
+            goto done;
+        }
         goto fail;
-
-    if (!!virGetLastError() != expect_error)
-        goto fail;
-
-    if (expect_error) {
-        /* need to suppress the errors */
-        virResetLastError();
     }
 
     if (!(actual = virNWFilterDefFormat(dev)))
@@ -52,6 +49,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
         goto fail;
     }
 
+ done:
     ret = 0;
 
  fail:
