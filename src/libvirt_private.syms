@@ -1448,6 +1448,7 @@ virInitctlSetRunLevel;
 
 
 # util/viriptables.h
+iptablesAddDontMasquerade;
 iptablesAddForwardAllowCross;
 iptablesAddForwardAllowIn;
 iptablesAddForwardAllowOut;
@@ -1458,6 +1459,7 @@ iptablesAddForwardRejectOut;
 iptablesAddOutputFixUdpChecksum;
 iptablesAddTcpInput;
 iptablesAddUdpInput;
+iptablesRemoveDontMasquerade;
 iptablesRemoveForwardAllowCross;
 iptablesRemoveForwardAllowIn;
 iptablesRemoveForwardAllowOut;

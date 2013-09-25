@@ -832,6 +832,94 @@ iptablesRemoveForwardMasquerade(virSocketAddr *netaddr,
 }
 
 
+/* Don't masquerade traffic coming from the network associated with the bridge
+ * if said traffic targets @destaddr.
+ */
+static int
+iptablesForwardDontMasquerade(virSocketAddr *netaddr,
+                              unsigned int prefix,
+                              const char *physdev,
+                              const char *destaddr,
+                              int action)
+{
+    int ret = -1;
+    char *networkstr = NULL;
+    virCommandPtr cmd = NULL;
+
+    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+        return -1;
+
+    if (!VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET)) {
+        /* Higher level code *should* guaranteee it's impossible to get here. */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
+                       networkstr);
+        goto cleanup;
+    }
+
+    cmd = iptablesCommandNew("nat", "POSTROUTING", AF_INET, action);
+
+    if (physdev && physdev[0])
+        virCommandAddArgList(cmd, "--out-interface", physdev, NULL);
+
+    virCommandAddArgList(cmd, "--source", networkstr,
+                         "--destination", destaddr, "--jump", "RETURN", NULL);
+    ret = virCommandRun(cmd, NULL);
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(networkstr);
+    return ret;
+}
+
+/**
+ * iptablesAddDontMasquerade:
+ * @netaddr: the source network name
+ * @prefix: prefix (# of 1 bits) of netmask to apply to @netaddr
+ * @physdev: the physical output device or NULL
+ * @destaddr: the destination network not to masquerade for
+ *
+ * Add rules to the IP table context to avoid masquerading from
+ * @netaddr/@prefix to @destaddr on @physdev. @destaddr must be in a format
+ * directly consumable by iptables, it must not depend on user input or
+ * configuration.
+ *
+ * Returns 0 in case of success or an error code otherwise.
+ */
+int
+iptablesAddDontMasquerade(virSocketAddr *netaddr,
+                          unsigned int prefix,
+                          const char *physdev,
+                          const char *destaddr)
+{
+    return iptablesForwardDontMasquerade(netaddr, prefix, physdev, destaddr,
+                                         ADD);
+}
+
+/**
+ * iptablesRemoveDontMasquerade:
+ * @netaddr: the source network name
+ * @prefix: prefix (# of 1 bits) of netmask to apply to @netaddr
+ * @physdev: the physical output device or NULL
+ * @destaddr: the destination network not to masquerade for
+ *
+ * Remove rules from the IP table context that prevent masquerading from
+ * @netaddr/@prefix to @destaddr on @physdev. @destaddr must be in a format
+ * directly consumable by iptables, it must not depend on user input or
+ * configuration.
+ *
+ * Returns 0 in case of success or an error code otherwise.
+ */
+int
+iptablesRemoveDontMasquerade(virSocketAddr *netaddr,
+                             unsigned int prefix,
+                             const char *physdev,
+                             const char *destaddr)
+{
+    return iptablesForwardDontMasquerade(netaddr, prefix, physdev, destaddr,
+                                         REMOVE);
+}
+
+
 static int
 iptablesOutputFixUdpChecksum(const char *iface,
                              int port,

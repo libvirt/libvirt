@@ -94,6 +94,14 @@ int              iptablesRemoveForwardMasquerade (virSocketAddr *netaddr,
                                                   virSocketAddrRangePtr addr,
                                                   virPortRangePtr port,
                                                   const char *protocol);
+int              iptablesAddDontMasquerade       (virSocketAddr *netaddr,
+                                                  unsigned int prefix,
+                                                  const char *physdev,
+                                                  const char *destaddr);
+int              iptablesRemoveDontMasquerade    (virSocketAddr *netaddr,
+                                                  unsigned int prefix,
+                                                  const char *physdev,
+                                                  const char *destaddr);
 int              iptablesAddOutputFixUdpChecksum (const char *iface,
                                                   int port);
 int              iptablesRemoveOutputFixUdpChecksum (const char *iface,
