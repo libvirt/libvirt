@@ -127,6 +127,9 @@ out:
     return ret;
 }
 
+static const char networkLocalMulticast[] = "224.0.0.0/24";
+static const char networkLocalBroadcast[] = "255.255.255.255/32";
+
 int networkAddMasqueradingFirewallRules(virNetworkObjPtr network,
                                         virNetworkIpDefPtr ipdef)
 {
@@ -167,11 +170,20 @@ int networkAddMasqueradingFirewallRules(virNetworkObjPtr network,
     /*
      * Enable masquerading.
      *
-     * We need to end up with 3 rules in the table in this order
+     * We need to end up with 5 rules in the table in this order
      *
-     *  1. protocol=tcp with sport mapping restriction
-     *  2. protocol=udp with sport mapping restriction
-     *  3. generic any protocol
+     *  1. do not masquerade packets targeting 224.0.0.0/24
+     *  2. do not masquerade packets targeting 255.255.255.255/32
+     *  3. masquerade protocol=tcp with sport mapping restriction
+     *  4. masquerade protocol=udp with sport mapping restriction
+     *  5. generic, masquerade any protocol
+     *
+     * 224.0.0.0/24 is the local network multicast range. Packets are not
+     * forwarded outside.
+     *
+     * 255.255.255.255/32 is the broadcast address of any local network. Again,
+     * such packets are never forwarded, but strict DHCP clients don't accept
+     * DHCP replies with changed source ports.
      *
      * The sport mappings are required, because default IPtables
      * MASQUERADE maintain port numbers unchanged where possible.
@@ -238,8 +250,50 @@ int networkAddMasqueradingFirewallRules(virNetworkObjPtr network,
         goto masqerr5;
     }
 
+    /* exempt local network broadcast address as destination */
+    if (iptablesAddDontMasquerade(&ipdef->address,
+                                  prefix,
+                                  forwardIf,
+                                  networkLocalBroadcast) < 0) {
+        if (forwardIf)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to prevent local broadcast masquerading on %s"),
+                           forwardIf);
+        else
+            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                           _("failed to add iptables rule to prevent local broadcast masquerading"));
+        goto masqerr6;
+    }
+
+    /* exempt local multicast range as destination */
+    if (iptablesAddDontMasquerade(&ipdef->address,
+                                  prefix,
+                                  forwardIf,
+                                  networkLocalMulticast) < 0) {
+        if (forwardIf)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to prevent local multicast masquerading on %s"),
+                           forwardIf);
+        else
+            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                           _("failed to add iptables rule to prevent local multicast masquerading"));
+        goto masqerr7;
+    }
+
     return 0;
 
+ masqerr7:
+    iptablesRemoveDontMasquerade(&ipdef->address,
+                                 prefix,
+                                 forwardIf,
+                                 networkLocalBroadcast);
+ masqerr6:
+    iptablesRemoveForwardMasquerade(&ipdef->address,
+                                    prefix,
+                                    forwardIf,
+                                    &network->def->forward.addr,
+                                    &network->def->forward.port,
+                                    "tcp");
  masqerr5:
     iptablesRemoveForwardMasquerade(&ipdef->address,
                                     prefix,
@@ -275,6 +329,14 @@ void networkRemoveMasqueradingFirewallRules(virNetworkObjPtr network,
     const char *forwardIf = virNetworkDefForwardIf(network->def, 0);
 
     if (prefix >= 0) {
+        iptablesRemoveDontMasquerade(&ipdef->address,
+                                     prefix,
+                                     forwardIf,
+                                     networkLocalMulticast);
+        iptablesRemoveDontMasquerade(&ipdef->address,
+                                     prefix,
+                                     forwardIf,
+                                     networkLocalBroadcast);
         iptablesRemoveForwardMasquerade(&ipdef->address,
                                         prefix,
                                         forwardIf,
