@@ -79,18 +79,23 @@ testCompareXMLToXMLHelper(const void *data)
         goto cleanup;
 
     if (info->different) {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_out, false);
+        if (testCompareXMLToXMLFiles(xml_in, xml_out, false) < 0)
+            goto cleanup;
     } else {
-        ret = testCompareXMLToXMLFiles(xml_in, xml_in, false);
+        if (testCompareXMLToXMLFiles(xml_in, xml_in, false) < 0)
+            goto cleanup;
     }
     if (!info->inactive_only) {
         if (info->different) {
-            ret = testCompareXMLToXMLFiles(xml_in, xml_out, true);
+            if (testCompareXMLToXMLFiles(xml_in, xml_out, true) < 0)
+                goto cleanup;
         } else {
-            ret = testCompareXMLToXMLFiles(xml_in, xml_in, true);
+            if (testCompareXMLToXMLFiles(xml_in, xml_in, true) < 0)
+                goto cleanup;
         }
     }
 
+    ret = 0;
 cleanup:
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
