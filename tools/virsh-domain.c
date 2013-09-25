@@ -9074,6 +9074,20 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         /* If there is no port number for this type, then jump to the next
          * scheme */
         if (tmp)
+            port = 0;
+
+        /* Create our XPATH lookup for TLS Port (automatically skipped
+         * for unsupported schemes */
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "tlsPort") < 0)
+            goto cleanup;
+
+        /* Attempt to get the TLS port number */
+        tmp = virXPathInt(xpath, ctxt, &tls_port);
+        VIR_FREE(xpath);
+        if (tmp)
+            tls_port = 0;
+
+        if (!port && !tls_port)
             continue;
 
         /* Create our XPATH lookup for the current display's address */
@@ -9104,17 +9118,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             port -= 5900;
         }
 
-        /* Create our XPATH lookup for TLS Port (automatically skipped
-         * for unsupported schemes */
-        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "tlsPort") < 0)
-            goto cleanup;
-
-        /* Attempt to get the TLS port number */
-        tmp = virXPathInt(xpath, ctxt, &tls_port);
-        VIR_FREE(xpath);
-        if (tmp)
-            tls_port = 0;
-
         /* Build up the full URI, starting with the scheme */
         virBufferAsprintf(&buf, "%s://", scheme[iter]);
 
@@ -9129,7 +9132,8 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, "%s", listen_addr);
 
         /* Add the port */
-        virBufferAsprintf(&buf, ":%d", port);
+        if (port)
+            virBufferAsprintf(&buf, ":%d", port);
 
         /* TLS Port */
         if (tls_port) {
