@@ -84,16 +84,19 @@ testCompareXMLToXMLHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    if (info->when & WHEN_INACTIVE) {
-        ret = testCompareXMLToXMLFiles(xml_in,
-                                       info->different ? xml_out : xml_in,
-                                       false);
-    }
-    if (info->when & WHEN_ACTIVE) {
-        ret = testCompareXMLToXMLFiles(xml_in,
-                                       info->different ? xml_out : xml_in,
-                                       true);
-    }
+    if ((info->when & WHEN_INACTIVE) &&
+        testCompareXMLToXMLFiles(xml_in,
+                                 info->different ? xml_out : xml_in,
+                                 false) < 0)
+        goto cleanup;
+
+    if ((info->when & WHEN_ACTIVE) &&
+        testCompareXMLToXMLFiles(xml_in,
+                                 info->different ? xml_out : xml_in,
+                                 true) < 0)
+        goto cleanup;
+
+    ret = 0;
 
 cleanup:
     VIR_FREE(xml_in);
