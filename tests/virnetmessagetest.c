@@ -327,6 +327,9 @@ static int testMessagePayloadDecode(const void *args ATTRIBUTE_UNUSED)
     };
     int ret = -1;
 
+    if (!msg)
+        return -1;
+
     msg->bufferLength = 4;
     if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
         goto cleanup;
@@ -475,6 +478,9 @@ static int testMessagePayloadStreamEncode(const void *args ATTRIBUTE_UNUSED)
         'd', 'o', 'g',
     };
     int ret = -1;
+
+    if (!msg)
+        return -1;
 
     msg->header.prog = 0x11223344;
     msg->header.vers = 0x01;
