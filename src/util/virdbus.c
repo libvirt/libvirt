@@ -601,8 +601,10 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             if (virDBusTypeStackPush(&stack, &nstack,
                                      iter, types,
-                                     nstruct, narray) < 0)
+                                     nstruct, narray) < 0) {
+                VIR_FREE(newiter);
                 goto cleanup;
+            }
             VIR_FREE(contsig);
             iter = newiter;
             newiter = NULL;
@@ -625,8 +627,10 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             if (virDBusTypeStackPush(&stack, &nstack,
                                      iter, types,
-                                     nstruct, narray) < 0)
+                                     nstruct, narray) < 0) {
+                VIR_FREE(newiter);
                 goto cleanup;
+            }
             iter = newiter;
             newiter = NULL;
             types = vsig;
@@ -657,8 +661,10 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 
             if (virDBusTypeStackPush(&stack, &nstack,
                                      iter, types,
-                                     nstruct, narray) < 0)
+                                     nstruct, narray) < 0) {
+                VIR_FREE(newiter);
                 goto cleanup;
+            }
             VIR_FREE(contsig);
             iter = newiter;
             newiter = NULL;
@@ -678,6 +684,17 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
     ret = 0;
 
 cleanup:
+    while (nstack > 0) {
+        DBusMessageIter *thisiter = iter;
+        VIR_DEBUG("Popping iter=%p", iter);
+        ignore_value(virDBusTypeStackPop(&stack, &nstack, &iter,
+                                         &types, &nstruct, &narray));
+        VIR_DEBUG("Popped iter=%p", iter);
+
+        if (thisiter != rootiter)
+            VIR_FREE(thisiter);
+    }
+
     virDBusTypeStackFree(&stack, &nstack);
     VIR_FREE(contsig);
     VIR_FREE(newiter);
