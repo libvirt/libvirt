@@ -2534,27 +2534,32 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     char *addrStr = NULL;
     qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCIE;
 
-    /* Verify that the first SATA controller is at 00:1F.2 */
-    /* the q35 machine type *always* has a SATA controller at this address */
     for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
-            def->controllers[i]->idx == 0) {
-            if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-                if (def->controllers[i]->info.addr.pci.domain != 0 ||
-                    def->controllers[i]->info.addr.pci.bus != 0 ||
-                    def->controllers[i]->info.addr.pci.slot != 0x1F ||
-                    def->controllers[i]->info.addr.pci.function != 2) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Primary SATA controller must have PCI address 0:0:1f.2"));
-                    goto cleanup;
+        switch (def->controllers[i]->type) {
+        case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+            /* Verify that the first SATA controller is at 00:1F.2 the
+             * q35 machine type *always* has a SATA controller at this
+             * address.
+             */
+            if (def->controllers[i]->idx == 0) {
+                if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                    if (def->controllers[i]->info.addr.pci.domain != 0 ||
+                        def->controllers[i]->info.addr.pci.bus != 0 ||
+                        def->controllers[i]->info.addr.pci.slot != 0x1F ||
+                        def->controllers[i]->info.addr.pci.function != 2) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("Primary SATA controller must have PCI address 0:0:1f.2"));
+                        goto cleanup;
+                    }
+                } else {
+                    def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                    def->controllers[i]->info.addr.pci.domain = 0;
+                    def->controllers[i]->info.addr.pci.bus = 0;
+                    def->controllers[i]->info.addr.pci.slot = 0x1F;
+                    def->controllers[i]->info.addr.pci.function = 2;
                 }
-            } else {
-                def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-                def->controllers[i]->info.addr.pci.domain = 0;
-                def->controllers[i]->info.addr.pci.bus = 0;
-                def->controllers[i]->info.addr.pci.slot = 0x1F;
-                def->controllers[i]->info.addr.pci.function = 2;
             }
+            break;
         }
     }
 
