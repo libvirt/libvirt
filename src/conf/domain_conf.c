@@ -6905,17 +6905,17 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
-                if (mode == NULL)
+                if (!mode)
                     mode = virXMLPropString(cur, "mode");
 
-                switch (def->type) {
+                switch ((enum virDomainChrType) def->type) {
                 case VIR_DOMAIN_CHR_TYPE_PTY:
                 case VIR_DOMAIN_CHR_TYPE_DEV:
                 case VIR_DOMAIN_CHR_TYPE_FILE:
                 case VIR_DOMAIN_CHR_TYPE_PIPE:
                 case VIR_DOMAIN_CHR_TYPE_UNIX:
                     /* PTY path is only parsed from live xml.  */
-                    if (path == NULL &&
+                    if (!path  &&
                         (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
                          !(flags & VIR_DOMAIN_XML_INACTIVE)))
                         path = virXMLPropString(cur, "path");
@@ -6924,27 +6924,32 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
                 case VIR_DOMAIN_CHR_TYPE_UDP:
                 case VIR_DOMAIN_CHR_TYPE_TCP:
-                    if (mode == NULL ||
-                        STREQ((const char *)mode, "connect")) {
-
-                        if (connectHost == NULL)
+                    if (!mode || STREQ(mode, "connect")) {
+                        if (!connectHost)
                             connectHost = virXMLPropString(cur, "host");
-                        if (connectService == NULL)
+                        if (!connectService)
                             connectService = virXMLPropString(cur, "service");
-                    } else if (STREQ((const char *)mode, "bind")) {
-                        if (bindHost == NULL)
+                    } else if (STREQ(mode, "bind")) {
+                        if (!bindHost)
                             bindHost = virXMLPropString(cur, "host");
-                        if (bindService == NULL)
+                        if (!bindService)
                             bindService = virXMLPropString(cur, "service");
                     } else {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Unknown source mode '%s'"),
-                                       mode);
+                                       _("Unknown source mode '%s'"), mode);
                         goto error;
                     }
 
                     if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
                         VIR_FREE(mode);
+                    break;
+
+                case VIR_DOMAIN_CHR_TYPE_LAST:
+                case VIR_DOMAIN_CHR_TYPE_NULL:
+                case VIR_DOMAIN_CHR_TYPE_VC:
+                case VIR_DOMAIN_CHR_TYPE_STDIO:
+                case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+                    break;
                 }
 
                 /* Check for an optional seclabel override in <source/>. */
@@ -6963,7 +6968,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     ctxt->node = saved_node;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
-                if (protocol == NULL)
+                if (!protocol)
                     protocol = virXMLPropString(cur, "type");
             } else {
                 remaining++;
@@ -6972,11 +6977,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         cur = cur->next;
     }
 
-    switch (def->type) {
+    switch ((enum virDomainChrType) def->type) {
+    case VIR_DOMAIN_CHR_TYPE_LAST:
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        /* Nada */
-        break;
-
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_VC:
         break;
 
@@ -6984,7 +6989,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (path == NULL &&
+        if (!path &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
@@ -6995,20 +7000,15 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         path = NULL;
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_STDIO:
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-        /* Nada */
-        break;
-
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (mode == NULL ||
-            STREQ(mode, "connect")) {
-            if (connectHost == NULL) {
+        if (!mode || STREQ(mode, "connect")) {
+            if (!connectHost) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Missing source host attribute for char device"));
                 goto error;
             }
-            if (connectService == NULL) {
+
+            if (!connectService) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Missing source service attribute for char device"));
                 goto error;
@@ -7020,12 +7020,13 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             connectService = NULL;
             def->data.tcp.listen = false;
         } else {
-            if (bindHost == NULL) {
+            if (!bindHost) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Missing source host attribute for char device"));
                 goto error;
             }
-            if (bindService == NULL) {
+
+            if (!bindService) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Missing source service attribute for char device"));
                 goto error;
@@ -7038,7 +7039,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             def->data.tcp.listen = true;
         }
 
-        if (protocol == NULL)
+        if (!protocol)
             def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
         else if ((def->data.tcp.protocol =
                   virDomainChrTcpProtocolTypeFromString(protocol)) < 0) {
@@ -7050,7 +7051,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (connectService == NULL) {
+        if (!connectService) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source service attribute for char device"));
             goto error;
