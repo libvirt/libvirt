@@ -11408,8 +11408,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected feature %s"),
-                           nodes[i]->name);
+                           _("unexpected feature '%s'"), nodes[i]->name);
             goto error;
         }
         def->features |= (1 << val);
@@ -11419,7 +11418,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 int eoi;
                 if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown value for attribute eoi: %s"),
+                                   _("unknown value for attribute eoi: '%s'"),
                                    tmp);
                     goto error;
                 }
