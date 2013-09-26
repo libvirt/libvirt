@@ -1241,6 +1241,12 @@ cleanup:
 # ifndef AFS_FS_MAGIC
 #  define AFS_FS_MAGIC 0x6B414653
 # endif
+# ifndef SMB_SUPER_MAGIC
+#  define SMB_SUPER_MAGIC 0x517B
+# endif
+# ifndef CIFS_SUPER_MAGIC
+#  define CIFS_SUPER_MAGIC 0xFF534D42
+# endif
 
 
 int virStorageFileIsSharedFSType(const char *path,
@@ -1304,6 +1310,12 @@ int virStorageFileIsSharedFSType(const char *path,
     if ((fstypes & VIR_STORAGE_FILE_SHFS_AFS) &&
         (sb.f_type == AFS_FS_MAGIC))
         return 1;
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_SMB) &&
+        (sb.f_type == SMB_SUPER_MAGIC))
+        return 1;
+    if ((fstypes & VIR_STORAGE_FILE_SHFS_CIFS) &&
+        (sb.f_type == CIFS_SUPER_MAGIC))
+        return 1;
 
     return 0;
 }
@@ -1322,7 +1334,9 @@ int virStorageFileIsSharedFS(const char *path)
                                         VIR_STORAGE_FILE_SHFS_NFS |
                                         VIR_STORAGE_FILE_SHFS_GFS2 |
                                         VIR_STORAGE_FILE_SHFS_OCFS |
-                                        VIR_STORAGE_FILE_SHFS_AFS);
+                                        VIR_STORAGE_FILE_SHFS_AFS |
+                                        VIR_STORAGE_FILE_SHFS_SMB |
+                                        VIR_STORAGE_FILE_SHFS_CIFS);
 }
 
 int virStorageFileIsClusterFS(const char *path)
