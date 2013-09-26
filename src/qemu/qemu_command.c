@@ -11125,7 +11125,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 #define WANT_VALUE()                                                   \
     const char *val = progargv[++i];                                   \
     if (!val) {                                                        \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                        \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
                        _("missing value for %s argument"), arg);       \
         goto error;                                                    \
     }
