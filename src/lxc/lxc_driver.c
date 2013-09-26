@@ -3203,7 +3203,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     created = true;
 
     /* Labelling normally operates on src, but we need
-     * to actally label the dst here, so hack the config */
+     * to actually label the dst here, so hack the config */
     def->src = dst;
     if (virSecurityManagerSetImageLabel(driver->securityManager,
                                         vm->def, def) < 0)
