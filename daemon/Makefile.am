@@ -100,6 +100,7 @@ noinst_LTLIBRARIES = libvirtd_conf.la
 libvirtd_conf_la_SOURCES = $(LIBVIRTD_CONF_SOURCES)
 libvirtd_conf_la_CFLAGS = \
 	$(LIBXML_CFLAGS) \
+	$(XDR_CFLAGS) \
 	$(WARN_CFLAGS) $(PIE_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	$(NULL)
