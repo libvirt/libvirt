@@ -3384,6 +3384,7 @@ cleanup:
     virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
     if (dst && created && ret < 0)
         unlink(dst);
+    VIR_FREE(dst);
     return ret;
 }
 
