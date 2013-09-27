@@ -4488,7 +4488,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &to) < 0)
-        return false;
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "verbose"))
         verbose = true;
