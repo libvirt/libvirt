@@ -638,7 +638,10 @@ void remoteClientFreeFunc(void *data)
 
     /* Deregister event delivery callback */
     if (priv->conn) {
+        virIdentityPtr sysident = virIdentityGetSystem();
         int i;
+
+        virIdentitySetCurrent(sysident);
 
         for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
             if (priv->domainEventCallbackID[i] != -1) {
@@ -650,6 +653,9 @@ void remoteClientFreeFunc(void *data)
         }
 
         virConnectClose(priv->conn);
+
+        virIdentitySetCurrent(NULL);
+        virObjectUnref(sysident);
     }
 
     VIR_FREE(priv);
