@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-05-14 10:45+0800\n"
+"POT-Creation-Date: 2013-09-23 11:46+0000\n"
 "PO-Revision-Date: 2012-05-11 03:25+0000\n"
 "Last-Translator: Yulia <yulia.poyarkova@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.net/projects/p/libvirt/language/"
@@ -904,26 +904,26 @@ msgstr "не удалось инициализировать мьютекс"
 #: src/openvz/openvz_driver.c:1876 src/qemu/qemu_driver.c:1466
 #: src/qemu/qemu_driver.c:1485 src/qemu/qemu_driver.c:1537
 #: src/qemu/qemu_driver.c:1617 src/qemu/qemu_driver.c:1714
-#: src/qemu/qemu_driver.c:1769 src/qemu/qemu_driver.c:1857
-#: src/qemu/qemu_driver.c:2074 src/qemu/qemu_driver.c:2085
-#: src/qemu/qemu_driver.c:2156 src/qemu/qemu_driver.c:2317
-#: src/qemu/qemu_driver.c:2821 src/qemu/qemu_driver.c:2880
-#: src/qemu/qemu_driver.c:3095 src/qemu/qemu_driver.c:3206
-#: src/qemu/qemu_driver.c:3297 src/qemu/qemu_driver.c:4516
-#: src/qemu/qemu_driver.c:7537 src/qemu/qemu_driver.c:7602
-#: src/qemu/qemu_driver.c:7625 src/qemu/qemu_driver.c:7687
-#: src/qemu/qemu_driver.c:7715 src/qemu/qemu_driver.c:7856
-#: src/qemu/qemu_driver.c:8217 src/qemu/qemu_driver.c:8352
-#: src/qemu/qemu_driver.c:8903 src/qemu/qemu_driver.c:9410
-#: src/qemu/qemu_driver.c:9445 src/qemu/qemu_driver.c:9507
-#: src/qemu/qemu_driver.c:9565 src/qemu/qemu_driver.c:9740
-#: src/qemu/qemu_driver.c:10126 src/qemu/qemu_driver.c:11447
-#: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11600
-#: src/qemu/qemu_driver.c:11719 src/qemu/qemu_driver.c:11752
-#: src/qemu/qemu_driver.c:11803 src/qemu/qemu_driver.c:11895
-#: src/qemu/qemu_driver.c:12281 src/qemu/qemu_driver.c:12653
-#: src/qemu/qemu_driver.c:12726 src/qemu/qemu_driver.c:12756
-#: src/qemu/qemu_driver.c:12802 src/qemu/qemu_migration.c:2615
+#: src/qemu/qemu_driver.c:1769 src/qemu/qemu_driver.c:1864
+#: src/qemu/qemu_driver.c:2081 src/qemu/qemu_driver.c:2092
+#: src/qemu/qemu_driver.c:2163 src/qemu/qemu_driver.c:2324
+#: src/qemu/qemu_driver.c:2828 src/qemu/qemu_driver.c:2887
+#: src/qemu/qemu_driver.c:3102 src/qemu/qemu_driver.c:3213
+#: src/qemu/qemu_driver.c:3304 src/qemu/qemu_driver.c:4523
+#: src/qemu/qemu_driver.c:7544 src/qemu/qemu_driver.c:7609
+#: src/qemu/qemu_driver.c:7632 src/qemu/qemu_driver.c:7694
+#: src/qemu/qemu_driver.c:7722 src/qemu/qemu_driver.c:7863
+#: src/qemu/qemu_driver.c:8224 src/qemu/qemu_driver.c:8359
+#: src/qemu/qemu_driver.c:8910 src/qemu/qemu_driver.c:9417
+#: src/qemu/qemu_driver.c:9452 src/qemu/qemu_driver.c:9514
+#: src/qemu/qemu_driver.c:9572 src/qemu/qemu_driver.c:9747
+#: src/qemu/qemu_driver.c:10133 src/qemu/qemu_driver.c:11454
+#: src/qemu/qemu_driver.c:11463 src/qemu/qemu_driver.c:11607
+#: src/qemu/qemu_driver.c:11726 src/qemu/qemu_driver.c:11759
+#: src/qemu/qemu_driver.c:11810 src/qemu/qemu_driver.c:11902
+#: src/qemu/qemu_driver.c:12288 src/qemu/qemu_driver.c:12660
+#: src/qemu/qemu_driver.c:12733 src/qemu/qemu_driver.c:12763
+#: src/qemu/qemu_driver.c:12809 src/qemu/qemu_migration.c:2615
 #: src/uml/uml_driver.c:2399 src/xen/xen_driver.c:2131
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -1424,7 +1424,7 @@ msgstr ""
 msgid "unknown interface type '%s'"
 msgstr "неизвестный тип интерфейса «%s»"
 
-#: src/conf/domain_conf.c:4494 src/qemu/qemu_command.c:6781
+#: src/conf/domain_conf.c:4494 src/qemu/qemu_command.c:6782
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "не удалось разобрать MAC-адрес «%s»"
@@ -2685,7 +2685,7 @@ msgid "Unable to format guestfwd port"
 msgstr "Ошибка форматирования порта guestfwd"
 
 #: src/conf/domain_conf.c:11716 src/conf/domain_conf.c:11747
-#: src/qemu/qemu_command.c:5084
+#: src/qemu/qemu_command.c:5085
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "недопустимый тип смарт-карты: %d"
@@ -2911,7 +2911,7 @@ msgstr "непредвиденный снимок домена %s уже сущ�
 msgid "unknown disk format '%s' for %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:14488 src/qemu/qemu_driver.c:8481
+#: src/conf/domain_conf.c:14488 src/qemu/qemu_driver.c:8488
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr ""
@@ -4847,7 +4847,7 @@ msgstr "Снимок «%s» уже существует"
 msgid "Could not create snapshot: %s"
 msgstr "Не удалось создать снимок: %s"
 
-#: src/esx/esx_driver.c:4668 src/qemu/qemu_driver.c:10822
+#: src/esx/esx_driver.c:4668 src/qemu/qemu_driver.c:10829
 #: src/vbox/vbox_tmpl.c:6340
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -6973,41 +6973,41 @@ msgstr "Не удалось задать память для домена"
 
 #: src/lxc/lxc_driver.c:823 src/lxc/lxc_driver.c:2971
 #: src/lxc/lxc_driver.c:3115 src/lxc/lxc_driver.c:3219
-#: src/lxc/lxc_driver.c:3323 src/qemu/qemu_driver.c:6198
-#: src/qemu/qemu_driver.c:6358 src/qemu/qemu_driver.c:6540
-#: src/qemu/qemu_driver.c:6647 src/qemu/qemu_driver.c:6809
-#: src/qemu/qemu_driver.c:6978 src/qemu/qemu_driver.c:7203
-#: src/qemu/qemu_driver.c:7419 src/qemu/qemu_driver.c:12665
+#: src/lxc/lxc_driver.c:3323 src/qemu/qemu_driver.c:6205
+#: src/qemu/qemu_driver.c:6365 src/qemu/qemu_driver.c:6547
+#: src/qemu/qemu_driver.c:6654 src/qemu/qemu_driver.c:6816
+#: src/qemu/qemu_driver.c:6985 src/qemu/qemu_driver.c:7210
+#: src/qemu/qemu_driver.c:7426 src/qemu/qemu_driver.c:12672
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "не удалось найти cgroup для домена %s"
 
-#: src/lxc/lxc_driver.c:835 src/qemu/qemu_driver.c:6554
+#: src/lxc/lxc_driver.c:835 src/qemu/qemu_driver.c:6561
 msgid "unable to set memory hard_limit tunable"
 msgstr "не удалось изменить hard_limit памяти"
 
-#: src/lxc/lxc_driver.c:842 src/qemu/qemu_driver.c:6567
+#: src/lxc/lxc_driver.c:842 src/qemu/qemu_driver.c:6574
 msgid "unable to set memory soft_limit tunable"
 msgstr "не удалось изменить soft_limit памяти"
 
-#: src/lxc/lxc_driver.c:849 src/qemu/qemu_driver.c:6580
+#: src/lxc/lxc_driver.c:849 src/qemu/qemu_driver.c:6587
 msgid "unable to set swap_hard_limit tunable"
 msgstr "не удалось изменить swap_hard_limit"
 
-#: src/lxc/lxc_driver.c:913 src/qemu/qemu_driver.c:6708
+#: src/lxc/lxc_driver.c:913 src/qemu/qemu_driver.c:6715
 msgid "unable to get memory hard limit"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:924 src/qemu/qemu_driver.c:6721
+#: src/lxc/lxc_driver.c:924 src/qemu/qemu_driver.c:6728
 msgid "unable to get memory soft limit"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:935 src/qemu/qemu_driver.c:6734
+#: src/lxc/lxc_driver.c:935 src/qemu/qemu_driver.c:6741
 msgid "unable to get swap hard limit"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:1212 src/network/bridge_driver.c:1832
-#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8025
+#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8032
 #: src/util/virnetdevmacvlan.c:933
 #, c-format
 msgid "cannot set bandwidth limits on %s"
@@ -7145,38 +7145,38 @@ msgstr "Домен уже работает"
 #: src/qemu/qemu_driver.c:1461 src/qemu/qemu_driver.c:1528
 #: src/qemu/qemu_driver.c:1588 src/qemu/qemu_driver.c:1669
 #: src/qemu/qemu_driver.c:1760 src/qemu/qemu_driver.c:1822
-#: src/qemu/qemu_driver.c:1906 src/qemu/qemu_driver.c:1935
-#: src/qemu/qemu_driver.c:1966 src/qemu/qemu_driver.c:2068
-#: src/qemu/qemu_driver.c:2145 src/qemu/qemu_driver.c:2191
-#: src/qemu/qemu_driver.c:2278 src/qemu/qemu_driver.c:2311
-#: src/qemu/qemu_driver.c:2815 src/qemu/qemu_driver.c:2874
-#: src/qemu/qemu_driver.c:2925 src/qemu/qemu_driver.c:2959
-#: src/qemu/qemu_driver.c:3085 src/qemu/qemu_driver.c:3450
-#: src/qemu/qemu_driver.c:3560 src/qemu/qemu_driver.c:3693
-#: src/qemu/qemu_driver.c:3772 src/qemu/qemu_driver.c:3863
-#: src/qemu/qemu_driver.c:3904 src/qemu/qemu_driver.c:4499
-#: src/qemu/qemu_driver.c:4830 src/qemu/qemu_driver.c:5055
-#: src/qemu/qemu_driver.c:5706 src/qemu/qemu_driver.c:5877
-#: src/qemu/qemu_driver.c:5904 src/qemu/qemu_driver.c:7596
-#: src/qemu/qemu_driver.c:7681 src/qemu/qemu_driver.c:7850
-#: src/qemu/qemu_driver.c:8208 src/qemu/qemu_driver.c:8269
-#: src/qemu/qemu_driver.c:8337 src/qemu/qemu_driver.c:8434
-#: src/qemu/qemu_driver.c:8797 src/qemu/qemu_driver.c:8887
-#: src/qemu/qemu_driver.c:9074 src/qemu/qemu_driver.c:9145
-#: src/qemu/qemu_driver.c:9386 src/qemu/qemu_driver.c:9436
-#: src/qemu/qemu_driver.c:9498 src/qemu/qemu_driver.c:9554
-#: src/qemu/qemu_driver.c:9611 src/qemu/qemu_driver.c:10343
-#: src/qemu/qemu_driver.c:10592 src/qemu/qemu_driver.c:10623
-#: src/qemu/qemu_driver.c:10661 src/qemu/qemu_driver.c:10701
-#: src/qemu/qemu_driver.c:10743 src/qemu/qemu_driver.c:10778
-#: src/qemu/qemu_driver.c:10808 src/qemu/qemu_driver.c:10851
-#: src/qemu/qemu_driver.c:10886 src/qemu/qemu_driver.c:10956
-#: src/qemu/qemu_driver.c:11324 src/qemu/qemu_driver.c:11441
-#: src/qemu/qemu_driver.c:11594 src/qemu/qemu_driver.c:11714
-#: src/qemu/qemu_driver.c:11889 src/qemu/qemu_driver.c:11984
-#: src/qemu/qemu_driver.c:12139 src/qemu/qemu_driver.c:12270
-#: src/qemu/qemu_driver.c:12355 src/qemu/qemu_driver.c:12455
-#: src/qemu/qemu_driver.c:12718 src/qemu/qemu_driver.c:12793
+#: src/qemu/qemu_driver.c:1913 src/qemu/qemu_driver.c:1942
+#: src/qemu/qemu_driver.c:1973 src/qemu/qemu_driver.c:2075
+#: src/qemu/qemu_driver.c:2152 src/qemu/qemu_driver.c:2198
+#: src/qemu/qemu_driver.c:2285 src/qemu/qemu_driver.c:2318
+#: src/qemu/qemu_driver.c:2822 src/qemu/qemu_driver.c:2881
+#: src/qemu/qemu_driver.c:2932 src/qemu/qemu_driver.c:2966
+#: src/qemu/qemu_driver.c:3092 src/qemu/qemu_driver.c:3457
+#: src/qemu/qemu_driver.c:3567 src/qemu/qemu_driver.c:3700
+#: src/qemu/qemu_driver.c:3779 src/qemu/qemu_driver.c:3870
+#: src/qemu/qemu_driver.c:3911 src/qemu/qemu_driver.c:4506
+#: src/qemu/qemu_driver.c:4837 src/qemu/qemu_driver.c:5062
+#: src/qemu/qemu_driver.c:5713 src/qemu/qemu_driver.c:5884
+#: src/qemu/qemu_driver.c:5911 src/qemu/qemu_driver.c:7603
+#: src/qemu/qemu_driver.c:7688 src/qemu/qemu_driver.c:7857
+#: src/qemu/qemu_driver.c:8215 src/qemu/qemu_driver.c:8276
+#: src/qemu/qemu_driver.c:8344 src/qemu/qemu_driver.c:8441
+#: src/qemu/qemu_driver.c:8804 src/qemu/qemu_driver.c:8894
+#: src/qemu/qemu_driver.c:9081 src/qemu/qemu_driver.c:9152
+#: src/qemu/qemu_driver.c:9393 src/qemu/qemu_driver.c:9443
+#: src/qemu/qemu_driver.c:9505 src/qemu/qemu_driver.c:9561
+#: src/qemu/qemu_driver.c:9618 src/qemu/qemu_driver.c:10350
+#: src/qemu/qemu_driver.c:10599 src/qemu/qemu_driver.c:10630
+#: src/qemu/qemu_driver.c:10668 src/qemu/qemu_driver.c:10708
+#: src/qemu/qemu_driver.c:10750 src/qemu/qemu_driver.c:10785
+#: src/qemu/qemu_driver.c:10815 src/qemu/qemu_driver.c:10858
+#: src/qemu/qemu_driver.c:10893 src/qemu/qemu_driver.c:10963
+#: src/qemu/qemu_driver.c:11331 src/qemu/qemu_driver.c:11448
+#: src/qemu/qemu_driver.c:11601 src/qemu/qemu_driver.c:11721
+#: src/qemu/qemu_driver.c:11896 src/qemu/qemu_driver.c:11991
+#: src/qemu/qemu_driver.c:12146 src/qemu/qemu_driver.c:12277
+#: src/qemu/qemu_driver.c:12362 src/qemu/qemu_driver.c:12462
+#: src/qemu/qemu_driver.c:12725 src/qemu/qemu_driver.c:12800
 #: src/test/test_driver.c:2129 src/uml/uml_driver.c:1641
 #: src/uml/uml_driver.c:1666 src/uml/uml_driver.c:1699
 #: src/uml/uml_driver.c:2042 src/uml/uml_driver.c:2160
@@ -7185,22 +7185,22 @@ msgstr "Домен уже работает"
 msgid "no domain with matching uuid '%s'"
 msgstr "нет домена с совпадающим UUID «%s»"
 
-#: src/lxc/lxc_driver.c:2190 src/qemu/qemu_driver.c:3473
-#: src/qemu/qemu_driver.c:3910
+#: src/lxc/lxc_driver.c:2190 src/qemu/qemu_driver.c:3480
+#: src/qemu/qemu_driver.c:3917
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "неизвестный тип виртуализации в определении домена «%d»"
 
-#: src/lxc/lxc_driver.c:2213 src/qemu/qemu_driver.c:3933
+#: src/lxc/lxc_driver.c:2213 src/qemu/qemu_driver.c:3940
 msgid "Failed to get security label"
 msgstr "Не удалось получить метку безопасности"
 
-#: src/lxc/lxc_driver.c:2244 src/qemu/qemu_driver.c:3965
+#: src/lxc/lxc_driver.c:2244 src/qemu/qemu_driver.c:3972
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "Длина строки модели безопасности превышает %d байт"
 
-#: src/lxc/lxc_driver.c:2253 src/qemu/qemu_driver.c:3975
+#: src/lxc/lxc_driver.c:2253 src/qemu/qemu_driver.c:3982
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "Длина строки DOI превышает %d байт"
@@ -7221,18 +7221,18 @@ msgid "Unknown release: %s"
 msgstr "Неизвестный выпуск: %s"
 
 #: src/lxc/lxc_driver.c:2818 src/lxc/lxc_driver.c:2966
-#: src/lxc/lxc_driver.c:3109 src/qemu/qemu_driver.c:6002
-#: src/qemu/qemu_driver.c:7198 src/qemu/qemu_driver.c:7413
+#: src/lxc/lxc_driver.c:3109 src/qemu/qemu_driver.c:6009
+#: src/qemu/qemu_driver.c:7205 src/qemu/qemu_driver.c:7420
 msgid "cgroup CPU controller is not mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2851 src/qemu/qemu_driver.c:7079
-#: src/qemu/qemu_driver.c:7300
+#: src/lxc/lxc_driver.c:2851 src/qemu/qemu_driver.c:7086
+#: src/qemu/qemu_driver.c:7307
 msgid "unable to get cpu bandwidth period tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2858 src/qemu/qemu_driver.c:7072
-#: src/qemu/qemu_driver.c:7307
+#: src/lxc/lxc_driver.c:2858 src/qemu/qemu_driver.c:7079
+#: src/qemu/qemu_driver.c:7314
 msgid "unable to get cpu bandwidth tunable"
 msgstr ""
 
@@ -7249,7 +7249,7 @@ msgid "Unable to set cpu bandwidth quota"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2908 src/qemu/qemu_cgroup.c:467
-#: src/qemu/qemu_cgroup.c:502 src/qemu/qemu_driver.c:7059
+#: src/qemu/qemu_cgroup.c:502 src/qemu/qemu_driver.c:7066
 #: src/xenapi/xenapi_utils.c:375 src/xenapi/xenapi_utils.c:379
 #, c-format
 msgid "%s"
@@ -7257,39 +7257,39 @@ msgstr ""
 
 #: src/lxc/lxc_driver.c:2948 src/lxc/lxc_driver.c:3090
 #: src/lxc/lxc_driver.c:3203 src/lxc/lxc_driver.c:3300
-#: src/qemu/qemu_driver.c:6181 src/qemu/qemu_driver.c:6335
-#: src/qemu/qemu_driver.c:6523 src/qemu/qemu_driver.c:6630
-#: src/qemu/qemu_driver.c:6792 src/qemu/qemu_driver.c:6955
-#: src/qemu/qemu_driver.c:7180 src/qemu/qemu_driver.c:7394
-#: src/qemu/qemu_driver.c:7931 src/qemu/qemu_driver.c:8094
-#: src/qemu/qemu_driver.c:12646
+#: src/qemu/qemu_driver.c:6188 src/qemu/qemu_driver.c:6342
+#: src/qemu/qemu_driver.c:6530 src/qemu/qemu_driver.c:6637
+#: src/qemu/qemu_driver.c:6799 src/qemu/qemu_driver.c:6962
+#: src/qemu/qemu_driver.c:7187 src/qemu/qemu_driver.c:7401
+#: src/qemu/qemu_driver.c:7938 src/qemu/qemu_driver.c:8101
+#: src/qemu/qemu_driver.c:12653
 #, c-format
 msgid "No such domain %s"
 msgstr "Домен %s не существует"
 
-#: src/lxc/lxc_driver.c:2985 src/qemu/qemu_driver.c:7217
+#: src/lxc/lxc_driver.c:2985 src/qemu/qemu_driver.c:7224
 msgid "unable to set cpu shares tunable"
 msgstr "не удалось задать cpu_shares"
 
-#: src/lxc/lxc_driver.c:3122 src/qemu/qemu_driver.c:7426
+#: src/lxc/lxc_driver.c:3122 src/qemu/qemu_driver.c:7433
 msgid "unable to get cpu shares tunable"
 msgstr "не удалось получить cpu_shares"
 
 #: src/lxc/lxc_driver.c:3213 src/lxc/lxc_driver.c:3317
-#: src/qemu/qemu_driver.c:6192 src/qemu/qemu_driver.c:6352
+#: src/qemu/qemu_driver.c:6199 src/qemu/qemu_driver.c:6359
 msgid "blkio cgroup isn't mounted"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:3231 src/lxc/lxc_driver.c:3254
-#: src/qemu/qemu_driver.c:6213 src/qemu/qemu_driver.c:6269
+#: src/qemu/qemu_driver.c:6220 src/qemu/qemu_driver.c:6276
 msgid "out of blkio weight range."
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3238 src/qemu/qemu_driver.c:6221
+#: src/lxc/lxc_driver.c:3238 src/qemu/qemu_driver.c:6228
 msgid "unable to set blkio weight tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3336 src/qemu/qemu_driver.c:6373
+#: src/lxc/lxc_driver.c:3336 src/qemu/qemu_driver.c:6380
 msgid "unable to get blkio weight"
 msgstr ""
 
@@ -7308,13 +7308,13 @@ msgid "Cannot create autostart directory %s"
 msgstr "Не удалось создать каталог автозапуска %s"
 
 #: src/lxc/lxc_driver.c:3519 src/libxl/libxl_driver.c:3476
-#: src/qemu/qemu_driver.c:5932 src/uml/uml_driver.c:2279
+#: src/qemu/qemu_driver.c:5939 src/uml/uml_driver.c:2279
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Не удалось создать символьную ссылку «%s» к «%s»"
 
 #: src/lxc/lxc_driver.c:3526 src/libxl/libxl_driver.c:3483
-#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5939
+#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5946
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2286
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -7337,7 +7337,7 @@ msgstr ""
 msgid "default"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3807 src/qemu/qemu_driver.c:11636
+#: src/lxc/lxc_driver.c:3807 src/qemu/qemu_driver.c:11643
 #: src/uml/uml_driver.c:2427 src/xen/xen_driver.c:2159
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -7372,21 +7372,21 @@ msgstr "ошибка чтения образа домена"
 msgid "failed to read libxl header"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:233 src/qemu/qemu_driver.c:4040
+#: src/libxl/libxl_driver.c:233 src/qemu/qemu_driver.c:4047
 msgid "image magic is incorrect"
 msgstr "недопустимое действие образа"
 
-#: src/libxl/libxl_driver.c:239 src/qemu/qemu_driver.c:4066
+#: src/libxl/libxl_driver.c:239 src/qemu/qemu_driver.c:4073
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "версия образа не поддерживается (%d > %d)"
 
-#: src/libxl/libxl_driver.c:246 src/qemu/qemu_driver.c:4073
+#: src/libxl/libxl_driver.c:246 src/qemu/qemu_driver.c:4080
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "недопустимая длина XML: %d"
 
-#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:4084
+#: src/libxl/libxl_driver.c:256 src/qemu/qemu_driver.c:4091
 msgid "failed to read XML"
 msgstr "ошибка чтения XML"
 
@@ -7400,7 +7400,7 @@ msgstr ""
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:637 src/qemu/qemu_driver.c:4458
+#: src/libxl/libxl_driver.c:637 src/qemu/qemu_driver.c:4465
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -7528,7 +7528,7 @@ msgstr ""
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:1695 src/qemu/qemu_driver.c:2002
+#: src/libxl/libxl_driver.c:1695 src/qemu/qemu_driver.c:2009
 #: src/uml/uml_driver.c:1711
 msgid "cannot set memory higher than max memory"
 msgstr "объём памяти не может превышать максимальный объём"
@@ -7591,7 +7591,7 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2113 src/qemu/qemu_driver.c:2885
+#: src/libxl/libxl_driver.c:2113 src/qemu/qemu_driver.c:2892
 msgid "cannot do managed save for transient domain"
 msgstr ""
 
@@ -7609,13 +7609,13 @@ msgstr ""
 msgid "cannot set vcpus on an inactive domain"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2258 src/qemu/qemu_driver.c:3480
+#: src/libxl/libxl_driver.c:2258 src/qemu/qemu_driver.c:3487
 #: src/xen/xend_internal.c:2228 src/xen/xm_internal.c:731
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 "не удалось определить максимальное число виртуальных процессоров для домена"
 
-#: src/libxl/libxl_driver.c:2268 src/qemu/qemu_driver.c:3490
+#: src/libxl/libxl_driver.c:2268 src/qemu/qemu_driver.c:3497
 #: src/xen/xend_internal.c:2233 src/xen/xm_internal.c:740
 #, c-format
 msgid ""
@@ -7647,7 +7647,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2563 src/libxl/libxl_driver.c:2606
-#: src/qemu/qemu_driver.c:4560 src/qemu/qemu_driver.c:4604
+#: src/qemu/qemu_driver.c:4567 src/qemu/qemu_driver.c:4611
 #: src/xen/xen_driver.c:1278 src/xen/xen_driver.c:1327
 #, c-format
 msgid "unsupported config type %s"
@@ -7661,16 +7661,16 @@ msgstr ""
 msgid "parsing xm config failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2783 src/qemu/qemu_driver.c:5061
+#: src/libxl/libxl_driver.c:2783 src/qemu/qemu_driver.c:5068
 #: src/uml/uml_driver.c:1948 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "нельзя удалить определение промежуточного домена"
 
-#: src/libxl/libxl_driver.c:2795 src/qemu/qemu_driver.c:5086
+#: src/libxl/libxl_driver.c:2795 src/qemu/qemu_driver.c:5093
 msgid "Failed to remove domain managed save image"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2800 src/qemu/qemu_driver.c:5092
+#: src/libxl/libxl_driver.c:2800 src/qemu/qemu_driver.c:5099
 #: tools/virsh.c:2896
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
@@ -7707,13 +7707,13 @@ msgstr "отсутствует путь к исходному диску"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5184
+#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5191
 #: src/uml/uml_driver.c:2065
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "шина диска «%s» не может быть автоматически настроена."
 
-#: src/libxl/libxl_driver.c:2946 src/qemu/qemu_driver.c:5190
+#: src/libxl/libxl_driver.c:2946 src/qemu/qemu_driver.c:5197
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "тип дискового устройства «%s» не может быть автоматически настроен"
@@ -7739,18 +7739,18 @@ msgstr ""
 msgid "device type '%s' cannot hot unplugged"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3025 src/qemu/qemu_driver.c:5280
+#: src/libxl/libxl_driver.c:3025 src/qemu/qemu_driver.c:5287
 #: src/uml/uml_driver.c:2070
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "тип устройства «%s» не может быть подключен"
 
-#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_driver.c:5461
+#: src/libxl/libxl_driver.c:3043 src/qemu/qemu_driver.c:5468
 #, c-format
 msgid "target %s already exists."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3056 src/qemu/qemu_driver.c:5528
+#: src/libxl/libxl_driver.c:3056 src/qemu/qemu_driver.c:5535
 msgid "persistent attach of device is not supported"
 msgstr ""
 
@@ -7759,54 +7759,54 @@ msgstr ""
 msgid "device type '%s' cannot be detached"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3094 src/qemu/qemu_driver.c:5549
+#: src/libxl/libxl_driver.c:3094 src/qemu/qemu_driver.c:5556
 #, c-format
 msgid "no target device %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3102 src/qemu/qemu_driver.c:5595
+#: src/libxl/libxl_driver.c:3102 src/qemu/qemu_driver.c:5602
 msgid "persistent detach of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3127 src/qemu/qemu_driver.c:5402
+#: src/libxl/libxl_driver.c:3127 src/qemu/qemu_driver.c:5409
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:5439
+#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:5446
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5615
+#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5622
 #, c-format
 msgid "target %s doesn't exist."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3161 src/qemu/qemu_driver.c:5622
+#: src/libxl/libxl_driver.c:3161 src/qemu/qemu_driver.c:5629
 msgid "this disk doesn't support update"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3182 src/qemu/qemu_driver.c:5667
+#: src/libxl/libxl_driver.c:3182 src/qemu/qemu_driver.c:5674
 msgid "persistent update of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3237 src/qemu/qemu_driver.c:5731
+#: src/libxl/libxl_driver.c:3237 src/qemu/qemu_driver.c:5738
 msgid "cannot modify device on transient domain"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3263 src/libxl/libxl_driver.c:3287
-#: src/qemu/qemu_driver.c:5768 src/qemu/qemu_driver.c:5789
+#: src/qemu/qemu_driver.c:5775 src/qemu/qemu_driver.c:5796
 #, c-format
 msgid "unknown domain modify action %d"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3454 src/qemu/qemu_driver.c:5910
+#: src/libxl/libxl_driver.c:3454 src/qemu/qemu_driver.c:5917
 #: src/uml/uml_driver.c:2257
 msgid "cannot set autostart for transient domain"
 msgstr "нельзя задать автозапуск для промежуточного домена"
 
-#: src/libxl/libxl_driver.c:3469 src/qemu/qemu_driver.c:5925
+#: src/libxl/libxl_driver.c:3469 src/qemu/qemu_driver.c:5932
 #: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2272
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -8907,7 +8907,7 @@ msgstr "Не удалось установить значение секрета
 msgid "Failed to set %s for %s: %d"
 msgstr "Не удалось присвоить атрибуты из %s"
 
-#: src/openvz/openvz_driver.c:1893 src/qemu/qemu_driver.c:7873
+#: src/openvz/openvz_driver.c:1893 src/qemu/qemu_driver.c:7880
 #: src/test/test_driver.c:2858
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
@@ -9113,16 +9113,16 @@ msgid ""
 "support to enable this feature."
 msgstr ""
 
-#: src/qemu/qemu_agent.c:196 src/qemu/qemu_monitor.c:283
+#: src/qemu/qemu_agent.c:196 src/qemu/qemu_monitor.c:278
 msgid "failed to create socket"
 msgstr "не удалось создать сокет"
 
-#: src/qemu/qemu_agent.c:202 src/qemu/qemu_monitor.c:758
+#: src/qemu/qemu_agent.c:202 src/qemu/qemu_monitor.c:753
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Не удалось перевести монитор в неблокирующий режим"
 
 #: src/qemu/qemu_agent.c:208 src/qemu/qemu_agent.c:273
-#: src/qemu/qemu_monitor.c:753
+#: src/qemu/qemu_monitor.c:748
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Не удалось задать флаг close-on-exec для монитора"
 
@@ -9131,15 +9131,15 @@ msgstr "Не удалось задать флаг close-on-exec для мони�
 msgid "Agent path %s too big for destination"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:242 src/qemu/qemu_monitor.c:309
+#: src/qemu/qemu_agent.c:242 src/qemu/qemu_monitor.c:304
 msgid "failed to connect to monitor socket"
 msgstr "ошибка подключения к сокету монитора"
 
-#: src/qemu/qemu_agent.c:249 src/qemu/qemu_monitor.c:316
+#: src/qemu/qemu_agent.c:249 src/qemu/qemu_monitor.c:311
 msgid "monitor socket did not show up."
 msgstr "сокет монитора не показан."
 
-#: src/qemu/qemu_agent.c:267 src/qemu/qemu_monitor.c:334
+#: src/qemu/qemu_agent.c:267 src/qemu/qemu_monitor.c:329
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Не удалось открыть путь %s"
@@ -9172,54 +9172,54 @@ msgstr ""
 msgid "Cannot connect to agent socket"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:512 src/qemu/qemu_monitor.c:487
+#: src/qemu/qemu_agent.c:512 src/qemu/qemu_monitor.c:482
 msgid "Unable to write to monitor"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:552 src/qemu/qemu_monitor.c:527
+#: src/qemu/qemu_agent.c:552 src/qemu/qemu_monitor.c:522
 msgid "Unable to read from monitor"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:607 src/qemu/qemu_monitor.c:582
+#: src/qemu/qemu_agent.c:607 src/qemu/qemu_monitor.c:577
 #, c-format
 msgid "event from unexpected fd %d!=%d / watch %d!=%d"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:647 src/qemu/qemu_monitor.c:617
+#: src/qemu/qemu_agent.c:647 src/qemu/qemu_monitor.c:612
 msgid "End of file from monitor"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:655 src/qemu/qemu_monitor.c:625
+#: src/qemu/qemu_agent.c:655 src/qemu/qemu_monitor.c:620
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:661 src/qemu/qemu_monitor.c:631
+#: src/qemu/qemu_agent.c:661 src/qemu/qemu_monitor.c:626
 #, c-format
 msgid "Unhandled event %d for monitor fd %d"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:675 src/qemu/qemu_monitor.c:645
+#: src/qemu/qemu_agent.c:675 src/qemu/qemu_monitor.c:640
 msgid "Error while processing monitor IO"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:732 src/qemu/qemu_monitor.c:703
+#: src/qemu/qemu_agent.c:732 src/qemu/qemu_monitor.c:698
 msgid "EOF notify callback must be supplied"
 msgstr "необходимо предоставить обратный вызов уведомления EOF"
 
-#: src/qemu/qemu_agent.c:743 src/qemu/qemu_monitor.c:714
+#: src/qemu/qemu_agent.c:743 src/qemu/qemu_monitor.c:709
 msgid "cannot initialize monitor mutex"
 msgstr "не удалось инициализировать мьютекс монитора"
 
-#: src/qemu/qemu_agent.c:749 src/qemu/qemu_monitor.c:720
+#: src/qemu/qemu_agent.c:749 src/qemu/qemu_monitor.c:715
 msgid "cannot initialize monitor condition"
 msgstr "не удалось инициализировать состояние монитора"
 
-#: src/qemu/qemu_agent.c:772 src/qemu/qemu_monitor.c:744
+#: src/qemu/qemu_agent.c:772 src/qemu/qemu_monitor.c:739
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "ошибка обработки типа монитора: %s"
 
-#: src/qemu/qemu_agent.c:790 src/qemu/qemu_monitor.c:770
+#: src/qemu/qemu_agent.c:790 src/qemu/qemu_monitor.c:765
 msgid "unable to register monitor events"
 msgstr "ошибка регистрации событий монитора"
 
@@ -9227,7 +9227,7 @@ msgstr "ошибка регистрации событий монитора"
 msgid "Guest agent not available for now"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:881 src/qemu/qemu_monitor.c:871
+#: src/qemu/qemu_agent.c:881 src/qemu/qemu_monitor.c:866
 msgid "Unable to wait on monitor condition"
 msgstr ""
 
@@ -9288,22 +9288,22 @@ msgid "failed to add ebtables rule to allow routing to '%s'"
 msgstr ""
 "не удалось добавить правило ebtables для разрешения маршрутизации на «%s»"
 
-#: src/qemu/qemu_capabilities.c:306 src/qemu/qemu_capabilities.c:1482
-#: src/qemu/qemu_capabilities.c:1564
+#: src/qemu/qemu_capabilities.c:307 src/qemu/qemu_capabilities.c:1485
+#: src/qemu/qemu_capabilities.c:1567
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "Не найден двоичный компонент QEMU %s"
 
-#: src/qemu/qemu_capabilities.c:1208
+#: src/qemu/qemu_capabilities.c:1211
 msgid "this qemu binary requires libvirt to be compiled with yajl"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:1345
+#: src/qemu/qemu_capabilities.c:1348
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:1558
+#: src/qemu/qemu_capabilities.c:1561
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr ""
@@ -9383,8 +9383,8 @@ msgid "Unable to set cpuset.mems for domain %s"
 msgstr ""
 
 #: src/qemu/qemu_cgroup.c:491 src/qemu/qemu_cgroup.c:582
-#: src/qemu/qemu_driver.c:5156 src/qemu/qemu_driver.c:5385
-#: src/qemu/qemu_driver.c:10133 src/qemu/qemu_hotplug.c:1081
+#: src/qemu/qemu_driver.c:5163 src/qemu/qemu_driver.c:5392
+#: src/qemu/qemu_driver.c:10140 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1659 src/qemu/qemu_hotplug.c:1763
 #: src/qemu/qemu_migration.c:3203
 #, c-format
@@ -9563,7 +9563,7 @@ msgid "rbd username '%s' specified but secret not found"
 msgstr ""
 
 #: src/qemu/qemu_command.c:1833 src/qemu/qemu_command.c:2176
-#: src/qemu/qemu_command.c:4737 src/uml/uml_conf.c:437
+#: src/qemu/qemu_command.c:4738 src/uml/uml_conf.c:437
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "тип диска «%s» не поддерживается"
@@ -9598,20 +9598,20 @@ msgstr "Поддерживается только 1 шина %s"
 msgid "target must be 0 for controller fdc"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1922 src/qemu/qemu_command.c:4747
+#: src/qemu/qemu_command.c:1922 src/qemu/qemu_command.c:4748
 #, c-format
 msgid "unsupported disk driver type for '%s'"
 msgstr "тип драйвера «%s» не поддерживается"
 
-#: src/qemu/qemu_command.c:1928 src/qemu/qemu_command.c:4753
+#: src/qemu/qemu_command.c:1928 src/qemu/qemu_command.c:4754
 msgid "cannot create virtual FAT disks in read-write mode"
 msgstr "невозможно создать виртуальные FAT-диски в режиме чтения-записи"
 
-#: src/qemu/qemu_command.c:1941 src/qemu/qemu_command.c:4769
+#: src/qemu/qemu_command.c:1941 src/qemu/qemu_command.c:4770
 msgid "NBD accepts only one host"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1969 src/qemu/qemu_command.c:4706
+#: src/qemu/qemu_command.c:1969 src/qemu/qemu_command.c:4707
 msgid "tray status 'open' is invalid for block type disk"
 msgstr ""
 
@@ -9636,7 +9636,7 @@ msgstr ""
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2116 src/qemu/qemu_driver.c:11990
+#: src/qemu/qemu_command.c:2116 src/qemu/qemu_driver.c:11997
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr ""
 
@@ -9730,11 +9730,11 @@ msgstr ""
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2853 src/qemu/qemu_command.c:5806
+#: src/qemu/qemu_command.c:2853 src/qemu/qemu_command.c:5807
 msgid "missing watchdog model"
 msgstr "отсутствует модель watchdog"
 
-#: src/qemu/qemu_command.c:2933 src/qemu/qemu_command.c:5768
+#: src/qemu/qemu_command.c:2933 src/qemu/qemu_command.c:5769
 msgid "invalid sound model"
 msgstr "недопустимая модель звукового устройства"
 
@@ -9742,7 +9742,7 @@ msgstr "недопустимая модель звукового устройс�
 msgid "invalid video model"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3001 src/qemu/qemu_command.c:5642
+#: src/qemu/qemu_command.c:3001 src/qemu/qemu_command.c:5643
 #, c-format
 msgid "value for 'vram' must be less than '%u'"
 msgstr ""
@@ -9801,7 +9801,7 @@ msgstr ""
 msgid "unsupported clock basis '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3630 src/qemu/qemu_command.c:4316
+#: src/qemu/qemu_command.c:3630 src/qemu/qemu_command.c:4317
 #, c-format
 msgid "unsupported clock offset '%s'"
 msgstr "смещение «%s» не поддерживается"
@@ -9892,407 +9892,407 @@ msgstr ""
 msgid "Domain '%s' sysinfo are not available"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4251
+#: src/qemu/qemu_command.c:4252
 msgid "qemu does not support -device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4256
+#: src/qemu/qemu_command.c:4257
 msgid "qemu does not support SGA"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4261
+#: src/qemu/qemu_command.c:4262
 msgid "need at least one serial port to use SGA"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4332
+#: src/qemu/qemu_command.c:4333
 #, c-format
 msgid "unsupported timer type (name) '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4356 src/qemu/qemu_command.c:4367
+#: src/qemu/qemu_command.c:4357 src/qemu/qemu_command.c:4368
 #, c-format
 msgid "unsupported rtc tickpolicy '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4391 src/qemu/qemu_command.c:4400
+#: src/qemu/qemu_command.c:4392 src/qemu/qemu_command.c:4401
 #, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4422
+#: src/qemu/qemu_command.c:4423
 msgid "pit timer is not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4457
+#: src/qemu/qemu_command.c:4458
 msgid "hypervisor lacks deviceboot feature"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4523 src/qemu/qemu_driver.c:5148
+#: src/qemu/qemu_command.c:4524 src/qemu/qemu_driver.c:5155
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "имя драйвера «%s» для диска «%s» не поддерживается"
 
-#: src/qemu/qemu_command.c:4544
+#: src/qemu/qemu_command.c:4545
 msgid "SATA is not supported with this QEMU binary"
 msgstr "SATA не поддерживается этим двоичным компонентом QEMU"
 
-#: src/qemu/qemu_command.c:4561
+#: src/qemu/qemu_command.c:4562
 msgid "Multiple legacy USB controller not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4617 src/qemu/qemu_command.c:4717
+#: src/qemu/qemu_command.c:4618 src/qemu/qemu_command.c:4718
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "тип диска USB «%s» не поддерживается"
 
-#: src/qemu/qemu_command.c:4841
+#: src/qemu/qemu_command.c:4842
 msgid "filesystem passthrough not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5004
+#: src/qemu/qemu_command.c:5005
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5015 src/qemu/qemu_command.c:5027
+#: src/qemu/qemu_command.c:5016 src/qemu/qemu_command.c:5028
 msgid "this QEMU binary lacks smartcard host mode support"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5037
+#: src/qemu/qemu_command.c:5038
 #, c-format
 msgid "invalid certificate name: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5048
+#: src/qemu/qemu_command.c:5049
 #, c-format
 msgid "invalid database name: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5063
+#: src/qemu/qemu_command.c:5064
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5176
+#: src/qemu/qemu_command.c:5177
 msgid "guestfwd requires QEMU to support -chardev & -device"
 msgstr "требование guestfwd: QEMU должен поддерживать «-chardev» и «-device»"
 
-#: src/qemu/qemu_command.c:5204 src/qemu/qemu_command.c:5243
+#: src/qemu/qemu_command.c:5205 src/qemu/qemu_command.c:5244
 msgid "virtio channel requires QEMU to support -device"
 msgstr "требование virtio: QEMU должен поддерживать «-device»"
 
-#: src/qemu/qemu_command.c:5268
+#: src/qemu/qemu_command.c:5269
 #, c-format
 msgid "unsupported console target type %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5309
+#: src/qemu/qemu_command.c:5310
 msgid "only 1 graphics device is supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5348 src/qemu/qemu_command.c:5499
+#: src/qemu/qemu_command.c:5349 src/qemu/qemu_command.c:5500
 msgid "network-based listen not possible, network driver not present"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5354 src/qemu/qemu_command.c:5505
+#: src/qemu/qemu_command.c:5355 src/qemu/qemu_command.c:5506
 #, c-format
 msgid "listen network '%s' had no usable address"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5432
+#: src/qemu/qemu_command.c:5433
 #, c-format
 msgid "sdl not supported by '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5470
+#: src/qemu/qemu_command.c:5471
 msgid "spice graphics are not supported with this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5479
+#: src/qemu/qemu_command.c:5480
 msgid ""
 "spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5568
+#: src/qemu/qemu_command.c:5569
 msgid ""
 "spice secure channels set in XML configuration, but TLS is disabled in qemu."
 "conf"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5610
+#: src/qemu/qemu_command.c:5611
 #, c-format
 msgid "unsupported graphics type '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5623
+#: src/qemu/qemu_command.c:5624
 msgid "This QEMU does not support QXL graphics adapters"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5630
+#: src/qemu/qemu_command.c:5631
 #, c-format
 msgid "video type %s is not supported with QEMU"
 msgstr "QEMU не поддерживает тип видео %s"
 
-#: src/qemu/qemu_command.c:5676
+#: src/qemu/qemu_command.c:5677
 #, c-format
 msgid "video type %s is not supported with this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5688
+#: src/qemu/qemu_command.c:5689
 #, c-format
 msgid "video type %s is only valid as primary video card"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5703
+#: src/qemu/qemu_command.c:5704
 msgid "only one video card is currently supported"
 msgstr "в настоящий момент поддерживается только одна видеокарта"
 
-#: src/qemu/qemu_command.c:5739 src/qemu/qemu_command.c:5775
+#: src/qemu/qemu_command.c:5740 src/qemu/qemu_command.c:5776
 msgid "this QEMU binary lacks hda support"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5822
+#: src/qemu/qemu_command.c:5823
 msgid "invalid watchdog action"
 msgstr "недопустимое действие watchdog"
 
-#: src/qemu/qemu_command.c:5863
+#: src/qemu/qemu_command.c:5864
 msgid "booting from assigned devices is only supported for PCI devices"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5868
+#: src/qemu/qemu_command.c:5869
 msgid ""
 "booting from assigned PCI devices is not supported with this version of qemu"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5925 src/qemu/qemu_monitor_text.c:1983
+#: src/qemu/qemu_command.c:5926 src/qemu/qemu_monitor_text.c:1983
 msgid "PCI device assignment is not supported by this version of qemu"
 msgstr "Эта версия QEMU не поддерживает сопоставление PCI-устройств"
 
-#: src/qemu/qemu_command.c:5939
+#: src/qemu/qemu_command.c:5940
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "TCP-миграция не поддерживается этим двоичным компонентом QEMU"
 
-#: src/qemu/qemu_command.c:5956
+#: src/qemu/qemu_command.c:5957
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "STDIO-миграция не поддерживается этим двоичным компонентом QEMU"
 
-#: src/qemu/qemu_command.c:5963
+#: src/qemu/qemu_command.c:5964
 msgid "EXEC migration is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5971
+#: src/qemu/qemu_command.c:5972
 msgid "FD migration is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5980
+#: src/qemu/qemu_command.c:5981
 msgid "UNIX migration is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5987
+#: src/qemu/qemu_command.c:5988
 msgid "unknown migration protocol"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6002
+#: src/qemu/qemu_command.c:6003
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6258
+#: src/qemu/qemu_command.c:6259
 #, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "неверно сформированные аргументы в «%s»"
 
-#: src/qemu/qemu_command.c:6371 src/qemu/qemu_command.c:7577
+#: src/qemu/qemu_command.c:6372 src/qemu/qemu_command.c:7578
 #, c-format
 msgid "cannot parse nbd filename '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6430 src/qemu/qemu_command.c:7606
+#: src/qemu/qemu_command.c:6431 src/qemu/qemu_command.c:7607
 #, c-format
 msgid "cannot parse sheepdog filename '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6517
+#: src/qemu/qemu_command.c:6518
 #, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "не удалось разобрать значение «index» для диска «%s»"
 
-#: src/qemu/qemu_command.c:6525
+#: src/qemu/qemu_command.c:6526
 #, c-format
 msgid "cannot parse drive bus '%s'"
 msgstr "не удалось разобрать значение «bus» для диска «%s»"
 
-#: src/qemu/qemu_command.c:6533
+#: src/qemu/qemu_command.c:6534
 #, c-format
 msgid "cannot parse drive unit '%s'"
 msgstr "не удалось разобрать значение «unit» для диска «%s»"
 
-#: src/qemu/qemu_command.c:6542
+#: src/qemu/qemu_command.c:6543
 #, c-format
 msgid "cannot parse io mode '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6554
+#: src/qemu/qemu_command.c:6555
 #, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "отсутствует параметр файла для диска «%s»"
 
-#: src/qemu/qemu_command.c:6567
+#: src/qemu/qemu_command.c:6568
 #, c-format
 msgid "missing index/unit/bus parameter in drive '%s'"
 msgstr "отсутствует параметр index/unit/bus для «%s»"
 
-#: src/qemu/qemu_command.c:6616
+#: src/qemu/qemu_command.c:6617
 #, c-format
 msgid "invalid device name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6652
+#: src/qemu/qemu_command.c:6653
 #, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "не удалось разобрать vlan NIC в «%s»"
 
-#: src/qemu/qemu_command.c:6664
+#: src/qemu/qemu_command.c:6665
 #, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr "определение NIC для vlan %d не найдено"
 
-#: src/qemu/qemu_command.c:6721
+#: src/qemu/qemu_command.c:6722
 #, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "не удалось разобрать vlan в «%s»"
 
-#: src/qemu/qemu_command.c:6751
+#: src/qemu/qemu_command.c:6752
 #, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "не удалось разобрать определение NIC «%s»"
 
-#: src/qemu/qemu_command.c:6799
+#: src/qemu/qemu_command.c:6800
 #, c-format
 msgid "cannot parse sndbuf size in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6838
+#: src/qemu/qemu_command.c:6839
 #, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "неизвестный синтаксис PCI-устройства: «%s»"
 
-#: src/qemu/qemu_command.c:6845
+#: src/qemu/qemu_command.c:6846
 #, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "не удалось извлечь информацию о шине PCI-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6851
+#: src/qemu/qemu_command.c:6852
 #, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "не удалось извлечь информацию о слоте PCI-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6857
+#: src/qemu/qemu_command.c:6858
 #, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "не удалось получить информацию о функции PCI-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6891
+#: src/qemu/qemu_command.c:6892
 #, c-format
 msgid "unknown USB device syntax '%s'"
 msgstr "неизвестный синтаксис устройства USB: «%s»"
 
-#: src/qemu/qemu_command.c:6899
+#: src/qemu/qemu_command.c:6900
 #, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "не удалось извлечь сведения о производителе USB-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6905
+#: src/qemu/qemu_command.c:6906
 #, c-format
 msgid "cannot extract USB device product '%s'"
 msgstr "не удалось получить информацию о продукте для USB-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6911
+#: src/qemu/qemu_command.c:6912
 #, c-format
 msgid "cannot extract USB device bus '%s'"
 msgstr "не удалось извлечь информацию о шине USB-устройства «%s»"
 
-#: src/qemu/qemu_command.c:6917
+#: src/qemu/qemu_command.c:6918
 #, c-format
 msgid "cannot extract USB device address '%s'"
 msgstr "не удалось получить адрес USB-устройства «%s»"
 
-#: src/qemu/qemu_command.c:7022
+#: src/qemu/qemu_command.c:7023
 #, c-format
 msgid "cannot find port number in character device %s"
 msgstr "не найден номер порта в символьном устройстве %s"
 
-#: src/qemu/qemu_command.c:7062
+#: src/qemu/qemu_command.c:7063
 #, c-format
 msgid "unknown character device syntax %s"
 msgstr "неизвестный синтаксис символьного устройства %s"
 
-#: src/qemu/qemu_command.c:7174
+#: src/qemu/qemu_command.c:7175
 msgid "conflicting occurrences of kvmclock feature"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7224
+#: src/qemu/qemu_command.c:7225
 #, c-format
 msgid "unknown CPU syntax '%s'"
 msgstr "неизвестный синтаксис процессора: «%s»"
 
-#: src/qemu/qemu_command.c:7303
+#: src/qemu/qemu_command.c:7304
 #, c-format
 msgid "cannot parse CPU topology '%s'"
 msgstr "не удалось разобрать топологию процессора «%s»"
 
-#: src/qemu/qemu_command.c:7344
+#: src/qemu/qemu_command.c:7345
 msgid "no emulator path found"
 msgstr "не найден путь к эмулятору"
 
-#: src/qemu/qemu_command.c:7357
+#: src/qemu/qemu_command.c:7358
 msgid "failed to generate uuid"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7410
+#: src/qemu/qemu_command.c:7411
 #, c-format
 msgid "missing value for %s argument"
 msgstr "отсутствует значение аргумента %s"
 
-#: src/qemu/qemu_command.c:7470
+#: src/qemu/qemu_command.c:7471
 #, c-format
 msgid "missing VNC port number in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7477
+#: src/qemu/qemu_command.c:7478
 #, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "не удалось разобрать порт VNC «%s»"
 
-#: src/qemu/qemu_command.c:7504
+#: src/qemu/qemu_command.c:7505
 #, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "не удалось разобрать уровень памяти «%s»"
 
-#: src/qemu/qemu_command.c:7516
+#: src/qemu/qemu_command.c:7517
 #, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "не удалось разобрать UUID «%s»"
 
-#: src/qemu/qemu_command.c:7886
+#: src/qemu/qemu_command.c:7887
 #, c-format
 msgid "unknown video adapter type '%s'"
 msgstr "неизвестный тип видеоадаптера «%s»"
 
-#: src/qemu/qemu_command.c:7959
+#: src/qemu/qemu_command.c:7960
 msgid "CEPH_ARGS was set without an rbd disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7966
+#: src/qemu/qemu_command.c:7967
 #, c-format
 msgid "could not parse CEPH_ARGS '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8001
+#: src/qemu/qemu_command.c:8002
 #, c-format
 msgid "found no rbd hosts in CEPH_ARGS '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8213
+#: src/qemu/qemu_command.c:8214
 #, c-format
 msgid "Unable to resolve %s for pid %u"
 msgstr ""
@@ -10437,7 +10437,7 @@ msgstr ""
 msgid "domain is no longer running"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1245 src/qemu/qemu_driver.c:9345
+#: src/qemu/qemu_domain.c:1245 src/qemu/qemu_driver.c:9352
 msgid "cannot get host CPU capabilities"
 msgstr "не удалось получить возможности процессора узла"
 
@@ -10574,8 +10574,8 @@ msgstr "Непредвиденный URI-путь QEMU: «%s» (попробуй
 msgid "no domain with matching id %d"
 msgstr "нет домена с совпадающим идентификатором %d"
 
-#: src/qemu/qemu_driver.c:1229 src/qemu/qemu_driver.c:8843
-#: src/qemu/qemu_driver.c:9111
+#: src/qemu/qemu_driver.c:1229 src/qemu/qemu_driver.c:8850
+#: src/qemu/qemu_driver.c:9118
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "нет домена с совпадающим именем «%s»"
@@ -10587,14 +10587,14 @@ msgid "resume operation failed"
 msgstr "сбой операции возобновления"
 
 #: src/qemu/qemu_driver.c:1602 src/qemu/qemu_driver.c:1683
-#: src/qemu/qemu_driver.c:9662 src/qemu/qemu_driver.c:9690
-#: src/qemu/qemu_driver.c:12741
+#: src/qemu/qemu_driver.c:9669 src/qemu/qemu_driver.c:9697
+#: src/qemu/qemu_driver.c:12748
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:1607 src/qemu/qemu_driver.c:1688
-#: src/qemu/qemu_driver.c:9668 src/qemu/qemu_driver.c:9697
-#: src/qemu/qemu_driver.c:12747
+#: src/qemu/qemu_driver.c:9675 src/qemu/qemu_driver.c:9704
+#: src/qemu/qemu_driver.c:12754
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
@@ -10606,65 +10606,65 @@ msgstr ""
 msgid "Reboot is not supported without the JSON monitor"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1838
+#: src/qemu/qemu_driver.c:1845 src/qemu/qemu_driver.c:1852
 msgid "failed to kill qemu process with SIGTERM"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1982
+#: src/qemu/qemu_driver.c:1989
 msgid "cannot resize the maximum memory on an active domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2019 src/uml/uml_driver.c:1705
+#: src/qemu/qemu_driver.c:2026 src/uml/uml_driver.c:1705
 msgid "cannot set memory of an active domain"
 msgstr "невозможно задать память для активного домена"
 
-#: src/qemu/qemu_driver.c:2130
+#: src/qemu/qemu_driver.c:2137
 #, c-format
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2202 src/uml/uml_driver.c:1747
+#: src/qemu/qemu_driver.c:2209 src/uml/uml_driver.c:1747
 msgid "cannot read cputime for domain"
 msgstr "не удалось прочитать время процессора для домена"
 
-#: src/qemu/qemu_driver.c:2411
+#: src/qemu/qemu_driver.c:2418
 #, c-format
 msgid "failed to write header to domain save file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2419 src/qemu/qemu_driver.c:4412
+#: src/qemu/qemu_driver.c:2426 src/qemu/qemu_driver.c:4419
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "не удалось записать XML в «%s»"
 
-#: src/qemu/qemu_driver.c:2478
+#: src/qemu/qemu_driver.c:2485
 #, c-format
 msgid "unable to open %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2493 src/qemu/qemu_driver.c:2517
+#: src/qemu/qemu_driver.c:2500 src/qemu/qemu_driver.c:2524
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2508
+#: src/qemu/qemu_driver.c:2515
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2529
+#: src/qemu/qemu_driver.c:2536
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "Ошибка при создании дочерним процессом «%s»"
 
-#: src/qemu/qemu_driver.c:2579 src/qemu/qemu_driver.c:10349
+#: src/qemu/qemu_driver.c:2586 src/qemu/qemu_driver.c:10356
 #: src/qemu/qemu_migration.c:807
 msgid "domain is marked for auto destroy"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2607 src/qemu/qemu_driver.c:3113
-#: src/qemu/qemu_driver.c:9756 src/qemu/qemu_driver.c:10168
-#: src/qemu/qemu_driver.c:11092 src/qemu/qemu_driver.c:11144
+#: src/qemu/qemu_driver.c:2614 src/qemu/qemu_driver.c:3120
+#: src/qemu/qemu_driver.c:9763 src/qemu/qemu_driver.c:10175
+#: src/qemu/qemu_driver.c:11099 src/qemu/qemu_driver.c:11151
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
 #: src/qemu/qemu_migration.c:1927 src/qemu/qemu_migration.c:2228
 #: src/qemu/qemu_migration.c:2552 src/qemu/qemu_migration.c:2937
@@ -10672,711 +10672,711 @@ msgstr ""
 msgid "guest unexpectedly quit"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2639
+#: src/qemu/qemu_driver.c:2646
 msgid "failed to get domain xml"
 msgstr "не удалось получить XML домена"
 
-#: src/qemu/qemu_driver.c:2669 src/qemu/qemu_driver.c:2996
-#: src/qemu/qemu_driver.c:4011
+#: src/qemu/qemu_driver.c:2676 src/qemu/qemu_driver.c:3003
+#: src/qemu/qemu_driver.c:4018
 msgid "bypass cache unsupported by this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2700 src/qemu/qemu_driver.c:2715
-#: src/qemu/qemu_driver.c:3240 src/vbox/vbox_tmpl.c:9070
+#: src/qemu/qemu_driver.c:2707 src/qemu/qemu_driver.c:2722
+#: src/qemu/qemu_driver.c:3247 src/vbox/vbox_tmpl.c:9070
 #, c-format
 msgid "unable to close %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2711
+#: src/qemu/qemu_driver.c:2718
 #, c-format
 msgid "unable to write %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2798
+#: src/qemu/qemu_driver.c:2805
 msgid "Invalid save image format specified in configuration file"
 msgstr "Недопустимый формат образа в файле конфигурации"
 
-#: src/qemu/qemu_driver.c:2804
+#: src/qemu/qemu_driver.c:2811
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3018
+#: src/qemu/qemu_driver.c:3025
 #, c-format
 msgid "unable to save file %s"
 msgstr "не удалось сохранить файл %s"
 
-#: src/qemu/qemu_driver.c:3050
+#: src/qemu/qemu_driver.c:3057
 msgid "Invalid dump image format specified in configuration file, using raw"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3055
+#: src/qemu/qemu_driver.c:3062
 msgid ""
 "Compression program for dump image format in configuration file isn't "
 "available, using raw"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3151
+#: src/qemu/qemu_driver.c:3158
 msgid "resuming after dump failed"
 msgstr "ошибка возобновления после дампа"
 
-#: src/qemu/qemu_driver.c:3195 src/qemu/qemu_driver.c:7526
+#: src/qemu/qemu_driver.c:3202 src/qemu/qemu_driver.c:7533
 #, c-format
 msgid "no domain matching uuid '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3214
+#: src/qemu/qemu_driver.c:3221
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3225 src/qemu/qemu_driver.c:8364
+#: src/qemu/qemu_driver.c:3232 src/qemu/qemu_driver.c:8371
 #: src/vbox/vbox_tmpl.c:9022
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "сбой mkstemp(\"%s\")"
 
-#: src/qemu/qemu_driver.c:3246 src/vbox/vbox_tmpl.c:9076
+#: src/qemu/qemu_driver.c:3253 src/vbox/vbox_tmpl.c:9076
 msgid "unable to open stream"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3307
+#: src/qemu/qemu_driver.c:3314
 msgid "Dump failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3315
+#: src/qemu/qemu_driver.c:3322
 msgid "Resuming after dump failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3394 src/qemu/qemu_process.c:1636
+#: src/qemu/qemu_driver.c:3401 src/qemu/qemu_process.c:1636
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 "получено неверное число PID виртуальных процессоров от QEMU: %d. Ожидается %d"
 
-#: src/qemu/qemu_driver.c:3415
+#: src/qemu/qemu_driver.c:3422
 msgid "cannot change vcpu count of this domain"
 msgstr "невозможно изменить число виртуальных процессоров для этого домена"
 
-#: src/qemu/qemu_driver.c:3438 src/test/test_driver.c:2178
+#: src/qemu/qemu_driver.c:3445 src/test/test_driver.c:2178
 #: src/xen/xen_driver.c:1126
 #, c-format
 msgid "argument out of range: %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3467
+#: src/qemu/qemu_driver.c:3474
 msgid "cannot adjust maximum on running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3572
+#: src/qemu/qemu_driver.c:3579
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "число виртуальных процессоров превышает допустимый диапазон: %d > %d"
 
-#: src/qemu/qemu_driver.c:3601 src/qemu/qemu_process.c:1932
+#: src/qemu/qemu_driver.c:3608 src/qemu/qemu_process.c:1932
 msgid "cpu affinity is not supported"
 msgstr "сопоставление процессоров не поддерживается"
 
-#: src/qemu/qemu_driver.c:3608
+#: src/qemu/qemu_driver.c:3615
 msgid "failed to delete vcpupin xml of a running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3615
+#: src/qemu/qemu_driver.c:3622
 msgid "failed to update or add vcpupin xml of a running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3630
+#: src/qemu/qemu_driver.c:3637
 msgid "failed to delete vcpupin xml of a persistent domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3637
+#: src/qemu/qemu_driver.c:3644
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3779
+#: src/qemu/qemu_driver.c:3786
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr ""
 "невозможно просмотреть сопоставления виртуальных процессоров для неактивного "
 "домена"
 
-#: src/qemu/qemu_driver.c:3811
+#: src/qemu/qemu_driver.c:3818
 msgid "cannot get vCPU placement & pCPU time"
 msgstr ""
 "не удалось получить размещение виртуальных процессоров и время физических "
 "процессоров"
 
-#: src/qemu/qemu_driver.c:3829
+#: src/qemu/qemu_driver.c:3836
 msgid "cpu affinity is not available"
 msgstr "сопоставление процессоров недоступно"
 
-#: src/qemu/qemu_driver.c:4028 src/qemu/qemu_driver.c:4048
+#: src/qemu/qemu_driver.c:4035 src/qemu/qemu_driver.c:4055
 #, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4035
+#: src/qemu/qemu_driver.c:4042
 msgid "failed to read qemu header"
 msgstr "ошибка чтения заголовка qemu"
 
-#: src/qemu/qemu_driver.c:4044
+#: src/qemu/qemu_driver.c:4051
 msgid "save image is incomplete"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4092 src/qemu/qemu_driver.c:4197
+#: src/qemu/qemu_driver.c:4099 src/qemu/qemu_driver.c:4204
 #, c-format
 msgid "cannot close file: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4153
+#: src/qemu/qemu_driver.c:4160
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "Недопустимый формат сжатия %d"
 
-#: src/qemu/qemu_driver.c:4168
+#: src/qemu/qemu_driver.c:4175
 #, c-format
 msgid "Failed to start decompression binary %s"
 msgstr "Не удалось запустить двоичный компонент распаковки %s"
 
-#: src/qemu/qemu_driver.c:4221
+#: src/qemu/qemu_driver.c:4228
 msgid "failed to resume domain"
 msgstr "не удалось возобновить работу домена"
 
-#: src/qemu/qemu_driver.c:4397
+#: src/qemu/qemu_driver.c:4404
 msgid "new xml too large to fit in file"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4406
+#: src/qemu/qemu_driver.c:4413
 #, c-format
 msgid "cannot seek in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4769
+#: src/qemu/qemu_driver.c:4776
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4839
+#: src/qemu/qemu_driver.c:4846
 msgid "domain is already running"
 msgstr "домен уже выполняется"
 
-#: src/qemu/qemu_driver.c:5069
+#: src/qemu/qemu_driver.c:5076
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5173
+#: src/qemu/qemu_driver.c:5180
 msgid "disk device='lun' is not supported for usb bus"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5220
+#: src/qemu/qemu_driver.c:5227
 #, c-format
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "шина дискового контроллера «%s» не может быть автоматически настроена."
 
-#: src/qemu/qemu_driver.c:5307 src/uml/uml_driver.c:2181
+#: src/qemu/qemu_driver.c:5314 src/uml/uml_driver.c:2181
 msgid "This type of disk cannot be hot unplugged"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5311
+#: src/qemu/qemu_driver.c:5318
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5332
+#: src/qemu/qemu_driver.c:5339
 #, c-format
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "шина дискового контроллера «%s» не может быть автоматически отключена."
 
-#: src/qemu/qemu_driver.c:5364 src/uml/uml_driver.c:2185
+#: src/qemu/qemu_driver.c:5371 src/uml/uml_driver.c:2185
 msgid "This type of device cannot be hot unplugged"
 msgstr "этот тип устройства не может быть автоматически отключен"
 
-#: src/qemu/qemu_driver.c:5483
+#: src/qemu/qemu_driver.c:5490
 #, c-format
 msgid "mac %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5499
+#: src/qemu/qemu_driver.c:5506
 msgid "device is already in the domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5515
+#: src/qemu/qemu_driver.c:5522
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5562
+#: src/qemu/qemu_driver.c:5569
 #, c-format
 msgid "no nic of mac %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5574
+#: src/qemu/qemu_driver.c:5581
 msgid "device not present in domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5586 src/qemu/qemu_hotplug.c:2399
+#: src/qemu/qemu_driver.c:5593 src/qemu/qemu_hotplug.c:2399
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5652
+#: src/qemu/qemu_driver.c:5659
 #, c-format
 msgid "mac %s doesn't exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5723
+#: src/qemu/qemu_driver.c:5730
 msgid "cannot do live update a device on inactive domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6106
+#: src/qemu/qemu_driver.c:6113
 #, c-format
 msgid "unable to parse device weight '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6241
+#: src/qemu/qemu_driver.c:6248
 #, c-format
 msgid "Unable to set io device weight for path %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6425 src/qemu/qemu_driver.c:6465
+#: src/qemu/qemu_driver.c:6432 src/qemu/qemu_driver.c:6472
 #: src/util/virtypedparam.c:143
 #, c-format
 msgid "Field name '%s' too long"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6534 src/qemu/qemu_driver.c:6641
-#: src/qemu/qemu_driver.c:6972
+#: src/qemu/qemu_driver.c:6541 src/qemu/qemu_driver.c:6648
+#: src/qemu/qemu_driver.c:6979
 msgid "cgroup memory controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6803
+#: src/qemu/qemu_driver.c:6810
 msgid "cgroup cpuset controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6823
+#: src/qemu/qemu_driver.c:6830
 msgid "can't change numa mode for running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6840
+#: src/qemu/qemu_driver.c:6847
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6848
+#: src/qemu/qemu_driver.c:6855
 msgid "unable to set numa tunable"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7010
+#: src/qemu/qemu_driver.c:7017
 msgid "unable to get numa nodeset"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7122
+#: src/qemu/qemu_driver.c:7129
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: %d)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7339
+#: src/qemu/qemu_driver.c:7346
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: 0)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7503
+#: src/qemu/qemu_driver.c:7510
 msgid "empty path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7511
+#: src/qemu/qemu_driver.c:7518
 #, c-format
 msgid "size must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7543 src/qemu/qemu_driver.c:7608
-#: src/qemu/qemu_driver.c:7694 src/test/test_driver.c:2803
+#: src/qemu/qemu_driver.c:7550 src/qemu/qemu_driver.c:7615
+#: src/qemu/qemu_driver.c:7701 src/test/test_driver.c:2803
 #, c-format
 msgid "invalid path: %s"
 msgstr "недопустимый путь: %s"
 
-#: src/qemu/qemu_driver.c:7615 src/qemu/qemu_driver.c:7701
+#: src/qemu/qemu_driver.c:7622 src/qemu/qemu_driver.c:7708
 #: src/qemu/qemu_hotplug.c:78
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "отсутствует имя дискового устройства для %s"
 
-#: src/qemu/qemu_driver.c:7887
+#: src/qemu/qemu_driver.c:7894
 msgid "interface stats not implemented on this platform"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7943 src/qemu/qemu_driver.c:7951
-#: src/qemu/qemu_driver.c:8115
+#: src/qemu/qemu_driver.c:7950 src/qemu/qemu_driver.c:7958
+#: src/qemu/qemu_driver.c:8122
 #, c-format
 msgid "Can't find device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8228
+#: src/qemu/qemu_driver.c:8235
 msgid "cannot get RSS for domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8275 src/qemu/qemu_driver.c:8440
+#: src/qemu/qemu_driver.c:8282 src/qemu/qemu_driver.c:8447
 #: src/uml/uml_driver.c:2332
 msgid "NULL or empty path"
 msgstr "путь NULL или пустой"
 
-#: src/qemu/qemu_driver.c:8282 src/uml/uml_driver.c:2339
+#: src/qemu/qemu_driver.c:8289 src/uml/uml_driver.c:2339
 #, c-format
 msgid "invalid path '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8291
+#: src/qemu/qemu_driver.c:8298
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: ошибка открытия"
 
-#: src/qemu/qemu_driver.c:8302
+#: src/qemu/qemu_driver.c:8309
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: ошибка поиска или чтения"
 
-#: src/qemu/qemu_driver.c:8343
+#: src/qemu/qemu_driver.c:8350
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "параметр flags должен быть установлен в VIR_MEMORY_VIRTUAL или "
 "VIR_MEMORY_PHYSICAL"
 
-#: src/qemu/qemu_driver.c:8388
+#: src/qemu/qemu_driver.c:8395
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "ошибка чтения временного файла, созданного из шаблона %s"
 
-#: src/qemu/qemu_driver.c:8447
+#: src/qemu/qemu_driver.c:8454
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8453
+#: src/qemu/qemu_driver.c:8460
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8463
+#: src/qemu/qemu_driver.c:8470
 #, c-format
 msgid "failed to open path '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8471
+#: src/qemu/qemu_driver.c:8478
 #, c-format
 msgid "unknown disk format %s for %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8500 src/storage/storage_backend.c:1011
+#: src/qemu/qemu_driver.c:8507 src/storage/storage_backend.c:1011
 #: src/storage/storage_backend.c:1039 src/storage/storage_backend.c:1159
 #: src/util/storage_file.c:744 src/util/storage_file.c:840
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "не удалось выполнить stat для «%s»"
 
-#: src/qemu/qemu_driver.c:8522
+#: src/qemu/qemu_driver.c:8529
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8676 src/qemu/qemu_driver.c:8748
-#: src/qemu/qemu_driver.c:8988 src/qemu/qemu_driver.c:9023
+#: src/qemu/qemu_driver.c:8683 src/qemu/qemu_driver.c:8755
+#: src/qemu/qemu_driver.c:8995 src/qemu/qemu_driver.c:9030
 msgid "no domain XML passed"
 msgstr "не был передан домен XML"
 
-#: src/qemu/qemu_driver.c:8681 src/qemu/qemu_driver.c:9028
+#: src/qemu/qemu_driver.c:8688 src/qemu/qemu_driver.c:9035
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "Вызван PrepareTunnel, но флаг TUNNELLED не установлен"
 
-#: src/qemu/qemu_driver.c:8686 src/qemu/qemu_driver.c:9033
+#: src/qemu/qemu_driver.c:8693 src/qemu/qemu_driver.c:9040
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr "запрошена туннельная миграция, но передан поток NULL"
 
-#: src/qemu/qemu_driver.c:8692 src/qemu/qemu_driver.c:8732
-#: src/qemu/qemu_driver.c:8787
+#: src/qemu/qemu_driver.c:8699 src/qemu/qemu_driver.c:8739
+#: src/qemu/qemu_driver.c:8794
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8742 src/qemu/qemu_driver.c:8982
+#: src/qemu/qemu_driver.c:8749 src/qemu/qemu_driver.c:8989
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "Запрошена туннельная миграция, но вызван неверный метод RPC"
 
-#: src/qemu/qemu_driver.c:8930 src/qemu/qemu_migration.c:1368
+#: src/qemu/qemu_driver.c:8937 src/qemu/qemu_migration.c:1368
 msgid "domain disappeared"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9217 src/xen/xen_driver.c:1969
+#: src/qemu/qemu_driver.c:9224 src/xen/xen_driver.c:1969
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "%s не является PCI-устройством"
 
-#: src/qemu/qemu_driver.c:9281
+#: src/qemu/qemu_driver.c:9288
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9285
+#: src/qemu/qemu_driver.c:9292
 #, c-format
 msgid "PCI device %s is still in use"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9453
+#: src/qemu/qemu_driver.c:9460
 msgid "no job is active on the domain"
 msgstr "нет активных заданий домена"
 
-#: src/qemu/qemu_driver.c:9457
+#: src/qemu/qemu_driver.c:9464
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9515
+#: src/qemu/qemu_driver.c:9522
 msgid "domain is not being migrated"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9645
+#: src/qemu/qemu_driver.c:9652
 #, c-format
 msgid "Disk '%s' does not support snapshotting"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9790 src/qemu/qemu_driver.c:10265
+#: src/qemu/qemu_driver.c:9797 src/qemu/qemu_driver.c:10272
 msgid "resuming after snapshot failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9820
+#: src/qemu/qemu_driver.c:9827
 msgid "reuse is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9831
+#: src/qemu/qemu_driver.c:9838
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9839
+#: src/qemu/qemu_driver.c:9846
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9857
+#: src/qemu/qemu_driver.c:9864
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9865
+#: src/qemu/qemu_driver.c:9872
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9871
+#: src/qemu/qemu_driver.c:9878
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9886 src/qemu/qemu_driver.c:9940
+#: src/qemu/qemu_driver.c:9893 src/qemu/qemu_driver.c:9947
 msgid "unexpected code path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9893
+#: src/qemu/qemu_driver.c:9900
 msgid "disk snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9903
+#: src/qemu/qemu_driver.c:9910
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10325
+#: src/qemu/qemu_driver.c:10332
 msgid "quiesce requires disk-only"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10354
+#: src/qemu/qemu_driver.c:10361
 msgid "cannot halt after transient domain snapshot"
-msgstr ""
-
-#: src/qemu/qemu_driver.c:10368
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:10375
 #, c-format
-msgid "parent %s for snapshot %s not found"
+msgid "cannot set snapshot %s as its own parent"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:10382
 #, c-format
+msgid "parent %s for snapshot %s not found"
+msgstr ""
+
+#: src/qemu/qemu_driver.c:10389
+#, c-format
 msgid "parent %s would create cycle to %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10400
+#: src/qemu/qemu_driver.c:10407
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10411
+#: src/qemu/qemu_driver.c:10418
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10419
+#: src/qemu/qemu_driver.c:10426
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10464
+#: src/qemu/qemu_driver.c:10471
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10668 src/qemu/qemu_driver.c:10708
-#: src/qemu/qemu_driver.c:10815 src/qemu/qemu_driver.c:10893
-#: src/qemu/qemu_driver.c:10963 src/qemu/qemu_driver.c:11331
+#: src/qemu/qemu_driver.c:10675 src/qemu/qemu_driver.c:10715
+#: src/qemu/qemu_driver.c:10822 src/qemu/qemu_driver.c:10900
+#: src/qemu/qemu_driver.c:10970 src/qemu/qemu_driver.c:11338
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10750
+#: src/qemu/qemu_driver.c:10757
 #, c-format
 msgid "no snapshot with matching name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10857
+#: src/qemu/qemu_driver.c:10864
 msgid "the domain does not have a current snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10974
+#: src/qemu/qemu_driver.c:10981
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10980
+#: src/qemu/qemu_driver.c:10987
 msgid "revert to external disk snapshot not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10987
+#: src/qemu/qemu_driver.c:10994
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10997
+#: src/qemu/qemu_driver.c:11004
 msgid "must respawn qemu to start inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11346
+#: src/qemu/qemu_driver.c:11353
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11373
+#: src/qemu/qemu_driver.c:11380
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11506
+#: src/qemu/qemu_driver.c:11513
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11511
+#: src/qemu/qemu_driver.c:11518
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11629
+#: src/qemu/qemu_driver.c:11636
 #, c-format
 msgid "cannot find character device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11649
+#: src/qemu/qemu_driver.c:11656
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11688
+#: src/qemu/qemu_driver.c:11695
 msgid "No device found for specified path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11728
+#: src/qemu/qemu_driver.c:11735
 msgid "block jobs not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11732
+#: src/qemu/qemu_driver.c:11739
 msgid "partial block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11737
+#: src/qemu/qemu_driver.c:11744
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11903
+#: src/qemu/qemu_driver.c:11910
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11915
+#: src/qemu/qemu_driver.c:11922
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12039
+#: src/qemu/qemu_driver.c:12046
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12046
+#: src/qemu/qemu_driver.c:12053
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12093
+#: src/qemu/qemu_driver.c:12100
 msgid "Write to config file failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12379
+#: src/qemu/qemu_driver.c:12386
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12385 src/qemu/qemu_driver.c:12412
-#: src/qemu/qemu_driver.c:12481
+#: src/qemu/qemu_driver.c:12392 src/qemu/qemu_driver.c:12419
+#: src/qemu/qemu_driver.c:12488
 msgid "unknown metadata type"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12407 src/qemu/qemu_driver.c:12475
+#: src/qemu/qemu_driver.c:12414 src/qemu/qemu_driver.c:12482
 msgid "QEMU driver does not support<metadata> element"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12488
+#: src/qemu/qemu_driver.c:12495
 msgid "Requested metadata element is not present"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12517 src/qemu/qemu_driver.c:12531
+#: src/qemu/qemu_driver.c:12524 src/qemu/qemu_driver.c:12538
 msgid "unable to get cpu account"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12586
+#: src/qemu/qemu_driver.c:12593
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12607
+#: src/qemu/qemu_driver.c:12614
 msgid "cpuacct parse error"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12659
+#: src/qemu/qemu_driver.c:12666
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12697
+#: src/qemu/qemu_driver.c:12704
 msgid "Duration not supported. Use 0 for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12705
+#: src/qemu/qemu_driver.c:12712
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12734
+#: src/qemu/qemu_driver.c:12741
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12810
+#: src/qemu/qemu_driver.c:12817
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
@@ -11949,116 +11949,116 @@ msgstr ""
 msgid "domain '%s' is not being migrated"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:291
+#: src/qemu/qemu_monitor.c:286
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "Слишком длинный путь к монитору: %s"
 
-#: src/qemu/qemu_monitor.c:361
+#: src/qemu/qemu_monitor.c:356
 #, c-format
 msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:456
+#: src/qemu/qemu_monitor.c:451
 msgid "Monitor does not support sending of file descriptors"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:818
+#: src/qemu/qemu_monitor.c:813
 msgid "Qemu monitor was closed"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:907
+#: src/qemu/qemu_monitor.c:902
 msgid "Unable to unescape command"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1100 src/qemu/qemu_monitor.c:1144
-#: src/qemu/qemu_monitor.c:1164 src/qemu/qemu_monitor.c:1205
-#: src/qemu/qemu_monitor.c:1224 src/qemu/qemu_monitor.c:1244
-#: src/qemu/qemu_monitor.c:1283 src/qemu/qemu_monitor.c:1303
-#: src/qemu/qemu_monitor.c:1324 src/qemu/qemu_monitor.c:1371
-#: src/qemu/qemu_monitor.c:1425 src/qemu/qemu_monitor.c:1461
-#: src/qemu/qemu_monitor.c:1514 src/qemu/qemu_monitor.c:1560
-#: src/qemu/qemu_monitor.c:1592 src/qemu/qemu_monitor.c:1614
-#: src/qemu/qemu_monitor.c:1633 src/qemu/qemu_monitor.c:1654
-#: src/qemu/qemu_monitor.c:1677 src/qemu/qemu_monitor.c:1700
-#: src/qemu/qemu_monitor.c:1722 src/qemu/qemu_monitor.c:1742
-#: src/qemu/qemu_monitor.c:1762 src/qemu/qemu_monitor.c:1785
-#: src/qemu/qemu_monitor.c:1813 src/qemu/qemu_monitor.c:1846
-#: src/qemu/qemu_monitor.c:1878 src/qemu/qemu_monitor.c:1920
-#: src/qemu/qemu_monitor.c:1985 src/qemu/qemu_monitor.c:2010
-#: src/qemu/qemu_monitor.c:2060 src/qemu/qemu_monitor.c:2081
-#: src/qemu/qemu_monitor.c:2102 src/qemu/qemu_monitor.c:2125
-#: src/qemu/qemu_monitor.c:2148 src/qemu/qemu_monitor.c:2169
-#: src/qemu/qemu_monitor.c:2191 src/qemu/qemu_monitor.c:2213
-#: src/qemu/qemu_monitor.c:2251 src/qemu/qemu_monitor.c:2282
-#: src/qemu/qemu_monitor.c:2321 src/qemu/qemu_monitor.c:2346
-#: src/qemu/qemu_monitor.c:2383 src/qemu/qemu_monitor.c:2404
-#: src/qemu/qemu_monitor.c:2425 src/qemu/qemu_monitor.c:2451
-#: src/qemu/qemu_monitor.c:2471 src/qemu/qemu_monitor.c:2490
-#: src/qemu/qemu_monitor.c:2509 src/qemu/qemu_monitor.c:2532
-#: src/qemu/qemu_monitor.c:2566 src/qemu/qemu_monitor.c:2587
-#: src/qemu/qemu_monitor.c:2606 src/qemu/qemu_monitor.c:2625
-#: src/qemu/qemu_monitor.c:2644 src/qemu/qemu_monitor.c:2670
-#: src/qemu/qemu_monitor.c:2760 src/qemu/qemu_monitor.c:2901
-#: src/qemu/qemu_monitor.c:2927
+#: src/qemu/qemu_monitor.c:1095 src/qemu/qemu_monitor.c:1139
+#: src/qemu/qemu_monitor.c:1159 src/qemu/qemu_monitor.c:1200
+#: src/qemu/qemu_monitor.c:1219 src/qemu/qemu_monitor.c:1239
+#: src/qemu/qemu_monitor.c:1278 src/qemu/qemu_monitor.c:1298
+#: src/qemu/qemu_monitor.c:1319 src/qemu/qemu_monitor.c:1366
+#: src/qemu/qemu_monitor.c:1420 src/qemu/qemu_monitor.c:1456
+#: src/qemu/qemu_monitor.c:1509 src/qemu/qemu_monitor.c:1555
+#: src/qemu/qemu_monitor.c:1587 src/qemu/qemu_monitor.c:1609
+#: src/qemu/qemu_monitor.c:1628 src/qemu/qemu_monitor.c:1649
+#: src/qemu/qemu_monitor.c:1672 src/qemu/qemu_monitor.c:1695
+#: src/qemu/qemu_monitor.c:1717 src/qemu/qemu_monitor.c:1737
+#: src/qemu/qemu_monitor.c:1757 src/qemu/qemu_monitor.c:1780
+#: src/qemu/qemu_monitor.c:1808 src/qemu/qemu_monitor.c:1841
+#: src/qemu/qemu_monitor.c:1873 src/qemu/qemu_monitor.c:1915
+#: src/qemu/qemu_monitor.c:1980 src/qemu/qemu_monitor.c:2005
+#: src/qemu/qemu_monitor.c:2055 src/qemu/qemu_monitor.c:2076
+#: src/qemu/qemu_monitor.c:2097 src/qemu/qemu_monitor.c:2120
+#: src/qemu/qemu_monitor.c:2143 src/qemu/qemu_monitor.c:2164
+#: src/qemu/qemu_monitor.c:2186 src/qemu/qemu_monitor.c:2208
+#: src/qemu/qemu_monitor.c:2246 src/qemu/qemu_monitor.c:2277
+#: src/qemu/qemu_monitor.c:2316 src/qemu/qemu_monitor.c:2341
+#: src/qemu/qemu_monitor.c:2378 src/qemu/qemu_monitor.c:2399
+#: src/qemu/qemu_monitor.c:2420 src/qemu/qemu_monitor.c:2446
+#: src/qemu/qemu_monitor.c:2466 src/qemu/qemu_monitor.c:2485
+#: src/qemu/qemu_monitor.c:2504 src/qemu/qemu_monitor.c:2527
+#: src/qemu/qemu_monitor.c:2561 src/qemu/qemu_monitor.c:2582
+#: src/qemu/qemu_monitor.c:2601 src/qemu/qemu_monitor.c:2620
+#: src/qemu/qemu_monitor.c:2639 src/qemu/qemu_monitor.c:2665
+#: src/qemu/qemu_monitor.c:2755 src/qemu/qemu_monitor.c:2896
+#: src/qemu/qemu_monitor.c:2922
 msgid "monitor must not be NULL"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1186
+#: src/qemu/qemu_monitor.c:1181
 msgid "both monitor and running must not be NULL"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1264
+#: src/qemu/qemu_monitor.c:1259
 msgid "monitor || name must not be NULL"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1342
+#: src/qemu/qemu_monitor.c:1337
 #, c-format
 msgid "unknown block IO status: %s"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1401
+#: src/qemu/qemu_monitor.c:1396
 #, c-format
 msgid "cannot find info for device '%s'"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1537
+#: src/qemu/qemu_monitor.c:1532
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1926
+#: src/qemu/qemu_monitor.c:1921
 #, c-format
 msgid "file offset must be a multiple of %llu"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2219
+#: src/qemu/qemu_monitor.c:2214
 msgid "fd must be valid"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2225
+#: src/qemu/qemu_monitor.c:2220
 #, c-format
 msgid "qemu is not using a unix socket monitor, cannot send fd %s"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2680
+#: src/qemu/qemu_monitor.c:2675
 msgid "text monitor lacks several snapshot features"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2700
+#: src/qemu/qemu_monitor.c:2695
 msgid "transaction requires JSON monitor"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2790
+#: src/qemu/qemu_monitor.c:2785
 #, c-format
 msgid "bandwidth must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2801
+#: src/qemu/qemu_monitor.c:2796
 msgid "block jobs require JSON monitor"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:2933
+#: src/qemu/qemu_monitor.c:2928
 msgid "JSON monitor is required"
 msgstr ""
 
@@ -13364,7 +13364,7 @@ msgstr ""
 msgid "unable to make pipe"
 msgstr "не удалось создать канал"
 
-#: src/rpc/virnetclient.c:538 src/rpc/virnetclient.c:1551
+#: src/rpc/virnetclient.c:538 src/rpc/virnetclient.c:1554
 msgid "failed to wake up polling thread"
 msgstr ""
 
@@ -13386,35 +13386,35 @@ msgstr ""
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1384
+#: src/rpc/virnetclient.c:1380
 msgid "read on wakeup fd failed"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1404
+#: src/rpc/virnetclient.c:1400
 msgid "poll on socket failed"
 msgstr "ошибка опроса сокета"
 
-#: src/rpc/virnetclient.c:1445
+#: src/rpc/virnetclient.c:1448
 msgid "received hangup / error event on socket"
 msgstr "получено событие ошибки/cброса сокета"
 
-#: src/rpc/virnetclient.c:1560
+#: src/rpc/virnetclient.c:1563
 msgid "failed to wait on condition"
 msgstr "не удалось дождаться условия"
 
-#: src/rpc/virnetclient.c:1686
+#: src/rpc/virnetclient.c:1689
 msgid "Attempt to send an asynchronous message with a synchronous reply"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1692
+#: src/rpc/virnetclient.c:1695
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1703
+#: src/rpc/virnetclient.c:1706
 msgid "client socket is closed"
 msgstr ""
 
-#: src/rpc/virnetclient.c:1709
+#: src/rpc/virnetclient.c:1712
 msgid "cannot initialize condition variable"
 msgstr "не удалось инициализировать переменную условия"
 
@@ -13824,7 +13824,7 @@ msgstr ""
 msgid "Failed to register shutdown timeout"
 msgstr "Не удалось зарегистрировать задержку выключения"
 
-#: src/rpc/virnetserverclient.c:788 src/rpc/virnetserverclient.c:947
+#: src/rpc/virnetserverclient.c:788 src/rpc/virnetserverclient.c:950
 #, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr ""
@@ -13848,37 +13848,37 @@ msgstr ""
 msgid "Failed to create mDNS client: %s"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:222
+#: src/rpc/virnetserverprogram.c:229
 #, c-format
 msgid "Cannot find program %d version %d"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:274
+#: src/rpc/virnetserverprogram.c:281
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:281
+#: src/rpc/virnetserverprogram.c:288
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "несоответствие версий (%x, ожидается %x)"
 
-#: src/rpc/virnetserverprogram.c:311
+#: src/rpc/virnetserverprogram.c:318
 #, c-format
 msgid "Unexpected message type %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:367
+#: src/rpc/virnetserverprogram.c:374
 #, c-format
 msgid "Unexpected message status %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:376
+#: src/rpc/virnetserverprogram.c:383
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "неизвестное действие: %d"
 
-#: src/rpc/virnetserverprogram.c:390
+#: src/rpc/virnetserverprogram.c:397
 msgid "authentication required"
 msgstr "требуется аутентификация"
 
@@ -14751,7 +14751,7 @@ msgid "cannot sync data to file '%s'"
 msgstr ""
 
 #: src/storage/storage_backend.c:219 src/storage/storage_backend.c:288
-#: src/storage/storage_backend_logical.c:736
+#: src/storage/storage_backend_logical.c:739
 #, c-format
 msgid "cannot close file '%s'"
 msgstr "не удалось закрыть файл «%s»"
@@ -14786,7 +14786,7 @@ msgid "cannot fill file '%s'"
 msgstr "не удалось заполнить файл «%s»"
 
 #: src/storage/storage_backend.c:384 src/storage/storage_backend_disk.c:648
-#: src/storage/storage_backend_logical.c:685
+#: src/storage/storage_backend_logical.c:688
 msgid "storage pool does not support encrypted volumes"
 msgstr "пул не поддерживает шифрование томов"
 
@@ -14908,7 +14908,7 @@ msgid "cannot read dir '%s'"
 msgstr "не удалось прочитать каталог «%s»"
 
 #: src/storage/storage_backend.c:1444
-#: src/storage/storage_backend_logical.c:208
+#: src/storage/storage_backend_logical.c:209
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "Не удалось выполнить компиляцию регулярного выражения %s"
@@ -15205,49 +15205,49 @@ msgstr "неверно сформированное значение длины 
 msgid "malformed volume extent size value"
 msgstr "неверно сформированное значение размера экстента тома"
 
-#: src/storage/storage_backend_logical.c:215
+#: src/storage/storage_backend_logical.c:218
 msgid "malformed volume extent devices value"
 msgstr ""
 
-#: src/storage/storage_backend_logical.c:244
+#: src/storage/storage_backend_logical.c:247
 msgid "malformed volume extent offset value"
 msgstr "неверно сформированное значение смещения экстента тома"
 
-#: src/storage/storage_backend_logical.c:436
+#: src/storage/storage_backend_logical.c:439
 msgid "failed to get source from sourceList"
 msgstr "не удалось получить источник из sourceList"
 
-#: src/storage/storage_backend_logical.c:513
+#: src/storage/storage_backend_logical.c:516
 #, c-format
 msgid "cannot open device '%s'"
 msgstr "не удалось открыть устройство «%s»"
 
-#: src/storage/storage_backend_logical.c:519
+#: src/storage/storage_backend_logical.c:522
 #, c-format
 msgid "cannot clear device header of '%s'"
 msgstr "не удалось очистить заголовок устройства «%s»"
 
-#: src/storage/storage_backend_logical.c:526
+#: src/storage/storage_backend_logical.c:529
 #, c-format
 msgid "cannot flush header of device'%s'"
 msgstr ""
 
-#: src/storage/storage_backend_logical.c:533
+#: src/storage/storage_backend_logical.c:536
 #, c-format
 msgid "cannot close device '%s'"
 msgstr "не удалось закрыть устройство «%s»"
 
-#: src/storage/storage_backend_logical.c:722
+#: src/storage/storage_backend_logical.c:725
 #, c-format
 msgid "cannot set file owner '%s'"
 msgstr "не удалось задать владельца файлов «%s»"
 
-#: src/storage/storage_backend_logical.c:729
+#: src/storage/storage_backend_logical.c:732
 #, c-format
 msgid "cannot set file mode '%s'"
 msgstr "не удалось задать режим файла «%s»"
 
-#: src/storage/storage_backend_logical.c:745
+#: src/storage/storage_backend_logical.c:748
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "не удалось найти только что созданный том «%s»"
@@ -16995,17 +16995,17 @@ msgid "%s:%zu: %s '%s'"
 msgstr ""
 
 #: src/util/virnetdev.c:63 src/util/virnetdev.c:487
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:156
+#: src/util/virnetdevbridge.c:79 src/util/virnetdevtap.c:156
 #: src/util/virnetdevtap.c:214
 #, c-format
 msgid "Network interface name '%s' is too long"
 msgstr ""
 
-#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:70 src/util/virnetdevbridge.c:87
 msgid "Cannot open network interface control socket"
 msgstr ""
 
-#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:76 src/util/virnetdevbridge.c:93
 msgid "Cannot set close-on-exec flag for socket"
 msgstr ""
 
@@ -17189,59 +17189,59 @@ msgstr ""
 msgid "Unable to restore net config on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:136 src/util/virnetdevbridge.c:147
+#: src/util/virnetdevbridge.c:154
 #, c-format
 msgid "Unable to set bridge %s %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:188 src/util/virnetdevbridge.c:200
+#: src/util/virnetdevbridge.c:210
 #, c-format
 msgid "Unable to get bridge %s %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:242 src/util/virnetdevbridge.c:256
 #, c-format
 msgid "Unable to create bridge %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:280 src/util/virnetdevbridge.c:294
 #, c-format
 msgid "Unable to delete bridge %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:321 src/util/virnetdevbridge.c:368
 #, c-format
 msgid "Unable to get interface index for %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:327 src/util/virnetdevbridge.c:341
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:375 src/util/virnetdevbridge.c:389
 #, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:520
 #, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:528
 #, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:538
 #, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:546
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr ""
@@ -26646,6 +26646,18 @@ msgstr ""
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Cannot find start time in %s"
+#~ msgstr "Не удалось найти ядро UML %s"
+
+#, fuzzy
+#~ msgid "Cannot parse start time %s in %s"
+#~ msgstr "не удалось разобрать версию %s"
+
+#, fuzzy
+#~ msgid "Unable to query process ID start time"
+#~ msgstr "не удалось получить текущее время"
 
 #~ msgid "Error creating command for container"
 #~ msgstr "Ошибка создания команды для контейнера"
