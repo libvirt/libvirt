@@ -986,12 +986,14 @@ qemuStateCleanup(void) {
     virObjectUnref(qemu_driver->activePciHostdevs);
     virObjectUnref(qemu_driver->inactivePciHostdevs);
     virObjectUnref(qemu_driver->activeUsbHostdevs);
+    virObjectUnref(qemu_driver->activeScsiHostdevs);
     virHashFree(qemu_driver->sharedDevices);
     virObjectUnref(qemu_driver->caps);
     virQEMUCapsCacheFree(qemu_driver->qemuCapsCache);
 
     virObjectUnref(qemu_driver->domains);
     virObjectUnref(qemu_driver->remotePorts);
+    virObjectUnref(qemu_driver->webSocketPorts);
 
     virObjectUnref(qemu_driver->xmlopt);
 
