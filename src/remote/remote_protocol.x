@@ -230,7 +230,7 @@ const REMOTE_NODE_MEMORY_PARAMETERS_MAX = 64;
 const REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX = 64;
 
 /* Upper limit on number of job stats */
-const REMOTE_DOMAIN_JOB_STATS_MAX = 16;
+const REMOTE_DOMAIN_JOB_STATS_MAX = 64;
 
 /* Upper limit on number of CPU models */
 const REMOTE_CONNECT_CPU_MODELS_MAX = 8192;
