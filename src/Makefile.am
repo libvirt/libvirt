@@ -196,7 +196,7 @@ BUILT_SOURCES += $(LOCK_PROTOCOL_GENERATED)
 MAINTAINERCLEANFILES += $(LOCK_PROTOCOL_GENERATED)
 
 LOCK_DAEMON_GENERATED = \
-		$(srcdir)/locking/lock_daemon_dispatch_stubs.h
+		locking/lock_daemon_dispatch_stubs.h
 		$(NULL)
 
 BUILT_SOURCES += $(LOCK_DAEMON_GENERATED)
