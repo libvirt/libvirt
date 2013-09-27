@@ -639,6 +639,7 @@ virnetsockettest_LDADD = $(LDADDS)
 virnetserverclienttest_SOURCES = \
 	virnetserverclienttest.c \
 	testutils.h testutils.c
+virnetserverclienttest_CFLAGS = $(XDR_CFLAGS) $(AM_CFLAGS)
 virnetserverclienttest_LDADD = $(LDADDS)
 
 virnetserverclientmock_la_SOURCES = \
