@@ -2011,7 +2011,7 @@ virLXCControllerEventSend(virLXCControllerPtr ctrl,
     virNetMessagePtr msg;
 
     if (!ctrl->client) {
-        VIR_WARN("Dropping event %d becuase libvirtd is not connected", procnr);
+        VIR_WARN("Dropping event %d because libvirtd is not connected", procnr);
         return;
     }
 
