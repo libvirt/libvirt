@@ -129,8 +129,11 @@ test_programs = virshtest sockettest \
         virportallocatortest \
 	sysinfotest \
 	virstoragetest \
-        fchosttest \
 	$(NULL)
+
+if WITH_LINUX
+test_programs += fchosttest
+endif WITH_LINUX
 
 if WITH_LIBVIRTD
 test_programs += fdstreamtest
@@ -845,9 +848,14 @@ fdstreamtest_SOURCES = \
 	fdstreamtest.c testutils.h testutils.c
 fdstreamtest_LDADD = $(LDADDS)
 
+if WITH_LINUX
 fchosttest_SOURCES = \
        fchosttest.c testutils.h testutils.c
 fchosttest_LDADD = $(LDADDS)
+
+else ! WITH_LINUX
+EXTRA_DIST += fchosttest.c
+endif  ! WITH_LINUX
 
 if WITH_CIL
 CILOPTFLAGS =
