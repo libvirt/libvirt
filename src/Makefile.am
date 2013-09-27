@@ -1756,6 +1756,12 @@ else ! WITH_LIBVIRTD
 SYM_FILES += $(srcdir)/libvirt_daemon.syms
 endif ! WITH_LIBVIRTD
 
+if WITH_REMOTE
+USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
+else ! WITH_REMOTE
+SYM_FILES += $(srcdir)/libvirt_remote.syms
+endif ! WITH_REMOTE
+
 if WITH_OPENVZ
 USED_SYM_FILES += $(srcdir)/libvirt_openvz.syms
 else ! WITH_OPENVZ

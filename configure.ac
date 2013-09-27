@@ -198,8 +198,22 @@ fi
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 
+# The daemon requires remote support.  Likewise, if we are not using
+# RPC, we don't need several libraries.
+if test "$with_remote" = "no" ; then
+  with_libvirtd=no
+  with_gnutls=no
+  with_ssh2=no
+  with_sasl=no
+fi
+# Stateful drivers are useful only when building the daemon.
 if test "$with_libvirtd" = "no" ; then
   with_qemu=no
+  with_xen=no
+  with_lxc=no
+  with_libxl=no
+  with_uml=no
+  with_vbox=no
 fi
 
 # Check for compiler and library settings.
@@ -1053,7 +1067,6 @@ dnl
 dnl check for kernel headers required by src/bridge.c
 dnl
 if test "$with_linux" = "yes"; then
-  if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
     # Various kernel versions have headers that are not self-standing, but
     # yet are incompatible with the corresponding glibc headers.  In order
     # to guarantee compilation across a wide range of versions (from RHEL 5
@@ -1087,7 +1100,6 @@ if test "$with_linux" = "yes"; then
         #endif
         #include <linux/in6.h>
       ]])
-  fi
 fi
 
 

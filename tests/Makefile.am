@@ -115,8 +115,8 @@ test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
-	virhashtest virnetmessagetest virnetsockettest \
-	viratomictest virnetserverclienttest \
+	virhashtest \
+	viratomictest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
@@ -132,6 +132,17 @@ test_programs = virshtest sockettest \
 	virstoragetest \
 	$(NULL)
 
+if WITH_REMOTE
+test_programs += \
+	virnetmessagetest \
+	virnetsockettest \
+	virnetserverclienttest \
+	$(NULL)
+if WITH_GNUTLS
+test_programs += virnettlscontexttest virnettlssessiontest
+endif WITH_GNUTLS
+endif WITH_REMOTE
+
 if WITH_LINUX
 test_programs += fchosttest
 endif WITH_LINUX
@@ -144,10 +155,6 @@ if WITH_DBUS
 test_programs += virdbustest \
                  virsystemdtest
 endif WITH_DBUS
-
-if WITH_GNUTLS
-test_programs += virnettlscontexttest virnettlssessiontest
-endif WITH_GNUTLS
 
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
