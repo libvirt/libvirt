@@ -2194,19 +2194,18 @@ EXTRA_DIST += \
 	rpc/virkeepaliveprotocol.x
 
 VIR_NET_RPC_GENERATED = \
-	$(srcdir)/rpc/virnetprotocol.h \
-	$(srcdir)/rpc/virnetprotocol.c \
-	$(srcdir)/rpc/virkeepaliveprotocol.h \
-	$(srcdir)/rpc/virkeepaliveprotocol.c
+	rpc/virnetprotocol.h \
+	rpc/virnetprotocol.c \
+	rpc/virkeepaliveprotocol.h \
+	rpc/virkeepaliveprotocol.c
 
 BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
 
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
-	rpc/virnetprotocol.h rpc/virnetprotocol.c \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
-	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c \
-	rpc/virkeepalive.h rpc/virkeepalive.c
+	rpc/virkeepalive.h rpc/virkeepalive.c \
+	$(VIR_NET_RPC_GENERATED)
 if WITH_SSH2
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsshsession.h rpc/virnetsshsession.c
