@@ -3520,7 +3520,8 @@ int qemuProcessStart(virConnectPtr conn,
     hookData.conn = conn;
     hookData.vm = vm;
     hookData.driver = driver;
-    hookData.cfg = virObjectRef(cfg);
+    /* We don't increase cfg's reference counter here. */
+    hookData.cfg = cfg;
 
     VIR_DEBUG("Beginning VM startup process");
 
