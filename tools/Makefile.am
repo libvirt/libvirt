@@ -74,7 +74,9 @@ endif WITH_SANLOCK
 if WITH_LXC
 conf_DATA += virt-login-shell.conf
 bin_PROGRAMS += virt-login-shell
-endif WITH_LXC
+else ! WITH_LXC
+EXTRA_DIST += virt-login-shell.conf
+endif ! WITH_LXC
 
 
 dist_man1_MANS = \
@@ -84,7 +86,9 @@ dist_man1_MANS = \
 		virsh.1
 if WITH_LXC
 dist_man1_MANS += virt-login-shell.1
-endif WITH_LXC
+else ! WITH_LXC
+EXTRA_DIST += virt-login-shell.1
+endif ! WITH_LXC
 if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
 endif WITH_SANLOCK
