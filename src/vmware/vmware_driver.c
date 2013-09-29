@@ -160,8 +160,8 @@ vmwareConnectOpen(virConnectPtr conn,
     for (i = 0; i < VMWARE_DRIVER_LAST; i++) {
         if (STREQ(tmp, vmwareDriverTypeToString(i))) {
             driver->type = i;
-	    break;
-	}
+            break;
+        }
     }
 
     if (driver->type == -1) {
