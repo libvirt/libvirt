@@ -665,7 +665,11 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    st = virStreamNew(ctl->conn, 0);
+    if (!(st = virStreamNew(ctl->conn, 0))) {
+        vshError(ctl, _("cannot create a new stream"));
+        goto cleanup;
+    }
+
     if (virStorageVolUpload(vol, st, offset, length, 0) < 0) {
         vshError(ctl, _("cannot upload to volume %s"), name);
         goto cleanup;
@@ -775,7 +779,11 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
         created = true;
     }
 
-    st = virStreamNew(ctl->conn, 0);
+    if (!(st = virStreamNew(ctl->conn, 0))) {
+        vshError(ctl, _("cannot create a new stream"));
+        goto cleanup;
+    }
+
     if (virStorageVolDownload(vol, st, offset, length, 0) < 0) {
         vshError(ctl, _("cannot download from volume %s"), name);
         goto cleanup;
