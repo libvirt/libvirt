@@ -708,7 +708,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
                        daemonClientStream *stream)
 {
     char *buffer;
-    size_t bufferLen = VIR_NET_MESSAGE_PAYLOAD_MAX;
+    size_t bufferLen = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret;
 
     VIR_DEBUG("client=%p, stream=%p tx=%d closed=%d",
