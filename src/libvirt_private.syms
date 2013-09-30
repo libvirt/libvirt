@@ -1947,8 +1947,10 @@ virSysinfoSetup;
 
 # util/virsystemd.h
 virSystemdCreateMachine;
+virSystemdMakeMachineName;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
+virSystemdTerminateMachine;
 
 
 # util/virthread.h

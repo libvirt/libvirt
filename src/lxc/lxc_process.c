@@ -50,6 +50,7 @@
 #include "virstring.h"
 #include "viratomic.h"
 #include "virprocess.h"
+#include "virsystemd.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -209,6 +210,13 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         virCgroupRemove(priv->cgroup);
         virCgroupFree(&priv->cgroup);
     }
+
+    /* Get machined to terminate the machine as it may not have cleaned it
+     * properly. See https://bugs.freedesktop.org/show_bug.cgi?id=68370 for
+     * the bug we are working around here.
+     */
+    virSystemdTerminateMachine(vm->def->name, "lxc", true);
+
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {

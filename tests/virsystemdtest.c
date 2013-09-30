@@ -54,6 +54,18 @@ static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static int testTerminateContainer(const void *opaque ATTRIBUTE_UNUSED)
+{
+    if (virSystemdTerminateMachine("demo",
+                                   "lxc",
+                                   true) < 0) {
+        fprintf(stderr, "%s", "Failed to terminate LXC machine\n");
+        return -1;
+    }
+
+    return 0;
+}
+
 static int testCreateMachine(const void *opaque ATTRIBUTE_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
@@ -71,6 +83,18 @@ static int testCreateMachine(const void *opaque ATTRIBUTE_UNUSED)
                                 false,
                                 NULL) < 0) {
         fprintf(stderr, "%s", "Failed to create KVM machine\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+static int testTerminateMachine(const void *opaque ATTRIBUTE_UNUSED)
+{
+    if (virSystemdTerminateMachine("demo",
+                                   "qemu",
+                                   false) < 0) {
+        fprintf(stderr, "%s", "Failed to terminate KVM machine\n");
         return -1;
     }
 
@@ -184,7 +208,11 @@ mymain(void)
 
     if (virtTestRun("Test create container ", 1, testCreateContainer, NULL) < 0)
         ret = -1;
+    if (virtTestRun("Test terminate container ", 1, testTerminateContainer, NULL) < 0)
+        ret = -1;
     if (virtTestRun("Test create machine ", 1, testCreateMachine, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test terminate machine ", 1, testTerminateMachine, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test create no systemd ", 1, testCreateNoSystemd, NULL) < 0)
         ret = -1;

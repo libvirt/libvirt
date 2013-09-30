@@ -116,6 +116,27 @@ char *virSystemdMakeSliceName(const char *partition)
     return virBufferContentAndReset(&buf);
 }
 
+char *virSystemdMakeMachineName(const char *name,
+                                const char *drivername,
+                                bool privileged)
+{
+    char *machinename = NULL;
+    char *username = NULL;
+    if (privileged) {
+        if (virAsprintf(&machinename, "%s-%s", drivername, name) < 0)
+            goto cleanup;
+    } else {
+        if (!(username = virGetUserName(geteuid())))
+            goto cleanup;
+        if (virAsprintf(&machinename, "%s-%s-%s", username, drivername, name) < 0)
+            goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(username);
+
+    return machinename;
+}
 
 /**
  * virSystemdCreateMachine:
@@ -142,7 +163,6 @@ int virSystemdCreateMachine(const char *name,
     DBusConnection *conn;
     char *machinename = NULL;
     char *creatorname = NULL;
-    char *username = NULL;
     char *slicename = NULL;
 
     ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
@@ -152,15 +172,8 @@ int virSystemdCreateMachine(const char *name,
     conn = virDBusGetSystemBus();
 
     ret = -1;
-    if (privileged) {
-        if (virAsprintf(&machinename, "%s-%s", drivername, name) < 0)
-            goto cleanup;
-    } else {
-        if (!(username = virGetUserName(geteuid())))
-            goto cleanup;
-        if (virAsprintf(&machinename, "%s-%s-%s", username, drivername, name) < 0)
-            goto cleanup;
-    }
+    if (!(machinename = virSystemdMakeMachineName(name, drivername, privileged)))
+        goto cleanup;
 
     if (virAsprintf(&creatorname, "libvirt-%s", drivername) < 0)
         goto cleanup;
@@ -236,9 +249,54 @@ int virSystemdCreateMachine(const char *name,
     ret = 0;
 
 cleanup:
-    VIR_FREE(username);
     VIR_FREE(creatorname);
     VIR_FREE(machinename);
     VIR_FREE(slicename);
+    return ret;
+}
+
+int virSystemdTerminateMachine(const char *name,
+                               const char *drivername,
+                               bool privileged)
+{
+    int ret;
+    DBusConnection *conn;
+    char *machinename = NULL;
+
+    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
+    if (ret < 0)
+        return ret;
+
+    conn = virDBusGetSystemBus();
+
+    ret = -1;
+    if (!(machinename = virSystemdMakeMachineName(name, drivername, privileged)))
+        goto cleanup;
+
+    /*
+     * The systemd DBus API we're invoking has the
+     * following signature
+     *
+     * TerminateMachine(in  s name);
+     *
+     * @name a host unique name for the machine. shows up
+     * in 'ps' listing & similar
+     */
+
+    VIR_DEBUG("Attempting to terminate machine via systemd");
+    if (virDBusCallMethod(conn,
+                          NULL,
+                          "org.freedesktop.machine1",
+                          "/org/freedesktop/machine1",
+                          "org.freedesktop.machine1.Manager",
+                          "TerminateMachine",
+                          "s",
+                          machinename) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(machinename);
     return ret;
 }
