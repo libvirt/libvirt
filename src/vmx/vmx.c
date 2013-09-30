@@ -2717,7 +2717,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     }
 
     /* vmx:fileName -> def:data.file.path */
-    if (virVMXGetConfigString(conf, fileName_name, &fileName, false) < 0) {
+    if (virVMXGetConfigString(conf, fileName_name, &fileName, true) < 0) {
         goto cleanup;
     }
 
