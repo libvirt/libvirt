@@ -1845,10 +1845,10 @@ cleanup:
         }
 
         len = strlen(buf);
-        /* best effor seek - we need to reset to the original position, so that
+        /* best effort seek - we need to reset to the original position, so that
          * a possible read of the fd in the monitor code doesn't influence this
          * error delivery option */
-        lseek(logfd, pos, SEEK_SET);
+        ignore_value(lseek(logfd, pos, SEEK_SET));
         qemuProcessReadLog(logfd, buf + len, buf_size - len - 1, 0, true);
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("process exited while connecting to monitor: %s"),
