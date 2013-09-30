@@ -1038,8 +1038,15 @@ safezero(int fd, off_t offset, off_t len)
 int
 safezero(int fd, off_t offset, off_t len)
 {
+    static long pagemask = 0;
+    off_t map_skip;
     int r;
     char *buf;
+
+    /* align offset and length, rounding offset down and length up */
+    if (pagemask == 0)
+        pagemask = ~(sysconf(_SC_PAGESIZE) - 1);
+    map_skip = offset - (offset & pagemask);
 
     /* memset wants the mmap'ed file to be present on disk so create a
      * sparse file
@@ -1048,12 +1055,13 @@ safezero(int fd, off_t offset, off_t len)
     if (r < 0)
         return -1;
 
-    buf = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
+    buf = mmap(NULL, len + map_skip, PROT_READ | PROT_WRITE, MAP_SHARED,
+               fd, offset - map_skip);
     if (buf == MAP_FAILED)
         return -1;
 
-    memset(buf, 0, len);
-    munmap(buf, len);
+    memset(buf + map_skip, 0, len);
+    munmap(buf, len + map_skip);
 
     return 0;
 }
