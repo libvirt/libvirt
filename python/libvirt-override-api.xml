@@ -100,7 +100,7 @@
       <arg name='flags' type='unsigned int' info='flags, currently unused, pass 0.'/>
     </function>
     <function name='virNodeGetInfo' file='python'>
-      <info>Extract hardware information about the Node.</info>
+      <info>Extract hardware information about the Node. Note that the memory size is reported in MiB instead of KiB.</info>
       <return type='char *' info='the list of information or None in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
