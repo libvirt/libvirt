@@ -1451,6 +1451,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
+            goto cleanup;
         }
     }
 
