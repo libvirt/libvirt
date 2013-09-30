@@ -88,16 +88,13 @@ static int
 virSCSIDeviceGetAdapterId(const char *adapter,
                           unsigned int *adapter_id)
 {
-    if (STRPREFIX(adapter, "scsi_host")) {
-        if (virStrToLong_ui(adapter + strlen("scsi_host"),
-                            NULL, 0, adapter_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse adapter '%s'"), adapter);
-            return -1;
-        }
-    }
-
-    return 0;
+    if (STRPREFIX(adapter, "scsi_host") &&
+        virStrToLong_ui(adapter + strlen("scsi_host"),
+                        NULL, 0, adapter_id) == 0)
+        return 0;
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Cannot parse adapter '%s'"), adapter);
+    return -1;
 }
 
 char *
