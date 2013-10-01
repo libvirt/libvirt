@@ -1108,6 +1108,69 @@ cleanup:
     return ret;
 }
 
+#define GEN_TEST_FUNC(funcName, ...)                                    \
+static int                                                              \
+testQemuMonitorJSON ## funcName(const void *opaque)                     \
+{                                                                       \
+    const testQemuMonitorJSONSimpleFuncDataPtr data =                   \
+        (const testQemuMonitorJSONSimpleFuncDataPtr) opaque;            \
+    virDomainXMLOptionPtr xmlopt = data->xmlopt;                        \
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);   \
+    const char *reply = data->reply;                                    \
+    int ret = -1;                                                       \
+                                                                        \
+    if (!test)                                                          \
+        return -1;                                                      \
+                                                                        \
+    if (!reply)                                                         \
+        reply = "{\"return\":{}}";                                      \
+                                                                        \
+    if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0)             \
+        goto cleanup;                                                   \
+                                                                        \
+    if (funcName(qemuMonitorTestGetMonitor(test), __VA_ARGS__) < 0)     \
+        goto cleanup;                                                   \
+                                                                        \
+    ret = 0;                                                            \
+cleanup:                                                                \
+    qemuMonitorTestFree(test);                                          \
+    return ret;                                                         \
+}
+
+GEN_TEST_FUNC(qemuMonitorJSONSetLink, "vnet0", VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN)
+GEN_TEST_FUNC(qemuMonitorJSONBlockResize, "vda", 123456)
+GEN_TEST_FUNC(qemuMonitorJSONSetVNCPassword, "secret_password")
+GEN_TEST_FUNC(qemuMonitorJSONSetPassword, "spice", "secret_password", "disconnect")
+GEN_TEST_FUNC(qemuMonitorJSONExpirePassword, "spice", "123456")
+GEN_TEST_FUNC(qemuMonitorJSONSetBalloon, 1024)
+GEN_TEST_FUNC(qemuMonitorJSONSetCPU, 1, true)
+GEN_TEST_FUNC(qemuMonitorJSONEjectMedia, "hdc", true)
+GEN_TEST_FUNC(qemuMonitorJSONChangeMedia, "hdc", "/foo/bar", NULL)
+GEN_TEST_FUNC(qemuMonitorJSONSaveVirtualMemory, 0, 1024, "/foo/bar")
+GEN_TEST_FUNC(qemuMonitorJSONSavePhysicalMemory, 0, 1024, "/foo/bar")
+GEN_TEST_FUNC(qemuMonitorJSONSetMigrationSpeed, 1024)
+GEN_TEST_FUNC(qemuMonitorJSONSetMigrationDowntime, 1)
+GEN_TEST_FUNC(qemuMonitorJSONMigrate, QEMU_MONITOR_MIGRATE_BACKGROUND |
+              QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
+              QEMU_MONITOR_MIGRATE_NON_SHARED_INC, "tcp:localhost:12345")
+GEN_TEST_FUNC(qemuMonitorJSONDump, "dummy_protocol")
+GEN_TEST_FUNC(qemuMonitorJSONGraphicsRelocate, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
+              "localhost", 12345, 12346, NULL)
+GEN_TEST_FUNC(qemuMonitorJSONAddNetdev, "some_dummy_netdevstr")
+GEN_TEST_FUNC(qemuMonitorJSONRemoveNetdev, "net0")
+GEN_TEST_FUNC(qemuMonitorJSONDelDevice, "ide0")
+GEN_TEST_FUNC(qemuMonitorJSONAddDevice, "some_dummy_devicestr")
+GEN_TEST_FUNC(qemuMonitorJSONSetDrivePassphrase, "vda", "secret_passhprase")
+GEN_TEST_FUNC(qemuMonitorJSONDriveMirror, "vdb", "/foo/bar", NULL, 1024,
+              VIR_DOMAIN_BLOCK_REBASE_SHALLOW | VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)
+GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", 1024)
+GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb", NULL, NULL)
+GEN_TEST_FUNC(qemuMonitorJSONScreendump, "/foo/bar")
+GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
+GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345)
+GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
+GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
+
 static int
 testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
 {
@@ -1770,6 +1833,11 @@ mymain(void)
     if (virtTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0)    \
         ret = -1
 
+#define DO_TEST_GEN(name, ...) \
+    simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = xmlopt, __VA_ARGS__ }; \
+    if (virtTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0) \
+        ret = -1
+
     DO_TEST(GetStatus);
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
@@ -1791,6 +1859,35 @@ mymain(void)
     DO_TEST_SIMPLE("inject-nmi", qemuMonitorJSONInjectNMI);
     DO_TEST_SIMPLE("system_wakeup", qemuMonitorJSONSystemWakeup);
     DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
+    DO_TEST_GEN(qemuMonitorJSONSetLink);
+    DO_TEST_GEN(qemuMonitorJSONBlockResize);
+    DO_TEST_GEN(qemuMonitorJSONSetVNCPassword);
+    DO_TEST_GEN(qemuMonitorJSONSetPassword);
+    DO_TEST_GEN(qemuMonitorJSONExpirePassword);
+    DO_TEST_GEN(qemuMonitorJSONSetBalloon);
+    DO_TEST_GEN(qemuMonitorJSONSetCPU);
+    DO_TEST_GEN(qemuMonitorJSONEjectMedia);
+    DO_TEST_GEN(qemuMonitorJSONChangeMedia);
+    DO_TEST_GEN(qemuMonitorJSONSaveVirtualMemory);
+    DO_TEST_GEN(qemuMonitorJSONSavePhysicalMemory);
+    DO_TEST_GEN(qemuMonitorJSONSetMigrationSpeed);
+    DO_TEST_GEN(qemuMonitorJSONSetMigrationDowntime);
+    DO_TEST_GEN(qemuMonitorJSONMigrate);
+    DO_TEST_GEN(qemuMonitorJSONDump);
+    DO_TEST_GEN(qemuMonitorJSONGraphicsRelocate);
+    DO_TEST_GEN(qemuMonitorJSONAddNetdev);
+    DO_TEST_GEN(qemuMonitorJSONRemoveNetdev);
+    DO_TEST_GEN(qemuMonitorJSONDelDevice);
+    DO_TEST_GEN(qemuMonitorJSONAddDevice);
+    DO_TEST_GEN(qemuMonitorJSONSetDrivePassphrase);
+    DO_TEST_GEN(qemuMonitorJSONDriveMirror);
+    DO_TEST_GEN(qemuMonitorJSONBlockCommit);
+    DO_TEST_GEN(qemuMonitorJSONDrivePivot);
+    DO_TEST_GEN(qemuMonitorJSONScreendump);
+    DO_TEST_GEN(qemuMonitorJSONOpenGraphics);
+    DO_TEST_GEN(qemuMonitorJSONNBDServerStart);
+    DO_TEST_GEN(qemuMonitorJSONNBDServerAdd);
+    DO_TEST_GEN(qemuMonitorJSONDetachCharDev);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
