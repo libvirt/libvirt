@@ -1799,6 +1799,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needFilterChange = false;
     bool needLinkStateChange = false;
     bool needReplaceDevDef = false;
+    bool needBandwidthSet = false;
     int ret = -1;
 
     if (!devslot || !(olddev = *devslot)) {
@@ -2062,8 +2063,6 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(olddev) ||
         !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
                                     virDomainNetGetActualVirtPortProfile(newdev)) ||
-        !virNetDevBandwidthEqual(virDomainNetGetActualBandwidth(olddev),
-                                 virDomainNetGetActualBandwidth(newdev)) ||
         !virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
                             virDomainNetGetActualVlan(newdev))) {
         needReconnect = true;
@@ -2072,6 +2071,10 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (olddev->linkstate != newdev->linkstate)
         needLinkStateChange = true;
 
+    if (!virNetDevBandwidthEqual(virDomainNetGetActualBandwidth(olddev),
+                                 virDomainNetGetActualBandwidth(newdev)))
+        needBandwidthSet = true;
+
     /* FINALLY - actually perform the required actions */
 
     if (needReconnect) {
@@ -2079,6 +2082,18 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                        _("unable to change config on '%s' network type"),
                        virDomainNetTypeToString(newdev->type));
         goto cleanup;
+    }
+
+    if (needBandwidthSet) {
+        if (virNetDevBandwidthSet(newdev->ifname,
+                                  virDomainNetGetActualBandwidth(newdev),
+                                  false) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot set bandwidth limits on %s"),
+                           newdev->ifname);
+            goto cleanup;
+        }
+        needReplaceDevDef = true;
     }
 
     if (needBridgeChange) {
