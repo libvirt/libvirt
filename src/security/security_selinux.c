@@ -460,6 +460,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 error:
 # if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
+    data->label_handle = NULL;
 # endif
     virConfFree(selinux_conf);
     VIR_FREE(data->domain_context);
@@ -547,6 +548,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 error:
 #if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
+    data->label_handle = NULL;
 #endif
     VIR_FREE(data->domain_context);
     VIR_FREE(data->alt_domain_context);
@@ -808,7 +810,8 @@ virSecuritySELinuxSecurityDriverClose(virSecurityManagerPtr mgr)
         return 0;
 
 #if HAVE_SELINUX_LABEL_H
-    selabel_close(data->label_handle);
+    if (data->label_handle)
+        selabel_close(data->label_handle);
 #endif
 
     virHashFree(data->mcs);
