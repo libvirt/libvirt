@@ -2,6 +2,7 @@
 /*
  * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
+ * Copyright (C) 2013. Doug Goldstein <cardoe@cardoe.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -156,13 +157,8 @@ vmwareConnectOpen(virConnectPtr conn,
         goto cleanup;
     }
 
-    driver->type = -1;
-    for (i = 0; i < VMWARE_DRIVER_LAST; i++) {
-        if (STREQ(tmp, vmwareDriverTypeToString(i))) {
-            driver->type = i;
-            break;
-        }
-    }
+    /* Match the non-'vmware' part of the scheme as the driver backend */
+    driver->type = vmwareDriverTypeFromString(tmp);
 
     if (driver->type == -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("unable to find valid "
