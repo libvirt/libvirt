@@ -9043,6 +9043,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     int flags = 0;
     bool params = false;
     const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/@%s)";
+    virSocketAddr addr;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9126,8 +9127,12 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, ":%s@", passwd);
 
         /* Then host name or IP */
-        if (!listen_addr || STREQ((const char *)listen_addr, "0.0.0.0"))
+        if (!listen_addr ||
+            (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
+             virSocketAddrIsWildcard(&addr)))
             virBufferAddLit(&buf, "localhost");
+        else if (strchr(listen_addr, ':'))
+            virBufferAsprintf(&buf, "[%s]", listen_addr);
         else
             virBufferAsprintf(&buf, "%s", listen_addr);
 
