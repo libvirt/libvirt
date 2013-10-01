@@ -1785,7 +1785,7 @@ mymain(void)
     DO_TEST(GetDeviceAliases);
     DO_TEST(CPU);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
-    DO_TEST_SIMPLE("system_powerdown", qemuMonitorSystemPowerdown);
+    DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
     DO_TEST_SIMPLE("migrate_cancel", qemuMonitorJSONMigrateCancel);
     DO_TEST_SIMPLE("inject-nmi", qemuMonitorJSONInjectNMI);
