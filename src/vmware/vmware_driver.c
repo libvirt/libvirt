@@ -166,6 +166,9 @@ vmwareConnectOpen(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (vmwareExtractVersion(driver) < 0)
+        goto cleanup;
+
     if (!(driver->domains = virDomainObjListNew()))
         goto cleanup;
 
@@ -176,9 +179,6 @@ vmwareConnectOpen(virConnectPtr conn,
         goto cleanup;
 
     if (vmwareLoadDomains(driver) < 0)
-        goto cleanup;
-
-    if (vmwareExtractVersion(driver) < 0)
         goto cleanup;
 
     conn->privateData = driver;
