@@ -490,9 +490,10 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     if (vm->def->nsounds &&
         ((!vm->def->ngraphics && cfg->nogfxAllowHostAudio) ||
-         ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+         (vm->def->graphics &&
+          ((vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
            cfg->vncAllowHostAudio) ||
-           (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)))) {
+           (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL))))) {
         rv = virCgroupAllowDeviceMajor(priv->cgroup, 'c', DEVICE_SND_MAJOR,
                                        VIR_CGROUP_DEVICE_RW);
         virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_SND_MAJOR,
