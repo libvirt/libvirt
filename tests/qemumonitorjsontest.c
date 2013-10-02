@@ -1171,6 +1171,82 @@ GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345)
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
 GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
 
+
+static int
+testQemuMonitorJSONqemuMonitorJSONGetCPUInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    pid_t *cpupids = NULL;
+    pid_t expected_cpupids[] = {17622, 17624, 17626, 17628};
+    int ncpupids;
+    size_t i;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-cpus",
+                               "{"
+                               "    \"return\": ["
+                               "        {"
+                               "            \"current\": true,"
+                               "            \"CPU\": 0,"
+                               "            \"pc\": -2130530478,"
+                               "            \"halted\": true,"
+                               "            \"thread_id\": 17622"
+                               "        },"
+                               "        {"
+                               "            \"current\": false,"
+                               "            \"CPU\": 1,"
+                               "            \"pc\": -2130530478,"
+                               "            \"halted\": true,"
+                               "            \"thread_id\": 17624"
+                               "        },"
+                               "        {"
+                               "            \"current\": false,"
+                               "            \"CPU\": 2,"
+                               "            \"pc\": -2130530478,"
+                               "            \"halted\": true,"
+                               "            \"thread_id\": 17626"
+                               "        },"
+                               "        {"
+                               "            \"current\": false,"
+                               "            \"CPU\": 3,"
+                               "            \"pc\": -2130530478,"
+                               "            \"halted\": true,"
+                               "            \"thread_id\": 17628"
+                               "        }"
+                               "    ],"
+                               "    \"id\": \"libvirt-7\""
+                               "}") < 0)
+        goto cleanup;
+
+    ncpupids = qemuMonitorJSONGetCPUInfo(qemuMonitorTestGetMonitor(test), &cpupids);
+
+    if (ncpupids != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expecting ncpupids = 4 but got %d", ncpupids);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ncpupids; i++) {
+        if (cpupids[i] != expected_cpupids[i]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "Expecting cpupids[%zu] = %d but got %d",
+                           i, expected_cpupids[i], cpupids[i]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpupids);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
 static int
 testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
 {
@@ -1898,6 +1974,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapability);
+    DO_TEST(qemuMonitorJSONGetCPUInfo);
 
     virObjectUnref(xmlopt);
 
