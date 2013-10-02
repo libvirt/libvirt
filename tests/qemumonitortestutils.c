@@ -51,6 +51,7 @@ struct _qemuMonitorTest {
     bool json;
     bool quit;
     bool running;
+    bool started;
 
     char *incoming;
     size_t incomingLength;
@@ -354,7 +355,7 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
 
     virObjectUnref(test->vm);
 
-    if (test->running)
+    if (test->started)
         virThreadJoin(&test->thread);
 
     if (timer != -1)
@@ -846,7 +847,7 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
         virMutexUnlock(&test->lock);
         goto error;
     }
-    test->running = true;
+    test->started = test->running = true;
     virMutexUnlock(&test->lock);
 
     return 0;
