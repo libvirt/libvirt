@@ -1463,6 +1463,55 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetMigrationStatus(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    qemuMonitorMigrationStatus status, expectedStatus;
+
+    if (!test)
+        return -1;
+
+    memset(&expectedStatus, 0, sizeof(expectedStatus));
+
+    expectedStatus.status = QEMU_MONITOR_MIGRATION_STATUS_ACTIVE;
+    expectedStatus.total_time = 47;
+    expectedStatus.ram_total = 1611038720;
+    expectedStatus.ram_remaining = 1605013504;
+    expectedStatus.ram_transferred = 3625548;
+
+    if (qemuMonitorTestAddItem(test, "query-migrate",
+                               "{"
+                               "    \"return\": {"
+                               "        \"status\": \"active\","
+                               "        \"total-time\": 47,"
+                               "        \"ram\": {"
+                               "            \"total\": 1611038720,"
+                               "            \"remaining\": 1605013504,"
+                               "            \"transferred\": 3625548"
+                               "        }"
+                               "    },"
+                               "    \"id\": \"libvirt-13\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetMigrationStatus(qemuMonitorTestGetMonitor(test), &status) < 0)
+        goto cleanup;
+
+    if (memcmp(&status, &expectedStatus, sizeof(status)) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Invalid migration status");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1515,6 +1564,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
+    DO_TEST(qemuMonitorJSONGetMigrationStatus);
 
     virObjectUnref(xmlopt);
 
