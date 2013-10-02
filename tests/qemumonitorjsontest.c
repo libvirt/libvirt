@@ -1216,6 +1216,217 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    long long rd_req, rd_bytes, rd_total_times;
+    long long wr_req, wr_bytes, wr_total_times;
+    long long flush_req, flush_total_times, errs;
+    int nparams;
+    unsigned long long extent;
+
+    const char *reply =
+        "{"
+        "    \"return\": ["
+        "        {"
+        "            \"device\": \"drive-virtio-disk0\","
+        "            \"parent\": {"
+        "                \"stats\": {"
+        "                    \"flush_total_time_ns\": 0,"
+        "                    \"wr_highest_offset\": 5256018944,"
+        "                    \"wr_total_time_ns\": 0,"
+        "                    \"wr_bytes\": 0,"
+        "                    \"rd_total_time_ns\": 0,"
+        "                    \"flush_operations\": 0,"
+        "                    \"wr_operations\": 0,"
+        "                    \"rd_bytes\": 0,"
+        "                    \"rd_operations\": 0"
+        "                }"
+        "            },"
+        "            \"stats\": {"
+        "                \"flush_total_time_ns\": 0,"
+        "                \"wr_highest_offset\": 10406001664,"
+        "                \"wr_total_time_ns\": 530699221,"
+        "                \"wr_bytes\": 2845696,"
+        "                \"rd_total_time_ns\": 640616474,"
+        "                \"flush_operations\": 0,"
+        "                \"wr_operations\": 174,"
+        "                \"rd_bytes\": 28505088,"
+        "                \"rd_operations\": 1279"
+        "            }"
+        "        },"
+        "        {"
+        "            \"device\": \"drive-virtio-disk1\","
+        "            \"parent\": {"
+        "                \"stats\": {"
+        "                    \"flush_total_time_ns\": 0,"
+        "                    \"wr_highest_offset\": 0,"
+        "                    \"wr_total_time_ns\": 0,"
+        "                    \"wr_bytes\": 0,"
+        "                    \"rd_total_time_ns\": 0,"
+        "                    \"flush_operations\": 0,"
+        "                    \"wr_operations\": 0,"
+        "                    \"rd_bytes\": 0,"
+        "                    \"rd_operations\": 0"
+        "                }"
+        "            },"
+        "            \"stats\": {"
+        "                \"flush_total_time_ns\": 0,"
+        "                \"wr_highest_offset\": 0,"
+        "                \"wr_total_time_ns\": 0,"
+        "                \"wr_bytes\": 0,"
+        "                \"rd_total_time_ns\": 8232156,"
+        "                \"flush_operations\": 0,"
+        "                \"wr_operations\": 0,"
+        "                \"rd_bytes\": 348160,"
+        "                \"rd_operations\": 85"
+        "            }"
+        "        },"
+        "        {"
+        "            \"device\": \"drive-ide0-1-0\","
+        "            \"parent\": {"
+        "                \"stats\": {"
+        "                    \"flush_total_time_ns\": 0,"
+        "                    \"wr_highest_offset\": 0,"
+        "                    \"wr_total_time_ns\": 0,"
+        "                    \"wr_bytes\": 0,"
+        "                    \"rd_total_time_ns\": 0,"
+        "                    \"flush_operations\": 0,"
+        "                    \"wr_operations\": 0,"
+        "                    \"rd_bytes\": 0,"
+        "                    \"rd_operations\": 0"
+        "                }"
+        "            },"
+        "            \"stats\": {"
+        "                \"flush_total_time_ns\": 0,"
+        "                \"wr_highest_offset\": 0,"
+        "                \"wr_total_time_ns\": 0,"
+        "                \"wr_bytes\": 0,"
+        "                \"rd_total_time_ns\": 1004952,"
+        "                \"flush_operations\": 0,"
+        "                \"wr_operations\": 0,"
+        "                \"rd_bytes\": 49250,"
+        "                \"rd_operations\": 16"
+        "            }"
+        "        }"
+        "    ],"
+        "    \"id\": \"libvirt-11\""
+        "}";
+
+    if (!test)
+        return -1;
+
+    /* fill in seven times - we are gonna ask seven times later on */
+    if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
+        goto cleanup;
+
+#define CHECK0(var, value) \
+    if (var != value) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "Invalid " #var " value: %lld, expected %d", \
+                       var, value); \
+        goto cleanup; \
+    }
+
+#define CHECK(RD_REQ, RD_BYTES, RD_TOTAL_TIMES, WR_REQ, WR_BYTES, WR_TOTAL_TIMES, \
+              FLUSH_REQ, FLUSH_TOTAL_TIMES, ERRS) \
+    CHECK0(rd_req, RD_REQ) \
+    CHECK0(rd_bytes, RD_BYTES) \
+    CHECK0(rd_total_times, RD_TOTAL_TIMES) \
+    CHECK0(wr_req, WR_REQ) \
+    CHECK0(wr_bytes, WR_BYTES) \
+    CHECK0(wr_total_times, WR_TOTAL_TIMES) \
+    CHECK0(flush_req, FLUSH_REQ) \
+    CHECK0(flush_total_times, FLUSH_TOTAL_TIMES) \
+    CHECK0(errs, ERRS)
+
+    if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "virtio-disk0",
+                                         &rd_req, &rd_bytes, &rd_total_times,
+                                         &wr_req, &wr_bytes, &wr_total_times,
+                                         &flush_req, &flush_total_times, &errs) < 0)
+        goto cleanup;
+
+    CHECK(1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, -1)
+
+    if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "virtio-disk1",
+                                         &rd_req, &rd_bytes, &rd_total_times,
+                                         &wr_req, &wr_bytes, &wr_total_times,
+                                         &flush_req, &flush_total_times, &errs) < 0)
+        goto cleanup;
+
+    CHECK(85, 348160, 8232156, 0, 0, 0, 0, 0, -1)
+
+    if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "ide0-1-0",
+                                         &rd_req, &rd_bytes, &rd_total_times,
+                                         &wr_req, &wr_bytes, &wr_total_times,
+                                         &flush_req, &flush_total_times, &errs) < 0)
+        goto cleanup;
+
+    CHECK(16, 49250, 1004952, 0, 0, 0, 0, 0, -1)
+
+    if (qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorTestGetMonitor(test),
+                                                 &nparams) < 0)
+        goto cleanup;
+
+    if (nparams != 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid number of stats: %d, expected 8",
+                       nparams);
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "virtio-disk0",
+                                      &extent) < 0)
+        goto cleanup;
+
+    if (extent != 5256018944) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid extent: %llu, expected 5256018944",
+                       extent);
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "virtio-disk1",
+                                      &extent) < 0)
+        goto cleanup;
+
+    if (extent != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid extent: %llu, expected 0",
+                       extent);
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "ide0-1-0",
+                                      &extent) < 0)
+        goto cleanup;
+
+    if (extent != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid extent: %llu, expected 0",
+                       extent);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+#undef CHECK
+#undef CHECK0
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1266,6 +1477,7 @@ mymain(void)
     DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
+    DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
 
     virObjectUnref(xmlopt);
 
