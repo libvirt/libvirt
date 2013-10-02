@@ -1934,6 +1934,31 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONSendKey(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    unsigned int keycodes[] = {43, 26, 46, 32};
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "send-key",
+                               "{\"return\": {}, \"id\": \"libvirt-16\"}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
+                               0, keycodes, ARRAY_CARDINALITY(keycodes)) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -2028,6 +2053,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationCapability);
     DO_TEST(qemuMonitorJSONGetCPUInfo);
     DO_TEST(qemuMonitorJSONGetVirtType);
+    DO_TEST(qemuMonitorJSONSendKey);
 
     virObjectUnref(xmlopt);
 
