@@ -1038,6 +1038,42 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    unsigned long long currmem;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-balloon",
+                               "{"
+                               "    \"return\": {"
+                               "        \"actual\": 4294967296"
+                               "    },"
+                               "    \"id\": \"libvirt-9\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetBalloonInfo(qemuMonitorTestGetMonitor(test), &currmem) < 0)
+        goto cleanup;
+
+    if (currmem != (4294967296/1024)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected currmem value: %llu", currmem);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1086,6 +1122,7 @@ mymain(void)
     DO_TEST_SIMPLE("inject-nmi", qemuMonitorJSONInjectNMI);
     DO_TEST_SIMPLE("system_wakeup", qemuMonitorJSONSystemWakeup);
     DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
+    DO_TEST(qemuMonitorJSONGetBalloonInfo);
 
     virObjectUnref(xmlopt);
 
