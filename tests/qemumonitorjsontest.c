@@ -1698,6 +1698,51 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetMigrationCapability(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    int cap;
+    const char *reply =
+        "{"
+        "    \"return\": ["
+        "        {"
+        "            \"state\": false,"
+        "            \"capability\": \"xbzrle\""
+        "        }"
+        "    ],"
+        "    \"id\": \"libvirt-22\""
+        "}";
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-migrate-capabilities", reply) < 0 ||
+        qemuMonitorTestAddItem(test, "migrate-set-capabilities",
+                               "{\"return\":{}}") < 0)
+        goto cleanup;
+
+    cap = qemuMonitorJSONGetMigrationCapability(qemuMonitorTestGetMonitor(test),
+                                              QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
+    if (cap != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected capability: %d, expecting 1",
+                       cap);
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONSetMigrationCapability(qemuMonitorTestGetMonitor(test),
+                                              QEMU_MONITOR_MIGRATION_CAPS_XBZRLE) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1755,6 +1800,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetPtyPaths);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
+    DO_TEST(qemuMonitorJSONGetMigrationCapability);
 
     virObjectUnref(xmlopt);
 
