@@ -1551,6 +1551,72 @@ cleanup:
 }
 
 static int
+testHashEqualString(const void *value1, const void *value2)
+{
+    return strcmp(value1, value2);
+}
+
+static int
+testQemuMonitorJSONqemuMonitorJSONGetPtyPaths(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    virHashTablePtr paths = NULL, expectedPaths = NULL;
+
+    if (!test)
+        return -1;
+
+    if (!(paths = virHashCreate(32, (virHashDataFree) free)) ||
+        !(expectedPaths = virHashCreate(32, NULL)))
+        goto cleanup;
+
+    if (virHashAddEntry(expectedPaths, "charserial1", (void *) "/dev/pts/21") < 0 ||
+        virHashAddEntry(expectedPaths, "charserial0", (void *) "/dev/pts/20") < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unable to create expectedPaths hash table");
+        goto cleanup;
+    }
+
+    if (qemuMonitorTestAddItem(test, "query-chardev",
+                               "{"
+                               "    \"return\": ["
+                               "        {"
+                               "            \"filename\": \"pty:/dev/pts/21\","
+                               "            \"label\": \"charserial1\""
+                               "        },"
+                               "        {"
+                               "            \"filename\": \"pty:/dev/pts/20\","
+                               "            \"label\": \"charserial0\""
+                               "        },"
+                               "        {"
+                               "            \"filename\": \"unix:/var/lib/libvirt/qemu/gentoo.monitor,server\","
+                               "            \"label\": \"charmonitor\""
+                               "        }"
+                               "    ],"
+                               "    \"id\": \"libvirt-15\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetPtyPaths(qemuMonitorTestGetMonitor(test),
+                                   paths) < 0)
+        goto cleanup;
+
+    if (!virHashEqual(paths, expectedPaths, testHashEqualString)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Hashtable is different to the expected one");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virHashFree(paths);
+    virHashFree(expectedPaths);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1605,6 +1671,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
     DO_TEST(qemuMonitorJSONGetMigrationStatus);
     DO_TEST(qemuMonitorJSONGetSpiceMigrationStatus);
+    DO_TEST(qemuMonitorJSONGetPtyPaths);
 
     virObjectUnref(xmlopt);
 
