@@ -1074,6 +1074,148 @@ cleanup:
 }
 
 static int
+testHashEqualQemuDomainDiskInfo(const void *value1, const void *value2)
+{
+    const struct qemuDomainDiskInfo *info1 = value1, *info2 = value2;
+
+    return memcmp(info1, info2, sizeof(*info1));
+}
+
+static int
+testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    virHashTablePtr blockDevices = NULL, expectedBlockDevices = NULL;
+    struct qemuDomainDiskInfo *info;
+
+    if (!test)
+        return -1;
+
+    if (!(blockDevices = virHashCreate(32, (virHashDataFree) free)) ||
+        !(expectedBlockDevices = virHashCreate(32, (virHashDataFree) (free))))
+        goto cleanup;
+
+    if (VIR_ALLOC(info) < 0)
+        goto cleanup;
+
+    if (virHashAddEntry(expectedBlockDevices, "virtio-disk0", info) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unable to create expectedBlockDevices hash table");
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(info) < 0)
+        goto cleanup;
+
+    if (virHashAddEntry(expectedBlockDevices, "virtio-disk1", info) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unable to create expectedBlockDevices hash table");
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(info) < 0)
+        goto cleanup;
+
+    info->locked = true;
+    info->removable = true;
+    if (virHashAddEntry(expectedBlockDevices, "ide0-1-0", info) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unable to create expectedBlockDevices hash table");
+        goto cleanup;
+    }
+
+    if (qemuMonitorTestAddItem(test, "query-block",
+                               "{"
+                               "    \"return\": ["
+                               "        {"
+                               "            \"io-status\": \"ok\","
+                               "            \"device\": \"drive-virtio-disk0\","
+                               "            \"locked\": false,"
+                               "            \"removable\": false,"
+                               "            \"inserted\": {"
+                               "                \"iops_rd\": 0,"
+                               "                \"iops_wr\": 0,"
+                               "                \"ro\": false,"
+                               "                \"backing_file_depth\": 0,"
+                               "                \"drv\": \"qcow2\","
+                               "                \"iops\": 0,"
+                               "                \"bps_wr\": 0,"
+                               "                \"encrypted\": false,"
+                               "                \"bps\": 0,"
+                               "                \"bps_rd\": 0,"
+                               "                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
+                               "                \"encryption_key_missing\": false"
+                               "            },"
+                               "            \"type\": \"unknown\""
+                               "        },"
+                               "        {"
+                               "            \"io-status\": \"ok\","
+                               "            \"device\": \"drive-virtio-disk1\","
+                               "            \"locked\": false,"
+                               "            \"removable\": false,"
+                               "            \"inserted\": {"
+                               "                \"iops_rd\": 0,"
+                               "                \"iops_wr\": 0,"
+                               "                \"ro\": false,"
+                               "                \"backing_file_depth\": 0,"
+                               "                \"drv\": \"raw\","
+                               "                \"iops\": 0,"
+                               "                \"bps_wr\": 0,"
+                               "                \"encrypted\": false,"
+                               "                \"bps\": 0,"
+                               "                \"bps_rd\": 0,"
+                               "                \"file\": \"/home/zippy/test.bin\","
+                               "                \"encryption_key_missing\": false"
+                               "            },"
+                               "            \"type\": \"unknown\""
+                               "        },"
+                               "        {"
+                               "            \"io-status\": \"ok\","
+                               "            \"device\": \"drive-ide0-1-0\","
+                               "            \"locked\": true,"
+                               "            \"removable\": true,"
+                               "            \"inserted\": {"
+                               "                \"iops_rd\": 0,"
+                               "                \"iops_wr\": 0,"
+                               "                \"ro\": true,"
+                               "                \"backing_file_depth\": 0,"
+                               "                \"drv\": \"raw\","
+                               "                \"iops\": 0,"
+                               "                \"bps_wr\": 0,"
+                               "                \"encrypted\": false,"
+                               "                \"bps\": 0,"
+                               "                \"bps_rd\": 0,"
+                               "                \"file\": \"/home/zippy/tmp/install-amd64-minimal-20121210.iso\","
+                               "                \"encryption_key_missing\": false"
+                               "            },"
+                               "            \"tray_open\": false,"
+                               "            \"type\": \"unknown\""
+                               "        }"
+                               "    ],"
+                               "    \"id\": \"libvirt-10\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetBlockInfo(qemuMonitorTestGetMonitor(test), blockDevices) < 0)
+        goto cleanup;
+
+    if (!virHashEqual(blockDevices, expectedBlockDevices, testHashEqualQemuDomainDiskInfo)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Hashtable is different to the expected one");
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virHashFree(blockDevices);
+    virHashFree(expectedBlockDevices);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1123,6 +1265,7 @@ mymain(void)
     DO_TEST_SIMPLE("system_wakeup", qemuMonitorJSONSystemWakeup);
     DO_TEST_SIMPLE("nbd-server-stop", qemuMonitorJSONNBDServerStop);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
+    DO_TEST(qemuMonitorJSONGetBlockInfo);
 
     virObjectUnref(xmlopt);
 
