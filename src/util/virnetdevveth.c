@@ -43,10 +43,10 @@ static int virNetDevVethExists(int devNum)
 {
     int ret;
     char *path = NULL;
-    if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0)
+    if (virAsprintf(&path, "/sys/class/net/vnet%d/", devNum) < 0)
         return -1;
     ret = virFileExists(path) ? 1 : 0;
-    VIR_DEBUG("Checked dev veth%d usage: %d", devNum, ret);
+    VIR_DEBUG("Checked dev vnet%d usage: %d", devNum, ret);
     VIR_FREE(path);
     return ret;
 }
@@ -125,7 +125,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
             if ((veth1num = virNetDevVethGetFreeNum(vethNum)) < 0)
                 goto cleanup;
 
-            if (virAsprintf(&veth1auto, "veth%d", veth1num) < 0)
+            if (virAsprintf(&veth1auto, "vnet%d", veth1num) < 0)
                 goto cleanup;
             vethNum = veth1num + 1;
         }
@@ -134,7 +134,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
             if ((veth2num = virNetDevVethGetFreeNum(vethNum)) < 0)
                 goto cleanup;
 
-            if (virAsprintf(&veth2auto, "veth%d", veth2num) < 0)
+            if (virAsprintf(&veth2auto, "vnet%d", veth2num) < 0)
                 goto cleanup;
             vethNum = veth2num + 1;
         }
