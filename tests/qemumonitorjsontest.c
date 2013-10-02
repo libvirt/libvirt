@@ -40,6 +40,77 @@ struct _testQemuMonitorJSONSimpleFuncData {
     const char *reply;
 };
 
+const char *queryBlockReply =
+"{"
+"    \"return\": ["
+"        {"
+"            \"io-status\": \"ok\","
+"            \"device\": \"drive-virtio-disk0\","
+"            \"locked\": false,"
+"            \"removable\": false,"
+"            \"inserted\": {"
+"                \"iops_rd\": 5,"
+"                \"iops_wr\": 6,"
+"                \"ro\": false,"
+"                \"backing_file_depth\": 0,"
+"                \"drv\": \"qcow2\","
+"                \"iops\": 4,"
+"                \"bps_wr\": 3,"
+"                \"encrypted\": false,"
+"                \"bps\": 1,"
+"                \"bps_rd\": 2,"
+"                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
+"                \"encryption_key_missing\": false"
+"            },"
+"            \"type\": \"unknown\""
+"        },"
+"        {"
+"            \"io-status\": \"ok\","
+"            \"device\": \"drive-virtio-disk1\","
+"            \"locked\": false,"
+"            \"removable\": false,"
+"            \"inserted\": {"
+"                \"iops_rd\": 0,"
+"                \"iops_wr\": 0,"
+"                \"ro\": false,"
+"                \"backing_file_depth\": 0,"
+"                \"drv\": \"raw\","
+"                \"iops\": 0,"
+"                \"bps_wr\": 0,"
+"                \"encrypted\": false,"
+"                \"bps\": 0,"
+"                \"bps_rd\": 0,"
+"                \"file\": \"/home/zippy/test.bin\","
+"                \"encryption_key_missing\": false"
+"            },"
+"            \"type\": \"unknown\""
+"        },"
+"        {"
+"            \"io-status\": \"ok\","
+"            \"device\": \"drive-ide0-1-0\","
+"            \"locked\": true,"
+"            \"removable\": true,"
+"            \"inserted\": {"
+"                \"iops_rd\": 0,"
+"                \"iops_wr\": 0,"
+"                \"ro\": true,"
+"                \"backing_file_depth\": 0,"
+"                \"drv\": \"raw\","
+"                \"iops\": 0,"
+"                \"bps_wr\": 0,"
+"                \"encrypted\": false,"
+"                \"bps\": 0,"
+"                \"bps_rd\": 0,"
+"                \"file\": \"/home/zippy/tmp/install-amd64-minimal-20121210.iso\","
+"                \"encryption_key_missing\": false"
+"            },"
+"            \"tray_open\": false,"
+"            \"type\": \"unknown\""
+"        }"
+"    ],"
+"    \"id\": \"libvirt-10\""
+"}";
+
 static int
 testQemuMonitorJSONGetStatus(const void *data)
 {
@@ -1126,76 +1197,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorTestAddItem(test, "query-block",
-                               "{"
-                               "    \"return\": ["
-                               "        {"
-                               "            \"io-status\": \"ok\","
-                               "            \"device\": \"drive-virtio-disk0\","
-                               "            \"locked\": false,"
-                               "            \"removable\": false,"
-                               "            \"inserted\": {"
-                               "                \"iops_rd\": 0,"
-                               "                \"iops_wr\": 0,"
-                               "                \"ro\": false,"
-                               "                \"backing_file_depth\": 0,"
-                               "                \"drv\": \"qcow2\","
-                               "                \"iops\": 0,"
-                               "                \"bps_wr\": 0,"
-                               "                \"encrypted\": false,"
-                               "                \"bps\": 0,"
-                               "                \"bps_rd\": 0,"
-                               "                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
-                               "                \"encryption_key_missing\": false"
-                               "            },"
-                               "            \"type\": \"unknown\""
-                               "        },"
-                               "        {"
-                               "            \"io-status\": \"ok\","
-                               "            \"device\": \"drive-virtio-disk1\","
-                               "            \"locked\": false,"
-                               "            \"removable\": false,"
-                               "            \"inserted\": {"
-                               "                \"iops_rd\": 0,"
-                               "                \"iops_wr\": 0,"
-                               "                \"ro\": false,"
-                               "                \"backing_file_depth\": 0,"
-                               "                \"drv\": \"raw\","
-                               "                \"iops\": 0,"
-                               "                \"bps_wr\": 0,"
-                               "                \"encrypted\": false,"
-                               "                \"bps\": 0,"
-                               "                \"bps_rd\": 0,"
-                               "                \"file\": \"/home/zippy/test.bin\","
-                               "                \"encryption_key_missing\": false"
-                               "            },"
-                               "            \"type\": \"unknown\""
-                               "        },"
-                               "        {"
-                               "            \"io-status\": \"ok\","
-                               "            \"device\": \"drive-ide0-1-0\","
-                               "            \"locked\": true,"
-                               "            \"removable\": true,"
-                               "            \"inserted\": {"
-                               "                \"iops_rd\": 0,"
-                               "                \"iops_wr\": 0,"
-                               "                \"ro\": true,"
-                               "                \"backing_file_depth\": 0,"
-                               "                \"drv\": \"raw\","
-                               "                \"iops\": 0,"
-                               "                \"bps_wr\": 0,"
-                               "                \"encrypted\": false,"
-                               "                \"bps\": 0,"
-                               "                \"bps_rd\": 0,"
-                               "                \"file\": \"/home/zippy/tmp/install-amd64-minimal-20121210.iso\","
-                               "                \"encryption_key_missing\": false"
-                               "            },"
-                               "            \"tray_open\": false,"
-                               "            \"type\": \"unknown\""
-                               "        }"
-                               "    ],"
-                               "    \"id\": \"libvirt-10\""
-                               "}") < 0)
+    if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0)
         goto cleanup;
 
     if (qemuMonitorJSONGetBlockInfo(qemuMonitorTestGetMonitor(test), blockDevices) < 0)
@@ -1617,6 +1619,48 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    virDomainBlockIoTuneInfo info, expectedInfo;
+
+    if (!test)
+        return -1;
+
+    expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6};
+
+    if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0 ||
+        qemuMonitorTestAddItemParams(test, "block_set_io_throttle",
+                                     "{\"return\":{}}",
+                                     "device", "\"drive-virtio-disk1\"",
+                                     "bps", "1", "bps_rd", "2", "bps_wr", "3",
+                                     "iops", "4", "iops_rd", "5", "iops_wr", "6",
+                                     NULL, NULL) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
+                                          "drive-virtio-disk0", &info) < 0)
+        goto cleanup;
+
+    if (memcmp(&info, &expectedInfo, sizeof(info) != 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Invalid @info");
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
+                                          "drive-virtio-disk1", &info) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1672,6 +1716,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationStatus);
     DO_TEST(qemuMonitorJSONGetSpiceMigrationStatus);
     DO_TEST(qemuMonitorJSONGetPtyPaths);
+    DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
 
     virObjectUnref(xmlopt);
 
