@@ -1032,16 +1032,18 @@ safezero(int fd, off_t offset, off_t len)
     errno = ret;
     return -1;
 }
+
 #else
 
-# ifdef HAVE_MMAP
 int
 safezero(int fd, off_t offset, off_t len)
 {
-    static long pagemask = 0;
-    off_t map_skip;
     int r;
     char *buf;
+    unsigned long long remain, bytes;
+# ifdef HAVE_MMAP
+    static long pagemask = 0;
+    off_t map_skip;
 
     /* align offset and length, rounding offset down and length up */
     if (pagemask == 0)
@@ -1057,30 +1059,23 @@ safezero(int fd, off_t offset, off_t len)
 
     buf = mmap(NULL, len + map_skip, PROT_READ | PROT_WRITE, MAP_SHARED,
                fd, offset - map_skip);
-    if (buf == MAP_FAILED)
-        return -1;
+    if (buf != MAP_FAILED) {
+        memset(buf + map_skip, 0, len);
+        munmap(buf, len + map_skip);
 
-    memset(buf + map_skip, 0, len);
-    munmap(buf, len + map_skip);
+        return 0;
+    }
 
-    return 0;
-}
-
-# else /* HAVE_MMAP */
-
-int
-safezero(int fd, off_t offset, off_t len)
-{
-    int r;
-    char *buf;
-    unsigned long long remain, bytes;
+    /* fall back to writing zeroes using safewrite if mmap fails (for
+     * example because of virtual memory limits) */
+# endif /* HAVE_MMAP */
 
     if (lseek(fd, offset, SEEK_SET) < 0)
         return -1;
 
     /* Split up the write in small chunks so as not to allocate lots of RAM */
     remain = len;
-    bytes = 1024 * 1024;
+    bytes = MAX(1024 * 1024, len);
 
     r = VIR_ALLOC_N(buf, bytes);
     if (r < 0) {
@@ -1104,7 +1099,6 @@ safezero(int fd, off_t offset, off_t len)
     VIR_FREE(buf);
     return 0;
 }
-# endif /* HAVE_MMAP */
 #endif /* HAVE_POSIX_FALLOCATE */
 
 
