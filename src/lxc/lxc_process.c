@@ -193,7 +193,6 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         virDomainNetDefPtr iface = vm->def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(iface);
         if (iface->ifname) {
-            ignore_value(virNetDevSetOnline(iface->ifname, false));
             if (vport &&
                 vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
                 ignore_value(virNetDevOpenvswitchRemovePort(
