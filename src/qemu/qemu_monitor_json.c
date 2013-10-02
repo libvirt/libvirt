@@ -1300,7 +1300,7 @@ int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
 
         if (virJSONValueObjectGetBoolean(data, "enabled", &val) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("info kvm reply missing 'running' field"));
+                           _("info kvm reply missing 'enabled' field"));
             ret = -1;
             goto cleanup;
         }
