@@ -339,16 +339,30 @@ virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
         return false;
 
     /* in */
-    if (a->in->average != b->in->average ||
-        a->in->peak != b->in->peak ||
-        a->in->burst != b->in->burst)
+    if (a->in) {
+        if (!b->in)
+            return false;
+
+        if (a->in->average != b->in->average ||
+            a->in->peak != b->in->peak ||
+            a->in->burst != b->in->burst)
+            return false;
+    } else if (b->in) {
         return false;
+    }
 
     /*out*/
-    if (a->out->average != b->out->average ||
-        a->out->peak != b->out->peak ||
-        a->out->burst != b->out->burst)
+    if (a->out) {
+        if (!b->out)
+            return false;
+
+        if (a->out->average != b->out->average ||
+            a->out->peak != b->out->peak ||
+            a->out->burst != b->out->burst)
+            return false;
+    } else if (b->out) {
         return false;
+    }
 
     return true;
 }
