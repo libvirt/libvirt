@@ -1427,6 +1427,42 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    unsigned long long cacheSize;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-migrate-cache-size",
+                               "{"
+                               "    \"return\": 67108864,"
+                               "    \"id\": \"libvirt-12\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetMigrationCacheSize(qemuMonitorTestGetMonitor(test),
+                                             &cacheSize) < 0)
+        goto cleanup;
+
+    if (cacheSize != 67108864) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid cacheSize: %llu, expected 67108864",
+                       cacheSize);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1478,6 +1514,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
+    DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
 
     virObjectUnref(xmlopt);
 
