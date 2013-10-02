@@ -1284,6 +1284,58 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    int virtType;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-kvm",
+                               "{"
+                               "    \"return\": {"
+                               "        \"enabled\": true,"
+                               "        \"present\": true"
+                               "    },"
+                               "    \"id\": \"libvirt-8\""
+                               "}") < 0 ||
+        qemuMonitorTestAddItem(test, "query-kvm",
+                               "{"
+                               "    \"return\": {"
+                               "        \"enabled\": false,"
+                               "        \"present\": true"
+                               "    },"
+                               "    \"id\": \"libvirt-7\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
+        goto cleanup;
+
+    if (virtType != VIR_DOMAIN_VIRT_KVM) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_KVM);
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
+        goto cleanup;
+
+    if (virtType != VIR_DOMAIN_VIRT_QEMU) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_QEMU);
+    }
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 testHashEqualQemuDomainDiskInfo(const void *value1, const void *value2)
 {
     const struct qemuDomainDiskInfo *info1 = value1, *info2 = value2;
@@ -1975,6 +2027,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapability);
     DO_TEST(qemuMonitorJSONGetCPUInfo);
+    DO_TEST(qemuMonitorJSONGetVirtType);
 
     virObjectUnref(xmlopt);
 
