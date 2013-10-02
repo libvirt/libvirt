@@ -3452,6 +3452,9 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     if (!cmd)
         goto cleanup;
 
+    /* @keys is part of @cmd now. Avoid double free */
+    keys = NULL;
+
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
