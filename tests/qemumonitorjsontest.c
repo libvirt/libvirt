@@ -1661,6 +1661,43 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    int ret = -1;
+    char *arch;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-target",
+                               "{"
+                               "    \"return\": {"
+                               "        \"arch\": \"x86_64\""
+                               "    },"
+                               "    \"id\": \"libvirt-21\""
+                               "}") < 0)
+        goto cleanup;
+
+    if (!(arch = qemuMonitorJSONGetTargetArch(qemuMonitorTestGetMonitor(test))))
+        goto cleanup;
+
+    if (STRNEQ(arch, "x86_64")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected architecture %s, expecting x86_64",
+                       arch);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(arch);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1717,6 +1754,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetSpiceMigrationStatus);
     DO_TEST(qemuMonitorJSONGetPtyPaths);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
+    DO_TEST(qemuMonitorJSONGetTargetArch);
 
     virObjectUnref(xmlopt);
 
