@@ -33,13 +33,26 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 /* Functions */
+
+static int virNetDevVethExists(int devNum)
+{
+    int ret;
+    char *path = NULL;
+    if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0)
+        return -1;
+    ret = virFileExists(path) ? 1 : 0;
+    VIR_DEBUG("Checked dev veth%d usage: %d", devNum, ret);
+    VIR_FREE(path);
+    return ret;
+}
+
 /**
- * virNetDevVethGetFreeName:
- * @veth: pointer to store returned name for veth device
+ * virNetDevVethGetFreeNum:
  * @startDev: device number to start at (x in vethx)
  *
  * Looks in /sys/class/net/ to find the first available veth device
@@ -47,25 +60,23 @@
  *
  * Returns non-negative device number on success or -1 in case of error
  */
-static int virNetDevVethGetFreeName(char **veth, int startDev)
+static int virNetDevVethGetFreeNum(int startDev)
 {
-    int devNum = startDev-1;
-    char *path = NULL;
+    int devNum;
 
-    VIR_DEBUG("Find free from veth%d", startDev);
-    do {
-        VIR_FREE(path);
-        ++devNum;
-        if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0)
+#define MAX_DEV_NUM 65536
+
+    for (devNum = startDev; devNum < MAX_DEV_NUM; devNum++) {
+        int ret = virNetDevVethExists(devNum);
+        if (ret < 0)
             return -1;
-        VIR_DEBUG("Probe %s", path);
-    } while (virFileExists(path));
-    VIR_FREE(path);
+        if (ret == 0)
+            return devNum;
+    }
 
-    if (virAsprintf(veth, "veth%d", devNum) < 0)
-        return -1;
-
-    return devNum;
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("No free veth devices available"));
+    return -1;
 }
 
 /**
@@ -95,57 +106,79 @@ static int virNetDevVethGetFreeName(char **veth, int startDev)
  */
 int virNetDevVethCreate(char** veth1, char** veth2)
 {
-    int rc = -1;
-    const char *argv[] = {
-        "ip", "link", "add", NULL, "type", "veth", "peer", "name", NULL, NULL
-    };
-    int vethDev = 0;
-    bool veth1_alloc = false;
-    bool veth2_alloc = false;
+    int ret = -1;
+    char *veth1auto = NULL;
+    char *veth2auto = NULL;
+    int vethNum = 0;
+    size_t i;
 
-    VIR_DEBUG("Host: %s guest: %s", NULLSTR(*veth1), NULLSTR(*veth2));
+    /*
+     * We might race with other containers, but this is reasonably
+     * unlikely, so don't do too many retries for device creation
+     */
+#define MAX_VETH_RETRIES 10
 
-    if (*veth1 == NULL) {
-        if ((vethDev = virNetDevVethGetFreeName(veth1, vethDev)) < 0)
+    for (i = 0; i < MAX_VETH_RETRIES; i++) {
+        int status;
+        if (!*veth1) {
+            int veth1num;
+            if ((veth1num = virNetDevVethGetFreeNum(vethNum)) < 0)
+                goto cleanup;
+
+            if (virAsprintf(&veth1auto, "veth%d", veth1num) < 0)
+                goto cleanup;
+            vethNum = veth1num + 1;
+        }
+        if (!*veth2) {
+            int veth2num;
+            if ((veth2num = virNetDevVethGetFreeNum(vethNum)) < 0)
+                goto cleanup;
+
+            if (virAsprintf(&veth2auto, "veth%d", veth2num) < 0)
+                goto cleanup;
+            vethNum = veth2num + 1;
+        }
+
+        virCommandPtr cmd = virCommandNew("ip");
+        virCommandAddArgList(cmd, "link", "add",
+                             *veth1 ? *veth1 : veth1auto,
+                             "type", "veth", "peer", "name",
+                             *veth2 ? *veth2 : veth2auto,
+                             NULL);
+
+        if (virCommandRun(cmd, &status) < 0)
             goto cleanup;
-        VIR_DEBUG("Assigned host: %s", *veth1);
-        veth1_alloc = true;
-        vethDev++;
-    }
-    argv[3] = *veth1;
 
-    while (*veth2 == NULL) {
-        if ((vethDev = virNetDevVethGetFreeName(veth2, vethDev)) < 0) {
-            if (veth1_alloc)
-                VIR_FREE(*veth1);
+        if (status == 0) {
+            if (veth1auto) {
+                *veth1 = veth1auto;
+                veth1auto = NULL;
+            }
+            if (veth2auto) {
+                *veth2 = veth2auto;
+                veth2auto = NULL;
+            }
+            VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
+            ret = 0;
             goto cleanup;
         }
 
-        /* Just make sure they didn't accidentally get same name */
-        if (STREQ(*veth1, *veth2)) {
-            vethDev++;
-            VIR_FREE(*veth2);
-            continue;
-        }
-
-        VIR_DEBUG("Assigned guest: %s", *veth2);
-        veth2_alloc = true;
-    }
-    argv[8] = *veth2;
-
-    VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
-    if (virRun(argv, NULL) < 0) {
-        if (veth1_alloc)
-            VIR_FREE(*veth1);
-        if (veth2_alloc)
-            VIR_FREE(*veth2);
-        goto cleanup;
+        VIR_DEBUG("Failed to create veth host: %s guest: %s: %d",
+                  *veth1 ? *veth1 : veth1auto,
+                  *veth1 ? *veth1 : veth1auto,
+                  status);
+        VIR_FREE(veth1auto);
+        VIR_FREE(veth2auto);
     }
 
-    rc = 0;
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to allocate free veth pair after %d attempts"),
+                   MAX_VETH_RETRIES);
 
 cleanup:
-    return rc;
+    VIR_FREE(veth1auto);
+    VIR_FREE(veth2auto);
+    return ret;
 }
 
 /**
