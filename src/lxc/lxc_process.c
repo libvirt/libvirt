@@ -1290,7 +1290,7 @@ cleanup:
         rc = -1;
     }
     for (i = 0; i < nveths; i++) {
-        if (rc != 0)
+        if (rc != 0 && veths[i])
             ignore_value(virNetDevVethDelete(veths[i]));
         VIR_FREE(veths[i]);
     }
