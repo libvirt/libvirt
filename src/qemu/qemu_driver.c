@@ -157,8 +157,7 @@ static void
 qemuVMDriverUnlock(void) {}
 
 static int
-qemuVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    virDomainObjListIterator iter, void *data)
+qemuVMFilterRebuild(virDomainObjListIterator iter, void *data)
 {
     return virDomainObjListForEach(qemu_driver->domains, iter, data);
 }
