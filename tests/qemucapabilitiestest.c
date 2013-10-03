@@ -232,6 +232,7 @@ mymain(void)
     if (virtTestRun(name, 1, testQemuCaps, &data) < 0) \
         ret = -1
 
+    DO_TEST("caps_1.2.2-1");
     DO_TEST("caps_1.5.3-1");
 
     virObjectUnref(xmlopt);
