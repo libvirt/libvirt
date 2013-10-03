@@ -13,6 +13,9 @@
          and in virsh -->
       <element name="name"><text/></element>
       <optional>
+        <element name="path"><text/></element>
+      </optional>
+      <optional>
         <element name="parent"><text/></element>
       </optional>
 
