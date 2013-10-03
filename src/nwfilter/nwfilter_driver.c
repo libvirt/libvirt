@@ -2,7 +2,7 @@
  * nwfilter_driver.c: core driver for network filter APIs
  *                    (based on storage_driver.c)
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2011, 2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
@@ -231,8 +231,7 @@ nwfilterStateInitialize(bool privileged,
 
     VIR_FREE(base);
 
-    if (virNWFilterLoadAllConfigs(NULL,
-                                  &driverState->nwfilters,
+    if (virNWFilterLoadAllConfigs(&driverState->nwfilters,
                                   driverState->configDir) < 0)
         goto error;
 
@@ -271,37 +270,28 @@ err_free_driverstate:
  * files and update its state
  */
 static int
-nwfilterStateReload(void) {
-    virConnectPtr conn;
-
-    if (!driverState) {
+nwfilterStateReload(void)
+{
+    if (!driverState)
         return -1;
-    }
 
     if (!driverState->privileged)
         return 0;
 
-    conn = virConnectOpen("qemu:///system");
+    virNWFilterDHCPSnoopEnd(NULL);
+    /* shut down all threads -- they will be restarted if necessary */
+    virNWFilterLearnThreadsTerminate(true);
 
-    if (conn) {
-        virNWFilterDHCPSnoopEnd(NULL);
-        /* shut down all threads -- they will be restarted if necessary */
-        virNWFilterLearnThreadsTerminate(true);
+    nwfilterDriverLock(driverState);
+    virNWFilterCallbackDriversLock();
 
-        nwfilterDriverLock(driverState);
-        virNWFilterCallbackDriversLock();
+    virNWFilterLoadAllConfigs(&driverState->nwfilters,
+                              driverState->configDir);
 
-        virNWFilterLoadAllConfigs(conn,
-                                  &driverState->nwfilters,
-                                  driverState->configDir);
+    virNWFilterCallbackDriversUnlock();
+    nwfilterDriverUnlock(driverState);
 
-        virNWFilterCallbackDriversUnlock();
-        nwfilterDriverUnlock(driverState);
-
-        virNWFilterInstFiltersOnAllVMs(conn);
-
-        virConnectClose(conn);
-    }
+    virNWFilterInstFiltersOnAllVMs();
 
     return 0;
 }
@@ -544,7 +534,7 @@ nwfilterDefineXML(virConnectPtr conn,
     if (!(def = virNWFilterDefParseString(xml)))
         goto cleanup;
 
-    if (!(nwfilter = virNWFilterObjAssignDef(conn, &driver->nwfilters, def)))
+    if (!(nwfilter = virNWFilterObjAssignDef(&driver->nwfilters, def)))
         goto cleanup;
 
     if (virNWFilterObjSaveDef(driver, nwfilter, def) < 0) {
@@ -585,7 +575,7 @@ nwfilterUndefine(virNWFilterPtr obj) {
         goto cleanup;
     }
 
-    if (virNWFilterTestUnassignDef(obj->conn, nwfilter) < 0) {
+    if (virNWFilterTestUnassignDef(nwfilter) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s",
                        _("nwfilter is in use"));
