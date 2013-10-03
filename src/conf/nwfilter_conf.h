@@ -688,12 +688,10 @@ int virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
 
 int virNWFilterObjDeleteDef(virNWFilterObjPtr nwfilter);
 
-virNWFilterObjPtr virNWFilterObjAssignDef(virConnectPtr conn,
-                                          virNWFilterObjListPtr nwfilters,
+virNWFilterObjPtr virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
                                           virNWFilterDefPtr def);
 
-int virNWFilterTestUnassignDef(virConnectPtr conn,
-                               virNWFilterObjPtr nwfilter);
+int virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
 
 virNWFilterDefPtr virNWFilterDefParseNode(xmlDocPtr xml,
                                           xmlNodePtr root);
@@ -707,8 +705,7 @@ int virNWFilterSaveXML(const char *configDir,
 int virNWFilterSaveConfig(const char *configDir,
                           virNWFilterDefPtr def);
 
-int virNWFilterLoadAllConfigs(virConnectPtr conn,
-                              virNWFilterObjListPtr nwfilters,
+int virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
                               const char *configDir);
 
 char *virNWFilterConfigFile(const char *dir,
@@ -726,11 +723,10 @@ void virNWFilterUnlockFilterUpdates(void);
 int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB, void *opaque);
 void virNWFilterConfLayerShutdown(void);
 
-int virNWFilterInstFiltersOnAllVMs(virConnectPtr conn);
+int virNWFilterInstFiltersOnAllVMs(void);
 
 
-typedef int (*virNWFilterRebuild)(virConnectPtr conn,
-                                  virDomainObjListIterator domUpdateCB,
+typedef int (*virNWFilterRebuild)(virDomainObjListIterator domUpdateCB,
                                   void *data);
 typedef void (*virNWFilterVoidCall)(void);
 
