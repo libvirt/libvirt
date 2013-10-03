@@ -2634,8 +2634,7 @@ cleanup:
 
 
 static virNWFilterDefPtr
-virNWFilterDefParse(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    const char *xmlStr,
+virNWFilterDefParse(const char *xmlStr,
                     const char *filename) {
     virNWFilterDefPtr def = NULL;
     xmlDocPtr xml;
@@ -2650,18 +2649,16 @@ virNWFilterDefParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 virNWFilterDefPtr
-virNWFilterDefParseString(virConnectPtr conn,
-                          const char *xmlStr)
+virNWFilterDefParseString(const char *xmlStr)
 {
-    return virNWFilterDefParse(conn, xmlStr, NULL);
+    return virNWFilterDefParse(xmlStr, NULL);
 }
 
 
 virNWFilterDefPtr
-virNWFilterDefParseFile(virConnectPtr conn,
-                        const char *filename)
+virNWFilterDefParseFile(const char *filename)
 {
-    return virNWFilterDefParse(conn, NULL, filename);
+    return virNWFilterDefParse(NULL, filename);
 }
 
 
@@ -3056,7 +3053,7 @@ virNWFilterObjLoad(virConnectPtr conn,
     virNWFilterDefPtr def;
     virNWFilterObjPtr nwfilter;
 
-    if (!(def = virNWFilterDefParseFile(conn, path))) {
+    if (!(def = virNWFilterDefParseFile(path))) {
         return NULL;
     }
 
