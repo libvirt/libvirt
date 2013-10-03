@@ -482,15 +482,15 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
     /* instantiate the filters */
 
     if (req->ifname)
-        rc = virNWFilterInstantiateFilterLate(NULL,
+        rc = virNWFilterInstantiateFilterLate(req->driver,
+                                              NULL,
                                               req->ifname,
                                               req->ifindex,
                                               req->linkdev,
                                               req->nettype,
                                               &req->macaddr,
                                               req->filtername,
-                                              req->vars,
-                                              req->driver);
+                                              req->vars);
 
 exit_snooprequnlock:
     virNWFilterSnoopReqUnlock(req);
@@ -872,15 +872,15 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
         goto skip_instantiate;
 
     if (ipAddrLeft) {
-        ret = virNWFilterInstantiateFilterLate(NULL,
+        ret = virNWFilterInstantiateFilterLate(req->driver,
+                                               NULL,
                                                req->ifname,
                                                req->ifindex,
                                                req->linkdev,
                                                req->nettype,
                                                &req->macaddr,
                                                req->filtername,
-                                               req->vars,
-                                               req->driver);
+                                               req->vars);
     } else {
         const virNWFilterVarValuePtr dhcpsrvrs =
             virHashLookup(req->vars->hashTable, NWFILTER_VARNAME_DHCPSERVER);
