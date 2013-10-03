@@ -586,7 +586,7 @@ enum UpdateStep {
 };
 
 struct domUpdateCBStruct {
-    virConnectPtr conn;
+    void *opaque;
     enum UpdateStep step;
     virHashTablePtr skipInterfaces;
 };
@@ -722,7 +722,7 @@ void virNWFilterObjUnlock(virNWFilterObjPtr obj);
 void virNWFilterLockFilterUpdates(void);
 void virNWFilterUnlockFilterUpdates(void);
 
-int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB);
+int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB, void *opaque);
 void virNWFilterConfLayerShutdown(void);
 
 int virNWFilterInstFiltersOnAllVMs(virConnectPtr conn);
