@@ -3826,13 +3826,13 @@ enum remote_procedure {
 
     /**
      * @generate: both
-     * @acl: connect:read
+     * @acl: connect:write
      */
     REMOTE_PROC_CONNECT_DOMAIN_XML_FROM_NATIVE = 135,
 
     /**
      * @generate: both
-     * @acl: connect:read
+     * @acl: connect:write
      */
     REMOTE_PROC_CONNECT_DOMAIN_XML_TO_NATIVE = 136,
 
