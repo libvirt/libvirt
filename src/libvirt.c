@@ -4611,6 +4611,10 @@ char *virConnectDomainXMLFromNative(virConnectPtr conn,
         virDispatchError(NULL);
         return NULL;
     }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
 
     virCheckNonNullArgGoto(nativeFormat, error);
     virCheckNonNullArgGoto(nativeConfig, error);
