@@ -613,15 +613,15 @@ learnIPAddressThread(void *arg)
                           "cache for interface %s"), inetaddr, req->ifname);
             }
 
-            ret = virNWFilterInstantiateFilterLate(NULL,
+            ret = virNWFilterInstantiateFilterLate(req->driver,
+                                                   NULL,
                                                    req->ifname,
                                                    req->ifindex,
                                                    req->linkdev,
                                                    req->nettype,
                                                    &req->macaddr,
                                                    req->filtername,
-                                                   req->filterparams,
-                                                   req->driver);
+                                                   req->filterparams);
             VIR_DEBUG("Result from applying firewall rules on "
                       "%s with IP addr %s : %d\n", req->ifname, inetaddr, ret);
         }
