@@ -82,8 +82,7 @@ virLXCDriverPtr lxc_driver = NULL;
 
 /* callbacks for nwfilter */
 static int
-lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virDomainObjListIterator iter, void *data)
+lxcVMFilterRebuild(virDomainObjListIterator iter, void *data)
 {
     return virDomainObjListForEach(lxc_driver->domains, iter, data);
 }

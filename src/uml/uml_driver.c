@@ -148,8 +148,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
 static struct uml_driver *uml_driver = NULL;
 
 static int
-umlVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virDomainObjListIterator iter, void *data)
+umlVMFilterRebuild(virDomainObjListIterator iter, void *data)
 {
     return virDomainObjListForEach(uml_driver->domains, iter, data);
 }
