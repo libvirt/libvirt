@@ -2850,6 +2850,7 @@ virNWFilterCallbackDriversUnlock(void)
 
 
 static virDomainObjListIterator virNWFilterDomainFWUpdateCB;
+static void *virNWFilterDomainFWUpdateOpaque;
 
 /**
  * virNWFilterInstFiltersOnAllVMs:
@@ -2861,7 +2862,7 @@ virNWFilterInstFiltersOnAllVMs(virConnectPtr conn)
 {
     size_t i;
     struct domUpdateCBStruct cb = {
-        .conn = conn,
+        .opaque = virNWFilterDomainFWUpdateOpaque,
         .step = STEP_APPLY_CURRENT,
         .skipInterfaces = NULL, /* not needed */
     };
@@ -2880,7 +2881,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
     size_t i;
     int ret = 0;
     struct domUpdateCBStruct cb = {
-        .conn = conn,
+        .opaque = virNWFilterDomainFWUpdateOpaque,
         .step = STEP_APPLY_NEW,
         .skipInterfaces = virHashCreate(0, NULL),
     };
@@ -3474,9 +3475,14 @@ char *virNWFilterConfigFile(const char *dir,
 }
 
 
-int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB)
+int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB,
+                             void *opaque)
 {
+    if (initialized)
+        return -1;
+
     virNWFilterDomainFWUpdateCB = domUpdateCB;
+    virNWFilterDomainFWUpdateOpaque = opaque;
 
     initialized = true;
 
@@ -3495,6 +3501,8 @@ void virNWFilterConfLayerShutdown(void)
     virMutexDestroy(&updateMutex);
 
     initialized = false;
+    virNWFilterDomainFWUpdateOpaque = NULL;
+    virNWFilterDomainFWUpdateCB = NULL;
 }
 
 
