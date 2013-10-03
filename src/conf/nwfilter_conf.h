@@ -714,10 +714,8 @@ int virNWFilterLoadAllConfigs(virConnectPtr conn,
 char *virNWFilterConfigFile(const char *dir,
                             const char *name);
 
-virNWFilterDefPtr virNWFilterDefParseString(virConnectPtr conn,
-                                            const char *xml);
-virNWFilterDefPtr virNWFilterDefParseFile(virConnectPtr conn,
-                                          const char *filename);
+virNWFilterDefPtr virNWFilterDefParseString(const char *xml);
+virNWFilterDefPtr virNWFilterDefParseFile(const char *filename);
 
 void virNWFilterObjLock(virNWFilterObjPtr obj);
 void virNWFilterObjUnlock(virNWFilterObjPtr obj);
