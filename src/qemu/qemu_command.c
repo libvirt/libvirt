@@ -817,7 +817,8 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
         for (i = 0; i < def->nnets; i++) {
             int thisidx;
 
-            if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            if (virDomainNetGetActualType(def->nets[i])
+                == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
                 /* type='hostdev' interfaces have a hostdev%d alias */
                continue;
             }
@@ -987,8 +988,9 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             /* type='hostdev' interfaces are also on the hostdevs list,
              * and will have their alias assigned with other hostdevs.
              */
-            if ((def->nets[i]->type != VIR_DOMAIN_NET_TYPE_HOSTDEV) &&
-                (qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0)) {
+            if (virDomainNetGetActualType(def->nets[i])
+                != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+                qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0) {
                 return -1;
             }
         }
