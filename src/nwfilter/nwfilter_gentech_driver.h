@@ -39,23 +39,23 @@ enum instCase {
 };
 
 
-int virNWFilterInstantiateFilter(virConnectPtr conn,
+int virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                  const unsigned char *vmuuid,
                                  const virDomainNetDefPtr net);
-int virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
+int virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
                                        const unsigned char *vmuuid,
                                        const virDomainNetDefPtr net,
                                        bool *skipIface);
 
-int virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
+int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
+                                     const unsigned char *vmuuid,
                                      const char *ifname,
                                      int ifindex,
                                      const char *linkdev,
                                      enum virDomainNetType nettype,
                                      const virMacAddrPtr macaddr,
                                      const char *filtername,
-                                     virNWFilterHashTablePtr filterparams,
-                                     virNWFilterDriverStatePtr driver);
+                                     virNWFilterHashTablePtr filterparams);
 
 int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 

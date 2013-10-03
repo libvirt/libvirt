@@ -203,7 +203,8 @@ nwfilterStateInitialize(bool privileged,
 
     virNWFilterTechDriversInit(privileged);
 
-    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
+    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB,
+                                 driverState) < 0)
         goto err_techdrivers_shutdown;
 
     /*
@@ -666,7 +667,7 @@ nwfilterInstantiateFilter(virConnectPtr conn,
                           const unsigned char *vmuuid,
                           virDomainNetDefPtr net)
 {
-    return virNWFilterInstantiateFilter(conn, vmuuid, net);
+    return virNWFilterInstantiateFilter(conn->nwfilterPrivateData, vmuuid, net);
 }
 
 

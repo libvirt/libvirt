@@ -813,7 +813,8 @@ err_unresolvable_vars:
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-__virNWFilterInstantiateFilter(const unsigned char *vmuuid,
+__virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
+                               const unsigned char *vmuuid,
                                bool teardownOld,
                                const char *ifname,
                                int ifindex,
@@ -823,7 +824,6 @@ __virNWFilterInstantiateFilter(const unsigned char *vmuuid,
                                const char *filtername,
                                virNWFilterHashTablePtr filterparams,
                                enum instCase useNewFilter,
-                               virNWFilterDriverStatePtr driver,
                                bool forceWithPendingReq,
                                bool *foundNewFilter)
 {
@@ -934,7 +934,7 @@ err_exit:
 
 
 static int
-_virNWFilterInstantiateFilter(virConnectPtr conn,
+_virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                               const unsigned char *vmuuid,
                               const virDomainNetDefPtr net,
                               bool teardownOld,
@@ -961,7 +961,8 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
         goto cleanup;
     }
 
-    rc = __virNWFilterInstantiateFilter(vmuuid,
+    rc = __virNWFilterInstantiateFilter(driver,
+                                        vmuuid,
                                         teardownOld,
                                         net->ifname,
                                         ifindex,
@@ -971,7 +972,6 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
                                         net->filter,
                                         net->filterparams,
                                         useNewFilter,
-                                        conn->nwfilterPrivateData,
                                         false,
                                         foundNewFilter);
 
@@ -983,22 +983,23 @@ cleanup:
 
 
 int
-virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
+virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
+                                 const unsigned char *vmuuid,
                                  const char *ifname,
                                  int ifindex,
                                  const char *linkdev,
                                  enum virDomainNetType nettype,
                                  const virMacAddrPtr macaddr,
                                  const char *filtername,
-                                 virNWFilterHashTablePtr filterparams,
-                                 virNWFilterDriverStatePtr driver)
+                                 virNWFilterHashTablePtr filterparams)
 {
     int rc;
     bool foundNewFilter = false;
 
     virNWFilterLockFilterUpdates();
 
-    rc = __virNWFilterInstantiateFilter(vmuuid,
+    rc = __virNWFilterInstantiateFilter(driver,
+                                        vmuuid,
                                         true,
                                         ifname,
                                         ifindex,
@@ -1008,7 +1009,6 @@ virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
                                         filtername,
                                         filterparams,
                                         INSTANTIATE_ALWAYS,
-                                        driver,
                                         true,
                                         &foundNewFilter);
     if (rc < 0) {
@@ -1028,13 +1028,13 @@ virNWFilterInstantiateFilterLate(const unsigned char *vmuuid,
 
 
 int
-virNWFilterInstantiateFilter(virConnectPtr conn,
+virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                              const unsigned char *vmuuid,
                              const virDomainNetDefPtr net)
 {
     bool foundNewFilter = false;
 
-    return _virNWFilterInstantiateFilter(conn, vmuuid, net,
+    return _virNWFilterInstantiateFilter(driver, vmuuid, net,
                                          1,
                                          INSTANTIATE_ALWAYS,
                                          &foundNewFilter);
@@ -1042,14 +1042,14 @@ virNWFilterInstantiateFilter(virConnectPtr conn,
 
 
 int
-virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
+virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
                                    const unsigned char *vmuuid,
                                    const virDomainNetDefPtr net,
                                    bool *skipIface)
 {
     bool foundNewFilter = false;
 
-    int rc = _virNWFilterInstantiateFilter(conn, vmuuid, net,
+    int rc = _virNWFilterInstantiateFilter(driver, vmuuid, net,
                                            0,
                                            INSTANTIATE_FOLLOW_NEWFILTER,
                                            &foundNewFilter);
@@ -1167,7 +1167,7 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
             if ((net->filter) && (net->ifname)) {
                 switch (cb->step) {
                 case STEP_APPLY_NEW:
-                    ret = virNWFilterUpdateInstantiateFilter(cb->conn,
+                    ret = virNWFilterUpdateInstantiateFilter(cb->opaque,
                                                              vm->uuid,
                                                              net,
                                                              &skipIface);
@@ -1192,7 +1192,7 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
                     break;
 
                 case STEP_APPLY_CURRENT:
-                    ret = virNWFilterInstantiateFilter(cb->conn,
+                    ret = virNWFilterInstantiateFilter(cb->opaque,
                                                        vm->uuid,
                                                        net);
                     if (ret)
