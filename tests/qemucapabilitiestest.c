@@ -237,6 +237,7 @@ mymain(void)
     DO_TEST("caps_1.4.2-1");
     DO_TEST("caps_1.5.3-1");
     DO_TEST("caps_1.6.0-1");
+    DO_TEST("caps_1.6.50-1");
 
     virObjectUnref(xmlopt);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
