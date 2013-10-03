@@ -34,7 +34,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
 
     virResetLastError();
 
-    if (!(dev = virNWFilterDefParseString(NULL, inXmlData))) {
+    if (!(dev = virNWFilterDefParseString(inXmlData))) {
         if (expect_error) {
             virResetLastError();
             goto done;
