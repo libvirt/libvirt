@@ -303,7 +303,7 @@
     </p>
 
 
-    <h2><a name="checks">Writing acces control policies</a></h2>
+    <h2><a name="checks">Writing access control policies</a></h2>
 
     <p>
       If using versions of polkit prior to 0.106 then it is only
