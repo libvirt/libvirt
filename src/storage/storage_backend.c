@@ -329,7 +329,8 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-#ifdef HAVE_FALLOCATE
+/* Avoid issues with older kernel's <linux/fs.h> namespace pollution. */
+#if HAVE_FALLOCATE - 0
     /* Try to preallocate all requested disk space, but fall back to
      * other methods if this fails with ENOSYS or EOPNOTSUPP.
      * NOTE: do not use posix_fallocate; posix_fallocate falls back
