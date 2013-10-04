@@ -1131,7 +1131,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *data)
     if (qemuMonitorJSONGetBalloonInfo(qemuMonitorTestGetMonitor(test), &currmem) < 0)
         goto cleanup;
 
-    if (currmem != (4294967296/1024)) {
+    if (currmem != (4294967296ULL/1024)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected currmem value: %llu", currmem);
         goto cleanup;
@@ -1389,7 +1389,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
                                       &extent) < 0)
         goto cleanup;
 
-    if (extent != 5256018944) {
+    if (extent != 5256018944ULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Invalid extent: %llu, expected 5256018944",
                        extent);
