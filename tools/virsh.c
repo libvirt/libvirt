@@ -48,7 +48,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xmlsave.h>
 
-#ifdef HAVE_READLINE_READLINE_H
+#if WITH_READLINE
 # include <readline/readline.h>
 # include <readline/history.h>
 #endif
@@ -2580,7 +2580,7 @@ vshCloseLogFile(vshControl *ctl)
     }
 }
 
-#ifdef USE_READLINE
+#if WITH_READLINE
 
 /* -----------------
  * Readline stuff
@@ -2765,7 +2765,7 @@ vshReadline(vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
     return readline(prompt);
 }
 
-#else /* !USE_READLINE */
+#else /* !WITH_READLINE */
 
 static int
 vshReadlineInit(vshControl *ctl ATTRIBUTE_UNUSED)
@@ -2799,7 +2799,7 @@ vshReadline(vshControl *ctl, const char *prompt)
     return vshStrdup(ctl, r);
 }
 
-#endif /* !USE_READLINE */
+#endif /* !WITH_READLINE */
 
 static void
 vshDeinitTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
@@ -3026,7 +3026,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_DTRACE_PROBES
     vshPrint(ctl, " DTrace");
 #endif
-#ifdef USE_READLINE
+#if WITH_READLINE
     vshPrint(ctl, " Readline");
 #endif
 #ifdef WITH_DRIVER_MODULES
@@ -3316,7 +3316,7 @@ main(int argc, char **argv)
             if (ctl->cmdstr == NULL)
                 break;          /* EOF */
             if (*ctl->cmdstr) {
-#if USE_READLINE
+#if WITH_READLINE
                 add_history(ctl->cmdstr);
 #endif
                 if (vshCommandStringParse(ctl, ctl->cmdstr))

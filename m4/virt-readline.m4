@@ -18,48 +18,33 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_READLINE],[
-  READLINE_LIBS=
-  AC_CHECK_HEADERS([readline/readline.h])
-
-  AC_CHECK_LIB([readline], [readline],
-	[lv_use_readline=yes; READLINE_LIBS=-lreadline],
-	[lv_use_readline=no])
-
-  # If the above test failed, it may simply be that -lreadline requires
-  # some termcap-related code, e.g., from one of the following libraries.
-  # See if adding one of them to LIBS helps.
-  if test $lv_use_readline = no; then
-    lv_saved_libs=$LIBS
+  extra_LIBS=
+  lv_saved_libs=$LIBS
+  if test "x$with_readline" != xno; then
+    # Linking with -lreadline may require some termcap-related code, e.g.,
+    # from one of the following libraries.  Add it to LIBS before using
+    # canned library checks; then verify later if it was needed.
     LIBS=
     AC_SEARCH_LIBS([tgetent], [ncurses curses termcap termlib])
     case $LIBS in
       no*) ;;  # handle "no" and "none required"
       *) # anything else is a -lLIBRARY
-	# Now, check for -lreadline again, also using $LIBS.
-	# Note: this time we use a different function, so that
-	# we don't get a cached "no" result.
-	AC_CHECK_LIB([readline], [rl_initialize],
-		[lv_use_readline=yes
-		 READLINE_LIBS="-lreadline $LIBS"],,
-		[$LIBS])
-	;;
+	extra_LIBS=$LIBS ;;
     esac
-    test $lv_use_readline = no &&
-	AC_MSG_WARN([readline library not found])
-    LIBS=$lv_saved_libs
+    LIBS="$lv_saved_libs $extra_LIBS"
   fi
 
-  if test $lv_use_readline = yes; then
-    AC_DEFINE_UNQUOTED([USE_READLINE], 1,
-		       [whether virsh can use readline])
-    READLINE_CFLAGS=-DUSE_READLINE
-  else
-    READLINE_CFLAGS=
-  fi
-  AC_SUBST([READLINE_CFLAGS])
+  # The normal library check...
+  LIBVIRT_CHECK_LIB([READLINE], [readline], [readline], [readline/readline.h])
+
+  # Touch things up to avoid $extra_LIBS, if possible.  Test a second
+  # function, to ensure we aren't being confused by caching.
+  LIBS=$lv_saved_libs
+  AC_CHECK_LIB([readline], [rl_initialize],
+    [], [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
+  LIBS=$lv_saved_libs
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_READLINE],[
-  LIBVIRT_RESULT([readline], [$lv_use_readline],
-     [CFLAGS='$READLINE_CFLAGS' LIBS='$READLINE_LIBS'])
+  LIBVIRT_RESULT_LIB([READLINE])
 ])
