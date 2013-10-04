@@ -1075,7 +1075,7 @@ safezero(int fd, off_t offset, off_t len)
 
     /* Split up the write in small chunks so as not to allocate lots of RAM */
     remain = len;
-    bytes = MAX(1024 * 1024, len);
+    bytes = MIN(1024 * 1024, len);
 
     r = VIR_ALLOC_N(buf, bytes);
     if (r < 0) {
