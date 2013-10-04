@@ -6547,14 +6547,10 @@ testDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 {
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    virDomainSnapshotObjPtr snap = NULL;
 
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
-
-    if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
 
     ret = (vm->current_snapshot &&
@@ -6573,14 +6569,13 @@ testDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 {
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    virDomainSnapshotObjPtr snap = NULL;
 
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
         goto cleanup;
 
-    if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
+    if (!testSnapObjFromSnapshot(vm, snapshot))
         goto cleanup;
 
     ret = 1;
@@ -6679,8 +6674,8 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (!virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
-                                           &update_current, flags) < 0)
+        if (virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
+                                          &update_current, flags) < 0)
             goto cleanup;
     } else {
         if (!(def->dom = virDomainDefCopy(vm->def,
@@ -7078,6 +7073,8 @@ cleanup:
         testDomainEventQueue(privconn, event);
         if (event2)
             testDomainEventQueue(privconn, event2);
+    } else {
+        virDomainEventFree(event2);
     }
     virObjectUnlock(vm);
     testDriverUnlock(privconn);
