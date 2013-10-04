@@ -24,7 +24,6 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
 dnl quiet about the fact that we intentionally cater to automake 1.9
 AM_INIT_AUTOMAKE([-Wno-portability -Wno-obsolete tar-ustar subdir-objects])
-AM_MAINTAINER_MODE([enable])
 
 # Maintainer note - comment this line out if you plan to rerun
 # GNULIB_POSIXCHECK testing to see if libvirt should be using more modules.
