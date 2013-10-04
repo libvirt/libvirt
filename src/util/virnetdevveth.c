@@ -110,6 +110,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
     char *veth1auto = NULL;
     char *veth2auto = NULL;
     int vethNum = 0;
+    virCommandPtr cmd = NULL;
     size_t i;
 
     /*
@@ -139,7 +140,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
             vethNum = veth2num + 1;
         }
 
-        virCommandPtr cmd = virCommandNew("ip");
+        cmd = virCommandNew("ip");
         virCommandAddArgList(cmd, "link", "add",
                              *veth1 ? *veth1 : veth1auto,
                              "type", "veth", "peer", "name",
@@ -169,6 +170,8 @@ int virNetDevVethCreate(char** veth1, char** veth2)
                   status);
         VIR_FREE(veth1auto);
         VIR_FREE(veth2auto);
+        virCommandFree(cmd);
+        cmd = NULL;
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -176,6 +179,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
                    MAX_VETH_RETRIES);
 
 cleanup:
+    virCommandFree(cmd);
     VIR_FREE(veth1auto);
     VIR_FREE(veth2auto);
     return ret;
