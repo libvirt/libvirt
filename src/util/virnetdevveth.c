@@ -196,18 +196,24 @@ int virNetDevVethDelete(const char *veth)
 {
     virCommandPtr cmd = virCommandNewArgList("ip", "link", "del", veth, NULL);
     int status;
+    int ret = -1;
 
     if (virCommandRun(cmd, &status) < 0)
-        return -1;
+        goto cleanup;
 
     if (status != 0) {
         if (!virNetDevExists(veth)) {
             VIR_DEBUG("Device %s already deleted (by kernel namespace cleanup)", veth);
-            return 0;
+            ret = 0;
+            goto cleanup;
         }
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to delete veth device %s"), veth);
-        return -1;
+        goto cleanup;
     }
-    return 0;
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
