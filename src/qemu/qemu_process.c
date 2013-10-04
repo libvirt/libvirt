@@ -3684,7 +3684,7 @@ int qemuProcessStart(virConnectPtr conn,
         (vm->def->numatune.memory.placement_mode ==
          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) {
         nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
-                                                vm->def->mem.cur_balloon);
+                                                vm->def->mem.max_balloon);
         if (!nodeset)
             goto cleanup;
 
