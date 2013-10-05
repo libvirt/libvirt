@@ -1,7 +1,7 @@
 /*
  * cpu_conf.h: CPU XML handling
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -131,14 +131,14 @@ virCPUDefFree(virCPUDefPtr def);
 
 int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virCPUDefCopyModel(virCPUDefPtr dst,
-                   const virCPUDefPtr src,
+                   const virCPUDef *src,
                    bool resetPolicy);
 
 virCPUDefPtr
-virCPUDefCopy(const virCPUDefPtr cpu);
+virCPUDefCopy(const virCPUDef *cpu);
 
 virCPUDefPtr
-virCPUDefParseXML(const xmlNodePtr node,
+virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode);
 

@@ -1,6 +1,7 @@
 /*
  * cpu_powerpc.c: CPU driver for PowerPC CPUs
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) IBM Corporation, 2010
  *
  * This library is free software; you can redistribute it and/or
@@ -144,7 +145,7 @@ ppcVendorFree(struct ppc_vendor *vendor)
 }
 
 static struct ppc_model *
-ppcModelFromCPU(const virCPUDefPtr cpu,
+ppcModelFromCPU(const virCPUDef *cpu,
                 const struct ppc_map *map)
 {
     struct ppc_model *model = NULL;
@@ -345,7 +346,7 @@ ppcMakeCPUData(virArch arch, struct cpuPPCData *data)
 
 static virCPUCompareResult
 ppcCompute(virCPUDefPtr host,
-           const virCPUDefPtr cpu,
+           const virCPUDef *cpu,
            virCPUDataPtr *guestData,
            char **message)
 
@@ -448,7 +449,7 @@ ppcCompare(virCPUDefPtr host,
 
 static int
 ppcDecode(virCPUDefPtr cpu,
-          const virCPUDataPtr data,
+          const virCPUData *data,
           const char **models,
           unsigned int nmodels,
           const char *preferred ATTRIBUTE_UNUSED,
@@ -529,7 +530,7 @@ ppcGuestData(virCPUDefPtr host,
 
 static int
 ppcUpdate(virCPUDefPtr guest,
-          const virCPUDefPtr host)
+          const virCPUDef *host)
 {
     switch ((enum virCPUMode) guest->mode) {
     case VIR_CPU_MODE_HOST_MODEL:

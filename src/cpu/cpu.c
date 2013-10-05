@@ -132,7 +132,7 @@ cpuCompare(virCPUDefPtr host,
 
 int
 cpuDecode(virCPUDefPtr cpu,
-          const virCPUDataPtr data,
+          const virCPUData *data,
           const char **models,
           unsigned int nmodels,
           const char *preferred)
@@ -175,7 +175,7 @@ cpuDecode(virCPUDefPtr cpu,
 
 int
 cpuEncode(virArch arch,
-          const virCPUDefPtr cpu,
+          const virCPUDef *cpu,
           virCPUDataPtr *forced,
           virCPUDataPtr *required,
           virCPUDataPtr *optional,
@@ -402,7 +402,7 @@ cpuBaseline(virCPUDefPtr *cpus,
 
 int
 cpuUpdate(virCPUDefPtr guest,
-          const virCPUDefPtr host)
+          const virCPUDef *host)
 {
     struct cpuArchDriver *driver;
 
@@ -422,7 +422,7 @@ cpuUpdate(virCPUDefPtr guest,
 }
 
 int
-cpuHasFeature(const virCPUDataPtr data,
+cpuHasFeature(const virCPUData *data,
               const char *feature)
 {
     struct cpuArchDriver *driver;

@@ -1,6 +1,7 @@
 /*
  * cpu_arm.c: CPU driver for arm CPUs
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) Canonical Ltd. 2012
  *
  * This library is free software; you can redistribute it and/or
@@ -45,7 +46,7 @@ ArmNodeData(virArch arch)
 
 static int
 ArmDecode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
-          const virCPUDataPtr data ATTRIBUTE_UNUSED,
+          const virCPUData *data ATTRIBUTE_UNUSED,
           const char **models ATTRIBUTE_UNUSED,
           unsigned int nmodels ATTRIBUTE_UNUSED,
           const char *preferred ATTRIBUTE_UNUSED,

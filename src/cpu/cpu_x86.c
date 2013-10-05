@@ -814,7 +814,7 @@ x86ModelFind(const struct x86_map *map,
 
 
 static struct x86_model *
-x86ModelFromCPU(const virCPUDefPtr cpu,
+x86ModelFromCPU(const virCPUDef *cpu,
                 const struct x86_map *map,
                 int policy)
 {
@@ -863,7 +863,7 @@ error:
 
 static int
 x86ModelSubtractCPU(struct x86_model *model,
-                    const virCPUDefPtr cpu,
+                    const virCPUDef *cpu,
                     const struct x86_map *map)
 {
     const struct x86_model *cpu_model;
@@ -1457,7 +1457,7 @@ out:
 
 static int
 x86DecodeCPUData(virCPUDefPtr cpu,
-                 const virCPUDataPtr data,
+                 const virCPUData *data,
                  const char **models,
                  unsigned int nmodels,
                  const char *preferred,
@@ -1468,7 +1468,7 @@ x86DecodeCPUData(virCPUDefPtr cpu,
 
 
 static struct cpuX86Data *
-x86EncodePolicy(const virCPUDefPtr cpu,
+x86EncodePolicy(const virCPUDef *cpu,
                 const struct x86_map *map,
                 enum virCPUFeaturePolicy policy)
 {
@@ -1488,7 +1488,7 @@ x86EncodePolicy(const virCPUDefPtr cpu,
 
 static int
 x86Encode(virArch arch,
-          const virCPUDefPtr cpu,
+          const virCPUDef *cpu,
           virCPUDataPtr *forced,
           virCPUDataPtr *required,
           virCPUDataPtr *optional,
@@ -1815,7 +1815,7 @@ error:
 
 static int
 x86UpdateCustom(virCPUDefPtr guest,
-                const virCPUDefPtr host)
+                const virCPUDef *host)
 {
     int ret = -1;
     size_t i;
@@ -1862,7 +1862,7 @@ cleanup:
 
 static int
 x86UpdateHostModel(virCPUDefPtr guest,
-                   const virCPUDefPtr host)
+                   const virCPUDef *host)
 {
     virCPUDefPtr oldguest;
     size_t i;
@@ -1896,7 +1896,7 @@ x86UpdateHostModel(virCPUDefPtr guest,
 
 static int
 x86Update(virCPUDefPtr guest,
-          const virCPUDefPtr host)
+          const virCPUDef *host)
 {
     switch ((enum virCPUMode) guest->mode) {
     case VIR_CPU_MODE_CUSTOM:
@@ -1919,7 +1919,7 @@ x86Update(virCPUDefPtr guest,
     return -1;
 }
 
-static int x86HasFeature(const virCPUDataPtr data,
+static int x86HasFeature(const virCPUData *data,
                          const char *name)
 {
     struct x86_map *map;

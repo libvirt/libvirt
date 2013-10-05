@@ -94,7 +94,7 @@ virCPUDefFree(virCPUDefPtr def)
 
 int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virCPUDefCopyModel(virCPUDefPtr dst,
-                   const virCPUDefPtr src,
+                   const virCPUDef *src,
                    bool resetPolicy)
 {
     size_t i;
@@ -126,7 +126,7 @@ virCPUDefCopyModel(virCPUDefPtr dst,
 }
 
 virCPUDefPtr
-virCPUDefCopy(const virCPUDefPtr cpu)
+virCPUDefCopy(const virCPUDef *cpu)
 {
     virCPUDefPtr copy;
     size_t i;
@@ -174,7 +174,7 @@ error:
 }
 
 virCPUDefPtr
-virCPUDefParseXML(const xmlNodePtr node,
+virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode)
 {

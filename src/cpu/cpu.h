@@ -50,7 +50,7 @@ typedef virCPUCompareResult
 
 typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
-                     const virCPUDataPtr data,
+                     const virCPUData *data,
                      const char **models,
                      unsigned int nmodels,
                      const char *preferred,
@@ -58,7 +58,7 @@ typedef int
 
 typedef int
 (*cpuArchEncode)    (virArch arch,
-                     const virCPUDefPtr cpu,
+                     const virCPUDef *cpu,
                      virCPUDataPtr *forced,
                      virCPUDataPtr *required,
                      virCPUDataPtr *optional,
@@ -87,10 +87,10 @@ typedef virCPUDefPtr
 
 typedef int
 (*cpuArchUpdate)    (virCPUDefPtr guest,
-                     const virCPUDefPtr host);
+                     const virCPUDef *host);
 
 typedef int
-(*cpuArchHasFeature) (const virCPUDataPtr data,
+(*cpuArchHasFeature) (const virCPUData *data,
                       const char *feature);
 
 
@@ -120,14 +120,14 @@ cpuCompare  (virCPUDefPtr host,
 
 extern int
 cpuDecode   (virCPUDefPtr cpu,
-             const virCPUDataPtr data,
+             const virCPUData *data,
              const char **models,
              unsigned int nmodels,
              const char *preferred);
 
 extern int
 cpuEncode   (virArch arch,
-             const virCPUDefPtr cpu,
+             const virCPUDef *cpu,
              virCPUDataPtr *forced,
              virCPUDataPtr *required,
              virCPUDataPtr *optional,
@@ -163,10 +163,10 @@ cpuBaseline (virCPUDefPtr *cpus,
 
 extern int
 cpuUpdate   (virCPUDefPtr guest,
-             const virCPUDefPtr host);
+             const virCPUDef *host);
 
 extern int
-cpuHasFeature(const virCPUDataPtr data,
+cpuHasFeature(const virCPUData *data,
               const char *feature);
 
 
