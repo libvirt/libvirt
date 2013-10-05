@@ -1,8 +1,8 @@
 /*
  * virebtables.c: Helper APIs for managing ebtables
  *
+ * Copyright (C) 2007-2008, 2013 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
- * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,10 +54,10 @@ void             ebtablesSaveRules               (ebtablesContext *ctx);
 
 int              ebtablesAddForwardAllowIn       (ebtablesContext *ctx,
                                                   const char *iface,
-                                                  const virMacAddrPtr mac);
+                                                  const virMacAddr *mac);
 int              ebtablesRemoveForwardAllowIn    (ebtablesContext *ctx,
                                                   const char *iface,
-                                                  const virMacAddrPtr mac);
+                                                  const virMacAddr *mac);
 
 int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
 

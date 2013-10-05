@@ -449,7 +449,7 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
 int
 ebtablesAddForwardAllowIn(ebtablesContext *ctx,
                           const char *iface,
-                          const virMacAddrPtr mac)
+                          const virMacAddr *mac)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
@@ -472,7 +472,7 @@ ebtablesAddForwardAllowIn(ebtablesContext *ctx,
 int
 ebtablesRemoveForwardAllowIn(ebtablesContext *ctx,
                              const char *iface,
-                             const virMacAddrPtr mac)
+                             const virMacAddr *mac)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
 

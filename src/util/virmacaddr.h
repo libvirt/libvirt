@@ -1,7 +1,7 @@
 /*
  * virmacaddr.h: MAC address handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,20 +38,20 @@ struct _virMacAddr {
 };
 
 int virMacAddrCompare(const char *mac1, const char *mac2);
-int virMacAddrCmp(const virMacAddrPtr mac1, const virMacAddrPtr mac2);
-int virMacAddrCmpRaw(const virMacAddrPtr mac1,
+int virMacAddrCmp(const virMacAddr *mac1, const virMacAddr *mac2);
+int virMacAddrCmpRaw(const virMacAddr *mac1,
                      const unsigned char s[VIR_MAC_BUFLEN]);
-void virMacAddrSet(virMacAddrPtr dst, const virMacAddrPtr src);
+void virMacAddrSet(virMacAddrPtr dst, const virMacAddr *src);
 void virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char s[VIR_MAC_BUFLEN]);
-void virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN]);
-const char *virMacAddrFormat(const virMacAddrPtr addr,
+void virMacAddrGetRaw(const virMacAddr *src, unsigned char dst[VIR_MAC_BUFLEN]);
+const char *virMacAddrFormat(const virMacAddr *addr,
                              char *str);
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
                         virMacAddrPtr addr);
 int virMacAddrParse(const char* str,
                     virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
-bool virMacAddrIsUnicast(const virMacAddrPtr addr);
-bool virMacAddrIsMulticast(const virMacAddrPtr addr);
+bool virMacAddrIsUnicast(const virMacAddr *addr);
+bool virMacAddrIsMulticast(const virMacAddr *addr);
 bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);
 
 #endif /* __VIR_MACADDR_H__ */

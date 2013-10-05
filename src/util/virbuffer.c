@@ -1,7 +1,7 @@
 /*
  * virbuffer.c: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,7 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
  * Return the current auto-indent value, or -1 if there has been an error.
  */
 int
-virBufferGetIndent(const virBufferPtr buf, bool dynamic)
+virBufferGetIndent(const virBuffer *buf, bool dynamic)
 {
     if (!buf || buf->error)
         return -1;
@@ -255,7 +255,7 @@ void virBufferFreeAndReset(virBufferPtr buf)
  * Return positive errno value or -1 on usage error, 0 if normal
  */
 int
-virBufferError(const virBufferPtr buf)
+virBufferError(const virBuffer *buf)
 {
     if (buf == NULL)
         return -1;
@@ -270,7 +270,7 @@ virBufferError(const virBufferPtr buf)
  * Return the string usage in bytes
  */
 unsigned int
-virBufferUse(const virBufferPtr buf)
+virBufferUse(const virBuffer *buf)
 {
     if (buf == NULL)
         return 0;

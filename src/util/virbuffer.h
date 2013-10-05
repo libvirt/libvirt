@@ -1,7 +1,7 @@
 /*
  * virbuffer.h: buffers for libvirt
  *
- * Copyright (C) 2005-2008, 2011, 2012 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,8 +52,8 @@ struct _virBuffer {
 const char *virBufferCurrentContent(virBufferPtr buf);
 char *virBufferContentAndReset(virBufferPtr buf);
 void virBufferFreeAndReset(virBufferPtr buf);
-int virBufferError(const virBufferPtr buf);
-unsigned int virBufferUse(const virBufferPtr buf);
+int virBufferError(const virBuffer *buf);
+unsigned int virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);
 void virBufferAddChar(virBufferPtr buf, char c);
 void virBufferAsprintf(virBufferPtr buf, const char *format, ...)
@@ -75,7 +75,7 @@ void virBufferURIEncodeString(virBufferPtr buf, const char *str);
     virBufferAdd(buf_, "" literal_string_ "", sizeof(literal_string_) - 1)
 
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
-int virBufferGetIndent(const virBufferPtr buf, bool dynamic);
+int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
 

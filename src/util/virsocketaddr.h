@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -80,12 +80,12 @@ int virSocketAddrParseIPv4(virSocketAddrPtr addr,
 int virSocketAddrParseIPv6(virSocketAddrPtr addr,
                            const char *val);
 
-void virSocketAddrSetIPv4Addr(const virSocketAddrPtr s, uint32_t addr);
+void virSocketAddrSetIPv4Addr(virSocketAddrPtr s, uint32_t addr);
 
-char * virSocketAddrFormat(virSocketAddrPtr addr);
-char * virSocketAddrFormatFull(virSocketAddrPtr addr,
-                               bool withService,
-                               const char *separator);
+char *virSocketAddrFormat(const virSocketAddr *addr);
+char *virSocketAddrFormatFull(const virSocketAddr *addr,
+                              bool withService,
+                              const char *separator);
 
 int virSocketAddrSetPort(virSocketAddrPtr addr, int port);
 
@@ -99,31 +99,31 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask);
 int virSocketAddrCheckNetmask(virSocketAddrPtr addr1,
                               virSocketAddrPtr addr2,
                               virSocketAddrPtr netmask);
-int virSocketAddrMask(const virSocketAddrPtr addr,
-                      const virSocketAddrPtr netmask,
-                      virSocketAddrPtr       network);
-int virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
-                              unsigned int           prefix,
-                              virSocketAddrPtr       network);
-int virSocketAddrBroadcast(const virSocketAddrPtr addr,
-                           const virSocketAddrPtr netmask,
-                           virSocketAddrPtr       broadcast);
-int virSocketAddrBroadcastByPrefix(const virSocketAddrPtr addr,
-                                   unsigned int           prefix,
-                                   virSocketAddrPtr       broadcast);
+int virSocketAddrMask(const virSocketAddr *addr,
+                      const virSocketAddr *netmask,
+                      virSocketAddrPtr network);
+int virSocketAddrMaskByPrefix(const virSocketAddr *addr,
+                              unsigned int prefix,
+                              virSocketAddrPtr network);
+int virSocketAddrBroadcast(const virSocketAddr *addr,
+                           const virSocketAddr *netmask,
+                           virSocketAddrPtr broadcast);
+int virSocketAddrBroadcastByPrefix(const virSocketAddr *addr,
+                                   unsigned int prefix,
+                                   virSocketAddrPtr broadcast);
 
-int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask);
+int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask);
 int virSocketAddrPrefixToNetmask(unsigned int prefix,
                                  virSocketAddrPtr netmask,
                                  int family);
-int virSocketAddrGetIpPrefix(const virSocketAddrPtr address,
-                             const virSocketAddrPtr netmask,
+int virSocketAddrGetIpPrefix(const virSocketAddr *address,
+                             const virSocketAddr *netmask,
                              int prefix);
-bool virSocketAddrEqual(const virSocketAddrPtr s1,
-                        const virSocketAddrPtr s2);
-bool virSocketAddrIsPrivate(const virSocketAddrPtr addr);
+bool virSocketAddrEqual(const virSocketAddr *s1,
+                        const virSocketAddr *s2);
+bool virSocketAddrIsPrivate(const virSocketAddr *addr);
 
-bool virSocketAddrIsWildcard(const virSocketAddrPtr addr);
+bool virSocketAddrIsWildcard(const virSocketAddr *addr);
 
 bool virSocketAddrIsNumeric(const char *address);
 #endif /* __VIR_SOCKETADDR_H__ */

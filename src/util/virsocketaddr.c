@@ -40,11 +40,14 @@ typedef virSocketAddrIPv4 *virSocketAddrIPv4Ptr;
 typedef unsigned short virSocketAddrIPv6[8];
 typedef virSocketAddrIPv6 *virSocketAddrIPv6Ptr;
 
-static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr tab) {
+static int
+virSocketAddrGetIPv4Addr(const virSocketAddr *addr,
+                         virSocketAddrIPv4Ptr tab)
+{
     unsigned long val;
     size_t i;
 
-    if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET))
+    if (!addr || !tab || addr->data.stor.ss_family != AF_INET)
         return -1;
 
     val = ntohl(addr->data.inet4.sin_addr.s_addr);
@@ -57,10 +60,12 @@ static int virSocketAddrGetIPv4Addr(virSocketAddrPtr addr, virSocketAddrIPv4Ptr 
     return 0;
 }
 
-static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr tab) {
+static int
+virSocketAddrGetIPv6Addr(const virSocketAddr *addr, virSocketAddrIPv6Ptr tab)
+{
     size_t i;
 
-    if ((addr == NULL) || (tab == NULL) || (addr->data.stor.ss_family != AF_INET6))
+    if (!addr || !tab || addr->data.stor.ss_family != AF_INET6)
         return -1;
 
     for (i = 0; i < 8; i++) {
@@ -188,7 +193,7 @@ virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val)
  * if their IP addresses and ports are equal.
  */
 bool
-virSocketAddrEqual(const virSocketAddrPtr s1, const virSocketAddrPtr s2)
+virSocketAddrEqual(const virSocketAddr *s1, const virSocketAddr *s2)
 {
     if (s1->data.stor.ss_family != s2->data.stor.ss_family)
         return false;
@@ -221,7 +226,7 @@ virSocketAddrEqual(const virSocketAddrPtr s1, const virSocketAddrPtr s2)
  * See RFC1918, RFC3484, and RFC4193 for details.
  */
 bool
-virSocketAddrIsPrivate(const virSocketAddrPtr addr)
+virSocketAddrIsPrivate(const virSocketAddr *addr)
 {
     unsigned long val;
 
@@ -248,7 +253,7 @@ virSocketAddrIsPrivate(const virSocketAddrPtr addr)
  * Check if passed address is a variant of ANYCAST address.
  */
 bool
-virSocketAddrIsWildcard(const virSocketAddrPtr addr)
+virSocketAddrIsWildcard(const virSocketAddr *addr)
 {
     struct in_addr tmp = { .s_addr = INADDR_ANY };
     switch (addr->data.stor.ss_family) {
@@ -270,7 +275,8 @@ virSocketAddrIsWildcard(const virSocketAddrPtr addr)
  * Caller must free the returned string
  */
 char *
-virSocketAddrFormat(virSocketAddrPtr addr) {
+virSocketAddrFormat(const virSocketAddr *addr)
+{
     return virSocketAddrFormatFull(addr, false, NULL);
 }
 
@@ -286,7 +292,7 @@ virSocketAddrFormat(virSocketAddrPtr addr) {
  * Caller must free the returned string
  */
 char *
-virSocketAddrFormatFull(virSocketAddrPtr addr,
+virSocketAddrFormatFull(const virSocketAddr *addr,
                         bool withService,
                         const char *separator)
 {
@@ -414,9 +420,9 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrMask(const virSocketAddrPtr addr,
-                  const virSocketAddrPtr netmask,
-                  virSocketAddrPtr       network)
+virSocketAddrMask(const virSocketAddr *addr,
+                  const virSocketAddr *netmask,
+                  virSocketAddrPtr network)
 {
     if (addr->data.stor.ss_family != netmask->data.stor.ss_family) {
         network->data.stor.ss_family = AF_UNSPEC;
@@ -460,9 +466,9 @@ virSocketAddrMask(const virSocketAddrPtr addr,
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
-                          unsigned int           prefix,
-                          virSocketAddrPtr       network)
+virSocketAddrMaskByPrefix(const virSocketAddr *addr,
+                          unsigned int prefix,
+                          virSocketAddrPtr network)
 {
     virSocketAddr netmask;
 
@@ -487,9 +493,9 @@ virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrBroadcast(const virSocketAddrPtr addr,
-                       const virSocketAddrPtr netmask,
-                       virSocketAddrPtr       broadcast)
+virSocketAddrBroadcast(const virSocketAddr *addr,
+                       const virSocketAddr *netmask,
+                       virSocketAddrPtr broadcast)
 {
     if ((addr->data.stor.ss_family != AF_INET) ||
         (netmask->data.stor.ss_family != AF_INET)) {
@@ -517,9 +523,9 @@ virSocketAddrBroadcast(const virSocketAddrPtr addr,
  * Returns 0 in case of success, or -1 on error.
  */
 int
-virSocketAddrBroadcastByPrefix(const virSocketAddrPtr addr,
-                               unsigned int           prefix,
-                               virSocketAddrPtr       broadcast)
+virSocketAddrBroadcastByPrefix(const virSocketAddr *addr,
+                               unsigned int prefix,
+                               virSocketAddrPtr broadcast)
 {
     virSocketAddr netmask;
 
@@ -654,7 +660,7 @@ int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
  * Returns the number of bits in the netmask or -1 if an error occurred
  * or the netmask is invalid.
  */
-int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask)
+int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask)
 {
     size_t i, j;
     int c = 0;
@@ -801,8 +807,8 @@ error:
  */
 
 int
-virSocketAddrGetIpPrefix(const virSocketAddrPtr address,
-                         const virSocketAddrPtr netmask,
+virSocketAddrGetIpPrefix(const virSocketAddr *address,
+                         const virSocketAddr *netmask,
                          int prefix)
 {
     if (prefix > 0) {

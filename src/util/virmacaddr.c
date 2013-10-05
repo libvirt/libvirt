@@ -1,7 +1,7 @@
 /*
  * virmacaddr.c: MAC address handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,7 +74,7 @@ virMacAddrCompare(const char *p, const char *q)
  * > 0 if mac1 > mac2
  */
 int
-virMacAddrCmp(const virMacAddrPtr mac1, const virMacAddrPtr mac2)
+virMacAddrCmp(const virMacAddr *mac1, const virMacAddr *mac2)
 {
     return memcmp(mac1->addr, mac2->addr, VIR_MAC_BUFLEN);
 }
@@ -89,7 +89,7 @@ virMacAddrCmp(const virMacAddrPtr mac1, const virMacAddrPtr mac2)
  * > 0 if mac1 > mac2
  */
 int
-virMacAddrCmpRaw(const virMacAddrPtr mac1,
+virMacAddrCmpRaw(const virMacAddr *mac1,
                  const unsigned char mac2[VIR_MAC_BUFLEN])
 {
     return memcmp(mac1->addr, mac2, VIR_MAC_BUFLEN);
@@ -103,7 +103,7 @@ virMacAddrCmpRaw(const virMacAddrPtr mac1,
  * Copy src to dst
  */
 void
-virMacAddrSet(virMacAddrPtr dst, const virMacAddrPtr src)
+virMacAddrSet(virMacAddrPtr dst, const virMacAddr *src)
 {
     memcpy(dst, src, sizeof(*src));
 }
@@ -129,7 +129,7 @@ virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char src[VIR_MAC_BUFLEN])
  * Copies the MAC address into raw memory
  */
 void
-virMacAddrGetRaw(virMacAddrPtr src, unsigned char dst[VIR_MAC_BUFLEN])
+virMacAddrGetRaw(const virMacAddr *src, unsigned char dst[VIR_MAC_BUFLEN])
 {
     memcpy(dst, src->addr, VIR_MAC_BUFLEN);
 }
@@ -187,7 +187,7 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
  * Returns a pointer to the resulting character string.
  */
 const char *
-virMacAddrFormat(const virMacAddrPtr addr,
+virMacAddrFormat(const virMacAddr *addr,
                  char *str)
 {
     snprintf(str, VIR_MAC_STRING_BUFLEN,
@@ -211,13 +211,13 @@ void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
 
 /* The low order bit of the first byte is the "multicast" bit. */
 bool
-virMacAddrIsMulticast(const virMacAddrPtr mac)
+virMacAddrIsMulticast(const virMacAddr *mac)
 {
     return !!(mac->addr[0] & 1);
 }
 
 bool
-virMacAddrIsUnicast(const virMacAddrPtr mac)
+virMacAddrIsUnicast(const virMacAddr *mac)
 {
     return !(mac->addr[0] & 1);
 }
