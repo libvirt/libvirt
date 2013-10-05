@@ -524,7 +524,7 @@ cleanup:
 static int
 testQemuMonitorJSONGetTPMModels(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **tpmmodels = NULL;
@@ -577,7 +577,7 @@ cleanup:
 static int
 testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **params = NULL;
@@ -678,7 +678,7 @@ cleanup:
 static int
 testQemuMonitorJSONAttachChardev(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     virDomainChrSourceDef chr;
     int ret = 0;
@@ -759,7 +759,7 @@ cleanup:
 static int
 testQemuMonitorJSONDetachChardev(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
 
@@ -792,7 +792,7 @@ cleanup:
 static int
 testQemuMonitorJSONGetListPaths(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONListPathPtr *paths;
@@ -870,7 +870,7 @@ cleanup:
 static int
 testQemuMonitorJSONGetObjectProperty(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONObjectProperty prop;
@@ -913,7 +913,7 @@ cleanup:
 static int
 testQemuMonitorJSONSetObjectProperty(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorJSONObjectProperty prop;
@@ -965,7 +965,7 @@ cleanup:
 static int
 testQemuMonitorJSONGetDeviceAliases(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **aliases = NULL;
@@ -1025,7 +1025,7 @@ cleanup:
 static int
 testQemuMonitorJSONCPU(const void *data)
 {
-    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     bool running = false;
@@ -1084,7 +1084,8 @@ cleanup:
 static int
 testQemuMonitorJSONSimpleFunc(const void *opaque)
 {
-    const testQemuMonitorJSONSimpleFuncDataPtr data = (const testQemuMonitorJSONSimpleFuncDataPtr) opaque;
+    testQemuMonitorJSONSimpleFuncDataPtr data =
+        (testQemuMonitorJSONSimpleFuncDataPtr) opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     const char *reply = data->reply;
@@ -1112,8 +1113,7 @@ cleanup:
 static int                                                              \
 testQemuMonitorJSON ## funcName(const void *opaque)                     \
 {                                                                       \
-    const testQemuMonitorJSONSimpleFuncDataPtr data =                   \
-        (const testQemuMonitorJSONSimpleFuncDataPtr) opaque;            \
+    const testQemuMonitorJSONSimpleFuncData *data = opaque;             \
     virDomainXMLOptionPtr xmlopt = data->xmlopt;                        \
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);   \
     const char *reply = data->reply;                                    \

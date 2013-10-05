@@ -163,7 +163,7 @@ static int
 testQemuCaps(const void *opaque)
 {
     int ret = -1;
-    const testQemuDataPtr data = (const testQemuDataPtr) opaque;
+    const testQemuData *data = opaque;
     char *repliesFile = NULL, *capsFile = NULL;
     char *replies = NULL, *caps = NULL;
     qemuMonitorTestPtr mon = NULL;

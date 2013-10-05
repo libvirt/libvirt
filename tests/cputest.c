@@ -1,7 +1,7 @@
 /*
  * cputest.c: Test the libvirtd internal CPU APIs
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -153,7 +153,7 @@ cleanup_cpus:
 
 static int
 cpuTestCompareXML(const char *arch,
-                  const virCPUDefPtr cpu,
+                  virCPUDef *cpu,
                   const char *name,
                   unsigned int flags)
 {
