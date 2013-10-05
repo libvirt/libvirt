@@ -1159,7 +1159,11 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
     socklen_t cr_len = sizeof(cr);
     virObjectLock(sock);
 
+# if defined(__APPLE__)
+    if (getsockopt(sock->fd, SOL_LOCAL, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
+# else
     if (getsockopt(sock->fd, SOL_SOCKET, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
+# endif
         virReportSystemError(errno, "%s",
                              _("Failed to get client socket identity"));
         virObjectUnlock(sock);
