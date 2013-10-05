@@ -38,7 +38,7 @@
 # include <numa.h>
 #endif
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__APPLE__)
 # include <sys/types.h>
 # include <sys/sysctl.h>
 #endif
@@ -58,9 +58,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__APPLE__)
 static int
-freebsdNodeGetCPUCount(void)
+appleFreebsdNodeGetCPUCount(void)
 {
     int ncpu_mib[2] = { CTL_HW, HW_NCPU };
     unsigned long ncpu;
@@ -882,13 +882,13 @@ cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
     return ret;
     }
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__APPLE__)
     {
     nodeinfo->nodes = 1;
     nodeinfo->sockets = 1;
     nodeinfo->threads = 1;
 
-    nodeinfo->cpus = freebsdNodeGetCPUCount();
+    nodeinfo->cpus = appleFreebsdNodeGetCPUCount();
     if (nodeinfo->cpus == -1)
         return -1;
 
@@ -897,12 +897,21 @@ cleanup:
     unsigned long cpu_freq;
     size_t cpu_freq_len = sizeof(cpu_freq);
 
+# ifdef __FreeBSD__
     if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
         virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
         return -1;
     }
 
     nodeinfo->mhz = cpu_freq;
+# else
+    if (sysctlbyname("hw.cpufrequency", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+        return -1;
+    }
+
+    nodeinfo->mhz = cpu_freq / 1000000;
+# endif
 
     /* get memory information */
     int mib[2] = { CTL_HW, HW_PHYSMEM };
