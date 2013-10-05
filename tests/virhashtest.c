@@ -499,15 +499,15 @@ cleanup:
 
 
 static int
-testHashGetItemsCompKey(const virHashKeyValuePairPtr a,
-                        const virHashKeyValuePairPtr b)
+testHashGetItemsCompKey(const virHashKeyValuePair *a,
+                        const virHashKeyValuePair *b)
 {
     return strcmp(a->key, b->key);
 }
 
 static int
-testHashGetItemsCompValue(const virHashKeyValuePairPtr a,
-                          const virHashKeyValuePairPtr b)
+testHashGetItemsCompValue(const virHashKeyValuePair *a,
+                          const virHashKeyValuePair *b)
 {
     return strcmp(a->value, b->value);
 }

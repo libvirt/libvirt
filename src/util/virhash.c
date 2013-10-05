@@ -3,7 +3,7 @@
  *
  * Reference: Your favorite introductory book on algorithms
  *
- * Copyright (C) 2005-2012 Red Hat, Inc.
+ * Copyright (C) 2005-2013 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -98,7 +98,7 @@ static void virHashStrFree(void *name)
 
 
 static size_t
-virHashComputeKey(virHashTablePtr table, const void *name)
+virHashComputeKey(const virHashTable *table, const void *name)
 {
     uint32_t value = table->keyCode(name, table->seed);
     return value % table->size;
@@ -361,7 +361,7 @@ virHashUpdateEntry(virHashTablePtr table, const void *name,
  * Returns a pointer to the userdata
  */
 void *
-virHashLookup(virHashTablePtr table, const void *name)
+virHashLookup(const virHashTable *table, const void *name)
 {
     size_t key;
     virHashEntryPtr entry;
@@ -411,7 +411,7 @@ void *virHashSteal(virHashTablePtr table, const void *name)
  * -1 in case of error
  */
 ssize_t
-virHashSize(virHashTablePtr table)
+virHashSize(const virHashTable *table)
 {
     if (table == NULL)
         return -1;
@@ -428,7 +428,7 @@ virHashSize(virHashTablePtr table)
  * -1 in case of error
  */
 ssize_t
-virHashTableSize(virHashTablePtr table)
+virHashTableSize(const virHashTable *table)
 {
     if (table == NULL)
         return -1;
@@ -609,11 +609,14 @@ virHashRemoveAll(virHashTablePtr table)
  * returns non-zero will be returned by this function.
  * The elements are processed in a undefined order
  */
-void *virHashSearch(virHashTablePtr table,
+void *virHashSearch(const virHashTable *ctable,
                     virHashSearcher iter,
                     const void *data)
 {
     size_t i;
+
+    /* Cast away const for internal detection of misuse.  */
+    virHashTablePtr table = (virHashTablePtr)ctable;
 
     if (table == NULL || iter == NULL)
         return NULL;
@@ -683,7 +686,7 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
 struct virHashEqualData
 {
     bool equal;
-    const virHashTablePtr table2;
+    const virHashTable *table2;
     virHashValueComparator compar;
 };
 
@@ -704,8 +707,8 @@ static int virHashEqualSearcher(const void *payload, const void *name,
     return 0;
 }
 
-bool virHashEqual(const virHashTablePtr table1,
-                  const virHashTablePtr table2,
+bool virHashEqual(const virHashTable *table1,
+                  const virHashTable *table2,
                   virHashValueComparator compar)
 {
     struct virHashEqualData data = {

@@ -1,7 +1,7 @@
 /*
  * nwfilter_params.c: parsing and data maintenance of filter parameters
  *
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -877,10 +877,10 @@ err_exit:
 
 
 static int
-virNWFilterFormatParameterNameSorter(const virHashKeyValuePairPtr a,
-                                     const virHashKeyValuePairPtr b)
+virNWFilterFormatParameterNameSorter(const virHashKeyValuePair *a,
+                                     const virHashKeyValuePair *b)
 {
-    return strcmp((const char *)a->key, (const char *)b->key);
+    return strcmp(a->key, b->key);
 }
 
 int

@@ -3,7 +3,7 @@
  * Description: This module implements the hash table and allocation and
  *              deallocation of domains and connections
  *
- * Copyright (C) 2005-2012 Red Hat, Inc.
+ * Copyright (C) 2005-2013 Red Hat, Inc.
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  *
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
@@ -108,8 +108,8 @@ virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashKeyCopy keyCopy,
                                   virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
-ssize_t virHashSize(virHashTablePtr table);
-ssize_t virHashTableSize(virHashTablePtr table);
+ssize_t virHashSize(const virHashTable *table);
+ssize_t virHashTableSize(const virHashTable *table);
 
 /*
  * Add a new entry to the hash table.
@@ -134,7 +134,7 @@ ssize_t virHashRemoveAll(virHashTablePtr table);
 /*
  * Retrieve the userdata.
  */
-void *virHashLookup(virHashTablePtr table, const void *name);
+void *virHashLookup(const virHashTable *table, const void *name);
 
 /*
  * Retrieve & remove the userdata.
@@ -159,8 +159,8 @@ struct _virHashKeyValuePair {
     const void *key;
     const void *value;
 };
-typedef int (*virHashKeyComparator)(const virHashKeyValuePairPtr,
-                                    const virHashKeyValuePairPtr);
+typedef int (*virHashKeyComparator)(const virHashKeyValuePair *,
+                                    const virHashKeyValuePair *);
 virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
                                        virHashKeyComparator compar);
 
@@ -171,8 +171,8 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
  * of two keys.
  */
 typedef int (*virHashValueComparator)(const void *value1, const void *value2);
-bool virHashEqual(const virHashTablePtr table1,
-                  const virHashTablePtr table2,
+bool virHashEqual(const virHashTable *table1,
+                  const virHashTable *table2,
                   virHashValueComparator compar);
 
 
@@ -181,6 +181,7 @@ bool virHashEqual(const virHashTablePtr table1,
  */
 ssize_t virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
 ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
-void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
+void *virHashSearch(const virHashTable *table, virHashSearcher iter,
+                    const void *data);
 
 #endif                          /* ! __VIR_HASH_H__ */

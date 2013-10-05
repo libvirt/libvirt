@@ -1,7 +1,7 @@
 /*
  * nwfilter_ebiptables_driver.c: driver for ebtables/iptables on tap devices
  *
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corp.
  * Copyright (C) 2010-2012 Stefan Berger
  *
@@ -3596,8 +3596,8 @@ ebiptablesRuleOrderSortPtr(const void *a, const void *b)
 }
 
 static int
-ebiptablesFilterOrderSort(const virHashKeyValuePairPtr a,
-                          const virHashKeyValuePairPtr b)
+ebiptablesFilterOrderSort(const virHashKeyValuePair *a,
+                          const virHashKeyValuePair *b)
 {
     /* elements' values has been limited to range [-1000, 1000] */
     return *(virNWFilterChainPriority *)a->value -
