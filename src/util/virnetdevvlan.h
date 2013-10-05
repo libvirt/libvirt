@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ struct _virNetDevVlan {
 
 void virNetDevVlanClear(virNetDevVlanPtr vlan);
 void virNetDevVlanFree(virNetDevVlanPtr vlan);
-int virNetDevVlanEqual(const virNetDevVlanPtr a, const virNetDevVlanPtr b);
-int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlanPtr src);
+int virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
+int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlan *src);
 
 #endif /* __VIR_NETDEV_VLAN_H__ */

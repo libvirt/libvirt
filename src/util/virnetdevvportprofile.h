@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -93,8 +93,8 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
                                 virNetDevVPortProfilePtr fromPortgroup);
 
 int virNetDevVPortProfileAssociate(const char *ifname,
-                                   const virNetDevVPortProfilePtr virtPort,
-                                   const virMacAddrPtr macaddr,
+                                   const virNetDevVPortProfile *virtPort,
+                                   const virMacAddr *macaddr,
                                    const char *linkdev,
                                    int vf,
                                    const unsigned char *vmuuid,
@@ -104,8 +104,8 @@ int virNetDevVPortProfileAssociate(const char *ifname,
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevVPortProfileDisassociate(const char *ifname,
-                                      const virNetDevVPortProfilePtr virtPort,
-                                      const virMacAddrPtr macaddr,
+                                      const virNetDevVPortProfile *virtPort,
+                                      const virMacAddr *macaddr,
                                       const char *linkdev,
                                       int vf,
                                       enum virNetDevVPortProfileOp vmOp)

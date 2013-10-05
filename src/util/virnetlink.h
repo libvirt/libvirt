@@ -58,7 +58,9 @@ typedef void (*virNetlinkEventHandleCallback)(struct nlmsghdr *,
                                               bool *handled,
                                               void *opaque);
 
-typedef void (*virNetlinkEventRemoveCallback)(int watch, const virMacAddrPtr macaddr, void *opaque);
+typedef void (*virNetlinkEventRemoveCallback)(int watch,
+                                              const virMacAddr *macaddr,
+                                              void *opaque);
 
 /**
  * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
@@ -90,13 +92,13 @@ int virNetlinkEventServiceLocalPid(unsigned int protocol);
  */
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                              virNetlinkEventRemoveCallback removeCB,
-                             void *opaque, const virMacAddrPtr macaddr,
+                             void *opaque, const virMacAddr *macaddr,
                              unsigned int protocol);
 
 /**
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
-int virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr,
+int virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                                 unsigned int protocol);
 
 #endif /* __VIR_NETLINK_H__ */

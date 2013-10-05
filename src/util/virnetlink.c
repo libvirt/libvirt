@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -610,7 +610,7 @@ error_locked:
 int
 virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                          virNetlinkEventRemoveCallback removeCB,
-                         void *opaque, const virMacAddrPtr macaddr,
+                         void *opaque, const virMacAddr *macaddr,
                          unsigned int protocol)
 {
     size_t i;
@@ -684,7 +684,7 @@ error:
  * Returns -1 if the file handle was not registered, 0 upon success
  */
 int
-virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr,
+virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                             unsigned int protocol)
 {
     size_t i;
@@ -813,7 +813,7 @@ int virNetlinkEventServiceLocalPid(unsigned int protocol ATTRIBUTE_UNUSED)
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UNUSED,
                              virNetlinkEventRemoveCallback removeCB ATTRIBUTE_UNUSED,
                              void *opaque ATTRIBUTE_UNUSED,
-                             const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                             const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                              unsigned int protocol ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
@@ -824,7 +824,7 @@ int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB ATTRIBUTE_UN
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
 int virNetlinkEventRemoveClient(int watch ATTRIBUTE_UNUSED,
-                                const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                                const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                                 unsigned int protocol ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));

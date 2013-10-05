@@ -165,7 +165,7 @@ int virNetDevExists(const char *ifname)
  * Returns 0 in case of success or -1 on failure
  */
 int virNetDevSetMAC(const char *ifname,
-                    const virMacAddrPtr macaddr)
+                    const virMacAddr *macaddr)
 {
     int fd = -1;
     int ret = -1;
@@ -200,7 +200,7 @@ cleanup:
 #elif defined(SIOCSIFLLADDR) && defined(HAVE_STRUCT_IFREQ) && \
     HAVE_DECL_LINK_ADDR
 int virNetDevSetMAC(const char *ifname,
-                    const virMacAddrPtr macaddr)
+                    const virMacAddr *macaddr)
 {
         struct ifreq ifr;
         struct sockaddr_dl sdl;
@@ -233,7 +233,7 @@ cleanup:
 }
 #else
 int virNetDevSetMAC(const char *ifname,
-                    const virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+                    const virMacAddr *macaddr ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot set interface MAC on '%s'"),
@@ -302,7 +302,7 @@ int virNetDevGetMAC(const char *ifname,
  */
 int
 virNetDevReplaceMacAddress(const char *linkdev,
-                           const virMacAddrPtr macaddress,
+                           const virMacAddr *macaddress,
                            const char *stateDir)
 {
     virMacAddr oldmac;
@@ -1002,7 +1002,7 @@ int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
  */
 #if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevValidateConfig(const char *ifname,
-                            const virMacAddrPtr macaddr, int ifindex)
+                            const virMacAddr *macaddr, int ifindex)
 {
     int fd = -1;
     int ret = -1;
@@ -1056,7 +1056,7 @@ int virNetDevValidateConfig(const char *ifname,
 }
 #else
 int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
-                            const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                            const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                             int ifindex ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -1461,7 +1461,7 @@ buffer_too_small:
 
 static int
 virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
-                     bool nltarget_kernel, const virMacAddrPtr macaddr,
+                     bool nltarget_kernel, const virMacAddr *macaddr,
                      int vlanid, uint32_t (*getPidFunc)(void))
 {
     int rc = -1;
@@ -1655,7 +1655,7 @@ virNetDevGetVfConfig(const char *ifname, int vf, virMacAddrPtr mac,
 
 static int
 virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
-                         const virMacAddrPtr macaddress,
+                         const virMacAddr *macaddress,
                          int vlanid,
                          const char *stateDir)
 {
@@ -1759,7 +1759,7 @@ cleanup:
  */
 int
 virNetDevReplaceNetConfig(char *linkdev, int vf,
-                          const virMacAddrPtr macaddress, int vlanid,
+                          const virMacAddr *macaddress, int vlanid,
                           char *stateDir)
 {
     if (vf == -1)
@@ -1804,7 +1804,7 @@ virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
 int
 virNetDevReplaceNetConfig(char *linkdev ATTRIBUTE_UNUSED,
                           int vf ATTRIBUTE_UNUSED,
-                          const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                          const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                           int vlanid ATTRIBUTE_UNUSED,
                           char *stateDir ATTRIBUTE_UNUSED)
 {

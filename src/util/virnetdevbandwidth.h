@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,14 +49,15 @@ int virNetDevBandwidthSet(const char *ifname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthClear(const char *ifname)
     ATTRIBUTE_NONNULL(1);
-int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest, const virNetDevBandwidthPtr src)
+int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
+                           const virNetDevBandwidth *src)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 bool virNetDevBandwidthEqual(virNetDevBandwidthPtr a, virNetDevBandwidthPtr b);
 
 int virNetDevBandwidthPlug(const char *brname,
                            virNetDevBandwidthPtr net_bandwidth,
-                           const virMacAddrPtr ifmac_ptr,
+                           const virMacAddr *ifmac_ptr,
                            virNetDevBandwidthPtr bandwidth,
                            unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)

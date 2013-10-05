@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Nicira, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -31,7 +32,7 @@
 
 int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,
-                                const virMacAddrPtr macaddr,
+                                const virMacAddr *macaddr,
                                 const unsigned char *vmuuid,
                                 virNetDevVPortProfilePtr ovsport,
                                 virNetDevVlanPtr virtVlan)

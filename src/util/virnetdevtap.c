@@ -435,7 +435,7 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  */
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
-                                   const virMacAddrPtr macaddr,
+                                   const virMacAddr *macaddr,
                                    const unsigned char *vmuuid,
                                    int *tapfd,
                                    int tapfdSize,

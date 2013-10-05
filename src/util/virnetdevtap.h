@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,7 +53,7 @@ typedef enum {
 
 int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
-                                   const virMacAddrPtr macaddr,
+                                   const virMacAddr *macaddr,
                                    const unsigned char *vmuuid,
                                    int *tapfd,
                                    int tapfdSize,

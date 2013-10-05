@@ -104,7 +104,7 @@ VIR_ONCE_GLOBAL_INIT(virNetDevMacVLanCreateMutex);
 int
 virNetDevMacVLanCreate(const char *ifname,
                        const char *type,
-                       const virMacAddrPtr macaddress,
+                       const virMacAddr *macaddress,
                        const char *srcdev,
                        uint32_t macvlan_mode,
                        int *retry)
@@ -746,7 +746,7 @@ virNetlinkCallbackDataFree(virNetlinkCallbackDataPtr calld)
  */
 static void
 virNetDevMacVLanVPortProfileDestroyCallback(int watch ATTRIBUTE_UNUSED,
-                                            const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                                            const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                                             void *opaque)
 {
     virNetlinkCallbackDataFree((virNetlinkCallbackDataPtr)opaque);
@@ -754,7 +754,7 @@ virNetDevMacVLanVPortProfileDestroyCallback(int watch ATTRIBUTE_UNUSED,
 
 int
 virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
-                                             const virMacAddrPtr macaddress,
+                                             const virMacAddr *macaddress,
                                              const char *linkdev,
                                              const unsigned char *vmuuid,
                                              virNetDevVPortProfilePtr virtPortProfile,
@@ -811,7 +811,7 @@ error:
  * otherwise returns 0; returns -1 on error.
  */
 int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
-                                           const virMacAddrPtr macaddress,
+                                           const virMacAddr *macaddress,
                                            const char *linkdev,
                                            enum virNetDevMacVLanMode mode,
                                            bool withTap,
@@ -985,7 +985,7 @@ link_del_exit:
  * were provided.
  */
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
-                                           const virMacAddrPtr macaddr,
+                                           const virMacAddr *macaddr,
                                            const char *linkdev,
                                            int mode,
                                            virNetDevVPortProfilePtr virtPortProfile,
@@ -1030,7 +1030,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
  * Returns 0; returns -1 on error.
  */
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
-                                           const virMacAddrPtr macaddress,
+                                           const virMacAddr *macaddress,
                                            const char *linkdev,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
@@ -1060,7 +1060,7 @@ error:
 #else /* ! WITH_MACVTAP */
 int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED,
-                           const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                            const char *srcdev ATTRIBUTE_UNUSED,
                            uint32_t macvlan_mode ATTRIBUTE_UNUSED,
                            int *retry ATTRIBUTE_UNUSED)
@@ -1078,7 +1078,7 @@ int virNetDevMacVLanDelete(const char *ifname ATTRIBUTE_UNUSED)
 }
 
 int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            enum virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
                                            bool withTap ATTRIBUTE_UNUSED,
@@ -1096,7 +1096,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            int mode ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
@@ -1108,7 +1108,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
@@ -1120,7 +1120,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUS
 }
 
 int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname ATTRIBUTE_UNUSED,
-                                             const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                                             const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                              const char *linkdev ATTRIBUTE_UNUSED,
                                              const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                              virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
