@@ -129,7 +129,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
                           int fd,
                           unsigned long long *total,
-                          int want_sparse)
+                          bool want_sparse)
 {
     int inputfd = -1;
     int amtread = -1;
@@ -270,7 +270,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (inputvol) {
         int res = virStorageBackendCopyToFD(vol, inputvol,
-                                            fd, &remain, 0);
+                                            fd, &remain, false);
         if (res < 0)
             goto cleanup;
     }
@@ -315,7 +315,7 @@ static int
 createRawFile(int fd, virStorageVolDefPtr vol,
               virStorageVolDefPtr inputvol)
 {
-    int need_alloc = 1;
+    bool need_alloc = true;
     int ret = 0;
     unsigned long long remain;
 
@@ -338,7 +338,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
      * available, and since we're going to copy data from another
      * file it doesn't make sense to write the file twice. */
     if (fallocate(fd, 0, 0, vol->allocation) == 0) {
-        need_alloc = 0;
+        need_alloc = false;
     } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
         ret = -errno;
         virReportSystemError(errno,
@@ -354,8 +354,8 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
-        int want_sparse = (need_alloc == 0) ||
-                          (vol->allocation < inputvol->capacity);
+        bool want_sparse = !need_alloc ||
+                           (vol->allocation < inputvol->capacity);
 
         ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain, want_sparse);
         if (ret < 0) {
