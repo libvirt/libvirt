@@ -38,8 +38,7 @@
 static bool isValidVarValue(const char *value);
 static void virNWFilterVarAccessSetIntIterId(virNWFilterVarAccessPtr,
                                              unsigned int);
-static unsigned int virNWFilterVarAccessGetIntIterId(
-                                             const virNWFilterVarAccessPtr);
+static unsigned int virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccess *);
 
 void
 virNWFilterVarValueFree(virNWFilterVarValuePtr val)
@@ -65,7 +64,7 @@ virNWFilterVarValueFree(virNWFilterVarValuePtr val)
 }
 
 virNWFilterVarValuePtr
-virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
+virNWFilterVarValueCopy(const virNWFilterVarValue *val)
 {
     virNWFilterVarValuePtr res;
     size_t i;
@@ -132,7 +131,7 @@ virNWFilterVarValueCreateSimpleCopyValue(const char *value)
 }
 
 const char *
-virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val)
+virNWFilterVarValueGetSimple(const virNWFilterVarValue *val)
 {
     if (val->valType == NWFILTER_VALUE_TYPE_SIMPLE)
         return val->u.simple.value;
@@ -140,7 +139,7 @@ virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val)
 }
 
 const char *
-virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val, unsigned int idx)
+virNWFilterVarValueGetNthValue(const virNWFilterVarValue* val, unsigned int idx)
 {
     const char *res = NULL;
 
@@ -164,7 +163,7 @@ virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val, unsigned int idx)
 }
 
 unsigned int
-virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr val)
+virNWFilterVarValueGetCardinality(const virNWFilterVarValue *val)
 {
     switch (val->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
@@ -180,8 +179,8 @@ virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr val)
 }
 
 bool
-virNWFilterVarValueEqual(const virNWFilterVarValuePtr a,
-                         const virNWFilterVarValuePtr b)
+virNWFilterVarValueEqual(const virNWFilterVarValue *a,
+                         const virNWFilterVarValue *b)
 {
     unsigned int card;
     size_t i, j;
@@ -335,7 +334,7 @@ virNWFilterVarCombIterEntryInit(virNWFilterVarCombIterEntryPtr cie,
 static int
 virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
                                   virNWFilterHashTablePtr hash,
-                                  const virNWFilterVarAccessPtr varAccess)
+                                  const virNWFilterVarAccess *varAccess)
 {
     virNWFilterVarValuePtr varValue;
     unsigned int maxValue = 0, minValue = 0;
@@ -543,7 +542,7 @@ next:
 
 const char *
 virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
-                                  const virNWFilterVarAccessPtr vap)
+                                  const virNWFilterVarAccess *vap)
 {
     size_t i;
     unsigned int iterId;
@@ -783,8 +782,8 @@ err_exit:
 static int
 virNWFilterVarValueCompare(const void *a, const void *b)
 {
-    return virNWFilterVarValueEqual((const virNWFilterVarValuePtr) a,
-                                    (const virNWFilterVarValuePtr) b) ? 0 : 1;
+    return virNWFilterVarValueEqual((const virNWFilterVarValue *) a,
+                                    (const virNWFilterVarValue *) b) ? 0 : 1;
 }
 
 bool
@@ -909,8 +908,7 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
     if (numKeys) {
         virBufferAddLit(buf, ">\n");
         for (i = 0; i < numKeys; i++) {
-            const virNWFilterVarValuePtr value =
-                (const virNWFilterVarValuePtr)items[i].value;
+            const virNWFilterVarValue *value = items[i].value;
 
             card = virNWFilterVarValueGetCardinality(value);
 
@@ -942,8 +940,8 @@ virNWFilterVarAccessFree(virNWFilterVarAccessPtr varAccess)
 }
 
 bool
-virNWFilterVarAccessEqual(const virNWFilterVarAccessPtr a,
-                          const virNWFilterVarAccessPtr b)
+virNWFilterVarAccessEqual(const virNWFilterVarAccess *a,
+                          const virNWFilterVarAccess *b)
 {
     if (a->accessType != b->accessType)
         return false;
@@ -1078,25 +1076,25 @@ virNWFilterVarAccessPrint(virNWFilterVarAccessPtr vap, virBufferPtr buf)
 }
 
 const char *
-virNWFilterVarAccessGetVarName(const virNWFilterVarAccessPtr vap)
+virNWFilterVarAccessGetVarName(const virNWFilterVarAccess *vap)
 {
     return vap->varName;
 }
 
 enum virNWFilterVarAccessType
-virNWFilterVarAccessGetType(const virNWFilterVarAccessPtr vap)
+virNWFilterVarAccessGetType(const virNWFilterVarAccess *vap)
 {
     return vap->accessType;
 }
 
 unsigned int
-virNWFilterVarAccessGetIterId(const virNWFilterVarAccessPtr vap)
+virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap)
 {
     return vap->u.iterId;
 }
 
 unsigned int
-virNWFilterVarAccessGetIndex(const virNWFilterVarAccessPtr vap)
+virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap)
 {
     return vap->u.index.index;
 }
@@ -1109,14 +1107,14 @@ virNWFilterVarAccessSetIntIterId(virNWFilterVarAccessPtr vap,
 }
 
 static unsigned int
-virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccessPtr vap)
+virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccess *vap)
 {
     return vap->u.index.intIterId;
 }
 
 bool
-virNWFilterVarAccessIsAvailable(const virNWFilterVarAccessPtr varAccess,
-                                const virNWFilterHashTablePtr hash)
+virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *varAccess,
+                                const virNWFilterHashTable *hash)
 {
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
     const char *res;

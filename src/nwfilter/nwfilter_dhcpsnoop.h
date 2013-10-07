@@ -1,6 +1,7 @@
 /*
  * nwfilter_dhcpsnoop.h: support DHCP snooping for a VM on an interface
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corp.
  * Copyright (C) 2010-2012 David L Stevens
  *
@@ -31,7 +32,7 @@ int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                             const char *linkdev,
                             enum virDomainNetType nettype,
                             const unsigned char *vmuuid,
-                            const virMacAddrPtr macaddr,
+                            const virMacAddr *macaddr,
                             const char *filtername,
                             virNWFilterHashTablePtr filterparams,
                             virNWFilterDriverStatePtr driver);

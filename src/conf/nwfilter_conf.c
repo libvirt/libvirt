@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010-2011 IBM Corporation
@@ -2927,7 +2927,7 @@ virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter)
 }
 
 static bool
-virNWFilterDefEqual(const virNWFilterDefPtr def1, virNWFilterDefPtr def2,
+virNWFilterDefEqual(const virNWFilterDef *def1, virNWFilterDefPtr def2,
                     bool cmpUUIDs)
 {
     bool ret = false;
@@ -3412,7 +3412,7 @@ virNWFilterEntryFormat(virNWFilterEntryPtr entry)
 
 
 char *
-virNWFilterDefFormat(virNWFilterDefPtr def)
+virNWFilterDefFormat(const virNWFilterDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuid[VIR_UUID_STRING_BUFLEN];

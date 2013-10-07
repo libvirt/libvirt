@@ -1,7 +1,7 @@
 /*
  * nwfilter_gentech_driver.c: generic technology driver
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011, 2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -148,7 +148,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 static int
 virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
                                   char *macaddr,
-                                  const virNWFilterVarValuePtr ipaddr)
+                                  const virNWFilterVarValue *ipaddr)
 {
     virNWFilterVarValue *val;
 
@@ -197,7 +197,8 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
  */
 virNWFilterHashTablePtr
 virNWFilterCreateVarHashmap(char *macaddr,
-                            const virNWFilterVarValuePtr ipaddr) {
+                            const virNWFilterVarValue *ipaddr)
+{
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
     if (!table)
         return NULL;
@@ -644,7 +645,7 @@ virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                        virNWFilterHashTablePtr vars,
                        enum instCase useNewFilter, bool *foundNewFilter,
                        bool teardownOld,
-                       const virMacAddrPtr macaddr,
+                       const virMacAddr *macaddr,
                        virNWFilterDriverStatePtr driver,
                        bool forceWithPendingReq)
 {
@@ -807,7 +808,7 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                int ifindex,
                                const char *linkdev,
                                enum virDomainNetType nettype,
-                               const virMacAddrPtr macaddr,
+                               const virMacAddr *macaddr,
                                const char *filtername,
                                virNWFilterHashTablePtr filterparams,
                                enum instCase useNewFilter,
@@ -923,7 +924,7 @@ err_exit:
 static int
 _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                               const unsigned char *vmuuid,
-                              const virDomainNetDefPtr net,
+                              const virDomainNetDef *net,
                               bool teardownOld,
                               enum instCase useNewFilter,
                               bool *foundNewFilter)
@@ -976,7 +977,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                  int ifindex,
                                  const char *linkdev,
                                  enum virDomainNetType nettype,
-                                 const virMacAddrPtr macaddr,
+                                 const virMacAddr *macaddr,
                                  const char *filtername,
                                  virNWFilterHashTablePtr filterparams)
 {
@@ -1017,7 +1018,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
 int
 virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                              const unsigned char *vmuuid,
-                             const virDomainNetDefPtr net)
+                             const virDomainNetDef *net)
 {
     bool foundNewFilter = false;
 
@@ -1031,7 +1032,7 @@ virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 int
 virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
                                    const unsigned char *vmuuid,
-                                   const virDomainNetDefPtr net,
+                                   const virDomainNetDef *net,
                                    bool *skipIface)
 {
     bool foundNewFilter = false;
@@ -1046,7 +1047,7 @@ virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
 }
 
 static int
-virNWFilterRollbackUpdateFilter(const virDomainNetDefPtr net)
+virNWFilterRollbackUpdateFilter(const virDomainNetDef *net)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
@@ -1130,7 +1131,7 @@ _virNWFilterTeardownFilter(const char *ifname)
 
 
 int
-virNWFilterTeardownFilter(const virDomainNetDefPtr net)
+virNWFilterTeardownFilter(const virDomainNetDef *net)
 {
     return _virNWFilterTeardownFilter(net->ifname);
 }

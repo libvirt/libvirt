@@ -2,7 +2,7 @@
  * nwfilter_learnipaddr.c: support for learning IP address used by a VM
  *                         on an interface
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011, 2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -677,7 +677,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                           int ifindex,
                           const char *linkdev,
                           enum virDomainNetType nettype,
-                          const virMacAddrPtr macaddr,
+                          const virMacAddr *macaddr,
                           const char *filtername,
                           virNWFilterHashTablePtr filterparams,
                           virNWFilterDriverStatePtr driver,
@@ -766,11 +766,12 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                           int ifindex ATTRIBUTE_UNUSED,
                           const char *linkdev ATTRIBUTE_UNUSED,
                           enum virDomainNetType nettype ATTRIBUTE_UNUSED,
-                          const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                          const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                           const char *filtername ATTRIBUTE_UNUSED,
                           virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                           virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,
-                          enum howDetect howDetect ATTRIBUTE_UNUSED) {
+                          enum howDetect howDetect ATTRIBUTE_UNUSED)
+{
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("IP parameter must be given since libvirt "
                      "was not compiled with IP address learning "

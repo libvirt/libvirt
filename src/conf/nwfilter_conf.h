@@ -2,7 +2,7 @@
  * nwfilter_conf.h: network filter XML processing
  *                  (derived from storage_conf.h)
  *
- * Copyright (C) 2006-2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2006-2010, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010 IBM Corporation
@@ -625,10 +625,10 @@ typedef int (*virNWFilterRuleDisplayInstanceData)(void *_inst);
 typedef int (*virNWFilterCanApplyBasicRules)(void);
 
 typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
-                                          const virMacAddrPtr macaddr);
+                                          const virMacAddr *macaddr);
 
 typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
-                                             const virMacAddrPtr macaddr,
+                                             const virMacAddr *macaddr,
                                              virNWFilterVarValuePtr dhcpsrvs,
                                              bool leaveTemporary);
 
@@ -695,7 +695,7 @@ int virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
 virNWFilterDefPtr virNWFilterDefParseNode(xmlDocPtr xml,
                                           xmlNodePtr root);
 
-char *virNWFilterDefFormat(virNWFilterDefPtr def);
+char *virNWFilterDefFormat(const virNWFilterDef *def);
 
 int virNWFilterSaveXML(const char *configDir,
                        virNWFilterDefPtr def,

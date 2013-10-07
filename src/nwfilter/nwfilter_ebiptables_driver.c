@@ -3235,7 +3235,7 @@ ebiptablesCanApplyBasicRules(void) {
  */
 static int
 ebtablesApplyBasicRules(const char *ifname,
-                        const virMacAddrPtr macaddr)
+                        const virMacAddr *macaddr)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char chain[MAX_CHAINNAME_LENGTH];
@@ -3328,7 +3328,7 @@ tear_down_tmpebchains:
  */
 static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
-                           const virMacAddrPtr macaddr,
+                           const virMacAddr *macaddr,
                            virNWFilterVarValuePtr dhcpsrvrs,
                            bool leaveTemporary)
 {
@@ -3564,8 +3564,8 @@ static int ebtablesCleanAll(const char *ifname)
 static int
 ebiptablesRuleOrderSort(const void *a, const void *b)
 {
-    const ebiptablesRuleInstPtr insta = (const ebiptablesRuleInstPtr)a;
-    const ebiptablesRuleInstPtr instb = (const ebiptablesRuleInstPtr)b;
+    const ebiptablesRuleInst *insta = a;
+    const ebiptablesRuleInst *instb = b;
     const char *root = virNWFilterChainSuffixTypeToString(
                                      VIR_NWFILTER_CHAINSUFFIX_ROOT);
     bool root_a = STREQ(insta->neededProtocolChain, root);
@@ -3590,8 +3590,8 @@ normal:
 static int
 ebiptablesRuleOrderSortPtr(const void *a, const void *b)
 {
-    const ebiptablesRuleInstPtr *insta = a;
-    const ebiptablesRuleInstPtr *instb = b;
+    ebiptablesRuleInst * const *insta = a;
+    ebiptablesRuleInst * const *instb = b;
     return ebiptablesRuleOrderSort(*insta, *instb);
 }
 

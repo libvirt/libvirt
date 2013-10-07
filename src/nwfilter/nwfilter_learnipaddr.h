@@ -2,7 +2,7 @@
  * nwfilter_learnipaddr.h: support for learning IP address used by a VM
  *                         on an interface
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -58,7 +58,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               int ifindex,
                               const char *linkdev,
                               enum virDomainNetType nettype,
-                              const virMacAddrPtr macaddr,
+                              const virMacAddr *macaddr,
                               const char *filtername,
                               virNWFilterHashTablePtr filterparams,
                               virNWFilterDriverStatePtr driver,

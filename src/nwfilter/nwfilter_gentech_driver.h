@@ -1,6 +1,7 @@
 /*
  * nwfilter_gentech_driver.h: generic technology driver include file
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -41,10 +42,10 @@ enum instCase {
 
 int virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                  const unsigned char *vmuuid,
-                                 const virDomainNetDefPtr net);
+                                 const virDomainNetDef *net);
 int virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
                                        const unsigned char *vmuuid,
-                                       const virDomainNetDefPtr net,
+                                       const virDomainNetDef *net,
                                        bool *skipIface);
 
 int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
@@ -53,14 +54,14 @@ int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                      int ifindex,
                                      const char *linkdev,
                                      enum virDomainNetType nettype,
-                                     const virMacAddrPtr macaddr,
+                                     const virMacAddr *macaddr,
                                      const char *filtername,
                                      virNWFilterHashTablePtr filterparams);
 
-int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
+int virNWFilterTeardownFilter(const virDomainNetDef *net);
 
 virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
-                                       const virNWFilterVarValuePtr);
+                                       const virNWFilterVarValue *value);
 
 int virNWFilterDomainFWUpdateCB(virDomainObjPtr vm,
                                 void *data);

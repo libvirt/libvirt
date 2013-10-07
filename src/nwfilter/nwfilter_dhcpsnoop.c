@@ -877,7 +877,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
                                                req->filtername,
                                                req->vars);
     } else {
-        const virNWFilterVarValuePtr dhcpsrvrs =
+        virNWFilterVarValuePtr dhcpsrvrs =
             virHashLookup(req->vars->hashTable, NWFILTER_VARNAME_DHCPSERVER);
 
         if (req->techdriver &&
@@ -1569,7 +1569,7 @@ exit:
 
 static void
 virNWFilterSnoopIFKeyFMT(char *ifkey, const unsigned char *vmuuid,
-                         const virMacAddrPtr macaddr)
+                         const virMacAddr *macaddr)
 {
     virUUIDFormat(vmuuid, ifkey);
     ifkey[VIR_UUID_STRING_BUFLEN - 1] = '-';
@@ -1582,7 +1582,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                         const char *linkdev,
                         enum virDomainNetType nettype,
                         const unsigned char *vmuuid,
-                        const virMacAddrPtr macaddr,
+                        const virMacAddr *macaddr,
                         const char *filtername,
                         virNWFilterHashTablePtr filterparams,
                         virNWFilterDriverStatePtr driver)
@@ -1829,7 +1829,7 @@ virNWFilterSnoopPruneIter(const void *payload,
                           const void *name ATTRIBUTE_UNUSED,
                           const void *data ATTRIBUTE_UNUSED)
 {
-    const virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
+    virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
     bool del_req;
 
     /* clean up orphaned, expired leases */
@@ -2025,7 +2025,7 @@ virNWFilterSnoopRemAllReqIter(const void *payload,
                               const void *name ATTRIBUTE_UNUSED,
                               const void *data ATTRIBUTE_UNUSED)
 {
-    const virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
+    virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
 
     /* protect req->ifname */
     virNWFilterSnoopReqLock(req);
@@ -2216,7 +2216,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                         const char *linkdev ATTRIBUTE_UNUSED,
                         enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                         const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                        const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                        const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                         const char *filtername ATTRIBUTE_UNUSED,
                         virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
                         virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
