@@ -1004,6 +1004,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Storage volume not found: %s");
             break;
+        case VIR_ERR_STORAGE_VOL_EXISTS:
+            if (info == NULL)
+                errmsg = _("this storage volume exists already");
+            else
+                errmsg = _("storage volume %s exists already");
+            break;
         case VIR_ERR_STORAGE_PROBE_FAILED:
             if (info == NULL)
                 errmsg = _("Storage pool probe failed");
