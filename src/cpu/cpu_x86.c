@@ -90,7 +90,7 @@ struct virCPUx86DataIterator {
     { data, -1, false }
 
 
-static int
+static bool
 x86cpuidMatch(const virCPUx86CPUID *cpuid1,
               const virCPUx86CPUID *cpuid2)
 {
@@ -101,7 +101,7 @@ x86cpuidMatch(const virCPUx86CPUID *cpuid1,
 }
 
 
-static int
+static bool
 x86cpuidMatchMasked(const virCPUx86CPUID *cpuid,
                     const virCPUx86CPUID *mask)
 {
