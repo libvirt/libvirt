@@ -156,6 +156,8 @@ bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 
+int virFileIsMountPoint(const char *file) ATTRIBUTE_NONNULL(1);
+
 char *virFileSanitizePath(const char *path);
 
 enum {

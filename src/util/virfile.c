@@ -1518,6 +1518,58 @@ virFileIsExecutable(const char *file)
     return false;
 }
 
+
+/*
+ * Check that a file refers to a mount point. Trick is that for
+ * a mount point, the st_dev field will differ from the parent
+ * directory.
+ *
+ * Note that this will not detect bind mounts of dirs/files,
+ * only true filesystem mounts.
+ */
+int virFileIsMountPoint(const char *file)
+{
+    char *parent = NULL;
+    int ret = -1;
+    struct stat sb1, sb2;
+
+    if (!(parent = mdir_name(file))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Comparing '%s' to '%s'", file, parent);
+
+    if (stat(file, &sb1) < 0) {
+        if (errno == ENOENT)
+            ret = 0;
+        else
+            virReportSystemError(errno,
+                                 _("Cannot stat '%s'"),
+                                 file);
+        goto cleanup;
+    }
+
+    if (stat(parent, &sb2) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot stat '%s'"),
+                             parent);
+        goto cleanup;
+    }
+
+    if (!S_ISDIR(sb1.st_mode)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = sb1.st_dev != sb2.st_dev;
+    VIR_DEBUG("Is mount %d", ret);
+
+ cleanup:
+    VIR_FREE(parent);
+    return ret;
+}
+
 #ifndef WIN32
 /* Check that a file is accessible under certain
  * user & gid.

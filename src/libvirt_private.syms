@@ -1196,6 +1196,7 @@ virFileIsAbsPath;
 virFileIsDir;
 virFileIsExecutable;
 virFileIsLink;
+virFileIsMountPoint;
 virFileLinkPointsTo;
 virFileLock;
 virFileLoopDeviceAssociate;
