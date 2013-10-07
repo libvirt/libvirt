@@ -79,14 +79,14 @@ enum compare_result {
 };
 
 
-struct data_iterator {
+struct virCPUx86DataIterator {
     virCPUx86Data *data;
     int pos;
     bool extended;
 };
 
 
-#define DATA_ITERATOR_INIT(data) \
+#define virCPUx86DataIteratorInit(data) \
     { data, -1, false }
 
 
@@ -147,7 +147,7 @@ x86cpuidAndBits(virCPUx86CPUID *cpuid,
 
 /* skips all zero CPUID leafs */
 static virCPUx86CPUID *
-x86DataCpuidNext(struct data_iterator *iterator)
+x86DataCpuidNext(struct virCPUx86DataIterator *iterator)
 {
     virCPUx86CPUID *ret;
     virCPUx86Data *data = iterator->data;
@@ -373,7 +373,7 @@ static void
 x86DataIntersect(virCPUx86Data *data1,
                  const virCPUx86Data *data2)
 {
-    struct data_iterator iter = DATA_ITERATOR_INIT(data1);
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
     virCPUx86CPUID *cpuid1;
     virCPUx86CPUID *cpuid2;
 
@@ -390,7 +390,7 @@ x86DataIntersect(virCPUx86Data *data1,
 static bool
 x86DataIsEmpty(virCPUx86Data *data)
 {
-    struct data_iterator iter = DATA_ITERATOR_INIT(data);
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data);
 
     return x86DataCpuidNext(&iter) == NULL;
 }
@@ -401,7 +401,7 @@ x86DataIsSubset(const virCPUx86Data *data,
                 const virCPUx86Data *subset)
 {
 
-    struct data_iterator iter = DATA_ITERATOR_INIT((virCPUx86Data *)subset);
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit((virCPUx86Data *)subset);
     const virCPUx86CPUID *cpuid;
     const virCPUx86CPUID *cpuidSubset;
 
@@ -912,8 +912,8 @@ x86ModelCompare(const struct x86_model *model1,
                 const struct x86_model *model2)
 {
     enum compare_result result = EQUAL;
-    struct data_iterator iter1 = DATA_ITERATOR_INIT(model1->data);
-    struct data_iterator iter2 = DATA_ITERATOR_INIT(model2->data);
+    struct virCPUx86DataIterator iter1 = virCPUx86DataIteratorInit(model1->data);
+    struct virCPUx86DataIterator iter2 = virCPUx86DataIteratorInit(model2->data);
     virCPUx86CPUID *cpuid1;
     virCPUx86CPUID *cpuid2;
 
@@ -1139,7 +1139,7 @@ error:
 static char *
 x86CPUDataFormat(const virCPUData *data)
 {
-    struct data_iterator iter = DATA_ITERATOR_INIT(data->data.x86);
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data->data.x86);
     virCPUx86CPUID *cpuid;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
