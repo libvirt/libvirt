@@ -4701,10 +4701,10 @@ typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
 typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
                                                       int phase,
-                                                      const virDomainEventGraphicsAddressPtr local,
-                                                      const virDomainEventGraphicsAddressPtr remote,
+                                                      const virDomainEventGraphicsAddress *local,
+                                                      const virDomainEventGraphicsAddress *remote,
                                                       const char *authScheme,
-                                                      const virDomainEventGraphicsSubjectPtr subject,
+                                                      const virDomainEventGraphicsSubject *subject,
                                                       void *opaque);
 
 /**
