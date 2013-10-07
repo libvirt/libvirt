@@ -756,15 +756,16 @@ typedef struct {
     const char *type;
     int mflags;
     bool skipUserNS;
+    bool skipUnmounted;
 } virLXCBasicMountInfo;
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
-    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false },
-    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false },
-    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true },
+    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false },
+    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false, false },
+    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false },
+    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true },
 #if WITH_SELINUX
-    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true },
+    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true },
 #endif
 };
 
@@ -851,16 +852,24 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
         VIR_DEBUG("Processing %s -> %s",
                   mnt->src, mnt->dst);
 
-        /* Skip if mount doesn't exist in source */
-        if ((mnt->src[0] == '/') &&
-            (access(mnt->src, R_OK) < 0))
-            continue;
+        if (mnt->skipUnmounted) {
+            char *hostdir;
+            int ret;
 
-#if WITH_SELINUX
-        if (STREQ(mnt->src, SELINUX_MOUNT) &&
-            !is_selinux_enabled())
-            continue;
-#endif
+            if (virAsprintf(&hostdir, "/.oldroot%s", mnt->dst) < 0)
+                goto cleanup;
+
+            ret = virFileIsMountPoint(hostdir);
+            VIR_FREE(hostdir);
+            if (ret < 0)
+                goto cleanup;
+
+            if (ret == 0) {
+                VIR_DEBUG("Skipping '%s' which isn't mounted in host",
+                          mnt->dst);
+                continue;
+            }
+        }
 
         if (mnt->skipUserNS && userns_enabled) {
             VIR_DEBUG("Skipping due to user ns enablement");
