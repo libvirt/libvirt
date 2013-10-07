@@ -73,7 +73,7 @@ static char *py_str(PyObject *obj)
  * Python dictionary for return to the user.  Return NULL on failure,
  * after raising a python exception.  */
 static PyObject *
-getPyVirTypedParameter(const virTypedParameterPtr params, int nparams)
+getPyVirTypedParameter(const virTypedParameter *params, int nparams)
 {
     PyObject *key, *val, *info;
     size_t i;
@@ -149,7 +149,7 @@ cleanup:
  * raising a python exception.  */
 static virTypedParameterPtr ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 setPyVirTypedParameter(PyObject *info,
-                       const virTypedParameterPtr params, int nparams)
+                       const virTypedParameter *params, int nparams)
 {
     PyObject *key, *value;
 #if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 4

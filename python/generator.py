@@ -294,57 +294,46 @@ py_types = {
     'size_t': ('n', None, "size_t", "size_t"),
 
     'virDomainPtr':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
-    'const virDomainPtr':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
     'virDomain *':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
     'const virDomain *':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
 
     'virNetworkPtr':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
-    'const virNetworkPtr':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
     'virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
     'const virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
 
     'virInterfacePtr':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
-    'const virInterfacePtr':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
     'virInterface *':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
     'const virInterface *':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
 
     'virStoragePoolPtr':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
-    'const virStoragePoolPtr':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
     'virStoragePool *':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
     'const virStoragePool *':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
 
     'virStorageVolPtr':  ('O', "virStorageVol", "virStorageVolPtr", "virStorageVolPtr"),
-    'const virStorageVolPtr':  ('O', "virStorageVol", "virStorageVolPtr", "virStorageVolPtr"),
     'virStorageVol *':  ('O', "virStorageVol", "virStorageVolPtr", "virStorageVolPtr"),
     'const virStorageVol *':  ('O', "virStorageVol", "virStorageVolPtr", "virStorageVolPtr"),
 
     'virConnectPtr':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
-    'const virConnectPtr':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'virConnect *':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'const virConnect *':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
 
     'virNodeDevicePtr':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
-    'const virNodeDevicePtr':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
     'virNodeDevice *':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
     'const virNodeDevice *':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
 
     'virSecretPtr':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
-    'const virSecretPtr':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'const virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
 
     'virNWFilterPtr':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
-    'const virNWFilterPtr':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
     'virNWFilter *':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
     'const virNWFilter *':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
 
     'virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
-    'const virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
     'virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
     'const virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
 
     'virDomainSnapshotPtr':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
-    'const virDomainSnapshotPtr':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
     'virDomainSnapshot *':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
     'const virDomainSnapshot *':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
 }
