@@ -2807,10 +2807,10 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
         virDomainChrDefPtr chr = dev->data.chr;
-        virDomainChrDefPtr **arrPtr;
-        size_t i, *cnt;
+        const virDomainChrDef **arrPtr;
+        size_t i, cnt;
 
-        virDomainChrGetDomainPtrs(def, chr, &arrPtr, &cnt);
+        virDomainChrGetDomainPtrs(def, chr->deviceType, &arrPtr, &cnt);
 
         if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
@@ -2822,9 +2822,9 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
              chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)) {
             int maxport = -1;
 
-            for (i = 0; i < *cnt; i++) {
-                if ((*arrPtr)[i]->target.port > maxport)
-                    maxport = (*arrPtr)[i]->target.port;
+            for (i = 0; i < cnt; i++) {
+                if (arrPtr[i]->target.port > maxport)
+                    maxport = arrPtr[i]->target.port;
             }
 
             chr->target.port = maxport + 1;
@@ -2834,8 +2834,8 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
             chr->info.addr.vioserial.port == 0) {
             int maxport = 0;
 
-            for (i = 0; i < *cnt; i++) {
-                virDomainChrDefPtr thischr = (*arrPtr)[i];
+            for (i = 0; i < cnt; i++) {
+                const virDomainChrDef *thischr = arrPtr[i];
                 if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
                     thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
                     thischr->info.addr.vioserial.bus == chr->info.addr.vioserial.bus &&
@@ -10277,26 +10277,31 @@ virDomainChrDefPtr
 virDomainChrFind(virDomainDefPtr def,
                  virDomainChrDefPtr target)
 {
-    virDomainChrDefPtr chr, **arrPtr;
-    size_t i, *cntPtr;
+    virDomainChrDefPtr chr;
+    const virDomainChrDef **arrPtr;
+    size_t i, cnt;
 
-    virDomainChrGetDomainPtrs(def, target, &arrPtr, &cntPtr);
+    virDomainChrGetDomainPtrs(def, target->deviceType, &arrPtr, &cnt);
 
-    for (i = 0; i < *cntPtr; i++) {
-        chr = (*arrPtr)[i];
+    for (i = 0; i < cnt; i++) {
+        /* Cast away const */
+        chr = (virDomainChrDefPtr) arrPtr[i];
         if (virDomainChrEquals(chr, target))
             return chr;
     }
     return NULL;
 }
 
-void
-virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
-                          virDomainChrDefPtr chr,
-                          virDomainChrDefPtr ***arrPtr,
-                          size_t **cntPtr)
+
+/* Return the address within vmdef to be modified when working with a
+ * chrdefptr of the given type.  */
+static void
+virDomainChrGetDomainPtrsInternal(virDomainDefPtr vmdef,
+                                  enum virDomainChrDeviceType type,
+                                  virDomainChrDefPtr ***arrPtr,
+                                  size_t **cntPtr)
 {
-    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    switch (type) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         *arrPtr = &vmdef->parallels;
         *cntPtr = &vmdef->nparallels;
@@ -10324,6 +10329,29 @@ virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
     }
 }
 
+/* Return the array within vmdef that can contain a chrdefptr of the
+ * given type.  */
+void
+virDomainChrGetDomainPtrs(const virDomainDef *vmdef,
+                          enum virDomainChrDeviceType type,
+                          const virDomainChrDef ***arrPtr,
+                          size_t *cntPtr)
+{
+    virDomainChrDef ***arrVar;
+    size_t *cntVar;
+
+    /* Cast away const; we add it back in the final assignment.  */
+    virDomainChrGetDomainPtrsInternal((virDomainDefPtr) vmdef, type,
+                                      &arrVar, &cntVar);
+    if (arrVar) {
+        *arrPtr = (const virDomainChrDef **) *arrVar;
+        *cntPtr = *cntVar;
+    } else {
+        *arrPtr = NULL;
+        *cntPtr = 0;
+    }
+}
+
 int
 virDomainChrInsert(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr)
@@ -10331,7 +10359,7 @@ virDomainChrInsert(virDomainDefPtr vmdef,
     virDomainChrDefPtr **arrPtr;
     size_t *cntPtr;
 
-    virDomainChrGetDomainPtrs(vmdef, chr, &arrPtr, &cntPtr);
+    virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
     return VIR_APPEND_ELEMENT(*arrPtr, *cntPtr, chr);
 }
@@ -10343,7 +10371,7 @@ virDomainChrRemove(virDomainDefPtr vmdef,
     virDomainChrDefPtr ret, **arrPtr;
     size_t i, *cntPtr;
 
-    virDomainChrGetDomainPtrs(vmdef, chr, &arrPtr, &cntPtr);
+    virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
     for (i = 0; i < *cntPtr; i++) {
         ret = (*arrPtr)[i];

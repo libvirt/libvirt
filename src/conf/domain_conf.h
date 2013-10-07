@@ -2439,10 +2439,11 @@ virDomainLeaseRemove(virDomainDefPtr def,
                      virDomainLeaseDefPtr lease);
 
 void
-virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
-                          virDomainChrDefPtr chr,
-                          virDomainChrDefPtr ***arrPtr,
-                          size_t **cntPtr);
+virDomainChrGetDomainPtrs(const virDomainDef *vmdef,
+                          enum virDomainChrDeviceType type,
+                          const virDomainChrDef ***arrPtr,
+                          size_t *cntPtr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 virDomainChrDefPtr
 virDomainChrFind(virDomainDefPtr def,
                  virDomainChrDefPtr target);
