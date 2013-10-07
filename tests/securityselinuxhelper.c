@@ -24,7 +24,9 @@
 
 #include <dlfcn.h>
 #include <errno.h>
-#include <linux/magic.h>
+#if HAVE_LINUX_MAGIC_H
+# include <linux/magic.h>
+#endif
 #include <selinux/selinux.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +34,10 @@
 #include <sys/vfs.h>
 #include <unistd.h>
 #include <attr/xattr.h>
+
+#ifndef NFS_SUPER_MAGIC
+# define NFS_SUPER_MAGIC 0x6969
+#endif
 
 #include "virstring.h"
 
