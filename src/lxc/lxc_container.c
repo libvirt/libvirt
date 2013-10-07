@@ -758,22 +758,12 @@ typedef struct {
 } virLXCBasicMountInfo;
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
-    /* When we want to make a bind mount readonly, for unknown reasons,
-     * it is currently necessary to bind it once, and then remount the
-     * bind with the readonly flag. If this is not done, then the original
-     * mount point in the main OS becomes readonly too which is not what
-     * we want. Hence some things have two entries here.
-     */
     { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
-    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV },
-    { "sysfs", "/sys", "sysfs", MS_BIND|MS_REMOUNT|MS_RDONLY },
-    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV },
-    { "securityfs", "/sys/kernel/security", "securityfs", MS_BIND|MS_REMOUNT|MS_RDONLY },
+    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY },
+    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
+    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
 #if WITH_SELINUX
-    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV },
-    { SELINUX_MOUNT, SELINUX_MOUNT, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY },
+    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
 #endif
 };
 
@@ -854,6 +844,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
     VIR_DEBUG("Mounting basic filesystems");
 
     for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
+        bool bindOverReadonly;
         virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
 
         VIR_DEBUG("Processing %s -> %s",
@@ -880,13 +871,32 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
             goto cleanup;
         }
 
+        /*
+         * We can't immediately set the MS_RDONLY flag when mounting filesystems
+         * because (in at least some kernel versions) this will propagate back
+         * to the original mount in the host OS, turning it readonly too. Thus
+         * we mount the filesystem in read-write mode initially, and then do a
+         * separate read-only bind mount on top of that.
+         */
+        bindOverReadonly = !!(mnt->mflags & MS_RDONLY);
+
         VIR_DEBUG("Mount %s on %s type=%s flags=%x",
-                  mnt->src, mnt->dst, mnt->type, mnt->mflags);
-        if (mount(mnt->src, mnt->dst, mnt->type, mnt->mflags, NULL) < 0) {
+                  mnt->src, mnt->dst, mnt->type, mnt->mflags & ~MS_RDONLY);
+        if (mount(mnt->src, mnt->dst, mnt->type, mnt->mflags & ~MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x"),
                                  mnt->src, mnt->dst, NULLSTR(mnt->type),
-                                 mnt->mflags);
+                                 mnt->mflags & ~MS_RDONLY);
+            goto cleanup;
+        }
+
+        if (bindOverReadonly &&
+            mount(mnt->src, mnt->dst, NULL,
+                  MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to re-mount %s on %s flags=%x"),
+                                 mnt->src, mnt->dst,
+                                 MS_BIND|MS_REMOUNT|MS_RDONLY);
             goto cleanup;
         }
     }
