@@ -1,7 +1,7 @@
 /*
  * cpu_x86_data.h: x86 specific CPU data
  *
- * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,10 +40,8 @@ struct _virCPUx86CPUID {
 
 typedef struct _virCPUx86Data virCPUx86Data;
 struct _virCPUx86Data {
-    size_t basic_len;
-    virCPUx86CPUID *basic;
-    size_t extended_len;
-    virCPUx86CPUID *extended;
+    size_t len;
+    virCPUx86CPUID *data;
 };
 
 #endif /* __VIR_CPU_X86_DATA_H__ */

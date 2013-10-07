@@ -84,14 +84,13 @@ enum compare_result {
 
 
 struct virCPUx86DataIterator {
-    virCPUx86Data *data;
+    const virCPUx86Data *data;
     int pos;
-    bool extended;
 };
 
 
 #define virCPUx86DataIteratorInit(data) \
-    { data, -1, false }
+    { data, -1 }
 
 
 static bool
@@ -120,6 +119,9 @@ static void
 x86cpuidSetBits(virCPUx86CPUID *cpuid,
                 const virCPUx86CPUID *mask)
 {
+    if (!mask)
+        return;
+
     cpuid->eax |= mask->eax;
     cpuid->ebx |= mask->ebx;
     cpuid->ecx |= mask->ecx;
@@ -131,6 +133,9 @@ static void
 x86cpuidClearBits(virCPUx86CPUID *cpuid,
                   const virCPUx86CPUID *mask)
 {
+    if (!mask)
+        return;
+
     cpuid->eax &= ~mask->eax;
     cpuid->ebx &= ~mask->ebx;
     cpuid->ecx &= ~mask->ecx;
@@ -142,10 +147,27 @@ static void
 x86cpuidAndBits(virCPUx86CPUID *cpuid,
                 const virCPUx86CPUID *mask)
 {
+    if (!mask)
+        return;
+
     cpuid->eax &= mask->eax;
     cpuid->ebx &= mask->ebx;
     cpuid->ecx &= mask->ecx;
     cpuid->edx &= mask->edx;
+}
+
+static int
+virCPUx86CPUIDSorter(const void *a, const void *b)
+{
+    virCPUx86CPUID *da = (virCPUx86CPUID *) a;
+    virCPUx86CPUID *db = (virCPUx86CPUID *) b;
+
+    if (da->function > db->function)
+        return 1;
+    else if (da->function < db->function)
+        return -1;
+
+    return 0;
 }
 
 
@@ -153,31 +175,17 @@ x86cpuidAndBits(virCPUx86CPUID *cpuid,
 static virCPUx86CPUID *
 x86DataCpuidNext(struct virCPUx86DataIterator *iterator)
 {
-    virCPUx86CPUID *ret;
-    virCPUx86Data *data = iterator->data;
+    const virCPUx86Data *data = iterator->data;
 
     if (!data)
         return NULL;
 
-    do {
-        ret = NULL;
-        iterator->pos++;
+    while (++iterator->pos < data->len) {
+        if (!x86cpuidMatch(data->data + iterator->pos, &cpuidNull))
+            return data->data + iterator->pos;
+    }
 
-        if (!iterator->extended) {
-            if (iterator->pos < data->basic_len)
-                ret = data->basic + iterator->pos;
-            else {
-                iterator->extended = true;
-                iterator->pos = 0;
-            }
-        }
-
-        if (iterator->extended && iterator->pos < data->extended_len) {
-            ret = data->extended + iterator->pos;
-        }
-    } while (ret && x86cpuidMatch(ret, &cpuidNull));
-
-    return ret;
+    return NULL;
 }
 
 
@@ -185,27 +193,15 @@ static virCPUx86CPUID *
 x86DataCpuid(const virCPUx86Data *data,
              uint32_t function)
 {
-    virCPUx86CPUID *cpuids;
-    int len;
     size_t i;
 
-    if (function < CPUX86_EXTENDED) {
-        cpuids = data->basic;
-        len = data->basic_len;
-        i = function;
-    }
-    else {
-        cpuids = data->extended;
-        len = data->extended_len;
-        i = function - CPUX86_EXTENDED;
+    for (i = 0; i < data->len; i++) {
+        if (data->data[i].function == function)
+            return data->data + i;
     }
 
-    if (i < len && !x86cpuidMatch(cpuids + i, &cpuidNull))
-        return cpuids + i;
-    else
-        return NULL;
+    return NULL;
 }
-
 
 void
 virCPUx86DataFree(virCPUx86Data *data)
@@ -213,8 +209,7 @@ virCPUx86DataFree(virCPUx86Data *data)
     if (data == NULL)
         return;
 
-    VIR_FREE(data->basic);
-    VIR_FREE(data->extended);
+    VIR_FREE(data->data);
     VIR_FREE(data);
 }
 
@@ -251,51 +246,17 @@ x86DataCopy(const virCPUx86Data *data)
     virCPUx86Data *copy = NULL;
     size_t i;
 
-    if (VIR_ALLOC(copy) < 0
-        || VIR_ALLOC_N(copy->basic, data->basic_len) < 0
-        || VIR_ALLOC_N(copy->extended, data->extended_len) < 0) {
+    if (VIR_ALLOC(copy) < 0 ||
+        VIR_ALLOC_N(copy->data, data->len) < 0) {
         virCPUx86DataFree(copy);
         return NULL;
     }
 
-    copy->basic_len = data->basic_len;
-    for (i = 0; i < data->basic_len; i++)
-        copy->basic[i] = data->basic[i];
-
-    copy->extended_len = data->extended_len;
-    for (i = 0; i < data->extended_len; i++)
-        copy->extended[i] = data->extended[i];
+    copy->len = data->len;
+    for (i = 0; i < data->len; i++)
+        copy->data[i] = data->data[i];
 
     return copy;
-}
-
-
-static int
-x86DataExpand(virCPUx86Data *data,
-              int basic_by,
-              int extended_by)
-{
-    size_t i;
-
-    if (basic_by > 0) {
-        size_t len = data->basic_len;
-        if (VIR_EXPAND_N(data->basic, data->basic_len, basic_by) < 0)
-            return -1;
-
-        for (i = 0; i < basic_by; i++)
-            data->basic[len + i].function = len + i;
-    }
-
-    if (extended_by > 0) {
-        size_t len = data->extended_len;
-        if (VIR_EXPAND_N(data->extended, data->extended_len, extended_by) < 0)
-            return -1;
-
-        for (i = 0; i < extended_by; i++)
-            data->extended[len + i].function = len + i + CPUX86_EXTENDED;
-    }
-
-    return 0;
 }
 
 
@@ -303,25 +264,18 @@ int
 virCPUx86DataAddCPUID(virCPUx86Data *data,
                       const virCPUx86CPUID *cpuid)
 {
-    unsigned int basic_by = 0;
-    unsigned int extended_by = 0;
-    virCPUx86CPUID **cpuids;
-    unsigned int pos;
+    virCPUx86CPUID *existing;
 
-    if (cpuid->function < CPUX86_EXTENDED) {
-        pos = cpuid->function;
-        basic_by = pos + 1 - data->basic_len;
-        cpuids = &data->basic;
+    if ((existing = x86DataCpuid(data, cpuid->function))) {
+        x86cpuidSetBits(existing, cpuid);
     } else {
-        pos = cpuid->function - CPUX86_EXTENDED;
-        extended_by = pos + 1 - data->extended_len;
-        cpuids = &data->extended;
+        if (VIR_APPEND_ELEMENT_COPY(data->data, data->len,
+                                    *((virCPUx86CPUID *)cpuid)) < 0)
+            return -1;
+
+        qsort(data->data, data->len,
+              sizeof(virCPUx86CPUID), virCPUx86CPUIDSorter);
     }
-
-    if (x86DataExpand(data, basic_by, extended_by) < 0)
-        return -1;
-
-    x86cpuidSetBits((*cpuids) + pos, cpuid);
 
     return 0;
 }
@@ -331,21 +285,19 @@ static int
 x86DataAdd(virCPUx86Data *data1,
            const virCPUx86Data *data2)
 {
-    size_t i;
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data2);
+    virCPUx86CPUID *cpuid1;
+    virCPUx86CPUID *cpuid2;
 
-    if (x86DataExpand(data1,
-                      data2->basic_len - data1->basic_len,
-                      data2->extended_len - data1->extended_len) < 0)
-        return -1;
+    while ((cpuid2 = x86DataCpuidNext(&iter))) {
+        cpuid1 = x86DataCpuid(data1, cpuid2->function);
 
-    for (i = 0; i < data2->basic_len; i++) {
-        x86cpuidSetBits(data1->basic + i,
-                        data2->basic + i);
-    }
-
-    for (i = 0; i < data2->extended_len; i++) {
-        x86cpuidSetBits(data1->extended + i,
-                        data2->extended + i);
+        if (cpuid1) {
+            x86cpuidSetBits(cpuid1, cpuid2);
+        } else {
+            if (virCPUx86DataAddCPUID(data1, cpuid2) < 0)
+                return -1;
+        }
     }
 
     return 0;
@@ -356,19 +308,13 @@ static void
 x86DataSubtract(virCPUx86Data *data1,
                 const virCPUx86Data *data2)
 {
-    size_t i;
-    unsigned int len;
+    struct virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
+    virCPUx86CPUID *cpuid1;
+    virCPUx86CPUID *cpuid2;
 
-    len = MIN(data1->basic_len, data2->basic_len);
-    for (i = 0; i < len; i++) {
-        x86cpuidClearBits(data1->basic + i,
-                          data2->basic + i);
-    }
-
-    len = MIN(data1->extended_len, data2->extended_len);
-    for (i = 0; i < len; i++) {
-        x86cpuidClearBits(data1->extended + i,
-                          data2->extended + i);
+    while ((cpuid1 = x86DataCpuidNext(&iter))) {
+        cpuid2 = x86DataCpuid(data2, cpuid1->function);
+        x86cpuidClearBits(cpuid1, cpuid2);
     }
 }
 
@@ -1763,25 +1709,23 @@ cpuidCall(virCPUx86CPUID *cpuid)
 
 
 static int
-cpuidSet(uint32_t base, virCPUx86CPUID **set)
+cpuidSet(uint32_t base, virCPUx86Data *data)
 {
     uint32_t max;
     uint32_t i;
     virCPUx86CPUID cpuid = { base, 0, 0, 0, 0 };
 
     cpuidCall(&cpuid);
-    max = cpuid.eax - base;
+    max = cpuid.eax;
 
-    if (VIR_ALLOC_N(*set, max + 1) < 0)
-        return -1;
-
-    for (i = 0; i <= max; i++) {
-        cpuid.function = base | i;
+    for (i = base; i <= max; i++) {
+        cpuid.function = i;
         cpuidCall(&cpuid);
-        (*set)[i] = cpuid;
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
     }
 
-    return max + 1;
+    return 0;
 }
 
 
@@ -1790,18 +1734,15 @@ x86NodeData(virArch arch)
 {
     virCPUDataPtr cpuData = NULL;
     virCPUx86Data *data;
-    int ret;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if ((ret = cpuidSet(CPUX86_BASIC, &data->basic)) < 0)
+    if (cpuidSet(CPUX86_BASIC, data) < 0)
         goto error;
-    data->basic_len = ret;
 
-    if ((ret = cpuidSet(CPUX86_EXTENDED, &data->extended)) < 0)
+    if (cpuidSet(CPUX86_EXTENDED, data) < 0)
         goto error;
-    data->extended_len = ret;
 
     if (!(cpuData = virCPUx86MakeData(arch, &data)))
         goto error;
