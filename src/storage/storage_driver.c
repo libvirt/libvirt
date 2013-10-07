@@ -1538,7 +1538,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
 
     if (virStorageVolDefFindByName(pool, voldef->name)) {
-        virReportError(VIR_ERR_STORAGE_VOL_EXISTS,
+        virReportError(VIR_ERR_STORAGE_VOL_EXIST,
                        _("'%s'"), voldef->name);
         goto cleanup;
     }

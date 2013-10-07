@@ -296,7 +296,7 @@ typedef enum {
     VIR_ERR_ACCESS_DENIED = 88,         /* operation on the object/resource
                                            was denied */
     VIR_ERR_DBUS_SERVICE = 89,          /* error from a dbus service */
-    VIR_ERR_STORAGE_VOL_EXISTS = 90,         /* the storage vol already exists */
+    VIR_ERR_STORAGE_VOL_EXIST = 90,     /* the storage vol already exists */
 } virErrorNumber;
 
 /**
