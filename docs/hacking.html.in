@@ -45,7 +45,7 @@
                  --to=libvir-list@redhat.com master
 </pre>
         <p>(Note that the "git send-email" subcommand may not be in
-        the main git package and using it may require installion of a
+        the main git package and using it may require installation of a
         separate package, for example the "git-email" package in
         Fedora.)  For a single patch you can omit
         <code>--cover-letter</code>, but a series of two or more

@@ -45,7 +45,7 @@ post your patches:
                  --to=libvir-list@redhat.com master
 
 (Note that the "git send-email" subcommand may not be in the main git package
-and using it may require installion of a separate package, for example the
+and using it may require installation of a separate package, for example the
 "git-email" package in Fedora.) For a single patch you can omit
 "--cover-letter", but a series of two or more patches needs a cover letter. If
 you get tired of typing "--to=libvir-list@redhat.com" designation you can set
