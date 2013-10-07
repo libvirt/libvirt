@@ -855,16 +855,13 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
 
     for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
         virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
-        const char *srcpath = NULL;
 
         VIR_DEBUG("Processing %s -> %s",
                   mnt->src, mnt->dst);
 
-        srcpath = mnt->src;
-
         /* Skip if mount doesn't exist in source */
-        if ((srcpath[0] == '/') &&
-            (access(srcpath, R_OK) < 0))
+        if ((mnt->src[0] == '/') &&
+            (access(mnt->src, R_OK) < 0))
             continue;
 
 #if WITH_SELINUX
@@ -884,11 +881,11 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
         }
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x",
-                  srcpath, mnt->dst, mnt->type, mnt->mflags);
-        if (mount(srcpath, mnt->dst, mnt->type, mnt->mflags, NULL) < 0) {
+                  mnt->src, mnt->dst, mnt->type, mnt->mflags);
+        if (mount(mnt->src, mnt->dst, mnt->type, mnt->mflags, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s type %s flags=%x"),
-                                 srcpath, mnt->dst, NULLSTR(mnt->type),
+                                 mnt->src, mnt->dst, NULLSTR(mnt->type),
                                  mnt->mflags);
             goto cleanup;
         }
