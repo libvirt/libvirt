@@ -55,7 +55,7 @@ const VIR_NET_MESSAGE_INITIAL = 65536;
  * payload size. We need to remember this for compat with
  * old clients.
  */
-const VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX = 262144;
+const VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX = 262120;
 
 /* Maximum total message size (serialised). */
 const VIR_NET_MESSAGE_MAX = 16777216;
