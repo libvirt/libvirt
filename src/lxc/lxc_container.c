@@ -755,15 +755,16 @@ typedef struct {
     const char *dst;
     const char *type;
     int mflags;
+    bool skipUserNS;
 } virLXCBasicMountInfo;
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
-    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY },
-    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
-    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
+    { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false },
+    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false },
+    { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false },
+    { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true },
 #if WITH_SELINUX
-    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY },
+    { SELINUX_MOUNT, SELINUX_MOUNT, "selinuxfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true },
 #endif
 };
 
@@ -857,12 +858,14 @@ static int lxcContainerMountBasicFS(bool userns_enabled)
 
 #if WITH_SELINUX
         if (STREQ(mnt->src, SELINUX_MOUNT) &&
-            (!is_selinux_enabled() || userns_enabled))
+            !is_selinux_enabled())
             continue;
 #endif
 
-        if (STREQ(mnt->src, "securityfs") && userns_enabled)
+        if (mnt->skipUserNS && userns_enabled) {
+            VIR_DEBUG("Skipping due to user ns enablement");
             continue;
+        }
 
         if (virFileMakePath(mnt->dst) < 0) {
             virReportSystemError(errno,
