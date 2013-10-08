@@ -349,7 +349,7 @@ cleanup:
 static int
 qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                           virNetDevVPortProfilePtr virtPort,
-                                          const virMacAddrPtr macaddr,
+                                          const virMacAddr *macaddr,
                                           const unsigned char *uuid,
                                           bool associate)
 {

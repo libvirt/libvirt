@@ -6264,11 +6264,11 @@ cleanup:
 }
 
 
-static char *qemuBuildTPMBackendStr(const virDomainDefPtr def,
+static char *qemuBuildTPMBackendStr(const virDomainDef *def,
                                     virQEMUCapsPtr qemuCaps,
                                     const char *emulator)
 {
-    const virDomainTPMDefPtr tpm = def->tpm;
+    const virDomainTPMDef *tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type = virDomainTPMBackendTypeToString(tpm->type);
     char *cancel_path;
@@ -6316,12 +6316,12 @@ static char *qemuBuildTPMBackendStr(const virDomainDefPtr def,
 }
 
 
-static char *qemuBuildTPMDevStr(const virDomainDefPtr def,
+static char *qemuBuildTPMDevStr(const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps,
                                 const char *emulator)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const virDomainTPMDefPtr tpm = def->tpm;
+    const virDomainTPMDef *tpm = def->tpm;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_TIS)) {
@@ -6532,8 +6532,8 @@ error:
 
 
 static int
-qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
-                   const virDomainDefPtr def,
+qemuBuildCpuArgStr(virQEMUDriverPtr driver,
+                   const virDomainDef *def,
                    const char *emulator,
                    virQEMUCapsPtr qemuCaps,
                    virArch hostarch,
@@ -6763,7 +6763,7 @@ cleanup:
 
 static int
 qemuBuildObsoleteAccelArg(virCommandPtr cmd,
-                          const virDomainDefPtr def,
+                          const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
     bool disableKQEMU = false;
@@ -6830,7 +6830,7 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
 
 static int
 qemuBuildMachineArgStr(virCommandPtr cmd,
-                       const virDomainDefPtr def,
+                       const virDomainDef *def,
                        virQEMUCapsPtr qemuCaps)
 {
     bool obsoleteAccel = false;
@@ -6917,7 +6917,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
 }
 
 static char *
-qemuBuildSmpArgStr(const virDomainDefPtr def,
+qemuBuildSmpArgStr(const virDomainDef *def,
                    virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -6958,7 +6958,7 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
 }
 
 static int
-qemuBuildNumaArgStr(const virDomainDefPtr def, virCommandPtr cmd)
+qemuBuildNumaArgStr(const virDomainDef *def, virCommandPtr cmd)
 {
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;

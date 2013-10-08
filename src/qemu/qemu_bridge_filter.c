@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2007-2009, 2013 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
- * Copyright (C) 2007-2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -65,8 +65,8 @@ networkDisableAllFrames(virQEMUDriverPtr driver) {
 int
 networkAllowMacOnPort(virQEMUDriverPtr driver,
                       const char * ifname,
-                      const virMacAddrPtr mac) {
-
+                      const virMacAddr *mac)
+{
     int err;
 
     /* allow this combination of macaddr and ifname */
@@ -86,8 +86,8 @@ networkAllowMacOnPort(virQEMUDriverPtr driver,
 int
 networkDisallowMacOnPort(virQEMUDriverPtr driver,
                          const char * ifname,
-                         const virMacAddrPtr mac) {
-
+                         const virMacAddr *mac)
+{
     int err;
 
     /* disallow this combination of macaddr and ifname */

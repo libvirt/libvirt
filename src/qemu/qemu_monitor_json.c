@@ -5237,7 +5237,7 @@ int qemuMonitorJSONGetTPMTypes(qemuMonitorPtr mon,
 
 static virJSONValuePtr
 qemuMonitorJSONAttachCharDevCommand(const char *chrID,
-                                    const virDomainChrSourceDefPtr chr)
+                                    const virDomainChrSourceDef *chr)
 {
     virJSONValuePtr ret;
     virJSONValuePtr backend;

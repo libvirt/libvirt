@@ -5323,7 +5323,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            int *fd,
-                           const virQEMUSaveHeaderPtr header,
+                           const virQEMUSaveHeader *header,
                            const char *path,
                            bool start_paused)
 {

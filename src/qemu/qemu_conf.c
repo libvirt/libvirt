@@ -837,7 +837,7 @@ qemuSharedDeviceEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 }
 
 static qemuSharedDeviceEntryPtr
-qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntryPtr entry)
+qemuSharedDeviceEntryCopy(const qemuSharedDeviceEntry *entry)
 {
     qemuSharedDeviceEntryPtr ret = NULL;
     size_t i;
