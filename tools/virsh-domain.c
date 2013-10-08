@@ -8550,6 +8550,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_DATA,
      .help = N_("graphics URI to be used for seamless graphics migration")
     },
+    {.name = "listen-address",
+     .type = VSH_OT_DATA,
+     .help = N_("listen address that destination should bind to for incoming migration")
+    },
     {.name = "dname",
      .type = VSH_OT_DATA,
      .help = N_("rename to new name during migration (if supported)")
@@ -8604,6 +8608,13 @@ doMigrate(void *opaque)
     if (opt &&
         virTypedParamsAddString(&params, &nparams, &maxparams,
                                 VIR_MIGRATE_PARAM_GRAPHICS_URI, opt) < 0)
+        goto save_error;
+
+    if (vshCommandOptStringReq(ctl, cmd, "listen-address", &opt) < 0)
+        goto out;
+    if (opt &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_LISTEN_ADDRESS, opt) < 0)
         goto save_error;
 
     if (vshCommandOptStringReq(ctl, cmd, "dname", &opt) < 0)
