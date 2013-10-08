@@ -10036,7 +10036,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     &def, origname, flags);
+                                     &def, origname, NULL, flags);
 
 cleanup:
     VIR_FREE(origname);
@@ -10087,7 +10087,8 @@ qemuDomainMigratePerform(virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               NULL, dconnuri, uri, NULL, cookie, cookielen,
+                               NULL, dconnuri, uri, NULL, NULL,
+                               cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
                                flags, dname, resource, false);
 
@@ -10241,7 +10242,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, origname, flags);
+                                     &def, origname, NULL, flags);
 
 cleanup:
     VIR_FREE(origname);
@@ -10265,6 +10266,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
+    const char *listenAddress = NULL;
     char *origname = NULL;
     int ret = -1;
 
@@ -10280,7 +10282,10 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                 &dname) < 0 ||
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_URI,
-                                &uri_in) < 0)
+                                &uri_in) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
+                                &listenAddress) < 0)
         return -1;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -10303,7 +10308,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, origname, flags);
+                                     &def, origname, listenAddress, flags);
 
 cleanup:
     VIR_FREE(origname);
@@ -10435,7 +10440,8 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     }
 
     return qemuMigrationPerform(driver, dom->conn, vm, xmlin,
-                                dconnuri, uri, NULL, cookiein, cookieinlen,
+                                dconnuri, uri, NULL, NULL,
+                                cookiein, cookieinlen,
                                 cookieout, cookieoutlen,
                                 flags, dname, resource, true);
 }
@@ -10457,6 +10463,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     const char *dname = NULL;
     const char *uri = NULL;
     const char *graphicsuri = NULL;
+    const char *listenAddress = NULL;
     unsigned long long bandwidth = 0;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -10477,7 +10484,10 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                 &bandwidth) < 0 ||
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_GRAPHICS_URI,
-                                &graphicsuri) < 0)
+                                &graphicsuri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
+                                &listenAddress) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -10489,7 +10499,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     }
 
     return qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
-                                dconnuri, uri, graphicsuri,
+                                dconnuri, uri, graphicsuri, listenAddress,
                                 cookiein, cookieinlen, cookieout, cookieoutlen,
                                 flags, dname, bandwidth, true);
 }

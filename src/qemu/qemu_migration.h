@@ -43,11 +43,12 @@
 
 /* All supported migration parameters and their types. */
 # define QEMU_MIGRATION_PARAMETERS                              \
-    VIR_MIGRATE_PARAM_URI,          VIR_TYPED_PARAM_STRING,     \
-    VIR_MIGRATE_PARAM_DEST_NAME,    VIR_TYPED_PARAM_STRING,     \
-    VIR_MIGRATE_PARAM_DEST_XML,     VIR_TYPED_PARAM_STRING,     \
-    VIR_MIGRATE_PARAM_BANDWIDTH,    VIR_TYPED_PARAM_ULLONG,     \
-    VIR_MIGRATE_PARAM_GRAPHICS_URI, VIR_TYPED_PARAM_STRING,     \
+    VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_BANDWIDTH,        VIR_TYPED_PARAM_ULLONG, \
+    VIR_MIGRATE_PARAM_GRAPHICS_URI,     VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_LISTEN_ADDRESS,   VIR_TYPED_PARAM_STRING, \
     NULL
 
 
@@ -124,6 +125,7 @@ int qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                char **uri_out,
                                virDomainDefPtr *def,
                                const char *origname,
+                               const char *listenAddress,
                                unsigned long flags);
 
 int qemuMigrationPerform(virQEMUDriverPtr driver,
@@ -133,6 +135,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          const char *dconnuri,
                          const char *uri,
                          const char *graphicsuri,
+                         const char *listenAddress,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,
