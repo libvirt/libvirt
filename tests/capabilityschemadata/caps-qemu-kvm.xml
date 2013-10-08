@@ -113,6 +113,17 @@
 
   <guest>
     <os_type>hvm</os_type>
+    <arch name='aarch64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-aarch64</emulator>
+      <machine>machvirt</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
     <arch name='microblaze'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/qemu-system-microblaze</emulator>

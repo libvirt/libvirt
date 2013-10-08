@@ -298,6 +298,7 @@
 
   <define name='archnames'>
     <choice>
+      <value>aarch64</value>
       <value>alpha</value>
       <value>armv7l</value>
       <value>cris</value>
