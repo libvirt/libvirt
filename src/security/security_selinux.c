@@ -1198,7 +1198,7 @@ virSecuritySELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
     int ret;
     virSecurityDeviceLabelDefPtr disk_seclabel;
     virSecuritySELinuxCallbackDataPtr cbdata = opaque;
-    const virSecurityLabelDefPtr secdef = cbdata->secdef;
+    virSecurityLabelDefPtr secdef = cbdata->secdef;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(cbdata->manager);
 
     disk_seclabel = virDomainDiskDefGetSecurityLabelDef(disk,

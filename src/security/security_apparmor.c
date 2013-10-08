@@ -267,7 +267,7 @@ reload_profile(virSecurityManagerPtr mgr,
 {
     int rc = -1;
     char *profile_name = NULL;
-    const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
+    virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
                                                 def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -304,7 +304,7 @@ AppArmorSetSecurityHostdevLabelHelper(const char *file, void *opaque)
     virDomainDefPtr def = ptr->def;
 
     if (reload_profile(ptr->mgr, def, file, true) < 0) {
-        const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
+        virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
                                                 def, SECURITY_APPARMOR_NAME);
         if (!secdef) {
             virReportOOMError();
@@ -528,7 +528,7 @@ static int
 AppArmorReleaseSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                              virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
+    virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
                                                         SECURITY_APPARMOR_NAME);
     if (!secdef)
         return -1;
@@ -547,7 +547,7 @@ AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 int migrated ATTRIBUTE_UNUSED)
 {
     int rc = 0;
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -572,7 +572,7 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     int rc = -1;
     char *profile_name = NULL;
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -616,7 +616,7 @@ AppArmorSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     int rc = -1;
     char *profile_name = NULL;
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -684,7 +684,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
 {
     int rc = -1;
     char *profile_name = NULL;
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -731,7 +731,7 @@ static int
 AppArmorSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                        virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -765,7 +765,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 {
     struct SDPDOP *ptr;
     int ret = -1;
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -862,7 +862,7 @@ AppArmorRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                     const char *vroot ATTRIBUTE_UNUSED)
 
 {
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
@@ -900,7 +900,7 @@ AppArmorSetFDLabel(virSecurityManagerPtr mgr,
     char *proc = NULL;
     char *fd_path = NULL;
 
-    const virSecurityLabelDefPtr secdef =
+    virSecurityLabelDefPtr secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
 
     if (!secdef)
