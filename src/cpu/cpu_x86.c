@@ -70,6 +70,10 @@ struct x86_map {
     struct x86_model *models;
 };
 
+static struct x86_map* virCPUx86Map = NULL;
+int virCPUx86MapOnceInit(void);
+VIR_ONCE_GLOBAL_INIT(virCPUx86Map);
+
 
 enum compare_result {
     SUBSET,
@@ -1119,7 +1123,7 @@ x86MapLoadCallback(enum cpuMapElement element,
 
 
 static struct x86_map *
-x86LoadMap(void)
+virCPUx86LoadMap(void)
 {
     struct x86_map *map;
 
@@ -1134,6 +1138,26 @@ x86LoadMap(void)
 error:
     x86MapFree(map);
     return NULL;
+}
+
+
+int
+virCPUx86MapOnceInit(void)
+{
+    if (!(virCPUx86Map = virCPUx86LoadMap()))
+        return -1;
+
+    return 0;
+}
+
+
+static const struct x86_map *
+virCPUx86GetMap(void)
+{
+    if (virCPUx86MapInitialize() < 0)
+        return NULL;
+
+    return virCPUx86Map;
 }
 
 
@@ -1248,7 +1272,7 @@ x86Compute(virCPUDefPtr host,
            virCPUDataPtr *guest,
            char **message)
 {
-    struct x86_map *map = NULL;
+    const struct x86_map *map = NULL;
     struct x86_model *host_model = NULL;
     struct x86_model *cpu_force = NULL;
     struct x86_model *cpu_require = NULL;
@@ -1301,7 +1325,7 @@ x86Compute(virCPUDefPtr host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    if (!(map = x86LoadMap()) ||
+    if (!(map = virCPUx86GetMap()) ||
         !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)) ||
         !(cpu_force = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORCE)) ||
         !(cpu_require = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_REQUIRE)) ||
@@ -1377,7 +1401,6 @@ x86Compute(virCPUDefPtr host,
     }
 
 cleanup:
-    x86MapFree(map);
     x86ModelFree(host_model);
     x86ModelFree(diff);
     x86ModelFree(cpu_force);
@@ -1416,7 +1439,7 @@ x86GuestData(virCPUDefPtr host,
 
 static int
 x86AddFeatures(virCPUDefPtr cpu,
-               struct x86_map *map)
+               const struct x86_map *map)
 {
     const struct x86_model *candidate;
     const struct x86_feature *feature = map->features;
@@ -1452,7 +1475,7 @@ x86Decode(virCPUDefPtr cpu,
           unsigned int flags)
 {
     int ret = -1;
-    struct x86_map *map;
+    const struct x86_map *map;
     const struct x86_model *candidate;
     virCPUDefPtr cpuCandidate;
     virCPUDefPtr cpuModel = NULL;
@@ -1460,7 +1483,7 @@ x86Decode(virCPUDefPtr cpu,
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
-    if (data == NULL || (map = x86LoadMap()) == NULL)
+    if (!data || !(map = virCPUx86GetMap()))
         return -1;
 
     candidate = map->models;
@@ -1544,7 +1567,6 @@ x86Decode(virCPUDefPtr cpu,
     ret = 0;
 
 out:
-    x86MapFree(map);
     virCPUDefFree(cpuModel);
 
     return ret;
@@ -1591,14 +1613,13 @@ x86Encode(virArch arch,
           virCPUDataPtr *forbidden,
           virCPUDataPtr *vendor)
 {
-    struct x86_map *map = NULL;
+    const struct x86_map *map = NULL;
     virCPUx86Data *data_forced = NULL;
     virCPUx86Data *data_required = NULL;
     virCPUx86Data *data_optional = NULL;
     virCPUx86Data *data_disabled = NULL;
     virCPUx86Data *data_forbidden = NULL;
     virCPUx86Data *data_vendor = NULL;
-    int ret = -1;
 
     if (forced)
         *forced = NULL;
@@ -1613,7 +1634,7 @@ x86Encode(virArch arch,
     if (vendor)
         *vendor = NULL;
 
-    if ((map = x86LoadMap()) == NULL)
+    if ((map = virCPUx86GetMap()) == NULL)
         goto error;
 
     if (forced) {
@@ -1681,12 +1702,7 @@ x86Encode(virArch arch,
         !(*vendor = virCPUx86MakeData(arch, &data_vendor)))
         goto error;
 
-    ret = 0;
-
-cleanup:
-    x86MapFree(map);
-
-    return ret;
+    return 0;
 
 error:
     virCPUx86DataFree(data_forced);
@@ -1707,7 +1723,7 @@ error:
         x86FreeCPUData(*forbidden);
     if (vendor)
         x86FreeCPUData(*vendor);
-    goto cleanup;
+    return -1;
 }
 
 
@@ -1807,7 +1823,7 @@ x86Baseline(virCPUDefPtr *cpus,
             unsigned int nmodels,
             unsigned int flags)
 {
-    struct x86_map *map = NULL;
+    const struct x86_map *map = NULL;
     struct x86_model *base_model = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
@@ -1815,7 +1831,7 @@ x86Baseline(virCPUDefPtr *cpus,
     struct x86_model *model = NULL;
     bool outputVendor = true;
 
-    if (!(map = x86LoadMap()))
+    if (!(map = virCPUx86GetMap()))
         goto error;
 
     if (!(base_model = x86ModelFromCPU(cpus[0], map, VIR_CPU_FEATURE_REQUIRE)))
@@ -1896,7 +1912,6 @@ x86Baseline(virCPUDefPtr *cpus,
 
 cleanup:
     x86ModelFree(base_model);
-    x86MapFree(map);
 
     return cpu;
 
@@ -1914,10 +1929,10 @@ x86UpdateCustom(virCPUDefPtr guest,
 {
     int ret = -1;
     size_t i;
-    struct x86_map *map;
+    const struct x86_map *map;
     struct x86_model *host_model = NULL;
 
-    if (!(map = x86LoadMap()) ||
+    if (!(map = virCPUx86GetMap()) ||
         !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)))
         goto cleanup;
 
@@ -1949,7 +1964,6 @@ x86UpdateCustom(virCPUDefPtr guest,
     ret = 0;
 
 cleanup:
-    x86MapFree(map);
     x86ModelFree(host_model);
     return ret;
 }
@@ -2019,11 +2033,11 @@ static int
 x86HasFeature(const virCPUData *data,
               const char *name)
 {
-    struct x86_map *map;
+    const struct x86_map *map;
     struct x86_feature *feature;
     int ret = -1;
 
-    if (!(map = x86LoadMap()))
+    if (!(map = virCPUx86GetMap()))
         return -1;
 
     if (!(feature = x86FeatureFind(map, name)))
@@ -2032,7 +2046,6 @@ x86HasFeature(const virCPUData *data,
     ret = x86DataIsSubset(data->data.x86, feature->data) ? 1 : 0;
 
 cleanup:
-    x86MapFree(map);
     return ret;
 }
 
