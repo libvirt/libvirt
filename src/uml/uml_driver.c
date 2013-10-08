@@ -419,9 +419,9 @@ cleanup:
 
 static int
 umlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                             virDomainDefPtr def ATTRIBUTE_UNUSED,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED)
+                            const virDomainDef *def ATTRIBUTE_UNUSED,
+                            virCapsPtr caps ATTRIBUTE_UNUSED,
+                            void *opaque ATTRIBUTE_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&

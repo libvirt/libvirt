@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_domain.h: LXC domain helpers
@@ -98,7 +98,7 @@ virLXCDomainDefPostParse(virDomainDefPtr def,
 
 static int
 virLXCDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                               virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               const virDomainDef *def ATTRIBUTE_UNUSED,
                                virCapsPtr caps ATTRIBUTE_UNUSED,
                                void *opaque ATTRIBUTE_UNUSED)
 {

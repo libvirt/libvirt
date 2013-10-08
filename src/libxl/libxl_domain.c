@@ -383,7 +383,7 @@ virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks = {
 
 static int
 libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                              virDomainDefPtr def,
+                              const virDomainDef *def,
                               virCapsPtr caps ATTRIBUTE_UNUSED,
                               void *opaque ATTRIBUTE_UNUSED)
 {

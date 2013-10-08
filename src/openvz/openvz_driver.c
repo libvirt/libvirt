@@ -102,7 +102,7 @@ openvzDomainDefPostParse(virDomainDefPtr def,
 
 static int
 openvzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                               virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               const virDomainDef *def ATTRIBUTE_UNUSED,
                                virCapsPtr caps ATTRIBUTE_UNUSED,
                                void *opaque ATTRIBUTE_UNUSED)
 {

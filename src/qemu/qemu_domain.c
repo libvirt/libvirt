@@ -787,7 +787,8 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 }
 
 static const char *
-qemuDomainDefaultNetModel(virDomainDefPtr def) {
+qemuDomainDefaultNetModel(const virDomainDef *def)
+{
     if (def->os.arch == VIR_ARCH_S390 ||
         def->os.arch == VIR_ARCH_S390X)
         return "virtio";
@@ -806,7 +807,7 @@ qemuDomainDefaultNetModel(virDomainDefPtr def) {
 
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                             virDomainDefPtr def,
+                             const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
                              void *opaque)
 {
