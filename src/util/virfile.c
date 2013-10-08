@@ -838,6 +838,8 @@ int virFileNBDDeviceAssociate(const char *file,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Associated NBD device %s with file %s and format %s",
+              nbddev, file, fmtstr);
     *dev = nbddev;
     nbddev = NULL;
     ret = 0;
