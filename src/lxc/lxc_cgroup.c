@@ -347,6 +347,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             goto cleanup;
     }
 
+    VIR_DEBUG("Allowing any disk block devs");
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK)
             continue;
@@ -360,6 +361,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             goto cleanup;
     }
 
+    VIR_DEBUG("Allowing any filesystem block devs");
     for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_BLOCK)
             continue;
@@ -372,6 +374,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             goto cleanup;
     }
 
+    VIR_DEBUG("Allowing any hostdev block devs");
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         virUSBDevicePtr usb;
@@ -422,6 +425,8 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
     if (virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
                                   VIR_CGROUP_DEVICE_RWM) < 0)
         goto cleanup;
+
+    VIR_DEBUG("Device whitelist complete");
 
     ret = 0;
 cleanup:
