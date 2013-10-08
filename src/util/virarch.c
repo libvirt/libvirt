@@ -38,6 +38,7 @@ static const struct virArchData {
     { "armv6l",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "armv7l",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "armv7b",       32, VIR_ARCH_BIG_ENDIAN },
+    { "aarch64",      64, VIR_ARCH_LITTLE_ENDIAN },
 
     { "cris",         32, VIR_ARCH_LITTLE_ENDIAN },
     { "i686",         32, VIR_ARCH_LITTLE_ENDIAN },
