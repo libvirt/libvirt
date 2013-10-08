@@ -244,7 +244,7 @@ no_memory:
     return NULL;
 }
 
-#elif defined(__arm__)
+#elif defined(__arm__) || defined(__aarch64__)
 static int
 virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
 {
@@ -505,6 +505,7 @@ no_memory:
       defined(__i386__) ||   \
       defined(__amd64__) || \
       defined(__arm__) || \
+      defined(__aarch64__) || \
       defined(__powerpc__))
 virSysinfoDefPtr
 virSysinfoRead(void) {

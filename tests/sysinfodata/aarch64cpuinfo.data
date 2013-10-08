@@ -1,0 +1,10 @@
+Processor	: AArch64 Processor rev 0 (aarch64)
+BogoMIPS	: 100.00
+
+Features	: fp asimd
+CPU architecture: AArch64
+CPU variant	: 0x0
+CPU part	: 0x000
+CPU revision	: 0
+
+Hardware	: Generic AArch64
