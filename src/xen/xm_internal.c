@@ -860,8 +860,8 @@ xenXMDomainSearchForUUID(const void *payload,
                          const void *name ATTRIBUTE_UNUSED,
                          const void *data)
 {
-    const unsigned char *wantuuid = (const unsigned char *)data;
-    const xenXMConfCachePtr entry = (const xenXMConfCachePtr)payload;
+    const unsigned char *wantuuid = data;
+    const xenXMConfCache *entry = payload;
 
     if (!memcmp(entry->def->uuid, wantuuid, VIR_UUID_BUFLEN))
         return 1;

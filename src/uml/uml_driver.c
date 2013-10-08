@@ -141,7 +141,7 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
 
 
 static int umlMonitorCommand(const struct uml_driver *driver,
-                             const virDomainObjPtr vm,
+                             const virDomainObj *vm,
                              const char *cmd,
                              char **reply);
 
@@ -836,8 +836,9 @@ reopen:
 }
 
 static int umlMonitorAddress(const struct uml_driver *driver,
-                             virDomainObjPtr vm,
-                             struct sockaddr_un *addr) {
+                             const virDomainObj *vm,
+                             struct sockaddr_un *addr)
+{
     char *sockname;
     int retval = 0;
 
@@ -918,7 +919,7 @@ struct monitor_response {
 
 
 static int umlMonitorCommand(const struct uml_driver *driver,
-                             const virDomainObjPtr vm,
+                             const virDomainObj *vm,
                              const char *cmd,
                              char **reply)
 {

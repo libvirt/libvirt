@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_process.c: LXC process lifecycle management
@@ -246,7 +246,7 @@ char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
     char *ret = NULL;
     char *parentVeth;
     char *containerVeth = NULL;
-    const virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
+    virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
 
     VIR_DEBUG("calling vethCreate()");
     parentVeth = net->ifname;
