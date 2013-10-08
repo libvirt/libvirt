@@ -255,6 +255,8 @@ static void qemuMonitorDispose(void *obj)
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm, mon->callbackOpaque);
+    virObjectUnref(mon->vm);
+
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
     virJSONValueFree(mon->options);
@@ -781,7 +783,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     }
     mon->fd = fd;
     mon->hasSendFD = hasSendFD;
-    mon->vm = vm;
+    mon->vm = virObjectRef(vm);
     mon->json = json;
     if (json)
         mon->waitGreeting = true;

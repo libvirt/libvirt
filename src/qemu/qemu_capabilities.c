@@ -2587,7 +2587,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     char *monpath = NULL;
     char *pidfile = NULL;
     pid_t pid = 0;
-    virDomainObj vm;
+    virDomainObjPtr vm = NULL;
+    virDomainXMLOptionPtr xmlopt = NULL;
 
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
      * domain called "capabilities"
@@ -2650,10 +2651,13 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
-    memset(&vm, 0, sizeof(vm));
-    vm.pid = pid;
+    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) ||
+        !(vm = virDomainObjNew(xmlopt)))
+        goto cleanup;
 
-    if (!(mon = qemuMonitorOpen(&vm, &config, true, &callbacks, NULL))) {
+    vm->pid = pid;
+
+    if (!(mon = qemuMonitorOpen(vm, &config, true, &callbacks, NULL))) {
         ret = 0;
         goto cleanup;
     }
@@ -2673,6 +2677,8 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(monarg);
     VIR_FREE(monpath);
+    virObjectUnref(vm);
+    virObjectUnref(xmlopt);
 
     if (pid != 0) {
         char ebuf[1024];
