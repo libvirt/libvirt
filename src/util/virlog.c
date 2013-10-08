@@ -547,6 +547,9 @@ virLogDefineFilter(const char *match,
 
     virCheckFlags(VIR_LOG_STACK_TRACE, -1);
 
+    if (virLogInitialize() < 0)
+        return -1;
+
     if ((match == NULL) || (priority < VIR_LOG_DEBUG) ||
         (priority > VIR_LOG_ERROR))
         return -1;
@@ -661,6 +664,9 @@ virLogDefineOutput(virLogOutputFunc f,
     char *ndup = NULL;
 
     virCheckFlags(0, -1);
+
+    if (virLogInitialize() < 0)
+        return -1;
 
     if (f == NULL)
         return -1;
