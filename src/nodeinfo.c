@@ -205,7 +205,8 @@ virNodeParseSocket(const char *dir, unsigned int cpu)
 # if defined(__powerpc__) || \
     defined(__powerpc64__) || \
     defined(__s390__) || \
-    defined(__s390x__)
+    defined(__s390x__) || \
+    defined(__aarch64__)
     /* ppc and s390(x) has -1 */
     if (ret < 0)
         ret = 0;
@@ -441,7 +442,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
              * and parsed in next iteration, because it is not in expected
              * format and thus lead to error. */
         }
-# elif defined(__arm__)
+# elif defined(__arm__) || defined(__aarch64__)
         char *buf = line;
         if (STRPREFIX(buf, "BogoMIPS")) {
             char *p;
