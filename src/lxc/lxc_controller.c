@@ -2257,7 +2257,9 @@ int main(int argc, char *argv[])
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
+        textdomain(PACKAGE) == NULL ||
+        virThreadInitialize() < 0 ||
+        virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
