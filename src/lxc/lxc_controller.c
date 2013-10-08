@@ -363,6 +363,8 @@ static int virLXCControllerSetupLoopDeviceFS(virDomainFSDefPtr fs)
     if ((lofd = virFileLoopDeviceAssociate(fs->src, &loname)) < 0)
         return -1;
 
+    VIR_DEBUG("Changing fs %s to use type=block for dev %s",
+              fs->src, loname);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
@@ -383,6 +385,9 @@ static int virLXCControllerSetupLoopDeviceDisk(virDomainDiskDefPtr disk)
 
     if ((lofd = virFileLoopDeviceAssociate(disk->src, &loname)) < 0)
         return -1;
+
+    VIR_DEBUG("Changing disk %s to use type=block for dev %s",
+              disk->src, loname);
 
     /*
      * We now change it into a block device type, so that
@@ -413,6 +418,8 @@ static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
                                   &dev) < 0)
         return -1;
 
+    VIR_DEBUG("Changing fs %s to use type=block for dev %s",
+              fs->src, dev);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
@@ -441,6 +448,8 @@ static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
                                   &dev) < 0)
         return -1;
 
+    VIR_DEBUG("Changing disk %s to use type=block for dev %s",
+              disk->src, dev);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
