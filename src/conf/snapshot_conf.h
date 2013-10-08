@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.h: domain snapshot XML processing
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -119,7 +119,7 @@ int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
                                 int default_snapshot,
                                 bool require_match);
 virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   const virDomainSnapshotDefPtr def);
+                                                   virDomainSnapshotDefPtr def);
 
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      virDomainSnapshotObjPtr from,
@@ -128,7 +128,7 @@ int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
                                 virDomainSnapshotObjPtr from,
                                 unsigned int flags);
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+virDomainSnapshotObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);

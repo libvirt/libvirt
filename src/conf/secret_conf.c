@@ -1,7 +1,7 @@
 /*
  * secret_conf.c: internal <secret> XML handling
  *
- * Copyright (C) 2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2009, 2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -243,7 +243,7 @@ virSecretDefParseFile(const char *filename)
 
 static int
 virSecretDefFormatUsage(virBufferPtr buf,
-                        const virSecretDefPtr def)
+                        const virSecretDef *def)
 {
     const char *type;
 
@@ -291,10 +291,10 @@ virSecretDefFormatUsage(virBufferPtr buf,
 }
 
 char *
-virSecretDefFormat(const virSecretDefPtr def)
+virSecretDefFormat(const virSecretDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    unsigned char *uuid;
+    const unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virBufferAsprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",

@@ -42,7 +42,7 @@ static virInterfaceDefPtr
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType);
 static int
 virInterfaceDefDevFormat(virBufferPtr buf,
-                         const virInterfaceDefPtr def, int level);
+                         const virInterfaceDef *def, int level);
 
 static
 void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
@@ -858,7 +858,8 @@ virInterfaceDefPtr virInterfaceDefParseFile(const char *filename)
 
 static int
 virInterfaceBridgeDefFormat(virBufferPtr buf,
-                            const virInterfaceDefPtr def, int level) {
+                            const virInterfaceDef *def, int level)
+{
     size_t i;
     int ret = 0;
 
@@ -883,7 +884,8 @@ virInterfaceBridgeDefFormat(virBufferPtr buf,
 
 static int
 virInterfaceBondDefFormat(virBufferPtr buf,
-                          const virInterfaceDefPtr def, int level) {
+                          const virInterfaceDef *def, int level)
+{
     size_t i;
     int ret = 0;
 
@@ -944,7 +946,8 @@ virInterfaceBondDefFormat(virBufferPtr buf,
 
 static int
 virInterfaceVlanDefFormat(virBufferPtr buf,
-                          const virInterfaceDefPtr def, int level) {
+                          const virInterfaceDef *def, int level)
+{
     if (def->data.vlan.tag == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("vlan misses the tag name"));
@@ -964,8 +967,9 @@ virInterfaceVlanDefFormat(virBufferPtr buf,
 }
 
 static int
-virInterfaceProtocolDefFormat(virBufferPtr buf, const virInterfaceDefPtr def,
-                              int level) {
+virInterfaceProtocolDefFormat(virBufferPtr buf, const virInterfaceDef *def,
+                              int level)
+{
     size_t i, j;
 
     for (i = 0; i < def->nprotos; i++) {
@@ -1038,7 +1042,8 @@ virInterfaceStartmodeDefFormat(virBufferPtr buf,
 
 static int
 virInterfaceDefDevFormat(virBufferPtr buf,
-                         const virInterfaceDefPtr def, int level) {
+                         const virInterfaceDef *def, int level)
+{
     const char *type = NULL;
 
     if (def == NULL) {
@@ -1115,7 +1120,7 @@ cleanup:
     return -1;
 }
 
-char *virInterfaceDefFormat(const virInterfaceDefPtr def)
+char *virInterfaceDefFormat(const virInterfaceDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -1150,7 +1155,7 @@ void virInterfaceObjFree(virInterfaceObjPtr iface)
 
 /* virInterfaceObjList manipulation */
 
-int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
+int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
                                 const char *mac,
                                 virInterfaceObjPtr *matches, int maxmatches)
 {
@@ -1175,8 +1180,7 @@ int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
     return matchct;
 }
 
-virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
-                                          interfaces,
+virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
                                           const char *name)
 {
     size_t i;
@@ -1242,7 +1246,7 @@ cleanup:
 }
 
 virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                                         const virInterfaceDefPtr def)
+                                         virInterfaceDefPtr def)
 {
     virInterfaceObjPtr iface;
 
@@ -1277,7 +1281,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
 }
 
 void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        const virInterfaceObjPtr iface)
+                        virInterfaceObjPtr iface)
 {
     size_t i;
 

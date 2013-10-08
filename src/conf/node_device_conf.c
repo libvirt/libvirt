@@ -72,7 +72,7 @@ virNodeDevCapsDefParseString(const char *xpath,
     return 0;
 }
 
-int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap)
+int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
     while (caps) {
@@ -85,7 +85,7 @@ int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap)
 
 
 virNodeDeviceObjPtr
-virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
+virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
                              const char *sysfs_path)
 {
     size_t i;
@@ -103,7 +103,7 @@ virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
 }
 
 
-virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
+virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
                                             const char *name)
 {
     size_t i;
@@ -166,7 +166,7 @@ void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 }
 
 virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
-                                           const virNodeDeviceDefPtr def)
+                                           virNodeDeviceDefPtr def)
 {
     virNodeDeviceObjPtr device;
 
@@ -201,7 +201,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
 }
 
 void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                            const virNodeDeviceObjPtr dev)
+                            virNodeDeviceObjPtr dev)
 {
     size_t i;
 
@@ -228,7 +228,7 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
     }
 }
 
-char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
+char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDefPtr caps;
@@ -1394,7 +1394,7 @@ cleanup:
  * Return the NPIV dev's parent device name
  */
 int
-virNodeDeviceGetParentHost(const virNodeDeviceObjListPtr devs,
+virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                            const char *dev_name,
                            const char *parent_name,
                            int *parent_host)

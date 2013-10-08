@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,6 @@
 # include "virxml.h"
 
 int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def);
-int virNetDevVlanFormat(virNetDevVlanPtr def, virBufferPtr buf);
+int virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf);
 
 #endif /* __VIR_NETDEV_VPORT_PROFILE_CONF_H__ */

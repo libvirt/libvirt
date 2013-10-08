@@ -218,22 +218,22 @@ struct _virNodeDeviceDriverState {
 };
 
 
-int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
+int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap);
 
-virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
+virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
                                             const char *name);
 virNodeDeviceObjPtr
-virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
+virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
                              const char *sysfs_path)
     ATTRIBUTE_NONNULL(2);
 
 virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
-                                           const virNodeDeviceDefPtr def);
+                                           virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                            const virNodeDeviceObjPtr dev);
+                            virNodeDeviceObjPtr dev);
 
-char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def);
+char *virNodeDeviceDefFormat(const virNodeDeviceDef *def);
 
 virNodeDeviceDefPtr virNodeDeviceDefParseString(const char *str,
                                                 int create,
@@ -250,7 +250,7 @@ int virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
                          char **wwnn,
                          char **wwpn);
 
-int virNodeDeviceGetParentHost(const virNodeDeviceObjListPtr devs,
+int virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                                const char *dev_name,
                                const char *parent_name,
                                int *parent_host);

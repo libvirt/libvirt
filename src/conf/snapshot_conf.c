@@ -1,7 +1,7 @@
 /*
  * snapshot_conf.c: domain snapshot XML processing
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -689,7 +689,7 @@ static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
 }
 
 virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   const virDomainSnapshotDefPtr def)
+                                                   virDomainSnapshotDefPtr def)
 {
     virDomainSnapshotObjPtr snap;
 
@@ -876,7 +876,7 @@ virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
 }
 
 virDomainSnapshotObjPtr
-virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
                             const char *name)
 {
     return name ? virHashLookup(snapshots->objs, name) : &snapshots->metaroot;
