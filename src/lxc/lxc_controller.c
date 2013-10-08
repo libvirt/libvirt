@@ -424,7 +424,7 @@ static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
      */
-    fs->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+    fs->type = VIR_DOMAIN_FS_TYPE_BLOCK;
     VIR_FREE(fs->src);
     fs->src = dev;
 
