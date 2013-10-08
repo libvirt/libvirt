@@ -85,6 +85,7 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     return list;
 }
 
+
 /*
  * qemuGetActivePciHostDeviceList - make a new list with a *copy* of
  *   every virPCIDevice object that is found on the activePciHostdevs
@@ -128,8 +129,10 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
     return list;
 }
 
-int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
-                                virDomainDefPtr def)
+
+int
+qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
+                            virDomainDefPtr def)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     virPCIDevicePtr dev = NULL;
@@ -187,6 +190,7 @@ cleanup:
     virObjectUnlock(driver->inactivePciHostdevs);
     return ret;
 }
+
 
 int
 qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
@@ -274,8 +278,10 @@ cleanup:
     return ret;
 }
 
+
 static int
-qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev, char **sysfs_path)
+qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
+                              char **sysfs_path)
 {
     virPCIDeviceAddress config_address;
 
@@ -286,6 +292,7 @@ qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev, char **sysfs_path)
 
     return virPCIDeviceAddressGetSysfsFile(&config_address, sysfs_path);
 }
+
 
 int
 qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
@@ -302,6 +309,7 @@ qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 
     return ret;
 }
+
 
 static int
 qemuDomainHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
@@ -330,6 +338,7 @@ cleanup:
 
     return ret;
 }
+
 
 static int
 qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
@@ -369,6 +378,7 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
 
     return ret;
 }
+
 
 int
 qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
@@ -438,6 +448,7 @@ cleanup:
     return ret;
 }
 
+
 int
 qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
                                   char *stateDir)
@@ -474,11 +485,13 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     return ret;
 }
 
-int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 const unsigned char *uuid,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs)
+
+int
+qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
+                             const char *name,
+                             const unsigned char *uuid,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs)
 {
     virPCIDeviceListPtr pcidevs;
     int last_processed_hostdev_vf = -1;
@@ -670,6 +683,7 @@ cleanup:
     return ret;
 }
 
+
 int
 qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
                              const char *name,
@@ -721,6 +735,7 @@ error:
     virObjectUnlock(driver->activeUsbHostdevs);
     return -1;
 }
+
 
 int
 qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
@@ -809,6 +824,7 @@ out:
     return 0;
 }
 
+
 static int
 qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           virDomainDefPtr def,
@@ -877,6 +893,7 @@ cleanup:
     virObjectUnref(list);
     return ret;
 }
+
 
 int
 qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
@@ -996,9 +1013,11 @@ cleanup:
     return -1;
 }
 
-int qemuPrepareHostDevices(virQEMUDriverPtr driver,
-                           virDomainDefPtr def,
-                           bool coldBoot)
+
+int
+qemuPrepareHostDevices(virQEMUDriverPtr driver,
+                       virDomainDefPtr def,
+                       bool coldBoot)
 {
     if (!def->nhostdevs)
         return 0;
@@ -1022,7 +1041,8 @@ int qemuPrepareHostDevices(virQEMUDriverPtr driver,
  * Pre-condition: driver->inactivePciHostdevs & driver->activePciHostdevs
  * are locked
  */
-void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver)
+void
+qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver)
 {
     int retries = 100;
 
@@ -1052,10 +1072,11 @@ void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver)
 }
 
 
-void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
-                                      const char *name,
-                                      virDomainHostdevDefPtr *hostdevs,
-                                      int nhostdevs)
+void
+qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
+                                 const char *name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs)
 {
     virPCIDeviceListPtr pcidevs;
     size_t i;
@@ -1140,6 +1161,7 @@ cleanup:
     virObjectUnref(cfg);
 }
 
+
 static void
 qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
                                  const char *name,
@@ -1202,6 +1224,7 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
     }
     virObjectUnlock(driver->activeUsbHostdevs);
 }
+
 
 void
 qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
@@ -1272,8 +1295,9 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
     virObjectUnlock(driver->activeScsiHostdevs);
 }
 
-void qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
-                                   virDomainDefPtr def)
+void
+qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
+                              virDomainDefPtr def)
 {
     if (!def->nhostdevs)
         return;
