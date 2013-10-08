@@ -1056,8 +1056,8 @@ nodeGetCPUCount(void)
 
     VIR_FREE(cpupath);
     return ncpu;
-#elif defined(__FreeBSD__)
-    return freebsdNodeGetCPUCount();
+#elif defined(__FreeBSD__) || defined(__APPLE__)
+    return appleFreebsdNodeGetCPUCount();
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("host cpu counting not implemented on this platform"));
