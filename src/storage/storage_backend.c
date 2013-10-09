@@ -332,19 +332,22 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 /* Avoid issues with older kernel's <linux/fs.h> namespace pollution. */
 #if HAVE_FALLOCATE - 0
     /* Try to preallocate all requested disk space, but fall back to
-     * other methods if this fails with ENOSYS or EOPNOTSUPP.
+     * other methods if this fails with ENOSYS or EOPNOTSUPP. If allocation
+     * is 0 (or less than 0), then fallocate will fail with EINVAL.
      * NOTE: do not use posix_fallocate; posix_fallocate falls back
      * to writing zeroes block by block in case fallocate isn't
      * available, and since we're going to copy data from another
      * file it doesn't make sense to write the file twice. */
-    if (fallocate(fd, 0, 0, vol->allocation) == 0) {
-        need_alloc = false;
-    } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
-        ret = -errno;
-        virReportSystemError(errno,
-                             _("cannot allocate %llu bytes in file '%s'"),
-                             vol->allocation, vol->target.path);
-        goto cleanup;
+    if (vol->allocation) {
+        if (fallocate(fd, 0, 0, vol->allocation) == 0) {
+            need_alloc = false;
+        } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("cannot allocate %llu bytes in file '%s'"),
+                                 vol->allocation, vol->target.path);
+            goto cleanup;
+        }
     }
 #endif
 
