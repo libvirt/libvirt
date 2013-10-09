@@ -710,7 +710,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                                                bool isServer)
 {
     virNetTLSContextPtr ctxt;
-    char *gnutlsdebug;
+    const char *gnutlsdebug;
     int err;
 
     if (virNetTLSContextInitialize() < 0)
@@ -719,7 +719,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     if (!(ctxt = virObjectLockableNew(virNetTLSContextClass)))
         return NULL;
 
-    if ((gnutlsdebug = getenv("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
+    if ((gnutlsdebug = virGetEnvAllowSUID("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
         int val;
         if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
             val = 10;

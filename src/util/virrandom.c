@@ -66,7 +66,7 @@ virRandomOnceInit(void)
     /* Normally we want a decent seed.  But if reproducible debugging
      * of a fixed pseudo-random sequence is ever required, uncomment
      * this block to let an environment variable force the seed.  */
-    const char *debug = getenv("VIR_DEBUG_RANDOM_SEED");
+    const char *debug = virGetEnvBlockSUID("VIR_DEBUG_RANDOM_SEED");
 
     if (debug && virStrToLong_ui(debug, NULL, 0, &seed) < 0)
         return -1;

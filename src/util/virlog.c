@@ -1637,18 +1637,18 @@ virLogParseDefaultPriority(const char *priority)
 void
 virLogSetFromEnv(void)
 {
-    char *debugEnv;
+    const char *debugEnv;
 
     if (virLogInitialize() < 0)
         return;
 
-    debugEnv = getenv("LIBVIRT_DEBUG");
+    debugEnv = virGetEnvAllowSUID("LIBVIRT_DEBUG");
     if (debugEnv && *debugEnv)
         virLogParseDefaultPriority(debugEnv);
-    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
+    debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_FILTERS");
     if (debugEnv && *debugEnv)
         virLogParseFilters(debugEnv);
-    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
+    debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv && *debugEnv)
         virLogParseOutputs(debugEnv);
 }

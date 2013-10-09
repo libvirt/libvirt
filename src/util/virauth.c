@@ -42,7 +42,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
 {
     int ret = -1;
     size_t i;
-    const char *authenv = getenv("LIBVIRT_AUTH_FILE");
+    const char *authenv = virGetEnvBlockSUID("LIBVIRT_AUTH_FILE");
     char *userdir = NULL;
 
     *path = NULL;
