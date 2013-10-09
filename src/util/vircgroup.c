@@ -2431,7 +2431,7 @@ virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 int
 virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 {
-    /* The cfs_period shoule be greater or equal than 1ms, and less or equal
+    /* The cfs_period should be greater or equal than 1ms, and less or equal
      * than 1s.
      */
     if (cfs_period < 1000 || cfs_period > 1000000) {
