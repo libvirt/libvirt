@@ -2185,7 +2185,8 @@
         <dd>
           An in-memory filesystem, using memory from the host OS.
           The source element has a single attribute <code>usage</code>
-          which gives the memory usage limit in kibibytes. Only used
+          which gives the memory usage limit in KiB, unless units
+          are specified by the <code>units</code> attribute. Only used
           by LXC driver.
           <span class="since"> (since 0.9.13)</span></dd>
         <dt><code>type='bind'</code></dt>
@@ -2251,7 +2252,8 @@
         <code>name</code> attribute must be used with
         <code>type='template'</code>, and the <code>dir</code> attribute must
         be used with <code>type='mount'</code>. The <code>usage</code> attribute
-        is used with <code>type='ram'</code> to set the memory limit in KB.
+        is used with <code>type='ram'</code> to set the memory limit in KiB,
+        unless units are specified by the <code>units</code> attribute.
       </dd>
 
       <dt><code>target</code></dt>

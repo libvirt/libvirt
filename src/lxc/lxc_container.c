@@ -1347,7 +1347,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
     char *data = NULL;
 
     if (virAsprintf(&data,
-                    "size=%lldk%s", fs->usage, sec_mount_options) < 0)
+                    "size=%lld%s", fs->usage, sec_mount_options) < 0)
         goto cleanup;
 
     if (virFileMakePath(fs->dst) < 0) {
