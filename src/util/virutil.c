@@ -2143,7 +2143,7 @@ cleanup:
  */
 const char *virGetEnvBlockSUID(const char *name)
 {
-    return secure_getenv(name);
+    return secure_getenv(name); /* exempt from syntax-check-rules */
 }
 
 
@@ -2157,7 +2157,7 @@ const char *virGetEnvBlockSUID(const char *name)
  */
 const char *virGetEnvAllowSUID(const char *name)
 {
-    return getenv(name);
+    return getenv(name); /* exempt from syntax-check-rules */
 }
 
 

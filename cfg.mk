@@ -859,6 +859,11 @@ sc_prohibit_unbounded_arrays_in_rpc:
 	halt='Arrays in XDR must have a upper limit set for <NNN>'	\
 	  $(_sc_search_regexp)
 
+sc_prohibit_getenv:
+	@prohibit='\b(secure_)?getenv *\('				\
+	exclude='exempt from syntax-check'				\
+	halt='Use virGetEnv{Allow,Block}SUID instead of getenv'		\
+	  $(_sc_search_regexp)
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
@@ -1028,3 +1033,6 @@ exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
 
 exclude_file_name_regexp--sc_prohibit_int_ijk = \
   ^(src/remote_protocol-structs|src/remote/remote_protocol.x|cfg.mk|include/)$
+
+exclude_file_name_regexp--sc_prohibit_getenv = \
+  ^tests/.*\.[ch]$$
