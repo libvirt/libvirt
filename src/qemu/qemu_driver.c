@@ -3232,6 +3232,8 @@ static int
 qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
+    int compressed = QEMU_SAVE_FORMAT_RAW;
     virDomainObjPtr vm;
     char *name = NULL;
     int ret = -1;
@@ -3257,13 +3259,29 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
+    cfg = virQEMUDriverGetConfig(driver);
+    if (cfg->saveImageFormat) {
+        compressed = qemuSaveCompressionTypeFromString(cfg->saveImageFormat);
+        if (compressed < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Invalid save image format specified "
+                             "in configuration file"));
+            goto cleanup;
+        }
+        if (!qemuCompressProgramAvailable(compressed)) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Compression program for image format "
+                             "in configuration file isn't available"));
+            goto cleanup;
+        }
+    }
+
     if (!(name = qemuDomainManagedSavePath(driver, vm)))
         goto cleanup;
 
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
 
-    if ((ret = qemuDomainSaveInternal(driver, dom, vm, name,
-                                      QEMU_SAVE_FORMAT_RAW,
+    if ((ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
                                       NULL, flags)) == 0)
         vm->hasManagedSave = true;
 
@@ -3273,6 +3291,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     VIR_FREE(name);
+    virObjectUnref(cfg);
 
     return ret;
 }
