@@ -56,6 +56,25 @@ struct x86_feature {
     struct x86_feature *next;
 };
 
+struct x86_kvm_feature {
+    const char *name;
+    const virCPUx86CPUID cpuid;
+};
+
+static const struct x86_kvm_feature x86_kvm_features[] =
+{
+    {VIR_CPU_x86_KVM_CLOCKSOURCE,  { .function = 0x40000001, .eax = 0x00000001 }},
+    {VIR_CPU_x86_KVM_NOP_IO_DELAY, { .function = 0x40000001, .eax = 0x00000002 }},
+    {VIR_CPU_x86_KVM_MMU_OP,       { .function = 0x40000001, .eax = 0x00000004 }},
+    {VIR_CPU_x86_KVM_CLOCKSOURCE2, { .function = 0x40000001, .eax = 0x00000008 }},
+    {VIR_CPU_x86_KVM_ASYNC_PF,     { .function = 0x40000001, .eax = 0x00000010 }},
+    {VIR_CPU_x86_KVM_STEAL_TIME,   { .function = 0x40000001, .eax = 0x00000020 }},
+    {VIR_CPU_x86_KVM_PV_EOI,       { .function = 0x40000001, .eax = 0x00000040 }},
+    {VIR_CPU_x86_KVM_PV_UNHALT,    { .function = 0x40000001, .eax = 0x00000080 }},
+    {VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT,
+                                   { .function = 0x40000001, .eax = 0x01000000 }},
+};
+
 struct x86_model {
     char *name;
     const struct x86_vendor *vendor;
@@ -1068,6 +1087,48 @@ x86MapLoadCallback(enum cpuMapElement element,
 }
 
 
+static int
+x86MapLoadInternalFeatures(struct x86_map *map)
+{
+    size_t i;
+    struct x86_feature *feature = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(x86_kvm_features); i++) {
+        const char *name = x86_kvm_features[i].name;
+
+        if (x86FeatureFind(map, name)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("CPU feature %s already defined"), name);
+            return -1;
+        }
+
+        if (!(feature = x86FeatureNew()))
+            goto error;
+
+        if (VIR_STRDUP(feature->name, name) < 0)
+            goto error;
+
+        if (virCPUx86DataAddCPUID(feature->data, &x86_kvm_features[i].cpuid))
+            goto error;
+
+        if (map->features == NULL) {
+            map->features = feature;
+        } else {
+            feature->next = map->features;
+            map->features = feature;
+        }
+
+        feature = NULL;
+    }
+
+    return 0;
+
+error:
+    x86FeatureFree(feature);
+    return -1;
+}
+
+
 static struct x86_map *
 virCPUx86LoadMap(void)
 {
@@ -1077,6 +1138,9 @@ virCPUx86LoadMap(void)
         return NULL;
 
     if (cpuMapLoad("x86", x86MapLoadCallback, map) < 0)
+        goto error;
+
+    if (x86MapLoadInternalFeatures(map) < 0)
         goto error;
 
     return map;
