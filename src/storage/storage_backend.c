@@ -527,11 +527,11 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     bool filecreated = false;
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
-        && (((getuid() == 0)
+        && (((geteuid() == 0)
              && (vol->target.perms.uid != (uid_t) -1)
              && (vol->target.perms.uid != 0))
             || ((vol->target.perms.gid != (gid_t) -1)
-                && (vol->target.perms.gid != getgid())))) {
+                && (vol->target.perms.gid != getegid())))) {
 
         virCommandSetUID(cmd, vol->target.perms.uid);
         virCommandSetGID(cmd, vol->target.perms.gid);

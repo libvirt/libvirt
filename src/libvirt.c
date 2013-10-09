@@ -133,7 +133,7 @@ static int virConnectAuthGainPolkit(const char *privilege) {
     int status;
     int ret = -1;
 
-    if (getuid() == 0)
+    if (geteuid() == 0)
         return 0;
 
     cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);

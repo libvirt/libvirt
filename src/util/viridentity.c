@@ -157,14 +157,14 @@ virIdentityPtr virIdentityGetSystem(void)
         virAsprintf(&processtime, "%llu", timestamp) < 0)
         goto cleanup;
 
-    if (!(username = virGetUserName(getuid())))
+    if (!(username = virGetUserName(geteuid())))
         goto cleanup;
-    if (virAsprintf(&userid, "%d", (int)getuid()) < 0)
+    if (virAsprintf(&userid, "%d", (int)geteuid()) < 0)
         goto cleanup;
 
-    if (!(groupname = virGetGroupName(getgid())))
+    if (!(groupname = virGetGroupName(getegid())))
         goto cleanup;
-    if (virAsprintf(&groupid, "%d", (int)getgid()) < 0)
+    if (virAsprintf(&groupid, "%d", (int)getegid()) < 0)
         goto cleanup;
 
 #if WITH_SELINUX

@@ -302,7 +302,7 @@ virLockManagerLockDaemonConnect(virLockManagerPtr lock,
 {
     virNetClientPtr client;
 
-    if (!(client = virLockManagerLockDaemonConnectionNew(getuid() == 0, program)))
+    if (!(client = virLockManagerLockDaemonConnectionNew(geteuid() == 0, program)))
         return NULL;
 
     if (virLockManagerLockDaemonConnectionRegister(lock,
@@ -331,7 +331,7 @@ static int virLockManagerLockDaemonSetupLockspace(const char *path)
     memset(&args, 0, sizeof(args));
     args.path = (char*)path;
 
-    if (!(client = virLockManagerLockDaemonConnectionNew(getuid() == 0, &program)))
+    if (!(client = virLockManagerLockDaemonConnectionNew(geteuid() == 0, &program)))
         return -1;
 
     if (virNetClientProgramCall(program,

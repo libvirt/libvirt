@@ -1167,7 +1167,7 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    privileged = getuid() == 0;
+    privileged = geteuid() == 0;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||

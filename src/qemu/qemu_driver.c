@@ -2786,8 +2786,8 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
     unsigned int vfoflags = 0;
     int fd = -1;
     int path_shared = virStorageFileIsSharedFS(path);
-    uid_t uid = getuid();
-    gid_t gid = getgid();
+    uid_t uid = geteuid();
+    gid_t gid = getegid();
 
     /* path might be a pre-existing block dev, in which case
      * we need to skip the create step, and also avoid unlink
@@ -2827,7 +2827,7 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                qemu user is non-root, just set a flag to
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
-            if ((fd != -EACCES && fd != -EPERM) || fallback_uid == getuid())
+            if ((fd != -EACCES && fd != -EPERM) || fallback_uid == geteuid())
                 goto error;
 
             /* On Linux we can also verify the FS-type of the directory. */

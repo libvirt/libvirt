@@ -1457,8 +1457,8 @@ virFileAccessibleAs(const char *path, int mode,
     gid_t *groups;
     int ngroups;
 
-    if (uid == getuid() &&
-        gid == getgid())
+    if (uid == geteuid() &&
+        gid == getegid())
         return access(path, mode);
 
     ngroups = virGetGroupList(uid, gid, &groups);
@@ -1750,9 +1750,9 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
-        uid = getuid();
+        uid = geteuid();
     if (gid == (gid_t) -1)
-        gid = getgid();
+        gid = getegid();
 
     /* treat absence of both flags as presence of both for simpler
      * calling. */
@@ -1760,7 +1760,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
         flags |= VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK;
 
     if ((flags & VIR_FILE_OPEN_NOFORK)
-        || (getuid() != 0)
+        || (geteuid() != 0)
         || ((uid == 0) && (gid == 0))) {
 
         if ((fd = open(path, openflags, mode)) < 0) {
@@ -1871,12 +1871,12 @@ virDirCreate(const char *path,
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
-        uid = getuid();
+        uid = geteuid();
     if (gid == (gid_t) -1)
-        gid = getgid();
+        gid = getegid();
 
     if ((!(flags & VIR_DIR_CREATE_AS_UID))
-        || (getuid() != 0)
+        || (geteuid() != 0)
         || ((uid == 0) && (gid == 0))
         || ((flags & VIR_DIR_CREATE_ALLOW_EXIST) && (stat(path, &st) >= 0))) {
         return virDirCreateNoFork(path, mode, uid, gid, flags);
