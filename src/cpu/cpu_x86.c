@@ -1240,6 +1240,7 @@ cleanup:
             ret = VIR_CPU_COMPARE_INCOMPATIBLE;                         \
         } while (0)
 
+
 static virCPUCompareResult
 x86Compute(virCPUDefPtr host,
            virCPUDefPtr cpu,
@@ -1409,6 +1410,7 @@ x86GuestData(virCPUDefPtr host,
 {
     return x86Compute(host, guest, data, message);
 }
+
 
 static int
 x86AddFeatures(virCPUDefPtr cpu,
@@ -2010,8 +2012,10 @@ x86Update(virCPUDefPtr guest,
     return -1;
 }
 
-static int x86HasFeature(const virCPUData *data,
-                         const char *name)
+
+static int
+x86HasFeature(const virCPUData *data,
+              const char *name)
 {
     struct x86_map *map;
     struct x86_feature *feature;
@@ -2029,6 +2033,7 @@ cleanup:
     x86MapFree(map);
     return ret;
 }
+
 
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
