@@ -78,6 +78,8 @@ module Libvirtd_qemu =
                  | int_entry "keepalive_interval"
                  | int_entry "keepalive_count"
 
+   let network_entry = str_entry "migration_address"
+
    (* Each entry in the config is one of the following ... *)
    let entry = vnc_entry
              | spice_entry
@@ -88,6 +90,7 @@ module Libvirtd_qemu =
              | process_entry
              | device_entry
              | rpc_entry
+             | network_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

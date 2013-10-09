@@ -10262,17 +10262,18 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                 unsigned int flags)
 {
     virQEMUDriverPtr driver = dconn->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDefPtr def = NULL;
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
-    const char *listenAddress = NULL;
+    const char *listenAddress = cfg->migrationAddress;
     char *origname = NULL;
     int ret = -1;
 
-    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+    virCheckFlagsGoto(QEMU_MIGRATION_FLAGS, cleanup);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
-        return -1;
+        goto cleanup;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_XML,
@@ -10286,7 +10287,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
                                 &listenAddress) < 0)
-        return -1;
+        goto cleanup;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
         /* this is a logical error; we never should have gotten here with
@@ -10313,6 +10314,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
 cleanup:
     VIR_FREE(origname);
     virDomainDefFree(def);
+    virObjectUnref(cfg);
     return ret;
 }
 

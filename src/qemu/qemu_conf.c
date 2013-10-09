@@ -546,6 +546,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     GET_VALUE_LONG("seccomp_sandbox", cfg->seccompSandbox);
 
+    GET_VALUE_STR("migration_address", cfg->migrationAddress);
+
     ret = 0;
 
 cleanup:
