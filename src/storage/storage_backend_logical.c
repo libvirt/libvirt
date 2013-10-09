@@ -85,6 +85,14 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     if (attrs[4] != 'a')
         return 0;
 
+    /*
+     * Skip thin pools(t). These show up in normal lvs output
+     * but do not have a corresponding /dev/$vg/$lv device that
+     * is created by udev. This breaks assumptions in later code.
+     */
+    if (attrs[0] == 't')
+        return 0;
+
     /* See if we're only looking for a specific volume */
     if (data != NULL) {
         vol = data;
