@@ -3138,18 +3138,18 @@ cleanup:
 }
 
 /* Returns true if a compression program is available in PATH */
-static bool qemuCompressProgramAvailable(virQEMUSaveFormat compress)
+static bool
+qemuCompressProgramAvailable(virQEMUSaveFormat compress)
 {
-    const char *prog;
-    char *c;
+    char *path;
 
     if (compress == QEMU_SAVE_FORMAT_RAW)
         return true;
-    prog = qemuSaveCompressionTypeToString(compress);
-    c = virFindFileInPath(prog);
-    if (!c)
+
+    if (!(path = virFindFileInPath(qemuSaveCompressionTypeToString(compress))))
         return false;
-    VIR_FREE(c);
+
+    VIR_FREE(path);
     return true;
 }
 
