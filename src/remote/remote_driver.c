@@ -187,7 +187,7 @@ remoteFindDaemonPath(void)
         NULL
     };
     size_t i;
-    const char *customDaemon = getenv("LIBVIRTD_PATH");
+    const char *customDaemon = virGetEnvBlockSUID("LIBVIRTD_PATH");
 
     if (customDaemon)
         return customDaemon;
@@ -955,7 +955,7 @@ remoteConnectOpen(virConnectPtr conn,
 {
     struct private_data *priv;
     int ret, rflags = 0;
-    const char *autostart = getenv("LIBVIRT_AUTOSTART");
+    const char *autostart = virGetEnvBlockSUID("LIBVIRT_AUTOSTART");
 
     if (inside_daemon && (!conn->uri || (conn->uri && !conn->uri->server)))
         return VIR_DRV_OPEN_DECLINED;

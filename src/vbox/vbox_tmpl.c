@@ -2237,7 +2237,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     vboxIID iid = VBOX_IID_INITIALIZER;
     int gotAllABoutDef   = -1;
     nsresult rc;
-    char *tmp;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -2509,8 +2508,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     }
                 } else if ((vrdpPresent != 1) && (totalPresent == 0) && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
                     if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
+                        const char *tmp;
                         def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-                        tmp = getenv("DISPLAY");
+                        tmp = virGetEnvBlockSUID("DISPLAY");
                         if (VIR_STRDUP(def->graphics[def->ngraphics]->data.desktop.display, tmp) < 0) {
                             /* just don't go to cleanup yet as it is ok to have
                              * display as NULL

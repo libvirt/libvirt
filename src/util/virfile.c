@@ -1354,6 +1354,7 @@ virFileIsLink(const char *linkpath)
 char *
 virFindFileInPath(const char *file)
 {
+    const char *origpath = NULL;
     char *path = NULL;
     char *pathiter;
     char *pathseg;
@@ -1382,9 +1383,11 @@ virFindFileInPath(const char *file)
     }
 
     /* copy PATH env so we can tweak it */
-    path = getenv("PATH");
+    origpath = virGetEnvBlockSUID("PATH");
+    if (!origpath)
+        origpath = "/bin:/usr/bin";
 
-    if (VIR_STRDUP_QUIET(path, path) <= 0)
+    if (VIR_STRDUP_QUIET(path, origpath) <= 0)
         return NULL;
 
     /* for each path segment, append the file to search for and test for

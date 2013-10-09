@@ -991,7 +991,7 @@ static int migrateProfile(void)
         goto cleanup;
     }
 
-    config_home = getenv("XDG_CONFIG_HOME");
+    config_home = virGetEnvBlockSUID("XDG_CONFIG_HOME");
     if (config_home && config_home[0] != '\0') {
         if (VIR_STRDUP(xdg_dir, config_home) < 0)
             goto cleanup;

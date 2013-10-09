@@ -135,7 +135,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     void *handle = NULL;
     virLockDriverPtr driver;
     virLockManagerPluginPtr plugin = NULL;
-    const char *moddir = getenv("LIBVIRT_LOCK_MANAGER_PLUGIN_DIR");
+    const char *moddir = virGetEnvBlockSUID("LIBVIRT_LOCK_MANAGER_PLUGIN_DIR");
     char *modfile = NULL;
     char *configFile = NULL;
 

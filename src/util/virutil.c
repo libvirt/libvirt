@@ -770,7 +770,7 @@ virGetUserDirectoryByUID(uid_t uid)
 
 static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
 {
-    const char *path = getenv(xdgenvname);
+    const char *path = virGetEnvBlockSUID(xdgenvname);
     char *ret = NULL;
     char *home = NULL;
 
@@ -798,7 +798,7 @@ char *virGetUserCacheDirectory(void)
 
 char *virGetUserRuntimeDirectory(void)
 {
-    const char *path = getenv("XDG_RUNTIME_DIR");
+    const char *path = virGetEnvBlockSUID("XDG_RUNTIME_DIR");
 
     if (!path || !path[0]) {
         return virGetUserCacheDirectory();
@@ -1131,7 +1131,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
     const char *dir;
     char *ret;
 
-    dir = getenv("HOME");
+    dir = virGetEnvBlockSUID("HOME");
 
     /* Only believe HOME if it is an absolute path and exists */
     if (dir) {
@@ -1151,7 +1151,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 
     if (!dir)
         /* USERPROFILE is probably the closest equivalent to $HOME? */
-        dir = getenv("USERPROFILE");
+        dir = virGetEnvBlockSUID("USERPROFILE");
 
     if (VIR_STRDUP(ret, dir) < 0)
         return NULL;

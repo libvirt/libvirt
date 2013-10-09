@@ -233,7 +233,7 @@ virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
 {
     virFreeError(last_error);
     last_error = virSaveLastError();
-    if (getenv("VIRSH_DEBUG") != NULL)
+    if (virGetEnvAllowSUID("VIRSH_DEBUG") != NULL)
         virDefaultErrorFunc(error);
 }
 
@@ -671,7 +671,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     int fd;
     char ebuf[1024];
 
-    tmpdir = getenv("TMPDIR");
+    tmpdir = virGetEnvBlockSUID("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
     if (virAsprintf(&ret, "%s/virshXXXXXX.xml", tmpdir) < 0) {
         vshError(ctl, "%s", _("out of memory"));
@@ -718,9 +718,9 @@ vshEditFile(vshControl *ctl, const char *filename)
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
-    editor = getenv("VISUAL");
+    editor = virGetEnvBlockSUID("VISUAL");
     if (!editor)
-        editor = getenv("EDITOR");
+        editor = virGetEnvBlockSUID("EDITOR");
     if (!editor)
         editor = "vi"; /* could be cruel & default to ed(1) here */
 
@@ -2269,11 +2269,11 @@ vshEventLoop(void *opaque)
 static void
 vshInitDebug(vshControl *ctl)
 {
-    char *debugEnv;
+    const char *debugEnv;
 
     if (ctl->debug == VSH_DEBUG_DEFAULT) {
         /* log level not set from commandline, check env variable */
-        debugEnv = getenv("VIRSH_DEBUG");
+        debugEnv = virGetEnvAllowSUID("VIRSH_DEBUG");
         if (debugEnv) {
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
@@ -2288,7 +2288,7 @@ vshInitDebug(vshControl *ctl)
 
     if (ctl->logfile == NULL) {
         /* log file not set from cmdline */
-        debugEnv = getenv("VIRSH_LOG_FILE");
+        debugEnv = virGetEnvBlockSUID("VIRSH_LOG_FILE");
         if (debugEnv && *debugEnv) {
             ctl->logfile = vshStrdup(ctl, debugEnv);
             vshOpenLogFile(ctl);
@@ -3134,7 +3134,7 @@ int
 main(int argc, char **argv)
 {
     vshControl _ctl, *ctl = &_ctl;
-    char *defaultConn;
+    const char *defaultConn;
     bool ret = true;
 
     memset(ctl, 0, sizeof(vshControl));
@@ -3172,7 +3172,7 @@ main(int argc, char **argv)
     else
         progname++;
 
-    if ((defaultConn = getenv("VIRSH_DEFAULT_CONNECT_URI"))) {
+    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"))) {
         ctl->name = vshStrdup(ctl, defaultConn);
     }
 
