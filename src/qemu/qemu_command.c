@@ -7141,7 +7141,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
      * security issues and might not work when using VNC.
      */
     if (cfg->vncAllowHostAudio)
-        virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+        virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
     else
         virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
 
@@ -7396,8 +7396,8 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
          * use QEMU's host audio drivers, possibly SDL too
          * User can set these two before starting libvirtd
          */
-        virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
-        virCommandAddEnvPass(cmd, "SDL_AUDIODRIVER");
+        virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
+        virCommandAddEnvPassBlockSUID(cmd, "SDL_AUDIODRIVER", NULL);
 
         /* New QEMU has this flag to let us explicitly ask for
          * SDL graphics. This is better than relying on the
@@ -7847,7 +7847,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArg(cmd, "-nographic");
 
         if (cfg->nogfxAllowHostAudio)
-            virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+            virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
         else
             virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
     }

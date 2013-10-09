@@ -99,8 +99,12 @@ void virCommandAddEnvString(virCommandPtr cmd,
 void virCommandAddEnvBuffer(virCommandPtr cmd,
                             virBufferPtr buf);
 
-void virCommandAddEnvPass(virCommandPtr cmd,
-                          const char *name) ATTRIBUTE_NONNULL(2);
+void virCommandAddEnvPassBlockSUID(virCommandPtr cmd,
+                                   const char *name,
+                                   const char *defvalue) ATTRIBUTE_NONNULL(2);
+
+void virCommandAddEnvPassAllowSUID(virCommandPtr cmd,
+                                   const char *name) ATTRIBUTE_NONNULL(2);
 
 void virCommandAddEnvPassCommon(virCommandPtr cmd);
 

@@ -294,8 +294,8 @@ static int test6(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
-    virCommandAddEnvPass(cmd, "DISPLAY");
-    virCommandAddEnvPass(cmd, "DOESNOTEXIST");
+    virCommandAddEnvPassBlockSUID(cmd, "DISPLAY", NULL);
+    virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
@@ -319,8 +319,8 @@ static int test7(const void *unused ATTRIBUTE_UNUSED)
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
-    virCommandAddEnvPass(cmd, "DISPLAY");
-    virCommandAddEnvPass(cmd, "DOESNOTEXIST");
+    virCommandAddEnvPassBlockSUID(cmd, "DISPLAY", NULL);
+    virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virErrorPtr err = virGetLastError();
