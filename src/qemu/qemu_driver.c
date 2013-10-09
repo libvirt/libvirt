@@ -3158,7 +3158,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    int compressed;
+    int compressed = QEMU_SAVE_FORMAT_RAW;
     int ret = -1;
     virDomainObjPtr vm = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -3168,20 +3168,18 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
-    if (cfg->saveImageFormat == NULL)
-        compressed = QEMU_SAVE_FORMAT_RAW;
-    else {
+    if (cfg->saveImageFormat) {
         compressed = qemuSaveCompressionTypeFromString(cfg->saveImageFormat);
         if (compressed < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("Invalid save image format specified "
-                                   "in configuration file"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Invalid save image format specified "
+                             "in configuration file"));
             goto cleanup;
         }
         if (!qemuCompressProgramAvailable(compressed)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("Compression program for image format "
-                                   "in configuration file isn't available"));
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Compression program for image format "
+                             "in configuration file isn't available"));
             goto cleanup;
         }
     }
