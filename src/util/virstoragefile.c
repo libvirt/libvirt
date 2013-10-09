@@ -572,7 +572,7 @@ virFindBackingFile(const char *start, bool start_is_dir, const char *path,
         goto cleanup;
     }
 
-    if (virFileAccessibleAs(combined, F_OK, getuid(), getgid()) < 0) {
+    if (virFileAccessibleAs(combined, F_OK, geteuid(), getegid()) < 0) {
         virReportSystemError(errno,
                              _("Cannot access backing file '%s'"),
                              combined);

@@ -999,7 +999,7 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
                                         unsigned int flags)
 {
     vboxGlobalData *data = NULL;
-    uid_t uid = getuid();
+    uid_t uid = geteuid();
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 

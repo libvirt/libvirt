@@ -789,7 +789,7 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
-    if (virNetSocketNewListenUNIX(path, 0700, getuid(), getgid(),
+    if (virNetSocketNewListenUNIX(path, 0700, geteuid(), getegid(),
                                   &test->server) < 0)
         goto error;
 

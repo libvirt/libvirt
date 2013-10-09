@@ -2362,7 +2362,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    if (getuid() != 0) {
+    if (geteuid() != 0) {
         fprintf(stderr, "%s: must be run as the 'root' user\n", argv[0]);
         goto cleanup;
     }
