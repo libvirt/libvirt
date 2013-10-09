@@ -220,7 +220,7 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
     if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
         goto cleanup;
 
-    if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
+    if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
         goto cleanup;
 
     if (virNetSocketListen(lsock, 0) < 0)
@@ -270,7 +270,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
         goto cleanup;
 
-    if (virNetSocketNewListenUNIX(path, 0700, -1, getgid(), &lsock) < 0)
+    if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
         goto cleanup;
 
     if (STRNEQ(virNetSocketLocalAddrString(lsock), "127.0.0.1;0")) {

@@ -995,7 +995,7 @@ remoteConnectOpen(virConnectPtr conn,
          (strstr(conn->uri->scheme, "+unix") != NULL)) &&
         (STREQ(conn->uri->path, "/session") ||
          STRPREFIX(conn->uri->scheme, "test+")) &&
-        getuid() > 0) {
+        geteuid() > 0) {
         VIR_DEBUG("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
         if (!virIsSUID() &&
@@ -1013,7 +1013,7 @@ remoteConnectOpen(virConnectPtr conn,
     if (!conn->uri) {
         VIR_DEBUG("Auto-probe remote URI");
 #ifndef __sun
-        if (getuid() > 0) {
+        if (geteuid() > 0) {
             VIR_DEBUG("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
             if (!virIsSUID() &&

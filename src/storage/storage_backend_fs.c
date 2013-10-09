@@ -785,9 +785,9 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Reflect the actual uid and gid to the config. */
     if (pool->def->target.perms.uid == (uid_t) -1)
-        pool->def->target.perms.uid = getuid();
+        pool->def->target.perms.uid = geteuid();
     if (pool->def->target.perms.gid == (gid_t) -1)
-        pool->def->target.perms.gid = getgid();
+        pool->def->target.perms.gid = getegid();
 
     if (flags != 0) {
         ret = virStorageBackendMakeFileSystem(pool, flags);

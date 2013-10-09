@@ -153,7 +153,7 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         unsigned int flags)
 {
-    uid_t uid = getuid();
+    uid_t uid = geteuid();
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 

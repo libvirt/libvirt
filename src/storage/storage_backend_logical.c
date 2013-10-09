@@ -718,7 +718,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         goto error;
 
     /* We can only chown/grp if root */
-    if (getuid() == 0) {
+    if (geteuid() == 0) {
         if (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0) {
             virReportSystemError(errno,
                                  _("cannot set file owner '%s'"),
