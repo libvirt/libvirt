@@ -1635,7 +1635,7 @@
                 <ref name="unsignedLong"/>
               </attribute>
               <optional>
-                <attribute name='unit'>
+                <attribute name='units'>
                   <ref name='unit'/>
                 </attribute>
               </optional>
