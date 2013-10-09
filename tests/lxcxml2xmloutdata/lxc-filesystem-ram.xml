@@ -1,0 +1,33 @@
+<domain type='lxc'>
+  <name>demo</name>
+  <uuid>8369f1ac-7e46-e869-4ca5-759d51478066</uuid>
+  <memory unit='KiB'>500000</memory>
+  <currentMemory unit='KiB'>500000</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>exe</type>
+    <init>/bin/sh</init>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/libexec/libvirt_lxc</emulator>
+    <filesystem type='ram' accessmode='passthrough'>
+      <source usage='1048576' units='KiB'/>
+      <target dir='/mnt/mississippi'/>
+    </filesystem>
+    <filesystem type='ram' accessmode='passthrough'>
+      <source usage='1024' units='KiB'/>
+      <target dir='/mnt/antananarivo'/>
+    </filesystem>
+    <filesystem type='ram' accessmode='passthrough'>
+      <source usage='1024' units='KiB'/>
+      <target dir='/mnt/ouagadougou'/>
+    </filesystem>
+    <console type='pty'>
+      <target type='lxc' port='0'/>
+    </console>
+  </devices>
+</domain>
