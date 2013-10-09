@@ -144,6 +144,7 @@ struct _virQEMUDriverConfig {
 
     char *saveImageFormat;
     char *dumpImageFormat;
+    char *snapshotImageFormat;
 
     char *autoDumpPath;
     bool autoDumpBypassCache;

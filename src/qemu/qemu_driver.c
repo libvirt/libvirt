@@ -12128,6 +12128,8 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     bool transaction = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION);
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
+    virQEMUDriverConfigPtr cfg = NULL;
+    int compressed = QEMU_SAVE_FORMAT_RAW;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SNAPSHOT) < 0)
         goto cleanup;
@@ -12189,12 +12191,28 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
                                      JOB_MASK(QEMU_JOB_SUSPEND) |
                                      JOB_MASK(QEMU_JOB_MIGRATION_OP));
 
+        cfg = virQEMUDriverGetConfig(driver);
+        if (cfg->snapshotImageFormat) {
+            compressed = qemuSaveCompressionTypeFromString(cfg->snapshotImageFormat);
+            if (compressed < 0) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Invalid snapshot image format specified "
+                                 "in configuration file"));
+                goto cleanup;
+            }
+            if (!qemuCompressProgramAvailable(compressed)) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Compression program for image format "
+                                 "in configuration file isn't available"));
+                goto cleanup;
+            }
+        }
+
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)))
             goto endjob;
 
         if ((ret = qemuDomainSaveMemory(driver, vm, snap->def->file,
-                                        xml, QEMU_SAVE_FORMAT_RAW,
-                                        resume, 0,
+                                        xml, compressed, resume, 0,
                                         QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto endjob;
 
@@ -12283,6 +12301,7 @@ endjob:
 
 cleanup:
     VIR_FREE(xml);
+    virObjectUnref(cfg);
     if (memory_unlink && ret < 0)
         unlink(snap->def->file);
 

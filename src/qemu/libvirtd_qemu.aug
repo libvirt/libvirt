@@ -58,6 +58,7 @@ module Libvirtd_qemu =
 
    let save_entry =  str_entry "save_image_format"
                  | str_entry "dump_image_format"
+                 | str_entry "snapshot_image_format"
                  | str_entry "auto_dump_path"
                  | bool_entry "auto_dump_bypass_cache"
                  | bool_entry "auto_start_bypass_cache"

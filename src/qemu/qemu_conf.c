@@ -521,6 +521,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
     GET_VALUE_STR("save_image_format", cfg->saveImageFormat);
     GET_VALUE_STR("dump_image_format", cfg->dumpImageFormat);
+    GET_VALUE_STR("snapshot_image_format", cfg->snapshotImageFormat);
+
     GET_VALUE_STR("auto_dump_path", cfg->autoDumpPath);
     GET_VALUE_BOOL("auto_dump_bypass_cache", cfg->autoDumpBypassCache);
     GET_VALUE_BOOL("auto_start_bypass_cache", cfg->autoStartBypassCache);
