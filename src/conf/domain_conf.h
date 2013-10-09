@@ -890,7 +890,7 @@ struct _virDomainFSDef {
     int accessmode; /* enum virDomainFSAccessMode */
     int wrpolicy; /* enum virDomainFSWrpolicy */
     int format; /* enum virStorageFileFormat */
-    unsigned long long usage;
+    unsigned long long usage; /* in bytes */
     char *src;
     char *dst;
     bool readonly;
