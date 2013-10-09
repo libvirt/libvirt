@@ -313,6 +313,18 @@ main(int argc, char **argv)
     if (cpid == 0) {
         pid_t ccpid;
 
+        int openmax = sysconf(_SC_OPEN_MAX);
+        int fd;
+        if (openmax < 0) {
+            virReportSystemError(errno,  "%s",
+                                 _("sysconf(_SC_OPEN_MAX) failed"));
+            return EXIT_FAILURE;
+        }
+        for (fd = 3; fd < openmax; fd++) {
+            int tmpfd = fd;
+            VIR_MASS_CLOSE(tmpfd);
+        }
+
         /* Fork once because we don't want to affect
          * virt-login-shell's namespace itself
          */
