@@ -127,6 +127,7 @@ mymain(void)
 
     DO_TEST("systemd");
     DO_TEST("hostdev");
+    DO_TEST_DIFFERENT("filesystem-ram");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

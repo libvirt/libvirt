@@ -822,7 +822,7 @@ struct _virDomainFSDef {
     int fsdriver;
     int accessmode;
     int wrpolicy; /* enum virDomainFSWrpolicy */
-    unsigned long long usage;
+    unsigned long long usage; /* in bytes */
     char *src;
     char *dst;
     bool readonly;

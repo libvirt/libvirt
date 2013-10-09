@@ -5499,7 +5499,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     char *accessmode = NULL;
     char *wrpolicy = NULL;
     char *usage = NULL;
-    char *unit = NULL;
+    char *units = NULL;
 
     ctxt->node = node;
 
@@ -5557,7 +5557,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
                     source = virXMLPropString(cur, "name");
                 else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
                     usage = virXMLPropString(cur, "usage");
-                    unit = virXMLPropString(cur, "unit");
+                    units = virXMLPropString(cur, "units");
                 }
             } else if (!target &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
@@ -5615,8 +5615,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
                            usage);
             goto error;
         }
-        if (unit &&
-            virScaleInteger(&def->usage, unit,
+        if (virScaleInteger(&def->usage, units,
                             1024, ULLONG_MAX) < 0)
             goto error;
     }
@@ -5638,7 +5637,7 @@ cleanup:
     VIR_FREE(accessmode);
     VIR_FREE(wrpolicy);
     VIR_FREE(usage);
-    VIR_FREE(unit);
+    VIR_FREE(units);
 
     return def;
 
