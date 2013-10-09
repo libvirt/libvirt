@@ -172,4 +172,8 @@ int virCompareLimitUlong(unsigned long long a, unsigned long long b);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
+const char *virGetEnvBlockSUID(const char *name);
+const char *virGetEnvAllowSUID(const char *name);
+bool virIsSUID(void);
+
 #endif /* __VIR_UTIL_H__ */
