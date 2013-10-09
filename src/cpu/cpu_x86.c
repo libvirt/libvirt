@@ -1296,6 +1296,7 @@ x86Compute(virCPUDefPtr host,
                           "CPU vendor %s"),
                         cpu->vendor) < 0)
             goto error;
+
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
@@ -1312,7 +1313,7 @@ x86Compute(virCPUDefPtr host,
     if (!x86DataIsEmpty(cpu_forbid->data)) {
         virX86CpuIncompatible(N_("Host CPU provides forbidden features"),
                               cpu_forbid->data);
-        goto out;
+        goto cleanup;
     }
 
     /* first remove features that were inherited from the CPU model and were
@@ -1327,7 +1328,7 @@ x86Compute(virCPUDefPtr host,
         virX86CpuIncompatible(N_("Host CPU does not provide required "
                                  "features"),
                               cpu_require->data);
-        goto out;
+        goto cleanup;
     }
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
@@ -1349,7 +1350,7 @@ x86Compute(virCPUDefPtr host,
         virX86CpuIncompatible(N_("Host CPU does not strictly match guest CPU: "
                                  "Extra features"),
                               diff->data);
-        goto out;
+        goto cleanup;
     }
 
     if (guest != NULL) {
@@ -1374,7 +1375,7 @@ x86Compute(virCPUDefPtr host,
         }
     }
 
-out:
+cleanup:
     x86MapFree(map);
     x86ModelFree(host_model);
     x86ModelFree(diff);
@@ -1389,7 +1390,7 @@ out:
 
 error:
     ret = VIR_CPU_COMPARE_ERROR;
-    goto out;
+    goto cleanup;
 }
 #undef virX86CpuIncompatible
 
