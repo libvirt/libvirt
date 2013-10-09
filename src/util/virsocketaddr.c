@@ -71,6 +71,35 @@ static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr 
     return 0;
 }
 
+static int
+virSocketAddrParseInternal(struct addrinfo **res,
+                           const char *val,
+                           int family,
+                           bool reportError)
+{
+    struct addrinfo hints;
+    int err;
+
+    if (val == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
+        return -1;
+    }
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = family;
+    hints.ai_flags = AI_NUMERICHOST;
+    if ((err = getaddrinfo(val, NULL, &hints, res)) != 0) {
+        if (reportError)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("Cannot parse socket address '%s': %s"),
+                           val, gai_strerror(err));
+
+        return -1;
+    }
+
+    return 0;
+}
+
 /**
  * virSocketAddrParse:
  * @val: a numeric network address IPv4 or IPv6
@@ -84,24 +113,10 @@ static int virSocketAddrGetIPv6Addr(virSocketAddrPtr addr, virSocketAddrIPv6Ptr 
  */
 int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family) {
     int len;
-    struct addrinfo hints;
-    struct addrinfo *res = NULL;
-    int err;
+    struct addrinfo *res;
 
-    if (val == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
+    if (virSocketAddrParseInternal(&res, val, family, true) < 0)
         return -1;
-    }
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = family;
-    hints.ai_flags = AI_NUMERICHOST;
-    if ((err = getaddrinfo(val, NULL, &hints, &res)) != 0) {
-        virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Cannot parse socket address '%s': %s"),
-                       val, gai_strerror(err));
-        return -1;
-    }
 
     if (res == NULL) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
@@ -823,4 +838,29 @@ virSocketAddrGetIpPrefix(const virSocketAddrPtr address,
      * route (the destination of a default route is 0.0.0.0/0).
      */
     return 0;
+}
+
+/**
+ * virSocketAddrIsNumeric:
+ * @address: address to check
+ *
+ * Check if passed address is an IP address in numeric format. For
+ * instance, for 0.0.0.0 true is returned, for 'examplehost"
+ * false is returned.
+ *
+ * Returns: true if @address is an IP address,
+ *          false otherwise
+ */
+bool
+virSocketAddrIsNumeric(const char *address)
+{
+    struct addrinfo *res;
+    unsigned short family;
+
+    if (virSocketAddrParseInternal(&res, address, AF_UNSPEC, false) < 0)
+        return false;
+
+    family = res->ai_addr->sa_family;
+    freeaddrinfo(res);
+    return family == AF_INET || family == AF_INET6;
 }

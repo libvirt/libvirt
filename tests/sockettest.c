@@ -174,6 +174,21 @@ static int testWildcardHelper(const void *opaque)
     return testWildcard(data->addr, data->pass);
 }
 
+struct testIsNumericData {
+    const char *addr;
+    bool pass;
+};
+
+static int
+testIsNumericHelper(const void *opaque)
+{
+    const struct testIsNumericData *data = opaque;
+
+    if (virSocketAddrIsNumeric(data->addr))
+        return data->pass ? 0 : -1;
+    return data->pass ? -1 : 0;
+}
+
 static int
 mymain(void)
 {
@@ -246,6 +261,14 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+#define DO_TEST_IS_NUMERIC(addr, pass)                                  \
+    do {                                                                \
+        struct testIsNumericData data = { addr, pass};                  \
+        if (virtTestRun("Test isNumeric " addr,                         \
+                       testIsNumericHelper, &data) < 0)                 \
+            ret = -1;                                                   \
+    } while (0)
+
 
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_UNSPEC, true);
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_INET, true);
@@ -306,6 +329,12 @@ mymain(void)
     DO_TEST_WILDCARD("0.0.0", true);
     DO_TEST_WILDCARD("1", false);
     DO_TEST_WILDCARD("0.1", false);
+
+    DO_TEST_IS_NUMERIC("0.0.0.0", true);
+    DO_TEST_IS_NUMERIC("::", true);
+    DO_TEST_IS_NUMERIC("1", true);
+    DO_TEST_IS_NUMERIC("::ffff", true);
+    DO_TEST_IS_NUMERIC("examplehost", false);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
