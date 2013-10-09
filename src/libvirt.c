@@ -1094,7 +1094,7 @@ virConnectGetDefaultURI(virConfPtr conf,
 {
     int ret = -1;
     virConfValuePtr value = NULL;
-    char *defname = getenv("LIBVIRT_DEFAULT_URI");
+    const char *defname = virGetEnvBlockSUID("LIBVIRT_DEFAULT_URI");
     if (defname && *defname) {
         VIR_DEBUG("Using LIBVIRT_DEFAULT_URI '%s'", defname);
         *name = defname;

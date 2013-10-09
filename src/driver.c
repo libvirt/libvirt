@@ -27,6 +27,7 @@
 #include "driver.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virutil.h"
 #include "configmake.h"
 #include "virstring.h"
 
@@ -43,7 +44,7 @@ static const char *moddir = NULL;
 void
 virDriverModuleInitialize(const char *defmoddir)
 {
-    const char *custommoddir = getenv("LIBVIRT_DRIVER_DIR");
+    const char *custommoddir = virGetEnvBlockSUID("LIBVIRT_DRIVER_DIR");
     if (custommoddir)
         moddir = custommoddir;
     else if (defmoddir)

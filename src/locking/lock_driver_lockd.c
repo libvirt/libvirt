@@ -84,7 +84,7 @@ static virLockManagerLockDaemonDriverPtr driver = NULL;
 static const char *
 virLockManagerLockDaemonFindDaemon(void)
 {
-    const char *customDaemon = getenv("VIRTLOCKD_PATH");
+    const char *customDaemon = virGetEnvBlockSUID("VIRTLOCKD_PATH");
 
     if (customDaemon)
         return customDaemon;
