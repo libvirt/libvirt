@@ -1318,6 +1318,9 @@ int virLogPriorityFromSyslog(int priority ATTRIBUTE_UNUSED)
  * Multiple output can be defined in a single @output, they just need to be
  * separated by spaces.
  *
+ * If running in setuid mode, then only the 'stderr' output will
+ * be allowed
+ *
  * Returns the number of output parsed and installed or -1 in case of error
  */
 int
@@ -1329,6 +1332,7 @@ virLogParseOutputs(const char *outputs)
     virLogPriority prio;
     int ret = -1;
     int count = 0;
+    bool isSUID = virIsSUID();
 
     if (cur == NULL)
         return -1;
@@ -1348,6 +1352,8 @@ virLogParseOutputs(const char *outputs)
             if (virLogAddOutputToStderr(prio) == 0)
                 count++;
         } else if (STREQLEN(cur, "syslog", 6)) {
+            if (isSUID)
+                goto cleanup;
             cur += 6;
             if (*cur != ':')
                 goto cleanup;
@@ -1365,6 +1371,8 @@ virLogParseOutputs(const char *outputs)
             VIR_FREE(name);
 #endif /* HAVE_SYSLOG_H */
         } else if (STREQLEN(cur, "file", 4)) {
+            if (isSUID)
+                goto cleanup;
             cur += 4;
             if (*cur != ':')
                 goto cleanup;
@@ -1385,6 +1393,8 @@ virLogParseOutputs(const char *outputs)
             VIR_FREE(name);
             VIR_FREE(abspath);
         } else if (STREQLEN(cur, "journald", 8)) {
+            if (isSUID)
+                goto cleanup;
             cur += 8;
 #if USE_JOURNALD
             if (virLogAddOutputToJournald(prio) == 0)
