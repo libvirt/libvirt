@@ -431,7 +431,7 @@ doRemoteOpen(virConnectPtr conn,
         trans_tcp,
     } transport;
 #ifndef WIN32
-    const char *daemonPath;
+    const char *daemonPath = NULL;
 #endif
 
     /* We handle *ALL* URIs here. The caller has rejected any
@@ -713,7 +713,8 @@ doRemoteOpen(virConnectPtr conn,
             VIR_DEBUG("Proceeding with sockname %s", sockname);
         }
 
-        if (!(daemonPath = remoteFindDaemonPath())) {
+        if ((flags & VIR_DRV_OPEN_REMOTE_AUTOSTART) &&
+            !(daemonPath = remoteFindDaemonPath())) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to locate libvirtd daemon in %s "
                              "(to override, set $LIBVIRTD_PATH to the "
@@ -997,8 +998,9 @@ remoteConnectOpen(virConnectPtr conn,
         getuid() > 0) {
         VIR_DEBUG("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
-        if (!autostart ||
-            STRNEQ(autostart, "0"))
+        if (!virIsSUID() &&
+            (!autostart ||
+             STRNEQ(autostart, "0")))
             rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
     }
 
@@ -1014,8 +1016,9 @@ remoteConnectOpen(virConnectPtr conn,
         if (getuid() > 0) {
             VIR_DEBUG("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
-            if (!autostart ||
-                STRNEQ(autostart, "0"))
+            if (!virIsSUID() &&
+                (!autostart ||
+                 STRNEQ(autostart, "0")))
                 rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
 #endif
