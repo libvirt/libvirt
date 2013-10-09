@@ -212,6 +212,8 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    setenv("PATH", "/bin:/usr/bin", 1);
+
     virSetErrorFunc(NULL, NULL);
     virSetErrorLogPriorityFunc(NULL);
 
