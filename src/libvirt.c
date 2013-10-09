@@ -1135,6 +1135,12 @@ do_open(const char *name,
     if (name && name[0] == '\0')
         name = NULL;
 
+    if (!name && virIsSUID()) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("An explicit URI must be provided when setuid"));
+        goto failed;
+    }
+
     /*
      *  If no URI is passed, then check for an environment string if not
      *  available probe the compiled in drivers to find a default hypervisor
