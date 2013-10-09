@@ -2116,3 +2116,42 @@ cleanup:
 
     return rc;
 }
+
+
+/**
+ * virGetEnvBlockSUID:
+ * @name: the environment variable name
+ *
+ * Obtain an environment variable which is unsafe to
+ * use when running setuid. If running setuid, a NULL
+ * value will be returned
+ */
+const char *virGetEnvBlockSUID(const char *name)
+{
+    return secure_getenv(name);
+}
+
+
+/**
+ * virGetEnvBlockSUID:
+ * @name: the environment variable name
+ *
+ * Obtain an environment variable which is safe to
+ * use when running setuid. The value will be returned
+ * even when running setuid
+ */
+const char *virGetEnvAllowSUID(const char *name)
+{
+    return getenv(name);
+}
+
+
+/**
+ * virIsSUID:
+ * Return a true value if running setuid. Does not
+ * check for elevated capabilities bits.
+ */
+bool virIsSUID(void)
+{
+    return getuid() != geteuid();
+}
