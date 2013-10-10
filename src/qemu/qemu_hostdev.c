@@ -633,7 +633,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                              int nhostdevs,
                              virQEMUCapsPtr qemuCaps)
 {
-    virPCIDeviceListPtr pcidevs;
+    virPCIDeviceListPtr pcidevs = NULL;
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
