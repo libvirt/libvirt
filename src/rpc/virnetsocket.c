@@ -1149,6 +1149,23 @@ cleanup:
 }
 #elif defined(LOCAL_PEERCRED)
 
+/* VIR_SOL_PEERCRED - the value needed to let getsockopt() work with
+ * LOCAL_PEERCRED
+ */
+# ifdef __APPLE__
+#  ifdef SOL_LOCAL
+#   define VIR_SOL_PEERCRED SOL_LOCAL
+#  else
+/* Prior to Mac OS X 10.7, SOL_LOCAL was not defined and users were
+ * expected to supply 0 as the second value for getsockopt() when using
+ * LOCAL_PEERCRED
+ */
+#   define VIR_SOL_PEERCRED 0
+#  endif
+# else
+#  define VIR_SOL_PEERCRED SOL_SOCKET
+# endif
+
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 uid_t *uid,
                                 gid_t *gid,
@@ -1159,11 +1176,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
     socklen_t cr_len = sizeof(cr);
     virObjectLock(sock);
 
-# if defined(__APPLE__)
-    if (getsockopt(sock->fd, SOL_LOCAL, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
-# else
-    if (getsockopt(sock->fd, SOL_SOCKET, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
-# endif
+    if (getsockopt(sock->fd, VIR_SOL_PEERCRED, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to get client socket identity"));
         virObjectUnlock(sock);
