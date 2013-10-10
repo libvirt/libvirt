@@ -3085,7 +3085,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
                                             VIR_DOMAIN_XML_INACTIVE))) {
             goto endjob;
         }
-        if (!virDomainDefCheckABIStability(vm->def, def)) {
+        if (!qemuDomainDefCheckABIStability(driver, vm->def, def)) {
             virDomainDefFree(def);
             goto endjob;
         }
@@ -13030,7 +13030,6 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     qemuDomainObjPrivatePtr priv;
     int rc;
     virDomainDefPtr config = NULL;
-    virDomainDefPtr migratableDef = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
 
@@ -13147,11 +13146,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 5, 6, 8, 9 */
             /* Check for ABI compatibility. We need to do this check against
              * the migratable XML or it will always fail otherwise */
-            if (!(migratableDef = qemuDomainDefCopy(driver, vm->def,
-                                                    VIR_DOMAIN_XML_MIGRATABLE)))
-                goto cleanup;
-
-            if (config && !virDomainDefCheckABIStability(migratableDef, config)) {
+            if (config && !qemuDomainDefCheckABIStability(driver, vm->def, config)) {
                 virErrorPtr err = virGetLastError();
 
                 if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
@@ -13356,7 +13351,6 @@ cleanup:
     }
     if (vm)
         virObjectUnlock(vm);
-    virDomainDefFree(migratableDef);
     virObjectUnref(caps);
     virObjectUnref(cfg);
 

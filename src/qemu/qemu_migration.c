@@ -2043,7 +2043,7 @@ static char
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
-        if (!virDomainDefCheckABIStability(vm->def, def))
+        if (!qemuDomainDefCheckABIStability(driver, vm->def, def))
             goto cleanup;
 
         rv = qemuDomainDefFormatLive(driver, def, false, true);
@@ -2250,7 +2250,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 if (!newdef)
                     goto cleanup;
 
-                if (!virDomainDefCheckABIStability(*def, newdef)) {
+                if (!qemuDomainDefCheckABIStability(driver, *def, newdef)) {
                     virDomainDefFree(newdef);
                     goto cleanup;
                 }
