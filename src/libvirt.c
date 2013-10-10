@@ -409,6 +409,14 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
+#ifndef IN_VIRT_LOGIN_SHELL
+    if (virIsSUID()) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libvirt.so is not safe to use from setuid programs"));
+        goto error;
+    }
+#endif
+
 #ifdef WITH_GNUTLS_GCRYPT
     /*
      * This sequence of API calls it copied exactly from
