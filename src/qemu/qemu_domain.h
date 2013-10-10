@@ -368,4 +368,7 @@ extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 int qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
                                virDomainObjPtr vm);
 
+bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
+                                    virDomainDefPtr src,
+                                    virDomainDefPtr dst);
 #endif /* __QEMU_DOMAIN_H__ */

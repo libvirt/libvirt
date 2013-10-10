@@ -2342,3 +2342,25 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     priv->qemuDevices = aliases;
     return 0;
 }
+
+bool
+qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
+                               virDomainDefPtr src,
+                               virDomainDefPtr dst)
+{
+    virDomainDefPtr migratableDefSrc = NULL;
+    virDomainDefPtr migratableDefDst = NULL;
+    const int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_UPDATE_CPU | VIR_DOMAIN_XML_MIGRATABLE;
+    bool ret = false;
+
+    if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, flags)) ||
+        !(migratableDefDst = qemuDomainDefCopy(driver, dst, flags)))
+        goto cleanup;
+
+    ret = virDomainDefCheckABIStability(migratableDefSrc, migratableDefDst);
+
+cleanup:
+    virDomainDefFree(migratableDefSrc);
+    virDomainDefFree(migratableDefDst);
+    return ret;
+}
