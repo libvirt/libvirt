@@ -14,7 +14,7 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir)
 noinst_PROGRAMS = openauth
 openauth_CFLAGS = $(WARN_CFLAGS)
 openauth_SOURCES = openauth.c
