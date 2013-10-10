@@ -31,6 +31,7 @@ XML_EXAMPLES = \
 					test/*.xml storage/*.xml)))
 
 EXTRA_DIST = \
+  config-post.h \
   ChangeLog-old \
   libvirt.spec libvirt.spec.in \
   mingw-libvirt.spec.in \

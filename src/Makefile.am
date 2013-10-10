@@ -21,6 +21,7 @@
 # that actually use them. Also keep GETTEXT_CPPFLAGS at the end.
 INCLUDES =	-I../gnulib/lib					\
 		-I$(top_srcdir)/gnulib/lib			\
+		-I$(top_srcdir)					\
 		-I../include					\
 		-I$(top_srcdir)/include				\
 		-I$(top_srcdir)/src/util			\
@@ -1916,6 +1917,77 @@ libvirt_lxc_la_LDFLAGS = \
 		$(NULL)
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
 libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
+
+# Since virt-login-shell will be setuid, we must do everything
+# we can to avoid linking to other libraries. Many of them do
+# unsafe things in functions marked __atttribute__((constructor)).
+# This library is built to include the bare minimum required to
+# have a RPC client for local UNIX socket access only. We use
+# the ../config-post.h header to disable all external deps that
+# we don't want
+if WITH_LXC
+noinst_LTLIBRARIES += libvirt-setuid-rpc-client.la
+
+libvirt_setuid_rpc_client_la_SOURCES = 		\
+		util/viralloc.c			\
+		util/virbitmap.c		\
+		util/virbuffer.c		\
+		util/vircommand.c		\
+		util/virconf.c			\
+		util/virerror.c			\
+		util/virevent.c			\
+		util/vireventpoll.c		\
+		util/virfile.c			\
+		util/virhash.c			\
+		util/virhashcode.c		\
+		util/virjson.c			\
+		util/virlog.c			\
+		util/virobject.c		\
+		util/virpidfile.c		\
+		util/virprocess.c		\
+		util/virrandom.c		\
+		util/virsocketaddr.c		\
+		util/virstoragefile.c		\
+		util/virstring.c		\
+		util/virtime.c			\
+		util/virthread.c		\
+		util/virtypedparam.c		\
+		util/viruri.c			\
+		util/virutil.c			\
+		util/viruuid.c			\
+		conf/domain_event.c		\
+		rpc/virnetsocket.c		\
+		rpc/virnetsocket.h		\
+		rpc/virnetmessage.h		\
+		rpc/virnetmessage.c		\
+		rpc/virkeepalive.c		\
+		rpc/virkeepalive.h		\
+		rpc/virnetclient.c		\
+		rpc/virnetclientprogram.c	\
+		rpc/virnetclientstream.c	\
+		rpc/virnetprotocol.c		\
+		remote/remote_driver.c		\
+		remote/remote_protocol.c	\
+		remote/qemu_protocol.c		\
+		remote/lxc_protocol.c		\
+		datatypes.c			\
+		libvirt.c			\
+		libvirt-lxc.c			\
+		$(NULL)
+
+libvirt_setuid_rpc_client_la_LDFLAGS =		\
+		$(AM_LDFLAGS)			\
+		$(LIBXML_LIBS)			\
+		$(SELINUX_LIBS)			\
+		$(NULL)
+libvirt_setuid_rpc_client_la_CFLAGS =		\
+		-DLIBVIRT_SETUID_RPC_CLIENT	\
+		-I$(top_srcdir)/src/conf	\
+		-I$(top_srcdir)/src/rpc		\
+		$(AM_CFLAGS)			\
+		$(SELINUX_CFLAGS)		\
+		$(NULL)
+endif WITH_LXC
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =
