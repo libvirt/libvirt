@@ -30,13 +30,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 
-VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
-              "none",
-              "802.1Qbg",
-              "802.1Qbh",
-              "openvswitch")
-
-
 virNetDevVPortProfilePtr
 virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
 {
