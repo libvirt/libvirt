@@ -32,6 +32,7 @@
 
 #ifdef WITH_DBUS
 
+static bool sharedBus = true;
 static DBusConnection *systembus = NULL;
 static DBusConnection *sessionbus = NULL;
 static virOnceControl systemonce = VIR_ONCE_CONTROL_INITIALIZER;
@@ -43,6 +44,11 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch, void *data);
 static void virDBusRemoveWatch(DBusWatch *watch, void *data);
 static void virDBusToggleWatch(DBusWatch *watch, void *data);
 
+void virDBusSetSharedBus(bool shared)
+{
+    sharedBus = shared;
+}
+
 static DBusConnection *virDBusBusInit(DBusBusType type, DBusError *dbuserr)
 {
     DBusConnection *bus;
@@ -52,7 +58,10 @@ static DBusConnection *virDBusBusInit(DBusBusType type, DBusError *dbuserr)
     dbus_threads_init_default();
 
     dbus_error_init(dbuserr);
-    if (!(bus = dbus_bus_get(type, dbuserr)))
+    bus = sharedBus ?
+        dbus_bus_get(type, dbuserr) :
+        dbus_bus_get_private(type, dbuserr);
+    if (!bus)
         return NULL;
 
     dbus_connection_set_exit_on_disconnect(bus, FALSE);
@@ -1281,6 +1290,11 @@ int virDBusIsServiceEnabled(const char *name)
 
 
 #else /* ! WITH_DBUS */
+void virDBusSetSharedBus(bool shared ATTRIBUTE_UNUSED)
+{
+    /* nothing */
+}
+
 DBusConnection *virDBusGetSystemBus(void)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,

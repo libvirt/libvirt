@@ -31,6 +31,8 @@
 # endif
 # include "internal.h"
 
+void virDBusSetSharedBus(bool shared);
+
 DBusConnection *virDBusGetSystemBus(void);
 bool virDBusHasSystemBus(void);
 DBusConnection *virDBusGetSessionBus(void);

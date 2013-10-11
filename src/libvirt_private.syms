@@ -1108,6 +1108,7 @@ virDBusHasSystemBus;
 virDBusMessageDecode;
 virDBusMessageEncode;
 virDBusMessageRead;
+virDBusSetSharedBus;
 
 
 # util/virdnsmasq.h
