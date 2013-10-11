@@ -772,7 +772,8 @@
       <dt><code>weight</code></dt>
       <dd> The optional <code>weight</code> element is the overall I/O
         weight of the guest. The value should be in the range [100,
-        1000].</dd>
+        1000]. After kernel 2.6.39, the value could be in the
+        range [10, 1000].</dd>
       <dt><code>device</code></dt>
       <dd>The domain may have multiple <code>device</code> elements
         that further tune the weights for each host block device in
@@ -789,7 +790,8 @@
         mandatory sub-elements, <code>path</code> describing the
         absolute path of the device, and <code>weight</code> giving
         the relative weight of that device, in the range [100,
-        1000].  <span class="since">Since 0.9.8</span></dd>
+        1000]. After kernel 2.6.39, the value could be in the
+        range [10, 1000].<span class="since">Since 0.9.8</span></dd>
     </dl>
 
 

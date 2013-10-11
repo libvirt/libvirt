@@ -1629,14 +1629,15 @@ Specifying -1 as a value for these limits is interpreted as unlimited.
 [I<--live>] | [I<--current>]]
 
 Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
-I<--weight> is in range [100, 1000].
+I<--weight> is in range [100, 1000]. After kernel 2.6.39, the value
+could be in the range [10, 1000].
 
 B<device-weights> is a single string listing one or more device/weight
 pairs, in the format of /path/to/device,weight,/path/to/device,weight.
-Each weight is in the range [100, 1000], or the value 0 to remove that
-device from per-device listings.  Only the devices listed in the string
-are modified; any existing per-device weights for other devices remain
-unchanged.
+Each weight is in the range [100, 1000], [10, 1000] after kernel 2.6.39,
+or the value 0 to remove that device from per-device listings.
+Only the devices listed in the string are modified;
+any existing per-device weights for other devices remain unchanged.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
