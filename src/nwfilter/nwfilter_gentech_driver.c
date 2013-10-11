@@ -193,7 +193,7 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
  * Create a hashmap used for evaluating the firewall rules. Initializes
  * it with the standard variable 'MAC' and 'IP' if provided.
  *
- * Returns pointer to hashmap, NULL if an error occcurred.
+ * Returns pointer to hashmap, NULL if an error occurred.
  */
 virNWFilterHashTablePtr
 virNWFilterCreateVarHashmap(char *macaddr,
