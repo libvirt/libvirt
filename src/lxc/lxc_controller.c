@@ -2230,7 +2230,7 @@ cleanup:
 int main(int argc, char *argv[])
 {
     pid_t pid;
-    int rc = 1;
+    int rc = -1;
     char *name = NULL;
     size_t nveths = 0;
     char **veths = NULL;
