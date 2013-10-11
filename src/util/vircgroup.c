@@ -664,12 +664,20 @@ virCgroupSetValueStr(virCgroupPtr group,
 {
     int ret = -1;
     char *keypath = NULL;
+    char *tmp = NULL;
 
     if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
         return -1;
 
     VIR_DEBUG("Set value '%s' to '%s'", keypath, value);
     if (virFileWriteStr(keypath, value, 0) < 0) {
+        if (errno == EINVAL &&
+            (tmp = strrchr(keypath, '/'))) {
+            virReportSystemError(errno,
+                                 _("Invalid value '%s' for '%s'"),
+                                 value, tmp + 1);
+            goto cleanup;
+        }
         virReportSystemError(errno,
                              _("Unable to write to '%s'"), keypath);
         goto cleanup;
@@ -1829,7 +1837,8 @@ virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
  *
  * @group: The cgroup to change io device weight device for
  * @path: The device with a weight to alter
- * @weight: The new device weight (100-1000), or 0 to clear
+ * @weight: The new device weight (100-1000),
+ * (10-1000) after kernel 2.6.39, or 0 to clear
  *
  * device_weight is treated as a write-only parameter, so
  * there isn't a getter counterpart.
