@@ -51,6 +51,9 @@
 # define QEMU_WEBSOCKET_PORT_MIN  5700
 # define QEMU_WEBSOCKET_PORT_MAX  65535
 
+# define QEMU_MIGRATION_PORT_MIN 49152
+# define QEMU_MIGRATION_PORT_MAX 49215
+
 typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
 typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
 struct _qemuBuildCommandLineCallbacks {
