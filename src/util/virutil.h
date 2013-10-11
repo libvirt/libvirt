@@ -168,7 +168,7 @@ char *virGetFCHostNameByWWN(const char *sysfs_prefix,
 
 char *virFindFCHostCapableVport(const char *sysfs_prefix);
 
-int virCompareLimitUlong(unsigned long long a, unsigned long b);
+int virCompareLimitUlong(unsigned long long a, unsigned long long b);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 

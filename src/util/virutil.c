@@ -2062,10 +2062,13 @@ virFindFCHostCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED)
  * Returns 0 if the numbers are equal, -1 if b is greater, 1 if a is greater.
  */
 int
-virCompareLimitUlong(unsigned long long a, unsigned long b)
+virCompareLimitUlong(unsigned long long a, unsigned long long b)
 {
     if (a == b)
         return 0;
+
+    if (!b)
+        return -1;
 
     if (a == 0 || a > b)
         return 1;
