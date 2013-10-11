@@ -210,6 +210,9 @@ struct _virQEMUDriver {
     /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr remotePorts;
 
+    /* Immutable pointer, self-locking APIs */
+    virPortAllocatorPtr migrationPorts;
+
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 
@@ -231,9 +234,6 @@ struct _qemuDomainCmdlineDef {
     char **env_value;
 };
 
-/* Port numbers used for KVM migration. */
-# define QEMUD_MIGRATION_FIRST_PORT 49152
-# define QEMUD_MIGRATION_NUM_PORTS 64
 
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);

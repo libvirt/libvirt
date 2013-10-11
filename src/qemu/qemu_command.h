@@ -48,6 +48,8 @@
 # define QEMU_REMOTE_PORT_MIN  5900
 # define QEMU_REMOTE_PORT_MAX  65535
 
+# define QEMU_MIGRATION_PORT_MIN 49152
+# define QEMU_MIGRATION_PORT_MAX 49215
 
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virQEMUDriverPtr driver,
