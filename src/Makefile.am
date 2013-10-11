@@ -2381,6 +2381,7 @@ libvirt_lxc_CFLAGS =				\
 		$(PIE_CFLAGS)			\
 		$(LIBNL_CFLAGS)			\
 		$(FUSE_CFLAGS)			\
+		$(DBUS_CFLAGS)			\
 		$(NULL)
 if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
