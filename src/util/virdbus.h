@@ -35,6 +35,7 @@ void virDBusSetSharedBus(bool shared);
 
 DBusConnection *virDBusGetSystemBus(void);
 bool virDBusHasSystemBus(void);
+void virDBusCloseSystemBus(void);
 DBusConnection *virDBusGetSessionBus(void);
 
 int virDBusCallMethod(DBusConnection *conn,

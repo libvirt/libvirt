@@ -122,6 +122,14 @@ virDBusHasSystemBus(void)
 }
 
 
+void virDBusCloseSystemBus(void)
+{
+    if (systembus && !sharedBus) {
+        dbus_connection_close(systembus);
+        systembus = NULL;
+    }
+}
+
 static void virDBusSessionBusInit(void)
 {
     sessionbus = virDBusBusInit(DBUS_BUS_SESSION, &sessiondbuserr);
@@ -1310,6 +1318,10 @@ virDBusHasSystemBus(void)
     return false;
 }
 
+void virDBusCloseSystemBus(void)
+{
+    /* nothing */
+}
 
 DBusConnection *virDBusGetSessionBus(void)
 {

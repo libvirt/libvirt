@@ -1102,6 +1102,7 @@ virConfWriteMem;
 
 # util/virdbus.h
 virDBusCallMethod;
+virDBusCloseSystemBus;
 virDBusGetSessionBus;
 virDBusGetSystemBus;
 virDBusHasSystemBus;
