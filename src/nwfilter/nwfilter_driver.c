@@ -175,8 +175,9 @@ nwfilterStateInitialize(bool privileged,
     DBusConnection *sysbus = NULL;
 
 #if WITH_DBUS
-    if (virDBusHasSystemBus())
-        sysbus = virDBusGetSystemBus();
+    if (virDBusHasSystemBus() &&
+        !(sysbus = virDBusGetSystemBus()))
+        return -1;
 #endif /* WITH_DBUS */
 
     if (VIR_ALLOC(driverState) < 0)

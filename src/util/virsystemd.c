@@ -169,7 +169,8 @@ int virSystemdCreateMachine(const char *name,
     if (ret < 0)
         return ret;
 
-    conn = virDBusGetSystemBus();
+    if (!(conn = virDBusGetSystemBus()))
+        return -1;
 
     ret = -1;
     if (!(machinename = virSystemdMakeMachineName(name, drivername, privileged)))
@@ -267,7 +268,8 @@ int virSystemdTerminateMachine(const char *name,
     if (ret < 0)
         return ret;
 
-    conn = virDBusGetSystemBus();
+    if (!(conn = virDBusGetSystemBus()))
+        return -1;
 
     ret = -1;
     if (!(machinename = virSystemdMakeMachineName(name, drivername, privileged)))

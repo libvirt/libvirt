@@ -111,14 +111,29 @@ virDBusGetSystemBus(void)
 }
 
 
+/**
+ * virDBusHasSystemBus:
+ *
+ * Check if dbus system bus is running. This does not
+ * imply that we have a connection. DBus might be running
+ * and refusing connections due to its client limit. The
+ * latter must be treated as a fatal error.
+ *
+ * Return false if dbus is not available, true if probably available.
+ */
 bool
 virDBusHasSystemBus(void)
 {
     if (virDBusGetSystemBusInternal())
         return true;
 
-    VIR_DEBUG("System DBus not available: %s", NULLSTR(systemdbuserr.message));
-    return false;
+    if (systemdbuserr.name &&
+        (STREQ(systemdbuserr.name, "org.freedesktop.DBus.Error.FileNotFound") ||
+         STREQ(systemdbuserr.name, "org.freedesktop.DBus.Error.NoServer"))) {
+        VIR_DEBUG("System DBus not available: %s", NULLSTR(systemdbuserr.message));
+        return false;
+    }
+    return true;
 }
 
 
@@ -1257,7 +1272,8 @@ int virDBusIsServiceEnabled(const char *name)
     if (!virDBusHasSystemBus())
         return -2;
 
-    conn = virDBusGetSystemBus();
+    if (!(conn = virDBusGetSystemBus()))
+        return -1;
 
     if (virDBusCallMethod(conn,
                           &reply,
