@@ -687,6 +687,11 @@ qemuStateInitialize(bool privileged,
                              cfg->webSocketPortMax)) == NULL)
         goto error;
 
+    if ((qemu_driver->migrationPorts =
+         virPortAllocatorNew(QEMU_MIGRATION_PORT_MIN,
+                             QEMU_MIGRATION_PORT_MAX)) == NULL)
+        goto error;
+
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
@@ -993,6 +998,7 @@ qemuStateCleanup(void) {
     virObjectUnref(qemu_driver->domains);
     virObjectUnref(qemu_driver->remotePorts);
     virObjectUnref(qemu_driver->webSocketPorts);
+    virObjectUnref(qemu_driver->migrationPorts);
 
     virObjectUnref(qemu_driver->xmlopt);
 
