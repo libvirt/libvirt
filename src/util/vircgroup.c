@@ -1796,13 +1796,6 @@ virCgroupPathOfController(virCgroupPtr group,
 int
 virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
 {
-    if (weight > 1000 || weight < 100) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("weight '%u' must be in range (100, 1000)"),
-                       weight);
-        return -1;
-    }
-
     return virCgroupSetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_BLKIO,
                                 "blkio.weight",
@@ -1853,13 +1846,6 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
     char *str;
     struct stat sb;
     int ret;
-
-    if (weight && (weight > 1000 || weight < 100)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("weight '%u' must be in range (100, 1000)"),
-                       weight);
-        return -1;
-    }
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
