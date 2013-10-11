@@ -980,6 +980,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virErrorPtr err = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCgroupPtr selfcgroup;
+    int status;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1182,8 +1183,17 @@ int virLXCProcessStart(virConnectPtr conn,
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof(ebuf)));
 
-    if (virCommandRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
+
+    if (status != 0) {
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) <= 0)
+            snprintf(ebuf, sizeof(ebuf), "unexpected exit status %d", status);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("guest failed to start: %s"), ebuf);
+        goto cleanup;
+    }
+
 
     if (VIR_CLOSE(handshakefds[1]) < 0) {
         virReportSystemError(errno, "%s", _("could not close handshake fd"));
@@ -1193,16 +1203,23 @@ int virLXCProcessStart(virConnectPtr conn,
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
      * pid file out to disk & created their cgroup */
-    if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
+    if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm))) {
+        /* Intentionally overwrite the real monitor error message,
+         * since a better one is almost always found in the logs
+         */
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0) {
+            virResetLastError();
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("guest failed to start: %s"), ebuf);
+        }
         goto cleanup;
+    }
 
     /* And get its pid */
     if ((r = virPidFileRead(cfg->stateDir, vm->def->name, &vm->pid)) < 0) {
-        char out[1024];
-
-        if (virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) > 0)
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) > 0)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("guest failed to start: %s"), out);
+                           _("guest failed to start: %s"), ebuf);
         else
             virReportSystemError(-r,
                                  _("Failed to read pid file %s/%s.pid"),
