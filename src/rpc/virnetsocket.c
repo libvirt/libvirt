@@ -1197,11 +1197,35 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
         goto cleanup;
     }
 
-    /* PID and process creation time are not supported on BSDs */
+    /* PID and process creation time are not supported on BSDs by
+     * LOCAL_PEERCRED.
+     */
     *pid = -1;
     *timestamp = -1;
     *uid = cr.cr_uid;
     *gid = cr.cr_gid;
+
+# ifdef LOCAL_PEERPID
+    /* Exists on Mac OS X 10.8 for retrieving the peer's PID */
+    cr_len = sizeof(*pid);
+
+    if (getsockopt(sock->fd, VIR_SOL_PEERCRED, LOCAL_PEERPID, pid, &cr_len) < 0) {
+        /* Ensure this is set to something sane as there are no guarantees
+         * as to what its set to now.
+         */
+        *pid = -1;
+
+        /* If this was built on a system with LOCAL_PEERPID defined but
+         * the kernel doesn't support it we'll get back EOPNOTSUPP so
+         * treat all errors but EOPNOTSUPP as fatal
+         */
+        if (errno != EOPNOTSUPP) {
+            virReportSystemError(errno, "%s",
+                    _("Failed to get client socket PID"));
+            goto cleanup;
+        }
+    }
+# endif
 
     ret = 0;
 
