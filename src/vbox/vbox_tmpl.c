@@ -1912,6 +1912,26 @@ cleanup:
     return ret;
 }
 
+static virDomainState vboxConvertState(enum MachineState state) {
+    switch (state) {
+        case MachineState_Running:
+            return VIR_DOMAIN_RUNNING;
+        case MachineState_Stuck:
+            return VIR_DOMAIN_BLOCKED;
+        case MachineState_Paused:
+            return VIR_DOMAIN_PAUSED;
+        case MachineState_Stopping:
+            return VIR_DOMAIN_SHUTDOWN;
+        case MachineState_PoweredOff:
+            return VIR_DOMAIN_SHUTOFF;
+        case MachineState_Aborted:
+            return VIR_DOMAIN_CRASHED;
+        case MachineState_Null:
+        default:
+            return VIR_DOMAIN_NOSTATE;
+    }
+}
+
 static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
@@ -1972,30 +1992,7 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
                 info->nrVirtCpu = CPUCount;
                 info->memory = memorySize * 1024;
                 info->maxMem = maxMemorySize * 1024;
-                switch (state) {
-                    case MachineState_Running:
-                        info->state = VIR_DOMAIN_RUNNING;
-                        break;
-                    case MachineState_Stuck:
-                        info->state = VIR_DOMAIN_BLOCKED;
-                        break;
-                    case MachineState_Paused:
-                        info->state = VIR_DOMAIN_PAUSED;
-                        break;
-                    case MachineState_Stopping:
-                        info->state = VIR_DOMAIN_SHUTDOWN;
-                        break;
-                    case MachineState_PoweredOff:
-                        info->state = VIR_DOMAIN_SHUTOFF;
-                        break;
-                    case MachineState_Aborted:
-                        info->state = VIR_DOMAIN_CRASHED;
-                        break;
-                    case MachineState_Null:
-                    default:
-                        info->state = VIR_DOMAIN_NOSTATE;
-                        break;
-                }
+                info->state = vboxConvertState(state);
 
                 ret = 0;
             }
@@ -2038,30 +2035,7 @@ vboxDomainGetState(virDomainPtr dom,
 
     machine->vtbl->GetState(machine, &mstate);
 
-    switch (mstate) {
-    case MachineState_Running:
-        *state = VIR_DOMAIN_RUNNING;
-        break;
-    case MachineState_Stuck:
-        *state = VIR_DOMAIN_BLOCKED;
-        break;
-    case MachineState_Paused:
-        *state = VIR_DOMAIN_PAUSED;
-        break;
-    case MachineState_Stopping:
-        *state = VIR_DOMAIN_SHUTDOWN;
-        break;
-    case MachineState_PoweredOff:
-        *state = VIR_DOMAIN_SHUTOFF;
-        break;
-    case MachineState_Aborted:
-        *state = VIR_DOMAIN_CRASHED;
-        break;
-    case MachineState_Null:
-    default:
-        *state = VIR_DOMAIN_NOSTATE;
-        break;
-    }
+    *state = vboxConvertState(mstate);
 
     if (reason)
         *reason = 0;
