@@ -145,6 +145,10 @@ mymain(void)
 #define DO_TEST_PARSE(name, doc)                \
     DO_TEST_FULL(name, FromString, doc, NULL, true)
 
+#define DO_TEST_PARSE_FAIL(name, doc)           \
+    DO_TEST_FULL(name, FromString, doc, NULL, false)
+
+
     DO_TEST_PARSE("Simple", "{\"return\": {}, \"id\": \"libvirt-1\"}");
     DO_TEST_PARSE("NotSoSimple", "{\"QMP\": {\"version\": {\"qemu\":"
             "{\"micro\": 91, \"minor\": 13, \"major\": 0},"
@@ -187,6 +191,22 @@ mymain(void)
                  true);
     DO_TEST_FULL("add and remove", AddRemove,
                  "[ 1 ]", NULL, false);
+
+
+    DO_TEST_PARSE("almost nothing", "[]");
+    DO_TEST_PARSE_FAIL("nothing", "");
+
+    DO_TEST_PARSE("number without garbage", "[ 234545 ]");
+    DO_TEST_PARSE_FAIL("number with garbage", "[ 2345b45 ]");
+
+    DO_TEST_PARSE("float without garbage", "[ 0.0314159e+100 ]");
+    DO_TEST_PARSE_FAIL("float with garbage", "[ 0.0314159ee+100 ]");
+
+    DO_TEST_PARSE("string", "[ \"The meaning of life\" ]");
+
+    DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");
+    DO_TEST_PARSE_FAIL("array of an object with an array as a key",
+                       "[ {[\"key1\", \"key2\"]: \"value\"} ]");
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
