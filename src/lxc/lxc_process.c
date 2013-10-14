@@ -217,7 +217,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virSystemdTerminateMachine(vm->def->name, "lxc", true);
 
 
-    /* now that we know it's stopped call the hook if present */
+    /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
         char *xml = virDomainDefFormat(vm->def, 0);
 
