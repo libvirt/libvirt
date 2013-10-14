@@ -807,6 +807,20 @@ cleanup:
 }
 
 
+static bool
+virLXCProcessIgnorableLogLine(const char *str)
+{
+    if (virLogProbablyLogMessage(str))
+        return true;
+    if (strstr(str, "PATH="))
+        return true;
+    if (strstr(str, "error receiving signal from container"))
+        return true;
+    if (STREQ(str, ""))
+        return true;
+    return false;
+}
+
 static int
 virLXCProcessReadLogOutputData(virDomainObjPtr vm,
                                int fd,
@@ -844,7 +858,7 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
         /* Filter out debug messages from intermediate libvirt process */
         while ((eol = strchr(filter_next, '\n'))) {
             *eol = '\0';
-            if (virLogProbablyLogMessage(filter_next)) {
+            if (virLXCProcessIgnorableLogLine(filter_next)) {
                 memmove(filter_next, eol + 1, got - (eol - buf));
                 got -= eol + 1 - filter_next;
             } else {
