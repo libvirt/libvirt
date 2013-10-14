@@ -136,6 +136,10 @@
                 <a href="archnode.html">Node Devices</a>
                 <span>Enumerating host node devices</span>
               </li>
+              <li>
+                <a href="secureusage.html">Secure usage</a>
+                <span>Secure usage of the libvirt APIs</span>
+              </li>
             </ul>
           </li>
           <li>
