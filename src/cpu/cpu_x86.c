@@ -542,8 +542,8 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Missing CPU vendor name"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing CPU vendor name"));
         goto ignore;
     }
 
@@ -556,7 +556,8 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     string = virXPathString("string(@string)", ctxt);
     if (!string) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing vendor string for CPU vendor %s"), vendor->name);
+                       _("Missing vendor string for CPU vendor %s"),
+                       vendor->name);
         goto ignore;
     }
     if (strlen(string) != VENDOR_STRING_LENGTH) {
