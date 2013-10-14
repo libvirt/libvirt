@@ -16,6 +16,11 @@
       <target dev='fda' bus='fdc'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='file' device='floppy'>
+      <source file='[datastore] directory/floppy'/>
+      <target dev='fdb' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
     <controller type='fdc' index='0'/>
     <video>
       <model type='vmvga' vram='4096'/>

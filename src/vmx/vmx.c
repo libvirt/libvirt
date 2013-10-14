@@ -2250,27 +2250,14 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-        if (virFileHasSuffix(fileName, ".flp")) {
-            if (fileType != NULL) {
-                if (STRCASENEQ(fileType, "file")) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Expecting VMX entry '%s' to be 'file' but "
-                                     "found '%s'"), fileType_name, fileType);
-                    goto cleanup;
-                }
-            }
-
-            (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
-            (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
-
-            if ((*def)->src == NULL) {
-                goto cleanup;
-            }
-        } else if (fileType != NULL && STRCASEEQ(fileType, "device")) {
+        if (fileType != NULL && STRCASEEQ(fileType, "device")) {
             (*def)->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             (*def)->src = fileName;
 
             fileName = NULL;
+        } else if (fileType != NULL && STRCASEEQ(fileType, "file")) {
+            (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
+            (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
@@ -3538,13 +3525,6 @@ virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
         virBufferAsprintf(buffer, "floppy%d.fileType = \"file\"\n", unit);
 
         if (def->src != NULL) {
-            if (! virFileHasSuffix(def->src, ".flp")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Image file for floppy '%s' has unsupported "
-                                 "suffix, expecting '.flp'"), def->dst);
-                return -1;
-            }
-
             fileName = ctx->formatFileName(def->src, ctx->opaque);
 
             if (fileName == NULL) {
