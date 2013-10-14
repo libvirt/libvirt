@@ -1905,6 +1905,15 @@ cleanup:
         ret = virCommandExec(cmd);
     }
 
+    if (ret != 0) {
+        virErrorPtr err = virGetLastError();
+        if (err && err->message)
+            fprintf(stderr, "%s\n", err->message);
+        else
+            fprintf(stderr, "%s\n",
+                    _("Unknown failure in libvirt_lxc startup"));
+    }
+
     virCommandFree(cmd);
     return ret;
 }
