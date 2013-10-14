@@ -1923,6 +1923,7 @@ static virDomainState vboxConvertState(enum MachineState state) {
         case MachineState_Stopping:
             return VIR_DOMAIN_SHUTDOWN;
         case MachineState_PoweredOff:
+        case MachineState_Saved:
             return VIR_DOMAIN_SHUTOFF;
         case MachineState_Aborted:
             return VIR_DOMAIN_CRASHED;
