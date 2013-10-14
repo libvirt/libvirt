@@ -44,6 +44,7 @@
 #include "qemu_bridge_filter.h"
 #include "qemu_migration.h"
 
+#include "cpu/cpu.h"
 #include "datatypes.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -3463,6 +3464,47 @@ qemuValidateCpuMax(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     return true;
 }
 
+
+static bool
+qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver, virDomainObjPtr vm)
+{
+    virDomainDefPtr def = vm->def;
+    virArch arch = def->os.arch;
+    virCPUDataPtr guestcpu = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool ret = false;
+
+    switch (arch) {
+    case VIR_ARCH_I686:
+    case VIR_ARCH_X86_64:
+        qemuDomainObjEnterMonitor(driver, vm);
+        guestcpu = qemuMonitorGetGuestCPU(priv->mon, arch);
+        qemuDomainObjExitMonitor(driver, vm);
+
+        if (!(guestcpu))
+            goto cleanup;
+
+        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_DOMAIN_FEATURE_STATE_ON) {
+            if (!cpuHasFeature(guestcpu, VIR_CPU_x86_KVM_PV_UNHALT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support paravirtual spinlocks"));
+                goto cleanup;
+            }
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    ret = true;
+
+cleanup:
+    cpuDataFree(guestcpu);
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -3921,6 +3963,10 @@ int qemuProcessStart(virConnectPtr conn,
         virResetLastError();
         priv->agentError = true;
     }
+
+    VIR_DEBUG("Detecting if required emulator features are present");
+    if (!qemuProcessVerifyGuestCPU(driver, vm))
+        goto cleanup;
 
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuProcessDetectVcpuPIDs(driver, vm) < 0)
