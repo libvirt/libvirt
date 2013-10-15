@@ -10339,8 +10339,8 @@ virDomainChrGetDomainPtrs(const virDomainDef *vmdef,
                           const virDomainChrDef ***arrPtr,
                           size_t *cntPtr)
 {
-    virDomainChrDef ***arrVar;
-    size_t *cntVar;
+    virDomainChrDef ***arrVar = NULL;
+    size_t *cntVar = NULL;
 
     /* Cast away const; we add it back in the final assignment.  */
     virDomainChrGetDomainPtrsInternal((virDomainDefPtr) vmdef, type,
@@ -10359,8 +10359,8 @@ int
 virDomainChrInsert(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr)
 {
-    virDomainChrDefPtr **arrPtr;
-    size_t *cntPtr;
+    virDomainChrDefPtr **arrPtr = NULL;
+    size_t *cntPtr = NULL;
 
     virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
@@ -10371,8 +10371,8 @@ virDomainChrDefPtr
 virDomainChrRemove(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr)
 {
-    virDomainChrDefPtr ret, **arrPtr;
-    size_t i, *cntPtr;
+    virDomainChrDefPtr ret, **arrPtr = NULL;
+    size_t i, *cntPtr = NULL;
 
     virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
