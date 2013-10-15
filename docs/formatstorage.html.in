@@ -21,8 +21,10 @@
       <code>iscsi</code>, <code>logical</code>, <code>scsi</code>
       (all <span class="since">since 0.4.1</span>), <code>mpath</code>
       (<span class="since">since 0.7.1</span>), <code>rbd</code>
-      (<span class="since">since 0.9.13</span>), or <code>sheepdog</code>
-      (<span class="since">since 0.10.0</span>). This corresponds to the
+      (<span class="since">since 0.9.13</span>), <code>sheepdog</code>
+      (<span class="since">since 0.10.0</span>),
+      or <code>gluster</code> (<span class="since">since
+      1.2.0</span>). This corresponds to the
       storage backend drivers listed further along in this document.
     </p>
     <h3><a name="StoragePoolFirst">General metadata</a></h3>
@@ -101,7 +103,9 @@
         path to the block device node. <span class="since">Since 0.4.1</span></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
-        type <code>dir</code>). May
+        type <code>dir</code>), or optionally to select a subdirectory
+        within a pool that resembles a filesystem (pool
+        type <code>gluster</code>). May
         only occur once. Contains a single attribute <code>path</code>
         which is the fully qualified path to the backing directory.
         <span class="since">Since 0.4.1</span></dd>
@@ -129,7 +133,7 @@
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
         remote server (pool types <code>netfs</code>, <code>iscsi</code>,
-        <code>rbd</code>, <code>sheepdog</code>). Will be
+        <code>rbd</code>, <code>sheepdog</code>, <code>gluster</code>). Will be
         used in combination with a <code>directory</code>
         or <code>device</code> element. Contains an attribute <code>name</code>
         which is the hostname or IP address of the server. May optionally
@@ -160,7 +164,8 @@
       <dt><code>name</code></dt>
       <dd>Provides the source for pools backed by storage from a
         named element (pool types <code>logical</code>, <code>rbd</code>,
-        <code>sheepdog</code>).  Contains a string identifier.
+        <code>sheepdog</code>, <code>gluster</code>).  Contains a
+        string identifier.
         <span class="since">Since 0.4.5</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the format of the pool (pool

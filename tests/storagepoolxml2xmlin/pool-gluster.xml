@@ -1,0 +1,8 @@
+<pool type='gluster'>
+  <source>
+    <name>volume</name>
+    <host name='localhost'/>
+  </source>
+  <name>mygluster</name>
+  <uuid>65fcba04-5b13-bd93-cff3-52ce48e11ad8</uuid>
+</pool>

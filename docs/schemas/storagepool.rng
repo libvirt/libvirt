@@ -21,6 +21,7 @@
         <ref name='poolmpath'/>
         <ref name='poolrbd'/>
         <ref name='poolsheepdog'/>
+        <ref name='poolgluster'/>
       </choice>
     </element>
   </define>
@@ -142,6 +143,17 @@
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
       <ref name='sourcesheepdog'/>
+    </interleave>
+  </define>
+
+  <define name='poolgluster'>
+    <attribute name='type'>
+      <value>gluster</value>
+    </attribute>
+    <interleave>
+      <ref name='commonmetadata'/>
+      <ref name='sizing'/>
+      <ref name='sourcegluster'/>
     </interleave>
   </define>
 
@@ -309,7 +321,7 @@
   <define name='sourceinfodir'>
     <element name='dir'>
       <attribute name='path'>
-        <ref name='absFilePath'/>
+        <ref name='absDirPath'/>
       </attribute>
       <empty/>
     </element>
@@ -550,6 +562,18 @@
       <interleave>
         <ref name='sourceinfohost'/>
         <ref name='sourceinfoname'/>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='sourcegluster'>
+    <element name='source'>
+      <interleave>
+        <ref name='sourceinfohost'/>
+        <ref name='sourceinfoname'/>
+        <optional>
+          <ref name='sourceinfodir'/>
+        </optional>
       </interleave>
     </element>
   </define>

@@ -1,0 +1,12 @@
+<pool type='gluster'>
+  <name>mygluster</name>
+  <uuid>65fcba04-5b13-bd93-cff3-52ce48e11ad8</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <host name='localhost'/>
+    <dir path='/sub'/>
+    <name>volume</name>
+  </source>
+</pool>

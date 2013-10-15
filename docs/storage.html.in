@@ -114,6 +114,9 @@
       <li>
         <a href="#StorageBackendSheepdog">Sheepdog backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendGluster">Gluster backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
@@ -280,7 +283,9 @@
         <code>glusterfs</code> - use the glusterfs FUSE file system.
         For now, the <code>dir</code> specified as the source can only
         be a gluster volume name, as gluster does not provide a way to
-        directly mount subdirectories within a volume.
+        directly mount subdirectories within a volume.  (To bypass the
+        file system completely, see
+        the <a href="#StorageBackendGluster">gluster</a> pool.)
       </li>
       <li>
         <code>cifs</code> - use the SMB (samba) or CIFS file system
@@ -650,6 +655,90 @@
     <h3>Valid volume format types</h3>
     <p>
       The Sheepdog pool does not use the volume format type element.
+    </p>
+
+    <h2><a name="StorageBackendGluster">Gluster pools</a></h2>
+    <p>
+      This provides a pool based on native Gluster access.  Gluster is
+      a distributed file system that can be exposed to the user via
+      FUSE, NFS or SMB (see the <a href="#StorageBackendNetfs">netfs</a>
+      pool for that usage); but for minimal overhead, the ideal access
+      is via native access (only possible for QEMU/KVM compiled with
+      libgfapi support).
+
+      The cluster and storage volume must already be running, and it
+      is recommended that the volume be configured with <code>gluster
+      volume set $volname storage.owner-uid=$uid</code>
+      and <code>gluster volume set $volname
+      storage.owner-gid=$gid</code> for the uid and gid that qemu will
+      be run as.  It may also be necessary to
+      set <code>rpc-auth-allow-insecure on</code> for the glusterd
+      service, as well as <code>gluster set $volname
+      server.allow-insecure on</code>, to allow access to the gluster
+      volume.
+
+      <span class="since">Since 1.2.0</span>
+    </p>
+
+    <h3>Example pool input</h3>
+    <p>A gluster volume corresponds to a libvirt storage pool.  If a
+      gluster volume could be mounted as <code>mount -t glusterfs
+      localhost:/volname /some/path</code>, then the following example
+      will describe the same pool without having to create a local
+      mount point.  Remember that with gluster, the mount point can be
+      through any machine in the cluster, and gluster will
+      automatically pick the ideal transport to the actual bricks
+      backing the gluster volume, even if on a different host than the
+      one named in the <code>host</code> designation.
+      The <code>&lt;name&gt;</code> element is always the volume name
+      (no slash).  The pool source also supports an
+      optional <code>&lt;dir&gt;</code> element with
+      a <code>path</code> attribute that lists the absolute name of a
+      subdirectory relative to the gluster volume to use instead of
+      the top-level directory of the volume.</p>
+    <pre>
+      &lt;pool type="gluster"&gt;
+        &lt;name&gt;myglusterpool&lt;/name&gt;
+        &lt;source&gt;
+          &lt;name&gt;volname&lt;/name&gt;
+          &lt;host name='localhost'/&gt;
+          &lt;dir path='/'/&gt;
+        &lt;/source&gt;
+      &lt;/pool&gt;</pre>
+
+    <h3>Example volume output</h3>
+    <p>Libvirt storage volumes associated with a gluster pool
+      correspond to the files that can be found when mounting the
+      gluster volume.  The <code>name</code> is the path relative to
+      the effective mount specified for the pool; and
+      the <code>key</code> is a path including the gluster volume
+      name and any subdirectory specified by the pool.</p>
+    <pre>
+       &lt;volume&gt;
+         &lt;name&gt;myfile&lt;/name&gt;
+         &lt;key&gt;volname/myfile&lt;/key&gt;
+         &lt;source&gt;
+         &lt;/source&gt;
+         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+       &lt;/volume&gt;</pre>
+
+    <h3>Example disk attachment</h3>
+    <p>Files within a gluster volume can be attached to Qemu guests.
+    Information about attaching a Gluster image to a
+    guest can be found
+    at the <a href="formatdomain.html#elementsDisks">format domain</a>
+    page.</p>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The Gluster pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The valid volume types are the same as for the <code>directory</code>
+      pool type.
     </p>
 
   </body>
