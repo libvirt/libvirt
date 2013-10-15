@@ -54,6 +54,7 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlout \
 	interfaceschemadata \
 	lxcxml2xmldata \
+	lxcxml2xmloutdata \
 	networkschematest \
 	networkxml2xmlin \
 	networkxml2xmlout \
