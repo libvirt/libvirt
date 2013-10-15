@@ -94,7 +94,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
             if (pool->def->source.auth.cephx.secret.uuidUsable) {
                 virReportError(VIR_ERR_NO_SECRET,
                                _("no secret matches uuid '%s'"),
-                                 pool->def->source.auth.cephx.secret.uuid);
+                                 secretUuid);
             } else {
                 virReportError(VIR_ERR_NO_SECRET,
                                _("no secret matches usage value '%s'"),
@@ -112,7 +112,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
                                _("could not get the value of the secret "
                                  "for username '%s' using uuid '%s'"),
                                pool->def->source.auth.cephx.username,
-                               pool->def->source.auth.cephx.secret.uuid);
+                               secretUuid);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "

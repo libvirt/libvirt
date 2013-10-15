@@ -44,6 +44,7 @@
 #include "virobject.h"
 #include "virrandom.h"
 #include "virstring.h"
+#include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -702,6 +703,7 @@ virStorageBackendISCSISetAuth(const char *portal,
     unsigned char *secret_value = NULL;
     virStoragePoolAuthChap chap;
     int ret = -1;
+    char uuidStr[VIR_UUID_STRING_BUFLEN];
 
     if (def->source.authType == VIR_STORAGE_POOL_AUTH_NONE)
         return 0;
@@ -733,10 +735,11 @@ virStorageBackendISCSISetAuth(const char *portal,
                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
         if (!secret_value) {
             if (chap.secret.uuidUsable) {
+                virUUIDFormat(chap.secret.uuid, uuidStr);
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
                                  "for username %s using uuid '%s'"),
-                                 chap.username, chap.secret.uuid);
+                                 chap.username, uuidStr);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret "
@@ -747,9 +750,10 @@ virStorageBackendISCSISetAuth(const char *portal,
         }
     } else {
         if (chap.secret.uuidUsable) {
+            virUUIDFormat(chap.secret.uuid, uuidStr);
             virReportError(VIR_ERR_NO_SECRET,
                            _("no secret matches uuid '%s'"),
-                           chap.secret.uuid);
+                           uuidStr);
         } else {
             virReportError(VIR_ERR_NO_SECRET,
                            _("no secret matches usage value '%s'"),
