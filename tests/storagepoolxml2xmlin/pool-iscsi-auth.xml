@@ -1,19 +1,19 @@
 <pool type='iscsi'>
-  <name>virtimages</name>
-  <uuid>e9392370-2917-565e-692b-d057f46512d6</uuid>
   <source>
-    <host name="iscsi.example.com"/>
-    <device path="demo-target"/>
     <auth type='chap' username='admin'>
       <secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/>
     </auth>
+    <device path="demo-target"/>
+    <host name="iscsi.example.com"/>
   </source>
+  <uuid>e9392370-2917-565e-692b-d057f46512d6</uuid>
   <target>
-    <path>/dev/disk/by-path</path>
     <permissions>
-      <mode>0700</mode>
       <owner>0</owner>
+      <mode>0700</mode>
       <group>0</group>
     </permissions>
+    <path>/dev/disk/by-path</path>
   </target>
+  <name>virtimages</name>
 </pool>
