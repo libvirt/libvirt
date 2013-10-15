@@ -3181,11 +3181,13 @@ qemuGetSecretString(virConnectPtr conn,
     size_t secret_size;
     virSecretPtr sec = NULL;
     char *secret = NULL;
+    char uuidStr[VIR_UUID_STRING_BUFLEN];
 
     /* look up secret */
     switch (diskSecretType) {
     case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
         sec = virSecretLookupByUUID(conn, uuid);
+        virUUIDFormat(uuid, uuidStr);
         break;
     case VIR_DOMAIN_DISK_SECRET_TYPE_USAGE:
         sec = virSecretLookupByUsage(conn, secretUsageType, usage);
@@ -3196,7 +3198,7 @@ qemuGetSecretString(virConnectPtr conn,
         if (diskSecretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
             virReportError(VIR_ERR_NO_SECRET,
                            _("%s no secret matches uuid '%s'"),
-                           scheme, uuid);
+                           scheme, uuidStr);
         } else {
             virReportError(VIR_ERR_NO_SECRET,
                            _("%s no secret matches usage value '%s'"),
@@ -3212,7 +3214,7 @@ qemuGetSecretString(virConnectPtr conn,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not get value of the secret for "
                              "username '%s' using uuid '%s'"),
-                           username, uuid);
+                           username, uuidStr);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not get value of the secret for "
