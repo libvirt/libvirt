@@ -121,15 +121,6 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              const char *sysfs_dir,
                              virNodeInfoPtr nodeinfo);
 
-static int linuxNodeGetCPUStats(FILE *procstat,
-                                int cpuNum,
-                                virNodeCPUStatsPtr params,
-                                int *nparams);
-static int linuxNodeGetMemoryStats(FILE *meminfo,
-                                   int cellNum,
-                                   virNodeMemoryStatsPtr params,
-                                   int *nparams);
-
 /* Return the positive decimal contents of the given
  * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
  * and the file could not be found, return that instead of an error;
@@ -617,10 +608,11 @@ cleanup:
 
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
-int linuxNodeGetCPUStats(FILE *procstat,
-                         int cpuNum,
-                         virNodeCPUStatsPtr params,
-                         int *nparams)
+static int
+linuxNodeGetCPUStats(FILE *procstat,
+                     int cpuNum,
+                     virNodeCPUStatsPtr params,
+                     int *nparams)
 {
     int ret = -1;
     char line[1024];
@@ -720,10 +712,11 @@ cleanup:
     return ret;
 }
 
-int linuxNodeGetMemoryStats(FILE *meminfo,
-                            int cellNum,
-                            virNodeMemoryStatsPtr params,
-                            int *nparams)
+static int
+linuxNodeGetMemoryStats(FILE *meminfo,
+                        int cellNum,
+                        virNodeMemoryStatsPtr params,
+                        int *nparams)
 {
     int ret = -1;
     size_t i = 0, j = 0, k = 0;
