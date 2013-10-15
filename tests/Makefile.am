@@ -68,6 +68,7 @@ EXTRA_DIST =		\
 	fchostdata \
 	interfaceschemadata \
 	lxcxml2xmldata \
+	lxcxml2xmloutdata \
 	networkschematest \
 	networkxml2xmlin \
 	networkxml2xmlout \
