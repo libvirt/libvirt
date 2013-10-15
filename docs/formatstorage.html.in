@@ -18,9 +18,12 @@
       The top level tag for a storage pool document is 'pool'. It has
       a single attribute <code>type</code>, which is one of <code>dir</code>,
       <code>fs</code>, <code>netfs</code>, <code>disk</code>,
-      <code>iscsi</code>, <code>logical</code>. This corresponds to the
+      <code>iscsi</code>, <code>logical</code>, <code>scsi</code>
+      (all <span class="since">since 0.4.1</span>), <code>mpath</code>
+      (<span class="since">since 0.7.1</span>), <code>rbd</code>
+      (<span class="since">since 0.9.13</span>), or <code>sheepdog</code>
+      (<span class="since">since 0.10.0</span>). This corresponds to the
       storage backend drivers listed further along in this document.
-      The storage pool XML format is available <span class="since">since 0.4.1</span>
     </p>
     <h3><a name="StoragePoolFirst">General metadata</a></h3>
 
@@ -64,7 +67,8 @@
     <p>
       A single <code>source</code> element is contained within the top level
       <code>pool</code> element. This tag is used to describe the source of
-      the storage pool. It can contain the following child elements:
+      the storage pool. The set of child elements that it will contain
+      depend on the pool type, but come from the following child elements:
     </p>
 
     <pre>
@@ -89,17 +93,21 @@
 
     <dl>
       <dt><code>device</code></dt>
-      <dd>Provides the source for pools backed by physical devices.
+      <dd>Provides the source for pools backed by physical devices
+        (pool types <code>fs</code>, <code>logical</code>, <code>disk</code>,
+        <code>iscsi</code>).
         May be repeated multiple times depending on backend driver. Contains
         a single attribute <code>path</code> which is the fully qualified
         path to the block device node. <span class="since">Since 0.4.1</span></dd>
-      <dt><code>directory</code></dt>
-      <dd>Provides the source for pools backed by directories. May
+      <dt><code>dir</code></dt>
+      <dd>Provides the source for pools backed by directories (pool
+        type <code>dir</code>). May
         only occur once. Contains a single attribute <code>path</code>
         which is the fully qualified path to the backing directory.
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>adapter</code></dt>
-      <dd>Provides the source for pools backed by SCSI adapters. May
+      <dd>Provides the source for pools backed by SCSI adapters (pool
+        type <code>scsi</code>). May
         only occur once. Attribute <code>name</code> is the SCSI adapter
         name (ex. "scsi_host1".  NB, although a name such as "host1" is
         still supported for backwards compatibility, it is not recommended).
@@ -120,7 +128,9 @@
         <span class="since">Since 0.6.2</span></dd>
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
-        remote server. Will be used in combination with a <code>directory</code>
+        remote server (pool types <code>netfs</code>, <code>iscsi</code>,
+        <code>rbd</code>, <code>sheepdog</code>). Will be
+        used in combination with a <code>directory</code>
         or <code>device</code> element. Contains an attribute <code>name</code>
         which is the hostname or IP address of the server. May optionally
         contain a <code>port</code> attribute for the protocol specific
@@ -128,18 +138,19 @@
       <dt><code>auth</code></dt>
       <dd>If present, the <code>auth</code> element provides the
         authentication credentials needed to access the source by the
-        setting of the <code>type</code> attribute. The <code>type</code>
-        must be either "chap" or "ceph". Additionally a mandatory attribute
+        setting of the <code>type</code> attribute (pool
+        types <code>iscsi</code>, <code>rbd</code>). The <code>type</code>
+        must be either "chap" or "ceph". Use "ceph" for
+        Ceph RBD (Rados Block Device) network sources and use "iscsi" for CHAP
+        (Challenge-Handshake Authentication Protocol) iSCSI
+        targets. Additionally a mandatory attribute
         <code>username</code> identifies the username to use during
         authentication as well as a sub-element <code>secret</code> with
         a mandatory attribute <code>type</code>, to tie back to a
         <a href="formatsecret.html">libvirt secret object</a> that
         holds the actual password or other credentials. The domain XML
         intentionally does not expose the password, only the reference
-        to the object that manages the password. The secret element
-        <code>type</code> must be either "ceph" or "iscsi". Use "ceph" for
-        Ceph RBD (Rados Block Device) network sources and use "iscsi" for CHAP
-        (Challenge-Handshake Authentication Protocol) iSCSI targets.
+        to the object that manages the password.
         The <code>secret</code> element requires either a <code>uuid</code>
         attribute with the UUID of the secret object or a <code>usage</code>
         attribute matching the key that was specified in the
@@ -148,11 +159,13 @@
       </dd>
       <dt><code>name</code></dt>
       <dd>Provides the source for pools backed by storage from a
-        named element (e.g., a logical volume group name).
-        Contains a string identifier.
+        named element (pool types <code>logical</code>, <code>rbd</code>,
+        <code>sheepdog</code>).  Contains a string identifier.
         <span class="since">Since 0.4.5</span></dd>
       <dt><code>format</code></dt>
-      <dd>Provides information about the format of the pool. This
+      <dd>Provides information about the format of the pool (pool
+        types <code>fs</code>, <code>netfs</code>, <code>disk</code>,
+        <code>logical</code>). This
         contains a single attribute <code>type</code> whose value is
         backend specific. This is typically used to indicate filesystem
         type, or network filesystem type, or partition table type, or
@@ -174,7 +187,11 @@
 
     <p>
       A single <code>target</code> element is contained within the top level
-      <code>pool</code> element. This tag is used to describe the mapping of
+      <code>pool</code> element for some types of pools (pool
+      types <code>dir</code>, <code>fs</code>, <code>netfs</code>,
+      <code>logical</code>, <code>disk</code>, <code>iscsi</code>,
+      <code>scsi</code>, <code>mpath</code>). This tag is used to
+      describe the mapping of
       the storage pool into the host filesystem. It can contain the following
       child elements:
     </p>
