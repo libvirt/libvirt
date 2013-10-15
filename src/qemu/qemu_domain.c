@@ -2235,12 +2235,9 @@ qemuDomainCleanupRemove(virDomainObjPtr vm,
     VIR_DEBUG("vm=%s, cb=%p", vm->def->name, cb);
 
     for (i = 0; i < priv->ncleanupCallbacks; i++) {
-        if (priv->cleanupCallbacks[i] == cb) {
-            memmove(priv->cleanupCallbacks + i,
-                    priv->cleanupCallbacks + i + 1,
-                    priv->ncleanupCallbacks - i - 1);
-            priv->ncleanupCallbacks--;
-        }
+        if (priv->cleanupCallbacks[i] == cb)
+            VIR_DELETE_ELEMENT_INPLACE(priv->cleanupCallbacks,
+                                       i, priv->ncleanupCallbacks);
     }
 
     VIR_SHRINK_N(priv->cleanupCallbacks,
