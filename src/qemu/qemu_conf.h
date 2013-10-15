@@ -155,6 +155,9 @@ struct _virQEMUDriverConfig {
     unsigned int keepAliveCount;
 
     int seccompSandbox;
+
+    int migrationPortMin;
+    int migrationPortMax;
 };
 
 /* Main driver state */

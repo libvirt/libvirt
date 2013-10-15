@@ -225,6 +225,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->webSocketPortMin = QEMU_WEBSOCKET_PORT_MIN;
     cfg->webSocketPortMax = QEMU_WEBSOCKET_PORT_MAX;
 
+    cfg->migrationPortMin = QEMU_MIGRATION_PORT_MIN;
+    cfg->migrationPortMax = QEMU_MIGRATION_PORT_MAX;
+
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
     /* For privileged driver, try and find hugepage mount automatically.
      * Non-privileged driver requires admin to create a dir for the
@@ -456,6 +459,24 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("%s: remote_display_port_min: min port must not be "
                           "greater than max port"), filename);
+        goto cleanup;
+    }
+
+    GET_VALUE_LONG("migration_port_min", cfg->migrationPortMin);
+    if (cfg->migrationPortMin <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s: migration_port_min: port must be greater than 0"),
+                        filename);
+        goto cleanup;
+    }
+
+    GET_VALUE_LONG("migration_port_max", cfg->migrationPortMax);
+    if (cfg->migrationPortMax > 65535 ||
+        cfg->migrationPortMax < cfg->migrationPortMin) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s: migration_port_max: port must be between "
+                          "the minimal port %d and 65535"),
+                       filename, cfg->migrationPortMin);
         goto cleanup;
     }
 
