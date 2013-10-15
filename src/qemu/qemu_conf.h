@@ -161,6 +161,8 @@ struct _virQEMUDriverConfig {
 
     /* The default for -incoming */
     char *migrationAddress;
+    int migrationPortMin;
+    int migrationPortMax;
 };
 
 /* Main driver state */

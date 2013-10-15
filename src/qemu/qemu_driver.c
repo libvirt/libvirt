@@ -688,8 +688,8 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     if ((qemu_driver->migrationPorts =
-         virPortAllocatorNew(QEMU_MIGRATION_PORT_MIN,
-                             QEMU_MIGRATION_PORT_MAX)) == NULL)
+         virPortAllocatorNew(cfg->migrationPortMin,
+                             cfg->migrationPortMax)) == NULL)
         goto error;
 
     if (qemuSecurityInit(qemu_driver) < 0)
