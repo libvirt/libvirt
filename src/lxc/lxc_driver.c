@@ -887,7 +887,7 @@ cleanup:
 }
 
 /**
- * lxcDomainCreateWithFlags:
+ * lxcDomainCreateWithFiles:
  * @dom: domain to start
  * @flags: Must be 0 for now
  *

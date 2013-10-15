@@ -308,7 +308,7 @@ fallback:
             goto cleanup;
         }
 
-        /* Check if the device's capability matches with provied
+        /* Check if the device's capability matches with provided
          * capabilities.
          */
         size_t j, k;
