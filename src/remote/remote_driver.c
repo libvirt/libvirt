@@ -3721,7 +3721,7 @@ static int remoteAuthCredSASL2Vir(int vircred)
  *
  * Build up the SASL callback structure. We register one callback for
  * each credential type that the libvirt client indicated they support.
- * We explicitly leav the callback function pointer at NULL though,
+ * We explicitly leave the callback function pointer at NULL though,
  * because we don't actually want to get SASL callbacks triggered.
  * Instead, we want the start/step functions to return SASL_INTERACT.
  * This lets us give the libvirt client a list of all required
