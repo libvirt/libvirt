@@ -70,12 +70,12 @@ esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
         goto cleanup;
     }
 
-    if (datastore == NULL) {
+    if (!datastore) {
         /* Not found, let the base storage driver handle error reporting */
         goto cleanup;
     }
 
-    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+    for (dynamicProperty = datastore->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "info")) {
             if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
@@ -87,11 +87,11 @@ esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
         }
     }
 
-    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo)) {
         *poolType = VIR_STORAGE_POOL_DIR;
-    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo)) {
         *poolType = VIR_STORAGE_POOL_NETFS;
-    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo)) {
         *poolType = VIR_STORAGE_POOL_FS;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -123,7 +123,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
         return -1;
     }
 
-    for (datastore = datastoreList; datastore != NULL;
+    for (datastore = datastoreList; datastore;
          datastore = datastore->_next) {
         ++count;
     }
@@ -159,9 +159,9 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
         goto cleanup;
     }
 
-    for (datastore = datastoreList; datastore != NULL;
+    for (datastore = datastoreList; datastore;
          datastore = datastore->_next) {
-        for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+        for (dynamicProperty = datastore->propSet; dynamicProperty;
              dynamicProperty = dynamicProperty->_next) {
             if (STREQ(dynamicProperty->name, "summary.name")) {
                 if (esxVI_AnyType_ExpectType(dynamicProperty->val,
@@ -215,7 +215,7 @@ esxStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (datastore == NULL) {
+    if (!datastore) {
         /* Not found, let the base storage driver handle error reporting */
         goto cleanup;
     }
@@ -233,7 +233,7 @@ esxStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (hostMount == NULL) {
+    if (!hostMount) {
         /* Not found, let the base storage driver handle error reporting */
         goto cleanup;
     }
@@ -273,7 +273,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
         goto cleanup;
     }
 
-    for (datastore = datastoreList; datastore != NULL;
+    for (datastore = datastoreList; datastore;
          datastore = datastore->_next) {
         esxVI_DatastoreHostMount_Free(&hostMount);
 
@@ -283,7 +283,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
             goto cleanup;
         }
 
-        if (hostMount == NULL) {
+        if (!hostMount) {
             /*
              * Storage pool is not of VMFS type, leave error reporting to the
              * base storage driver.
@@ -299,7 +299,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
         }
     }
 
-    if (datastore == NULL) {
+    if (!datastore) {
         /* Not found, let the base storage driver handle error reporting */
         goto cleanup;
     }
@@ -372,7 +372,7 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool,
     if (accessible == esxVI_Boolean_True) {
         info->state = VIR_STORAGE_POOL_RUNNING;
 
-        for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+        for (dynamicProperty = datastore->propSet; dynamicProperty;
              dynamicProperty = dynamicProperty->_next) {
             if (STREQ(dynamicProperty->name, "summary.capacity")) {
                 if (esxVI_AnyType_ExpectType(dynamicProperty->val,
@@ -446,7 +446,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     def.target.path = hostMount->mountInfo->path;
 
     if (accessible == esxVI_Boolean_True) {
-        for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+        for (dynamicProperty = datastore->propSet; dynamicProperty;
              dynamicProperty = dynamicProperty->_next) {
             if (STREQ(dynamicProperty->name, "summary.capacity")) {
                 if (esxVI_AnyType_ExpectType(dynamicProperty->val,
@@ -468,7 +468,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         def.allocation = def.capacity - def.available;
     }
 
-    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+    for (dynamicProperty = datastore->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "info")) {
             if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
@@ -481,9 +481,9 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     }
 
     /* See vSphere API documentation about HostDatastoreSystem for details */
-    if (esxVI_LocalDatastoreInfo_DynamicCast(info) != NULL) {
+    if (esxVI_LocalDatastoreInfo_DynamicCast(info)) {
         def.type = VIR_STORAGE_POOL_DIR;
-    } else if ((nasInfo = esxVI_NasDatastoreInfo_DynamicCast(info)) != NULL) {
+    } else if ((nasInfo = esxVI_NasDatastoreInfo_DynamicCast(info))) {
         if (VIR_ALLOC_N(def.source.hosts, 1) < 0)
             goto cleanup;
         def.type = VIR_STORAGE_POOL_NETFS;
@@ -500,7 +500,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
                            nasInfo->nas->type);
             goto cleanup;
         }
-    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(info) != NULL) {
+    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(info)) {
         def.type = VIR_STORAGE_POOL_FS;
         /*
          * FIXME: I'm not sure how to represent the source and target of a
@@ -541,9 +541,9 @@ esxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     }
 
     /* Interpret search result */
-    for (searchResults = searchResultsList; searchResults != NULL;
+    for (searchResults = searchResultsList; searchResults;
          searchResults = searchResults->_next) {
-        for (fileInfo = searchResults->file; fileInfo != NULL;
+        for (fileInfo = searchResults->file; fileInfo;
              fileInfo = fileInfo->_next) {
             ++count;
         }
@@ -573,7 +573,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     int count = 0;
     size_t i;
 
-    if (names == NULL || maxnames < 0) {
+    if (!names || maxnames < 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
         return -1;
     }
@@ -588,7 +588,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     }
 
     /* Interpret search result */
-    for (searchResults = searchResultsList; searchResults != NULL;
+    for (searchResults = searchResultsList; searchResults;
          searchResults = searchResults->_next) {
         VIR_FREE(directoryAndFileName);
 
@@ -606,7 +606,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
         }
 
         /* Build volume names */
-        for (fileInfo = searchResults->file; fileInfo != NULL;
+        for (fileInfo = searchResults->file; fileInfo;
              fileInfo = fileInfo->_next) {
             if (length < 1) {
                 if (VIR_STRDUP(names[count], fileInfo->path) < 0)
@@ -738,7 +738,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         goto cleanup;
     }
 
-    for (datastore = datastoreList; datastore != NULL;
+    for (datastore = datastoreList; datastore;
          datastore = datastore->_next) {
         datastoreName = NULL;
 
@@ -756,7 +756,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         }
 
         /* Interpret search result */
-        for (searchResults = searchResultsList; searchResults != NULL;
+        for (searchResults = searchResultsList; searchResults;
              searchResults = searchResults->_next) {
             VIR_FREE(directoryAndFileName);
 
@@ -774,7 +774,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
             }
 
             /* Build datastore path and query the UUID */
-            for (fileInfo = searchResults->file; fileInfo != NULL;
+            for (fileInfo = searchResults->file; fileInfo;
                  fileInfo = fileInfo->_next) {
                 VIR_FREE(datastorePath);
 
@@ -791,7 +791,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
                                 volumeName) < 0)
                     goto cleanup;
 
-                if (esxVI_VmDiskFileInfo_DynamicCast(fileInfo) == NULL) {
+                if (!esxVI_VmDiskFileInfo_DynamicCast(fileInfo)) {
                     /* Only a VirtualDisk has a UUID */
                     continue;
                 }
@@ -871,7 +871,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     /* Parse config */
     def = virStorageVolDefParseString(&poolDef, xmldesc);
 
-    if (def == NULL) {
+    if (!def) {
         goto cleanup;
     }
 
@@ -884,7 +884,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     /* Validate config */
     tmp = strrchr(def->name, '/');
 
-    if (tmp == NULL || *def->name == '/' || tmp[1] == '\0') {
+    if (!tmp || *def->name == '/' || tmp[1] == '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Volume name '%s' doesn't have expected format "
                          "'<directory>/<file>'"), def->name);
@@ -912,14 +912,14 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
 
         directoryName = esxUtil_EscapeDatastoreItem(unescapedDirectoryName);
 
-        if (directoryName == NULL) {
+        if (!directoryName) {
             goto cleanup;
         }
 
         fileName = esxUtil_EscapeDatastoreItem(unescapedDirectoryAndFileName +
                                                strlen(unescapedDirectoryName) + 1);
 
-        if (fileName == NULL) {
+        if (!fileName) {
             goto cleanup;
         }
 
@@ -938,7 +938,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
             goto cleanup;
         }
 
-        if (fileInfo == NULL) {
+        if (!fileInfo) {
             if (esxVI_MakeDirectory(priv->primary, datastorePathWithoutFileName,
                                     priv->primary->datacenter->_reference,
                                     esxVI_Boolean_True) < 0) {
@@ -1030,7 +1030,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
                               &esxStorageBackendVMFS, NULL);
 
   cleanup:
-    if (virtualDiskSpec != NULL) {
+    if (virtualDiskSpec) {
         virtualDiskSpec->diskType = NULL;
         virtualDiskSpec->adapterType = NULL;
     }
@@ -1097,7 +1097,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     /* Parse config */
     def = virStorageVolDefParseString(&poolDef, xmldesc);
 
-    if (def == NULL) {
+    if (!def) {
         goto cleanup;
     }
 
@@ -1110,7 +1110,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     /* Validate config */
     tmp = strrchr(def->name, '/');
 
-    if (tmp == NULL || *def->name == '/' || tmp[1] == '\0') {
+    if (!tmp || *def->name == '/' || tmp[1] == '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Volume name '%s' doesn't have expected format "
                          "'<directory>/<file>'"), def->name);
@@ -1138,14 +1138,14 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
         directoryName = esxUtil_EscapeDatastoreItem(unescapedDirectoryName);
 
-        if (directoryName == NULL) {
+        if (!directoryName) {
             goto cleanup;
         }
 
         fileName = esxUtil_EscapeDatastoreItem(unescapedDirectoryAndFileName +
                                                strlen(unescapedDirectoryName) + 1);
 
-        if (fileName == NULL) {
+        if (!fileName) {
             goto cleanup;
         }
 
@@ -1164,7 +1164,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
             goto cleanup;
         }
 
-        if (fileInfo == NULL) {
+        if (!fileInfo) {
             if (esxVI_MakeDirectory(priv->primary, datastorePathWithoutFileName,
                                     priv->primary->datacenter->_reference,
                                     esxVI_Boolean_True) < 0) {
@@ -1353,7 +1353,7 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
 
     info->type = VIR_STORAGE_VOL_FILE;
 
-    if (vmDiskFileInfo != NULL) {
+    if (vmDiskFileInfo) {
         /* Scale from kilobyte to byte */
         info->capacity = vmDiskFileInfo->capacityKb->value * 1024;
         info->allocation = vmDiskFileInfo->fileSize->value;
@@ -1421,18 +1421,18 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
     def.type = VIR_STORAGE_VOL_FILE;
     def.target.path = datastorePath;
 
-    if (vmDiskFileInfo != NULL) {
+    if (vmDiskFileInfo) {
         /* Scale from kilobyte to byte */
         def.capacity = vmDiskFileInfo->capacityKb->value * 1024;
         def.allocation = vmDiskFileInfo->fileSize->value;
 
         def.target.format = VIR_STORAGE_FILE_VMDK;
-    } else if (isoImageFileInfo != NULL) {
+    } else if (isoImageFileInfo) {
         def.capacity = fileInfo->fileSize->value;
         def.allocation = fileInfo->fileSize->value;
 
         def.target.format = VIR_STORAGE_FILE_ISO;
-    } else if (floppyImageFileInfo != NULL) {
+    } else if (floppyImageFileInfo) {
         def.capacity = fileInfo->fileSize->value;
         def.allocation = fileInfo->fileSize->value;
 

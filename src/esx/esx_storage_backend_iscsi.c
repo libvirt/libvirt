@@ -67,7 +67,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
     }
 
     /* FIXME: code looks for software iSCSI adapter only */
-    if (hostInternetScsiHba == NULL) {
+    if (!hostInternetScsiHba) {
         /* iSCSI adapter may not be enabled for this host */
         return 0;
     }
@@ -80,7 +80,7 @@ esxConnectNumOfStoragePools(virConnectPtr conn)
      * return iSCSI names for all static targets to avoid duplicate names.
      */
     for (target = hostInternetScsiHba->configuredStaticTarget;
-         target != NULL; target = target->_next) {
+         target; target = target->_next) {
         ++count;
     }
 
@@ -117,7 +117,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
     }
 
     /* FIXME: code looks for software iSCSI adapter only */
-    if (hostInternetScsiHba == NULL) {
+    if (!hostInternetScsiHba) {
         /* iSCSI adapter may not be enabled for this host */
         return 0;
     }
@@ -130,7 +130,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
      * return iSCSI names for all static targets to avoid duplicate names.
      */
     for (target = hostInternetScsiHba->configuredStaticTarget;
-         target != NULL && count < maxnames; target = target->_next) {
+         target && count < maxnames; target = target->_next) {
         if (VIR_STRDUP(names[count], target->iScsiName) < 0)
             goto cleanup;
 
@@ -173,7 +173,7 @@ esxStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (target == NULL) {
+    if (!target) {
         /* pool not found, error handling done by the base driver */
         goto cleanup;
     }
@@ -214,13 +214,13 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
     }
 
     /* FIXME: code just looks for software iSCSI adapter */
-    if (hostInternetScsiHba == NULL) {
+    if (!hostInternetScsiHba) {
         /* iSCSI adapter may not be enabled for this host */
         return NULL;
     }
 
     for (target = hostInternetScsiHba->configuredStaticTarget;
-         target != NULL; target = target->_next) {
+         target; target = target->_next) {
         md5_buffer(target->iScsiName, strlen(target->iScsiName), md5);
 
         if (memcmp(uuid, md5, VIR_UUID_STRING_BUFLEN) == 0) {
@@ -228,7 +228,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
         }
     }
 
-    if (target == NULL) {
+    if (!target) {
         /* pool not found, error handling done by the base driver */
         goto cleanup;
     }
@@ -310,13 +310,13 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     }
 
     for (target = hostInternetScsiHba->configuredStaticTarget;
-         target != NULL; target = target->_next) {
+         target; target = target->_next) {
         if (STREQ(target->iScsiName, pool->name)) {
             break;
         }
     }
 
-    if (target == NULL) {
+    if (!target) {
         /* pool not found */
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find storage pool with name '%s'"),
@@ -339,7 +339,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
     def.source.hosts[0].name = target->address;
 
-    if (target->port != NULL) {
+    if (target->port) {
         def.source.hosts[0].port = target->port->value;
     }
 
@@ -369,7 +369,7 @@ esxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     }
 
     for (hostScsiTopologyLun = hostScsiTopologyLunList;
-         hostScsiTopologyLun != NULL;
+         hostScsiTopologyLun;
          hostScsiTopologyLun = hostScsiTopologyLun->_next) {
         ++count;
     }
@@ -399,7 +399,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
         goto cleanup;
     }
 
-    if (hostScsiTopologyLunList == NULL) {
+    if (!hostScsiTopologyLunList) {
         /* iSCSI adapter may not be enabled on ESX host */
         return 0;
     }
@@ -408,10 +408,10 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
         goto cleanup;
     }
 
-    for (scsiLun = scsiLunList; scsiLun != NULL && count < maxnames;
+    for (scsiLun = scsiLunList; scsiLun && count < maxnames;
          scsiLun = scsiLun->_next) {
         for (hostScsiTopologyLun = hostScsiTopologyLunList;
-             hostScsiTopologyLun != NULL && count < maxnames;
+             hostScsiTopologyLun && count < maxnames;
              hostScsiTopologyLun = hostScsiTopologyLun->_next) {
             if (STREQ(hostScsiTopologyLun->scsiLun, scsiLun->key)) {
                 if (VIR_STRDUP(names[count], scsiLun->deviceName) < 0)
@@ -457,7 +457,7 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    for (scsiLun = scsiLunList; scsiLun != NULL;
+    for (scsiLun = scsiLunList; scsiLun;
          scsiLun = scsiLun->_next) {
         if (STREQ(scsiLun->deviceName, name)) {
             /*
@@ -505,10 +505,10 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
         goto cleanup;
     }
 
-    for (scsiLun = scsiLunList; scsiLun != NULL; scsiLun = scsiLun->_next) {
+    for (scsiLun = scsiLunList; scsiLun; scsiLun = scsiLun->_next) {
         hostScsiDisk = esxVI_HostScsiDisk_DynamicCast(scsiLun);
 
-        if (hostScsiDisk != NULL && STREQ(hostScsiDisk->devicePath, path)) {
+        if (hostScsiDisk && STREQ(hostScsiDisk->devicePath, path)) {
             /* Found matching device */
             VIR_FREE(poolName);
 
@@ -557,7 +557,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         goto cleanup;
     }
 
-    for (scsiLun = scsiLunList; scsiLun != NULL;
+    for (scsiLun = scsiLunList; scsiLun;
          scsiLun = scsiLun->_next) {
         memset(uuid_string, '\0', sizeof(uuid_string));
         memset(md5, '\0', sizeof(md5));
@@ -646,17 +646,17 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
         goto cleanup;
     }
 
-    for (scsiLun = scsiLunList; scsiLun != NULL;
+    for (scsiLun = scsiLunList; scsiLun;
          scsiLun = scsiLun->_next) {
         hostScsiDisk = esxVI_HostScsiDisk_DynamicCast(scsiLun);
 
-        if (hostScsiDisk != NULL &&
+        if (hostScsiDisk &&
             STREQ(hostScsiDisk->deviceName, volume->name)) {
             break;
         }
     }
 
-    if (hostScsiDisk == NULL) {
+    if (!hostScsiDisk) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could find volume with name: %s"), volume->name);
         goto cleanup;

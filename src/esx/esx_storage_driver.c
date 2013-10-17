@@ -188,7 +188,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     for (i = 0; i < LAST_BACKEND; ++i) {
         pool = backends[i]->storagePoolLookupByName(conn, name);
 
-        if (pool != NULL) {
+        if (pool) {
             return pool;
         }
     }
@@ -217,7 +217,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     for (i = 0; i < LAST_BACKEND; ++i) {
         pool = backends[i]->storagePoolLookupByUUID(conn, uuid);
 
-        if (pool != NULL) {
+        if (pool) {
             return pool;
         }
     }
@@ -420,7 +420,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     for (i = 0; i < LAST_BACKEND; ++i) {
         volume = backends[i]->storageVolLookupByKey(conn, key);
 
-        if (volume != NULL) {
+        if (volume) {
             return volume;
         }
     }
