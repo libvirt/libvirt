@@ -3036,7 +3036,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                                           &ctxt)))
             goto error;
 
-        /* tokenize the string from user and save it's parts into an array */
+        /* tokenize the string from user and save its parts into an array */
         if (vol_string &&
             (nvol_list = vshStringToArray(vol_string, &vol_list)) < 0)
             goto error;
