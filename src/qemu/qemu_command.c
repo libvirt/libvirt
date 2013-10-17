@@ -6541,7 +6541,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             virBufferAddLit(&opt, ",sasl");
 
             if (cfg->vncSASLdir)
-                virCommandAddEnvPair(cmd, "SASL_CONF_DIR", cfg->vncSASLdir);
+                virCommandAddEnvPair(cmd, "SASL_CONF_PATH", cfg->vncSASLdir);
 
             /* TODO: Support ACLs later */
         }
