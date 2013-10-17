@@ -58,5 +58,8 @@ int virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
 
 bool virNumaIsAvailable(void);
 int virNumaGetMaxNode(void);
+int virNumaGetNodeMemory(int node,
+                         unsigned long long *memsize,
+                         unsigned long long *memfree);
 
 #endif /* __VIR_NUMA_H__ */

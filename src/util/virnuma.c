@@ -202,6 +202,45 @@ virNumaGetMaxNode(void)
 
     return ret;
 }
+
+
+/**
+ * virNumaGetNodeMemorySize:
+ * @node: identifier of the requested NUMA node
+ * @memsize: returns the total size of memory in the NUMA node
+ * @memfree: returns the total free memory in a NUMA node
+ *
+ * Returns the size of the memory in one NUMA node in bytes via the @size
+ * argument and free memory of a node in the @free argument.  The caller has to
+ * guarantee that @node is in range (see virNumaGetMaxNode).
+ *
+ * Returns 0 on success, -1 on error. Does not report errors.
+ */
+int
+virNumaGetNodeMemory(int node,
+                     unsigned long long *memsize,
+                     unsigned long long *memfree)
+{
+    long long node_size;
+    long long node_free;
+
+    if (memsize)
+        *memsize = 0;
+
+    if (memfree)
+        *memfree = 0;
+
+    if ((node_size = numa_node_size64(node, &node_free)) < 0)
+        return -1;
+
+    if (memsize)
+        *memsize = node_size;
+
+    if (memfree)
+        *memfree = node_free;
+
+    return 0;
+}
 #else
 int
 virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
@@ -230,6 +269,22 @@ virNumaGetMaxNode(void)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("NUMA isn't available on this host"));
+    return -1;
+}
+
+
+int
+virNumaGetNodeMemory(int node ATTRIBUTE_UNUSED,
+                     unsigned long long *memsize,
+                     unsigned long long *memfree)
+{
+    if (memsize)
+        *memsize = 0;
+
+    if (memfree)
+        *memfree = 0;
+
+    VIR_DEBUG("NUMA isn't available on this host");
     return -1;
 }
 #endif

@@ -1680,6 +1680,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
                        int startCell,
                        int maxCells)
 {
+    unsigned long long mem;
     int n, lastCell, numCells;
     int ret = -1;
     int maxCell;
@@ -1702,9 +1703,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
         lastCell = maxCell;
 
     for (numCells = 0, n = startCell; n <= lastCell; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0)
-            mem = 0;
+        virNumaGetNodeMemory(n, NULL, &mem);
 
         freeMems[numCells++] = mem;
     }
@@ -1717,6 +1716,7 @@ cleanup:
 unsigned long long
 nodeGetFreeMemory(void)
 {
+    unsigned long long mem;
     unsigned long long freeMem = 0;
     int max_node;
     int n;
@@ -1728,9 +1728,7 @@ nodeGetFreeMemory(void)
         return 0;
 
     for (n = 0; n <= max_node; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0)
-            continue;
+        virNumaGetNodeMemory(n, NULL, &mem);
 
         freeMem += mem;
     }
@@ -1742,21 +1740,19 @@ nodeGetFreeMemory(void)
  * nodeGetCellMemory
  * @cell: The number of the numa cell to get memory info for.
  *
- * Will call the numa_node_size64() function from libnuma to get
- * the amount of total memory in bytes. It is then converted to
- * KiB and returned.
+ * Request size of memory in a NUMA node.
  *
  * Returns 0 if unavailable, amount of memory in KiB on success.
  */
 static unsigned long long nodeGetCellMemory(int cell)
 {
-    long long mem;
+    unsigned long long mem;
     unsigned long long memKiB = 0;
     int maxCell;
 
     /* Make sure the provided cell number is valid. */
     if ((maxCell = virNumaGetMaxNode()) < 0)
-        return 0;
+        goto cleanup;
 
     if (cell > maxCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1766,8 +1762,7 @@ static unsigned long long nodeGetCellMemory(int cell)
     }
 
     /* Get the amount of memory(bytes) in the node */
-    mem = numa_node_size64(cell, NULL);
-    if (mem < 0) {
+    if (virNumaGetNodeMemory(cell, &mem, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to query NUMA total memory for node: %d"),
                        cell);
