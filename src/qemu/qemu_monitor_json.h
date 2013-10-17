@@ -250,7 +250,7 @@ int qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
                               const char *device,
                               const char *file,
                               const char *format)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
                                const char *device,
