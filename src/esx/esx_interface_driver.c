@@ -82,7 +82,7 @@ esxConnectNumOfInterfaces(virConnectPtr conn)
         return -1;
     }
 
-    for (physicalNic = physicalNicList; physicalNic != NULL;
+    for (physicalNic = physicalNicList; physicalNic;
          physicalNic = physicalNic->_next) {
         ++count;
     }
@@ -113,7 +113,7 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
         return -1;
     }
 
-    for (physicalNic = physicalNicList; physicalNic != NULL;
+    for (physicalNic = physicalNicList; physicalNic;
          physicalNic = physicalNic->_next) {
         if (VIR_STRDUP(names[count], physicalNic->device) < 0)
             goto cleanup;
@@ -237,15 +237,15 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
     def.startmode = VIR_INTERFACE_START_ONBOOT;
 
     /* FIXME: Add support for IPv6, requires to use vSphere API 4.0 */
-    if (physicalNic->spec->ip != NULL) {
+    if (physicalNic->spec->ip) {
         protocol.family = (char *)"ipv4";
 
         if (physicalNic->spec->ip->dhcp == esxVI_Boolean_True) {
             protocol.dhcp = 1;
         }
 
-        if (physicalNic->spec->ip->ipAddress != NULL &&
-            physicalNic->spec->ip->subnetMask != NULL &&
+        if (physicalNic->spec->ip->ipAddress &&
+            physicalNic->spec->ip->subnetMask &&
             strlen(physicalNic->spec->ip->ipAddress) > 0 &&
             strlen(physicalNic->spec->ip->subnetMask) > 0) {
             hasAddress = true;

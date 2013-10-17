@@ -89,7 +89,7 @@ esxConnectNumOfNetworks(virConnectPtr conn)
         return -1;
     }
 
-    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch != NULL;
+    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch;
          hostVirtualSwitch = hostVirtualSwitch->_next) {
         ++count;
     }
@@ -121,7 +121,7 @@ esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
         return -1;
     }
 
-    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch != NULL;
+    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch;
          hostVirtualSwitch = hostVirtualSwitch->_next) {
         if (VIR_STRDUP(names[count], hostVirtualSwitch->name) < 0)
             goto cleanup;
@@ -183,7 +183,7 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return NULL;
     }
 
-    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch != NULL;
+    for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch;
          hostVirtualSwitch = hostVirtualSwitch->_next) {
         md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), md5);
 
@@ -192,7 +192,7 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         }
     }
 
-    if (hostVirtualSwitch == NULL) {
+    if (!hostVirtualSwitch) {
         virUUIDFormat(uuid, uuid_string);
 
         virReportError(VIR_ERR_NO_NETWORK,
@@ -252,12 +252,12 @@ esxBandwidthToShapingPolicy(virNetDevBandwidthPtr bandwidth,
 {
     int result = -1;
 
-    if (shapingPolicy == NULL || *shapingPolicy != NULL) {
+    if (!shapingPolicy || *shapingPolicy) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (bandwidth->in == NULL || bandwidth->out == NULL ||
+    if (!bandwidth->in || !bandwidth->out ||
         bandwidth->in->average != bandwidth->out->average ||
         bandwidth->in->peak != bandwidth->out->peak ||
         bandwidth->in->burst != bandwidth->out->burst) {
@@ -341,7 +341,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     /* Parse network XML */
     def = virNetworkDefParseString(xml);
 
-    if (def == NULL) {
+    if (!def) {
         return NULL;
     }
 
@@ -352,7 +352,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if (hostVirtualSwitch != NULL) {
+    if (hostVirtualSwitch) {
         /* FIXME */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("HostVirtualSwitch already exists, editing existing "
@@ -383,7 +383,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         }
 
         for (i = 0; i < def->nPortGroups; ++i) {
-            for (hostPortGroup = hostPortGroupList; hostPortGroup != NULL;
+            for (hostPortGroup = hostPortGroupList; hostPortGroup;
                  hostPortGroup = hostPortGroup->_next) {
                 if (STREQ(def->portGroups[i].name, hostPortGroup->spec->name)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -427,7 +427,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
                 goto cleanup;
             }
 
-            for (physicalNic = physicalNicList; physicalNic != NULL;
+            for (physicalNic = physicalNicList; physicalNic;
                  physicalNic = physicalNic->_next) {
                 if (STREQ(def->forward.ifs[i].device.dev, physicalNic->device)) {
                     if (esxVI_String_AppendValueToList
@@ -452,7 +452,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 
     hostVirtualSwitchSpec->numPorts->value = 128;
 
-    if (def->bandwidth != NULL) {
+    if (def->bandwidth) {
         if (esxVI_HostNetworkPolicy_Alloc(&hostVirtualSwitchSpec->policy) < 0) {
             goto cleanup;
         }
@@ -485,7 +485,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 
         hostPortGroupSpec->vlanId->value = 0;
 
-        if (def->portGroups[i].bandwidth != NULL) {
+        if (def->portGroups[i].bandwidth) {
             if (esxBandwidthToShapingPolicy
                   (def->portGroups[i].bandwidth,
                    &hostPortGroupSpec->policy->shapingPolicy) < 0) {
@@ -550,14 +550,14 @@ esxNetworkUndefine(virNetworkPtr network)
 
     /* Verify that the HostVirtualSwitch is connected to virtual machines only */
     for (hostPortGroupKey = hostVirtualSwitch->portgroup;
-         hostPortGroupKey != NULL; hostPortGroupKey = hostPortGroupKey->_next) {
+         hostPortGroupKey; hostPortGroupKey = hostPortGroupKey->_next) {
         bool found = false;
 
-        for (hostPortGroup = hostPortGroupList; hostPortGroup != NULL;
+        for (hostPortGroup = hostPortGroupList; hostPortGroup;
              hostPortGroup = hostPortGroup->_next) {
             if (STREQ(hostPortGroupKey->value, hostPortGroup->key)) {
                 for (hostPortGroupPort = hostPortGroup->port;
-                     hostPortGroupPort != NULL;
+                     hostPortGroupPort;
                      hostPortGroupPort = hostPortGroupPort->_next) {
                     if (STRNEQ(hostPortGroupPort->type, "virtualMachine")) {
                         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -582,10 +582,10 @@ esxNetworkUndefine(virNetworkPtr network)
 
     /* Remove all HostPortGroups from the HostVirtualSwitch */
     for (hostPortGroupKey = hostVirtualSwitch->portgroup;
-         hostPortGroupKey != NULL; hostPortGroupKey = hostPortGroupKey->_next) {
+         hostPortGroupKey; hostPortGroupKey = hostPortGroupKey->_next) {
         bool found = false;
 
-        for (hostPortGroup = hostPortGroupList; hostPortGroup != NULL;
+        for (hostPortGroup = hostPortGroupList; hostPortGroup;
              hostPortGroup = hostPortGroup->_next) {
             if (STREQ(hostPortGroupKey->value, hostPortGroup->key)) {
                 if (esxVI_RemovePortGroup
@@ -631,12 +631,12 @@ static int
 esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy,
                             virNetDevBandwidthPtr *bandwidth)
 {
-    if (bandwidth == NULL || *bandwidth != NULL) {
+    if (!bandwidth || *bandwidth) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (shapingPolicy == NULL || shapingPolicy->enabled != esxVI_Boolean_True) {
+    if (!shapingPolicy || shapingPolicy->enabled != esxVI_Boolean_True) {
         return 0;
     }
 
@@ -645,19 +645,19 @@ esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy
         VIR_ALLOC((*bandwidth)->out) < 0)
         return -1;
 
-    if (shapingPolicy->averageBandwidth != NULL) {
+    if (shapingPolicy->averageBandwidth) {
         /* Scale bits per second to kilobytes per second */
         (*bandwidth)->in->average = shapingPolicy->averageBandwidth->value / 8 / 1000;
         (*bandwidth)->out->average = shapingPolicy->averageBandwidth->value / 8 / 1000;
     }
 
-    if (shapingPolicy->peakBandwidth != NULL) {
+    if (shapingPolicy->peakBandwidth) {
         /* Scale bits per second to kilobytes per second */
         (*bandwidth)->in->peak = shapingPolicy->peakBandwidth->value / 8 / 1000;
         (*bandwidth)->out->peak = shapingPolicy->peakBandwidth->value / 8 / 1000;
     }
 
-    if (shapingPolicy->burstSize != NULL) {
+    if (shapingPolicy->burstSize) {
         /* Scale bytes to kilobytes */
         (*bandwidth)->in->burst = shapingPolicy->burstSize->value / 1024;
         (*bandwidth)->out->burst = shapingPolicy->burstSize->value / 1024;
@@ -713,7 +713,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     count = 0;
 
     for (physicalNicKey = hostVirtualSwitch->pnic;
-         physicalNicKey != NULL; physicalNicKey = physicalNicKey->_next) {
+         physicalNicKey; physicalNicKey = physicalNicKey->_next) {
         ++count;
     }
 
@@ -729,10 +729,10 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         }
 
         for (physicalNicKey = hostVirtualSwitch->pnic;
-             physicalNicKey != NULL; physicalNicKey = physicalNicKey->_next) {
+             physicalNicKey; physicalNicKey = physicalNicKey->_next) {
             bool found = false;
 
-            for (physicalNic = physicalNicList; physicalNic != NULL;
+            for (physicalNic = physicalNicList; physicalNic;
                  physicalNic = physicalNic->_next) {
                 if (STREQ(physicalNicKey->value, physicalNic->key)) {
                     def->forward.ifs[def->forward.nifs].type
@@ -761,7 +761,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     count = 0;
 
     for (hostPortGroupKey = hostVirtualSwitch->portgroup;
-         hostPortGroupKey != NULL; hostPortGroupKey = hostPortGroupKey->_next) {
+         hostPortGroupKey; hostPortGroupKey = hostPortGroupKey->_next) {
         ++count;
     }
 
@@ -776,7 +776,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
             goto cleanup;
         }
 
-        for (network = networkList; network != NULL; network = network->_next) {
+        for (network = networkList; network; network = network->_next) {
             char *tmp = NULL;
 
             if (esxVI_GetStringValue(network, "name", &tmp,
@@ -792,21 +792,21 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         }
 
         for (hostPortGroupKey = hostVirtualSwitch->portgroup;
-             hostPortGroupKey != NULL; hostPortGroupKey = hostPortGroupKey->_next) {
+             hostPortGroupKey; hostPortGroupKey = hostPortGroupKey->_next) {
             bool found = false;
 
-            for (hostPortGroup = hostPortGroupList; hostPortGroup != NULL;
+            for (hostPortGroup = hostPortGroupList; hostPortGroup;
                  hostPortGroup = hostPortGroup->_next) {
                 if (STREQ(hostPortGroupKey->value, hostPortGroup->key)) {
                     /* Find Network for HostPortGroup, there might be none */
-                    for (networkName = networkNameList; networkName != NULL;
+                    for (networkName = networkNameList; networkName;
                          networkName = networkName->_next) {
                         if (STREQ(networkName->value, hostPortGroup->spec->name)) {
                             if (VIR_STRDUP(def->portGroups[def->nPortGroups].name,
                                            networkName->value) < 0)
                                 goto cleanup;
 
-                            if (hostPortGroup->spec->policy != NULL) {
+                            if (hostPortGroup->spec->policy) {
                                 if (esxShapingPolicyToBandwidth
                                       (hostPortGroup->spec->policy->shapingPolicy,
                                        &def->portGroups[def->nPortGroups].bandwidth) < 0) {
@@ -834,7 +834,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         }
     }
 
-    if (hostVirtualSwitch->spec->policy != NULL) {
+    if (hostVirtualSwitch->spec->policy) {
         if (esxShapingPolicyToBandwidth
               (hostVirtualSwitch->spec->policy->shapingPolicy,
                &def->bandwidth) < 0) {
