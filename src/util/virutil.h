@@ -108,6 +108,10 @@ static inline int geteuid (void) { return 0; }
 static inline int getgid (void) { return 0; }
 # endif
 
+# ifndef HAVE_GETEGID
+static inline int getegid (void) { return 0; }
+# endif
+
 char *virGetHostname(void);
 
 char *virGetUserDirectory(void);
