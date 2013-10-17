@@ -100,11 +100,8 @@ netcfStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 static int
 netcfStateCleanup(void)
 {
-    if (!driverState) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to close netcf state driver already closed"));
+    if (!driverState)
         return -1;
-    }
 
     if (virObjectUnref(driverState)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
