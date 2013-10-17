@@ -924,7 +924,16 @@
           model even if the destination host contains more capable CPUs for
           the running instance of the guest; but shutting down and restarting
           the guest may present different hardware to the guest according to
-          the capabilities of the new host.</dd>
+          the capabilities of the new host. <strong>Beware</strong>, due to the
+          way libvirt detects host CPU and due to the fact libvirt does not
+          talk to QEMU/KVM when creating the CPU model, CPU configuration
+          created using <code>host-model</code> may not work as expected. The
+          guest CPU may differ from the configuration and it may also confuse
+          guest OS by using a combination of CPU features and other parameters
+          (such as CPUID level) that don't work. Until these issues are fixed,
+          it's a good idea to avoid using <code>host-model</code> and use
+          <code>custom</code> mode with just the CPU model from host
+          capabilities XML.</dd>
           <dt><code>host-passthrough</code></dt>
           <dd>With this mode, the CPU visible to the guest should be exactly
           the same as the host CPU even in the aspects that libvirt does not
