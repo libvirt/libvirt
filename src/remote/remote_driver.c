@@ -4945,7 +4945,7 @@ static int remoteDomainEventDeregisterAny(virConnectPtr conn,
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
     if (count == 0) {
-        args.eventID = callbackID;
+        args.eventID = eventID;
 
         if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY,
                   (xdrproc_t) xdr_remote_domain_events_deregister_any_args, (char *) &args,
