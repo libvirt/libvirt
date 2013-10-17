@@ -528,13 +528,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    if (persistent &&
-        virDomainIsActive(dom) == 1)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-
     if (vshCommandOptStringReq(ctl, cmd, "source", &source) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "target", &target) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "driver", &driver) < 0 ||
@@ -672,6 +665,13 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
     if (flags)
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     else
@@ -686,7 +686,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xml);
-    virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
