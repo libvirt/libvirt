@@ -174,6 +174,34 @@ virNumaIsAvailable(void)
 {
     return numa_available() != -1;
 }
+
+
+/**
+ * virNumaGetMaxNode:
+ * Get the highest node number available on the current system.
+ * (See the node numbers in /sys/devices/system/node/ ).
+ *
+ * Returns the highes NUMA node id on success, -1 on error.
+ */
+int
+virNumaGetMaxNode(void)
+{
+    int ret;
+
+    if (!virNumaIsAvailable()) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("NUMA isn't available on this host"));
+        return -1;
+    }
+
+    if ((ret = numa_max_node()) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to request maximum NUMA node id"));
+        return -1;
+    }
+
+    return ret;
+}
 #else
 int
 virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
@@ -194,5 +222,14 @@ bool
 virNumaIsAvailable(void)
 {
     return false;
+}
+
+
+int
+virNumaGetMaxNode(void)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("NUMA isn't available on this host"));
+    return -1;
 }
 #endif

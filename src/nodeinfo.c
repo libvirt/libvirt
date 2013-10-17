@@ -988,25 +988,21 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
         int ret;
         char *meminfo_path = NULL;
         FILE *meminfo;
+        int max_node;
 
         if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
             if (VIR_STRDUP(meminfo_path, MEMINFO_PATH) < 0)
                 return -1;
         } else {
-            if (!virNumaIsAvailable()) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("NUMA not supported on this host"));
+            if ((max_node = virNumaGetMaxNode()) < 0)
                 return -1;
-            }
 
-# if WITH_NUMACTL
-            if (cellNum > numa_max_node()) {
+            if (cellNum > max_node) {
                 virReportInvalidArg(cellNum,
                                     _("cellNum in %s must be less than or equal to %d"),
-                                    __FUNCTION__, numa_max_node());
+                                    __FUNCTION__, max_node);
                 return -1;
             }
-# endif
 
             if (virAsprintf(&meminfo_path, "%s/node/node%d/meminfo",
                             SYSFS_SYSTEM_PATH, cellNum) < 0)
@@ -1609,31 +1605,35 @@ nodeCapsInitNUMA(virCapsPtr caps)
     virCapsHostNUMACellCPUPtr cpus = NULL;
     int ret = -1;
     int max_n_cpus = NUMA_MAX_N_CPUS;
+    int mask_n_bytes = max_n_cpus / 8;
     int ncpus = 0;
     bool topology_failed = false;
+    int max_node;
 
     if (!virNumaIsAvailable())
         return nodeCapsInitNUMAFake(caps);
 
-    int mask_n_bytes = max_n_cpus / 8;
+    if ((max_node = virNumaGetMaxNode()) < 0)
+        goto cleanup;
+
     if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
         goto cleanup;
     if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof(*mask)) < 0)
         goto cleanup;
     memset(allonesmask, 0xff, mask_n_bytes);
 
-    for (n = 0; n <= numa_max_node(); n++) {
+    for (n = 0; n <= max_node; n++) {
         size_t i;
         /* The first time this returns -1, ENOENT if node doesn't exist... */
         if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
             VIR_WARN("NUMA topology for cell %d of %d not available, ignoring",
-                     n, numa_max_node()+1);
+                     n, max_node + 1);
             continue;
         }
         /* second, third... times it returns an all-1's mask */
         if (memcmp(mask, allonesmask, mask_n_bytes) == 0) {
             VIR_DEBUG("NUMA topology for cell %d of %d is all ones, ignoring",
-                      n, numa_max_node()+1);
+                      n, max_node + 1);
             continue;
         }
 
@@ -1688,7 +1688,9 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
         return nodeGetCellsFreeMemoryFake(freeMems,
                                           startCell, maxCells);
 
-    maxCell = numa_max_node();
+    if ((maxCell = virNumaGetMaxNode()) < 0)
+        return 0;
+
     if (startCell > maxCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("start cell %d out of range (0-%d)"),
@@ -1716,13 +1718,16 @@ unsigned long long
 nodeGetFreeMemory(void)
 {
     unsigned long long freeMem = 0;
+    int max_node;
     int n;
 
     if (!virNumaIsAvailable())
         return nodeGetFreeMemoryFake();
 
+    if ((max_node = virNumaGetMaxNode()) < 0)
+        return 0;
 
-    for (n = 0; n <= numa_max_node(); n++) {
+    for (n = 0; n <= max_node; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0)
             continue;
@@ -1750,7 +1755,9 @@ static unsigned long long nodeGetCellMemory(int cell)
     int maxCell;
 
     /* Make sure the provided cell number is valid. */
-    maxCell = numa_max_node();
+    if ((maxCell = virNumaGetMaxNode()) < 0)
+        return 0;
+
     if (cell > maxCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cell %d out of range (0-%d)"),

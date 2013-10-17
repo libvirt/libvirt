@@ -57,4 +57,6 @@ int virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
                              virBitmapPtr nodemask);
 
 bool virNumaIsAvailable(void);
+int virNumaGetMaxNode(void);
+
 #endif /* __VIR_NUMA_H__ */
