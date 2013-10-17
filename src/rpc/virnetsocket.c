@@ -1174,25 +1174,27 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
 {
     struct xucred cr;
     socklen_t cr_len = sizeof(cr);
+    int ret = -1;
+
     virObjectLock(sock);
 
+    cr.cr_ngroups = -1;
     if (getsockopt(sock->fd, VIR_SOL_PEERCRED, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to get client socket identity"));
-        virObjectUnlock(sock);
-        return -1;
+        goto cleanup;
     }
 
     if (cr.cr_version != XUCRED_VERSION) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                        _("Failed to get valid client socket identity"));
-        return -1;
+        goto cleanup;
     }
 
-    if (cr.cr_ngroups == 0) {
+    if (cr.cr_ngroups <= 0 || cr.cr_ngroups > NGROUPS) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                        _("Failed to get valid client socket identity groups"));
-        return -1;
+        goto cleanup;
     }
 
     /* PID and process creation time are not supported on BSDs */
@@ -1201,8 +1203,11 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
     *uid = cr.cr_uid;
     *gid = cr.cr_gid;
 
+    ret = 0;
+
+cleanup:
     virObjectUnlock(sock);
-    return 0;
+    return ret;
 }
 #else
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
