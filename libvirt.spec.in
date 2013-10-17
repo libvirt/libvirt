@@ -1107,6 +1107,18 @@ Requires: cyrus-sasl-md5
 Shared libraries and client binaries needed to access to the
 virtualization capabilities of recent versions of Linux (and other OSes).
 
+%if %{with_lxc}
+%package login-shell
+Summary: Login shell for connecting users to an LXC container
+Group: Development/Libraries
+Requires: %{name}-client = %{version}-%{release}
+
+%description login-shell
+Provides the set-uid virt-login-shell binary that is used to
+connect a user to an LXC container when they login, by switching
+namespaces.
+%endif
+
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
@@ -2015,23 +2027,14 @@ fi
 %doc COPYING COPYING.LESSER
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
-%if %{with_lxc}
-%config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
-%endif
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_mandir}/man1/virt-host-validate.1*
-%if %{with_lxc}
-%{_mandir}/man1/virt-login-shell.1*
-%endif
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
 %{_bindir}/virt-host-validate
-%if %{with_lxc}
-%attr(4755, root, root) %{_bindir}/virt-login-shell
-%endif
 %{_libdir}/lib*.so.*
 
 %if %{with_dtrace}
@@ -2073,6 +2076,13 @@ fi
 
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
+%endif
+
+%if %{with_lxc}
+%files login-shell
+%attr(4755, root, root) %{_bindir}/virt-login-shell
+%config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
+%{_mandir}/man1/virt-login-shell.1*
 %endif
 
 %files devel
