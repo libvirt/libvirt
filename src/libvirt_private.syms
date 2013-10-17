@@ -1523,6 +1523,7 @@ virNodeSuspendGetTargetMask;
 virDomainNumatuneMemModeTypeFromString;
 virDomainNumatuneMemModeTypeToString;
 virNumaGetAutoPlacementAdvice;
+virNumaIsAvailable;
 virNumaSetupMemoryPolicy;
 virNumaTuneMemPlacementModeTypeFromString;
 virNumaTuneMemPlacementModeTypeToString;

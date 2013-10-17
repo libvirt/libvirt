@@ -55,6 +55,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virstring.h"
+#include "virnuma.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -999,15 +1000,11 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
             if (VIR_STRDUP(meminfo_path, MEMINFO_PATH) < 0)
                 return -1;
         } else {
-# if WITH_NUMACTL
-            if (numa_available() < 0) {
-# endif
+            if (!virNumaIsAvailable()) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("NUMA not supported on this host"));
                 return -1;
-# if WITH_NUMACTL
             }
-# endif
 
 # if WITH_NUMACTL
             if (cellNum > numa_max_node()) {
@@ -1622,7 +1619,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     int ncpus = 0;
     bool topology_failed = false;
 
-    if (numa_available() < 0)
+    if (!virNumaIsAvailable())
         return nodeCapsInitNUMAFake(caps);
 
     int mask_n_bytes = max_n_cpus / 8;
@@ -1694,7 +1691,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
     int ret = -1;
     int maxCell;
 
-    if (numa_available() < 0)
+    if (!virNumaIsAvailable())
         return nodeGetCellsFreeMemoryFake(freeMems,
                                           startCell, maxCells);
 
@@ -1728,7 +1725,7 @@ nodeGetFreeMemory(void)
     unsigned long long freeMem = 0;
     int n;
 
-    if (numa_available() < 0)
+    if (!virNumaIsAvailable())
         return nodeGetFreeMemoryFake();
 
 

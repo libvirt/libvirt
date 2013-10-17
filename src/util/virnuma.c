@@ -167,6 +167,13 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
 cleanup:
     return ret;
 }
+
+
+bool
+virNumaIsAvailable(void)
+{
+    return numa_available() != -1;
+}
 #else
 int
 virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
@@ -180,5 +187,12 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
     }
 
     return 0;
+}
+
+
+bool
+virNumaIsAvailable(void)
+{
+    return false;
 }
 #endif

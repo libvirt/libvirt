@@ -55,4 +55,6 @@ char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
 
 int virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
                              virBitmapPtr nodemask);
+
+bool virNumaIsAvailable(void);
 #endif /* __VIR_NUMA_H__ */
