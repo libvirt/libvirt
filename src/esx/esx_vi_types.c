@@ -43,7 +43,7 @@
     int                                                                       \
     esxVI_##__type##_Alloc(esxVI_##__type **ptrptr)                           \
     {                                                                         \
-        if (ptrptr == NULL || *ptrptr != NULL) {                              \
+        if (!ptrptr || *ptrptr) {                                             \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
             return -1;                                                  \
         }                                                               \
@@ -64,7 +64,7 @@
     {                                                                         \
         esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
                                                                               \
-        if (ptrptr == NULL || *ptrptr == NULL) {                              \
+        if (!ptrptr || !(*ptrptr)) {                                          \
             return;                                                           \
         }                                                                     \
                                                                               \
@@ -101,13 +101,13 @@
     int                                                                       \
     esxVI_##_type##_DeepCopy(esxVI_##_type **dest, esxVI_##_type *src)        \
     {                                                                         \
-        if (dest == NULL || *dest != NULL) {                                  \
+        if (!dest || *dest) {                                                 \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        if (src == NULL) {                                                    \
+        if (!src) {                                                           \
             return 0;                                                         \
         }                                                                     \
                                                                               \
@@ -195,7 +195,7 @@
     {                                                                         \
         _dest_type *item ATTRIBUTE_UNUSED;                                    \
                                                                               \
-        if (anyType == NULL || ptrptr == NULL || *ptrptr != NULL) {           \
+        if (!anyType || !ptrptr || *ptrptr) {                                 \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
@@ -246,13 +246,13 @@
     esxVI_##_type##_Serialize(esxVI_##_type *item,                            \
                               const char *element, virBufferPtr output)       \
     {                                                                         \
-        if (element == NULL || output == NULL) {                              \
+        if (!element || !output) {                                            \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        if (item == NULL) {                                                   \
+        if (!item) {                                                          \
             return 0;                                                         \
         }                                                                     \
                                                                               \
@@ -288,7 +288,7 @@
                                                                               \
         _extra1                                                               \
                                                                               \
-        if (ptrptr == NULL || *ptrptr != NULL) {                              \
+        if (!ptrptr || *ptrptr) {                                             \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
@@ -300,7 +300,7 @@
                                                                               \
         _extra2                                                               \
                                                                               \
-        for (childNode = node->children; childNode != NULL;                   \
+        for (childNode = node->children; childNode;                           \
              childNode = childNode->next) {                                   \
             if (childNode->type != XML_ELEMENT_NODE) {                        \
                 virReportError(VIR_ERR_INTERNAL_ERROR,                        \
@@ -342,7 +342,7 @@
         char *string;                                                         \
         long long value;                                                      \
                                                                               \
-        if (number == NULL || *number != NULL) {                              \
+        if (!number || *number) {                                             \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
@@ -354,7 +354,7 @@
                                                                               \
         string = (char *)xmlNodeListGetString(node->doc, node->children, 1);  \
                                                                               \
-        if (string == NULL) {                                                 \
+        if (!string) {                                                        \
             virReportError(VIR_ERR_INTERNAL_ERROR,                            \
                            _("XML node doesn't contain text, expecting an %s "\
                              "value"), _xsdType);                             \
@@ -614,7 +614,7 @@
     esxVI_##__type *                                                          \
     esxVI_##__type##_DynamicCast(void *item)                                  \
     {                                                                         \
-        if (item == NULL) {                                                   \
+        if (!item) {                                                          \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return NULL;                                                      \
@@ -633,13 +633,13 @@
     int                                                                       \
     esxVI_##__type##_DeepCopy(esxVI_##__type **dest, esxVI_##__type *src)     \
     {                                                                         \
-        if (dest == NULL || *dest != NULL) {                                  \
+        if (!dest || *dest) {                                                 \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        if (src == NULL) {                                                    \
+        if (!src) {                                                           \
             return 0;                                                         \
         }                                                                     \
                                                                               \
@@ -714,7 +714,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
     int result = -1;
     char *type = NULL;
 
-    if (actualType == NULL || *actualType != esxVI_Type_Undefined) {
+    if (!actualType || *actualType != esxVI_Type_Undefined) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -723,7 +723,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
                      (node, BAD_CAST "type",
                       BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
-    if (type == NULL) {
+    if (!type) {
         /* no actual type specified, use base type instead */
         *actualType = baseType;
         return 0;
@@ -844,7 +844,7 @@ esxVI_Type_ToString(esxVI_Type type)
 esxVI_Type
 esxVI_Type_FromString(const char *type)
 {
-    if (type == NULL || STREQ(type, "<undefined>")) {
+    if (!type || STREQ(type, "<undefined>")) {
         return esxVI_Type_Undefined;
     } else if (STREQ(type, "xsd:boolean")) {
         return esxVI_Type_Boolean;
@@ -942,12 +942,12 @@ esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
 int
 esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 {
-    if (dest == NULL || *dest != NULL) {
+    if (!dest || *dest) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (src == NULL) {
+    if (!src) {
         return 0;
     }
 
@@ -958,7 +958,7 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
     (*dest)->_type = src->_type;
     (*dest)->node = xmlCopyNode(src->node, 1);
 
-    if ((*dest)->node == NULL) {
+    if (!(*dest)->node) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not copy an XML node"));
         goto failure;
@@ -1013,7 +1013,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 {
     long long int number;
 
-    if (anyType == NULL || *anyType != NULL) {
+    if (!anyType || *anyType) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1024,7 +1024,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 
     (*anyType)->node = xmlCopyNode(node, 1);
 
-    if ((*anyType)->node == NULL) {
+    if (!(*anyType)->node) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not copy an XML node"));
         goto failure;
@@ -1035,7 +1035,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
                 (node, BAD_CAST "type",
                  BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
-    if ((*anyType)->other == NULL) {
+    if (!(*anyType)->other) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("AnyType is missing 'type' property"));
         goto failure;
@@ -1153,7 +1153,7 @@ esxVI_String_ListContainsValue(esxVI_String *stringList, const char *value)
 {
     esxVI_String *string;
 
-    for (string = stringList; string != NULL; string = string->_next) {
+    for (string = stringList; string; string = string->_next) {
         if (STREQ(string->value, value)) {
             return true;
         }
@@ -1196,7 +1196,7 @@ esxVI_String_AppendValueListToList(esxVI_String **stringList,
     esxVI_String *stringListToAppend = NULL;
     const char *value = valueList;
 
-    while (value != NULL && *value != '\0') {
+    while (value && *value != '\0') {
         if (esxVI_String_AppendValueToList(&stringListToAppend, value) < 0) {
             goto failure;
         }
@@ -1228,12 +1228,12 @@ ESX_VI__TEMPLATE__LIST__DEEP_COPY(String)
 int
 esxVI_String_DeepCopyValue(char **dest, const char *src)
 {
-    if (dest == NULL || *dest != NULL) {
+    if (!dest || *dest) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (src == NULL) {
+    if (!src) {
         return 0;
     }
 
@@ -1250,7 +1250,7 @@ int
 esxVI_String_Serialize(esxVI_String *string, const char *element,
                        virBufferPtr output)
 {
-    return esxVI_String_SerializeValue(string != NULL ? string->value : NULL,
+    return esxVI_String_SerializeValue(string ? string->value : NULL,
                                        element, output);
 }
 
@@ -1261,12 +1261,12 @@ int
 esxVI_String_SerializeValue(const char *value, const char *element,
                             virBufferPtr output)
 {
-    if (element == NULL || output == NULL) {
+    if (!element || !output) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (value == NULL) {
+    if (!value) {
         return 0;
     }
 
@@ -1282,7 +1282,7 @@ esxVI_String_SerializeValue(const char *value, const char *element,
 int
 esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string)
 {
-    if (string == NULL || *string != NULL) {
+    if (!string || *string) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1306,7 +1306,7 @@ ESX_VI__TEMPLATE__LIST__DESERIALIZE(String)
 int
 esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
 {
-    if (value == NULL || *value != NULL) {
+    if (!value || *value) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1481,7 +1481,7 @@ ESX_VI__TEMPLATE__SERIALIZE(DateTime,
 int
 esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 {
-    if (dateTime == NULL || *dateTime != NULL) {
+    if (!dateTime || *dateTime) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1493,7 +1493,7 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
     (*dateTime)->value =
       (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
-    if ((*dateTime)->value == NULL) {
+    if (!(*dateTime)->value) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("XML node doesn't contain text, expecting an "
                          "xsd:dateTime value"));
@@ -1521,12 +1521,12 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
     int tz_minutes;
     int tz_offset = 0;
 
-    if (dateTime == NULL || secondsSinceEpoch == NULL) {
+    if (!dateTime || !secondsSinceEpoch) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (virStrcpyStatic(value, dateTime->value) == NULL) {
+    if (!virStrcpyStatic(value, dateTime->value)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("xsd:dateTime value '%s' too long for destination"),
                        dateTime->value);
@@ -1548,7 +1548,7 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
 
     tmp = strptime(value, "%Y-%m-%dT%H:%M:%S", &tm);
 
-    if (tmp == NULL) {
+    if (!tmp) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("xsd:dateTime value '%s' has unexpected format"),
                        dateTime->value);
@@ -1655,7 +1655,7 @@ ESX_VI__TEMPLATE__FREE(MethodFault,
 int
 esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
 {
-    if (methodFault == NULL || *methodFault != NULL) {
+    if (!methodFault || *methodFault) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1668,7 +1668,7 @@ esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
       (char *)xmlGetNsProp(node, BAD_CAST "type",
                            BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
-    if ((*methodFault)->_actualType == NULL) {
+    if (!(*methodFault)->_actualType) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("MethodFault is missing 'type' property"));
         goto failure;
@@ -1721,12 +1721,12 @@ esxVI_ManagedObjectReference_Serialize
   (esxVI_ManagedObjectReference *managedObjectReference,
    const char *element, virBufferPtr output)
 {
-    if (element == NULL || output == NULL) {
+    if (!element || !output) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (managedObjectReference == NULL) {
+    if (!managedObjectReference) {
         return 0;
     }
 
@@ -1751,7 +1751,7 @@ int
 esxVI_ManagedObjectReference_Deserialize
   (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference)
 {
-    if (managedObjectReference == NULL || *managedObjectReference != NULL) {
+    if (!managedObjectReference || *managedObjectReference) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1763,7 +1763,7 @@ esxVI_ManagedObjectReference_Deserialize
     (*managedObjectReference)->type =
       (char *)xmlGetNoNsProp(node, BAD_CAST "type");
 
-    if ((*managedObjectReference)->type == NULL) {
+    if (!(*managedObjectReference)->type) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("ManagedObjectReference is missing 'type' property"));
         goto failure;
@@ -1841,7 +1841,7 @@ ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(Event, /* nothing */,
       (char *)xmlGetNsProp(node, BAD_CAST "type",
                            BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
-    if ((*ptrptr)->_actualType == NULL) {
+    if (!(*ptrptr)->_actualType) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s is missing 'type' property"),
                        esxVI_Type_ToString((*ptrptr)->_type));
