@@ -4643,7 +4643,8 @@ lxcDispatchDomainOpenNamespace(virNetServerPtr server ATTRIBUTE_UNUSED,
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virDomainFree(dom);
+    if (dom)
+        virDomainFree(dom);
     return rv;
 }
 
