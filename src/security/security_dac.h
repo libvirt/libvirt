@@ -25,10 +25,9 @@
 
 extern virSecurityDriver virSecurityDriverDAC;
 
-void virSecurityDACSetUser(virSecurityManagerPtr mgr,
-                           uid_t user);
-void virSecurityDACSetGroup(virSecurityManagerPtr mgr,
-                            gid_t group);
+int virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
+                                  uid_t user,
+                                  gid_t group);
 
 void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
                                        bool dynamic);

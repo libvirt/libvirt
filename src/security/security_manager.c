@@ -146,8 +146,10 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
     if (!mgr)
         return NULL;
 
-    virSecurityDACSetUser(mgr, user);
-    virSecurityDACSetGroup(mgr, group);
+    if (virSecurityDACSetUserAndGroup(mgr, user, group) < 0) {
+        virSecurityManagerDispose(mgr);
+        return NULL;
+    }
     virSecurityDACSetDynamicOwnership(mgr, dynamicOwnership);
 
     return mgr;
