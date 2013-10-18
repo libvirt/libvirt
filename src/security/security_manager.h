@@ -55,6 +55,8 @@ void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);
+const char *virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtType);
+
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr);

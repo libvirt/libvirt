@@ -275,6 +275,21 @@ virSecurityManagerGetModel(virSecurityManagerPtr mgr)
     return NULL;
 }
 
+/* return NULL if a base label is not present */
+const char *
+virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
+{
+    if (mgr->drv->getBaseLabel) {
+        const char *ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->getBaseLabel(mgr, virtType);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return NULL;
+}
+
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
 {
     return mgr->allowDiskFormatProbing;

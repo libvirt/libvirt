@@ -46,6 +46,8 @@ typedef int (*virSecurityDriverClose) (virSecurityManagerPtr mgr);
 
 typedef const char *(*virSecurityDriverGetModel) (virSecurityManagerPtr mgr);
 typedef const char *(*virSecurityDriverGetDOI) (virSecurityManagerPtr mgr);
+typedef const char *(*virSecurityDriverGetBaseLabel) (virSecurityManagerPtr mgr,
+                                                      int virtType);
 
 typedef int (*virSecurityDriverPreFork) (virSecurityManagerPtr mgr);
 
@@ -154,6 +156,8 @@ struct _virSecurityDriver {
 
     virSecurityDomainGetMountOptions domainGetSecurityMountOptions;
     virSecurityDomainSetHugepages domainSetSecurityHugepages;
+
+    virSecurityDriverGetBaseLabel getBaseLabel;
 };
 
 virSecurityDriverPtr virSecurityDriverLookup(const char *name,

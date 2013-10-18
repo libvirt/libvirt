@@ -842,6 +842,7 @@ virSecurityDriverLookup;
 # security/security_manager.h
 virSecurityManagerClearSocketLabel;
 virSecurityManagerGenLabel;
+virSecurityManagerGetBaseLabel;
 virSecurityManagerGetDOI;
 virSecurityManagerGetModel;
 virSecurityManagerGetMountOptions;

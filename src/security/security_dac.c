@@ -1174,6 +1174,14 @@ virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return NULL;
 }
 
+static const char *
+virSecurityDACGetBaseLabel(virSecurityManagerPtr mgr,
+                           int virt ATTRIBUTE_UNUSED)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return priv->baselabel;
+}
+
 virSecurityDriver virSecurityDriverDAC = {
     .privateDataLen                     = sizeof(virSecurityDACData),
     .name                               = SECURITY_DAC_NAME,
@@ -1216,4 +1224,6 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityTapFDLabel        = virSecurityDACSetTapFDLabel,
 
     .domainGetSecurityMountOptions      = virSecurityDACGetMountOptions,
+
+    .getBaseLabel                       = virSecurityDACGetBaseLabel,
 };

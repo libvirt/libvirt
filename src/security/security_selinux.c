@@ -1830,6 +1830,17 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
 }
 
 
+static const char *
+virSecuritySELinuxGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
+{
+    virSecuritySELinuxDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    if (virtType == VIR_DOMAIN_VIRT_QEMU && priv->alt_domain_context)
+        return priv->alt_domain_context;
+    else
+        return priv->domain_context;
+}
+
+
 static int
 virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
@@ -2477,4 +2488,5 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainSetSecurityTapFDLabel        = virSecuritySELinuxSetTapFDLabel,
 
     .domainGetSecurityMountOptions      = virSecuritySELinuxGetSecurityMountOptions,
+    .getBaseLabel                       = virSecuritySELinuxGetBaseLabel,
 };

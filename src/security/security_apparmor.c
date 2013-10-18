@@ -931,6 +931,12 @@ AppArmorGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return opts;
 }
 
+static const char *
+AppArmorGetBaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                     int virtType ATTRIBUTE_UNUSED)
+{
+    return NULL;
+}
 
 virSecurityDriver virAppArmorSecurityDriver = {
     .privateDataLen                     = 0,
@@ -972,4 +978,6 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainSetSecurityTapFDLabel        = AppArmorSetFDLabel,
 
     .domainGetSecurityMountOptions      = AppArmorGetMountOptions,
+
+    .getBaseLabel                       = AppArmoryGetBaseLabel,
 };

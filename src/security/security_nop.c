@@ -186,6 +186,14 @@ static char *virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr ATTRI
     return opts;
 }
 
+static const char *
+virSecurityGetBaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                        int virtType ATTRIBUTE_UNUSED)
+{
+    return NULL;
+}
+
+
 virSecurityDriver virSecurityDriverNop = {
     .privateDataLen                     = 0,
     .name                               = "none",
@@ -226,4 +234,6 @@ virSecurityDriver virSecurityDriverNop = {
     .domainSetSecurityTapFDLabel        = virSecurityDomainSetFDLabelNop,
 
     .domainGetSecurityMountOptions      = virSecurityDomainGetMountOptionsNop,
+
+    .getBaseLabel                       = virSecurityGetBaseLabel,
 };

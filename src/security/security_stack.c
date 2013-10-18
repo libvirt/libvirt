@@ -555,6 +555,13 @@ virSecurityStackGetNested(virSecurityManagerPtr mgr)
     return list;
 }
 
+static const char *
+virSecurityStackGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
+{
+    return virSecurityManagerGetBaseLabel(virSecurityStackGetPrimary(mgr),
+                                          virtType);
+}
+
 virSecurityDriver virSecurityDriverStack = {
     .privateDataLen                     = sizeof(virSecurityStackData),
     .name                               = "stack",
@@ -599,4 +606,6 @@ virSecurityDriver virSecurityDriverStack = {
     .domainGetSecurityMountOptions      = virSecurityStackGetMountOptions,
 
     .domainSetSecurityHugepages         = virSecurityStackSetHugepages,
+
+    .getBaseLabel                       = virSecurityStackGetBaseLabel,
 };
