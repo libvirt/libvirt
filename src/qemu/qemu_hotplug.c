@@ -2519,17 +2519,9 @@ qemuDomainRemovePCIHostDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr hostdev)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
     virPCIDevicePtr pci;
     virPCIDevicePtr activePci;
-
-    /*
-     * For SRIOV net host devices, unset mac and port profile before
-     * reset and reattach device
-     */
-    if (hostdev->parent.data.net)
-        qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
 
     virObjectLock(driver->activePciHostdevs);
     virObjectLock(driver->inactivePciHostdevs);
@@ -2551,7 +2543,6 @@ qemuDomainRemovePCIHostDevice(virQEMUDriverPtr driver,
     virObjectUnlock(driver->inactivePciHostdevs);
 
     qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
-    virObjectUnref(cfg);
 }
 
 static void
@@ -2587,6 +2578,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainHostdevDefPtr hostdev)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainNetDefPtr net = NULL;
     virDomainEventPtr event;
     size_t i;
@@ -2618,6 +2610,8 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
     virDomainAuditHostdev(vm, hostdev, "detach", true);
 
+    qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
+
     switch ((enum virDomainHostdevSubsysType) hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
@@ -2646,6 +2640,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         networkReleaseActualDevice(net);
         virDomainNetDefFree(net);
     }
+    virObjectUnref(cfg);
 }
 
 

@@ -466,6 +466,15 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     bool port_profile_associate = false;
     int isvf;
 
+    /* This is only needed for PCI devices that have been defined
+     * using <interface type='hostdev'>. For all others, it is a NOP.
+     */
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI ||
+        hostdev->parent.type != VIR_DOMAIN_DEVICE_NET ||
+        !hostdev->parent.data.net)
+       return 0;
+
     isvf = qemuDomainHostdevIsVirtualFunction(hostdev);
     if (isvf <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -799,14 +808,9 @@ inactivedevs:
     }
 
 resetvfnetconfig:
-    for (i = 0; last_processed_hostdev_vf != -1 &&
-                i < last_processed_hostdev_vf; i++) {
-         virDomainHostdevDefPtr hostdev = hostdevs[i];
-         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
-             hostdev->parent.data.net) {
-             qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
-         }
-    }
+    for (i = 0;
+         last_processed_hostdev_vf != -1 && i < last_processed_hostdev_vf; i++)
+        qemuDomainHostdevNetConfigRestore(hostdevs[i], cfg->stateDir);
 
 reattachdevs:
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
@@ -1270,17 +1274,8 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
      * For SRIOV net host devices, unset mac and port profile before
      * reset and reattach device
      */
-    for (i = 0; i < nhostdevs; i++) {
-         virDomainHostdevDefPtr hostdev = hostdevs[i];
-         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-             continue;
-         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-             continue;
-         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
-             hostdev->parent.data.net) {
-             qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
-         }
-    }
+    for (i = 0; i < nhostdevs; i++)
+        qemuDomainHostdevNetConfigRestore(hostdevs[i], cfg->stateDir);
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
