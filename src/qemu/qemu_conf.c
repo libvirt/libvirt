@@ -605,12 +605,14 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
 
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
-    size_t i;
+    size_t i, j;
     virCapsPtr caps;
     virSecurityManagerPtr *sec_managers = NULL;
     /* Security driver data */
-    const char *doi, *model;
+    const char *doi, *model, *lbl, *type;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const int virtTypes[] = {VIR_DOMAIN_VIRT_KVM,
+                             VIR_DOMAIN_VIRT_QEMU,};
 
     /* Basic host arch / guest machine capabilities */
     if (!(caps = virQEMUCapsInit(driver->qemuCapsCache)))
@@ -635,11 +637,21 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
         goto error;
 
     for (i = 0; sec_managers[i]; i++) {
+        virCapsHostSecModelPtr sm = &caps->host.secModels[i];
         doi = virSecurityManagerGetDOI(sec_managers[i]);
         model = virSecurityManagerGetModel(sec_managers[i]);
-        if (VIR_STRDUP(caps->host.secModels[i].model, model) < 0 ||
-            VIR_STRDUP(caps->host.secModels[i].doi, doi) < 0)
+        if (VIR_STRDUP(sm->model, model) < 0 ||
+            VIR_STRDUP(sm->doi, doi) < 0)
             goto error;
+
+        for (j = 0; j < ARRAY_CARDINALITY(virtTypes); j++) {
+            lbl = virSecurityManagerGetBaseLabel(sec_managers[i], virtTypes[j]);
+            type = virDomainVirtTypeToString(virtTypes[j]);
+            if (lbl &&
+                virCapabilitiesHostSecModelAddBaseLabel(sm, type, lbl) < 0)
+                goto error;
+        }
+
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
                   "DOI \"%s\"", model, doi);
     }

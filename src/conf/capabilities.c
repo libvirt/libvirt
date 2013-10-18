@@ -184,6 +184,20 @@ virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
 }
 
 static void
+virCapabilitiesClearSecModel(virCapsHostSecModelPtr secmodel)
+{
+    size_t i;
+    for (i = 0; i < secmodel->nlabels; i++) {
+        VIR_FREE(secmodel->labels[i].type);
+        VIR_FREE(secmodel->labels[i].label);
+    }
+
+    VIR_FREE(secmodel->labels);
+    VIR_FREE(secmodel->model);
+    VIR_FREE(secmodel->doi);
+}
+
+static void
 virCapabilitiesDispose(void *object)
 {
     virCapsPtr caps = object;
@@ -204,8 +218,7 @@ virCapabilitiesDispose(void *object)
     VIR_FREE(caps->host.migrateTrans);
 
     for (i = 0; i < caps->host.nsecModels; i++) {
-        VIR_FREE(caps->host.secModels[i].model);
-        VIR_FREE(caps->host.secModels[i].doi);
+        virCapabilitiesClearSecModel(&caps->host.secModels[i]);
     }
     VIR_FREE(caps->host.secModels);
 
@@ -504,6 +517,44 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
  no_memory:
     virCapabilitiesFreeGuestFeature(feature);
     return NULL;
+}
+
+/**
+ * virCapabilitiesHostSecModelAddBaseLabel
+ * @secmodel: Security model to add a base label for
+ * @type: virtualization type
+ * @label: base label
+ *
+ * Returns non-zero on error.
+ */
+extern int
+virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
+                                        const char *type,
+                                        const char *label)
+{
+    char *t = NULL, *l = NULL;
+
+    if (type == NULL || label == NULL)
+        return -1;
+
+    if (VIR_STRDUP(t, type) < 0)
+        goto no_memory;
+
+    if (VIR_STRDUP(l, label) < 0)
+        goto no_memory;
+
+    if (VIR_EXPAND_N(secmodel->labels, secmodel->nlabels, 1) < 0)
+        goto no_memory;
+
+    secmodel->labels[secmodel->nlabels - 1].type = t;
+    secmodel->labels[secmodel->nlabels - 1].label = l;
+
+    return 0;
+
+no_memory:
+    VIR_FREE(l);
+    VIR_FREE(t);
+    return -1;
 }
 
 /**
@@ -826,6 +877,11 @@ virCapabilitiesFormatXML(virCapsPtr caps)
                           caps->host.secModels[i].model);
         virBufferAsprintf(&xml, "      <doi>%s</doi>\n",
                           caps->host.secModels[i].doi);
+        for (j = 0; j < caps->host.secModels[i].nlabels; j++) {
+            virBufferAsprintf(&xml, "      <baselabel type='%s'>%s</baselabel>\n",
+                              caps->host.secModels[i].labels[j].type,
+                              caps->host.secModels[i].labels[j].label);
+        }
         virBufferAddLit(&xml, "    </secmodel>\n");
     }
 

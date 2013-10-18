@@ -60,6 +60,14 @@
           <element name='doi'>
             <text/>
           </element>
+          <zeroOrMore>
+            <element name='baselabel'>
+              <attribute name='type'>
+                <text/>
+              </attribute>
+              <text/>
+            </element>
+          </zeroOrMore>
        </interleave>
     </element>
   </define>

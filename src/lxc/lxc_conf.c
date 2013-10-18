@@ -126,10 +126,13 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
 
     if (driver) {
         /* Security driver data */
-        const char *doi, *model;
+        const char *doi, *model, *label, *type;
 
         doi = virSecurityManagerGetDOI(driver->securityManager);
         model = virSecurityManagerGetModel(driver->securityManager);
+        label = virSecurityManagerGetBaseLabel(driver->securityManager,
+                                               VIR_DOMAIN_VIRT_LXC);
+        type = virDomainVirtTypeToString(VIR_DOMAIN_VIRT_LXC);
         /* Allocate the primary security driver for LXC. */
         if (VIR_ALLOC(caps->host.secModels) < 0)
             goto error;
@@ -137,6 +140,11 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         if (VIR_STRDUP(caps->host.secModels[0].model, model) < 0)
             goto error;
         if (VIR_STRDUP(caps->host.secModels[0].doi, doi) < 0)
+            goto error;
+        if (label &&
+            virCapabilitiesHostSecModelAddBaseLabel(&caps->host.secModels[0],
+                                                    type,
+                                                    label) < 0)
             goto error;
 
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "

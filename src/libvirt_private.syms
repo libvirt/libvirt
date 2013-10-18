@@ -58,6 +58,7 @@ virCapabilitiesFormatXML;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
 virCapabilitiesGetCpusForNodemask;
+virCapabilitiesHostSecModelAddBaseLabel;
 virCapabilitiesNew;
 virCapabilitiesSetHostCPU;
 

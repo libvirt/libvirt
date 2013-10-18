@@ -82,6 +82,8 @@
     <secmodel>
       <model>dac</model>
       <doi>0</doi>
+      <baselabel type='kvm'>107:107</baselabel>
+      <baselabel type='qemu'>107:107</baselabel>
     </secmodel>
   </host>
 

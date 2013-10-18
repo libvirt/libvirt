@@ -25,6 +25,8 @@
     <secmodel>
       <model>selinux</model>
       <doi>0</doi>
+      <baselabel type='kvm'>system_u:system_r:svirt_t:s0</baselabel>
+      <baselabel type='qemu'>system_u:system_r:svirt_tcg_t:s0</baselabel>
     </secmodel>
   </host>
 

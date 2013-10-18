@@ -104,11 +104,20 @@ struct _virCapsHostNUMACell {
     virCapsHostNUMACellCPUPtr cpus;
 };
 
+typedef struct _virCapsHostSecModelLabel virCapsHostSecModelLabel;
+typedef virCapsHostSecModelLabel *virCapsHostSecModelLabelPtr;
+struct _virCapsHostSecModelLabel {
+    char *type;
+    char *label;
+};
+
 typedef struct _virCapsHostSecModel virCapsHostSecModel;
 typedef virCapsHostSecModel *virCapsHostSecModelPtr;
 struct _virCapsHostSecModel {
     char *model;
     char *doi;
+    size_t nlabels;
+    virCapsHostSecModelLabelPtr labels;
 };
 
 typedef struct _virCapsHost virCapsHost;
@@ -223,6 +232,11 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                const char *name,
                                int defaultOn,
                                int toggle);
+
+extern int
+virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
+                                        const char *type,
+                                        const char *label);
 
 extern int
 virCapabilitiesSupportsGuestArch(virCapsPtr caps,
