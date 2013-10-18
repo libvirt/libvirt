@@ -446,7 +446,7 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
     virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        false, 0, NULL, NULL, 0)
-# define VIR_APPEND_ELEMENT_COPY_QUIT(Eptr, count, newelem) \
+# define VIR_APPEND_ELEMENT_COPY_QUIET(ptr, count, newelem) \
     virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        false, 0, NULL, NULL, 0)
