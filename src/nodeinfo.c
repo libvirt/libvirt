@@ -33,11 +33,6 @@
 #include <sched.h>
 #include "conf/domain_conf.h"
 
-#if WITH_NUMACTL
-# define NUMA_VERSION1_COMPATIBILITY 1
-# include <numa.h>
-#endif
-
 #if defined(__FreeBSD__) || defined(__APPLE__)
 # include <sys/types.h>
 # include <sys/sysctl.h>
@@ -1534,7 +1529,6 @@ nodeGetFreeMemoryFake(void)
     return ret;
 }
 
-#if WITH_NUMACTL
 static virBitmapPtr
 virNodeGetSiblingsList(const char *dir, int cpu_id)
 {
@@ -1715,23 +1709,3 @@ nodeGetFreeMemory(void)
 
     return freeMem;
 }
-
-
-#else
-int nodeCapsInitNUMA(virCapsPtr caps) {
-    return nodeCapsInitNUMAFake(caps);
-}
-
-int nodeGetCellsFreeMemory(unsigned long long *freeMems,
-                           int startCell,
-                           int maxCells)
-{
-    return nodeGetCellsFreeMemoryFake(freeMems,
-                                      startCell, maxCells);
-}
-
-unsigned long long nodeGetFreeMemory(void)
-{
-    return nodeGetFreeMemoryFake();
-}
-#endif
