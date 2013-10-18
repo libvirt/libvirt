@@ -82,6 +82,8 @@ module Libvirtd_qemu =
                  | int_entry "keepalive_count"
 
    let network_entry = str_entry "migration_address"
+                 | int_entry "migration_port_min"
+                 | int_entry "migration_port_max"
 
    (* Each entry in the config is one of the following ... *)
    let entry = vnc_entry
