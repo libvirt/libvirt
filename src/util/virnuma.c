@@ -21,10 +21,18 @@
 
 #include <config.h>
 
+#define NUMA_MAX_N_CPUS 4096
+
 #if WITH_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
-#endif
+
+# if LIBNUMA_API_VERSION > 1
+#  undef NUMA_MAX_N_CPUS
+#  define NUMA_MAX_N_CPUS (numa_all_cpus_ptr->size)
+# endif
+
+#endif /* WITH_NUMACTL */
 
 #include "virnuma.h"
 #include "vircommand.h"
@@ -288,3 +296,17 @@ virNumaGetNodeMemory(int node ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif
+
+
+/**
+ * virNumaGetMaxCPUs:
+ *
+ * Get the maximum count of CPUs supportable in the host.
+ *
+ * Returns the count of CPUs supported.
+ */
+unsigned int
+virNumaGetMaxCPUs(void)
+{
+    return NUMA_MAX_N_CPUS;
+}

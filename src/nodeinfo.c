@@ -1535,11 +1535,6 @@ nodeGetFreeMemoryFake(void)
 }
 
 #if WITH_NUMACTL
-# if LIBNUMA_API_VERSION <= 1
-#  define NUMA_MAX_N_CPUS 4096
-# else
-#  define NUMA_MAX_N_CPUS (numa_all_cpus_ptr->size)
-# endif
 
 # define n_bits(var) (8 * sizeof(var))
 # define MASK_CPU_ISSET(mask, cpu) \
@@ -1559,7 +1554,7 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
     if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
         goto cleanup;
 
-    if (virBitmapParse(buf, 0, &ret, NUMA_MAX_N_CPUS) < 0)
+    if (virBitmapParse(buf, 0, &ret, virNumaGetMaxCPUs()) < 0)
         goto cleanup;
 
 cleanup:
@@ -1602,7 +1597,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
     int ret = -1;
-    int max_n_cpus = NUMA_MAX_N_CPUS;
+    int max_n_cpus = virNumaGetMaxCPUs();
     int mask_n_bytes = max_n_cpus / 8;
     int ncpus = 0;
     bool topology_failed = false;

@@ -62,4 +62,6 @@ int virNumaGetNodeMemory(int node,
                          unsigned long long *memsize,
                          unsigned long long *memfree);
 
+unsigned int virNumaGetMaxCPUs(void);
+
 #endif /* __VIR_NUMA_H__ */
