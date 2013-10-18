@@ -1545,8 +1545,6 @@ nodeGetFreeMemoryFake(void)
 # define MASK_CPU_ISSET(mask, cpu) \
   (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
 
-static unsigned long long nodeGetCellMemory(int cell);
-
 static virBitmapPtr
 virNodeGetSiblingsList(const char *dir, int cpu_id)
 {
@@ -1637,8 +1635,9 @@ nodeCapsInitNUMA(virCapsPtr caps)
             continue;
         }
 
-        /* Detect the amount of memory in the numa cell */
-        memory = nodeGetCellMemory(n);
+        /* Detect the amount of memory in the numa cell in KiB */
+        virNumaGetNodeMemory(n, &memory, NULL);
+        memory >>= 10;
 
         for (ncpus = 0, i = 0; i < max_n_cpus; i++)
             if (MASK_CPU_ISSET(mask, i))
@@ -1734,46 +1733,6 @@ nodeGetFreeMemory(void)
     }
 
     return freeMem;
-}
-
-/**
- * nodeGetCellMemory
- * @cell: The number of the numa cell to get memory info for.
- *
- * Request size of memory in a NUMA node.
- *
- * Returns 0 if unavailable, amount of memory in KiB on success.
- */
-static unsigned long long nodeGetCellMemory(int cell)
-{
-    unsigned long long mem;
-    unsigned long long memKiB = 0;
-    int maxCell;
-
-    /* Make sure the provided cell number is valid. */
-    if ((maxCell = virNumaGetMaxNode()) < 0)
-        goto cleanup;
-
-    if (cell > maxCell) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cell %d out of range (0-%d)"),
-                       cell, maxCell);
-        goto cleanup;
-    }
-
-    /* Get the amount of memory(bytes) in the node */
-    if (virNumaGetNodeMemory(cell, &mem, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to query NUMA total memory for node: %d"),
-                       cell);
-        goto cleanup;
-    }
-
-    /* Convert the memory from bytes to KiB */
-    memKiB = mem >> 10;
-
-cleanup:
-    return memKiB;
 }
 
 
