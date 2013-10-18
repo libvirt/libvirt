@@ -1003,7 +1003,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         }
 
         /* Connect to vCenter */
-        if (!priv->parsedUri->vCenter) {
+        if (priv->parsedUri->vCenter) {
             if (STREQ(priv->parsedUri->vCenter, "*")) {
                 if (!potentialVCenterIpAddress) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
