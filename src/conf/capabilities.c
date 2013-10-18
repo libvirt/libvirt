@@ -276,6 +276,7 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
  * @caps: capabilities to extend
  * @num: ID number of NUMA cell
  * @ncpus: number of CPUs in cell
+ * @mem: Total size of memory in the NUMA node (in KiB)
  * @cpus: array of CPU definition structures, the pointer is stolen
  *
  * Registers a new NUMA cell for a host, passing in a
