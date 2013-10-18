@@ -64,4 +64,6 @@ int virNumaGetNodeMemory(int node,
 
 unsigned int virNumaGetMaxCPUs(void);
 
+int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus);
+
 #endif /* __VIR_NUMA_H__ */

@@ -38,6 +38,8 @@
 #include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
+#include "viralloc.h"
+#include "virbitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -249,6 +251,83 @@ virNumaGetNodeMemory(int node,
 
     return 0;
 }
+
+
+/**
+ * virNumaGetNodeCPUs:
+ * @node: identifier of the requested NUMA node
+ * @cpus: returns a bitmap of CPUs in @node
+ *
+ * Returns count of CPUs in the selected node and sets the map of the cpus to
+ * @cpus. On error if the @node doesn't exist in the system this function
+ * returns -2 and sets @cpus to NULL. On other errors -1 is returned, @cpus
+ * is set to NULL and an error is reported.
+ */
+
+# define n_bits(var) (8 * sizeof(var))
+# define MASK_CPU_ISSET(mask, cpu) \
+  (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
+int
+virNumaGetNodeCPUs(int node,
+                   virBitmapPtr *cpus)
+{
+    unsigned long *mask = NULL;
+    unsigned long *allonesmask = NULL;
+    virBitmapPtr cpumap = NULL;
+    int ncpus = 0;
+    int max_n_cpus = virNumaGetMaxCPUs();
+    int mask_n_bytes = max_n_cpus / 8;
+    size_t i;
+    int ret = -1;
+
+    *cpus = NULL;
+
+    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof(*mask)) < 0)
+        goto cleanup;
+
+    memset(allonesmask, 0xff, mask_n_bytes);
+
+    /* The first time this returns -1, ENOENT if node doesn't exist... */
+    if (numa_node_to_cpus(node, mask, mask_n_bytes) < 0) {
+        VIR_WARN("NUMA topology for cell %d is not available, ignoring", node);
+        ret = -2;
+        goto cleanup;
+    }
+
+    /* second, third... times it returns an all-1's mask */
+    if (memcmp(mask, allonesmask, mask_n_bytes) == 0) {
+        VIR_DEBUG("NUMA topology for cell %d is invalid, ignoring", node);
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (!(cpumap = virBitmapNew(max_n_cpus)))
+        goto cleanup;
+
+    for (i = 0; i < max_n_cpus; i++) {
+        if (MASK_CPU_ISSET(mask, i)) {
+            ignore_value(virBitmapSetBit(cpumap, i));
+            ncpus++;
+        }
+    }
+
+    *cpus = cpumap;
+    cpumap = NULL;
+    ret = ncpus;
+
+cleanup:
+    VIR_FREE(mask);
+    VIR_FREE(allonesmask);
+    VIR_FREE(cpumap);
+
+    return ret;
+}
+# undef MASK_CPU_ISSET
+# undef n_bits
+
 #else
 int
 virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
@@ -293,6 +372,18 @@ virNumaGetNodeMemory(int node ATTRIBUTE_UNUSED,
         *memfree = 0;
 
     VIR_DEBUG("NUMA isn't available on this host");
+    return -1;
+}
+
+
+int
+virNumaGetNodeCPUs(int node ATTRIBUTE_UNUSED,
+                   virBitmapPtr *cpus)
+{
+    *cpus = NULL;
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("NUMA isn't available on this host"));
     return -1;
 }
 #endif

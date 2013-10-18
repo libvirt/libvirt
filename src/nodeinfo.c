@@ -1535,11 +1535,6 @@ nodeGetFreeMemoryFake(void)
 }
 
 #if WITH_NUMACTL
-
-# define n_bits(var) (8 * sizeof(var))
-# define MASK_CPU_ISSET(mask, cpu) \
-  (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
-
 static virBitmapPtr
 virNodeGetSiblingsList(const char *dir, int cpu_id)
 {
@@ -1592,14 +1587,12 @@ int
 nodeCapsInitNUMA(virCapsPtr caps)
 {
     int n;
-    unsigned long *mask = NULL;
-    unsigned long *allonesmask = NULL;
     unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
+    virBitmapPtr cpumap = NULL;
     int ret = -1;
-    int max_n_cpus = virNumaGetMaxCPUs();
-    int mask_n_bytes = max_n_cpus / 8;
     int ncpus = 0;
+    int cpu;
     bool topology_failed = false;
     int max_node;
 
@@ -1609,49 +1602,41 @@ nodeCapsInitNUMA(virCapsPtr caps)
     if ((max_node = virNumaGetMaxNode()) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
-        goto cleanup;
-    if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof(*mask)) < 0)
-        goto cleanup;
-    memset(allonesmask, 0xff, mask_n_bytes);
-
     for (n = 0; n <= max_node; n++) {
         size_t i;
-        /* The first time this returns -1, ENOENT if node doesn't exist... */
-        if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
-            VIR_WARN("NUMA topology for cell %d of %d not available, ignoring",
-                     n, max_node + 1);
-            continue;
-        }
-        /* second, third... times it returns an all-1's mask */
-        if (memcmp(mask, allonesmask, mask_n_bytes) == 0) {
-            VIR_DEBUG("NUMA topology for cell %d of %d is all ones, ignoring",
-                      n, max_node + 1);
-            continue;
-        }
 
-        /* Detect the amount of memory in the numa cell in KiB */
-        virNumaGetNodeMemory(n, &memory, NULL);
-        memory >>= 10;
+        if ((ncpus = virNumaGetNodeCPUs(n, &cpumap)) < 0) {
+            if (ncpus == -2)
+                continue;
 
-        for (ncpus = 0, i = 0; i < max_n_cpus; i++)
-            if (MASK_CPU_ISSET(mask, i))
-                ncpus++;
+            goto cleanup;
+        }
 
         if (VIR_ALLOC_N(cpus, ncpus) < 0)
             goto cleanup;
+        cpu = 0;
 
-        for (ncpus = 0, i = 0; i < max_n_cpus; i++) {
-            if (MASK_CPU_ISSET(mask, i)) {
-                if (virNodeCapsFillCPUInfo(i, cpus + ncpus++) < 0) {
+        for (i = 0; i < virBitmapSize(cpumap); i++) {
+            bool cpustate;
+            if (virBitmapGetBit(cpumap, i, &cpustate) < 0)
+                continue;
+
+            if (cpustate) {
+                if (virNodeCapsFillCPUInfo(i, cpus + cpu++) < 0) {
                     topology_failed = true;
                     virResetLastError();
                 }
             }
         }
 
+        /* Detect the amount of memory in the numa cell in KiB */
+        virNumaGetNodeMemory(n, &memory, NULL);
+        memory >>= 10;
+
         if (virCapabilitiesAddHostNUMACell(caps, n, ncpus, memory, cpus) < 0)
             goto cleanup;
+
+        cpus = NULL;
     }
 
     ret = 0;
@@ -1660,11 +1645,12 @@ cleanup:
     if (topology_failed || ret < 0)
         virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
 
+    virBitmapFree(cpumap);
+    VIR_FREE(cpus);
+
     if (ret < 0)
         VIR_FREE(cpus);
 
-    VIR_FREE(mask);
-    VIR_FREE(allonesmask);
     return ret;
 }
 
