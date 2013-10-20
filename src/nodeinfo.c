@@ -73,6 +73,33 @@ appleFreebsdNodeGetCPUCount(void)
 
     return ncpu;
 }
+
+/* VIR_HW_PHYSMEM - the resulting value of HW_PHYSMEM of FreeBSD
+ * is 64 bits while that of Mac OS X is still 32 bits.
+ * Mac OS X provides HW_MEMSIZE for 64 bits version of HW_PHYSMEM
+ * since 10.6.8 (Snow Leopard) at least.
+ */
+# ifdef HW_MEMSIZE
+#  define VIR_HW_PHYSMEM HW_MEMSIZE
+# else
+#  define VIR_HW_PHYSMEM HW_PHYSMEM
+# endif
+static int
+appleFreebsdNodeGetMemorySize(unsigned long *memory)
+{
+    int mib[2] = { CTL_HW, VIR_HW_PHYSMEM };
+    unsigned long physmem;
+    size_t len = sizeof(physmem);
+
+    if (sysctl(mib, 2, &physmem, &len, NULL, 0) == -1) {
+        virReportSystemError(errno, "%s", _("cannot obtain memory size"));
+        return -1;
+    }
+
+    *memory = (unsigned long)(physmem / 1024);
+
+    return 0;
+}
 #endif
 
 #ifdef __linux__
@@ -914,17 +941,8 @@ cleanup:
     nodeinfo->mhz = cpu_freq / 1000000;
 # endif
 
-    /* get memory information */
-    int mib[2] = { CTL_HW, HW_PHYSMEM };
-    unsigned long physmem;
-    size_t len = sizeof(physmem);
-
-    if (sysctl(mib, 2, &physmem, &len, NULL, 0) == -1) {
-        virReportSystemError(errno, "%s", _("cannot obtain memory size"));
+    if (appleFreebsdNodeGetMemorySize(&nodeinfo->memory) < 0)
         return -1;
-    }
-
-    nodeinfo->memory = (unsigned long)(physmem / 1024);
 
     return 0;
     }
