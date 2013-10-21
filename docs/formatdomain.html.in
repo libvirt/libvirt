@@ -272,7 +272,7 @@
       no arguments. To specify the initial argv, use the <code>initarg</code>
       element, repeated as many time as is required. The <code>cmdline</code>
       element, if set will be used to provide an equivalent to <code>/proc/cmdline</code>
-      but will not effect init argv.
+      but will not affect init argv.
     </p>
 
     <pre>
