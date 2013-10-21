@@ -49,11 +49,14 @@ nodist_conf_DATA =
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
 
+SECDRIVER_CFLAGS =
 SECDRIVER_LIBS =
 if WITH_SECDRIVER_SELINUX
+SECDRIVER_CFLAGS += $(SELINUX_CFLAGS)
 SECDRIVER_LIBS += $(SELINUX_LIBS)
 endif
 if WITH_SECDRIVER_APPARMOR
+SECDRIVER_CFLAGS += $(APPARMOR_CFLAGS)
 SECDRIVER_LIBS += $(APPARMOR_LIBS)
 endif
 
@@ -1978,14 +1981,14 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 libvirt_setuid_rpc_client_la_LDFLAGS =		\
 		$(AM_LDFLAGS)			\
 		$(LIBXML_LIBS)			\
-		$(SELINUX_LIBS)			\
+		$(SECDRIVER_LIBS)		\
 		$(NULL)
 libvirt_setuid_rpc_client_la_CFLAGS =		\
 		-DLIBVIRT_SETUID_RPC_CLIENT	\
 		-I$(top_srcdir)/src/conf	\
 		-I$(top_srcdir)/src/rpc		\
 		$(AM_CFLAGS)			\
-		$(SELINUX_CFLAGS)		\
+		$(SECDRIVER_CFLAGS)		\
 		$(NULL)
 endif WITH_LXC
 
@@ -2409,15 +2412,10 @@ libvirt_lxc_CFLAGS =				\
 if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
-endif
-if WITH_SECDRIVER_SELINUX
-libvirt_lxc_CFLAGS += $(SELINUX_CFLAGS)
-endif
-if WITH_SECDRIVER_APPARMOR
-libvirt_lxc_CFLAGS += $(APPARMOR_CFLAGS)
-endif
-endif
-endif
+endif WITH_BLKID
+libvirt_lxc_CFLAGS += $(SECDRIVER_CFLAGS)
+endif WITH_LIBVIRTD
+endif WITH_LXC
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
 
 if WITH_SECDRIVER_APPARMOR
