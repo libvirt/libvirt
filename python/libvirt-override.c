@@ -7157,6 +7157,8 @@ libvirt_virDomainCreateWithFiles(PyObject *self ATTRIBUTE_UNUSED, PyObject *args
 
         if (libvirt_intUnwrap(pyfd, &fd) < 0)
             goto cleanup;
+
+        files[i] = fd;
     }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -7201,6 +7203,8 @@ libvirt_virDomainCreateXMLWithFiles(PyObject *self ATTRIBUTE_UNUSED, PyObject *a
 
         if (libvirt_intUnwrap(pyfd, &fd) < 0)
             goto cleanup;
+
+        files[i] = fd;
     }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
