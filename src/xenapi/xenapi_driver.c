@@ -437,7 +437,8 @@ xenapiConnectGetCapabilities(virConnectPtr conn)
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (caps) {
         char *xml = virCapabilitiesFormatXML(caps);
-        if (!xml) goto cleanup;
+        if (!xml)
+            goto cleanup;
         return xml;
     }
   cleanup:
@@ -704,7 +705,8 @@ xenapiDomainLookupByName(virConnectPtr conn,
             }
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
     return NULL;
 }
@@ -739,7 +741,8 @@ xenapiDomainSuspend(virDomainPtr dom)
             return 0;
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -774,7 +777,8 @@ xenapiDomainResume(virDomainPtr dom)
             return 0;
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -812,7 +816,8 @@ xenapiDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
             return 0;
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -855,7 +860,8 @@ xenapiDomainReboot(virDomainPtr dom, unsigned int flags)
         xen_vm_set_free(vms);
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -899,7 +905,8 @@ xenapiDomainDestroyFlags(virDomainPtr dom,
         dom->id = -1;
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -949,7 +956,8 @@ xenapiDomainGetOSType(virDomainPtr dom)
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
 
   cleanup:
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     return ostype;
 }
 /*
@@ -977,7 +985,8 @@ xenapiDomainGetMaxMemory(virDomainPtr dom)
         xen_vm_set_free(vms);
         return mem_static_max / 1024;
     } else {
-        if (vms) xen_vm_set_free(vms);
+        if (vms)
+            xen_vm_set_free(vms);
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
         return 0;
     }
@@ -1011,7 +1020,8 @@ xenapiDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
         }
         xen_vm_set_free(vms);
     } else {
-        if (vms) xen_vm_set_free(vms);
+        if (vms)
+            xen_vm_set_free(vms);
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
         return -1;
     }
@@ -1057,7 +1067,8 @@ xenapiDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         xen_vm_set_free(vms);
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -1145,7 +1156,8 @@ xenapiDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             return 0;
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -1198,7 +1210,8 @@ xenapiDomainPinVcpu(virDomainPtr dom, unsigned int vcpu ATTRIBUTE_UNUSED,
             return -1;
         }
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, NULL);
     return -1;
 }
@@ -1319,7 +1332,8 @@ xenapiDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         xen_vm_set_free(vms);
         return (int)maxvcpu;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, NULL);
     return -1;
 }
@@ -1360,7 +1374,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     /* Flags checked by virDomainDefFormat */
 
-    if (!xen_vm_get_by_name_label(session, &vms, dom->name)) return NULL;
+    if (!xen_vm_get_by_name_label(session, &vms, dom->name))
+        return NULL;
     if (vms->size != 1) {
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Domain name is not unique"));
@@ -1524,7 +1539,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         }
         xen_vif_set_free(vif_set);
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xml = virDomainDefFormat(defPtr, flags);
     virDomainDefFree(defPtr);
     return xml;
@@ -1654,7 +1670,8 @@ xenapiDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
         xen_vm_set_free(vms);
     } else {
-        if (vms) xen_vm_set_free(vms);
+        if (vms)
+            xen_vm_set_free(vms);
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
         return -1;
     }
@@ -1748,7 +1765,8 @@ xenapiDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
         xen_vm_set_free(vms);
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -1800,10 +1818,12 @@ xenapiDomainGetAutostart(virDomainPtr dom, int *autostart)
         }
         xen_vm_set_free(vms);
         xen_string_string_map_free(result);
-        if (flag == 0) return -1;
+        if (flag == 0)
+            return -1;
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
@@ -1842,7 +1862,8 @@ xenapiDomainSetAutostart(virDomainPtr dom, int autostart)
         xen_vm_set_free(vms);
         return 0;
     }
-    if (vms) xen_vm_set_free(vms);
+    if (vms)
+        xen_vm_set_free(vms);
     xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
