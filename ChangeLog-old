@@ -13920,7 +13920,7 @@ Tue Feb 27 10:20:43 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Only hardcode port = 5900+domid if
 	running against old XenD < 3.0.3, because in newer XenD
-	port is guarenteed to be available in XenStore if the VNC
+	port is guaranteed to be available in XenStore if the VNC
 	server is running.
 
 Mon Feb 26 15:33:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
@@ -15228,7 +15228,7 @@ Sun Sep  3 12:34:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	iterating over list of ids/names, because it is not neccessarily
 	the same as the value returned by virConnectNumOfDomains. Use qsort
 	to sort active domains by Id, and inactive domains by name, since
-	there is no guarenteed sort ordering when listing domains. For inactive
+	there is no guaranteed sort ordering when listing domains. For inactive
 	domains display a '-' instead of '-1' to make it clear they have no
 	sensible ID number.
 
