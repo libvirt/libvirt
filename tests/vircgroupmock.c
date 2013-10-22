@@ -498,6 +498,14 @@ int access(const char *path, int mode)
         }
         ret = realaccess(newpath, mode);
         free(newpath);
+    } else if (STREQ(path, "/proc/cgroups") ||
+               STREQ(path, "/proc/self/cgroup")) {
+        /* These files are readable for all. */
+        ret = (mode == F_OK || mode == R_OK) ? 0 : -1;
+    } else if (STREQ(path, "/proc/mounts")) {
+        /* This one is accessible anytime for anybody. In fact, it's just
+         * a symlink to /proc/self/mounts. */
+        ret = 0;
     } else {
         ret = realaccess(path, mode);
     }
