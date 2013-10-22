@@ -2226,6 +2226,13 @@ vshTTYIsInterruptCharacter(vshControl *ctl ATTRIBUTE_UNUSED,
 }
 
 
+bool
+vshTTYAvailable(vshControl *ctl)
+{
+    return ctl->istty;
+}
+
+
 int
 vshTTYDisableInterrupt(vshControl *ctl ATTRIBUTE_UNUSED)
 {

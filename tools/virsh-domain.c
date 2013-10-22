@@ -3529,6 +3529,7 @@ vshWatchJob(vshControl *ctl,
     bool functionReturn = false;
     sigset_t sigmask, oldsigmask;
     bool jobStarted = false;
+    nfds_t npollfd = 2;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
@@ -3539,9 +3540,13 @@ vshWatchJob(vshControl *ctl,
     sigemptyset(&sig_action.sa_mask);
     sigaction(SIGINT, &sig_action, &old_sig_action);
 
+    /* don't poll on STDIN if we are not using a terminal */
+    if (!vshTTYAvailable(ctl))
+        npollfd = 1;
+
     GETTIMEOFDAY(&start);
     while (1) {
-        ret = poll((struct pollfd *)&pollfd, 2, 500);
+        ret = poll((struct pollfd *)&pollfd, npollfd, 500);
         if (ret > 0) {
             if (pollfd[1].revents & POLLIN &&
                 saferead(STDIN_FILENO, &retchar, sizeof(retchar)) > 0) {
