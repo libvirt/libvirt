@@ -555,12 +555,12 @@ sc_avoid_attribute_unused_in_header:
 	  $(_sc_search_regexp)
 
 sc_prohibit_int_ijk:
-	@prohibit='\<(int|unsigned) ([^(]* )*(i|j|k)(\s|,|;)'		\
+	@prohibit='\<(int|unsigned) ([^(]* )*(i|j|k)\>(\s|,|;)'		\
 	halt='use size_t, not int/unsigned int for loop vars i, j, k'	\
 	  $(_sc_search_regexp)
 
 sc_prohibit_loop_iijjkk:
-	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)(\s|,|;)'	\
+	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)\>(\s|,|;)'	\
 	halt='use i, j, k for loop iterators, not ii, jj, kk' 		\
 	  $(_sc_search_regexp)
 
