@@ -1107,7 +1107,8 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     if (dctx == NULL)
         goto cleanup;
 
-    dnsmasqCapsRefresh(&driver->dnsmasqCaps, false);
+    if (dnsmasqCapsRefresh(&driver->dnsmasqCaps, NULL) < 0)
+        goto cleanup;
 
     ret = networkBuildDhcpDaemonCommandLine(network, &cmd, pidfile,
                                             dctx, driver->dnsmasqCaps);
