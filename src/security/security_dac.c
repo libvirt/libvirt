@@ -60,7 +60,7 @@ virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
     priv->user = user;
     priv->group = group;
 
-    if (virAsprintf(&priv->baselabel, "%u:%u",
+    if (virAsprintf(&priv->baselabel, "+%u:+%u",
                     (unsigned int) user,
                     (unsigned int) group) < 0)
         return -1;
@@ -1064,7 +1064,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         }
         break;
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        if (virAsprintf(&seclabel->label, "%u:%u",
+        if (virAsprintf(&seclabel->label, "+%u:+%u",
                         (unsigned int) priv->user,
                         (unsigned int) priv->group) < 0)
             return rc;
