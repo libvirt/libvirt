@@ -132,7 +132,7 @@
       crash, the simplest is to run the program under gdb, reproduce the
       steps leading to the crash and then issue a gdb "bt -a" command to
       get the stack trace, attach it to the bug. Note that for the
-      data to be really useful libvirt debug informations must be present
+      data to be really useful libvirt debug information must be present
       for example by installing libvirt debuginfo package on Fedora or
       Red Hat Enterprise Linux (with debuginfo-install libvirt) prior
       to running gdb.</p>
@@ -147,11 +147,11 @@
       <pre> #  ps -o etime,pid `pgrep libvirt`
 ... note the process id from the output
 # gdb /usr/sbin/libvirtd
-.... some informations about gdb and loading debug data
+.... some information about gdb and loading debug data
 (gdb) attach $the_damon_process_id
 ....
 (gdb) thread apply all bt
-.... informations to attach to the bug
+.... information to attach to the bug
 (gdb)
 </pre>
 

@@ -68,7 +68,7 @@
       <ul>
         <li>1 or "debug": asking the library to log every message emitted,
             though the filters can be used to avoid filling up the output</li>
-        <li>2 or "info": log all non-debugging informations</li>
+        <li>2 or "info": log all non-debugging information</li>
         <li>3 or "warn": log warnings and errors, that's the default value</li>
         <li>4 or "error": log only error messages</li>
       </ul></li>
@@ -89,7 +89,7 @@
       <ul>
         <li>4: only errors</li>
         <li>3: warnings and errors</li>
-        <li>2: informations, warnings and errors</li>
+        <li>2: information, warnings and errors</li>
         <li>1: debug and everything</li>
       </ul></li>
       <li>log_filters: defines logging filters</li>
