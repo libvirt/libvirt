@@ -34,6 +34,7 @@
 # undef WITH_CURL
 # undef WITH_DTRACE_PROBES
 # undef WITH_GNUTLS
+# undef WITH_GNUTLS_GCRYPT
 # undef WITH_MACVTAP
 # undef WITH_NUMACTL
 # undef WITH_SASL
