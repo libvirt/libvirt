@@ -164,7 +164,7 @@ typedef virInterfaceObj *virInterfaceObjPtr;
 struct _virInterfaceObj {
     virMutex lock;
 
-    unsigned int active:1;           /* 1 if interface is active (up) */
+    bool active;           /* true if interface is active (up) */
     virInterfaceDefPtr def; /* The interface definition */
 };
 
@@ -175,7 +175,7 @@ struct _virInterfaceObjList {
     virInterfaceObjPtr *objs;
 };
 
-static inline int
+static inline bool
 virInterfaceObjIsActive(const virInterfaceObj *iface)
 {
     return iface->active;
