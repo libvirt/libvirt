@@ -968,7 +968,7 @@ exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|python/|src/util/virstring\.c|tests/virnetserverclientmock.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vircgroupmock\.c)$$)
+  (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vir(cgroup|pci)mock\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(qemuhelp|nodeinfo)data/|\.(gif|ico|png|diff)$$)

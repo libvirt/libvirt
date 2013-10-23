@@ -57,6 +57,47 @@ cleanup:
     return ret;
 }
 
+# define CHECK_LIST_COUNT(list, cnt)                                    \
+    if ((count = virPCIDeviceListCount(list)) != cnt) {                 \
+        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
+                       "Unexpected count of items in " #list ": %d, "   \
+                       "expecting " #cnt, count);                       \
+        goto cleanup;                                                   \
+    }
+
+static int
+testVirPCIDeviceDetach(const void *oaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virPCIDevicePtr dev;
+    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    int count;
+
+    if (!(dev = virPCIDeviceNew(0, 0, 1, 0)) ||
+        !(activeDevs = virPCIDeviceListNew()) ||
+        !(inactiveDevs = virPCIDeviceListNew()))
+        goto cleanup;
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, 0);
+
+    if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
+        goto cleanup;
+
+    if (virPCIDeviceDetach(dev, activeDevs, inactiveDevs) < 0)
+        goto cleanup;
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, 1);
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(dev);
+    virObjectUnref(activeDevs);
+    virObjectUnref(inactiveDevs);
+    return ret;
+}
+
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
 static int
@@ -84,6 +125,7 @@ mymain(void)
     } while (0)
 
     DO_TEST(testVirPCIDeviceNew);
+    DO_TEST(testVirPCIDeviceDetach);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakesysfsdir);

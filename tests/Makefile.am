@@ -48,12 +48,15 @@ if WITH_DTRACE_PROBES
 PROBES_O += ../src/libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
+GNULIB_LIBS = \
+       ../gnulib/lib/libgnu.la
+
 LDADDS = \
         $(WARN_CFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
-	../src/libvirt.la \
-	../gnulib/lib/libgnu.la
+	$(GNULIB_LIBS) \
+	../src/libvirt.la
 
 EXTRA_DIST =		\
 	capabilityschemadata \
@@ -751,7 +754,8 @@ virpcitest_LDADD = $(LDADDS)
 virpcimock_la_SOURCES = \
 	virpcimock.c
 virpcimock_la_CFLAGS = $(AM_CFLAGS)
-virpcimock_la_LIBADD = ../src/libvirt.la
+virpcimock_la_LIBADD = $(GNULIB_LIBS) \
+					   ../src/libvirt.la
 virpcimock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
