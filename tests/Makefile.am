@@ -123,6 +123,7 @@ test_programs = virshtest sockettest \
 	virauthconfigtest \
 	virbitmaptest \
 	vircgrouptest \
+	virpcitest \
 	virendiantest \
 	viridentitytest \
 	virkeycodetest \
@@ -306,6 +307,7 @@ test_libraries = libshunload.la \
 		libvirportallocatormock.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
+		virpcimock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
@@ -740,6 +742,17 @@ vircgroupmock_la_SOURCES = \
 	vircgroupmock.c
 vircgroupmock_la_CFLAGS = $(AM_CFLAGS)
 vircgroupmock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+virpcitest_SOURCES = \
+	virpcitest.c testutils.h testutils.c
+virpcitest_LDADD = $(LDADDS)
+
+virpcimock_la_SOURCES = \
+	virpcimock.c
+virpcimock_la_CFLAGS = $(AM_CFLAGS)
+virpcimock_la_LIBADD = ../src/libvirt.la
+virpcimock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 if WITH_DBUS

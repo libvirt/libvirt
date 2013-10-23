@@ -212,6 +212,7 @@
 /tests/virlockspacetest
 /tests/virlogtest
 /tests/virnet*test
+/tests/virpcitest
 /tests/virportallocatortest
 /tests/virshtest
 /tests/virstoragetest
