@@ -233,6 +233,9 @@
 /tools/virt-*-validate
 /tools/virt-sanlock-cleanup
 /update.log
+GPATH
+GRTAGS
+GTAGS
 Makefile
 Makefile.in
 TAGS
