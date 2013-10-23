@@ -2535,6 +2535,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
     char *uri_str = NULL;
     int ret = -1;
     virURIPtr uri = NULL;
+    bool well_formed_uri = true;
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
@@ -2597,6 +2598,7 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
 
         /* Convert uri_in to well-formed URI with // after tcp: */
         if (!(STRPREFIX(uri_in, "tcp://"))) {
+            well_formed_uri = false;
             if (virAsprintf(&uri_str, "tcp://%s", p) < 0)
                 goto cleanup;
         }
@@ -2626,9 +2628,17 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                 goto cleanup;
             }
 
-            /* Caller frees */
-            if (virAsprintf(uri_out, "%s:%d", uri_in, port) < 0)
-                goto cleanup;
+            if (well_formed_uri) {
+                uri->port = port;
+
+                /* Caller frees */
+                if (!(*uri_out = virURIFormat(uri)))
+                    goto cleanup;
+            } else {
+                /* Caller frees */
+                if (virAsprintf(uri_out, "%s:%d", uri_in, port) < 0)
+                    goto cleanup;
+            }
 
         } else {
             port = uri->port;
