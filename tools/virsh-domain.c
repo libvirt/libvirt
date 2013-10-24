@@ -295,6 +295,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("target device type")
     },
+    {.name = "shareable",
+     .type = VSH_OT_ALIAS,
+     .help = "mode=shareable"
+    },
     {.name = "mode",
      .type = VSH_OT_STRING,
      .help = N_("mode of device reading and writing")
@@ -310,10 +314,6 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {.name = "wwn",
      .type = VSH_OT_STRING,
      .help = N_("wwn of disk device")
-    },
-    {.name = "shareable",
-     .type = VSH_OT_BOOL,
-     .help = N_("shareable between domains")
     },
     {.name = "rawio",
      .type = VSH_OT_BOOL,
@@ -601,9 +601,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (wwn)
         virBufferAsprintf(&buf, "  <wwn>%s</wwn>\n", wwn);
-
-    if (vshCommandOptBool(cmd, "shareable"))
-        virBufferAddLit(&buf, "  <shareable/>\n");
 
     if (straddr) {
         if (str2DiskAddress(straddr, &diskAddr) != 0) {

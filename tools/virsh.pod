@@ -1923,7 +1923,7 @@ expected.
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
 [I<--type type>] [I<--mode mode>] [I<--config>] [I<--sourcetype soucetype>]
-[I<--serial serial>] [I<--wwn wwn>] [I<--shareable>] [I<--rawio>]
+[I<--serial serial>] [I<--wwn wwn>] [I<--rawio>]
 [I<--address address>] [I<--multifunction>] [I<--print-xml>]
 
 Attach a new disk device to the domain.
@@ -1945,7 +1945,6 @@ I<sourcetype> can indicate the type of source (block|file)
 I<cache> can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
 I<serial> is the serial of disk device. I<wwn> is the wwn of disk device.
-I<shareable> indicates the disk device is shareable between domains.
 I<rawio> indicates the disk needs rawio capability.
 I<address> is the address of disk device in the form of pci:domain.bus.slot.function,
 scsi:controller.bus.unit or ide:controller.bus.unit.
@@ -1964,6 +1963,7 @@ on the hypervisor driver.
 
 For compatibility purposes, I<--persistent> behaves like I<--config> for
 an offline domain, and like I<--live> I<--config> for a running domain.
+Likewise, I<--shareable> is an alias for I<--mode shareable>.
 
 =item B<attach-interface> I<domain> I<type> I<source>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
