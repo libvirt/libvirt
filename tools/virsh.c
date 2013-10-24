@@ -885,6 +885,10 @@ static const vshCmdOptDef opts_echo[] = {
      .type = VSH_OT_ALIAS,
      .help = "string"
     },
+    {.name = "hi",
+     .type = VSH_OT_ALIAS,
+     .help = "string=hello"
+    },
     {.name = "string",
      .type = VSH_OT_ARGV,
      .help = N_("arguments to echo")
@@ -1011,11 +1015,24 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         }
         if (opt->type == VSH_OT_ALIAS) {
             size_t j;
+            char *name = (char *)opt->help; /* cast away const */
+            char *p;
+
             if (opt->flags || !opt->help)
                 return -1; /* alias options are tracked by the original name */
+            if ((p = strchr(name, '=')) &&
+                VIR_STRNDUP(name, name, p - name) < 0)
+                return -1;
             for (j = i + 1; cmd->opts[j].name; j++) {
-                if (STREQ(opt->help, cmd->opts[j].name))
+                if (STREQ(name, cmd->opts[j].name) &&
+                    cmd->opts[j].type != VSH_OT_ALIAS)
                     break;
+            }
+            if (name != opt->help) {
+                VIR_FREE(name);
+                /* If alias comes with value, replacement must not be bool */
+                if (cmd->opts[j].type == VSH_OT_BOOL)
+                    return -1;
             }
             if (!cmd->opts[j].name)
                 return -1; /* alias option must map to a later option name */
@@ -1049,9 +1066,11 @@ static vshCmdOptDef helpopt = {
 };
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint32_t *opts_seen, int *opt_index)
+                   uint32_t *opts_seen, int *opt_index, char **optstr)
 {
     size_t i;
+    const vshCmdOptDef *ret = NULL;
+    char *alias = NULL;
 
     if (STREQ(name, helpopt.name)) {
         return &helpopt;
@@ -1062,16 +1081,36 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
 
         if (STREQ(opt->name, name)) {
             if (opt->type == VSH_OT_ALIAS) {
-                name = opt->help;
+                char *value;
+
+                /* Two types of replacements:
+                   opt->help = "string": straight replacement of name
+                   opt->help = "string=value": treat boolean flag as
+                   alias of option and its default value */
+                sa_assert(!alias);
+                if (VIR_STRDUP(alias, opt->help) < 0)
+                    goto cleanup;
+                name = alias;
+                if ((value = strchr(name, '='))) {
+                    *value = '\0';
+                    if (*optstr) {
+                        vshError(ctl, _("invalid '=' after option --%s"),
+                                 opt->name);
+                        goto cleanup;
+                    }
+                    if (VIR_STRDUP(*optstr, value + 1) < 0)
+                        goto cleanup;
+                }
                 continue;
             }
             if ((*opts_seen & (1 << i)) && opt->type != VSH_OT_ARGV) {
                 vshError(ctl, _("option --%s already seen"), name);
-                return NULL;
+                goto cleanup;
             }
             *opts_seen |= 1 << i;
             *opt_index = i;
-            return opt;
+            ret = opt;
+            goto cleanup;
         }
     }
 
@@ -1079,7 +1118,9 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         vshError(ctl, _("command '%s' doesn't support option --%s"),
                  cmd->name, name);
     }
-    return NULL;
+cleanup:
+    VIR_FREE(alias);
+    return ret;
 }
 
 static const vshCmdOptDef *
@@ -1845,7 +1886,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 }
                 /* Special case 'help' to ignore all spurious options */
                 if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
-                                               &opts_seen, &opt_index))) {
+                                               &opts_seen, &opt_index,
+                                               &optstr))) {
                     VIR_FREE(optstr);
                     if (STREQ(cmd->name, "help"))
                         continue;
@@ -1875,7 +1917,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     tkdata = NULL;
                     if (optstr) {
                         vshError(ctl, _("invalid '=' after option --%s"),
-                                opt->name);
+                                 opt->name);
                         VIR_FREE(optstr);
                         goto syntaxError;
                     }

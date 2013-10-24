@@ -393,6 +393,7 @@ mymain(void)
     DO_TEST(32, "hello\n", "echo --string hello");
     DO_TEST(33, "hello\n", "echo", "--str", "hello");
     DO_TEST(34, "hello\n", "echo --str hello");
+    DO_TEST(35, "hello\n", "echo --hi");
 
 # undef DO_TEST
 
