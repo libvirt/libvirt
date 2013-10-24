@@ -1152,18 +1152,17 @@ cleanup:
 /* VIR_SOL_PEERCRED - the value needed to let getsockopt() work with
  * LOCAL_PEERCRED
  */
-# ifdef __APPLE__
-#  ifdef SOL_LOCAL
-#   define VIR_SOL_PEERCRED SOL_LOCAL
-#  else
-/* Prior to Mac OS X 10.7, SOL_LOCAL was not defined and users were
- * expected to supply 0 as the second value for getsockopt() when using
- * LOCAL_PEERCRED
- */
-#   define VIR_SOL_PEERCRED 0
-#  endif
+
+/* Mac OS X 10.8 provides SOL_LOCAL for LOCAL_PEERCRED */
+# ifdef SOL_LOCAL
+#  define VIR_SOL_PEERCRED SOL_LOCAL
 # else
-#  define VIR_SOL_PEERCRED SOL_SOCKET
+/* FreeBSD and Mac OS X prior to 10.7, SOL_LOCAL is not defined and
+ * users are expected to supply 0 as the second value for getsockopt()
+ * when using LOCAL_PEERCRED. NB SOL_SOCKET cannot be used instead
+ * of SOL_LOCAL
+ */
+#  define VIR_SOL_PEERCRED 0
 # endif
 
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
