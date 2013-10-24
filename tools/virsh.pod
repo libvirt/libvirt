@@ -2823,7 +2823,7 @@ B<blockresize> for live resizing.
 
 =back
 
-=head1 SECRET COMMMANDS
+=head1 SECRET COMMANDS
 
 The following commands manipulate "secrets" (e.g. passwords, passphrases and
 encryption keys).  Libvirt can store secrets independently from their use, and
@@ -2870,7 +2870,7 @@ I<--no-private> to list the non-private ones.
 
 =back
 
-=head1 SNAPSHOT COMMMANDS
+=head1 SNAPSHOT COMMANDS
 
 The following commands manipulate domain snapshots.  Snapshots take the
 disk, memory, and device state of a domain at a point-of-time, and save it
@@ -3170,7 +3170,7 @@ the data contents from that point in time.
 
 =back
 
-=head1 NWFILTER COMMMANDS
+=head1 NWFILTER COMMANDS
 
 The following commands manipulate network filters. Network filters allow
 filtering of the network traffic coming from and going to virtual machines.
