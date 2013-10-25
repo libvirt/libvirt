@@ -3163,7 +3163,7 @@
       parameters in its <code>&lt;parameters&gt;</code> element -
       an <code>interfaceid</code> which is a standard uuid used to
       uniquely identify this particular interface to Open vSwitch (if
-      you do no specify one, a random interfaceid will be generated
+      you do not specify one, a random interfaceid will be generated
       for you when you first define the interface), and an
       optional <code>profileid</code> which is sent to Open vSwitch as
       the interfaces "port-profile".
