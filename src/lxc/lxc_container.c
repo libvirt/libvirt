@@ -420,9 +420,11 @@ static int lxcContainerSetID(virDomainDefPtr def)
      * for this container. And user namespace is only enabled
      * when nuidmap&ngidmap is not zero */
 
-    VIR_DEBUG("Set UID/GID to 0/0");
-    if (def->idmap.nuidmap &&
-        virSetUIDGID(0, 0, NULL, 0) < 0) {
+    if (!def->idmap.nuidmap)
+        return 0;
+
+    VIR_DEBUG("Setting UID/GID to 0/0");
+    if (virSetUIDGID(0, 0, NULL, 0) < 0) {
         virReportSystemError(errno, "%s",
                              _("setuid or setgid failed"));
         return -1;
