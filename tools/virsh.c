@@ -2748,11 +2748,14 @@ vshReadlineCompletion(const char *text, int start,
     return matches;
 }
 
+# define VIRSH_HISTSIZE_MAX 500000
 
 static int
 vshReadlineInit(vshControl *ctl)
 {
     char *userdir = NULL;
+    int max_history = 500;
+    const char *histsize_str;
 
     /* Allow conditional parsing of the ~/.inputrc file. */
     rl_readline_name = "virsh";
@@ -2761,7 +2764,19 @@ vshReadlineInit(vshControl *ctl)
     rl_attempted_completion_function = vshReadlineCompletion;
 
     /* Limit the total size of the history buffer */
-    stifle_history(500);
+    if ((histsize_str = virGetEnvBlockSUID("VIRSH_HISTSIZE"))) {
+        if (virStrToLong_i(histsize_str, NULL, 10, &max_history) < 0) {
+            vshError(ctl, "%s", _("Bad $VIRSH_HISTSIZE value."));
+            VIR_FREE(userdir);
+            return -1;
+        } else if (max_history > VIRSH_HISTSIZE_MAX || max_history < 0) {
+            vshError(ctl, _("$VIRSH_HISTSIZE value should be between 0 and %d"),
+                     VIRSH_HISTSIZE_MAX);
+            VIR_FREE(userdir);
+            return -1;
+        }
+    }
+    stifle_history(max_history);
 
     /* Prepare to read/write history from/to the $XDG_CACHE_HOME/virsh/history file */
     userdir = virGetUserCacheDirectory();

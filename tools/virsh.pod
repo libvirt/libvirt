@@ -3349,6 +3349,11 @@ The editor to use by the B<edit> and related options.
 The editor to use by the B<edit> and related options, if C<VISUAL>
 is not set.
 
+=item VIRSH_HISTSIZE
+
+The number of commands to remember in the command  history.  The
+default value is 500.
+
 =item LIBVIRT_DEBUG=LEVEL
 
 Turn on verbose debugging of all libvirt API calls. Valid levels are
