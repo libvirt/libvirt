@@ -191,10 +191,6 @@ if test $with_freebsd = yes; then
    with_firewalld=no
 fi
 
-if test $with_osx = yes; then
-   with_qemu=no
-fi
-
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 
@@ -2393,7 +2389,7 @@ fi
 AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
 
 
-if test $with_freebsd = yes; then
+if test $with_freebsd = yes || test $with_osx = yes; then
   default_qemu_user=root
   default_qemu_group=wheel
 else
