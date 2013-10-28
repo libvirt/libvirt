@@ -3253,6 +3253,9 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     struct qemuProcessReconnectData *src = opaque;
     struct qemuProcessReconnectData *data;
 
+    if (!obj->pid)
+        return 0;
+
     if (VIR_ALLOC(data) < 0)
         return -1;
 

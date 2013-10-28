@@ -811,8 +811,6 @@ qemuStateInitialize(bool privileged,
 
     conn = virConnectOpen(cfg->uri);
 
-    qemuProcessReconnectAll(conn, qemu_driver);
-
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->configDir,
@@ -823,6 +821,7 @@ qemuStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
+    qemuProcessReconnectAll(conn, qemu_driver);
 
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainSnapshotLoad,
