@@ -17343,9 +17343,9 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                              notify,
                                              opaque);
         if (dom) {
-            virObjectUnlock(dom);
             if (!liveStatus)
                 dom->persistent = 1;
+            virObjectUnlock(dom);
         }
     }
 
