@@ -1042,10 +1042,10 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
         if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0)
             return -1;
         if (symlink(ttyPaths[i], tty) < 0) {
-            VIR_FREE(tty);
             virReportSystemError(errno,
                                  _("Failed to symlink %s to %s"),
                                  ttyPaths[i], tty);
+            VIR_FREE(tty);
             return -1;
         }
         VIR_FREE(tty);
