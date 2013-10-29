@@ -979,5 +979,5 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainGetSecurityMountOptions      = AppArmorGetMountOptions,
 
-    .getBaseLabel                       = AppArmoryGetBaseLabel,
+    .getBaseLabel                       = AppArmorGetBaseLabel,
 };
