@@ -3219,10 +3219,7 @@ error:
         if (!virDomainObjIsActive(obj)) {
             if (virObjectUnref(obj))
                 virObjectUnlock(obj);
-            return;
-        }
-
-        if (virObjectUnref(obj)) {
+        } else if (virObjectUnref(obj)) {
             /* We can't get the monitor back, so must kill the VM
              * to remove danger of it ending up running twice if
              * user tries to start it again later
