@@ -471,9 +471,13 @@ sc_correct_id_types:
 # "const fooPtr a" is the same as "foo * const a", even though it is
 # usually desired to have "foo const *a".  It's easier to just prevent
 # the confusing mix of typedef vs. const placement.
+# Also requires that all 'fooPtr' typedefs are actually pointers.
 sc_forbid_const_pointer_typedef:
 	@prohibit='(^|[^"])const \w*Ptr'				\
 	halt='"const fooPtr var" does not declare what you meant'	\
+	  $(_sc_search_regexp)
+	@prohibit='typedef [^(]+ [^*]\w*Ptr\b'				\
+	halt='use correct style and type for Ptr typedefs'		\
 	  $(_sc_search_regexp)
 
 # Forbid sizeof foo or sizeof (foo), require sizeof(foo)

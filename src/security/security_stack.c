@@ -30,7 +30,7 @@
 typedef struct _virSecurityStackData virSecurityStackData;
 typedef virSecurityStackData *virSecurityStackDataPtr;
 typedef struct _virSecurityStackItem virSecurityStackItem;
-typedef virSecurityStackItem* virSecurityStackItemPtr;
+typedef virSecurityStackItem *virSecurityStackItemPtr;
 
 struct _virSecurityStackItem {
     virSecurityManagerPtr securityManager;

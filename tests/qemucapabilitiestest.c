@@ -27,7 +27,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 typedef struct _testQemuData testQemuData;
-typedef testQemuData * testQemuDataPtr;
+typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     virDomainXMLOptionPtr xmlopt;
     const char *base;
