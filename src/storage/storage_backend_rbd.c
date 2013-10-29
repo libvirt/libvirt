@@ -44,9 +44,9 @@ struct _virStorageBackendRBDState {
 };
 
 typedef struct _virStorageBackendRBDState virStorageBackendRBDState;
-typedef virStorageBackendRBDState virStorageBackendRBDStatePtr;
+typedef virStorageBackendRBDState *virStorageBackendRBDStatePtr;
 
-static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
+static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                                              virConnectPtr conn,
                                              virStoragePoolObjPtr pool)
 {
@@ -223,21 +223,21 @@ static int virStorageBackendRBDCloseRADOSConn(virStorageBackendRBDStatePtr ptr)
 {
     int ret = 0;
 
-    if (ptr.ioctx != NULL) {
+    if (ptr->ioctx != NULL) {
         VIR_DEBUG("Closing RADOS IoCTX");
-        rados_ioctx_destroy(ptr.ioctx);
+        rados_ioctx_destroy(ptr->ioctx);
         ret = -1;
     }
-    ptr.ioctx = NULL;
+    ptr->ioctx = NULL;
 
-    if (ptr.cluster != NULL) {
+    if (ptr->cluster != NULL) {
         VIR_DEBUG("Closing RADOS connection");
-        rados_shutdown(ptr.cluster);
+        rados_shutdown(ptr->cluster);
         ret = -2;
     }
-    ptr.cluster = NULL;
+    ptr->cluster = NULL;
 
-    time_t runtime = time(0) - ptr.starttime;
+    time_t runtime = time(0) - ptr->starttime;
     VIR_DEBUG("RADOS connection existed for %ld seconds", runtime);
 
     return ret;
@@ -249,7 +249,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 {
     int ret = -1;
     rbd_image_t image;
-    if (rbd_open(ptr.ioctx, vol->name, &image, NULL) < 0) {
+    if (rbd_open(ptr->ioctx, vol->name, &image, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to open the RBD image '%s'"),
                        vol->name);
@@ -298,7 +298,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
     int ret = -1;
     int len = -1;
     char *name, *names = NULL;
-    virStorageBackendRBDStatePtr ptr;
+    virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
 
@@ -373,7 +373,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
 
         name += strlen(name) + 1;
 
-        if (volStorageBackendRBDRefreshVolInfo(vol, pool, ptr) < 0) {
+        if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0) {
             virStorageVolDefFree(vol);
             goto cleanup;
         }
@@ -388,7 +388,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
 
 cleanup:
     VIR_FREE(names);
-    virStorageBackendRBDCloseRADOSConn(ptr);
+    virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
 
@@ -398,7 +398,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
                                          unsigned int flags)
 {
     int ret = -1;
-    virStorageBackendRBDStatePtr ptr;
+    virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
 
@@ -431,7 +431,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
     ret = 0;
 
 cleanup:
-    virStorageBackendRBDCloseRADOSConn(ptr);
+    virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
 
@@ -439,7 +439,7 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
                                          virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol)
 {
-    virStorageBackendRBDStatePtr ptr;
+    virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
     int order = 0;
@@ -475,14 +475,14 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (volStorageBackendRBDRefreshVolInfo(vol, pool, ptr) < 0) {
+    if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0) {
         goto cleanup;
     }
 
     ret = 0;
 
 cleanup:
-    virStorageBackendRBDCloseRADOSConn(ptr);
+    virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
 
@@ -490,7 +490,7 @@ static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
                                           virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                           virStorageVolDefPtr vol)
 {
-    virStorageBackendRBDStatePtr ptr;
+    virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
     int ret = -1;
@@ -507,14 +507,14 @@ static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (volStorageBackendRBDRefreshVolInfo(vol, pool, ptr) < 0) {
+    if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0) {
         goto cleanup;
     }
 
     ret = 0;
 
 cleanup:
-    virStorageBackendRBDCloseRADOSConn(ptr);
+    virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
 
@@ -524,7 +524,7 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      unsigned long long capacity,
                                      unsigned int flags)
 {
-    virStorageBackendRBDStatePtr ptr;
+    virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
     rbd_image_t image = NULL;
@@ -563,7 +563,7 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 cleanup:
     if (image != NULL)
        rbd_close(image);
-    virStorageBackendRBDCloseRADOSConn(ptr);
+    virStorageBackendRBDCloseRADOSConn(&ptr);
     return ret;
 }
 
