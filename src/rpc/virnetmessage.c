@@ -345,7 +345,7 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
                   msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
 
     /* Try to encode the payload. If the buffer is too small increase it. */
-    while (!(*filter)(&xdr, data)) {
+    while (!(*filter)(&xdr, data, 0)) {
         unsigned int newlen = (msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4;
 
         if (newlen > VIR_NET_MESSAGE_MAX) {
@@ -402,7 +402,7 @@ int virNetMessageDecodePayload(virNetMessagePtr msg,
     xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
                   msg->bufferLength - msg->bufferOffset, XDR_DECODE);
 
-    if (!(*filter)(&xdr, data)) {
+    if (!(*filter)(&xdr, data, 0)) {
         virReportError(VIR_ERR_RPC, "%s", _("Unable to decode message payload"));
         goto error;
     }
