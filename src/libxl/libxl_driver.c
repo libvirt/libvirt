@@ -448,7 +448,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     libxlDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     libxl_bitmap map;
-    uint8_t *cpumask = NULL;
+    virBitmapPtr cpumask = NULL;
     uint8_t *cpumap = NULL;
     virNodeInfo nodeinfo;
     size_t cpumaplen;
@@ -468,10 +468,12 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
         if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
             goto cleanup;
 
-        cpumask = (uint8_t*) def->cputune.vcpupin[vcpu]->cpumask;
+        cpumask = def->cputune.vcpupin[vcpu]->cpumask;
 
-        for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; ++i) {
-            if (cpumask[i])
+        for (i = 0; i < virBitmapSize(cpumask); ++i) {
+            bool bit;
+            ignore_value(virBitmapGetBit(cpumask, i, &bit));
+            if (bit)
                 VIR_USE_CPU(cpumap, i);
         }
 
