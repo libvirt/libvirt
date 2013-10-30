@@ -2079,9 +2079,9 @@
      To enable traffic for TCP ports 22 and 80 we will add 2 rules to
      enable this type of traffic. To allow the VM to send ping traffic
      we will add a rule for ICMP traffic. For simplicity reasons
-     we allow general ICMP traffic to be initated from the VM, not
+     we allow general ICMP traffic to be initiated from the VM, not
      just ICMP echo request and response messages. To then
-     disallow all other traffic to reach or be initated by the
+     disallow all other traffic to reach or be initiated by the
      VM we will then need to add a rule that drops all other traffic.
      Assuming our VM is called <i>test</i> and
      the interface we want to associate our filter with is called <i>eth0</i>,
