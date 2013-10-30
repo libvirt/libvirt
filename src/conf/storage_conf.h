@@ -112,7 +112,7 @@ struct _virStorageVolDef {
 typedef struct _virStorageVolDefList virStorageVolDefList;
 typedef virStorageVolDefList *virStorageVolDefListPtr;
 struct _virStorageVolDefList {
-    unsigned int count;
+    size_t count;
     virStorageVolDefPtr *objs;
 };
 
@@ -340,7 +340,7 @@ struct _virStoragePoolObj {
 typedef struct _virStoragePoolObjList virStoragePoolObjList;
 typedef virStoragePoolObjList *virStoragePoolObjListPtr;
 struct _virStoragePoolObjList {
-    unsigned int count;
+    size_t count;
     virStoragePoolObjPtr *objs;
 };
 

@@ -381,7 +381,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
         pool->volumes.objs[pool->volumes.count++] = vol;
     }
 
-    VIR_DEBUG("Found %d images in RBD pool %s",
+    VIR_DEBUG("Found %zu images in RBD pool %s",
               pool->volumes.count, pool->def->source.name);
 
     ret = 0;
