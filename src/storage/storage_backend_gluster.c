@@ -23,20 +23,259 @@
 
 #include <glusterfs/api/glfs.h>
 
-#include "virerror.h"
 #include "storage_backend_gluster.h"
 #include "storage_conf.h"
+#include "viralloc.h"
+#include "virerror.h"
+#include "virlog.h"
+#include "virstoragefile.h"
+#include "virstring.h"
+#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+struct _virStorageBackendGlusterState {
+    glfs_t *vol;
+
+    /* Accept the same URIs as qemu's block/gluster.c:
+     * gluster[+transport]://[server[:port]]/vol/[dir/]image[?socket=...] */
+    virURI *uri;
+
+    char *volname; /* vol from URI, no '/' */
+    char *dir; /* dir from URI, or "/"; always starts and ends in '/' */
+};
+
+typedef struct _virStorageBackendGlusterState virStorageBackendGlusterState;
+typedef virStorageBackendGlusterState *virStorageBackendGlusterStatePtr;
+
+static void
+virStorageBackendGlusterClose(virStorageBackendGlusterStatePtr state)
+{
+    if (!state)
+        return;
+
+    /* Yuck - glusterfs-api-3.4.1 appears to always return -1 for
+     * glfs_fini, with errno containing random data, so there's no way
+     * to tell if it succeeded. 3.4.2 is supposed to fix this.*/
+    if (state->vol && glfs_fini(state->vol) < 0)
+        VIR_DEBUG("shutdown of gluster volume %s failed with errno %d",
+                  state->volname, errno);
+
+    virURIFree(state->uri);
+    VIR_FREE(state->volname);
+    VIR_FREE(state->dir);
+    VIR_FREE(state);
+}
+
+static virStorageBackendGlusterStatePtr
+virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
+{
+    virStorageBackendGlusterStatePtr ret = NULL;
+    const char *name = pool->def->source.name;
+    const char *dir = pool->def->source.dir;
+    bool trailing_slash = true;
+
+    /* Volume name must not contain '/'; optional path allows use of a
+     * subdirectory within the volume name.  */
+    if (strchr(name, '/')) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("gluster pool name '%s' must not contain /"),
+                       name);
+        return NULL;
+    }
+    if (dir) {
+        if (*dir != '/') {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("gluster pool path '%s' must start with /"),
+                           dir);
+            return NULL;
+        }
+        if (strchr(dir, '\0')[-1] != '/')
+            trailing_slash = false;
+    }
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_STRDUP(ret->volname, name) < 0)
+        goto error;
+    if (virAsprintf(&ret->dir, "%s%s", dir ? dir : "/",
+                    trailing_slash ? "" : "/") < 0)
+        goto error;
+
+    /* FIXME: Currently hard-coded to tcp transport; XML needs to be
+     * extended to allow alternate transport */
+    if (VIR_ALLOC(ret->uri) < 0)
+        goto error;
+    if (VIR_STRDUP(ret->uri->scheme, "gluster") < 0)
+        goto error;
+    if (VIR_STRDUP(ret->uri->server, pool->def->source.hosts[0].name) < 0)
+        goto error;
+    if (virAsprintf(&ret->uri->path, "/%s%s", ret->volname, ret->dir) < 0)
+        goto error;
+    ret->uri->port = pool->def->source.hosts[0].port;
+
+    /* Actually connect to glfs */
+    if (!(ret->vol = glfs_new(ret->volname))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (glfs_set_volfile_server(ret->vol, "tcp",
+                                ret->uri->server, ret->uri->port) < 0 ||
+        glfs_init(ret->vol) < 0) {
+        char *uri = virURIFormat(ret->uri);
+
+        virReportSystemError(errno, _("failed to connect to %s"),
+                             NULLSTR(uri));
+        VIR_FREE(uri);
+        goto error;
+    }
+
+    if (glfs_chdir(ret->vol, ret->dir) < 0) {
+        virReportSystemError(errno,
+                             _("failed to change to directory '%s' in '%s'"),
+                             ret->dir, ret->volname);
+        goto error;
+    }
+
+    return ret;
+
+error:
+    virStorageBackendGlusterClose(ret);
+    return NULL;
+}
+
+
+/* Populate *volptr for the given name and stat information, or leave
+ * it NULL if the entry should be skipped (such as ".").  Return 0 on
+ * success, -1 on failure. */
+static int
+virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
+                                   const char *name,
+                                   struct stat *st,
+                                   virStorageVolDefPtr *volptr)
+{
+    char *tmp;
+    int ret = -1;
+    virStorageVolDefPtr vol = NULL;
+
+    *volptr = NULL;
+
+    /* Silently skip '.' and '..'.  */
+    if (STREQ(name, ".") || STREQ(name, ".."))
+        return 0;
+    /* FIXME: support directories.  For now, silently skip them.  */
+    if (S_ISDIR(st->st_mode))
+        return 0;
+
+    if (VIR_ALLOC(vol) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(vol->name, name) < 0)
+        goto cleanup;
+    if (virAsprintf(&vol->key, "%s%s%s", state->volname, state->dir,
+                    vol->name) < 0)
+        goto cleanup;
+
+    vol->type = VIR_STORAGE_VOL_NETWORK;
+    tmp = state->uri->path;
+    state->uri->path = vol->key;
+    if (!(vol->target.path = virURIFormat(state->uri))) {
+        state->uri->path = tmp;
+        goto cleanup;
+    }
+    state->uri->path = tmp;
+
+    /* FIXME - must open files to determine if they are non-raw */
+    vol->target.format = VIR_STORAGE_FILE_RAW;
+    vol->capacity = vol->allocation = st->st_size;
+
+    *volptr = vol;
+    vol = NULL;
+    ret = 0;
+cleanup:
+    virStorageVolDefFree(vol);
+    return ret;
+}
 
 static int
 virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
+                                    virStoragePoolObjPtr pool)
 {
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("gluster pool type not fully supported yet"));
-    return -1;
+    int ret = -1;
+    virStorageBackendGlusterStatePtr state = NULL;
+    struct {
+        struct dirent ent;
+        /* See comment below about readdir_r needing padding */
+        char padding[MAX(1, 256 - (int) (sizeof(struct dirent)
+                                         - offsetof(struct dirent, d_name)))];
+    } de;
+    struct dirent *ent;
+    glfs_fd_t *dir = NULL;
+    struct stat st;
+    struct statvfs sb;
+
+    if (!(state = virStorageBackendGlusterOpen(pool)))
+        goto cleanup;
+
+    /* Why oh why did glfs 3.4 decide to expose only readdir_r rather
+     * than readdir?  POSIX admits that readdir_r is inherently a
+     * flawed design, because systems are not required to define
+     * NAME_MAX: http://austingroupbugs.net/view.php?id=696
+     * http://womble.decadent.org.uk/readdir_r-advisory.html
+     *
+     * Fortunately, gluster appears to limit its underlying bricks to
+     * only use file systems such as XFS that have a NAME_MAX of 255;
+     * so we are currently guaranteed that if we provide 256 bytes of
+     * tail padding, then we should have enough space to avoid buffer
+     * overflow no matter whether the OS used d_name[], d_name[1], or
+     * d_name[256] in its 'struct dirent'.
+     * http://lists.gnu.org/archive/html/gluster-devel/2013-10/msg00083.html
+     */
+
+    if (!(dir = glfs_opendir(state->vol, state->dir))) {
+        virReportSystemError(errno, _("cannot open path '%s' in '%s'"),
+                             state->dir, state->volname);
+        goto cleanup;
+    }
+    while (!(errno = glfs_readdirplus_r(dir, &st, &de.ent, &ent)) && ent) {
+        virStorageVolDefPtr vol;
+        int okay = virStorageBackendGlusterRefreshVol(state,
+                                                      ent->d_name, &st,
+                                                      &vol);
+
+        if (okay < 0)
+            goto cleanup;
+        if (vol && VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count,
+                                      vol) < 0)
+            goto cleanup;
+    }
+    if (errno) {
+        virReportSystemError(errno, _("failed to read directory '%s' in '%s'"),
+                             state->dir, state->volname);
+        goto cleanup;
+    }
+
+    if (glfs_statvfs(state->vol, state->dir, &sb) < 0) {
+        virReportSystemError(errno, _("cannot statvfs path '%s' in '%s'"),
+                             state->dir, state->volname);
+        goto cleanup;
+    }
+
+    pool->def->capacity = ((unsigned long long)sb.f_frsize *
+                           (unsigned long long)sb.f_blocks);
+    pool->def->available = ((unsigned long long)sb.f_bfree *
+                            (unsigned long long)sb.f_frsize);
+    pool->def->allocation = pool->def->capacity - pool->def->available;
+
+    ret = 0;
+cleanup:
+    if (dir)
+        glfs_closedir(dir);
+    virStorageBackendGlusterClose(state);
+    if (ret < 0)
+        virStoragePoolObjClearVols(pool);
+    return ret;
 }
 
 virStorageBackend virStorageBackendGluster = {
