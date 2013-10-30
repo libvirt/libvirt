@@ -5331,6 +5331,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     if (!maximum && !active && current)
         current = false;
 
+    VSH_EXCLUSIVE_OPTIONS_VAR(live, config)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
     VSH_EXCLUSIVE_OPTIONS_VAR(active, maximum);
