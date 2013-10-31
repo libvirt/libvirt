@@ -101,6 +101,42 @@ cleanup:
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
 static int
+testVirPCIDeviceReattach(const void *oaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virPCIDevicePtr dev = NULL;
+    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    int count;
+
+    if (!(dev = virPCIDeviceNew(0, 0, 1, 0)) ||
+        !(activeDevs = virPCIDeviceListNew()) ||
+        !(inactiveDevs = virPCIDeviceListNew()))
+        goto cleanup;
+
+    if (virPCIDeviceListAdd(inactiveDevs, dev) < 0) {
+        virPCIDeviceFree(dev);
+        goto cleanup;
+    }
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, 1);
+
+    if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
+        goto cleanup;
+
+    if (virPCIDeviceReattach(dev, activeDevs, inactiveDevs) < 0)
+        goto cleanup;
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, 0);
+
+    ret = 0;
+cleanup:
+    virObjectUnref(activeDevs);
+    virObjectUnref(inactiveDevs);
+    return ret;
+}
+static int
 mymain(void)
 {
     int ret = 0;
@@ -126,6 +162,7 @@ mymain(void)
 
     DO_TEST(testVirPCIDeviceNew);
     DO_TEST(testVirPCIDeviceDetach);
+    DO_TEST(testVirPCIDeviceReattach);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakesysfsdir);
