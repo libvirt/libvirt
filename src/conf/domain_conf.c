@@ -2167,7 +2167,13 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             /* UUID & name match, but if VM is already active, refuse it */
             if (virDomainObjIsActive(vm)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain is already active as '%s'"),
+                               _("domain '%s' is already active"),
+                               vm->def->name);
+                goto error;
+            }
+            if (!vm->persistent) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("domain '%s' is already being started"),
                                vm->def->name);
                 goto error;
             }
