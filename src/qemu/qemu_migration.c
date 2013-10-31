@@ -1115,7 +1115,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
             goto cleanup;
 
         if (!port &&
-            ((virPortAllocatorAcquire(driver->remotePorts, &port) < 0) ||
+            ((virPortAllocatorAcquire(driver->migrationPorts, &port) < 0) ||
              (qemuMonitorNBDServerStart(priv->mon, listenAddr, port) < 0))) {
             qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
