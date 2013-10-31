@@ -678,17 +678,20 @@ qemuStateInitialize(bool privileged,
      * do this before the config is loaded properly, since the port
      * numbers are configurable now */
     if ((qemu_driver->remotePorts =
-         virPortAllocatorNew(cfg->remotePortMin,
+         virPortAllocatorNew(_("display"),
+                             cfg->remotePortMin,
                              cfg->remotePortMax)) == NULL)
         goto error;
 
     if ((qemu_driver->webSocketPorts =
-         virPortAllocatorNew(cfg->webSocketPortMin,
+         virPortAllocatorNew(_("webSocket"),
+                             cfg->webSocketPortMin,
                              cfg->webSocketPortMax)) == NULL)
         goto error;
 
     if ((qemu_driver->migrationPorts =
-         virPortAllocatorNew(cfg->migrationPortMin,
+         virPortAllocatorNew(_("migration"),
+                             cfg->migrationPortMin,
                              cfg->migrationPortMax)) == NULL)
         goto error;
 

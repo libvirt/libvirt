@@ -28,7 +28,8 @@
 typedef struct _virPortAllocator virPortAllocator;
 typedef virPortAllocator *virPortAllocatorPtr;
 
-virPortAllocatorPtr virPortAllocatorNew(unsigned short start,
+virPortAllocatorPtr virPortAllocatorNew(const char *name,
+                                        unsigned short start,
                                         unsigned short end);
 
 int virPortAllocatorAcquire(virPortAllocatorPtr pa,

@@ -844,7 +844,8 @@ libxlStateInitialize(bool privileged,
 
     /* Allocate bitmap for vnc port reservation */
     if (!(libxl_driver->reservedVNCPorts =
-          virPortAllocatorNew(LIBXL_VNC_PORT_MIN,
+          virPortAllocatorNew(_("VNC"),
+                              LIBXL_VNC_PORT_MIN,
                               LIBXL_VNC_PORT_MAX)))
         goto error;
 
