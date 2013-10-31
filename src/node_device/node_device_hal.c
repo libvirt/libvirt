@@ -652,6 +652,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     }
     nodeDeviceLock(driverState);
 
+    dbus_error_init(&err);
     if (!(sysbus = virDBusGetSystemBus())) {
         virErrorPtr verr = virGetLastError();
         VIR_ERROR(_("DBus not available, disabling HAL driver: %s"),
@@ -660,7 +661,6 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         goto failure;
     }
 
-    dbus_error_init(&err);
     hal_ctx = libhal_ctx_new();
     if (hal_ctx == NULL) {
         VIR_ERROR(_("libhal_ctx_new returned NULL"));
