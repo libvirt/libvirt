@@ -99,19 +99,59 @@ virPortAllocatorPtr virPortAllocatorNew(const char *name,
     return pa;
 }
 
+static int virPortAllocatorBindToPort(bool *used,
+                                      unsigned short port)
+{
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(port),
+        .sin_addr.s_addr = htonl(INADDR_ANY)
+    };
+    int reuse = 1;
+    int ret = -1;
+    int fd = -1;
+
+    *used = false;
+
+    fd = socket(PF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        virReportSystemError(errno, "%s", _("Unable to open test socket"));
+        goto cleanup;
+    }
+
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse,
+                   sizeof(reuse)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set socket reuse addr flag"));
+        goto cleanup;
+    }
+
+    if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+        if (errno == EADDRINUSE) {
+            *used = true;
+            ret = 0;
+        } else {
+            virReportSystemError(errno, _("Unable to bind to port %d"), port);
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
 int virPortAllocatorAcquire(virPortAllocatorPtr pa,
                             unsigned short *port)
 {
     int ret = -1;
     size_t i;
-    int fd = -1;
 
     *port = 0;
     virObjectLock(pa);
 
     for (i = pa->start; i <= pa->end && !*port; i++) {
-        int reuse = 1;
-        struct sockaddr_in addr;
         bool used = false;
 
         if (virBitmapGetBit(pa->bitmap,
@@ -124,31 +164,10 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
         if (used)
             continue;
 
-        addr.sin_family = AF_INET;
-        addr.sin_port = htons(i);
-        addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        fd = socket(PF_INET, SOCK_STREAM, 0);
-        if (fd < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to open test socket"));
+        if (virPortAllocatorBindToPort(&used, i) < 0)
             goto cleanup;
-        }
 
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse, sizeof(reuse)) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to set socket reuse addr flag"));
-            goto cleanup;
-        }
-
-        if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-            if (errno != EADDRINUSE) {
-                virReportSystemError(errno,
-                                     _("Unable to bind to port %zu"), i);
-                goto cleanup;
-            }
-            /* In use, try next */
-            VIR_FORCE_CLOSE(fd);
-        } else {
+        if (!used) {
             /* Add port to bitmap of reserved ports */
             if (virBitmapSetBit(pa->bitmap,
                                 i - pa->start) < 0) {
@@ -168,7 +187,6 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
     }
 cleanup:
     virObjectUnlock(pa);
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
