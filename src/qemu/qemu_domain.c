@@ -1014,6 +1014,12 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
+    VIR_DEBUG("Starting %s: %s (async=%s vm=%p name=%s)",
+              job == QEMU_JOB_ASYNC ? "async job" : "job",
+              qemuDomainJobTypeToString(job),
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              obj, obj->def->name);
+
     priv->jobs_queued++;
 
     if (virTimeMillisNow(&now) < 0) {
@@ -1032,11 +1038,13 @@ retry:
     }
 
     while (!nested && !qemuDomainNestedJobAllowed(priv, job)) {
+        VIR_DEBUG("Waiting for async job (vm=%p name=%s)", obj, obj->def->name);
         if (virCondWaitUntil(&priv->job.asyncCond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
     while (priv->job.active) {
+        VIR_DEBUG("Waiting for job (vm=%p name=%s)", obj, obj->def->name);
         if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
             goto error;
     }
@@ -1049,14 +1057,16 @@ retry:
     qemuDomainObjResetJob(priv);
 
     if (job != QEMU_JOB_ASYNC) {
-        VIR_DEBUG("Starting job: %s (async=%s)",
+        VIR_DEBUG("Started job: %s (async=%s vm=%p name=%s)",
                    qemuDomainJobTypeToString(job),
-                   qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+                  qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+                  obj, obj->def->name);
         priv->job.active = job;
         priv->job.owner = virThreadSelfID();
     } else {
-        VIR_DEBUG("Starting async job: %s",
-                  qemuDomainAsyncJobTypeToString(asyncJob));
+        VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
+                  qemuDomainAsyncJobTypeToString(asyncJob),
+                  obj, obj->def->name);
         qemuDomainObjResetAsyncJob(priv);
         priv->job.asyncJob = asyncJob;
         priv->job.asyncOwner = virThreadSelfID();
@@ -1161,9 +1171,10 @@ bool qemuDomainObjEndJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 
     priv->jobs_queued--;
 
-    VIR_DEBUG("Stopping job: %s (async=%s)",
+    VIR_DEBUG("Stopping job: %s (async=%s vm=%p name=%s)",
               qemuDomainJobTypeToString(job),
-              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              obj, obj->def->name);
 
     qemuDomainObjResetJob(priv);
     if (qemuDomainTrackJob(job))
@@ -1180,8 +1191,9 @@ qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 
     priv->jobs_queued--;
 
-    VIR_DEBUG("Stopping async job: %s",
-              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+    VIR_DEBUG("Stopping async job: %s (vm=%p name=%s)",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              obj, obj->def->name);
 
     qemuDomainObjResetAsyncJob(priv);
     qemuDomainObjSaveJob(driver, obj);
@@ -1195,8 +1207,9 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
-    VIR_DEBUG("Requesting abort of async job: %s",
-              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+    VIR_DEBUG("Requesting abort of async job: %s (vm=%p name=%s)",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+              obj, obj->def->name);
 
     priv->job.asyncAbort = true;
 }
@@ -1232,6 +1245,8 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
                  " monitor without asking for a nested job is dangerous");
     }
 
+    VIR_DEBUG("Entering monitor (mon=%p vm=%p name=%s)",
+              priv->mon, obj, obj->def->name);
     virObjectLock(priv->mon);
     virObjectRef(priv->mon);
     ignore_value(virTimeMillisNow(&priv->monStart));
@@ -1253,6 +1268,8 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
         virObjectUnlock(priv->mon);
 
     virObjectLock(obj);
+    VIR_DEBUG("Exited monitor (mon=%p vm=%p name=%s)",
+              priv->mon, obj, obj->def->name);
 
     priv->monStart = 0;
     if (!hasRefs)
@@ -1321,6 +1338,8 @@ qemuDomainObjEnterAgent(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
+    VIR_DEBUG("Entering agent (agent=%p vm=%p name=%s)",
+              priv->agent, obj, obj->def->name);
     virObjectLock(priv->agent);
     virObjectRef(priv->agent);
     ignore_value(virTimeMillisNow(&priv->agentStart));
@@ -1344,6 +1363,8 @@ qemuDomainObjExitAgent(virDomainObjPtr obj)
         virObjectUnlock(priv->agent);
 
     virObjectLock(obj);
+    VIR_DEBUG("Exited agent (agent=%p vm=%p name=%s)",
+              priv->agent, obj, obj->def->name);
 
     priv->agentStart = 0;
     if (!hasRefs)
@@ -1352,6 +1373,8 @@ qemuDomainObjExitAgent(virDomainObjPtr obj)
 
 void qemuDomainObjEnterRemote(virDomainObjPtr obj)
 {
+    VIR_DEBUG("Entering remote (vm=%p name=%s)",
+              obj, obj->def->name);
     virObjectRef(obj);
     virObjectUnlock(obj);
 }
@@ -1359,6 +1382,8 @@ void qemuDomainObjEnterRemote(virDomainObjPtr obj)
 void qemuDomainObjExitRemote(virDomainObjPtr obj)
 {
     virObjectLock(obj);
+    VIR_DEBUG("Exited remote (vm=%p name=%s)",
+              obj, obj->def->name);
     virObjectUnref(obj);
 }
 
