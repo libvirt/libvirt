@@ -1095,11 +1095,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
     const char *newDriverName = NULL;
 
     if (virPCIDriverDir(&stubDriverPath, stubDriverName) < 0 ||
-        virPCIFile(&driverLink, dev->name, "driver") < 0 ||
-        virPCIDeviceGetDriverPathAndName(dev, &oldDriverPath,
-                                         &oldDriverName) < 0) {
+        virPCIFile(&driverLink, dev->name, "driver") < 0)
         goto cleanup;
-    }
 
     if (virFileExists(driverLink)) {
         if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
