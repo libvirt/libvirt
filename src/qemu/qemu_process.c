@@ -3499,6 +3499,10 @@ int qemuProcessStart(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
 
+    VIR_DEBUG("vm=%p name=%s id=%d pid=%llu",
+              vm, vm->def->name, vm->def->id,
+              (unsigned long long)vm->pid);
+
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
@@ -3845,23 +3849,11 @@ int qemuProcessStart(virConnectPtr conn,
                            _("Domain %s didn't show up"), vm->def->name);
             ret = -1;
         }
-#if 0
-    } else if (ret == -2) {
-        /*
-         * XXX this is bogus. It isn't safe to set vm->pid = child
-         * because the child no longer exists.
-         */
-
-        /* The virCommand process that launches the daemon failed. Pending on
-         * when it failed (we can't determine for sure), there may be
-         * extra info in the domain log (if the hook failed for example).
-         *
-         * Pretend like things succeeded, and let 'WaitForMonitor' report
-         * the log contents for us.
-         */
-        vm->pid = child;
-        ret = 0;
-#endif
+        VIR_DEBUG("QEMU vm=%p name=%s running with pid=%llu",
+                  vm, vm->def->name, (unsigned long long)vm->pid);
+    } else {
+        VIR_DEBUG("QEMU vm=%p name=%s failed to spawn",
+                  vm, vm->def->name);
     }
 
     VIR_DEBUG("Writing early domain status to disk");
@@ -4085,8 +4077,9 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
 {
     int ret;
 
-    VIR_DEBUG("vm=%s pid=%d flags=%x",
-              vm->def->name, vm->pid, flags);
+    VIR_DEBUG("vm=%p name=%s pid=%llu flags=%x",
+              vm, vm->def->name,
+              (unsigned long long)vm->pid, flags);
 
     if (!(flags & VIR_QEMU_PROCESS_KILL_NOCHECK)) {
         if (!virDomainObjIsActive(vm)) {
@@ -4126,8 +4119,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     char ebuf[1024];
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    VIR_DEBUG("Shutting down VM '%s' pid=%d flags=%x",
-              vm->def->name, vm->pid, flags);
+    VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu flags=%x",
+              vm, vm->def->name, vm->def->id,
+              (unsigned long long)vm->pid, flags);
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("VM '%s' not active", vm->def->name);
