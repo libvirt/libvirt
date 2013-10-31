@@ -3397,12 +3397,6 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
         if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
             goto error;
 
-        if (port == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to find an unused port for SPICE"));
-            goto error;
-        }
-
         graphics->data.spice.port = port;
     }
 
@@ -3428,11 +3422,6 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
                 goto error;
 
-            if (tlsPort == 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to find an unused port for SPICE TLS"));
-                goto error;
-            }
             graphics->data.spice.tlsPort = tlsPort;
         }
     }

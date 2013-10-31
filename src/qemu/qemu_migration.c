@@ -2561,14 +2561,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
      * to be a correct hostname which refers to the target machine).
      */
     if (uri_in == NULL) {
-        if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0) {
+        if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
             goto cleanup;
-        } else if (!port) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No migration port available within the "
-                             "configured range"));
-            goto cleanup;
-        }
 
         if ((hostname = virGetHostname()) == NULL)
             goto cleanup;
@@ -2623,14 +2617,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
         }
 
         if (uri->port == 0) {
-            if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0) {
+            if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto cleanup;
-            } else if (!port) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("No migration port available within the "
-                                 "configured range"));
-                goto cleanup;
-            }
 
             if (well_formed_uri) {
                 uri->port = port;

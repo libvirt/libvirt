@@ -157,10 +157,15 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
                 goto cleanup;
             }
             *port = i;
+            ret = 0;
         }
     }
 
-    ret = 0;
+    if (*port == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to find an unused port in range '%s' (%d-%d)"),
+                       pa->name, pa->start, pa->end);
+    }
 cleanup:
     virObjectUnlock(pa);
     VIR_FORCE_CLOSE(fd);

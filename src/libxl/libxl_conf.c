@@ -950,11 +950,6 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
 
                 if (virPortAllocatorAcquire(driver->reservedVNCPorts, &port) < 0)
                     return -1;
-                if (port == 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused VNC port"));
-                    return -1;
-                }
                 l_vfb->data.vnc.port = port;
             }
             x_vfb->vnc.display = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;

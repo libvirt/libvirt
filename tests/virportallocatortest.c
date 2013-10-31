@@ -118,11 +118,9 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p7) < 0)
-        goto cleanup;
-    if (p7 != 0) {
+    if (virPortAllocatorAcquire(alloc, &p7) == 0) {
         if (virTestGetDebug())
-            fprintf(stderr, "Expected 0, got %d", p7);
+            fprintf(stderr, "Expected error, got %d", p7);
         goto cleanup;
     }
 
