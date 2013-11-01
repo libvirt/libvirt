@@ -50,19 +50,25 @@
 #include "virstring.h"
 #include "virutil.h"
 
+bool iptables_supports_xlock = false;
+
 #if HAVE_FIREWALLD
 static char *firewall_cmd_path = NULL;
+#endif
 
 static int
 virIpTablesOnceInit(void)
 {
+    virCommandPtr cmd;
+    int status;
+
+#if HAVE_FIREWALLD
     firewall_cmd_path = virFindFileInPath("firewall-cmd");
     if (!firewall_cmd_path) {
         VIR_INFO("firewall-cmd not found on system. "
                  "firewalld support disabled for iptables.");
     } else {
-        virCommandPtr cmd = virCommandNew(firewall_cmd_path);
-        int status;
+        cmd = virCommandNew(firewall_cmd_path);
 
         virCommandAddArgList(cmd, "--state", NULL);
         if (virCommandRun(cmd, &status) < 0 || status != 0) {
@@ -74,12 +80,25 @@ virIpTablesOnceInit(void)
         }
         virCommandFree(cmd);
     }
+
+    if (firewall_cmd_path)
+        return 0;
+
+#endif
+
+    cmd = virCommandNew(IPTABLES_PATH);
+    virCommandAddArgList(cmd, "-w", "-L", "-n", NULL);
+    if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        VIR_INFO("xtables locking not supported by your iptables");
+    } else {
+        VIR_INFO("using xtables locking for iptables");
+        iptables_supports_xlock = true;
+    }
+    virCommandFree(cmd);
     return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virIpTables)
-
-#endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -92,8 +111,8 @@ static virCommandPtr
 iptablesCommandNew(const char *table, const char *chain, int family, int action)
 {
     virCommandPtr cmd = NULL;
-#if HAVE_FIREWALLD
     virIpTablesInitialize();
+#if HAVE_FIREWALLD
     if (firewall_cmd_path) {
         cmd = virCommandNew(firewall_cmd_path);
         virCommandAddArgList(cmd, "--direct", "--passthrough",
@@ -104,6 +123,9 @@ iptablesCommandNew(const char *table, const char *chain, int family, int action)
     if (cmd == NULL) {
         cmd = virCommandNew((family == AF_INET6)
                         ? IP6TABLES_PATH : IPTABLES_PATH);
+
+        if (iptables_supports_xlock)
+            virCommandAddArgList(cmd, "-w", NULL);
     }
 
     virCommandAddArgList(cmd, "--table", table,
