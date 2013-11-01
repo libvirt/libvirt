@@ -454,7 +454,6 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     size_t cpumaplen;
     int vcpu;
     size_t i;
-    size_t limit;
     int ret = -1;
 
     if (libxlDoNodeGetInfo(driver, &nodeinfo) < 0)
@@ -471,8 +470,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
         cpumask = (uint8_t*) def->cputune.vcpupin[vcpu]->cpumask;
 
-        limit = MIN(VIR_DOMAIN_CPUMASK_LEN, cpumaplen);
-        for (i = 0; i < limit; ++i) {
+        for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; ++i) {
             if (cpumask[i])
                 VIR_USE_CPU(cpumap, i);
         }
