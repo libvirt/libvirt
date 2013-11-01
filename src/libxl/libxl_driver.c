@@ -916,6 +916,9 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     char *managed_save_path = NULL;
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
+#ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
+    libxl_domain_restore_params params;
+#endif
 
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
@@ -976,8 +979,14 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         ret = libxl_domain_create_new(priv->ctx, &d_config,
                                       &domid, NULL, NULL);
     else
+#ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
+        params.checkpointed_stream = 0;
+        ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
+                                          restore_fd, &params, NULL, NULL);
+#else
         ret = libxl_domain_create_restore(priv->ctx, &d_config, &domid,
                                           restore_fd, NULL, NULL);
+#endif
 
     if (ret) {
         if (restore_fd < 0)
