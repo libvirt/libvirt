@@ -77,13 +77,11 @@ struct _virLXCControllerConsole {
     int hostFd;  /* PTY FD in the host OS */
     bool hostClosed;
     int hostEpoll;
-    bool hostBlocking;
 
     int contWatch;
     int contFd;  /* PTY FD in the container */
     bool contClosed;
     int contEpoll;
-    bool contBlocking;
 
     int epollWatch;
     int epollFd; /* epoll FD for dealing with EOF */
@@ -814,12 +812,15 @@ static void virLXCControllerSignalChildIO(virNetServerPtr server,
     int status;
 
     ret = waitpid(-1, &status, WNOHANG);
+    VIR_DEBUG("Got sig child %d vs %lld", ret, (unsigned long long)ctrl->initpid);
     if (ret == ctrl->initpid) {
         virNetServerQuit(server);
         virMutexLock(&lock);
         if (WIFSIGNALED(status) &&
-            WTERMSIG(status) == SIGHUP)
+            WTERMSIG(status) == SIGHUP) {
+            VIR_DEBUG("Status indicates reboot");
             wantReboot = true;
+        }
         virMutexUnlock(&lock);
     }
 }
@@ -830,28 +831,32 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
     int hostEvents = 0;
     int contEvents = 0;
 
-    if (!console->hostClosed || (!console->hostBlocking && console->fromContLen)) {
+    /* If host console is open, then we can look to read/write */
+    if (!console->hostClosed) {
         if (console->fromHostLen < sizeof(console->fromHostBuf))
             hostEvents |= VIR_EVENT_HANDLE_READABLE;
         if (console->fromContLen)
             hostEvents |= VIR_EVENT_HANDLE_WRITABLE;
     }
-    if (!console->contClosed || (!console->contBlocking && console->fromHostLen)) {
+
+    /* If cont console is open, then we can look to read/write */
+    if (!console->contClosed) {
         if (console->fromContLen < sizeof(console->fromContBuf))
             contEvents |= VIR_EVENT_HANDLE_READABLE;
         if (console->fromHostLen)
             contEvents |= VIR_EVENT_HANDLE_WRITABLE;
     }
 
-    VIR_DEBUG("Container watch %d=%d host watch %d=%d",
-              console->contWatch, contEvents,
-              console->hostWatch, hostEvents);
+    VIR_DEBUG("Container watch=%d, events=%d closed=%d; host watch=%d events=%d closed=%d",
+              console->contWatch, contEvents, console->contClosed,
+              console->hostWatch, hostEvents, console->hostClosed);
     virEventUpdateHandle(console->contWatch, contEvents);
     virEventUpdateHandle(console->hostWatch, hostEvents);
 
     if (console->hostClosed) {
+        /* Must setup an epoll to detect when host becomes accessible again */
         int events = EPOLLIN | EPOLLET;
-        if (console->hostBlocking)
+        if (console->fromContLen)
             events |= EPOLLOUT;
 
         if (events != console->hostEpoll) {
@@ -887,8 +892,9 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
     }
 
     if (console->contClosed) {
+        /* Must setup an epoll to detect when guest becomes accessible again */
         int events = EPOLLIN | EPOLLET;
-        if (console->contBlocking)
+        if (console->fromHostLen)
             events |= EPOLLOUT;
 
         if (events != console->contEpoll) {
@@ -959,7 +965,7 @@ static void virLXCControllerConsoleEPoll(int watch, int fd, int events, void *op
 
         /* If we get HUP+dead PID, we just re-enable the main loop
          * which will see the PID has died and exit */
-        if ((event.events & EPOLLIN)) {
+        if ((event.events & (EPOLLIN|EPOLLOUT))) {
             if (event.data.fd == console->hostFd) {
                 console->hostClosed = false;
             } else {
@@ -1039,10 +1045,6 @@ static void virLXCControllerConsoleIO(int watch, int fd, int events, void *opaqu
             *len -= done;
         } else {
             VIR_DEBUG("Write fd %d done %d errno %d", fd, (int)done, errno);
-            if (watch == console->hostWatch)
-                console->hostBlocking = true;
-            else
-                console->contBlocking = true;
         }
     }
 
