@@ -203,10 +203,16 @@ mymain(void)
     DO_TEST_PARSE_FAIL("float with garbage", "[ 0.0314159ee+100 ]");
 
     DO_TEST_PARSE("string", "[ \"The meaning of life\" ]");
+    DO_TEST_PARSE_FAIL("unterminated string", "[ \"The meaning of lif ]");
+
 
     DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");
+    DO_TEST_PARSE_FAIL("unterminated object", "{ \"1\":1, \"2\":1, \"3\":2");
+    DO_TEST_PARSE_FAIL("unterminated array of objects",
+                       "[ {\"name\": \"John\"}, {\"name\": \"Paul\"}, ");
     DO_TEST_PARSE_FAIL("array of an object with an array as a key",
                        "[ {[\"key1\", \"key2\"]: \"value\"} ]");
+    DO_TEST_PARSE_FAIL("object with unterminated key", "{ \"key:7 }");
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

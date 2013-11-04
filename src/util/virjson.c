@@ -1004,7 +1004,14 @@ virJSONValuePtr virJSONValueFromString(const char *jsonstring)
         goto cleanup;
     }
 
-    ret = parser.head;
+    if (parser.nstate != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse json %s: unterminated string/map/array"),
+                       jsonstring);
+        virJSONValueFree(parser.head);
+    } else {
+        ret = parser.head;
+    }
 
 cleanup:
     yajl_free(hand);
