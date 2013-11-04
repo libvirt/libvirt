@@ -1018,9 +1018,8 @@ cleanup:
 
     if (parser.nstate) {
         size_t i;
-        for (i = 0; i < parser.nstate; i++) {
+        for (i = 0; i < parser.nstate; i++)
             VIR_FREE(parser.state[i].key);
-        }
         VIR_FREE(parser.state);
     }
 
