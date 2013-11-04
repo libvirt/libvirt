@@ -3151,6 +3151,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     }
     netdef = network->def;
 
+    if (VIR_ALLOC(iface->data.network.actual) < 0)
+        goto error;
+
     /* portgroup can be present for any type of network, in particular
      * for bandwidth information, so we need to check for that and
      * fill it in appropriately for all forward types.
@@ -3167,14 +3170,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     else if (portgroup && portgroup->bandwidth)
         bandwidth = portgroup->bandwidth;
 
-    if (bandwidth) {
-        if (!iface->data.network.actual &&
-            VIR_ALLOC(iface->data.network.actual) < 0)
-            goto error;
-        if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                   bandwidth) < 0)
-            goto error;
-    }
+    if (bandwidth && virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
+                                            bandwidth) < 0)
+        goto error;
 
     /* copy appropriate vlan info to actualNet */
     if (iface->vlan.nTags > 0)
@@ -3184,13 +3182,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     else if (netdef->vlan.nTags > 0)
         vlan = &netdef->vlan;
 
-    if (vlan) {
-        if (!iface->data.network.actual &&
-            VIR_ALLOC(iface->data.network.actual) < 0)
-            goto error;
-        if (virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
-           goto error;
-    }
+    if (vlan && virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
+        goto error;
 
     if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
@@ -3199,8 +3192,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
          *NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
         */
-        if (iface->data.network.actual)
-            iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
         if (networkPlugBandwidth(network, iface) < 0)
             goto error;
@@ -3211,10 +3203,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         /* <forward type='bridge'/> <bridge name='xxx'/>
          * is VIR_DOMAIN_NET_TYPE_BRIDGE
          */
-
-        if (!iface->data.network.actual &&
-            VIR_ALLOC(iface->data.network.actual) < 0)
-            goto error;
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_BRIDGE;
         if (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
@@ -3247,10 +3235,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     } else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
 
         virDomainHostdevSubsysPciBackendType backend;
-
-        if (!iface->data.network.actual &&
-            VIR_ALLOC(iface->data.network.actual) < 0)
-            goto error;
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
         if (netdef->forward.npfs > 0 && netdef->forward.nifs <= 0 &&
@@ -3334,10 +3318,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
          */
-
-        if (!iface->data.network.actual &&
-            VIR_ALLOC(iface->data.network.actual) < 0)
-            goto error;
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_DIRECT;
@@ -3813,7 +3793,8 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
    }
 
 success:
-    netdef->connections--;
+    if (iface->data.network.actual)
+        netdef->connections--;
     VIR_DEBUG("Releasing network %s, %d connections",
               netdef->name, netdef->connections);
     ret = 0;
