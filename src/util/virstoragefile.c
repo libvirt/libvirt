@@ -671,8 +671,13 @@ virStorageFileMatchesVersion(int format,
 static bool
 virBackingStoreIsFile(const char *backing)
 {
-    /* Backing store is a network block device or Rados block device */
-    if (STRPREFIX(backing, "nbd:") || STRPREFIX(backing, "rbd:"))
+    char *colon = strchr(backing, ':');
+    char *slash = strchr(backing, '/');
+
+    /* Reject anything that looks like a protocol (such as nbd: or
+     * rbd:); if someone really does want a relative file name that
+     * includes ':', they can always prefix './'.  */
+    if (colon && (!slash || colon < slash))
         return false;
     return true;
 }
