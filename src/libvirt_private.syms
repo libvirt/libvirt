@@ -1383,6 +1383,7 @@ virFileOpenAs;
 virFileOpenTty;
 virFilePrintf;
 virFileReadAll;
+virFileReadHeaderFD;
 virFileReadLimFD;
 virFileResolveAllLinks;
 virFileResolveLink;
