@@ -70,18 +70,19 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     int fd = -1;
     int ret = -1;
     virStorageFileMetadata *meta = NULL;
+    struct stat sb;
 
     *backingStore = NULL;
     *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
     if (encryption)
         *encryption = NULL;
 
-    if ((ret = virStorageBackendVolOpenCheckMode(target->path,
+    if ((ret = virStorageBackendVolOpenCheckMode(target->path, &sb,
                                         VIR_STORAGE_VOL_FS_REFRESH_FLAGS)) < 0)
         goto error; /* Take care to propagate ret, it is not always -1 */
     fd = ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb,
                                                       allocation,
                                                       capacity)) < 0) {
         goto error;

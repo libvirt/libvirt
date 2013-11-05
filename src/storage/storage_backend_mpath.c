@@ -1,7 +1,7 @@
 /*
  * storage_backend_mpath.c: storage backend for multipath handling
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  * Copyright (C) 2009-2008 Dave Allan
  *
  * This library is free software; you can redistribute it and/or
@@ -46,13 +46,16 @@ virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
 {
     int ret = -1;
     int fdret, fd = -1;
+    struct stat sb;
 
-    if ((fdret = virStorageBackendVolOpen(target->path)) < 0)
+    if ((fdret = virStorageBackendVolOpenCheckMode(target->path, &sb,
+                                                   VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
         goto out;
     fd = fdret;
 
     if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,
+                                               &sb,
                                                allocation,
                                                capacity) < 0)
         goto out;
