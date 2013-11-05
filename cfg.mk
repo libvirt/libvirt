@@ -971,7 +971,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vir(cgroup|pci)mock\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^tests/(qemuhelp|nodeinfo)data/|\.(gif|ico|png|diff)$$)
+  (^tests/(qemuhelp|nodeinfo|virpcitest)data/|\.(gif|ico|png|diff)$$)
 
 _src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \

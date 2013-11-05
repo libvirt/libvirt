@@ -61,7 +61,7 @@ cleanup:
     if ((count = virPCIDeviceListCount(list)) != cnt) {                 \
         virReportError(VIR_ERR_INTERNAL_ERROR,                          \
                        "Unexpected count of items in " #list ": %d, "   \
-                       "expecting " #cnt, count);                       \
+                       "expecting %zu", count, (size_t) cnt);           \
         goto cleanup;                                                   \
     }
 
@@ -69,39 +69,115 @@ static int
 testVirPCIDeviceDetach(const void *oaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    virPCIDevicePtr dev = NULL, unbindedDev = NULL;
+    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    size_t i, nDev = ARRAY_CARDINALITY(dev);
     virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
     int count;
 
-    if (!(dev = virPCIDeviceNew(0, 0, 1, 0)) ||
-        !(unbindedDev = virPCIDeviceNew(0, 0, 3, 0)) ||
-        !(activeDevs = virPCIDeviceListNew()) ||
+    if (!(activeDevs = virPCIDeviceListNew()) ||
         !(inactiveDevs = virPCIDeviceListNew()))
         goto cleanup;
 
     CHECK_LIST_COUNT(activeDevs, 0);
     CHECK_LIST_COUNT(inactiveDevs, 0);
 
-    if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0 ||
-        virPCIDeviceSetStubDriver(unbindedDev, "pci-stub") < 0)
-        goto cleanup;
+    for (i = 0; i < nDev; i++) {
+        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)) ||
+            virPCIDeviceSetStubDriver(dev[i], "pci-stub") < 0)
+            goto cleanup;
 
-    if (virPCIDeviceDetach(dev, activeDevs, inactiveDevs) < 0)
-        goto cleanup;
+        if (virPCIDeviceDetach(dev[i], activeDevs, inactiveDevs) < 0)
+            goto cleanup;
 
-    CHECK_LIST_COUNT(activeDevs, 0);
-    CHECK_LIST_COUNT(inactiveDevs, 1);
-
-    if (virPCIDeviceDetach(unbindedDev, activeDevs, inactiveDevs) < 0)
-        goto cleanup;
-
-    CHECK_LIST_COUNT(activeDevs, 0);
-    CHECK_LIST_COUNT(inactiveDevs, 2);
+        CHECK_LIST_COUNT(activeDevs, 0);
+        CHECK_LIST_COUNT(inactiveDevs, i + 1);
+    }
 
     ret = 0;
 cleanup:
-    virPCIDeviceFree(dev);
-    virPCIDeviceFree(unbindedDev);
+    for (i = 0; i < nDev; i++)
+        virPCIDeviceFree(dev[i]);
+    virObjectUnref(activeDevs);
+    virObjectUnref(inactiveDevs);
+    return ret;
+}
+
+static int
+testVirPCIDeviceReset(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    size_t i, nDev = ARRAY_CARDINALITY(dev);
+    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    int count;
+
+    if (!(activeDevs = virPCIDeviceListNew()) ||
+        !(inactiveDevs = virPCIDeviceListNew()))
+        goto cleanup;
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, 0);
+
+    for (i = 0; i < nDev; i++) {
+        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)) ||
+            virPCIDeviceSetStubDriver(dev[i], "pci-stub") < 0)
+            goto cleanup;
+
+        if (virPCIDeviceReset(dev[i], activeDevs, inactiveDevs) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    for (i = 0; i < nDev; i++)
+        virPCIDeviceFree(dev[i]);
+    virObjectUnref(activeDevs);
+    virObjectUnref(inactiveDevs);
+    return ret;
+}
+
+static int
+testVirPCIDeviceReattach(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    size_t i, nDev = ARRAY_CARDINALITY(dev);
+    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    int count;
+
+    if (!(activeDevs = virPCIDeviceListNew()) ||
+        !(inactiveDevs = virPCIDeviceListNew()))
+        goto cleanup;
+
+    for (i = 0; i < nDev; i++) {
+        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
+            goto cleanup;
+
+        if (virPCIDeviceListAdd(inactiveDevs, dev[i]) < 0) {
+            virPCIDeviceFree(dev[i]);
+            goto cleanup;
+        }
+
+        CHECK_LIST_COUNT(activeDevs, 0);
+        CHECK_LIST_COUNT(inactiveDevs, i + 1);
+
+        if (virPCIDeviceSetStubDriver(dev[i], "pci-stub") < 0)
+            goto cleanup;
+    }
+
+    CHECK_LIST_COUNT(activeDevs, 0);
+    CHECK_LIST_COUNT(inactiveDevs, nDev);
+
+    for (i = 0; i < nDev; i++) {
+        if (virPCIDeviceReattach(dev[i], activeDevs, inactiveDevs) < 0)
+            goto cleanup;
+
+        CHECK_LIST_COUNT(activeDevs, 0);
+        CHECK_LIST_COUNT(inactiveDevs, nDev - i - 1);
+    }
+
+    ret = 0;
+cleanup:
     virObjectUnref(activeDevs);
     virObjectUnref(inactiveDevs);
     return ret;
@@ -109,55 +185,6 @@ cleanup:
 
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
-static int
-testVirPCIDeviceReattach(const void *oaque ATTRIBUTE_UNUSED)
-{
-    int ret = -1;
-    virPCIDevicePtr dev = NULL, unbindedDev = NULL;
-    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
-    int count;
-
-    if (!(dev = virPCIDeviceNew(0, 0, 1, 0)) ||
-        !(unbindedDev = virPCIDeviceNew(0, 0, 3, 0)) ||
-        !(activeDevs = virPCIDeviceListNew()) ||
-        !(inactiveDevs = virPCIDeviceListNew()))
-        goto cleanup;
-
-    if (virPCIDeviceListAdd(inactiveDevs, dev) < 0) {
-        virPCIDeviceFree(dev);
-        virPCIDeviceFree(unbindedDev);
-        goto cleanup;
-    }
-
-    if (virPCIDeviceListAdd(inactiveDevs, unbindedDev) < 0) {
-        virPCIDeviceFree(unbindedDev);
-        goto cleanup;
-    }
-
-    CHECK_LIST_COUNT(activeDevs, 0);
-    CHECK_LIST_COUNT(inactiveDevs, 2);
-
-    if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
-        goto cleanup;
-
-    if (virPCIDeviceReattach(dev, activeDevs, inactiveDevs) < 0)
-        goto cleanup;
-
-    CHECK_LIST_COUNT(activeDevs, 0);
-    CHECK_LIST_COUNT(inactiveDevs, 1);
-
-    if (virPCIDeviceReattach(unbindedDev, activeDevs, inactiveDevs) < 0)
-        goto cleanup;
-
-    CHECK_LIST_COUNT(activeDevs, 0);
-    CHECK_LIST_COUNT(inactiveDevs, 0);
-
-    ret = 0;
-cleanup:
-    virObjectUnref(activeDevs);
-    virObjectUnref(inactiveDevs);
-    return ret;
-}
 static int
 mymain(void)
 {
@@ -184,6 +211,7 @@ mymain(void)
 
     DO_TEST(testVirPCIDeviceNew);
     DO_TEST(testVirPCIDeviceDetach);
+    DO_TEST(testVirPCIDeviceReset);
     DO_TEST(testVirPCIDeviceReattach);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)

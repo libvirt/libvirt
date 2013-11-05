@@ -302,9 +302,12 @@ pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
     char *devpath;
+    char *configSrc, *configDst;
     char tmp[32];
+    struct stat sb;
 
     if (VIR_ALLOC_QUIET(dev) < 0 ||
+        virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config", abs_builddir, data->id) < 0 ||
         virAsprintfQuiet(&devpath, "%s/devices/%s", fakesysfsdir, data->id) < 0)
         ABORT_OOM();
 
@@ -313,7 +316,21 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (virFileMakePath(devpath) < 0)
         ABORT("Unable to create: %s", devpath);
 
-    make_file(devpath, "config", "some dummy config");
+    /* If there is a config file for the device within virpcitestdata dir,
+     * symlink it. Otherwise create a dummy config file. */
+    if ((realstat && realstat(configSrc, &sb) == 0) ||
+        (real__xstat && real__xstat(_STAT_VER, configSrc, &sb) == 0)) {
+        /* On success make symlink to @configSrc */
+        if (virAsprintfQuiet(&configDst, "%s/config", devpath) < 0)
+            ABORT_OOM();
+
+        if (symlink(configSrc, configDst) < 0)
+            ABORT("Unable to create symlink: %s", configDst);
+    } else {
+        /* If there's no config data in the virpcitestdata dir, create a dummy
+         * config file */
+        make_file(devpath, "config", "some dummy config");
+    }
 
     if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->vendor) < 0)
         ABORT("@tmp overflow");
