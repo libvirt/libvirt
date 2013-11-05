@@ -24,6 +24,8 @@
 #ifndef __VIR_STORAGE_BACKEND_H__
 # define __VIR_STORAGE_BACKEND_H__
 
+# include <sys/stat.h>
+
 # include "internal.h"
 # include "storage_conf.h"
 # include "vircommand.h"
@@ -108,9 +110,10 @@ enum {
                                        VIR_STORAGE_VOL_OPEN_CHAR     |\
                                        VIR_STORAGE_VOL_OPEN_BLOCK)
 
-int virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
-ATTRIBUTE_RETURN_CHECK
-ATTRIBUTE_NONNULL(1);
+int virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
+                                      unsigned int flags)
+    ATTRIBUTE_RETURN_CHECK
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    int withCapacity);
@@ -124,6 +127,7 @@ int virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned int openflags);
 int virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                            int fd,
+                                           struct stat *sb,
                                            unsigned long long *allocation,
                                            unsigned long long *capacity);
 int

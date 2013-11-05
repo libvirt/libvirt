@@ -1152,30 +1152,30 @@ virStorageBackendForType(int type)
  * volume is a dangling symbolic link.
  */
 int
-virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
+virStorageBackendVolOpenCheckMode(const char *path, struct stat *sb,
+                                  unsigned int flags)
 {
     int fd, mode = 0;
-    struct stat sb;
     char *base = last_component(path);
 
-    if (lstat(path, &sb) < 0) {
+    if (lstat(path, sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              path);
         return -1;
     }
 
-    if (S_ISFIFO(sb.st_mode)) {
+    if (S_ISFIFO(sb->st_mode)) {
         VIR_WARN("ignoring FIFO '%s'", path);
         return -2;
-    } else if (S_ISSOCK(sb.st_mode)) {
+    } else if (S_ISSOCK(sb->st_mode)) {
         VIR_WARN("ignoring socket '%s'", path);
         return -2;
     }
 
     if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
         if ((errno == ENOENT || errno == ELOOP) &&
-            S_ISLNK(sb.st_mode)) {
+            S_ISLNK(sb->st_mode)) {
             VIR_WARN("ignoring dangling symlink '%s'", path);
             return -2;
         }
@@ -1186,7 +1186,7 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
         return -1;
     }
 
-    if (fstat(fd, &sb) < 0) {
+    if (fstat(fd, sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              path);
@@ -1194,13 +1194,13 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
         return -1;
     }
 
-    if (S_ISREG(sb.st_mode))
+    if (S_ISREG(sb->st_mode))
         mode = VIR_STORAGE_VOL_OPEN_REG;
-    else if (S_ISCHR(sb.st_mode))
+    else if (S_ISCHR(sb->st_mode))
         mode = VIR_STORAGE_VOL_OPEN_CHAR;
-    else if (S_ISBLK(sb.st_mode))
+    else if (S_ISBLK(sb->st_mode))
         mode = VIR_STORAGE_VOL_OPEN_BLOCK;
-    else if (S_ISDIR(sb.st_mode)) {
+    else if (S_ISDIR(sb->st_mode)) {
         mode = VIR_STORAGE_VOL_OPEN_DIR;
 
         if (STREQ(base, ".") ||
@@ -1229,7 +1229,8 @@ virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
 
 int virStorageBackendVolOpen(const char *path)
 {
-    return virStorageBackendVolOpenCheckMode(path,
+    struct stat sb;
+    return virStorageBackendVolOpenCheckMode(path, &sb,
                                              VIR_STORAGE_VOL_OPEN_DEFAULT);
 }
 
@@ -1240,14 +1241,16 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned int openflags)
 {
     int ret, fd;
+    struct stat sb;
 
-    if ((ret = virStorageBackendVolOpenCheckMode(target->path,
+    if ((ret = virStorageBackendVolOpenCheckMode(target->path, &sb,
                                                  openflags)) < 0)
         return ret;
 
     fd = ret;
     ret = virStorageBackendUpdateVolTargetInfoFD(target,
                                                  fd,
+                                                 &sb,
                                                  allocation,
                                                  capacity);
 
@@ -1298,35 +1301,28 @@ int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
 int
 virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                        int fd,
+                                       struct stat *sb,
                                        unsigned long long *allocation,
                                        unsigned long long *capacity)
 {
-    struct stat sb;
 #if WITH_SELINUX
     security_context_t filecon = NULL;
 #endif
 
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             target->path);
-        return -1;
-    }
-
     if (allocation) {
-        if (S_ISREG(sb.st_mode)) {
+        if (S_ISREG(sb->st_mode)) {
 #ifndef WIN32
-            *allocation = (unsigned long long)sb.st_blocks *
+            *allocation = (unsigned long long)sb->st_blocks *
                           (unsigned long long)DEV_BSIZE;
 #else
-            *allocation = sb.st_size;
+            *allocation = sb->st_size;
 #endif
             /* Regular files may be sparse, so logical size (capacity) is not same
              * as actual allocation above
              */
             if (capacity)
-                *capacity = sb.st_size;
-        } else if (S_ISDIR(sb.st_mode)) {
+                *capacity = sb->st_size;
+        } else if (S_ISDIR(sb->st_mode)) {
             *allocation = 0;
             if (capacity)
                 *capacity = 0;
@@ -1351,16 +1347,16 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
         }
     }
 
-    target->perms.mode = sb.st_mode & S_IRWXUGO;
-    target->perms.uid = sb.st_uid;
-    target->perms.gid = sb.st_gid;
+    target->perms.mode = sb->st_mode & S_IRWXUGO;
+    target->perms.uid = sb->st_uid;
+    target->perms.gid = sb->st_gid;
 
     if (!target->timestamps && VIR_ALLOC(target->timestamps) < 0)
         return -1;
-    target->timestamps->atime = get_stat_atime(&sb);
-    target->timestamps->btime = get_stat_birthtime(&sb);
-    target->timestamps->ctime = get_stat_ctime(&sb);
-    target->timestamps->mtime = get_stat_mtime(&sb);
+    target->timestamps->atime = get_stat_atime(sb);
+    target->timestamps->btime = get_stat_birthtime(sb);
+    target->timestamps->ctime = get_stat_ctime(sb);
+    target->timestamps->mtime = get_stat_mtime(sb);
 
     VIR_FREE(target->perms.label);
 
