@@ -405,6 +405,8 @@ pci_driver_new(const char *name, ...)
         driver->len++;
     }
 
+    va_end(args);
+
     make_file(driverpath, "bind", NULL);
     make_file(driverpath, "unbind", NULL);
     make_file(driverpath, "new_id", NULL);
