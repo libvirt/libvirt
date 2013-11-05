@@ -1880,6 +1880,7 @@ virFileMatchesNameSuffix;
 virFileOpenAs;
 virFileOpenTty;
 virFileReadAll;
+virFileReadHeaderFD;
 virFileReadLimFD;
 virFileResolveAllLinks;
 virFileResolveLink;

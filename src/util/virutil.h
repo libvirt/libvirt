@@ -58,6 +58,9 @@ int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                          unsigned long long capBits,
                          bool clearExistingCaps);
 
+int virFileReadHeaderFD(int fd, int maxlen, char **buf)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(3);
+
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
 int virFileReadAll(const char *path, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
