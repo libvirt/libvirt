@@ -102,23 +102,23 @@ struct FileTypeInfo {
                            * where to find encryption mode,
                            * -1 if encryption is not used */
     int (*getBackingStore)(char **res, int *format,
-                           const unsigned char *buf, size_t buf_size);
+                           const char *buf, size_t buf_size);
     int (*getFeatures)(virBitmapPtr *features, int format,
-                       unsigned char *buf, ssize_t len);
+                       char *buf, ssize_t len);
 };
 
 static int cowGetBackingStore(char **, int *,
-                              const unsigned char *, size_t);
+                              const char *, size_t);
 static int qcow1GetBackingStore(char **, int *,
-                                const unsigned char *, size_t);
+                                const char *, size_t);
 static int qcow2GetBackingStore(char **, int *,
-                                const unsigned char *, size_t);
+                                const char *, size_t);
 static int qcow2GetFeatures(virBitmapPtr *features, int format,
-                            unsigned char *buf, ssize_t len);
+                            char *buf, ssize_t len);
 static int vmdk4GetBackingStore(char **, int *,
-                                const unsigned char *, size_t);
+                                const char *, size_t);
 static int
-qedGetBackingStore(char **, int *, const unsigned char *, size_t);
+qedGetBackingStore(char **, int *, const char *, size_t);
 
 #define QCOWX_HDR_VERSION (4)
 #define QCOWX_HDR_BACKING_FILE_OFFSET (QCOWX_HDR_VERSION+4)
@@ -252,7 +252,7 @@ verify(ARRAY_CARDINALITY(qcow2CompatibleFeatureArray) ==
 static int
 cowGetBackingStore(char **res,
                    int *format,
-                   const unsigned char *buf,
+                   const char *buf,
                    size_t buf_size)
 {
 #define COW_FILENAME_MAXLEN 1024
@@ -274,7 +274,7 @@ cowGetBackingStore(char **res,
 
 static int
 qcow2GetBackingStoreFormat(int *format,
-                           const unsigned char *buf,
+                           const char *buf,
                            size_t buf_size,
                            size_t extension_start,
                            size_t extension_end)
@@ -329,7 +329,7 @@ done:
 static int
 qcowXGetBackingStore(char **res,
                      int *format,
-                     const unsigned char *buf,
+                     const char *buf,
                      size_t buf_size,
                      bool isQCow2)
 {
@@ -407,7 +407,7 @@ qcowXGetBackingStore(char **res,
 static int
 qcow1GetBackingStore(char **res,
                      int *format,
-                     const unsigned char *buf,
+                     const char *buf,
                      size_t buf_size)
 {
     int ret;
@@ -424,7 +424,7 @@ qcow1GetBackingStore(char **res,
 static int
 qcow2GetBackingStore(char **res,
                      int *format,
-                     const unsigned char *buf,
+                     const char *buf,
                      size_t buf_size)
 {
     return qcowXGetBackingStore(res, format, buf, buf_size, true);
@@ -434,7 +434,7 @@ qcow2GetBackingStore(char **res,
 static int
 vmdk4GetBackingStore(char **res,
                      int *format,
-                     const unsigned char *buf,
+                     const char *buf,
                      size_t buf_size)
 {
     static const char prefix[] = "parentFileNameHint=\"";
@@ -495,7 +495,7 @@ cleanup:
 static int
 qedGetBackingStore(char **res,
                    int *format,
-                   const unsigned char *buf,
+                   const char *buf,
                    size_t buf_size)
 {
     unsigned long long flags;
@@ -596,7 +596,7 @@ cleanup:
 
 static bool
 virStorageFileMatchesMagic(int format,
-                           unsigned char *buf,
+                           char *buf,
                            size_t buflen)
 {
     int mlen;
@@ -634,7 +634,7 @@ virStorageFileMatchesExtension(int format,
 
 static bool
 virStorageFileMatchesVersion(int format,
-                             unsigned char *buf,
+                             char *buf,
                              size_t buflen)
 {
     int version;
@@ -684,7 +684,7 @@ virBackingStoreIsFile(const char *backing)
 
 static int
 virStorageFileProbeFormatFromBuf(const char *path,
-                                 unsigned char *buf,
+                                 char *buf,
                                  size_t buflen)
 {
     int format = VIR_STORAGE_FILE_RAW;
@@ -726,7 +726,7 @@ cleanup:
 static int
 qcow2GetFeatures(virBitmapPtr *features,
                  int format,
-                 unsigned char *buf,
+                 char *buf,
                  ssize_t len)
 {
     int version = -1;
@@ -767,7 +767,7 @@ virStorageFileGetMetadataInternal(const char *path,
                                   int format)
 {
     virStorageFileMetadata *meta = NULL;
-    unsigned char *buf = NULL;
+    char *buf = NULL;
     ssize_t len = STORAGE_MAX_HEAD;
     virStorageFileMetadata *ret = NULL;
     struct stat sb;
@@ -922,7 +922,7 @@ cleanup:
 int
 virStorageFileProbeFormatFromFD(const char *path, int fd)
 {
-    unsigned char *head;
+    char *head = NULL;
     ssize_t len = STORAGE_MAX_HEAD;
     int ret = -1;
     struct stat sb;
