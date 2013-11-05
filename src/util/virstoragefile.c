@@ -703,12 +703,7 @@ virStorageFileGetMetadataInternal(const char *path,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(buf, len) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if ((len = read(fd, buf, len)) < 0) {
+    if ((len = virFileReadHeaderFD(fd, len, (char **)&buf)) < 0) {
         virReportSystemError(errno, _("cannot read header '%s'"), path);
         goto cleanup;
     }
@@ -843,17 +838,12 @@ virStorageFileProbeFormatFromFD(const char *path, int fd)
         return VIR_STORAGE_FILE_DIR;
     }
 
-    if (VIR_ALLOC_N(head, len) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
         virReportSystemError(errno, _("cannot set to start of '%s'"), path);
         goto cleanup;
     }
 
-    if ((len = read(fd, head, len)) < 0) {
+    if ((len = virFileReadHeaderFD(fd, len, (char **)&head)) < 0) {
         virReportSystemError(errno, _("cannot read header '%s'"), path);
         goto cleanup;
     }
