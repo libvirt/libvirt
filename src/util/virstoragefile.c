@@ -148,11 +148,6 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 #define QED_F_BACKING_FILE 0x01
 #define QED_F_BACKING_FORMAT_NO_PROBE 0x04
 
-/* VMDK needs at least 20*512 B to find backing store,
- * ISO has 5 Byte magic on offset 32769,
- * other formats need less */
-#define STORAGE_MAX_HEAD 32769+5
-
 
 static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
@@ -442,7 +437,7 @@ vmdk4GetBackingStore(char **res,
     size_t len;
     int ret = BACKING_STORE_ERROR;
 
-    if (VIR_ALLOC_N(desc, STORAGE_MAX_HEAD + 1) < 0)
+    if (VIR_ALLOC_N(desc, VIR_STORAGE_MAX_HEADER) < 0)
         goto cleanup;
 
     *res = NULL;
@@ -460,8 +455,8 @@ vmdk4GetBackingStore(char **res,
         goto cleanup;
     }
     len = buf_size - 0x200;
-    if (len > STORAGE_MAX_HEAD)
-        len = STORAGE_MAX_HEAD;
+    if (len > VIR_STORAGE_MAX_HEADER)
+        len = VIR_STORAGE_MAX_HEADER;
     memcpy(desc, buf + 0x200, len);
     desc[len] = '\0';
     start = strstr(desc, prefix);
@@ -682,7 +677,7 @@ virBackingStoreIsFile(const char *backing)
     return true;
 }
 
-static int
+int
 virStorageFileProbeFormatFromBuf(const char *path,
                                  char *buf,
                                  size_t buflen)
@@ -690,7 +685,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
     int format = VIR_STORAGE_FILE_RAW;
     size_t i;
     int possibleFormat = VIR_STORAGE_FILE_RAW;
-    VIR_DEBUG("path=%s", path);
+    VIR_DEBUG("path=%s, buf=%p, buflen=%zu", path, buf, buflen);
 
     /* First check file magic */
     for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
@@ -882,57 +877,6 @@ cleanup:
 
 
 /**
- * virStorageFileProbeFormatFromFD:
- *
- * Probe for the format of 'fd' (which is an open file descriptor
- * pointing to 'path'), returning the detected disk format.
- *
- * Callers are advised never to trust the returned 'format'
- * unless it is listed as VIR_STORAGE_FILE_RAW, since a
- * malicious guest can turn a file into any other non-raw
- * format at will.
- *
- * Best option: Don't use this function
- */
-int
-virStorageFileProbeFormatFromFD(const char *path, int fd)
-{
-    char *head = NULL;
-    ssize_t len = STORAGE_MAX_HEAD;
-    int ret = -1;
-    struct stat sb;
-
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             path);
-        return -1;
-    }
-
-    /* No header to probe for directories */
-    if (S_ISDIR(sb.st_mode)) {
-        return VIR_STORAGE_FILE_DIR;
-    }
-
-    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
-        goto cleanup;
-    }
-
-    if ((len = virFileReadHeaderFD(fd, len, &head)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), path);
-        goto cleanup;
-    }
-
-    ret = virStorageFileProbeFormatFromBuf(path, head, len);
-
-cleanup:
-    VIR_FREE(head);
-    return ret;
-}
-
-
-/**
  * virStorageFileProbeFormat:
  *
  * Probe for the format of 'path', returning the detected
@@ -948,15 +892,42 @@ cleanup:
 int
 virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
 {
-    int fd, ret;
+    int fd;
+    int ret = -1;
+    struct stat sb;
+    ssize_t len = VIR_STORAGE_MAX_HEADER;
+    char *header = NULL;
 
     if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
         virReportSystemError(-fd, _("Failed to open file '%s'"), path);
         return -1;
     }
 
-    ret = virStorageFileProbeFormatFromFD(path, fd);
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno, _("cannot stat file '%s'"), path);
+        goto cleanup;
+    }
 
+    /* No header to probe for directories */
+    if (S_ISDIR(sb.st_mode)) {
+        ret = VIR_STORAGE_FILE_DIR;
+        goto cleanup;
+    }
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
+        goto cleanup;
+    }
+
+    if ((len = virFileReadHeaderFD(fd, len, &header)) < 0) {
+        virReportSystemError(errno, _("cannot read header '%s'"), path);
+        goto cleanup;
+    }
+
+    ret = virStorageFileProbeFormatFromBuf(path, header, len);
+
+cleanup:
+    VIR_FREE(header);
     VIR_FORCE_CLOSE(fd);
 
     return ret;
@@ -1003,7 +974,7 @@ virStorageFileGetMetadataFromFDInternal(const char *path,
                                         int format)
 {
     char *buf = NULL;
-    ssize_t len = STORAGE_MAX_HEAD;
+    ssize_t len = VIR_STORAGE_MAX_HEADER;
     struct stat sb;
     virStorageFileMetadataPtr ret = NULL;
 

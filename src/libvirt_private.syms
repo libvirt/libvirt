@@ -1731,7 +1731,7 @@ virStorageFileIsClusterFS;
 virStorageFileIsSharedFS;
 virStorageFileIsSharedFSType;
 virStorageFileProbeFormat;
-virStorageFileProbeFormatFromFD;
+virStorageFileProbeFormatFromBuf;
 virStorageFileResize;
 
 
