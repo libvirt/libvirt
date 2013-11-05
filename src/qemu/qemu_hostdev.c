@@ -819,7 +819,8 @@ reattachdevs:
         /* NB: This doesn't actually re-bind to original driver, just
          * unbinds from the stub driver
          */
-        virPCIDeviceReattach(dev, driver->activePciHostdevs, NULL);
+        ignore_value(virPCIDeviceReattach(dev, driver->activePciHostdevs,
+                                          NULL));
     }
 
 cleanup:
