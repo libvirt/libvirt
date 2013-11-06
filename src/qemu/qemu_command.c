@@ -2959,6 +2959,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
+    /* Assign a PCI slot to the primary video card if there is not an
+     * assigned address. */
+    if (def->nvideos > 0 &&
+        def->videos[0]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainPCIAddressReserveNextSlot(addrs, &def->videos[0]->info,
+                                                flags) < 0)
+            goto error;
+    }
     /* Further non-primary video cards which have to be qxl type */
     for (i = 1; i < def->nvideos; i++) {
         if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
