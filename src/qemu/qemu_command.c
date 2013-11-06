@@ -3517,7 +3517,7 @@ cleanup:
     return ret;
 
 error:
-    virDomainDiskHostDefFree(def->hosts);
+    virDomainDiskHostDefClear(def->hosts);
     VIR_FREE(def->hosts);
     goto cleanup;
 }
@@ -3619,7 +3619,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
     return 0;
 
 error:
-    virDomainDiskHostDefFree(h);
+    virDomainDiskHostDefClear(h);
     VIR_FREE(h);
     return -1;
 }

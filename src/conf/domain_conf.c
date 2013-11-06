@@ -1217,13 +1217,13 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     }
 
     for (i = 0; i < def->nhosts; i++)
-        virDomainDiskHostDefFree(&def->hosts[i]);
+        virDomainDiskHostDefClear(&def->hosts[i]);
     VIR_FREE(def->hosts);
 
     VIR_FREE(def);
 }
 
-void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def)
+void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def)
 {
     if (!def)
         return;
@@ -4864,7 +4864,7 @@ error:
     VIR_FREE(protocol);
     VIR_FREE(transport);
     while (nhosts > 0) {
-        virDomainDiskHostDefFree(&hosts[nhosts - 1]);
+        virDomainDiskHostDefClear(&hosts[nhosts - 1]);
         nhosts--;
     }
 
