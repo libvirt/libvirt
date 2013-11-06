@@ -2137,14 +2137,17 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         goto cleanup;
 
     for (i = 0; i < nmachines; i++) {
-        if (VIR_STRDUP(qemuCaps->machineAliases[i], machines[i]->alias) < 0 ||
-            VIR_STRDUP(qemuCaps->machineTypes[i], machines[i]->name) < 0)
+        qemuCaps->nmachineTypes++;
+        if (VIR_STRDUP(qemuCaps->machineAliases[qemuCaps->nmachineTypes -1],
+                       machines[i]->alias) < 0 ||
+            VIR_STRDUP(qemuCaps->machineTypes[qemuCaps->nmachineTypes - 1],
+                       machines[i]->name) < 0)
             goto cleanup;
         if (machines[i]->isDefault)
             defIdx = i;
-        qemuCaps->machineMaxCpus[i] = machines[i]->maxCpus;
+        qemuCaps->machineMaxCpus[qemuCaps->nmachineTypes - 1] =
+            machines[i]->maxCpus;
     }
-    qemuCaps->nmachineTypes = nmachines;
 
     if (defIdx)
         virQEMUCapsSetDefaultMachine(qemuCaps, defIdx);
