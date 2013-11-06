@@ -4683,49 +4683,48 @@ cleanup:
 
 static int
 virDomainDiskSourcePoolDefParse(xmlNodePtr node,
-                                virDomainDiskDefPtr def)
+                                virDomainDiskSourcePoolDefPtr *srcpool)
 {
-    char *pool = NULL;
-    char *volume = NULL;
     char *mode = NULL;
+    virDomainDiskSourcePoolDefPtr source;
     int ret = -1;
 
-    pool = virXMLPropString(node, "pool");
-    volume = virXMLPropString(node, "volume");
+    *srcpool = NULL;
+
+    if (VIR_ALLOC(source) < 0)
+        return -1;
+
+    source->pool = virXMLPropString(node, "pool");
+    source->volume = virXMLPropString(node, "volume");
     mode = virXMLPropString(node, "mode");
 
     /* CD-ROM and Floppy allows no source */
-    if (!pool && !volume)
-        return 0;
+    if (!source->pool && !source->volume) {
+        ret = 0;
+        goto cleanup;
+    }
 
-    if (!pool || !volume) {
+    if (!source->pool || !source->volume) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("'pool' and 'volume' must be specified together "
                          "for 'pool' type source"));
         goto cleanup;
     }
 
-    if (VIR_ALLOC(def->srcpool) < 0)
-        goto cleanup;
-
-    if (mode && (def->srcpool->mode =
-                 virDomainDiskSourcePoolModeTypeFromString(mode)) <= 0) {
+    if (mode &&
+        (source->mode = virDomainDiskSourcePoolModeTypeFromString(mode)) <= 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown source mode '%s' for volume type disk"),
                        mode);
         goto cleanup;
     }
 
-    def->srcpool->pool = pool;
-    pool = NULL;
-    def->srcpool->volume = volume;
-    volume = NULL;
-
+    *srcpool = source;
+    source = NULL;
     ret = 0;
 
 cleanup:
-    VIR_FREE(pool);
-    VIR_FREE(volume);
+    virDomainDiskSourcePoolDefFree(source);
     VIR_FREE(mode);
     return ret;
 }
@@ -4916,7 +4915,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     }
                     break;
                 case VIR_DOMAIN_DISK_TYPE_VOLUME:
-                    if (virDomainDiskSourcePoolDefParse(cur, def) < 0)
+                    if (virDomainDiskSourcePoolDefParse(cur, &def->srcpool) < 0)
                         goto error;
                     break;
                 default:
