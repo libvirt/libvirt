@@ -4742,16 +4742,17 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
                             int type,
                             char **source,
                             int *proto,
-                            size_t *ndefhosts,
-                            virDomainDiskHostDefPtr *defhosts,
+                            size_t *nhosts,
+                            virDomainDiskHostDefPtr *hosts,
                             virDomainDiskSourcePoolDefPtr *srcpool)
 {
     char *protocol = NULL;
     char *transport = NULL;
-    virDomainDiskHostDefPtr hosts = NULL;
-    int nhosts = 0;
+    virDomainDiskHostDef host;
     xmlNodePtr child;
     int ret = -1;
+
+    memset(&host, 0, sizeof(host));
 
     switch (type) {
     case VIR_DOMAIN_DISK_TYPE_FILE:
@@ -4764,110 +4765,102 @@ virDomainDiskSourceDefParse(xmlNodePtr node,
         *source = virXMLPropString(node, "dir");
         break;
     case VIR_DOMAIN_DISK_TYPE_NETWORK:
-        protocol = virXMLPropString(node, "protocol");
-        if (protocol == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("missing protocol type"));
-            goto error;
+        if (!(protocol = virXMLPropString(node, "protocol"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing network source protocol type"));
+            goto cleanup;
         }
-        *proto = virDomainDiskProtocolTypeFromString(protocol);
-        if (*proto < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown protocol type '%s'"),
-                           protocol);
-            goto error;
+
+        if ((*proto = virDomainDiskProtocolTypeFromString(protocol)) < 0){
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown protocol type '%s'"), protocol);
+            goto cleanup;
         }
 
         if (!(*source = virXMLPropString(node, "name")) &&
             *proto != VIR_DOMAIN_DISK_PROTOCOL_NBD) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing name for disk source"));
-            goto error;
+            goto cleanup;
         }
+
         child = node->children;
         while (child != NULL) {
             if (child->type == XML_ELEMENT_NODE &&
                 xmlStrEqual(child->name, BAD_CAST "host")) {
-                if (VIR_REALLOC_N(hosts, nhosts + 1) < 0)
-                    goto error;
-                hosts[nhosts].name = NULL;
-                hosts[nhosts].port = NULL;
-                hosts[nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-                hosts[nhosts].socket = NULL;
-                nhosts++;
+
+                host.transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
 
                 /* transport can be tcp (default), unix or rdma.  */
-                transport = virXMLPropString(child, "transport");
-                if (transport != NULL) {
-                    hosts[nhosts - 1].transport = virDomainDiskProtocolTransportTypeFromString(transport);
-                    if (hosts[nhosts - 1].transport < 0) {
+                if ((transport = virXMLPropString(child, "transport"))) {
+                    host.transport = virDomainDiskProtocolTransportTypeFromString(transport);
+                    if (host.transport < 0) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("unknown protocol transport type '%s'"),
                                        transport);
-                        goto error;
+                        goto cleanup;
                     }
                 }
-                hosts[nhosts - 1].socket = virXMLPropString(child, "socket");
-                if (hosts[nhosts - 1].transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
-                    hosts[nhosts - 1].socket == NULL) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   "%s", _("missing socket for unix transport"));
-                    goto error;
+
+                host.socket = virXMLPropString(child, "socket");
+
+                if (host.transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                    host.socket == NULL) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("missing socket for unix transport"));
+                    goto cleanup;
                 }
-                if (hosts[nhosts - 1].transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
-                    hosts[nhosts - 1].socket != NULL) {
+
+                if (host.transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                    host.socket != NULL) {
                     virReportError(VIR_ERR_XML_ERROR,
-                                   _("transport %s does not support socket attribute"),
+                                   _("transport '%s' does not support "
+                                     "socket attribute"),
                                    transport);
-                    goto error;
+                    goto cleanup;
                 }
+
                 VIR_FREE(transport);
-                if (hosts[nhosts - 1].transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
-                    hosts[nhosts - 1].name = virXMLPropString(child, "name");
-                    if (!hosts[nhosts - 1].name) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       "%s", _("missing name for host"));
-                        goto error;
+
+                if (host.transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
+                    if (!(host.name = virXMLPropString(child, "name"))) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("missing name for host"));
+                        goto cleanup;
                     }
-                    hosts[nhosts - 1].port = virXMLPropString(child, "port");
+
+                    host.port = virXMLPropString(child, "port");
                 }
+
+                if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0)
+                    goto cleanup;
             }
             child = child->next;
         }
         break;
     case VIR_DOMAIN_DISK_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, srcpool) < 0)
-            goto error;
+            goto cleanup;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %s"),
                        virDomainDiskTypeToString(type));
-        goto error;
+        goto cleanup;
     }
 
-    /* People sometimes pass a bogus '' source path
-       when they mean to omit the source element
-       completely (e.g. CDROM without media). This is
-       just a little compatibility check to help
-       those broken apps */
+    /* People sometimes pass a bogus '' source path when they mean to omit the
+     * source element completely (e.g. CDROM without media). This is just a
+     * little compatibility check to help those broken apps */
     if (*source && STREQ(*source, ""))
         VIR_FREE(*source);
 
-    *ndefhosts = nhosts;
-    *defhosts = hosts;
-    nhosts = 0;
-
     ret = 0;
 
-error:
+cleanup:
+    virDomainDiskHostDefClear(&host);
     VIR_FREE(protocol);
     VIR_FREE(transport);
-    while (nhosts > 0) {
-        virDomainDiskHostDefClear(&hosts[nhosts - 1]);
-        nhosts--;
-    }
-
     return ret;
 }
 
