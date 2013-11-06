@@ -257,6 +257,7 @@ static void qemuMonitorDispose(void *obj)
         (mon->cb->destroy)(mon, mon->vm, mon->callbackOpaque);
     virObjectUnref(mon->vm);
 
+    virResetError(&mon->lastError);
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
     virJSONValueFree(mon->options);
