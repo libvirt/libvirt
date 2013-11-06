@@ -2137,6 +2137,8 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         goto cleanup;
 
     for (i = 0; i < nmachines; i++) {
+        if (STREQ(machines[i]->name, "none"))
+            continue;
         qemuCaps->nmachineTypes++;
         if (VIR_STRDUP(qemuCaps->machineAliases[qemuCaps->nmachineTypes -1],
                        machines[i]->alias) < 0 ||
