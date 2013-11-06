@@ -103,6 +103,13 @@
         in a virtual machine.  It prints out a list of facts about the
         virtual machine, derived from heuristics.
       </dd>
+      <dt><a href="http://sourceware.org/systemtap/">stap</a></dt>
+      <dd>
+        SystemTap is a tool used to gather rich information about a running
+        system through the use of scripts. Starting from v2.4, the front-end
+        application stap can use libvirt to gather data within virtual
+        machines.
+      </dd>
     </dl>
 
     <h2><a name="configmgmt">Configuration Management</a></h2>
