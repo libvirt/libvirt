@@ -305,9 +305,14 @@ pci_device_new_from_stub(const struct pciDevice *data)
     char *configSrc, *configDst;
     char tmp[32];
     struct stat sb;
+    char *abs_srcdir;
+
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(NULL, 0);
 
     if (VIR_ALLOC_QUIET(dev) < 0 ||
-        virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config", abs_builddir, data->id) < 0 ||
+        virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config", abs_srcdir, data->id) < 0 ||
         virAsprintfQuiet(&devpath, "%s/devices/%s", fakesysfsdir, data->id) < 0)
         ABORT_OOM();
 
