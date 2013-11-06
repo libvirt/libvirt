@@ -1095,14 +1095,6 @@ error:
     return -1;
 }
 
-
-static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                            virDomainObjPtr vm,
-                                            void *opaque ATTRIBUTE_UNUSED)
-{
-    virObjectUnref(vm);
-}
-
 static int
 qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             virDomainObjPtr vm,
@@ -1366,7 +1358,6 @@ cleanup:
 
 
 static qemuMonitorCallbacks monitorCallbacks = {
-    .destroy = qemuProcessHandleMonitorDestroy,
     .eofNotify = qemuProcessHandleMonitorEOF,
     .errorNotify = qemuProcessHandleMonitorError,
     .diskSecretLookup = qemuProcessFindVolumeQcowPassphrase,
@@ -1403,7 +1394,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int logfd)
     }
 
     /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted while the monitor is active */
+     * deleted unitl the monitor gets its own reference. */
     virObjectRef(vm);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
@@ -1419,11 +1410,10 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int logfd)
         ignore_value(qemuMonitorSetDomainLog(mon, logfd));
 
     virObjectLock(vm);
+    virObjectUnref(vm);
     priv->monStart = 0;
 
-    if (mon == NULL) {
-        virObjectUnref(vm);
-    } else if (!virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         qemuMonitorClose(mon);
         mon = NULL;
     }
