@@ -1512,6 +1512,21 @@ static int testConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 32;
 }
 
+static char *
+testConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       const char **xmlCPUs,
+                       unsigned int ncpus,
+                       unsigned int flags)
+{
+    char *cpu;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+
+    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+
+    return cpu;
+}
+
 static int testNodeGetInfo(virConnectPtr conn,
                            virNodeInfoPtr info)
 {
@@ -7177,6 +7192,8 @@ static virDriver testDriver = {
     .domainSnapshotCreateXML = testDomainSnapshotCreateXML, /* 1.1.4 */
     .domainRevertToSnapshot = testDomainRevertToSnapshot, /* 1.1.4 */
     .domainSnapshotDelete = testDomainSnapshotDelete, /* 1.1.4 */
+
+    .connectBaselineCPU = testConnectBaselineCPU, /* 1.1.5 */
 };
 
 static virNetworkDriver testNetworkDriver = {
