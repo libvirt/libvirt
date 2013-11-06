@@ -1827,7 +1827,7 @@
      initiate a connection from TCP port 80 back towards the VM.
      By default the connection state match that enables connection tracking
      and then enforcement of directionality of traffic is turned on. <br/>
-     The following shows an example XML fragement where this feature has been
+     The following shows an example XML fragment where this feature has been
      turned off for incoming connections to TCP port 12345.
     </p>
 <pre>
