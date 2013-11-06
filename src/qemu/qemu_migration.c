@@ -3930,11 +3930,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
+    unsigned short port;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
+
+    port = priv->migrationPort;
+    priv->migrationPort = 0;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -3982,8 +3986,6 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         qemuMigrationStopNBDServer(driver, vm, mig);
-        virPortAllocatorRelease(driver->migrationPorts, priv->migrationPort);
-        priv->migrationPort = 0;
 
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             virDomainDefPtr vmdef;
@@ -4116,6 +4118,7 @@ endjob:
     }
 
 cleanup:
+    virPortAllocatorRelease(driver->migrationPorts, port);
     if (vm) {
         VIR_FREE(priv->origname);
         virObjectUnlock(vm);
