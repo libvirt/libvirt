@@ -867,6 +867,30 @@ error:
     virBitmapFree(map);
     return NULL;
 }
+
+
+static virBitmapPtr
+virNodeGetSiblingsList(const char *dir, int cpu_id)
+{
+    char *path = NULL;
+    char *buf = NULL;
+    virBitmapPtr ret = NULL;
+
+    if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings_list",
+                    dir, cpu_id) < 0)
+        goto cleanup;
+
+    if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
+        goto cleanup;
+
+    if (virBitmapParse(buf, 0, &ret, virNumaGetMaxCPUs()) < 0)
+        goto cleanup;
+
+cleanup:
+    VIR_FREE(buf);
+    VIR_FREE(path);
+    return ret;
+}
 #endif
 
 int nodeGetInfo(virNodeInfoPtr nodeinfo)
@@ -1529,33 +1553,12 @@ nodeGetFreeMemoryFake(void)
     return ret;
 }
 
-static virBitmapPtr
-virNodeGetSiblingsList(const char *dir, int cpu_id)
-{
-    char *path = NULL;
-    char *buf = NULL;
-    virBitmapPtr ret = NULL;
-
-    if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings_list",
-                    dir, cpu_id) < 0)
-        goto cleanup;
-
-    if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
-        goto cleanup;
-
-    if (virBitmapParse(buf, 0, &ret, virNumaGetMaxCPUs()) < 0)
-        goto cleanup;
-
-cleanup:
-    VIR_FREE(buf);
-    VIR_FREE(path);
-    return ret;
-}
-
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
 static int
-virNodeCapsFillCPUInfo(int cpu_id, virCapsHostNUMACellCPUPtr cpu)
+virNodeCapsFillCPUInfo(int cpu_id ATTRIBUTE_UNUSED,
+                       virCapsHostNUMACellCPUPtr cpu ATTRIBUTE_UNUSED)
 {
+#ifdef __linux__
     int tmp;
     cpu->id = cpu_id;
 
@@ -1575,6 +1578,11 @@ virNodeCapsFillCPUInfo(int cpu_id, virCapsHostNUMACellCPUPtr cpu)
         return -1;
 
     return 0;
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node cpu info not implemented on this platform"));
+    return -1;
+#endif
 }
 
 int
