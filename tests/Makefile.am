@@ -107,6 +107,7 @@ EXTRA_DIST =		\
 	sysinfodata \
 	test-lib.sh	\
 	virsh-uriprecedence \
+	virpcitestdata \
 	vmx2xmldata \
 	xencapsdata \
 	xmconfigdata \
