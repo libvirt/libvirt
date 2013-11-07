@@ -1987,7 +1987,7 @@ static char
         goto cleanup;
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR)) {
         /* TODO support NBD for TUNNELLED migration */
         if (flags & VIR_MIGRATE_TUNNELLED) {
             VIR_WARN("NBD in tunnelled migration is currently not supported");
