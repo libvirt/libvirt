@@ -14375,53 +14375,49 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
         switch (type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
             virBufferAddLit(buf, "      <source");
-            if (src)
-                virBufferEscapeString(buf, " file='%s'", src);
-            if (startupPolicy)
-                virBufferEscapeString(buf, " startupPolicy='%s'",
-                                      startupPolicy);
+            virBufferEscapeString(buf, " file='%s'", src);
+            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+
             if (nseclabels) {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
                 for (n = 0; n < nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, seclabels[n],
-                                                    flags);
+                    virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
                 virBufferAddLit(buf, "/>\n");
             }
             break;
+
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferAddLit(buf, "      <source");
             virBufferEscapeString(buf, " dev='%s'", src);
-            if (startupPolicy)
-                virBufferEscapeString(buf, " startupPolicy='%s'",
-                                      startupPolicy);
+            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+
             if (nseclabels) {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
                 for (n = 0; n < nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, seclabels[n],
-                                                    flags);
+                    virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
                 virBufferAddLit(buf, "/>\n");
             }
             break;
+
         case VIR_DOMAIN_DISK_TYPE_DIR:
-            virBufferEscapeString(buf, "      <source dir='%s'", src);
-            if (startupPolicy)
-                virBufferEscapeString(buf, " startupPolicy='%s'",
-                                      startupPolicy);
+            virBufferAddLit(buf, "      <source");
+            virBufferEscapeString(buf, " dir='%s'", src);
+            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
             virBufferAddLit(buf, "/>\n");
             break;
+
         case VIR_DOMAIN_DISK_TYPE_NETWORK:
             virBufferAsprintf(buf, "      <source protocol='%s'",
                               virDomainDiskProtocolTypeToString(protocol));
-            if (src)
-                virBufferEscapeString(buf, " name='%s'", src);
+            virBufferEscapeString(buf, " name='%s'", src);
 
             if (nhosts == 0) {
                 virBufferAddLit(buf, "/>\n");
@@ -14429,25 +14425,21 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                 virBufferAddLit(buf, ">\n");
                 for (n = 0; n < nhosts; n++) {
                     virBufferAddLit(buf, "        <host");
-                    if (hosts[n].name)
-                        virBufferEscapeString(buf, " name='%s'", hosts[n].name);
-
-                    if (hosts[n].port)
-                        virBufferEscapeString(buf, " port='%s'",
-                                              hosts[n].port);
+                    virBufferEscapeString(buf, " name='%s'", hosts[n].name);
+                    virBufferEscapeString(buf, " port='%s'", hosts[n].port);
 
                     if (hosts[n].transport)
                         virBufferAsprintf(buf, " transport='%s'",
                                           virDomainDiskProtocolTransportTypeToString(hosts[n].transport));
 
-                    if (hosts[n].socket)
-                        virBufferEscapeString(buf, " socket='%s'", hosts[n].socket);
+                    virBufferEscapeString(buf, " socket='%s'", hosts[n].socket);
 
                     virBufferAddLit(buf, "/>\n");
                 }
                 virBufferAddLit(buf, "      </source>\n");
             }
             break;
+
         case VIR_DOMAIN_DISK_TYPE_VOLUME:
             virBufferAddLit(buf, "      <source");
 
@@ -14458,8 +14450,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                     virBufferAsprintf(buf, " mode='%s'",
                                       virDomainDiskSourcePoolModeTypeToString(srcpool->mode));
             }
-            if (startupPolicy)
-                virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
             if (nseclabels) {
                 virBufferAddLit(buf, ">\n");
@@ -14473,6 +14464,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                 virBufferAddLit(buf, "/>\n");
             }
             break;
+
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected disk type %s"),
