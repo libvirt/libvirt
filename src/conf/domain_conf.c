@@ -14352,6 +14352,32 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
     }
 }
 
+
+/* virDomainDiskSourceDefFormatSeclabel:
+ *
+ * This function automaticaly closes the <source> element and formats any
+ * possible seclabels.
+ */
+static void
+virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
+                                     size_t nseclabels,
+                                     virSecurityDeviceLabelDefPtr *seclabels,
+                                     unsigned int flags)
+{
+    size_t n;
+
+    if (nseclabels) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 8);
+        for (n = 0; n < nseclabels; n++)
+            virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
+        virBufferAdjustIndent(buf, -8);
+        virBufferAddLit(buf, "      </source>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
 static int
 virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                      int type,
@@ -14378,33 +14404,15 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             virBufferEscapeString(buf, " file='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            if (nseclabels) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 8);
-                for (n = 0; n < nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
-                virBufferAdjustIndent(buf, -8);
-                virBufferAddLit(buf, "      </source>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
-            }
-            break;
+            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+           break;
 
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferAddLit(buf, "      <source");
             virBufferEscapeString(buf, " dev='%s'", src);
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            if (nseclabels) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 8);
-                for (n = 0; n < nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
-                virBufferAdjustIndent(buf, -8);
-                virBufferAddLit(buf, "      </source>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
-            }
+            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
             break;
 
         case VIR_DOMAIN_DISK_TYPE_DIR:
@@ -14452,17 +14460,7 @@ virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
             }
             virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
 
-            if (nseclabels) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 8);
-                for (n = 0; n < nseclabels; n++)
-                    virSecurityDeviceLabelDefFormat(buf, seclabels[n],
-                                                    flags);
-                virBufferAdjustIndent(buf, -8);
-                virBufferAddLit(buf, "      </source>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
-            }
+            virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
             break;
 
         default:
