@@ -137,6 +137,7 @@ mymain(void)
     DO_TEST("hostdev");
     DO_TEST("disk-formats");
     DO_TEST_DIFFERENT("filesystem-ram");
+    DO_TEST("filesystem-root");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

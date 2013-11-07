@@ -1679,7 +1679,7 @@
           <interleave>
             <element name="source">
               <attribute name="dir">
-                <ref name="absFilePath"/>
+                <ref name="absDirPath"/>
               </attribute>
               <empty/>
             </element>
@@ -1697,7 +1697,7 @@
           <interleave>
             <element name="source">
               <attribute name="dir">
-                <ref name="absFilePath"/>
+                <ref name="absDirPath"/>
               </attribute>
               <empty/>
             </element>

@@ -14,6 +14,10 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/libexec/libvirt_lxc</emulator>
+    <filesystem type='bind' accessmode='passthrough'>
+      <source dir='/'/>
+      <target dir='/'/>
+    </filesystem>
     <filesystem type='ram' accessmode='passthrough'>
       <source usage='1048576' units='KiB'/>
       <target dir='/mnt/mississippi'/>

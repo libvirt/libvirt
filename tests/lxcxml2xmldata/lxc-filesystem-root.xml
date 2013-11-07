@@ -14,21 +14,9 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/libexec/libvirt_lxc</emulator>
-    <filesystem type='bind'>
-        <source dir='/'/>
-        <target dir='/'/>
-    </filesystem>
-    <filesystem type='ram'>
-        <source usage='1048576'/>
-        <target dir='/mnt/mississippi'/>
-    </filesystem>
-    <filesystem type='ram'>
-        <source usage='1048576' units='bytes'/>
-        <target dir='/mnt/antananarivo'/>
-    </filesystem>
-    <filesystem type='ram'>
-        <source usage='1024' units='KiB'/>
-        <target dir='/mnt/ouagadougou'/>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/'/>
+      <target dir='/'/>
     </filesystem>
     <console type='pty'>
       <target type='lxc' port='0'/>
