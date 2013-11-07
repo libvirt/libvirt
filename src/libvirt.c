@@ -2925,7 +2925,7 @@ error:
  * If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
  * attempt to bypass the file system cache while restoring the file, or
  * fail if it cannot do so for the given system; this can allow less
- * pressure on file system cache, but also risks slowing saves to NFS.
+ * pressure on file system cache, but also risks slowing restores from NFS.
  *
  * Normally, the saved state file will remember whether the domain was
  * running or paused, and restore defaults to the same state.
