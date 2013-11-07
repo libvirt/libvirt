@@ -767,7 +767,7 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
     if (STRNEQ_NULLABLE(src->vendor_id, dst->vendor_id)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target CPU model %s does not match source %s"),
+                       _("Target CPU vendor id %s does not match source %s"),
                        NULLSTR(dst->vendor_id), NULLSTR(src->vendor_id));
         goto cleanup;
     }
