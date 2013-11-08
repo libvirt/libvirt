@@ -1274,10 +1274,10 @@ typedef enum {
  * VIR_MIGRATE_PARAM_LISTEN_ADDRESS:
  *
  * virDomainMigrate* params field: The listen address that hypervisor on the
- * destination side should bind to for incoming migration. Both, IPv4 and IPv6
+ * destination side should bind to for incoming migration. Both IPv4 and IPv6
  * addresses are accepted as well as hostnames (the resolving is done on
- * destination). Some hypervisors do not support this feature an will return an
- * error if this field is used.
+ * destination). Some hypervisors do not support this feature and will return
+ * an error if this field is used.
  */
 #define VIR_MIGRATE_PARAM_LISTEN_ADDRESS    "listen_address"
 
