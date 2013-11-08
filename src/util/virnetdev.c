@@ -1104,7 +1104,7 @@ int
 virNetDevGetVirtualFunctions(const char *pfname,
                              char ***vfname,
                              virPCIDeviceAddressPtr **virt_fns,
-                             unsigned int *n_vfname)
+                             size_t *n_vfname)
 {
     int ret = -1;
     size_t i;
@@ -1291,7 +1291,7 @@ int
 virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              char ***vfname ATTRIBUTE_UNUSED,
                              virPCIDeviceAddressPtr **virt_fns ATTRIBUTE_UNUSED,
-                             unsigned int *n_vfname ATTRIBUTE_UNUSED)
+                             size_t *n_vfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual functions on this platform"));

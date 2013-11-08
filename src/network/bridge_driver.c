@@ -3046,7 +3046,7 @@ int networkRegister(void) {
  */
 static int
 networkCreateInterfacePool(virNetworkDefPtr netdef) {
-    unsigned int num_virt_fns = 0;
+    size_t num_virt_fns = 0;
     char **vfname = NULL;
     virPCIDeviceAddressPtr *virt_fns;
     int ret = -1;

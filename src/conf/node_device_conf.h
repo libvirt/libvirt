@@ -110,7 +110,7 @@ struct _virNodeDevCapsDef {
             char *vendor_name;
             virPCIDeviceAddressPtr physical_function;
             virPCIDeviceAddressPtr *virtual_functions;
-            unsigned int num_virtual_functions;
+            size_t num_virtual_functions;
             unsigned int flags;
             virPCIDeviceAddressPtr *iommuGroupDevices;
             size_t nIommuGroupDevices;

@@ -138,7 +138,7 @@ int virPCIGetPhysicalFunction(const char *sysfs_path,
 
 int virPCIGetVirtualFunctions(const char *sysfs_path,
                               virPCIDeviceAddressPtr **virtual_functions,
-                              unsigned int *num_virtual_functions);
+                              size_t *num_virtual_functions);
 
 int virPCIIsVirtualFunction(const char *vf_sysfs_device_link);
 

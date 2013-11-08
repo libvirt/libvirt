@@ -2385,7 +2385,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 int
 virPCIGetVirtualFunctions(const char *sysfs_path,
                           virPCIDeviceAddressPtr **virtual_functions,
-                          unsigned int *num_virtual_functions)
+                          size_t *num_virtual_functions)
 {
     int ret = -1;
     size_t i;
@@ -2418,7 +2418,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                 goto error;
             }
 
-            VIR_DEBUG("Number of virtual functions: %d",
+            VIR_DEBUG("Number of virtual functions: %zu",
                       *num_virtual_functions);
 
             if (virPCIGetDeviceAddressFromSysfsLink(device_link,
@@ -2489,7 +2489,7 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
 {
     int ret = -1;
     size_t i;
-    unsigned int num_virt_fns = 0;
+    size_t num_virt_fns = 0;
     virPCIDeviceAddressPtr vf_bdf = NULL;
     virPCIDeviceAddressPtr *virt_fns = NULL;
 
@@ -2634,7 +2634,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
 int
 virPCIGetVirtualFunctions(const char *sysfs_path ATTRIBUTE_UNUSED,
                           virPCIDeviceAddressPtr **virtual_functions ATTRIBUTE_UNUSED,
-                          unsigned int *num_virtual_functions ATTRIBUTE_UNUSED)
+                          size_t *num_virtual_functions ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;

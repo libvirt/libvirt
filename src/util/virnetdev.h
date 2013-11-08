@@ -124,7 +124,7 @@ int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
                                  virPCIDeviceAddressPtr **virt_fns,
-                                 unsigned int *n_vfname)
+                                 size_t *n_vfname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
