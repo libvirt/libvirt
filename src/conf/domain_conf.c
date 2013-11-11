@@ -4370,6 +4370,17 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             def->norelabel = false;
     }
 
+    /* Always parse model */
+    p = virXPathStringLimit("string(./@model)",
+                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+    def->model = p;
+
+    /* For the model 'none' none of the following labels is going to be
+     * present. Hence, return now. */
+
+    if (STREQ_NULLABLE(def->model, "none"))
+        return def;
+
     /* Only parse label, if using static labels, or
      * if the 'live' VM XML is requested
      */
@@ -4407,11 +4418,6 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         def->baselabel = p;
     }
-
-    /* Always parse model */
-    p = virXPathStringLimit("string(./@model)",
-                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-    def->model = p;
 
     return def;
 
@@ -14177,7 +14183,9 @@ virDomainEventActionDefFormat(virBufferPtr buf,
 
 
 static void
-virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
+virSecurityLabelDefFormat(virBufferPtr buf,
+                          virSecurityLabelDefPtr def,
+                          unsigned flags)
 {
     const char *sectype = virDomainSeclabelTypeToString(def->type);
 
@@ -14196,7 +14204,9 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
     virBufferAsprintf(buf, "<seclabel type='%s'",
                       sectype);
 
-    if (def->model && STRNEQ(def->model, "none"))
+    /* When generating state XML do include the model */
+    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS ||
+        STRNEQ_NULLABLE(def->model, "none"))
         virBufferEscapeString(buf, " model='%s'", def->model);
 
     if (def->type == VIR_DOMAIN_SECLABEL_NONE) {
@@ -17107,7 +17117,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAdjustIndent(buf, 2);
     for (n = 0; n < def->nseclabels; n++)
-        virSecurityLabelDefFormat(buf, def->seclabels[n]);
+        virSecurityLabelDefFormat(buf, def->seclabels[n], flags);
     virBufferAdjustIndent(buf, -2);
 
     if (def->namespaceData && def->ns.format) {
