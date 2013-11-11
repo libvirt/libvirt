@@ -940,6 +940,7 @@ mymain(void)
     DO_TEST("seclabel-dynamic-baselabel", QEMU_CAPS_NAME);
     DO_TEST("seclabel-dynamic-override", QEMU_CAPS_NAME);
     DO_TEST("seclabel-dynamic-labelskip", QEMU_CAPS_NAME);
+    DO_TEST("seclabel-dynamic-relabel", QEMU_CAPS_NAME);
     DO_TEST("seclabel-static", QEMU_CAPS_NAME);
     DO_TEST("seclabel-static-relabel", QEMU_CAPS_NAME);
     DO_TEST("seclabel-static-labelskip", QEMU_CAPS_NAME);
