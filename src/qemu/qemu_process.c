@@ -3472,17 +3472,22 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver, virDomainObjPtr vm)
     virArch arch = def->os.arch;
     virCPUDataPtr guestcpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rc;
     bool ret = false;
 
     switch (arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
         qemuDomainObjEnterMonitor(driver, vm);
-        guestcpu = qemuMonitorGetGuestCPU(priv->mon, arch);
+        rc = qemuMonitorGetGuestCPU(priv->mon, arch, &guestcpu);
         qemuDomainObjExitMonitor(driver, vm);
 
-        if (!(guestcpu))
+        if (rc < 0) {
+            if (rc == -2)
+                break;
+
             goto cleanup;
+        }
 
         if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_DOMAIN_FEATURE_STATE_ON) {
             if (!cpuHasFeature(guestcpu, VIR_CPU_x86_KVM_PV_UNHALT)) {

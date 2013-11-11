@@ -764,8 +764,9 @@ int qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
 
 int qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd);
 
-virCPUDataPtr qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
-                                     virArch arch);
+int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
+                           virArch arch,
+                           virCPUDataPtr *data);
 
 /**
  * When running two dd process and using <> redirection, we need a

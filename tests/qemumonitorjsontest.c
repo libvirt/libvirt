@@ -1997,8 +1997,9 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     if (qemuMonitorTestAddItem(test, "qom-get", jsonStr) < 0)
         goto cleanup;
 
-    if (!(cpuData = qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
-                                               VIR_ARCH_X86_64)))
+    if (qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
+                                   VIR_ARCH_X86_64,
+                                   &cpuData) < 0)
         goto cleanup;
 
     if (!(actual = cpuDataFormat(cpuData)))

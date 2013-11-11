@@ -427,5 +427,7 @@ int qemuMonitorJSONDetachCharDev(qemuMonitorPtr mon,
 int qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
                                     char ***aliases);
 
-virCPUDataPtr qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon, virArch arch);
+int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
+                               virArch arch,
+                               virCPUDataPtr *data);
 #endif /* QEMU_MONITOR_JSON_H */

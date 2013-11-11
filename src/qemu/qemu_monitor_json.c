@@ -5503,9 +5503,10 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
 }
 
 
-static virCPUDataPtr
+static int
 qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
-                             const char *property)
+                             const char *property,
+                             virCPUDataPtr *cpudata)
 {
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
@@ -5513,14 +5514,14 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
     virCPUx86Data *x86Data = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
-    virCPUDataPtr ret = NULL;
     int n;
+    int ret = -1;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
                                            "s:path", QOM_CPU_PATH,
                                            "s:property", property,
                                            NULL)))
-        return NULL;
+        return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -5551,8 +5552,10 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
             goto cleanup;
     }
 
-    if (!(ret = virCPUx86MakeData(VIR_ARCH_X86_64, &x86Data)))
+    if (!(*cpudata = virCPUx86MakeData(VIR_ARCH_X86_64, &x86Data)))
         goto cleanup;
+
+    ret = 0;
 
 cleanup:
     virJSONValueFree(cmd);
@@ -5566,24 +5569,27 @@ cleanup:
  * qemuMonitorJSONGetGuestCPU:
  * @mon: Pointer to the monitor
  * @arch: arch of the guest
+ * @data: returns the cpu data of the guest
  *
  * Retrieve the definition of the guest CPU from a running qemu instance.
  *
- * Returns the cpu definition object. On error returns NULL.
+ * Returns 0 on success, -2 if guest doesn't support this feature,
+ * -1 on other errors.
  */
-virCPUDataPtr
+int
 qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
-                           virArch arch)
+                           virArch arch,
+                           virCPUDataPtr *data)
 {
     switch (arch) {
     case VIR_ARCH_X86_64:
     case VIR_ARCH_I686:
-        return qemuMonitorJSONGetCPUx86Data(mon, "feature-words");
+        return qemuMonitorJSONGetCPUx86Data(mon, "feature-words", data);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU definition retrieval isn't supported for '%s'"),
                        virArchToString(arch));
-        return NULL;
+        return -1;
     }
 }
