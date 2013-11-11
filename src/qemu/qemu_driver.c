@@ -6039,10 +6039,13 @@ qemuDomainObjStart(virConnectPtr conn,
                     vm->hasManagedSave = false;
             }
 
-            if (ret > 0)
+            if (ret > 0) {
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);
-            else
+            } else {
+                VIR_WARN("Unable to restore from managed state %s. "
+                         "Maybe the file is corrupted?", managed_save);
                 goto cleanup;
+            }
         }
     }
 
