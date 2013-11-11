@@ -1,7 +1,6 @@
 [Unit]
 Description=Virtual machine lock manager
 Requires=virtlockd.socket
-After=syslog.target
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/virtlockd
