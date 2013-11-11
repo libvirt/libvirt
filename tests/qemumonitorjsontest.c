@@ -1994,6 +1994,22 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
         virtTestLoadFile(dataFile, &expected) < 0)
         goto cleanup;
 
+    if (qemuMonitorTestAddItem(test, "qom-list",
+                               "{"
+                               "    \"return\": ["
+                               "        {"
+                               "            \"name\": \"filtered-features\","
+                               "            \"type\": \"X86CPUFeatureWordInfo\""
+                               "        },"
+                               "        {"
+                               "            \"name\": \"feature-words\","
+                               "            \"type\": \"X86CPUFeatureWordInfo\""
+                               "        }"
+                               "    ],"
+                               "    \"id\": \"libvirt-19\""
+                               "}") < 0)
+        goto cleanup;
+
     if (qemuMonitorTestAddItem(test, "qom-get", jsonStr) < 0)
         goto cleanup;
 

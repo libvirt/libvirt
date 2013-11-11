@@ -5508,20 +5508,66 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
                              const char *property,
                              virCPUDataPtr *cpudata)
 {
-    virJSONValuePtr cmd;
+    virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
+    virJSONValuePtr element;
     virCPUx86Data *x86Data = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
     int n;
     int ret = -1;
 
+    /* look up if the property exists before asking */
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
+                                           "s:path", QOM_CPU_PATH,
+                                           NULL)))
+        goto cleanup;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    /* check if device exists */
+    if ((data = virJSONValueObjectGet(reply, "error")) &&
+        STREQ_NULLABLE(virJSONValueObjectGetString(data, "class"),
+                       "DeviceNotFound")) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONCheckError(cmd, reply))
+        goto cleanup;
+
+    data = virJSONValueObjectGet(reply, "return");
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s CPU property did not return an array"),
+                       property);
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        element = virJSONValueArrayGet(data, i);
+        if (STREQ_NULLABLE(virJSONValueObjectGetString(element, "name"),
+                           property))
+            break;
+    }
+
+    /* "property" was not found */
+    if (i == n) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
     if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
                                            "s:path", QOM_CPU_PATH,
                                            "s:property", property,
                                            NULL)))
-        return -1;
+        goto cleanup;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
