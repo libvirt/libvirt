@@ -147,6 +147,37 @@ error:
 }
 
 
+static ssize_t
+virStorageBackendGlusterReadHeader(glfs_fd_t *fd,
+                                   const char *name,
+                                   ssize_t maxlen,
+                                   char **buf)
+{
+    char *s;
+    size_t nread = 0;
+
+    if (VIR_ALLOC_N(*buf, maxlen) < 0)
+        return -1;
+
+    s = *buf;
+    while (maxlen) {
+        ssize_t r = glfs_read(fd, s, maxlen, 0);
+        if (r < 0 && errno == EINTR)
+            continue;
+        if (r < 0) {
+            VIR_FREE(*buf);
+            virReportSystemError(errno, _("unable to read '%s'"), name);
+            return r;
+        }
+        if (r == 0)
+            return nread;
+        buf += r;
+        maxlen -= r;
+        nread += r;
+    }
+    return nread;
+}
+
 /* Populate *volptr for the given name and stat information, or leave
  * it NULL if the entry should be skipped (such as ".").  Return 0 on
  * success, -1 on failure. */
@@ -159,6 +190,10 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     char *tmp;
     int ret = -1;
     virStorageVolDefPtr vol = NULL;
+    glfs_fd_t *fd = NULL;
+    virStorageFileMetadata *meta = NULL;
+    char *header = NULL;
+    ssize_t len = VIR_STORAGE_MAX_HEADER;
 
     *volptr = NULL;
 
@@ -208,15 +243,57 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
     }
 
-    /* FIXME - must open files to determine if they are non-raw */
     vol->type = VIR_STORAGE_VOL_NETWORK;
     vol->target.format = VIR_STORAGE_FILE_RAW;
+    /* No need to worry about O_NONBLOCK - gluster doesn't allow creation
+     * of fifos, so there's nothing it would protect us from. */
+    if (!(fd = glfs_open(state->vol, name, O_RDONLY | O_NOCTTY))) {
+        /* A dangling symlink now implies a TOCTTOU race; report it.  */
+        virReportSystemError(errno, _("cannot open volume '%s'"), name);
+        goto cleanup;
+    }
+
+    if ((len = virStorageBackendGlusterReadHeader(fd, name, len, &header)) < 0)
+        goto cleanup;
+
+    if ((vol->target.format = virStorageFileProbeFormatFromBuf(name,
+                                                               header,
+                                                               len)) < 0)
+        goto clenaup;
+    if (!(meta = virStorageFileGetMetadataFromBuf(name, header, len,
+                                                  vol->target.format)))
+        goto cleanup;
+
+    if (meta->backingStore) {
+        vol->backingStore.path = meta->backingStore;
+        meta->backingStore = NULL;
+        vol->backingStore.format = meta->backingStoreFormat;
+        if (vol->backingStore.format < 0)
+            vol->backingStore.format = VIR_STORAGE_FILE_RAW;
+    }
+    if (meta->capacity)
+        vol->capacity = meta->capacity;
+    if (meta->encrypted) {
+        if (VIR_ALLOC(vol->target.encryption) < 0)
+            goto cleanup;
+        if (vol->target.format == VIR_STORAGE_FILE_QCOW ||
+            vol->target.format == VIR_STORAGE_FILE_QCOW2)
+            vol->target.encryption->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
+    }
+    vol->target.features = meta->features;
+    meta->features = NULL;
+    vol->target.compat = meta->compat;
+    meta->compat = NULL;
 
     *volptr = vol;
     vol = NULL;
     ret = 0;
 cleanup:
+    virStorageFileFreeMetadata(meta);
     virStorageVolDefFree(vol);
+    if (fd)
+        glfs_close(fd);
+    VIR_FREE(header);
     return ret;
 }
 
