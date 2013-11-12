@@ -942,6 +942,31 @@ out:
     return ret;
 }
 
+
+static const char *
+vshVolumeTypeToString(int type)
+{
+    switch (type) {
+    case VIR_STORAGE_VOL_FILE:
+        return N_("file");
+
+    case VIR_STORAGE_VOL_BLOCK:
+        return N_("block");
+
+    case VIR_STORAGE_VOL_DIR:
+        return N_("dir");
+
+    case VIR_STORAGE_VOL_NETWORK:
+        return N_("network");
+
+    case VIR_STORAGE_VOL_LAST:
+        break;
+    }
+
+    return N_("unknown");
+}
+
+
 /*
  * "vol-info" command
  */
@@ -983,26 +1008,9 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     if (virStorageVolGetInfo(vol, &info) == 0) {
         double val;
         const char *unit;
-        switch (info.type) {
-        case VIR_STORAGE_VOL_FILE:
-            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("file"));
-            break;
 
-        case VIR_STORAGE_VOL_BLOCK:
-            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("block"));
-            break;
-
-        case VIR_STORAGE_VOL_DIR:
-            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("dir"));
-            break;
-
-        case VIR_STORAGE_VOL_NETWORK:
-            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("network"));
-            break;
-
-        default:
-            vshPrint(ctl, "%-15s %s\n", _("Type:"), _("unknown"));
-        }
+        vshPrint(ctl, "%-15s %s\n", _("Type:"),
+                 _(vshVolumeTypeToString(info.type)));
 
         val = vshPrettyCapacity(info.capacity, &unit);
         vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
@@ -1377,19 +1385,8 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 /* Convert the returned volume info into output strings */
 
                 /* Volume type */
-                switch (volumeInfo.type) {
-                        case VIR_STORAGE_VOL_FILE:
-                            volInfoTexts[i].type = vshStrdup(ctl, _("file"));
-                            break;
-                        case VIR_STORAGE_VOL_BLOCK:
-                            volInfoTexts[i].type = vshStrdup(ctl, _("block"));
-                            break;
-                        case VIR_STORAGE_VOL_DIR:
-                            volInfoTexts[i].type = vshStrdup(ctl, _("dir"));
-                            break;
-                        default:
-                            volInfoTexts[i].type = vshStrdup(ctl, _("unknown"));
-                }
+                volInfoTexts[i].type = vshStrdup(ctl,
+                                                 _(vshVolumeTypeToString(volumeInfo.type)));
 
                 /* Create the capacity output string */
                 val = vshPrettyCapacity(volumeInfo.capacity, &unit);
