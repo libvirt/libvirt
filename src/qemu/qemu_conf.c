@@ -1473,9 +1473,6 @@ cleanup:
 int
 qemuSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def)
 {
-    if (def->type == -1)
-        return VIR_DOMAIN_DISK_TYPE_FILE;
-
     return def->type;
 }
 

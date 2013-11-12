@@ -170,6 +170,21 @@
             snapshots, the original file name becomes the read-only
             snapshot, and the new file name contains the read-write
             delta of all disk changes since the snapshot.
+
+            <span class="since">Since 1.2.2</span> the <code>disk</code> element
+            supports an optional attribute <code>type</code> if the
+            <code>snapshot</code> attribute is set to <code>external</code>.
+            This attribute specifies the snapshot target storage type and allows
+            to overwrite the default <code>file</code> type. The <code>type</code>
+            attribute along with the format of the <code>source</code>
+            sub-element is identical to the <code>source</code> element used in
+            domain disk definitions. See the
+            <a href="formatdomain.html#elementsDisks">disk devices</a> section
+            documentation for further information.
+
+            Libvirt currently supports the <code>type</code> element in the qemu
+            driver and supported values are <code>file</code> and
+            <code>block</code> <span class="since">(since 1.2.2)</span>.
           </dd>
         </dl>
       </dd>

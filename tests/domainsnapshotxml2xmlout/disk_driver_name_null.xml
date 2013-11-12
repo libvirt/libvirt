@@ -2,7 +2,7 @@
   <name>asdf</name>
   <description>adsf</description>
   <disks>
-    <disk name='vda' snapshot='external'>
+    <disk name='vda' snapshot='external' type='file'>
       <source file='/tmp/foo'/>
     </disk>
   </disks>

@@ -11,15 +11,15 @@
     <disk name='hda' snapshot='no'/>
     <disk name='hdb' snapshot='no'/>
     <disk name='hdc' snapshot='internal'/>
-    <disk name='hdd' snapshot='external'>
+    <disk name='hdd' snapshot='external' type='file'>
       <driver type='qed'/>
       <source file='/path/to/generated4'/>
     </disk>
-    <disk name='hde' snapshot='external'>
+    <disk name='hde' snapshot='external' type='file'>
       <driver type='qcow2'/>
       <source file='/path/to/new'/>
     </disk>
-    <disk name='hdf' snapshot='external'>
+    <disk name='hdf' snapshot='external' type='file'>
       <driver type='qcow2'/>
       <source file='/path/to/generated5'/>
     </disk>

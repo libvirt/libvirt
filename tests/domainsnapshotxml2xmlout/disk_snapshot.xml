@@ -5,11 +5,29 @@
     <disk name='/dev/HostVG/QEMUGuest1'/>
     <disk name='hdb' snapshot='no'/>
     <disk name='hdc' snapshot='internal'/>
-    <disk name='hdd' snapshot='external'>
+    <disk name='hdd' snapshot='external' type='file'>
       <driver type='qed'/>
     </disk>
-    <disk name='hde' snapshot='external'>
+    <disk name='hde' snapshot='external' type='file'>
       <source file='/path/to/new'/>
+    </disk>
+    <disk name='hde' snapshot='external' type='file'>
+      <source file='/path/to/new2'/>
+    </disk>
+    <disk name='hdf' snapshot='external' type='block'>
+      <source dev='/path/to/new3'/>
+    </disk>
+    <disk name='hdg' snapshot='external' type='network'>
+      <source protocol='gluster' name='volume/path'>
+        <host name='host' port='1234'/>
+      </source>
+    </disk>
+    <disk name='hdh' snapshot='external' type='network'>
+      <source protocol='rbd' name='name'>
+        <host name='host' port='1234'/>
+        <host name='host2' port='1234' transport='rdma'/>
+        <host name='host3' port='1234'/>
+      </source>
     </disk>
   </disks>
 </domainsnapshot>

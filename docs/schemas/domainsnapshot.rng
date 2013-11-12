@@ -123,19 +123,57 @@
               <value>external</value>
             </attribute>
           </optional>
-          <interleave>
-            <ref name='disksnapshotdriver'/>
-            <optional>
-              <element name='source'>
+          <choice>
+            <group>
+              <optional>
+                <attribute name='type'>
+                  <value>file</value>
+                </attribute>
+              </optional>
+              <interleave>
                 <optional>
-                  <attribute name='file'>
-                    <ref name='absFilePath'/>
-                  </attribute>
+                  <element name='source'>
+                    <optional>
+                      <attribute name='file'>
+                        <ref name='absFilePath'/>
+                      </attribute>
+                    </optional>
+                    <empty/>
+                  </element>
                 </optional>
-                <empty/>
-              </element>
-            </optional>
-          </interleave>
+                <ref name='disksnapshotdriver'/>
+              </interleave>
+            </group>
+            <group>
+              <attribute name='type'>
+                <value>block</value>
+              </attribute>
+              <interleave>
+                <optional>
+                  <element name="source">
+                    <attribute name="dev">
+                      <ref name="absFilePath"/>
+                    </attribute>
+                    <empty/>
+                  </element>
+                </optional>
+                <ref name='disksnapshotdriver'/>
+              </interleave>
+            </group>
+            <group>
+              <attribute name="type">
+                <value>network</value>
+              </attribute>
+              <interleave>
+                <optional>
+                  <element name="source">
+                    <ref name='diskSourceNetwork'/>
+                  </element>
+                </optional>
+                <ref name='disksnapshotdriver'/>
+              </interleave>
+            </group>
+          </choice>
         </group>
       </choice>
     </element>

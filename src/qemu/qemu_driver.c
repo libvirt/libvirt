@@ -12623,33 +12623,47 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
-        VIR_STRDUP(source, snap->file) < 0 ||
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
         goto cleanup;
 
-    /* create the stub file and set selinux labels; manipulate disk in
-     * place, in a way that can be reverted on failure. */
-    if (!reuse) {
-        fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
-                          &need_unlink, NULL);
-        if (fd < 0)
-            goto cleanup;
-        VIR_FORCE_CLOSE(fd);
-    }
-
     /* XXX Here, we know we are about to alter disk->backingChain if
-     * successful, so we nuke the existing chain so that future
-     * commands will recompute it.  Better would be storing the chain
-     * ourselves rather than reprobing, but this requires modifying
-     * domain_conf and our XML to fully track the chain across
-     * libvirtd restarts.  */
+     * successful, so we nuke the existing chain so that future commands will
+     * recompute it.  Better would be storing the chain ourselves rather than
+     * reprobing, but this requires modifying domain_conf and our XML to fully
+     * track the chain across libvirtd restarts.  */
     virStorageFileFreeMetadata(disk->backingChain);
     disk->backingChain = NULL;
 
-    if (qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
-                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
-        qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
-                                          VIR_DISK_CHAIN_NO_ACCESS);
+    switch (snap->type) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+        reuse = true;
+        /* fallthrough */
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        if (VIR_STRDUP(source, snap->file) < 0)
+            goto cleanup;
+
+        /* create the stub file and set selinux labels; manipulate disk in
+         * place, in a way that can be reverted on failure. */
+        if (!reuse) {
+            fd = qemuOpenFile(driver, vm, source, O_WRONLY | O_TRUNC | O_CREAT,
+                              &need_unlink, NULL);
+            if (fd < 0)
+                goto cleanup;
+            VIR_FORCE_CLOSE(fd);
+        }
+
+        if (qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
+                                              VIR_DISK_CHAIN_READ_WRITE) < 0) {
+            qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
+                                              VIR_DISK_CHAIN_NO_ACCESS);
+            goto cleanup;
+        }
+        break;
+
+    default:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("snapshots are not supported on '%s' volumes"),
+                       virDomainDiskTypeToString(snap->type));
         goto cleanup;
     }
 
@@ -12685,11 +12699,13 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     disk->src = source;
     source = NULL;
     disk->format = format;
+    disk->type = snap->type;
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
         persistDisk->src = persistSource;
         persistSource = NULL;
         persistDisk->format = format;
+        persistDisk->type = snap->type;
     }
 
 cleanup:
@@ -12731,11 +12747,13 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     disk->src = source;
     source = NULL;
     disk->format = origdisk->format;
+    disk->type = origdisk->type;
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
         persistDisk->src = persistSource;
         persistSource = NULL;
         persistDisk->format = origdisk->format;
+        persistDisk->type = origdisk->type;
     }
 
 cleanup:

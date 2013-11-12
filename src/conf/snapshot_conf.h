@@ -48,12 +48,15 @@ enum virDomainSnapshotState {
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
 typedef virDomainSnapshotDiskDef *virDomainSnapshotDiskDefPtr;
 struct _virDomainSnapshotDiskDef {
-    char *name; /* name matching the <target dev='...' of the domain */
-    int index; /* index within snapshot->dom->disks that matches name */
-    int snapshot; /* enum virDomainSnapshotLocation */
-    int type; /* enum virDomainDiskType */
-    char *file; /* new source file when snapshot is external */
-    int format; /* enum virStorageFileFormat */
+    char *name;     /* name matching the <target dev='...' of the domain */
+    int index;      /* index within snapshot->dom->disks that matches name */
+    int snapshot;   /* enum virDomainSnapshotLocation */
+    int type;       /* enum virDomainDiskType */
+    char *file;     /* new source file when snapshot is external */
+    int format;     /* enum virStorageFileFormat */
+    int protocol;   /* network source protocol */
+    size_t nhosts;  /* network source hosts count */
+    virDomainDiskHostDefPtr hosts; /* network source hosts */
 };
 
 /* Stores the complete snapshot metadata */
