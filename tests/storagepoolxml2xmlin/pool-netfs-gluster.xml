@@ -1,0 +1,12 @@
+<pool type='netfs'>
+  <source>
+    <host name='example.com'/>
+    <format type='glusterfs'/>
+    <dir path='/volume'/>
+  </source>
+  <name>netfs-gluster</name>
+  <uuid>d5609ced-94b1-489e-b218-eff35c30336a</uuid>
+  <target>
+    <path>/mnt/gluster</path>
+  </target>
+</pool>

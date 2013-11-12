@@ -249,7 +249,8 @@
       a local block device as the source, it requires the name of a
       host and path of an exported directory. It will mount this network
       filesystem and manage files within the directory of its mount
-      point. It will default to using NFS as the protocol.
+      point. It will default to using <code>auto</code> as the
+      protocol, which generally tries a mount via NFS first.
     </p>
 
     <h3>Example pool input</h3>
@@ -259,6 +260,7 @@
         &lt;source&gt;
           &lt;host name="nfs.example.com"/&gt;
           &lt;dir path="/var/lib/virt/images"/&gt;
+          &lt;format type='nfs'/&gt;
         &lt;/source&gt;
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
@@ -275,10 +277,13 @@
         <code>nfs</code>
       </li>
       <li>
-        <code>glusterfs</code>
+        <code>glusterfs</code> - use the glusterfs FUSE file system.
+        For now, the <code>dir</code> specified as the source can only
+        be a gluster volume name, as gluster does not provide a way to
+        directly mount subdirectories within a volume.
       </li>
       <li>
-        <code>cifs</code>
+        <code>cifs</code> - use the SMB (samba) or CIFS file system
       </li>
     </ul>
 

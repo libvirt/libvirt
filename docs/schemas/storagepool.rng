@@ -381,11 +381,10 @@
           <choice>
             <value>auto</value>
             <value>nfs</value>
+            <value>cifs</value>
+            <value>glusterfs</value>
           </choice>
         </attribute>
-        <optional>
-          <ref name='sourceinfovendor'/>
-        </optional>
       </element>
     </optional>
   </define>
