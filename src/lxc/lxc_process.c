@@ -957,7 +957,7 @@ virLXCProcessReadLogOutput(virDomainObjPtr vm,
 static int
 virLXCProcessEnsureRootFS(virDomainObjPtr vm)
 {
-    virDomainFSDefPtr root = virDomainGetRootFilesystem(vm->def);
+    virDomainFSDefPtr root = virDomainGetFilesystemForTarget(vm->def, "/");
 
     if (root)
         return 0;

@@ -149,6 +149,7 @@
 /tests/commandtest
 /tests/conftest
 /tests/cputest
+/tests/domainconftest
 /tests/domainsnapshotxml2xmltest
 /tests/esxutilstest
 /tests/eventtest

@@ -18083,12 +18083,13 @@ virDomainFSRemove(virDomainDefPtr def, size_t i)
 }
 
 virDomainFSDefPtr
-virDomainGetRootFilesystem(virDomainDefPtr def)
+virDomainGetFilesystemForTarget(virDomainDefPtr def,
+                                const char *path)
 {
     size_t i;
 
     for (i = 0; i < def->nfss; i++) {
-        if (STREQ(def->fss[i]->dst, "/"))
+        if (STREQ(def->fss[i]->dst, path))
             return def->fss[i];
     }
 

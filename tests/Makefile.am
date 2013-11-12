@@ -65,6 +65,7 @@ EXTRA_DIST =		\
 	commanddata \
 	confdata \
 	cputestdata \
+	domainconfdata \
 	domainschemadata \
 	domainschematest \
 	domainsnapshotschematest \
@@ -147,6 +148,7 @@ test_programs = virshtest sockettest \
 	virnetdevbandwidthtest \
 	virkmodtest \
 	vircapstest \
+	domainconftest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -938,6 +940,10 @@ shunloadtest_DEPENDENCIES = libshunload.la
 sysinfotest_SOURCES = \
 	sysinfotest.c testutils.h testutils.c
 sysinfotest_LDADD = $(LDADDS)
+
+domainconftest_SOURCES = \
+	domainconftest.c testutils.h testutils.c
+domainconftest_LDADD = $(LDADDS)
 
 fdstreamtest_SOURCES = \
 	fdstreamtest.c testutils.h testutils.c

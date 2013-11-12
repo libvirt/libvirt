@@ -2563,7 +2563,8 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                                 int *busIdx,
                                 int *devIdx);
 
-virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
+virDomainFSDefPtr virDomainGetFilesystemForTarget(virDomainDefPtr def,
+                                                  const char *path);
 int virDomainFSInsert(virDomainDefPtr def, virDomainFSDefPtr fs);
 int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 virDomainFSDefPtr virDomainFSRemove(virDomainDefPtr def, size_t i);
