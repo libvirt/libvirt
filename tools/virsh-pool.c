@@ -1191,14 +1191,14 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Output basic info then return if --details option not selected */
     if (!details) {
         /* Output old style header */
-        vshPrintExtra(ctl, "%-20s %-10s %-10s\n", _("Name"), _("State"),
+        vshPrintExtra(ctl, " %-20s %-10s %-10s\n", _("Name"), _("State"),
                       _("Autostart"));
-        vshPrintExtra(ctl, "-----------------------------------------\n");
+        vshPrintExtra(ctl, "-------------------------------------------\n");
 
         /* Output old style pool info */
         for (i = 0; i < list->npools; i++) {
             const char *name = virStoragePoolGetName(list->pools[i]);
-            vshPrint(ctl, "%-20s %-10s %-10s\n",
+            vshPrint(ctl, " %-20s %-10s %-10s\n",
                  name,
                  poolInfoTexts[i].state,
                  poolInfoTexts[i].autostart);
@@ -1266,7 +1266,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
      * the longest string.
      */
     ret = virAsprintf(&outputStr,
-              "%%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
+              " %%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
               (unsigned long) nameStrLength,
               (unsigned long) stateStrLength,
               (unsigned long) autostartStrLength,
@@ -1285,7 +1285,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     for (i = nameStrLength + stateStrLength + autostartStrLength
                            + persistStrLength + capStrLength
                            + allocStrLength + availStrLength
-                           + 12; i > 0; i--)
+                           + 14; i > 0; i--)
         vshPrintExtra(ctl, "-");
     vshPrintExtra(ctl, "\n");
 
