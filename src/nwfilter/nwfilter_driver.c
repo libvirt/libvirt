@@ -174,6 +174,9 @@ nwfilterStateInitialize(bool privileged,
     char *base = NULL;
     DBusConnection *sysbus = NULL;
 
+    if (!privileged)
+        return 0;
+
 #if WITH_DBUS
     if (virDBusHasSystemBus())
         sysbus = virDBusGetSystemBus();
@@ -188,9 +191,6 @@ nwfilterStateInitialize(bool privileged,
     /* remember that we are going to use firewalld */
     driverState->watchingFirewallD = (sysbus != NULL);
     driverState->privileged = privileged;
-
-    if (!privileged)
-        return 0;
 
     nwfilterDriverLock(driverState);
 
