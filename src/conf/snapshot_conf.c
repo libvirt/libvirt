@@ -128,27 +128,42 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         }
     }
 
-    cur = node->children;
-    while (cur) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!def->file &&
-                xmlStrEqual(cur->name, BAD_CAST "source")) {
-                def->file = virXMLPropString(cur, "file");
-            } else if (!def->format &&
-                       xmlStrEqual(cur->name, BAD_CAST "driver")) {
-                char *driver = virXMLPropString(cur, "type");
-                def->format = virStorageFileFormatTypeFromString(driver);
-                if (def->format <= 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("unknown disk snapshot driver '%s'"),
-                                   driver);
-                    VIR_FREE(driver);
-                    goto cleanup;
-                }
+    def->type = -1;
+
+    for (cur = node->children; cur; cur = cur->next) {
+        if (cur->type != XML_ELEMENT_NODE)
+            continue;
+
+        if (!def->file &&
+            xmlStrEqual(cur->name, BAD_CAST "source")) {
+
+            int backingtype = def->type;
+
+            if (backingtype < 0)
+                backingtype = VIR_DOMAIN_DISK_TYPE_FILE;
+
+            if (virDomainDiskSourceDefParse(cur,
+                                            backingtype,
+                                            &def->file,
+                                            NULL,
+                                            NULL,
+                                            NULL,
+                                            NULL) < 0)
+                goto cleanup;
+
+        } else if (!def->format &&
+                   xmlStrEqual(cur->name, BAD_CAST "driver")) {
+            char *driver = virXMLPropString(cur, "type");
+            def->format = virStorageFileFormatTypeFromString(driver);
+            if (def->format <= 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unknown disk snapshot driver '%s'"),
+                               driver);
                 VIR_FREE(driver);
+                goto cleanup;
             }
+            VIR_FREE(driver);
         }
-        cur = cur->next;
     }
 
     if (!def->snapshot && (def->file || def->format))
@@ -577,6 +592,8 @@ static void
 virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                                virDomainSnapshotDiskDefPtr disk)
 {
+    int type = disk->type;
+
     if (!disk->name)
         return;
 
@@ -584,6 +601,10 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (disk->snapshot > 0)
         virBufferAsprintf(buf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(disk->snapshot));
+
+    if (type < 0)
+        type = VIR_DOMAIN_DISK_TYPE_FILE;
+
     if (!disk->file && disk->format == 0) {
         virBufferAddLit(buf, "/>\n");
         return;
@@ -591,12 +612,14 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 
     virBufferAddLit(buf, ">\n");
 
-    virBufferAdjustIndent(buf, 6);
     if (disk->format > 0)
-        virBufferEscapeString(buf, "<driver type='%s'/>\n",
+        virBufferEscapeString(buf, "      <driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->format));
-    virBufferEscapeString(buf, "<source file='%s'/>\n", disk->file);
-    virBufferAdjustIndent(buf, -6);
+    virDomainDiskSourceDefFormatInternal(buf,
+                                         type,
+                                         disk->file,
+                                         0, 0, 0, NULL, 0, NULL, NULL, 0);
+
     virBufferAddLit(buf, "    </disk>\n");
 }
 
