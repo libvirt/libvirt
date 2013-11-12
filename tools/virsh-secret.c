@@ -532,8 +532,9 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!(list = vshSecretListCollect(ctl, flags)))
         return false;
 
-    vshPrintExtra(ctl, "%-36s %s\n", _("UUID"), _("Usage"));
-    vshPrintExtra(ctl, "-----------------------------------------------------------\n");
+    vshPrintExtra(ctl, " %-36s  %s\n", _("UUID"), _("Usage"));
+    vshPrintExtra(ctl, "----------------------------------------"
+                       "----------------------------------------\n");
 
     for (i = 0; i < list->nsecrets; i++) {
         virSecretPtr sec = list->secrets[i];
@@ -547,11 +548,11 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
 
         if (usageType) {
-            vshPrint(ctl, "%-36s %s %s\n",
+            vshPrint(ctl, " %-36s  %s %s\n",
                      uuid, usageStr,
                      virSecretGetUsageID(sec));
         } else {
-            vshPrint(ctl, "%-36s %s\n",
+            vshPrint(ctl, " %-36s  %s\n",
                      uuid, _("Unused"));
         }
     }
