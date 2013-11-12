@@ -4737,7 +4737,7 @@ cleanup:
 }
 
 
-static int
+int
 virDomainDiskSourceDefParse(xmlNodePtr node,
                             int type,
                             char **source,
@@ -14378,7 +14378,7 @@ virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
     }
 }
 
-static int
+int
 virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                      int type,
                                      const char *src,
