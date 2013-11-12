@@ -1450,10 +1450,11 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Output basic info then return if --details option not selected */
     if (!details) {
         /* The old output format */
-        vshPrintExtra(ctl, "%-20s %-40s\n", _("Name"), _("Path"));
-        vshPrintExtra(ctl, "-----------------------------------------\n");
+        vshPrintExtra(ctl, " %-20s %-40s\n", _("Name"), _("Path"));
+        vshPrintExtra(ctl, "---------------------------------------"
+                           "---------------------------------------\n");
         for (i = 0; i < list->nvols; i++) {
-            vshPrint(ctl, "%-20s %-40s\n", virStorageVolGetName(list->vols[i]),
+            vshPrint(ctl, " %-20s %-40s\n", virStorageVolGetName(list->vols[i]),
                      volInfoTexts[i].path);
         }
 
@@ -1503,7 +1504,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* Create the output template */
     ret = virAsprintf(&outputStr,
-                      "%%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus\n",
+                      " %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus\n",
                       (unsigned long) nameStrLength,
                       (unsigned long) pathStrLength,
                       (unsigned long) typeStrLength,
@@ -1519,7 +1520,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
              ("Capacity"), _("Allocation"));
     for (i = nameStrLength + pathStrLength + typeStrLength
                            + capStrLength + allocStrLength
-                           + 8; i > 0; i--)
+                           + 10; i > 0; i--)
         vshPrintExtra(ctl, "-");
     vshPrintExtra(ctl, "\n");
 
