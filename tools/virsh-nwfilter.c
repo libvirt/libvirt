@@ -370,15 +370,15 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!(list = vshNWFilterListCollect(ctl, 0)))
         return false;
 
-    vshPrintExtra(ctl, "%-36s  %-20s \n", _("UUID"), _("Name"));
-    vshPrintExtra(ctl,
-       "----------------------------------------------------------------\n");
+    vshPrintExtra(ctl, " %-36s  %-20s \n", _("UUID"), _("Name"));
+    vshPrintExtra(ctl, "---------------------------------"
+                       "---------------------------------\n");
 
     for (i = 0; i < list->nfilters; i++) {
         virNWFilterPtr nwfilter = list->filters[i];
 
         virNWFilterGetUUIDString(nwfilter, uuid);
-        vshPrint(ctl, "%-36s  %-20s\n",
+        vshPrint(ctl, " %-36s  %-20s\n",
                  uuid,
                  virNWFilterGetName(nwfilter));
     }
