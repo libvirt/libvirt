@@ -1085,8 +1085,6 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
 
     char *stubDriverPath = NULL;
     char *driverLink = NULL;
-    char *oldDriverPath = NULL;
-    char *oldDriverName = NULL;
     char *path = NULL; /* reused for different purposes */
     const char *newDriverName = NULL;
 
@@ -1217,8 +1215,6 @@ remove_id:
 cleanup:
     VIR_FREE(stubDriverPath);
     VIR_FREE(driverLink);
-    VIR_FREE(oldDriverPath);
-    VIR_FREE(oldDriverName);
     VIR_FREE(path);
 
     if (newDriverName &&
