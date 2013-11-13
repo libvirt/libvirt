@@ -154,15 +154,17 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         } else if (!def->format &&
                    xmlStrEqual(cur->name, BAD_CAST "driver")) {
             char *driver = virXMLPropString(cur, "type");
-            def->format = virStorageFileFormatTypeFromString(driver);
-            if (def->format <= 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown disk snapshot driver '%s'"),
-                               driver);
+            if (driver) {
+                def->format = virStorageFileFormatTypeFromString(driver);
+                if (def->format <= 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("unknown disk snapshot driver '%s'"),
+                                   driver);
+                    VIR_FREE(driver);
+                    goto cleanup;
+                }
                 VIR_FREE(driver);
-                goto cleanup;
             }
-            VIR_FREE(driver);
         }
     }
 
