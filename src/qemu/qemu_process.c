@@ -3431,7 +3431,6 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             if (tlsPort == 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Unable to find an unused port for SPICE TLS"));
-                virPortAllocatorRelease(driver->remotePorts, port);
                 goto error;
             }
             graphics->data.spice.tlsPort = tlsPort;
