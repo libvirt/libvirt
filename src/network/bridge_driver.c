@@ -1061,6 +1061,8 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
     *cmdout = cmd;
     ret = 0;
 cleanup:
+    VIR_FREE(configfile);
+    VIR_FREE(configstr);
     return ret;
 }
 
