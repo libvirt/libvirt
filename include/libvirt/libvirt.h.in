@@ -1466,6 +1466,22 @@ VIR_EXPORT_VAR virConnectAuthPtr virConnectAuthPtrDefault;
 
 #define LIBVIR_VERSION_NUMBER @LIBVIRT_VERSION_NUMBER@
 
+/**
+ * LIBVIR_CHECK_VERSION:
+ * @major: major component of the version number
+ * @minor: minor component of the version number
+ * @micro: micro component of the version number
+ *
+ * Macro for developers to easily check what version of the library
+ * their code is compiling against.
+ * e.g.
+ *   #if LIBVIR_CHECK_VERSION(1,1,3)
+ *     // some code that only works in 1.1.3 and newer
+ *   #endif
+ */
+#define LIBVIR_CHECK_VERSION(major, minor, micro) \
+    ((major) * 1000000 + (minor) * 1000 + (micro) <= LIBVIR_VERSION_NUMBER)
+
 int                     virGetVersion           (unsigned long *libVer,
                                                  const char *type,
                                                  unsigned long *typeVer);
