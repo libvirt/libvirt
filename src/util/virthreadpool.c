@@ -241,6 +241,9 @@ void virThreadPoolFree(virThreadPoolPtr pool)
 {
     virThreadPoolJobPtr job;
     bool priority = false;
+    size_t i;
+    size_t nWorkers = pool->nWorkers;
+    size_t nPrioWorkers = pool->nPrioWorkers;
 
     if (!pool)
         return;
@@ -261,6 +264,12 @@ void virThreadPoolFree(virThreadPoolPtr pool)
         pool->jobList.head = pool->jobList.head->next;
         VIR_FREE(job);
     }
+
+    for (i = 0; i < nWorkers; i++)
+        virThreadJoin(&pool->workers[i]);
+
+    for (i = 0; i < nPrioWorkers; i++)
+        virThreadJoin(&pool->prioWorkers[i]);
 
     VIR_FREE(pool->workers);
     virMutexUnlock(&pool->mutex);
