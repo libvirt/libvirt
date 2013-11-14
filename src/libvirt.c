@@ -21455,6 +21455,7 @@ int virConnectRegisterCloseCallback(virConnectPtr conn,
         goto error;
     }
 
+    conn->closeCallback->conn = conn;
     conn->closeCallback->callback = cb;
     conn->closeCallback->opaque = opaque;
     conn->closeCallback->freeCallback = freecb;
