@@ -3281,7 +3281,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
      */
     virConnectRef(data->conn);
 
-    if (virThreadCreate(&thread, true, qemuProcessReconnect, data) < 0) {
+    if (virThreadCreate(&thread, false, qemuProcessReconnect, data) < 0) {
 
         virConnectClose(data->conn);
 
