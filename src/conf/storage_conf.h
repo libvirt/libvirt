@@ -229,7 +229,7 @@ struct _virStoragePoolSourceDevice {
      * the geometry data is needed
      */
     struct _geometry {
-        int cyliders;
+        int cylinders;
         int heads;
         int sectors;
     } geometry;

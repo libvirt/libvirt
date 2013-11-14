@@ -290,10 +290,19 @@ xend_req(int fd, char **content)
         if (STREQ(buffer, "\r\n"))
             break;
 
-        if (istartswith(buffer, "Content-Length: "))
-            content_length = atoi(buffer + 16);
-        else if (istartswith(buffer, "HTTP/1.1 "))
-            retcode = atoi(buffer + 9);
+        if (istartswith(buffer, "Content-Length: ")) {
+            if (virStrToLong_i(buffer + 16, NULL, 10, &content_length) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to parse Xend response content length"));
+                return -1;
+            }
+        } else if (istartswith(buffer, "HTTP/1.1 ")) {
+            if (virStrToLong_i(buffer + 9, NULL, 10, &retcode) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to parse Xend response return code"));
+                return -1;
+            }
+        }
     }
 
     VIR_FREE(buffer);

@@ -280,12 +280,16 @@ virStorageBackendDiskMakePoolGeometry(virStoragePoolObjPtr pool,
                                       char **const groups,
                                       void *data ATTRIBUTE_UNUSED)
 {
+    virStoragePoolSourceDevicePtr device = &(pool->def->source.devices[0]);
+    if (virStrToLong_i(groups[0], NULL, 0, &device->geometry.cylinders) < 0 ||
+        virStrToLong_i(groups[1], NULL, 0, &device->geometry.heads) < 0 ||
+        virStrToLong_i(groups[2], NULL, 0, &device->geometry.sectors) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to create disk pool geometry"));
+        return -1;
+    }
 
-       pool->def->source.devices[0].geometry.cyliders = atoi(groups[0]);
-       pool->def->source.devices[0].geometry.heads = atoi(groups[1]);
-       pool->def->source.devices[0].geometry.sectors = atoi(groups[2]);
-
-       return 0;
+    return 0;
 }
 
 static int

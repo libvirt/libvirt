@@ -869,6 +869,12 @@ sc_prohibit_getenv:
 	halt='Use virGetEnv{Allow,Block}SUID instead of getenv'		\
 	  $(_sc_search_regexp)
 
+sc_prohibit_atoi:
+	@prohibit='\bato(i|f|l|ll|q) *\('	\
+	halt='Use virStrToLong* instead of atoi, atol, atof, atoq, atoll' \
+	  $(_sc_search_regexp)
+
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
