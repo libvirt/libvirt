@@ -1134,6 +1134,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     int configfd = -1;
     char *configfd_name = NULL;
     bool releaseaddr = false;
+    bool teardowncgroup = false;
     int backend = hostdev->source.subsys.u.pci.backend;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -1169,6 +1170,10 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
         break;
     }
+
+    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+        goto error;
+    teardowncgroup = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
@@ -1225,6 +1230,9 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     return 0;
 
 error:
+    if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+        VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
 
@@ -1417,6 +1425,7 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
     virUSBDevicePtr usb = NULL;
     char *devstr = NULL;
     bool added = false;
+    bool teardowncgroup = false;
     int ret = -1;
 
     if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
@@ -1433,6 +1442,10 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
 
     added = true;
     virUSBDeviceListSteal(list, usb);
+
+    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+        goto cleanup;
+    teardowncgroup = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
@@ -1460,6 +1473,10 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
+    if (ret < 0 &&
+        teardowncgroup &&
+        qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+        VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
     if (added)
         virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     virUSBDeviceFree(usb);
@@ -1477,6 +1494,7 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
     char *drvstr = NULL;
+    bool teardowncgroup = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE) ||
         !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
@@ -1496,6 +1514,10 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
                        hostdev->source.subsys.u.scsi.unit);
         return -1;
     }
+
+    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+        goto cleanup;
+    teardowncgroup = true;
 
     if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
         goto cleanup;
@@ -1534,8 +1556,11 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
-    if (ret < 0)
+    if (ret < 0) {
         qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &hostdev, 1);
+        if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+    }
     VIR_FREE(drvstr);
     VIR_FREE(devstr);
     return ret;
@@ -1552,12 +1577,9 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
-        return -1;
-
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
                                           vm->def, hostdev, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
@@ -1591,10 +1613,6 @@ error:
     if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
                                               vm->def, hostdev, NULL) < 0)
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
-
-cleanup:
-    if (qemuTeardownHostdevCgroup(vm, hostdev) < 0)
-        VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
     return -1;
 }
 
