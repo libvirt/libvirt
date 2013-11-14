@@ -144,6 +144,7 @@ virDomainEventCallbackListFree(virDomainEventCallbackListPtr list)
             (*freecb)(list->callbacks[i]->opaque);
         VIR_FREE(list->callbacks[i]);
     }
+    VIR_FREE(list->callbacks);
     VIR_FREE(list);
 }
 
