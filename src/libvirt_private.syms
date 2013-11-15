@@ -198,6 +198,8 @@ virDomainDiskFindByBusAndDst;
 virDomainDiskGeometryTransTypeFromString;
 virDomainDiskGeometryTransTypeToString;
 virDomainDiskHostDefClear;
+virDomainDiskHostDefCopy;
+virDomainDiskHostDefFree;
 virDomainDiskIndexByName;
 virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;

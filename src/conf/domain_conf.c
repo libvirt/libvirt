@@ -1216,9 +1216,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
         VIR_FREE(def->seclabels);
     }
 
-    for (i = 0; i < def->nhosts; i++)
-        virDomainDiskHostDefClear(&def->hosts[i]);
-    VIR_FREE(def->hosts);
+    virDomainDiskHostDefFree(def->nhosts, def->hosts);
 
     VIR_FREE(def);
 }
@@ -1232,6 +1230,57 @@ void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def)
     VIR_FREE(def->port);
     VIR_FREE(def->socket);
 }
+
+
+void
+virDomainDiskHostDefFree(size_t nhosts,
+                         virDomainDiskHostDefPtr hosts)
+{
+    size_t i;
+
+    if (!hosts)
+        return;
+
+    for (i = 0; i < nhosts; i++)
+        virDomainDiskHostDefClear(&hosts[i]);
+
+    VIR_FREE(hosts);
+}
+
+
+virDomainDiskHostDefPtr
+virDomainDiskHostDefCopy(size_t nhosts,
+                         virDomainDiskHostDefPtr hosts)
+{
+    virDomainDiskHostDefPtr ret = NULL;
+    size_t i;
+
+    if (VIR_ALLOC_N(ret, nhosts) < 0)
+        goto error;
+
+    for (i = 0; i < nhosts; i++) {
+        virDomainDiskHostDefPtr src = &hosts[i];
+        virDomainDiskHostDefPtr dst = &ret[i];
+
+        dst->transport = src->transport;
+
+        if (VIR_STRDUP(dst->name, src->name) < 0)
+            goto error;
+
+        if (VIR_STRDUP(dst->port, src->port) < 0)
+            goto error;
+
+        if (VIR_STRDUP(dst->socket, src->socket) < 0)
+            goto error;
+    }
+
+    return ret;
+
+error:
+    virDomainDiskHostDefFree(nhosts, ret);
+    return NULL;
+}
+
 
 void virDomainControllerDefFree(virDomainControllerDefPtr def)
 {
