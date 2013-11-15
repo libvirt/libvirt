@@ -2355,7 +2355,7 @@
       on the source system are equivalent to those on the target system
       and vice versa.
       <br/><br/>
-      Migration must occur between libvirt insallations of version
+      Migration must occur between libvirt installations of version
       0.8.1 or later in order not to lose the network traffic filters
       associated with an interface.
      </p>
