@@ -18666,6 +18666,9 @@ error:
  * Extract information about progress of a background job on a domain.
  * Will return an error if the domain is not active.
  *
+ * This function returns a limited amount of information in comparison
+ * to virDomainGetJobStats().
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
