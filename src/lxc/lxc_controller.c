@@ -1983,6 +1983,12 @@ virLXCControllerSetupFuse(virLXCControllerPtr ctrl)
 }
 
 static int
+virLXCControllerStartFuse(virLXCControllerPtr ctrl)
+{
+    return lxcStartFuse(ctrl->fuse);
+}
+
+static int
 virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
                               char **containerTTYPaths)
 {
@@ -2187,6 +2193,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerMoveInterfaces(ctrl) < 0)
         goto cleanup;
 
+    if (virLXCControllerStartFuse(ctrl) < 0)
+        goto cleanup;
+
     if (lxcContainerSendContinue(control[0]) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to send container continue message"));
@@ -2198,8 +2207,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
                              _("error receiving signal from container"));
         goto cleanup;
     }
-
-    /* Now the container is fully setup... */
 
     /* ...and reduce our privileges */
     if (lxcControllerClearCapabilities() < 0)

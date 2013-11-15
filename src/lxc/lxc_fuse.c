@@ -322,12 +322,6 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
         goto cleanup1;
     }
 
-    if (virThreadCreate(&fuse->thread, false, lxcFuseRun,
-                        (void *)fuse) < 0) {
-        lxcFuseDestroy(fuse);
-        goto cleanup1;
-    }
-
     ret = 0;
 cleanup:
     fuse_opt_free_args(&args);
@@ -339,6 +333,17 @@ cleanup1:
 cleanup2:
     VIR_FREE(fuse);
     goto cleanup;
+}
+
+int lxcStartFuse(virLXCFusePtr fuse)
+{
+    if (virThreadCreate(&fuse->thread, false, lxcFuseRun,
+                        (void *)fuse) < 0) {
+        lxcFuseDestroy(fuse);
+        return -1;
+    }
+
+    return 0;
 }
 
 void lxcFreeFuse(virLXCFusePtr *f)
@@ -362,6 +367,10 @@ int lxcSetupFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED,
                   virDomainDefPtr def ATTRIBUTE_UNUSED)
 {
     return 0;
+}
+
+int lxcStartFuse(virLXCFusePtr f ATTRIBUTE_UNUSED)
+{
 }
 
 void lxcFreeFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED)
