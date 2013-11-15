@@ -728,9 +728,9 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm, mon->callbackOpaque);
+        virObjectUnref(mon);
     } else if (error) {
         qemuMonitorErrorNotifyCallback errorNotify = mon->cb->errorNotify;
         virDomainObjPtr vm = mon->vm;
@@ -738,9 +738,9 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
         (errorNotify)(mon, vm, mon->callbackOpaque);
+        virObjectUnref(mon);
     } else {
         virObjectUnlock(mon);
         virObjectUnref(mon);
