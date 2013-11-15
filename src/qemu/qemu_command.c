@@ -3626,104 +3626,123 @@ error:
     return -1;
 }
 
-static int
-qemuBuildDriveURIString(virConnectPtr conn,
-                        virDomainDiskDefPtr disk, virBufferPtr opt,
-                        const char *scheme, virSecretUsageType secretUsageType)
+
+char *
+qemuBuildNetworkDriveURI(int protocol,
+                         const char *src,
+                         size_t nhosts,
+                         virDomainDiskHostDefPtr hosts,
+                         const char *username,
+                         const char *secret)
 {
-    int ret = -1;
-    int port = 0;
-    char *secret = NULL;
+    char *ret = NULL;
+    virURIPtr uri = NULL;
 
-    char *tmpscheme = NULL;
-    char *volimg = NULL;
-    char *sock = NULL;
-    char *user = NULL;
-    char *builturi = NULL;
-    const char *transp = NULL;
-    virURI uri = {
-        .port = port /* just to clear rest of bits */
-    };
-
-    if (disk->nhosts != 1) {
+    if (nhosts != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s accepts only one host"), scheme);
-        return -1;
+                       _("protocol '%s' accepts only one host"),
+                       virDomainDiskProtocolTypeToString(protocol));
+        return NULL;
     }
 
-    virBufferAddLit(opt, "file=");
-    transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
+    if (VIR_ALLOC(uri) < 0)
+        return NULL;
 
-    if (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
-        if (VIR_STRDUP(tmpscheme, scheme) < 0)
+    if (hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
+        if (VIR_STRDUP(uri->scheme, virDomainDiskProtocolTypeToString(protocol)) < 0)
             goto cleanup;
     } else {
-        if (virAsprintf(&tmpscheme, "%s+%s", scheme, transp) < 0)
+        if (virAsprintf(&uri->scheme, "%s+%s",
+                        virDomainDiskProtocolTypeToString(protocol),
+                        virDomainDiskProtocolTransportTypeToString(hosts->transport)) < 0)
             goto cleanup;
     }
 
-    if (disk->src && virAsprintf(&volimg, "/%s", disk->src) < 0)
+    if (src &&
+        virAsprintf(&uri->path, "/%s", src) < 0)
         goto cleanup;
 
-    if (disk->hosts->port) {
-        port = atoi(disk->hosts->port);
+    if (hosts->port &&
+        virStrToLong_i(hosts->port, NULL, 10, &uri->port) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse port number '%s'"),
+                       hosts->port);
+        goto cleanup;
     }
 
-    if (disk->hosts->socket &&
-        virAsprintf(&sock, "socket=%s", disk->hosts->socket) < 0)
+    if (hosts->socket &&
+        virAsprintf(&uri->query, "socket=%s", hosts->socket) < 0)
         goto cleanup;
+
+    if (username) {
+        if (secret) {
+            if (virAsprintf(&uri->user, "%s:%s", username, secret) < 0)
+                goto cleanup;
+        } else {
+            if (VIR_STRDUP(uri->user, username) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (VIR_STRDUP(uri->server, hosts->name) < 0)
+        goto cleanup;
+
+    ret = virURIFormat(uri);
+
+cleanup:
+    virURIFree(uri);
+
+    return ret;
+}
+
+
+static int
+qemuBuildDriveURIString(virConnectPtr conn,
+                        virDomainDiskDefPtr disk,
+                        virBufferPtr opt,
+                        int protocol,
+                        virSecretUsageType secretUsageType)
+{
+    char *secret = NULL;
+    char *builturi = NULL;
+    int ret = -1;
+
+    virBufferAddLit(opt, "file=");
 
     if (disk->auth.username && secretUsageType != VIR_SECRET_USAGE_TYPE_NONE) {
         /* Get the secret string using the virDomainDiskDef */
-        if (!(secret = qemuGetSecretString(conn, scheme, false,
+        if (!(secret = qemuGetSecretString(conn,
+                                           virDomainDiskProtocolTypeToString(protocol),
+                                           false,
                                            disk->auth.secretType,
                                            disk->auth.username,
                                            disk->auth.secret.uuid,
                                            disk->auth.secret.usage,
                                            secretUsageType)))
             goto cleanup;
-        if (virAsprintf(&user, "%s:%s", disk->auth.username, secret) < 0)
-            goto cleanup;
     }
 
-    uri.scheme = tmpscheme; /* gluster+<transport> */
-    uri.server = disk->hosts->name;
-    uri.user = user;
-    uri.port = port;
-    uri.path = volimg;
-    uri.query = sock;
+    if (!(builturi = qemuBuildNetworkDriveURI(protocol,
+                                              disk->src,
+                                              disk->nhosts,
+                                              disk->hosts,
+                                              disk->auth.username,
+                                              secret)))
+        goto cleanup;
 
-    builturi = virURIFormat(&uri);
     virBufferEscape(opt, ',', ",", "%s", builturi);
 
     ret = 0;
 
 cleanup:
-    VIR_FREE(builturi);
-    VIR_FREE(tmpscheme);
-    VIR_FREE(volimg);
-    VIR_FREE(sock);
     VIR_FREE(secret);
-    VIR_FREE(user);
+    VIR_FREE(builturi);
 
     return ret;
 }
 
-static int
-qemuBuildGlusterString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
-{
-    return qemuBuildDriveURIString(conn, disk, opt, "gluster",
-                                   VIR_SECRET_USAGE_TYPE_NONE);
-}
 
 #define QEMU_DEFAULT_NBD_PORT "10809"
-
-static int
-qemuBuildISCSIString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
-{
-    return qemuBuildDriveURIString(conn, disk, opt, "iscsi",
-                                   VIR_SECRET_USAGE_TYPE_ISCSI);
-}
 
 static int
 qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
@@ -3741,7 +3760,8 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
             && !disk->hosts->name)
         || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX
             && disk->hosts->socket && disk->hosts->socket[0] != '/'))
-        return qemuBuildDriveURIString(conn, disk, opt, "nbd",
+        return qemuBuildDriveURIString(conn, disk, opt,
+                                       VIR_DOMAIN_DISK_PROTOCOL_NBD,
                                        VIR_SECRET_USAGE_TYPE_NONE);
 
     virBufferAddLit(opt, "file=nbd:");
@@ -3910,12 +3930,16 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-                if (qemuBuildGlusterString(conn, disk, &opt) < 0)
+                if (qemuBuildDriveURIString(conn, disk, &opt,
+                                            VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
+                                            VIR_SECRET_USAGE_TYPE_NONE) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-                if (qemuBuildISCSIString(conn, disk, &opt) < 0)
+                if (qemuBuildDriveURIString(conn, disk, &opt,
+                                            VIR_DOMAIN_DISK_PROTOCOL_ISCSI,
+                                            VIR_SECRET_USAGE_TYPE_ISCSI) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
