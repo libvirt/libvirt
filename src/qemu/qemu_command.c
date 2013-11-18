@@ -3754,6 +3754,29 @@ qemuBuildNetworkDriveURI(int protocol,
             break;
 
         case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+            if (!src) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing disk source for 'sheepdog' protocol"));
+                goto cleanup;
+            }
+
+            if (nhosts == 0) {
+                if (virAsprintf(&ret, "sheepdog:%s", src) < 0)
+                    goto cleanup;
+            } else if (nhosts == 1) {
+                if (virAsprintf(&ret, "sheepdog:%s:%s:%s",
+                                hosts->name,
+                                hosts->port ? hosts->port : "7000",
+                                src) < 0)
+                    goto cleanup;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("protocol 'sheepdog' accepts up to one host"));
+                goto cleanup;
+            }
+
+            break;
+
         case VIR_DOMAIN_DISK_PROTOCOL_RBD:
         case VIR_DOMAIN_DISK_PROTOCOL_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4001,6 +4024,7 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
 
+            case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
             case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
             case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
             case VIR_DOMAIN_DISK_PROTOCOL_FTP:
@@ -4010,19 +4034,6 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
             case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
                 if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
                     goto error;
-                break;
-
-            case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-                if (disk->nhosts == 0) {
-                    virBufferEscape(&opt, ',', ",", "file=sheepdog:%s,",
-                                    disk->src);
-                } else {
-                    /* only one host is supported now */
-                    virBufferAsprintf(&opt, "file=sheepdog:%s:%s:",
-                                      disk->hosts->name,
-                                      disk->hosts->port ? disk->hosts->port : "7000");
-                    virBufferEscape(&opt, ',', ",", "%s,", disk->src);
-                }
                 break;
             }
         } else {
