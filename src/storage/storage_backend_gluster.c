@@ -166,6 +166,17 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     if (STREQ(name, ".") || STREQ(name, ".."))
         return 0;
 
+    /* Follow symlinks; silently skip broken links and loops.  */
+    if (S_ISLNK(st->st_mode) && glfs_stat(state->vol, name, st) < 0) {
+        if (errno == ENOENT || errno == ELOOP) {
+            VIR_WARN("ignoring dangling symlink '%s'", name);
+            ret = 0;
+        } else {
+            virReportSystemError(errno, _("cannot stat '%s'"), name);
+        }
+        return ret;
+    }
+
     if (VIR_ALLOC(vol) < 0)
         goto cleanup;
 
