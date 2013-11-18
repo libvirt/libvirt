@@ -371,6 +371,7 @@ int lxcSetupFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED,
 
 int lxcStartFuse(virLXCFusePtr f ATTRIBUTE_UNUSED)
 {
+    return 0;
 }
 
 void lxcFreeFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED)
