@@ -3333,7 +3333,8 @@ sharedFoldersCleanup:
 
                                     deviceFilter->vtbl->GetActive(deviceFilter, &active);
                                     if (active) {
-                                        if (VIR_ALLOC(def->hostdevs[USBFilterCount]) >= 0) {
+                                        def->hostdevs[USBFilterCount] = virDomainHostdevDefAlloc();
+                                        if (def->hostdevs[USBFilterCount]) {
                                             PRUnichar *vendorIdUtf16  = NULL;
                                             char *vendorIdUtf8        = NULL;
                                             unsigned vendorId         = 0;
