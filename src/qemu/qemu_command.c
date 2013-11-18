@@ -3627,6 +3627,61 @@ error:
 }
 
 
+static int
+qemuNetworkDriveGetPort(int protocol,
+                        const char *port)
+{
+    int ret = 0;
+
+    if (port) {
+        if (virStrToLong_i(port, NULL, 10, &ret) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse port number '%s'"),
+                           port);
+            return -1;
+        }
+
+        return ret;
+    }
+
+    switch ((enum virDomainDiskProtocol) protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+            return 80;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+            return 443;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+            return 21;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+            return 990;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+            return 69;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+            return 7000;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+            return 10809;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+            /* no default port specified */
+            return 0;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+            /* not aplicable */
+            return -1;
+    }
+
+    return -1;
+}
+
+
+
 char *
 qemuBuildNetworkDriveURI(int protocol,
                          const char *src,
@@ -3638,56 +3693,74 @@ qemuBuildNetworkDriveURI(int protocol,
     char *ret = NULL;
     virURIPtr uri = NULL;
 
-    if (nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("protocol '%s' accepts only one host"),
-                       virDomainDiskProtocolTypeToString(protocol));
-        return NULL;
-    }
-
-    if (VIR_ALLOC(uri) < 0)
-        return NULL;
-
-    if (hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
-        if (VIR_STRDUP(uri->scheme, virDomainDiskProtocolTypeToString(protocol)) < 0)
-            goto cleanup;
-    } else {
-        if (virAsprintf(&uri->scheme, "%s+%s",
-                        virDomainDiskProtocolTypeToString(protocol),
-                        virDomainDiskProtocolTransportTypeToString(hosts->transport)) < 0)
-            goto cleanup;
-    }
-
-    if (src &&
-        virAsprintf(&uri->path, "/%s", src) < 0)
-        goto cleanup;
-
-    if (hosts->port &&
-        virStrToLong_i(hosts->port, NULL, 10, &uri->port) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse port number '%s'"),
-                       hosts->port);
-        goto cleanup;
-    }
-
-    if (hosts->socket &&
-        virAsprintf(&uri->query, "socket=%s", hosts->socket) < 0)
-        goto cleanup;
-
-    if (username) {
-        if (secret) {
-            if (virAsprintf(&uri->user, "%s:%s", username, secret) < 0)
+    switch ((enum virDomainDiskProtocol) protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+            if (nhosts != 1) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("protocol '%s' accepts only one host"),
+                               virDomainDiskProtocolTypeToString(protocol));
                 goto cleanup;
-        } else {
-            if (VIR_STRDUP(uri->user, username) < 0)
+            }
+
+            if (VIR_ALLOC(uri) < 0)
                 goto cleanup;
-        }
+
+            if (hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
+                if (VIR_STRDUP(uri->scheme,
+                               virDomainDiskProtocolTypeToString(protocol)) < 0)
+                    goto cleanup;
+            } else {
+                if (virAsprintf(&uri->scheme, "%s+%s",
+                                virDomainDiskProtocolTypeToString(protocol),
+                                virDomainDiskProtocolTransportTypeToString(hosts->transport)) < 0)
+                    goto cleanup;
+            }
+
+            if ((uri->port = qemuNetworkDriveGetPort(protocol, hosts->port)) < 0)
+                goto cleanup;
+
+            if (src &&
+                virAsprintf(&uri->path, "%s%s",
+                            src[0] == '/' ? "" : "/",
+                            src) < 0)
+                goto cleanup;
+
+            if (hosts->socket &&
+                virAsprintf(&uri->query, "socket=%s", hosts->socket) < 0)
+                goto cleanup;
+
+            if (username) {
+                if (secret) {
+                    if (virAsprintf(&uri->user, "%s:%s", username, secret) < 0)
+                        goto cleanup;
+                } else {
+                    if (VIR_STRDUP(uri->user, username) < 0)
+                        goto cleanup;
+                }
+            }
+
+            if (VIR_STRDUP(uri->server, hosts->name) < 0)
+                goto cleanup;
+
+            ret = virURIFormat(uri);
+
+            break;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network disk protocol '%s' not supported"),
+                           virDomainDiskProtocolTypeToString(protocol));
+            goto cleanup;
     }
-
-    if (VIR_STRDUP(uri->server, hosts->name) < 0)
-        goto cleanup;
-
-    ret = virURIFormat(uri);
 
 cleanup:
     virURIFree(uri);
@@ -3756,11 +3829,9 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
         return -1;
     }
 
-    if ((disk->hosts->name && strchr(disk->hosts->name, ':'))
-        || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP
-            && !disk->hosts->name)
-        || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX
-            && disk->hosts->socket && disk->hosts->socket[0] != '/'))
+    if ((disk->hosts->name && strchr(disk->hosts->name, ':')) ||
+        (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP && !disk->hosts->name) ||
+        (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX && disk->hosts->socket && disk->hosts->socket[0] != '/'))
         return qemuBuildDriveURIString(conn, disk, opt);
 
     virBufferAddLit(opt, "file=nbd:");
@@ -3930,6 +4001,11 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
 
+            case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+            case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+            case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+            case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+            case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
             case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
             case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
                 if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
@@ -3947,37 +4023,6 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       disk->hosts->port ? disk->hosts->port : "7000");
                     virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 }
-                break;
-
-            case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-                virBufferAsprintf(&opt, "file=http://%s:%s",
-                                  disk->hosts->name,
-                                  disk->hosts->port ? disk->hosts->port : "80");
-                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
-                break;
-            case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-                virBufferAsprintf(&opt, "file=https://%s:%s",
-                                  disk->hosts->name,
-                                  disk->hosts->port ? disk->hosts->port : "443");
-                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
-                break;
-            case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-                virBufferAsprintf(&opt, "file=ftp://%s:%s",
-                                  disk->hosts->name,
-                                  disk->hosts->port ? disk->hosts->port : "21");
-                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
-                break;
-            case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-                virBufferAsprintf(&opt, "file=ftps://%s:%s",
-                                  disk->hosts->name,
-                                  disk->hosts->port ? disk->hosts->port : "990");
-                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
-                break;
-            case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-                virBufferAsprintf(&opt, "file=tftp://%s:%s",
-                                  disk->hosts->name,
-                                  disk->hosts->port ? disk->hosts->port : "69");
-                virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 break;
             }
         } else {
