@@ -3823,7 +3823,7 @@ qemuBuildVolumeString(virConnectPtr conn,
         }
         break;
     case VIR_STORAGE_VOL_NETWORK:
-        /* Keep the compiler quite, qemuTranslateDiskSourcePool already
+        /* Keep the compiler quiet, qemuTranslateDiskSourcePool already
          * reported the unsupported error.
          */
         break;

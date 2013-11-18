@@ -943,7 +943,7 @@ int qemuMonitorSend(qemuMonitorPtr mon,
 {
     int ret = -1;
 
-    /* Check whether qemu quited unexpectedly */
+    /* Check whether qemu quit unexpectedly */
     if (mon->lastError.code != VIR_ERR_OK) {
         VIR_DEBUG("Attempt to send command while error is set %s",
                   NULLSTR(mon->lastError.message));
