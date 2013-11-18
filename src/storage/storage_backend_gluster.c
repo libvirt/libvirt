@@ -168,6 +168,12 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
 
     if (VIR_ALLOC(vol) < 0)
         goto cleanup;
+
+    if (virStorageBackendUpdateVolTargetInfoFD(&vol->target, -1, st,
+                                               &vol->allocation,
+                                               &vol->capacity) < 0)
+        goto cleanup;
+
     if (VIR_STRDUP(vol->name, name) < 0)
         goto cleanup;
     if (virAsprintf(&vol->key, "%s%s%s", state->volname, state->dir,
@@ -194,7 +200,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     /* FIXME - must open files to determine if they are non-raw */
     vol->type = VIR_STORAGE_VOL_NETWORK;
     vol->target.format = VIR_STORAGE_FILE_RAW;
-    vol->capacity = vol->allocation = st->st_size;
 
     *volptr = vol;
     vol = NULL;

@@ -1296,9 +1296,9 @@ int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
 
 /*
  * virStorageBackendUpdateVolTargetInfoFD:
- * @conn: connection to report errors on
  * @target: target definition ptr of volume to update
- * @fd: fd of storage volume to update, via virStorageBackendOpenVol*
+ * @fd: fd of storage volume to update, via virStorageBackendOpenVol*, or -1
+ * @sb: details about file (must match @fd, if that is provided)
  * @allocation: If not NULL, updated allocation information will be stored
  * @capacity: If not NULL, updated capacity info will be stored
  *
@@ -1333,7 +1333,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
             if (capacity)
                 *capacity = 0;
 
-        } else {
+        } else if (fd >= 0) {
             off_t end;
             /* XXX this is POSIX compliant, but doesn't work for CHAR files,
              * only BLOCK. There is a Linux specific ioctl() for getting
@@ -1368,7 +1368,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
 
 #if WITH_SELINUX
     /* XXX: make this a security driver call */
-    if (fgetfilecon_raw(fd, &filecon) == -1) {
+    if (fd >= 0 && fgetfilecon_raw(fd, &filecon) == -1) {
         if (errno != ENODATA && errno != ENOTSUP) {
             virReportSystemError(errno,
                                  _("cannot get file context of '%s'"),
