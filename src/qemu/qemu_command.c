@@ -3253,72 +3253,6 @@ cleanup:
     return secret;
 }
 
-static int
-qemuBuildRBDString(virConnectPtr conn,
-                   virDomainDiskDefPtr disk,
-                   virBufferPtr opt)
-{
-    size_t i;
-    int ret = 0;
-    char *secret = NULL;
-
-    if (strchr(disk->src, ':')) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("':' not allowed in RBD source volume name '%s'"),
-                       disk->src);
-        return -1;
-    }
-
-    virBufferEscape(opt, ',', ",", "rbd:%s", disk->src);
-    if (disk->auth.username) {
-        virBufferEscape(opt, '\\', ":", ":id=%s", disk->auth.username);
-        /* Get the secret string using the virDomainDiskDef
-         * NOTE: qemu/librbd wants it base64 encoded
-         */
-        if (!(secret = qemuGetSecretString(conn, "rbd", true,
-                                           disk->auth.secretType,
-                                           disk->auth.username,
-                                           disk->auth.secret.uuid,
-                                           disk->auth.secret.usage,
-                                           VIR_SECRET_USAGE_TYPE_CEPH)))
-            goto error;
-
-
-        virBufferEscape(opt, '\\', ":",
-                        ":key=%s:auth_supported=cephx\\;none",
-                        secret);
-    } else {
-        virBufferAddLit(opt, ":auth_supported=none");
-    }
-
-    if (disk->nhosts > 0) {
-        virBufferAddLit(opt, ":mon_host=");
-        for (i = 0; i < disk->nhosts; ++i) {
-            if (i) {
-                virBufferAddLit(opt, "\\;");
-            }
-
-            /* assume host containing : is ipv6 */
-            if (strchr(disk->hosts[i].name, ':')) {
-                virBufferEscape(opt, '\\', ":", "[%s]", disk->hosts[i].name);
-            } else {
-                virBufferAsprintf(opt, "%s", disk->hosts[i].name);
-            }
-            if (disk->hosts[i].port) {
-                virBufferAsprintf(opt, "\\:%s", disk->hosts[i].port);
-            }
-        }
-    }
-
-cleanup:
-    VIR_FREE(secret);
-
-    return ret;
-
-error:
-    ret = -1;
-    goto cleanup;
-}
 
 static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
 {
@@ -3693,6 +3627,7 @@ qemuBuildNetworkDriveURI(int protocol,
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virURIPtr uri = NULL;
+    size_t i;
 
     switch ((enum virDomainDiskProtocol) protocol) {
         case VIR_DOMAIN_DISK_PROTOCOL_NBD:
@@ -3835,10 +3770,51 @@ qemuBuildNetworkDriveURI(int protocol,
             break;
 
         case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+            if (strchr(src, ':')) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("':' not allowed in RBD source volume name '%s'"),
+                               src);
+                goto cleanup;
+            }
+
+            virBufferStrcat(&buf, "rbd:", src, NULL);
+
+            if (username) {
+                virBufferEscape(&buf, '\\', ":", ":id=%s", username);
+                virBufferEscape(&buf, '\\', ":",
+                                ":key=%s:auth_supported=cephx\\;none",
+                                secret);
+            } else {
+                virBufferAddLit(&buf, ":auth_supported=none");
+            }
+
+            if (nhosts > 0) {
+                virBufferAddLit(&buf, ":mon_host=");
+                for (i = 0; i < nhosts; i++) {
+                    if (i)
+                        virBufferAddLit(&buf, "\\;");
+
+                    /* assume host containing : is ipv6 */
+                    if (strchr(hosts[i].name, ':'))
+                        virBufferEscape(&buf, '\\', ":", "[%s]", hosts[i].name);
+                    else
+                        virBufferAsprintf(&buf, "%s", hosts[i].name);
+
+                    if (hosts[i].port)
+                        virBufferAsprintf(&buf, "\\:%s", hosts[i].port);
+                }
+            }
+
+            if (virBufferError(&buf) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            ret = virBufferContentAndReset(&buf);
+            break;
+
+
         case VIR_DOMAIN_DISK_PROTOCOL_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network disk protocol '%s' not supported"),
-                           virDomainDiskProtocolTypeToString(protocol));
             goto cleanup;
     }
 
@@ -3861,17 +3837,26 @@ qemuBuildDriveURIString(virConnectPtr conn,
 
     virBufferAddLit(opt, "file=");
 
-    if (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI &&
+    if ((disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
+         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) &&
         disk->auth.username) {
-        /* Get the secret string using the virDomainDiskDef */
+        bool encode = false;
+        int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
+
+        if (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+            /* qemu requires the secret to be encoded for RBD */
+            encode = true;
+            secretType = VIR_SECRET_USAGE_TYPE_CEPH;
+        }
+
         if (!(secret = qemuGetSecretString(conn,
                                            virDomainDiskProtocolTypeToString(disk->protocol),
-                                           false,
+                                           encode,
                                            disk->auth.secretType,
                                            disk->auth.username,
                                            disk->auth.secret.uuid,
                                            disk->auth.secret.usage,
-                                           VIR_SECRET_USAGE_TYPE_ISCSI)))
+                                           secretType)))
             goto cleanup;
     }
 
@@ -4019,28 +4004,10 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 disk->src);
             else
                 virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
-        } else if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-            switch (disk->protocol) {
-            case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-                virBufferAddLit(&opt, "file=");
-                if (qemuBuildRBDString(conn, disk, &opt) < 0)
-                    goto error;
-                virBufferAddChar(&opt, ',');
-                break;
 
-            case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-            case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-            case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
-            case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
-            case VIR_DOMAIN_DISK_PROTOCOL_FTP:
-            case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
-            case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
-            case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-            case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-                if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
-                    goto error;
-                break;
-            }
+        } else if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
+                goto error;
         } else {
             if ((actualType == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
                 (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
