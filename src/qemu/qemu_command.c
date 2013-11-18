@@ -3699,9 +3699,7 @@ cleanup:
 static int
 qemuBuildDriveURIString(virConnectPtr conn,
                         virDomainDiskDefPtr disk,
-                        virBufferPtr opt,
-                        int protocol,
-                        virSecretUsageType secretUsageType)
+                        virBufferPtr opt)
 {
     char *secret = NULL;
     char *builturi = NULL;
@@ -3709,20 +3707,22 @@ qemuBuildDriveURIString(virConnectPtr conn,
 
     virBufferAddLit(opt, "file=");
 
-    if (disk->auth.username && secretUsageType != VIR_SECRET_USAGE_TYPE_NONE) {
+    if (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI &&
+        disk->auth.username) {
         /* Get the secret string using the virDomainDiskDef */
         if (!(secret = qemuGetSecretString(conn,
-                                           virDomainDiskProtocolTypeToString(protocol),
+                                           virDomainDiskProtocolTypeToString(disk->protocol),
                                            false,
                                            disk->auth.secretType,
                                            disk->auth.username,
                                            disk->auth.secret.uuid,
                                            disk->auth.secret.usage,
-                                           secretUsageType)))
+                                           VIR_SECRET_USAGE_TYPE_ISCSI)))
             goto cleanup;
     }
 
-    if (!(builturi = qemuBuildNetworkDriveURI(protocol,
+
+    if (!(builturi = qemuBuildNetworkDriveURI(disk->protocol,
                                               disk->src,
                                               disk->nhosts,
                                               disk->hosts,
@@ -3731,6 +3731,7 @@ qemuBuildDriveURIString(virConnectPtr conn,
         goto cleanup;
 
     virBufferEscape(opt, ',', ",", "%s", builturi);
+    virBufferAddChar(opt, ',');
 
     ret = 0;
 
@@ -3760,9 +3761,7 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
             && !disk->hosts->name)
         || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX
             && disk->hosts->socket && disk->hosts->socket[0] != '/'))
-        return qemuBuildDriveURIString(conn, disk, opt,
-                                       VIR_DOMAIN_DISK_PROTOCOL_NBD,
-                                       VIR_SECRET_USAGE_TYPE_NONE);
+        return qemuBuildDriveURIString(conn, disk, opt);
 
     virBufferAddLit(opt, "file=nbd:");
 
@@ -3791,6 +3790,8 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
 
     if (disk->src)
         virBufferEscape(opt, ',', ",", ":exportname=%s", disk->src);
+
+    virBufferAddChar(opt, ',');
 
     return 0;
 }
@@ -3921,7 +3922,6 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
             case VIR_DOMAIN_DISK_PROTOCOL_NBD:
                 if (qemuBuildNBDString(conn, disk, &opt) < 0)
                     goto error;
-                virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                 virBufferAddLit(&opt, "file=");
@@ -3929,19 +3929,11 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
+
             case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-                if (qemuBuildDriveURIString(conn, disk, &opt,
-                                            VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
-                                            VIR_SECRET_USAGE_TYPE_NONE) < 0)
-                    goto error;
-                virBufferAddChar(&opt, ',');
-                break;
             case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-                if (qemuBuildDriveURIString(conn, disk, &opt,
-                                            VIR_DOMAIN_DISK_PROTOCOL_ISCSI,
-                                            VIR_SECRET_USAGE_TYPE_ISCSI) < 0)
+                if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
                     goto error;
-                virBufferAddChar(&opt, ',');
                 break;
 
             case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
