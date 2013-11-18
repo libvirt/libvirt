@@ -2757,8 +2757,11 @@ vshReadlineInit(vshControl *ctl)
     int max_history = 500;
     const char *histsize_str;
 
-    /* Allow conditional parsing of the ~/.inputrc file. */
-    rl_readline_name = "virsh";
+    /* Allow conditional parsing of the ~/.inputrc file.
+     * Work around ancient readline 4.1 (hello Mac OS X),
+     * which declared it as 'char *' instead of 'const char *'.
+     */
+    rl_readline_name = (char *) "virsh";
 
     /* Tell the completer that we want a crack first. */
     rl_attempted_completion_function = vshReadlineCompletion;
