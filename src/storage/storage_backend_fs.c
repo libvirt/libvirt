@@ -1137,7 +1137,7 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, -1);
 
-    switch (vol->type) {
+    switch ((virStorageVolType) vol->type) {
     case VIR_STORAGE_VOL_FILE:
         if (unlink(vol->target.path) < 0) {
             /* Silently ignore failures where the vol has already gone away */
@@ -1159,7 +1159,8 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
     case VIR_STORAGE_VOL_BLOCK:
     case VIR_STORAGE_VOL_NETWORK:
-    default:
+    case VIR_STORAGE_VOL_NETDIR:
+    case VIR_STORAGE_VOL_LAST:
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("removing block or network volumes is not supported: %s"),
                        vol->target.path);

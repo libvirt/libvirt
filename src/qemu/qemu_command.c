@@ -3782,7 +3782,7 @@ qemuBuildVolumeString(virConnectPtr conn,
 {
     int ret = -1;
 
-    switch (disk->srcpool->voltype) {
+    switch ((virStorageVolType) disk->srcpool->voltype) {
     case VIR_STORAGE_VOL_DIR:
         if (!disk->readonly) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3825,10 +3825,12 @@ qemuBuildVolumeString(virConnectPtr conn,
         }
         break;
     case VIR_STORAGE_VOL_NETWORK:
+    case VIR_STORAGE_VOL_NETDIR:
+    case VIR_STORAGE_VOL_LAST:
         /* Keep the compiler quiet, qemuTranslateDiskSourcePool already
          * reported the unsupported error.
          */
-        break;
+        goto cleanup;
     }
 
     ret = 0;

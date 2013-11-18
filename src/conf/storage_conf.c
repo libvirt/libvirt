@@ -53,7 +53,7 @@
 
 VIR_ENUM_IMPL(virStorageVol,
               VIR_STORAGE_VOL_LAST,
-              "file", "block", "dir", "network")
+              "file", "block", "dir", "network", "netdir")
 
 VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,

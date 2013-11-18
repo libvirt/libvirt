@@ -20,6 +20,7 @@
             <value>block</value>
             <value>dir</value>
             <value>network</value>
+            <value>netdir</value>
           </choice>
         </attribute>
       </optional>

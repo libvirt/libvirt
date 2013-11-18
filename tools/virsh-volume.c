@@ -947,7 +947,7 @@ out:
 static const char *
 vshVolumeTypeToString(int type)
 {
-    switch (type) {
+    switch ((virStorageVolType) type) {
     case VIR_STORAGE_VOL_FILE:
         return N_("file");
 
@@ -959,6 +959,9 @@ vshVolumeTypeToString(int type)
 
     case VIR_STORAGE_VOL_NETWORK:
         return N_("network");
+
+    case VIR_STORAGE_VOL_NETDIR:
+        return N_("netdir");
 
     case VIR_STORAGE_VOL_LAST:
         break;
