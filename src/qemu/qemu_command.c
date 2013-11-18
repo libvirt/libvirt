@@ -3680,7 +3680,7 @@ qemuNetworkDriveGetPort(int protocol,
     return -1;
 }
 
-
+#define QEMU_DEFAULT_NBD_PORT "10809"
 
 char *
 qemuBuildNetworkDriveURI(int protocol,
@@ -3691,9 +3691,67 @@ qemuBuildNetworkDriveURI(int protocol,
                          const char *secret)
 {
     char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virURIPtr uri = NULL;
 
     switch ((enum virDomainDiskProtocol) protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+            if (nhosts != 1) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("protocol '%s' accepts only one host"),
+                               virDomainDiskProtocolTypeToString(protocol));
+                goto cleanup;
+            }
+
+            if (!((hosts->name && strchr(hosts->name, ':')) ||
+                  (hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP &&
+                   !hosts->name) ||
+                  (hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                   hosts->socket &&
+                   hosts->socket[0] != '/'))) {
+
+                virBufferAddLit(&buf, "nbd:");
+
+                switch (hosts->transport) {
+                case VIR_DOMAIN_DISK_PROTO_TRANS_TCP:
+                    virBufferStrcat(&buf, hosts->name, NULL);
+                    virBufferAsprintf(&buf, ":%s",
+                                      hosts->port ? hosts->port :
+                                      QEMU_DEFAULT_NBD_PORT);
+                    break;
+
+                case VIR_DOMAIN_DISK_PROTO_TRANS_UNIX:
+                    if (!hosts->socket) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("socket attribute required for "
+                                         "unix transport"));
+                        goto cleanup;
+                    }
+
+                    virBufferAsprintf(&buf, "unix:%s", hosts->socket);
+                    break;
+
+                default:
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("nbd does not support transport '%s'"),
+                                   virDomainDiskProtocolTransportTypeToString(hosts->transport));
+                    goto cleanup;
+                }
+
+                if (src)
+                    virBufferAsprintf(&buf, ":exportname=%s", src);
+
+                if (virBufferError(&buf) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                ret = virBufferContentAndReset(&buf);
+                goto cleanup;
+            }
+            /* fallthrough */
+            /* NBD code uses same formatting scheme as others in some cases */
+
         case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
         case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
         case VIR_DOMAIN_DISK_PROTOCOL_FTP:
@@ -3701,7 +3759,6 @@ qemuBuildNetworkDriveURI(int protocol,
         case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
         case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
         case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
             if (nhosts != 1) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("protocol '%s' accepts only one host"),
@@ -3786,6 +3843,7 @@ qemuBuildNetworkDriveURI(int protocol,
     }
 
 cleanup:
+    virBufferFreeAndReset(&buf);
     virURIFree(uri);
 
     return ret;
@@ -3839,56 +3897,6 @@ cleanup:
 }
 
 
-#define QEMU_DEFAULT_NBD_PORT "10809"
-
-static int
-qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
-{
-    const char *transp;
-
-    if (disk->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("nbd accepts only one host"));
-        return -1;
-    }
-
-    if ((disk->hosts->name && strchr(disk->hosts->name, ':')) ||
-        (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP && !disk->hosts->name) ||
-        (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX && disk->hosts->socket && disk->hosts->socket[0] != '/'))
-        return qemuBuildDriveURIString(conn, disk, opt);
-
-    virBufferAddLit(opt, "file=nbd:");
-
-    switch (disk->hosts->transport) {
-    case VIR_DOMAIN_DISK_PROTO_TRANS_TCP:
-        if (disk->hosts->name)
-            virBufferEscape(opt, ',', ",", "%s", disk->hosts->name);
-        virBufferEscape(opt, ',', ",", ":%s",
-                        disk->hosts->port ? disk->hosts->port :
-                        QEMU_DEFAULT_NBD_PORT);
-        break;
-    case VIR_DOMAIN_DISK_PROTO_TRANS_UNIX:
-        if (!disk->hosts->socket) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("socket attribute required for unix transport"));
-            return -1;
-        }
-        virBufferEscape(opt, ',', ",", "unix:%s", disk->hosts->socket);
-        break;
-    default:
-        transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("nbd does not support transport '%s'"), transp);
-        break;
-    }
-
-    if (disk->src)
-        virBufferEscape(opt, ',', ",", ":exportname=%s", disk->src);
-
-    virBufferAddChar(opt, ',');
-
-    return 0;
-}
 
 
 char *
@@ -4013,10 +4021,6 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
         } else if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK) {
             switch (disk->protocol) {
-            case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-                if (qemuBuildNBDString(conn, disk, &opt) < 0)
-                    goto error;
-                break;
             case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                 virBufferAddLit(&opt, "file=");
                 if (qemuBuildRBDString(conn, disk, &opt) < 0)
@@ -4024,6 +4028,7 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
 
+            case VIR_DOMAIN_DISK_PROTOCOL_NBD:
             case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
             case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
             case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
