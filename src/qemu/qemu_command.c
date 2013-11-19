@@ -1335,12 +1335,14 @@ cleanup:
 
     return ret;
 }
+
 static int
 qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
                                        virQEMUCapsPtr qemuCaps)
 {
     if (def->os.arch == VIR_ARCH_ARMV7L &&
-        STRPREFIX(def->os.machine, "vexpress-") &&
+        (STRPREFIX(def->os.machine, "vexpress-") ||
+            STREQ(def->os.machine, "virt")) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
