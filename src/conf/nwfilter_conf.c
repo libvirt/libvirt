@@ -135,7 +135,7 @@ static const struct int_map chain_priorities[] = {
     INTMAP_ENTRY(NWFILTER_VLAN_FILTER_PRI, "vlan"),
     INTMAP_ENTRY(NWFILTER_IPV4_FILTER_PRI, "ipv4"),
     INTMAP_ENTRY(NWFILTER_IPV6_FILTER_PRI, "ipv6"),
-    INTMAP_ENTRY(NWFILTER_ARP_FILTER_PRI , "arp"),
+    INTMAP_ENTRY(NWFILTER_ARP_FILTER_PRI,  "arp"),
     INTMAP_ENTRY(NWFILTER_RARP_FILTER_PRI, "rarp"),
     INTMAP_ENTRY_LAST,
 };
@@ -462,11 +462,11 @@ struct _virXMLAttr2Struct
 
 
 static const struct int_map macProtoMap[] = {
-    INTMAP_ENTRY(ETHERTYPE_ARP   , "arp"),
+    INTMAP_ENTRY(ETHERTYPE_ARP,    "arp"),
     INTMAP_ENTRY(ETHERTYPE_REVARP, "rarp"),
-    INTMAP_ENTRY(ETHERTYPE_IP    , "ipv4"),
-    INTMAP_ENTRY(ETHERTYPE_IPV6  , "ipv6"),
-    INTMAP_ENTRY(ETHERTYPE_VLAN  , "vlan"),
+    INTMAP_ENTRY(ETHERTYPE_IP,     "ipv4"),
+    INTMAP_ENTRY(ETHERTYPE_IPV6,   "ipv6"),
+    INTMAP_ENTRY(ETHERTYPE_VLAN,   "vlan"),
     INTMAP_ENTRY_LAST
 };
 
@@ -772,11 +772,11 @@ dscpValidator(enum attrDatatype datatype, union data *val,
 
 
 static const struct int_map stateMatchMap[] = {
-    INTMAP_ENTRY(RULE_FLAG_STATE_NEW          , "NEW"),
-    INTMAP_ENTRY(RULE_FLAG_STATE_ESTABLISHED  , "ESTABLISHED"),
-    INTMAP_ENTRY(RULE_FLAG_STATE_RELATED      , "RELATED"),
-    INTMAP_ENTRY(RULE_FLAG_STATE_INVALID      , "INVALID"),
-    INTMAP_ENTRY(RULE_FLAG_STATE_NONE         , "NONE"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_NEW,           "NEW"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_ESTABLISHED,   "ESTABLISHED"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_RELATED,       "RELATED"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_INVALID,       "INVALID"),
+    INTMAP_ENTRY(RULE_FLAG_STATE_NONE,          "NONE"),
     INTMAP_ENTRY_LAST,
 };
 
@@ -901,14 +901,14 @@ stateFormatter(virBufferPtr buf,
 
 
 static const struct int_map tcpFlags[] = {
-    INTMAP_ENTRY(0x1 , "FIN"),
-    INTMAP_ENTRY(0x2 , "SYN"),
-    INTMAP_ENTRY(0x4 , "RST"),
-    INTMAP_ENTRY(0x8 , "PSH"),
+    INTMAP_ENTRY(0x1,  "FIN"),
+    INTMAP_ENTRY(0x2,  "SYN"),
+    INTMAP_ENTRY(0x4,  "RST"),
+    INTMAP_ENTRY(0x8,  "PSH"),
     INTMAP_ENTRY(0x10, "ACK"),
     INTMAP_ENTRY(0x20, "URG"),
     INTMAP_ENTRY(0x3F, "ALL"),
-    INTMAP_ENTRY(0x0 , "NONE"),
+    INTMAP_ENTRY(0x0,  "NONE"),
     INTMAP_ENTRY_LAST
 };
 
@@ -931,7 +931,7 @@ tcpFlagsValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, union data *val,
 
     *sep = '\0';
 
-    if (parseStringItems(tcpFlags, s_mask , &mask , ',') == 0 &&
+    if (parseStringItems(tcpFlags, s_mask, &mask, ',') == 0 &&
         parseStringItems(tcpFlags, s_flags, &flags, ',') == 0) {
         item->u.tcpFlags.mask  = mask  & 0x3f;
         item->u.tcpFlags.flags = flags & 0x3f;
@@ -1075,22 +1075,26 @@ ipsetFlagsFormatter(virBufferPtr buf,
     {\
         .name = SRCMACADDR,\
         .datatype = DATATYPE_MACADDR,\
-        .dataIdx = offsetof(virNWFilterRuleDef,p.STRUCT.ethHdr.dataSrcMACAddr),\
+            .dataIdx = offsetof(virNWFilterRuleDef,\
+                            p.STRUCT.ethHdr.dataSrcMACAddr),\
     },\
     {\
         .name = SRCMACMASK,\
         .datatype = DATATYPE_MACMASK,\
-        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ethHdr.dataSrcMACMask),\
+        .dataIdx = offsetof(virNWFilterRuleDef,\
+                            p.STRUCT.ethHdr.dataSrcMACMask),\
     },\
     {\
         .name = DSTMACADDR,\
         .datatype = DATATYPE_MACADDR,\
-        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ethHdr.dataDstMACAddr),\
+        .dataIdx = offsetof(virNWFilterRuleDef,\
+                            p.STRUCT.ethHdr.dataDstMACAddr),\
     },\
     {\
         .name = DSTMACMASK,\
         .datatype = DATATYPE_MACMASK,\
-        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ethHdr.dataDstMACMask),\
+        .dataIdx = offsetof(virNWFilterRuleDef,\
+                            p.STRUCT.ethHdr.dataDstMACMask),\
     }
 
 
@@ -1742,30 +1746,30 @@ struct _virAttributes {
 
 
 static const virAttributes virAttr[] = {
-    PROTOCOL_ENTRY("arp"    , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ARP),
-    PROTOCOL_ENTRY("rarp"   , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_RARP),
-    PROTOCOL_ENTRY("mac"    , macAttributes    , VIR_NWFILTER_RULE_PROTOCOL_MAC),
-    PROTOCOL_ENTRY("vlan"   , vlanAttributes   , VIR_NWFILTER_RULE_PROTOCOL_VLAN),
-    PROTOCOL_ENTRY("stp"    , stpAttributes   ,  VIR_NWFILTER_RULE_PROTOCOL_STP),
-    PROTOCOL_ENTRY("ip"     , ipAttributes     , VIR_NWFILTER_RULE_PROTOCOL_IP),
-    PROTOCOL_ENTRY("ipv6"   , ipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_IPV6),
-    PROTOCOL_ENTRY("tcp"    , tcpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_TCP),
-    PROTOCOL_ENTRY("udp"    , udpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_UDP),
+    PROTOCOL_ENTRY("arp",     arpAttributes,     VIR_NWFILTER_RULE_PROTOCOL_ARP),
+    PROTOCOL_ENTRY("rarp",    arpAttributes,     VIR_NWFILTER_RULE_PROTOCOL_RARP),
+    PROTOCOL_ENTRY("mac",     macAttributes,     VIR_NWFILTER_RULE_PROTOCOL_MAC),
+    PROTOCOL_ENTRY("vlan",    vlanAttributes,    VIR_NWFILTER_RULE_PROTOCOL_VLAN),
+    PROTOCOL_ENTRY("stp",     stpAttributes,     VIR_NWFILTER_RULE_PROTOCOL_STP),
+    PROTOCOL_ENTRY("ip",      ipAttributes,      VIR_NWFILTER_RULE_PROTOCOL_IP),
+    PROTOCOL_ENTRY("ipv6",    ipv6Attributes,    VIR_NWFILTER_RULE_PROTOCOL_IPV6),
+    PROTOCOL_ENTRY("tcp",     tcpAttributes,     VIR_NWFILTER_RULE_PROTOCOL_TCP),
+    PROTOCOL_ENTRY("udp",     udpAttributes,     VIR_NWFILTER_RULE_PROTOCOL_UDP),
     PROTOCOL_ENTRY("udplite", udpliteAttributes, VIR_NWFILTER_RULE_PROTOCOL_UDPLITE),
-    PROTOCOL_ENTRY("esp"    , espAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ESP),
-    PROTOCOL_ENTRY("ah"     , ahAttributes     , VIR_NWFILTER_RULE_PROTOCOL_AH),
-    PROTOCOL_ENTRY("sctp"   , sctpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_SCTP),
-    PROTOCOL_ENTRY("icmp"   , icmpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_ICMP),
-    PROTOCOL_ENTRY("all"    , allAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ALL),
-    PROTOCOL_ENTRY("igmp"   , igmpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_IGMP),
-    PROTOCOL_ENTRY("tcp-ipv6"    , tcpipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6),
-    PROTOCOL_ENTRY("udp-ipv6"    , udpipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6),
+    PROTOCOL_ENTRY("esp",     espAttributes,     VIR_NWFILTER_RULE_PROTOCOL_ESP),
+    PROTOCOL_ENTRY("ah",      ahAttributes,      VIR_NWFILTER_RULE_PROTOCOL_AH),
+    PROTOCOL_ENTRY("sctp",    sctpAttributes,    VIR_NWFILTER_RULE_PROTOCOL_SCTP),
+    PROTOCOL_ENTRY("icmp",    icmpAttributes,    VIR_NWFILTER_RULE_PROTOCOL_ICMP),
+    PROTOCOL_ENTRY("all",     allAttributes,     VIR_NWFILTER_RULE_PROTOCOL_ALL),
+    PROTOCOL_ENTRY("igmp",    igmpAttributes,    VIR_NWFILTER_RULE_PROTOCOL_IGMP),
+    PROTOCOL_ENTRY("tcp-ipv6",     tcpipv6Attributes,     VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6),
+    PROTOCOL_ENTRY("udp-ipv6",     udpipv6Attributes,     VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6),
     PROTOCOL_ENTRY("udplite-ipv6", udpliteipv6Attributes, VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6),
-    PROTOCOL_ENTRY("esp-ipv6"    , espipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6),
-    PROTOCOL_ENTRY("ah-ipv6"     , ahipv6Attributes     , VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6),
-    PROTOCOL_ENTRY("sctp-ipv6"   , sctpipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6),
-    PROTOCOL_ENTRY("icmpv6"      , icmpv6Attributes     , VIR_NWFILTER_RULE_PROTOCOL_ICMPV6),
-    PROTOCOL_ENTRY("all-ipv6"    , allipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6),
+    PROTOCOL_ENTRY("esp-ipv6",     espipv6Attributes,     VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6),
+    PROTOCOL_ENTRY("ah-ipv6",      ahipv6Attributes,      VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6),
+    PROTOCOL_ENTRY("sctp-ipv6",    sctpipv6Attributes,    VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6),
+    PROTOCOL_ENTRY("icmpv6",       icmpv6Attributes,      VIR_NWFILTER_RULE_PROTOCOL_ICMPV6),
+    PROTOCOL_ENTRY("all-ipv6",     allipv6Attributes,     VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6),
     PROTOCOL_ENTRY_LAST
 };
 
@@ -1779,7 +1783,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     char *prop;
     bool found = false;
     enum attrDatatype datatype, att_datatypes;
-    enum virNWFilterEntryItemFlags *flags ,match_flag = 0, flags_set = 0;
+    enum virNWFilterEntryItemFlags *flags, match_flag = 0, flags_set = 0;
     nwItemDesc *item;
     int int_val;
     unsigned int uint_val;
@@ -3428,7 +3432,7 @@ virNWFilterDefFormat(const virNWFilterDef *def)
     virBufferAddLit(&buf, ">\n");
 
     virUUIDFormat(def->uuid, uuid);
-    virBufferAsprintf(&buf,"  <uuid>%s</uuid>\n", uuid);
+    virBufferAsprintf(&buf, "  <uuid>%s</uuid>\n", uuid);
 
     for (i = 0; i < def->nentries; i++) {
         xml = virNWFilterEntryFormat(def->filterEntries[i]);

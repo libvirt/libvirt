@@ -591,7 +591,7 @@ virNWFilterRuleInstancesToArray(int nEntries,
                                 void ***ptrs,
                                 int *nptrs)
 {
-    size_t i,j;
+    size_t i, j;
 
     *nptrs = 0;
 

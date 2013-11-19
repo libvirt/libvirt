@@ -236,14 +236,14 @@ enum l3_proto_idx {
  * for prefix matching.
  */
 static const struct ushort_map l3_protocols[] = {
-    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV4_IDX, ETHERTYPE_IP    , "ipv4"),
-    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV6_IDX, ETHERTYPE_IPV6  , "ipv6"),
-    USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX , ETHERTYPE_ARP   , "arp"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV4_IDX, ETHERTYPE_IP,     "ipv4"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV6_IDX, ETHERTYPE_IPV6,   "ipv6"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX,  ETHERTYPE_ARP,    "arp"),
     USHORTMAP_ENTRY_IDX(L3_PROTO_RARP_IDX, ETHERTYPE_REVARP, "rarp"),
-    USHORTMAP_ENTRY_IDX(L2_PROTO_VLAN_IDX, ETHERTYPE_VLAN  , "vlan"),
-    USHORTMAP_ENTRY_IDX(L2_PROTO_STP_IDX,  0               , "stp"),
-    USHORTMAP_ENTRY_IDX(L2_PROTO_MAC_IDX,  0               , "mac"),
-    USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0               , NULL),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_VLAN_IDX, ETHERTYPE_VLAN,   "vlan"),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_STP_IDX,  0,                "stp"),
+    USHORTMAP_ENTRY_IDX(L2_PROTO_MAC_IDX,  0,                "mac"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0,                NULL),
 };
 
 
@@ -471,7 +471,7 @@ printCommentVar(virBufferPtr dest, const char *buf)
         else
             virBufferAddChar(dest, buf[i]);
     }
-    virBufferAddLit(dest,"'" CMD_SEPARATOR);
+    virBufferAddLit(dest, "'" CMD_SEPARATOR);
 }
 
 
@@ -623,13 +623,13 @@ static int iptablesCreateBaseChains(virBufferPtr buf)
                          "$IPT -N " VIRT_IN_POST_CHAIN CMD_SEPARATOR
                          "$IPT -N " HOST_IN_CHAIN      CMD_SEPARATOR);
     iptablesLinkIPTablesBaseChain(buf,
-                                  VIRT_IN_CHAIN     , "FORWARD", 1, 1);
+                                  VIRT_IN_CHAIN,      "FORWARD", 1, 1);
     iptablesLinkIPTablesBaseChain(buf,
-                                  VIRT_OUT_CHAIN    , "FORWARD", 2, 1);
+                                  VIRT_OUT_CHAIN,     "FORWARD", 2, 1);
     iptablesLinkIPTablesBaseChain(buf,
                                   VIRT_IN_POST_CHAIN, "FORWARD", 3, 1);
     iptablesLinkIPTablesBaseChain(buf,
-                                  HOST_IN_CHAIN     , "INPUT"  , 1, 1);
+                                  HOST_IN_CHAIN,      "INPUT",   1, 1);
 
     return 0;
 }
@@ -782,8 +782,8 @@ iptablesLinkTmpRootChains(virBufferPtr buf,
                           const char *ifname)
 {
     iptablesLinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname, 1);
-    iptablesLinkTmpRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname, 1);
-    iptablesLinkTmpRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname, 1);
+    iptablesLinkTmpRootChain(buf, VIRT_IN_CHAIN,  'F', 1, ifname, 1);
+    iptablesLinkTmpRootChain(buf, HOST_IN_CHAIN,  'H', 1, ifname, 1);
 
     return 0;
 }
@@ -896,8 +896,8 @@ iptablesUnlinkRootChains(virBufferPtr buf,
                          const char *ifname)
 {
     iptablesUnlinkRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkRootChain(buf, VIRT_IN_CHAIN,  'F', 1, ifname);
+    iptablesUnlinkRootChain(buf, HOST_IN_CHAIN,  'H', 1, ifname);
 
     return 0;
 }
@@ -908,8 +908,8 @@ iptablesUnlinkTmpRootChains(virBufferPtr buf,
                             const char *ifname)
 {
     iptablesUnlinkTmpRootChain(buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkTmpRootChain(buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkTmpRootChain(buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkTmpRootChain(buf, VIRT_IN_CHAIN,  'F', 1, ifname);
+    iptablesUnlinkTmpRootChain(buf, HOST_IN_CHAIN,  'H', 1, ifname);
     return 0;
 }
 
@@ -3355,7 +3355,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
-    PRINT_ROOT_CHAIN(chain_in , CHAINPREFIX_HOST_IN_TEMP , ifname);
+    PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
     virBufferAsprintf(&buf,
@@ -3487,7 +3487,7 @@ ebtablesApplyDropAllRules(const char *ifname)
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
-    PRINT_ROOT_CHAIN(chain_in , CHAINPREFIX_HOST_IN_TEMP , ifname);
+    PRINT_ROOT_CHAIN(chain_in, CHAINPREFIX_HOST_IN_TEMP, ifname);
     PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
 
     virBufferAsprintf(&buf,
@@ -3759,7 +3759,7 @@ ebiptablesApplyNewRules(const char *ifname,
 
     /* create needed chains */
     if ((virHashSize(chains_in_set) > 0 &&
-         ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set , 1,
+         ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_in_set, 1,
                                            &ebtChains, &nEbtChains) < 0) ||
         (virHashSize(chains_out_set) > 0 &&
          ebtablesCreateTmpRootAndSubChains(&buf, ifname, chains_out_set, 0,

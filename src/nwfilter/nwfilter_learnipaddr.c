@@ -636,7 +636,7 @@ learnIPAddressThread(void *arg)
 
     memset(&req->thread, 0x0, sizeof(req->thread));
 
-    VIR_DEBUG("pcap thread terminating for interface %s\n",req->ifname);
+    VIR_DEBUG("pcap thread terminating for interface %s\n", req->ifname);
 
     virNWFilterUnlockIface(req->ifname);
 
