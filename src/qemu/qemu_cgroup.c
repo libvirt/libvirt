@@ -417,7 +417,7 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!virCgroupHasController(priv->cgroup,VIR_CGROUP_CONTROLLER_MEMORY)) {
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
         if (vm->def->mem.hard_limit != 0 ||
             vm->def->mem.soft_limit != 0 ||
             vm->def->mem.swap_hard_limit != 0) {

@@ -1918,7 +1918,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     int agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
-                  VIR_DOMAIN_REBOOT_GUEST_AGENT , -1);
+                  VIR_DOMAIN_REBOOT_GUEST_AGENT, -1);
 
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN) &&

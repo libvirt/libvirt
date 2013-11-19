@@ -216,7 +216,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (VIR_STRDUP(cfg->spiceListen, "127.0.0.1") < 0)
         goto error;
 
-    if (VIR_STRDUP(cfg->spiceTLSx509certdir , SYSCONFDIR "/pki/libvirt-spice") < 0)
+    if (VIR_STRDUP(cfg->spiceTLSx509certdir,
+                   SYSCONFDIR "/pki/libvirt-spice") < 0)
         goto error;
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;

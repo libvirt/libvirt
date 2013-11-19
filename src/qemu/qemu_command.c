@@ -1149,7 +1149,7 @@ int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
         return 0;
     }
 
-    if (virHashAddEntry(addrs->defined,addr,addr) < 0)
+    if (virHashAddEntry(addrs->defined, addr, addr) < 0)
         goto cleanup;
     else
         addr = NULL; /* memory will be freed by hash table */
@@ -1179,7 +1179,7 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (STREQ(def->nets[i]->model,"virtio") &&
+        if (STREQ(def->nets[i]->model, "virtio") &&
             def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             def->nets[i]->info.type = type;
         }

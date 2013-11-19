@@ -239,8 +239,8 @@ static char * qemuMonitorEscapeNonPrintable(const char *text)
     for (i = 0; text[i] != '\0'; i++) {
         if (c_isprint(text[i]) ||
             text[i] == '\n' ||
-            (text[i] == '\r' && text[i+1] == '\n'))
-            virBufferAsprintf(&buf,"%c", text[i]);
+            (text[i] == '\r' && text[i + 1] == '\n'))
+            virBufferAddChar(&buf, text[i]);
         else
             virBufferAsprintf(&buf, "0x%02x", text[i]);
     }
@@ -3040,7 +3040,7 @@ int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, name=%s",mon,name);
+    VIR_DEBUG("mon=%p, name=%s", mon, name);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3059,7 +3059,7 @@ int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, name=%s",mon,name);
+    VIR_DEBUG("mon=%p, name=%s", mon, name);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3078,7 +3078,7 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, name=%s",mon,name);
+    VIR_DEBUG("mon=%p, name=%s", mon, name);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3276,7 +3276,7 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
     VIR_DEBUG("mon=%p, file=%s", mon, file);
 
     if (!mon) {
-        virReportError(VIR_ERR_INVALID_ARG,"%s",
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("monitor must not be NULL"));
         return -1;
     }
