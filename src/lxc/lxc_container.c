@@ -483,7 +483,7 @@ error_out:
 
 
 /*_syscall2(int, pivot_root, char *, newroot, const char *, oldroot)*/
-extern int pivot_root(const char * new_root,const char * put_old);
+extern int pivot_root(const char * new_root, const char * put_old);
 
 static int lxcContainerChildMountSort(const void *a, const void *b)
 {

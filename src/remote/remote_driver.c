@@ -4484,7 +4484,7 @@ remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     virDomainPtr dom;
     virDomainEventPtr event = NULL;
 
-    dom = get_nonnull_domain(conn,msg->dom);
+    dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
         return;
 

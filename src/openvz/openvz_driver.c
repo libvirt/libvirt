@@ -1280,7 +1280,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     }
 
     *autostart = 0;
-    if (STREQ(value,"yes"))
+    if (STREQ(value, "yes"))
         *autostart = 1;
     ret = 0;
 
@@ -1523,7 +1523,7 @@ static int openvzConnectListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
     int ret;
     char buf[32];
     char *endptr;
-    virCommandPtr cmd = virCommandNewArgList(VZLIST, "-ovpsid", "-H" , NULL);
+    virCommandPtr cmd = virCommandNewArgList(VZLIST, "-ovpsid", "-H", NULL);
 
     virCommandSetOutputFD(cmd, &outfd);
     if (virCommandRunAsync(cmd, NULL) < 0)

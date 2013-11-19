@@ -1,6 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Guido Günther
  *
  * This library is free software; you can redistribute it and/or
@@ -64,7 +65,7 @@ openvzVEGetStringParam(virDomainPtr domain, const char* param)
                                              "-o",
                                              param,
                                              domain->name,
-                                             "-H" , NULL);
+                                             "-H", NULL);
 
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0) {
