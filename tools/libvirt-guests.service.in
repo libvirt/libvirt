@@ -1,6 +1,6 @@
 [Unit]
 Description=Suspend Active Libvirt Guests
-After=network.target
+After=network.target libvirtd.service
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/libvirt-guests
