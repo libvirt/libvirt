@@ -756,7 +756,7 @@ virSysinfoParseMemory(const char *base, virSysinfoDefPtr ret)
             cur += 9;
             eol = strchr(cur, '\n');
             virSkipSpacesBackwards(cur, &eol);
-            if (eol && VIR_STRNDUP(memory->memory_locator,cur, eol - cur) < 0)
+            if (eol && VIR_STRNDUP(memory->memory_locator, cur, eol - cur) < 0)
                 return -1;
         }
         if ((cur = strstr(base, "Bank Locator: ")) != NULL) {

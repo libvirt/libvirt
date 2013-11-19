@@ -332,7 +332,7 @@ int virNetDevMacVLanTapOpen(const char *ifname,
 
     if (fscanf(file, "%d", &ifindex) != 1) {
         virReportSystemError(errno,
-                             "%s",_("cannot determine macvtap's tap device "
+                             "%s", _("cannot determine macvtap's tap device "
                              "interface index"));
         VIR_FORCE_FCLOSE(file);
         return -1;

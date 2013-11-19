@@ -399,8 +399,8 @@ virExec(virCommandPtr cmd)
 {
     pid_t pid;
     int null = -1, fd, openmax;
-    int pipeout[2] = {-1,-1};
-    int pipeerr[2] = {-1,-1};
+    int pipeout[2] = {-1, -1};
+    int pipeerr[2] = {-1, -1};
     int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;

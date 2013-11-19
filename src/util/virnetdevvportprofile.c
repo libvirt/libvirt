@@ -841,7 +841,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     int rc;
     int src_pid = 0;
     uint32_t dst_pid = 0;
-    struct nlattr *tb[IFLA_MAX + 1] = { NULL , };
+    struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
     int repeats = STATUS_POLL_TIMEOUT_USEC / STATUS_POLL_INTERVL_USEC;
     uint16_t status = 0;
     bool is8021Qbg = (profileId == NULL);

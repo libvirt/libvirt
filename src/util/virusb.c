@@ -216,7 +216,7 @@ virUSBDeviceFindByVendor(unsigned int vendor,
     virUSBDeviceListPtr list;
     int count;
 
-    if (!(list = virUSBDeviceSearch(vendor, product, 0 , 0,
+    if (!(list = virUSBDeviceSearch(vendor, product, 0, 0,
                                     vroot,
                                     USB_DEVICE_FIND_BY_VENDOR)))
         return -1;

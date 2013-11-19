@@ -374,7 +374,8 @@ virPCIDeviceWrite32(virPCIDevicePtr dev, int cfgfd, unsigned int pos, uint32_t v
     virPCIDeviceWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
 }
 
-typedef int (*virPCIDeviceIterPredicate)(virPCIDevicePtr , virPCIDevicePtr , void *);
+typedef int (*virPCIDeviceIterPredicate)(virPCIDevicePtr, virPCIDevicePtr,
+                                         void *);
 
 /* Iterate over available PCI devices calling @predicate
  * to compare each one to @dev.

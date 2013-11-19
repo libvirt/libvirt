@@ -660,7 +660,7 @@ addentry:
         virMacAddrSet(&srv->handles[r].macaddr, macaddr);
     else
         virMacAddrSetRaw(&srv->handles[r].macaddr,
-                         (unsigned char[VIR_MAC_BUFLEN]){0,0,0,0,0,0});
+                         (unsigned char[VIR_MAC_BUFLEN]){0, 0, 0, 0, 0, 0});
 
     VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
 

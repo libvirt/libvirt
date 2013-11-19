@@ -167,7 +167,7 @@ virNetDevBandwidthSet(const char *ifname,
         }
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-        virCommandAddArgList(cmd,"class", "add", "dev", ifname, "parent",
+        virCommandAddArgList(cmd, "class", "add", "dev", ifname, "parent",
                              hierarchical_class ? "1:1" : "1:", "classid",
                              hierarchical_class ? "1:2" : "1:1", "htb",
                              "rate", average, NULL);
@@ -192,7 +192,7 @@ virNetDevBandwidthSet(const char *ifname,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
-        virCommandAddArgList(cmd,"filter", "add", "dev", ifname, "parent",
+        virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
                              "1:0", "protocol", "ip", "handle", "1", "fw",
                              "flowid", "1", NULL);
 

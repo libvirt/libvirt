@@ -1183,7 +1183,7 @@ virLogOutputToJournald(virLogSource source,
     state.bufs = iov_bufs;
     state.bufs_end = iov_bufs + ARRAY_CARDINALITY(iov_bufs);
 
-    journalAddString(&state ,"MESSAGE", rawstr);
+    journalAddString(&state, "MESSAGE", rawstr);
     journalAddInt(&state, "PRIORITY", priority);
     journalAddString(&state, "LIBVIRT_SOURCE",
                      virLogSourceTypeToString(source));
