@@ -2038,6 +2038,49 @@ cleanup:
     return ret;
 }
 
+static int
+testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr) opaque;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    virCPUDataPtr cpuData = NULL;
+    int rv, ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "qom-list",
+                               "{"
+                               "    \"id\": \"libvirt-7\","
+                               "    \"error\": {"
+                               "        \"class\": \"CommandNotFound\","
+                               "        \"desc\": \"The command qom-list has not been found\""
+                               "    }"
+                               "}") < 0)
+        goto cleanup;
+
+    rv = qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
+                                   VIR_ARCH_X86_64,
+                                   &cpuData);
+    if (rv != -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected return value %d, expecting -2", rv);
+        goto cleanup;
+    }
+
+    if (cpuData) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Unexpected allocation of data = %p, expecting NULL",
+                       cpuData);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    qemuMonitorTestFree(test);
+    cpuDataFree(cpuData);
+    return ret;
+}
 
 static int
 mymain(void)
@@ -2094,6 +2137,7 @@ mymain(void)
     DO_TEST(SetObjectProperty);
     DO_TEST(GetDeviceAliases);
     DO_TEST(CPU);
+    DO_TEST(GetNonExistingCPUData);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
