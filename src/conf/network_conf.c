@@ -2393,7 +2393,7 @@ virNetworkIpDefFormat(virBufferPtr buf,
         VIR_FREE(addr);
     }
     if (def->prefix > 0) {
-        virBufferAsprintf(buf," prefix='%u'", def->prefix);
+        virBufferAsprintf(buf, " prefix='%u'", def->prefix);
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
@@ -2492,7 +2492,7 @@ virNetworkRouteDefFormat(virBufferPtr buf,
         VIR_FREE(addr);
     }
     if (def->has_prefix) {
-        virBufferAsprintf(buf," prefix='%u'", def->prefix);
+        virBufferAsprintf(buf, " prefix='%u'", def->prefix);
     }
     if (VIR_SOCKET_ADDR_VALID(&def->gateway)) {
         char *addr = virSocketAddrFormat(&def->gateway);
@@ -2502,7 +2502,7 @@ virNetworkRouteDefFormat(virBufferPtr buf,
         VIR_FREE(addr);
     }
     if (def->has_metric && def->metric > 0) {
-        virBufferAsprintf(buf," metric='%u'", def->metric);
+        virBufferAsprintf(buf, " metric='%u'", def->metric);
     }
     virBufferAddLit(buf, "/>\n");
 

@@ -813,7 +813,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAddLit(&xml, "  <host>\n");
     if (virUUIDIsValid(caps->host.host_uuid)) {
         virUUIDFormat(caps->host.host_uuid, host_uuid);
-        virBufferAsprintf(&xml,"    <uuid>%s</uuid>\n", host_uuid);
+        virBufferAsprintf(&xml, "    <uuid>%s</uuid>\n", host_uuid);
     }
     virBufferAddLit(&xml, "    <cpu>\n");
     if (caps->host.arch)
