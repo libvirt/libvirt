@@ -1071,7 +1071,7 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
 
 static int vboxConnectClose(virConnectPtr conn) {
     vboxGlobalData *data = conn->privateData;
-    VIR_DEBUG("%s: in vboxClose",conn->driver->name);
+    VIR_DEBUG("%s: in vboxClose", conn->driver->name);
 
     vboxUninitialize(data);
     conn->privateData = NULL;
@@ -1081,7 +1081,7 @@ static int vboxConnectClose(virConnectPtr conn) {
 
 static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version) {
     vboxGlobalData *data = conn->privateData;
-    VIR_DEBUG("%s: in vboxGetVersion",conn->driver->name);
+    VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
 
     vboxDriverLock(data);
     *version = data->version;
@@ -1154,7 +1154,8 @@ static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     rc = vboxArrayGet(&machines, data->vboxObj, data->vboxObj->vtbl->GetMachines);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get list of Domains, rc=%08x"),(unsigned)rc);
+                       _("Could not get list of Domains, rc=%08x"),
+                       (unsigned)rc);
         goto cleanup;
     }
 
@@ -4374,18 +4375,18 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             adapter->vtbl->SetEnabled(adapter, 1);
 
             if (def->nets[i]->model) {
-                if (STRCASEEQ(def->nets[i]->model , "Am79C970A")) {
+                if (STRCASEEQ(def->nets[i]->model, "Am79C970A")) {
                     adapterType = NetworkAdapterType_Am79C970A;
-                } else if (STRCASEEQ(def->nets[i]->model , "Am79C973")) {
+                } else if (STRCASEEQ(def->nets[i]->model, "Am79C973")) {
                     adapterType = NetworkAdapterType_Am79C973;
-                } else if (STRCASEEQ(def->nets[i]->model , "82540EM")) {
+                } else if (STRCASEEQ(def->nets[i]->model, "82540EM")) {
                     adapterType = NetworkAdapterType_I82540EM;
-                } else if (STRCASEEQ(def->nets[i]->model , "82545EM")) {
+                } else if (STRCASEEQ(def->nets[i]->model, "82545EM")) {
                     adapterType = NetworkAdapterType_I82545EM;
-                } else if (STRCASEEQ(def->nets[i]->model , "82543GC")) {
+                } else if (STRCASEEQ(def->nets[i]->model, "82543GC")) {
                     adapterType = NetworkAdapterType_I82543GC;
 #if VBOX_API_VERSION >= 3001
-                } else if (STRCASEEQ(def->nets[i]->model , "virtio")) {
+                } else if (STRCASEEQ(def->nets[i]->model, "virtio")) {
                     adapterType = NetworkAdapterType_Virtio;
 #endif /* VBOX_API_VERSION >= 3001 */
                 }
@@ -7730,7 +7731,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             }
         }
 
-        VBOX_UTF8_TO_UTF16(networkNameUtf8 , &networkNameUtf16);
+        VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
         /* Currently support only one dhcp server per network
          * with contigious address space from start to end
@@ -7922,7 +7923,7 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
             }
 #endif /* VBOX_API_VERSION != 2002 */
 
-            VBOX_UTF8_TO_UTF16(networkNameUtf8 , &networkNameUtf16);
+            VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
             data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
                                                              networkNameUtf16,
@@ -7985,7 +7986,7 @@ static int vboxNetworkCreate(virNetworkPtr network) {
             IDHCPServer *dhcpServer     = NULL;
 
 
-            VBOX_UTF8_TO_UTF16(networkNameUtf8 , &networkNameUtf16);
+            VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
             data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
                                                              networkNameUtf16,
@@ -8066,7 +8067,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
                 networkInterface->vtbl->GetId(networkInterface, &vboxnet0IID.value);
                 vboxIIDToUUID(&vboxnet0IID, def->uuid);
 
-                VBOX_UTF8_TO_UTF16(networkNameUtf8 , &networkNameUtf16);
+                VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
                 def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
