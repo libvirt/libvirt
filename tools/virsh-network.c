@@ -367,10 +367,10 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
-    vshPrint(ctl, "%-15s %s\n", _("Name"), virNetworkGetName(network));
+    vshPrint(ctl, "%-15s %s\n", _("Name:"), virNetworkGetName(network));
 
     if (virNetworkGetUUIDString(network, uuid) == 0)
-        vshPrint(ctl, "%-15s %s\n", _("UUID"), uuid);
+        vshPrint(ctl, "%-15s %s\n", _("UUID:"), uuid);
 
     active = virNetworkIsActive(network);
     if (active >= 0)
