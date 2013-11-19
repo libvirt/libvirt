@@ -1,4 +1,4 @@
-<volume>
+<volume type='file'>
   <name>sparse.img</name>
   <key>/var/lib/libvirt/images/sparse.img</key>
   <source>

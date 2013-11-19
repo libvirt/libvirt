@@ -1,4 +1,4 @@
-<volume>
+<volume type='file'>
   <name>OtherDemo.img</name>
   <key>/var/lib/libvirt/images/OtherDemo.img</key>
   <source>

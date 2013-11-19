@@ -1,4 +1,4 @@
-<volume>
+<volume type='block'>
   <name>sda1</name>
   <key>/dev/sda1</key>
   <source>

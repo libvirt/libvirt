@@ -283,14 +283,18 @@
 
     <h2><a name="StorageVol">Storage volume XML</a></h2>
     <p>
-      A storage volume will be either a file or a device node.
-      The storage volume XML format is available <span class="since">since 0.4.1</span>
+      A storage volume will generally be either a file or a device
+      node; <span class="since">since 1.2.0</span>, an optional
+      output-only attribute <code>type</code> lists the actual type
+      (file, block, dir, or network), which is also available
+      from <code>virStorageVolGetInfo()</code>.  The storage volume
+      XML format is available <span class="since">since 0.4.1</span>
     </p>
 
     <h3><a name="StorageVolFirst">General metadata</a></h3>
 
     <pre>
-      &lt;volume&gt;
+      &lt;volume type='file'&gt;
         &lt;name&gt;sparse.img&lt;/name&gt;
         &lt;key&gt;/var/lib/xen/images/sparse.img&lt;/key&gt;
         &lt;allocation&gt;0&lt;/allocation&gt;

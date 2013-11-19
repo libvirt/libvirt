@@ -116,6 +116,7 @@ struct _virStorageVolDefList {
     virStorageVolDefPtr *objs;
 };
 
+VIR_ENUM_DECL(virStorageVol)
 
 enum virStoragePoolType {
     VIR_STORAGE_POOL_DIR,      /* Local directory */
