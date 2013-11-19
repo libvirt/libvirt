@@ -218,10 +218,10 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
         *tmp = '\0';
     /* sens now just contains the sensitivity lower bound */
 
-    /* If there was no category part, just assume c0.c1024 */
+    /* If there was no category part, just assume c0.c1023 */
     if (!cat) {
         *catMin = 0;
-        *catMax = 1024;
+        *catMax = 1023;
         ret = 0;
         goto cleanup;
     }
