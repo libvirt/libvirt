@@ -228,6 +228,7 @@ LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_CURL
 LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_FUSE
+LIBVIRT_CHECK_GLUSTER
 LIBVIRT_CHECK_HAL
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
@@ -1643,6 +1644,10 @@ AC_ARG_WITH([storage-sheepdog],
   [AS_HELP_STRING([--with-storage-sheepdog],
     [with Sheepdog backend for the storage driver @<:@default=check@:>@])],
   [],[with_storage_sheepdog=check])
+AC_ARG_WITH([storage-gluster],
+  [AS_HELP_STRING([--with-storage-gluster],
+    [with Gluster backend for the storage driver @<:@default=check@:>@])],
+  [],[with_storage_gluster=check])
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -1654,6 +1659,7 @@ if test "$with_libvirtd" = "no"; then
   with_storage_disk=no
   with_storage_rbd=no
   with_storage_sheepdog=no
+  with_storage_gluster=no
 fi
 if test "$with_storage_dir" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_STORAGE_DIR], 1, [whether directory backend for storage driver is enabled])
@@ -1854,6 +1860,19 @@ if test "$with_storage_sheepdog" = "yes" ||
 fi
 AM_CONDITIONAL([WITH_STORAGE_SHEEPDOG],
   [test "$with_storage_sheepdog" = "yes"])
+
+LIBGLUSTER_LIBS=
+if test "$with_storage_gluster" = "check"; then
+  with_storage_gluster=$with_glusterfs
+fi
+if test "$with_storage_gluster" = "yes"; then
+  if test "$with_glusterfs" = no; then
+    AC_MSG_ERROR([Need glusterfs (libgfapi) for gluster storage driver])
+  fi
+  AC_DEFINE_UNQUOTED([WITH_STORAGE_GLUSTER], [1],
+    [whether Gluster backend for storage driver is enabled])
+fi
+AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
 
 
 LIBPARTED_CFLAGS=
@@ -2583,6 +2602,7 @@ AC_MSG_NOTICE([   mpath: $with_storage_mpath])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
 AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
+AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
@@ -2608,6 +2628,7 @@ LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_CURL
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_FUSE
+LIBVIRT_RESULT_GLUSTER
 LIBVIRT_RESULT_HAL
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL

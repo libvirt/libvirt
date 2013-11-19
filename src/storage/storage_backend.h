@@ -1,7 +1,7 @@
 /*
  * storage_backend.h: internal storage driver backend contract
  *
- * Copyright (C) 2007-2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2007-2010, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -70,6 +70,8 @@ virStorageBackendFSImageToolTypeToFunc(int tool_type);
 typedef struct _virStorageBackend virStorageBackend;
 typedef virStorageBackend *virStorageBackendPtr;
 
+/* Callbacks are optional unless documented otherwise; but adding more
+ * callbacks provides better pool support.  */
 struct _virStorageBackend {
     int type;
 
@@ -77,7 +79,7 @@ struct _virStorageBackend {
     virStorageBackendCheckPool checkPool;
     virStorageBackendStartPool startPool;
     virStorageBackendBuildPool buildPool;
-    virStorageBackendRefreshPool refreshPool;
+    virStorageBackendRefreshPool refreshPool; /* Must be non-NULL */
     virStorageBackendStopPool stopPool;
     virStorageBackendDeletePool deletePool;
 

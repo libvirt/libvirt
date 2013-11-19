@@ -59,7 +59,7 @@ VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
-              "scsi", "mpath", "rbd", "sheepdog")
+              "scsi", "mpath", "rbd", "sheepdog", "gluster")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
@@ -246,6 +246,19 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
      .volOptions = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatToString = virStoragePoolFormatDiskTypeToString,
+     }
+    },
+    {.poolType = VIR_STORAGE_POOL_GLUSTER,
+     .poolOptions = {
+         .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
+                   VIR_STORAGE_POOL_SOURCE_NETWORK |
+                   VIR_STORAGE_POOL_SOURCE_NAME |
+                   VIR_STORAGE_POOL_SOURCE_DIR),
+     },
+     .volOptions = {
+         .defaultFormat = VIR_STORAGE_FILE_RAW,
+         .formatToString = virStorageFileFormatTypeToString,
+         .formatFromString = virStorageVolumeFormatFromString,
      }
     },
     {.poolType = VIR_STORAGE_POOL_MPATH,
@@ -652,6 +665,10 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     source->dir = virXPathString("string(./dir/@path)", ctxt);
+    /* In gluster, a missing dir defaults to "/" */
+    if (!source->dir && pool_type == VIR_STORAGE_POOL_GLUSTER &&
+        VIR_STRDUP(source->dir, "/") < 0)
+        goto cleanup;
 
     if ((adapter_type = virXPathString("string(./adapter/@type)", ctxt))) {
         if ((source->adapter.type =
@@ -1196,10 +1213,11 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
     if (virStoragePoolSourceFormat(&buf, options, &def->source) < 0)
         goto cleanup;
 
-    /* RBD and Sheepdog devices are not local block devs nor files, so it
-     * doesn't have a target */
+    /* RBD, Sheepdog, and Gluster devices are not local block devs nor
+     * files, so they don't have a target */
     if (def->type != VIR_STORAGE_POOL_RBD &&
-        def->type != VIR_STORAGE_POOL_SHEEPDOG) {
+        def->type != VIR_STORAGE_POOL_SHEEPDOG &&
+        def->type != VIR_STORAGE_POOL_GLUSTER) {
         virBufferAddLit(&buf, "  <target>\n");
 
         virBufferEscapeString(&buf, "    <path>%s</path>\n", def->target.path);

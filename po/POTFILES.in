@@ -133,6 +133,7 @@ src/storage/parthelper.c
 src/storage/storage_backend.c
 src/storage/storage_backend_disk.c
 src/storage/storage_backend_fs.c
+src/storage/storage_backend_gluster.c
 src/storage/storage_backend_iscsi.c
 src/storage/storage_backend_logical.c
 src/storage/storage_backend_mpath.c

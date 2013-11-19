@@ -80,6 +80,9 @@
 #if WITH_STORAGE_SHEEPDOG
 # include "storage_backend_sheepdog.h"
 #endif
+#if WITH_STORAGE_GLUSTER
+# include "storage_backend_gluster.h"
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -111,6 +114,9 @@ static virStorageBackendPtr backends[] = {
 #endif
 #if WITH_STORAGE_SHEEPDOG
     &virStorageBackendSheepdog,
+#endif
+#if WITH_STORAGE_GLUSTER
+    &virStorageBackendGluster,
 #endif
     NULL
 };

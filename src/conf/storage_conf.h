@@ -1,7 +1,7 @@
 /*
  * storage_conf.h: config handling for storage driver
  *
- * Copyright (C) 2006-2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -129,6 +129,7 @@ enum virStoragePoolType {
     VIR_STORAGE_POOL_MPATH,    /* Multipath devices */
     VIR_STORAGE_POOL_RBD,      /* RADOS Block Device */
     VIR_STORAGE_POOL_SHEEPDOG, /* Sheepdog device */
+    VIR_STORAGE_POOL_GLUSTER,  /* Gluster device */
 
     VIR_STORAGE_POOL_LAST,
 };

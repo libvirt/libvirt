@@ -98,6 +98,11 @@
 %else
     %define with_storage_sheepdog 0
 %endif
+%if 0%{?fedora} >= 19
+    %define with_storage_gluster 0%{!?_without_storage_gluster:%{server_drivers}}
+%else
+    %define with_storage_gluster 0
+%endif
 %define with_numactl          0%{!?_without_numactl:%{server_drivers}}
 %define with_selinux          0%{!?_without_selinux:%{server_drivers}}
 
@@ -280,6 +285,7 @@
     %define with_storage_mpath 0
     %define with_storage_rbd 0
     %define with_storage_sheepdog 0
+    %define with_storage_gluster 0
     %define with_storage_disk 0
 %endif
 
@@ -553,6 +559,10 @@ BuildRequires: device-mapper-devel
     %if %{with_storage_rbd}
 BuildRequires: ceph-devel
     %endif
+%endif
+%if %{with_storage_gluster}
+BuildRequires: glusterfs-api-devel >= 3.4.1
+BuildRequires: glusterfs-devel >= 3.4.1
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
@@ -1256,6 +1266,10 @@ driver
     %define _without_storage_sheepdog --without-storage-sheepdog
 %endif
 
+%if ! %{with_storage_gluster}
+    %define _without_storage_gluster --without-storage-gluster
+%endif
+
 %if ! %{with_numactl}
     %define _without_numactl --without-numactl
 %endif
@@ -1377,6 +1391,7 @@ driver
            %{?_without_storage_mpath} \
            %{?_without_storage_rbd} \
            %{?_without_storage_sheepdog} \
+           %{?_without_storage_gluster} \
            %{?_without_numactl} \
            %{?_without_numad} \
            %{?_without_capng} \
