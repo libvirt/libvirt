@@ -5528,11 +5528,13 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
         goto cleanup;
 
     /* check if device exists */
-    if ((data = virJSONValueObjectGet(reply, "error")) &&
-        STREQ_NULLABLE(virJSONValueObjectGetString(data, "class"),
-                       "DeviceNotFound")) {
-        ret = -2;
-        goto cleanup;
+    if ((data = virJSONValueObjectGet(reply, "error"))) {
+        const char *klass = virJSONValueObjectGetString(data, "class");
+        if (STREQ_NULLABLE(klass, "DeviceNotFound") ||
+            STREQ_NULLABLE(klass, "CommandNotFound")) {
+            ret = -2;
+            goto cleanup;
+        }
     }
 
     if (qemuMonitorJSONCheckError(cmd, reply))
