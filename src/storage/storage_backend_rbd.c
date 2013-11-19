@@ -454,7 +454,7 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
     }
 
     if (rados_ioctx_create(ptr.cluster,
-        pool->def->source.name,&ptr.ioctx) < 0) {
+                           pool->def->source.name, &ptr.ioctx) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
                        pool->def->source.name);

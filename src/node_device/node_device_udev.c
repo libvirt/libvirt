@@ -357,7 +357,7 @@ typedef void (*udevLogFunctionPtr)(struct udev *udev,
                                    va_list args);
 
 static void
-ATTRIBUTE_FMT_PRINTF(6,0)
+ATTRIBUTE_FMT_PRINTF(6, 0)
 udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
                 int priority,
                 const char *file,

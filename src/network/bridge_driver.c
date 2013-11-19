@@ -1700,7 +1700,7 @@ networkAddRouteToBridge(virNetworkObjPtr network,
 
     /* this creates an all-0 address of the appropriate family */
     ignore_value(virSocketAddrParse(&zero,
-                                    (VIR_SOCKET_ADDR_IS_FAMILY(addr,AF_INET)
+                                    (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)
                                      ? "0.0.0.0" : "::"),
                                     VIR_SOCKET_ADDR_FAMILY(addr)));
 

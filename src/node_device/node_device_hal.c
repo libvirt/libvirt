@@ -570,7 +570,7 @@ device_removed(LibHalContext *ctx ATTRIBUTE_UNUSED,
     virNodeDeviceObjPtr dev;
 
     nodeDeviceLock(driverState);
-    dev = virNodeDeviceFindByName(&driverState->devs,name);
+    dev = virNodeDeviceFindByName(&driverState->devs, name);
     VIR_DEBUG("%s", name);
     if (dev)
         virNodeDeviceObjRemove(&driverState->devs, dev);
@@ -588,7 +588,7 @@ device_cap_added(LibHalContext *ctx,
     virNodeDeviceObjPtr dev;
 
     nodeDeviceLock(driverState);
-    dev = virNodeDeviceFindByName(&driverState->devs,name);
+    dev = virNodeDeviceFindByName(&driverState->devs, name);
     nodeDeviceUnlock(driverState);
     VIR_DEBUG("%s %s", cap, name);
     if (dev) {
