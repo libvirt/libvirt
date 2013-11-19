@@ -14243,7 +14243,7 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 {
     if (def->blockio.logical_block_size > 0 ||
         def->blockio.physical_block_size > 0) {
-        virBufferAddLit(buf,"      <blockio");
+        virBufferAddLit(buf, "      <blockio");
         if (def->blockio.logical_block_size > 0) {
             virBufferAsprintf(buf,
                               " logical_block_size='%u'",
@@ -14270,7 +14270,7 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
         def->startupPolicy) {
         switch (def->type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
-            virBufferAddLit(buf,"      <source");
+            virBufferAddLit(buf, "      <source");
             if (def->src)
                 virBufferEscapeString(buf, " file='%s'", def->src);
             if (def->startupPolicy)
