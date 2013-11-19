@@ -1,6 +1,7 @@
 /*
  * sysinfotest.c: Testcase(s) for virSysinfoRead
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright IBM Corp. 2012
  *
  * This library is free software; you can redistribute it and/or
@@ -75,7 +76,7 @@ testSysinfo(const void *data)
         goto cleanup;
     }
 
-    if (virSysinfoFormat(&buf,ret) < 0)
+    if (virSysinfoFormat(&buf, ret) < 0)
         goto cleanup;
 
     if (!(sysfsActualData = virBufferCurrentContent(&buf)))

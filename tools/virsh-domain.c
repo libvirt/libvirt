@@ -2568,7 +2568,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (vshCommandOptStringReq(ctl, cmd, "inbound", &inboundStr) < 0 ||
-        vshCommandOptStringReq(ctl,cmd, "outbound", &outboundStr) < 0)
+        vshCommandOptStringReq(ctl, cmd, "outbound", &outboundStr) < 0)
         goto cleanup;
 
     memset(&inbound, 0, sizeof(inbound));

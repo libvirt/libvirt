@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -123,7 +123,7 @@ thread_func(void *data)
         bucket[idx] += d;
         virAtomicIntAdd(&atomic, d);
 #ifdef WIN32
-        SleepEx(0,0);
+        SleepEx(0, 0);
 #else
         sched_yield();
 #endif

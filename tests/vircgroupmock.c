@@ -399,7 +399,7 @@ static void init_sysfs(void)
 # define MAKE_CONTROLLER(subpath)                               \
     do {                                                        \
         char *path;                                             \
-        if (asprintf(&path,"%s/%s", fakesysfsdir, subpath) < 0) \
+        if (asprintf(&path, "%s/%s", fakesysfsdir, subpath) < 0)\
             abort();                                            \
         if (make_controller(path, 0755) < 0) {                  \
             fprintf(stderr, "Cannot initialize %s\n", path);    \
