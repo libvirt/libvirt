@@ -2257,7 +2257,7 @@ xenFormatSxpr(virConnectPtr conn,
         if (hvm &&
             def->os.loader == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s",_("no HVM domain loader"));
+                           "%s", _("no HVM domain loader"));
             goto error;
         }
 

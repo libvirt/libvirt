@@ -1,6 +1,6 @@
 /*
  * xenapi_utils.c: Xen API driver -- utils parts.
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -172,7 +172,7 @@ createXenAPIBootOrderString(int nboot, int *bootDevs)
         else if (bootDevs[i] == VIR_DOMAIN_BOOT_NET)
             val = (char *)"n";
         if (val)
-            virBufferEscapeString(&ret,"%s",val);
+            virBufferEscapeString(&ret, "%s", val);
     }
     return virBufferContentAndReset(&ret);
 }
@@ -231,20 +231,20 @@ xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action)
 int
 getStorageVolumeType(char *type)
 {
-    if (STREQ(type,"lvmoiscsi") ||
-        STREQ(type,"lvmohba") ||
-        STREQ(type,"lvm") ||
-        STREQ(type,"file") ||
-        STREQ(type,"iso") ||
-        STREQ(type,"ext") ||
-        STREQ(type,"nfs"))
+    if (STREQ(type, "lvmoiscsi") ||
+        STREQ(type, "lvmohba") ||
+        STREQ(type, "lvm") ||
+        STREQ(type, "file") ||
+        STREQ(type, "iso") ||
+        STREQ(type, "ext") ||
+        STREQ(type, "nfs"))
         return (int)VIR_STORAGE_VOL_FILE;
-    else if (STREQ(type,"iscsi") ||
-             STREQ(type,"equal") ||
-             STREQ(type,"hba") ||
-             STREQ(type,"cslg") ||
-             STREQ(type,"udev") ||
-             STREQ(type,"netapp"))
+    else if (STREQ(type, "iscsi") ||
+             STREQ(type, "equal") ||
+             STREQ(type, "hba") ||
+             STREQ(type, "cslg") ||
+             STREQ(type, "udev") ||
+             STREQ(type, "netapp"))
         return (int)VIR_STORAGE_VOL_BLOCK;
     return -1;
 }

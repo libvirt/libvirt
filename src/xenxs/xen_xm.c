@@ -1891,7 +1891,7 @@ virConfPtr xenFormatXM(virConnectPtr conn,
     netVal->list = NULL;
 
     for (i = 0; i < def->nnets; i++) {
-        if (xenFormatXMNet(conn, netVal,def->nets[i],
+        if (xenFormatXMNet(conn, netVal, def->nets[i],
                            hvm, xendConfigVersion) < 0)
             goto cleanup;
     }

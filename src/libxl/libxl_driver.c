@@ -1501,7 +1501,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm,VIR_DOMAIN_EVENT_STOPPED,
+    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
     if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED) != 0) {

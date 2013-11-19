@@ -815,7 +815,7 @@ retry:
     if (new_domain_cnt < 0)
         return -1;
 
-    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0)
+    if (VIR_ALLOC_N(new_domids, new_domain_cnt) < 0)
         return -1;
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
@@ -898,7 +898,7 @@ retry:
     if (new_domain_cnt < 0)
         return -1;
 
-    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0)
+    if (VIR_ALLOC_N(new_domids, new_domain_cnt) < 0)
         return -1;
     nread = xenStoreDoListDomains(conn, priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
