@@ -32,8 +32,8 @@ foreach my $file (@ARGV) {
     while (defined (my $line = <FILE>)) {
         my $data = $line;
 
-        # Kill any quoted ; or "
-        $data =~ s,'[";]','X',g;
+        # Kill any quoted , ; or "
+        $data =~ s/'[";,]'/'X'/g;
 
         # Kill any quoted strings
         $data =~ s,"([^\\\"]|\\.)*","XXX",g;
@@ -114,7 +114,7 @@ foreach my $file (@ARGV) {
             last;
         }
 
-        # Forbid whitespace before ";". Things like below are allowed:
+        # Forbid whitespace before ";" or ",". Things like below are allowed:
         #
         # 1) The expression is empty for "for" loop. E.g.
         #   for (i = 0; ; i++)
@@ -124,7 +124,7 @@ foreach my $file (@ARGV) {
         #          errno == EINTR)
         #       ;
         #
-        while ($data =~ /[^;\s]\s+;/) {
+        while ($data =~ /[^;\s]\s+[;,]/) {
             print "$file:$.: $line";
             $ret = 1;
             last;
@@ -133,6 +133,13 @@ foreach my $file (@ARGV) {
         # Require EOL, macro line continuation, or whitespace after ";".
         # Allow "for (;;)" as an exception.
         while ($data =~ /;[^	 \\\n;)]/) {
+            print "$file:$.: $line";
+            $ret = 1;
+            last;
+        }
+
+        # Require EOL, space, or enum/struct end after comma.
+        while ($data =~ /,[^ \\\n)}]/) {
             print "$file:$.: $line";
             $ret = 1;
             last;

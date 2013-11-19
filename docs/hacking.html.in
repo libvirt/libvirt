@@ -402,6 +402,43 @@
       int foo(int wizz);    // Good
 </pre>
 
+    <h2><a name="comma">Commas</a></h2>
+
+    <p>
+      Commas should always be followed by a space or end of line, and
+      never have leading space; this is enforced during 'make
+      syntax-check'.
+    </p>
+    <pre>
+      call(a,b ,c);// Bad
+      call(a, b, c); // Good
+</pre>
+
+    <p>
+      When declaring an enum or using a struct initializer that
+      occupies more than one line, use a trailing comma.  That way,
+      future edits to extend the list only have to add a line, rather
+      than modify an existing line to add the intermediate comma.  Any
+      sentinel enumerator value with a name ending in _LAST is exempt,
+      since you would extend such an enum before the _LAST element.
+      Another reason to favor trailing commas is that it requires less
+      effort to produce via code generators.  Note that the syntax
+      checker is unable to enforce a style of trailing commas, so
+      there are counterexamples in existing code which do not use it;
+      also, while C99 allows trailing commas, remember that JSON and
+      XDR do not.
+    </p>
+    <pre>
+      enum {
+          VALUE_ONE,
+          VALUE_TWO // Bad
+      };
+      enum {
+          VALUE_THREE,
+          VALUE_FOUR, // Good
+      };
+</pre>
+
     <h2><a name="semicolon">Semicolons</a></h2>
 
     <p>
