@@ -461,7 +461,7 @@ libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *info;
 
     if (!PyArg_ParseTuple(args, (char *)"Oz:virDomainBlockStats",
-        &pyobj_domain,&path))
+        &pyobj_domain, &path))
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
@@ -676,7 +676,7 @@ libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     PyObject *info;
 
     if (!PyArg_ParseTuple(args, (char *)"Oz:virDomainInterfaceStats",
-        &pyobj_domain,&path))
+        &pyobj_domain, &path))
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
@@ -4924,12 +4924,12 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     virDomainRef(dom);
     pyobj_dom = libvirt_virDomainPtrWrap(dom);
     pyobj_dom_args = PyTuple_New(2);
-    if (PyTuple_SetItem(pyobj_dom_args, 0, pyobj_conn_inst)!=0) {
-        DEBUG("%s error creating tuple",__FUNCTION__);
+    if (PyTuple_SetItem(pyobj_dom_args, 0, pyobj_conn_inst) != 0) {
+        DEBUG("%s error creating tuple", __FUNCTION__);
         goto cleanup;
     }
-    if (PyTuple_SetItem(pyobj_dom_args, 1, pyobj_dom)!=0) {
-        DEBUG("%s error creating tuple",__FUNCTION__);
+    if (PyTuple_SetItem(pyobj_dom_args, 1, pyobj_dom) != 0) {
+        DEBUG("%s error creating tuple", __FUNCTION__);
         goto cleanup;
     }
     Py_INCREF(pyobj_conn_inst);
