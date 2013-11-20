@@ -1665,7 +1665,9 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
-    if (STREQ(root->src, "/") &&
+    /* FIXME: we should find a way to unmount these mounts for container
+     * even user namespace is enabled. */
+    if (STREQ(root->src, "/") && (!vmDef->idmap.nuidmap) &&
         lxcContainerUnmountForSharedRoot(stateDir, vmDef->name) < 0)
         goto cleanup;
 
