@@ -667,6 +667,14 @@ deleteVport(virStoragePoolSourceAdapter adapter)
     if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
 
+    /* It must be a HBA instead of a vHBA as long as "parent"
+     * is NULL. "createVport" guaranteed "parent" for a vHBA
+     * cannot be NULL, it's either specified in XML, or detected
+     * automatically.
+     */
+    if (!adapter.data.fchost.parent)
+        return 0;
+
     if (!(virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
                                 adapter.data.fchost.wwpn)))
         return -1;
