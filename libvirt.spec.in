@@ -1491,8 +1491,8 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
 
-mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} \
-   $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-docs-%{version}
+# Copied into libvirt-docs subpackage eventually
+mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} libvirt-docs
 
 %if %{with_dtrace}
     %ifarch %{power64} s390x x86_64 ia64 alpha sparc64
@@ -1732,12 +1732,7 @@ fi
 
 %files docs
 %defattr(-, root, root)
-%doc AUTHORS ChangeLog.gz NEWS README TODO
-
-# Website
-%dir %{_datadir}/doc/libvirt-docs-%{version}
-%dir %{_datadir}/doc/libvirt-docs-%{version}/html
-%{_datadir}/doc/libvirt-docs-%{version}/html/*
+%doc AUTHORS ChangeLog.gz NEWS README TODO libvirt-docs/*
 
 # API docs
 %dir %{_datadir}/gtk-doc/html/libvirt/
