@@ -959,6 +959,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
 {
     int ret = -1;
     char *path = NULL;
+    int flags = def->idmap.nuidmap ? MS_BIND : MS_MOVE;
 
     VIR_DEBUG("Mount /dev/ stateDir=%s", stateDir);
 
@@ -972,9 +973,10 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
         goto cleanup;
     }
 
-    VIR_DEBUG("Trying to move %s to /dev", path);
+    VIR_DEBUG("Trying to %s %s to /dev", def->idmap.nuidmap ?
+              "bind" : "move", path);
 
-    if (mount(path, "/dev", NULL, MS_MOVE, NULL) < 0) {
+    if (mount(path, "/dev", NULL, flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev"),
                              path);
@@ -993,6 +995,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
 {
     int ret;
     char *path = NULL;
+    int flags = def->idmap.nuidmap ? MS_BIND : MS_MOVE;
 
     VIR_DEBUG("Mount /dev/pts stateDir=%s", stateDir);
 
@@ -1008,10 +1011,10 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
         goto cleanup;
     }
 
-    VIR_DEBUG("Trying to move %s to /dev/pts", path);
+    VIR_DEBUG("Trying to %s %s to /dev/pts", def->idmap.nuidmap ?
+              "bind" : "move", path);
 
-    if ((ret = mount(path, "/dev/pts",
-                     NULL, MS_MOVE, NULL)) < 0) {
+    if ((ret = mount(path, "/dev/pts", NULL, flags, NULL)) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev/pts"),
                              path);
