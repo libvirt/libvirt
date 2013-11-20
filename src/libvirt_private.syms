@@ -701,6 +701,8 @@ virStorageVolDefFree;
 virStorageVolDefParseFile;
 virStorageVolDefParseNode;
 virStorageVolDefParseString;
+virStorageVolTypeFromString;
+virStorageVolTypeToString;
 
 
 # conf/storage_encryption_conf.h
