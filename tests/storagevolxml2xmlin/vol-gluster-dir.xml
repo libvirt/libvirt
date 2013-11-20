@@ -1,0 +1,12 @@
+<volume type='netdir'>
+  <name>dir</name>
+  <key>vol/dir</key>
+  <source>
+  </source>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <target>
+    <format type='dir'/>
+    <path>gluster://example.com/vol/dir</path>
+  </target>
+</volume>

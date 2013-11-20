@@ -121,6 +121,7 @@ mymain(void)
     DO_TEST("pool-logical", "vol-logical");
     DO_TEST("pool-logical", "vol-logical-backing");
     DO_TEST("pool-sheepdog", "vol-sheepdog");
+    DO_TEST("pool-gluster", "vol-gluster-dir");
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

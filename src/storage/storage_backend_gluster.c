@@ -165,9 +165,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     /* Silently skip '.' and '..'.  */
     if (STREQ(name, ".") || STREQ(name, ".."))
         return 0;
-    /* FIXME: support directories.  For now, silently skip them.  */
-    if (S_ISDIR(st->st_mode))
-        return 0;
 
     if (VIR_ALLOC(vol) < 0)
         goto cleanup;
@@ -177,7 +174,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
                     vol->name) < 0)
         goto cleanup;
 
-    vol->type = VIR_STORAGE_VOL_NETWORK;
     tmp = state->uri->path;
     state->uri->path = vol->key;
     if (!(vol->target.path = virURIFormat(state->uri))) {
@@ -186,7 +182,17 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     }
     state->uri->path = tmp;
 
+    if (S_ISDIR(st->st_mode)) {
+        vol->type = VIR_STORAGE_VOL_NETDIR;
+        vol->target.format = VIR_STORAGE_FILE_DIR;
+        *volptr = vol;
+        vol = NULL;
+        ret = 0;
+        goto cleanup;
+    }
+
     /* FIXME - must open files to determine if they are non-raw */
+    vol->type = VIR_STORAGE_VOL_NETWORK;
     vol->target.format = VIR_STORAGE_FILE_RAW;
     vol->capacity = vol->allocation = st->st_size;
 

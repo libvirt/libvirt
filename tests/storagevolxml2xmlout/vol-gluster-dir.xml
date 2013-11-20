@@ -1,0 +1,17 @@
+<volume type='netdir'>
+  <name>dir</name>
+  <key>vol/dir</key>
+  <source>
+  </source>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <target>
+    <path>gluster://example.com/vol/dir</path>
+    <format type='dir'/>
+    <permissions>
+      <mode>0600</mode>
+      <owner>4294967295</owner>
+      <group>4294967295</group>
+    </permissions>
+  </target>
+</volume>
