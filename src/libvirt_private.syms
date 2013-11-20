@@ -696,6 +696,7 @@ virStoragePoolSourceFree;
 virStoragePoolSourceListFormat;
 virStoragePoolSourceListNewSource;
 virStoragePoolTypeFromString;
+virStoragePoolTypeToString;
 virStorageVolDefFindByKey;
 virStorageVolDefFindByName;
 virStorageVolDefFindByPath;

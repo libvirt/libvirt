@@ -1298,6 +1298,17 @@ cleanup:
     return ret;
 }
 
+
+int
+qemuDiskGetActualType(virDomainDiskDefPtr def)
+{
+    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME)
+        return def->srcpool->actualtype;
+
+    return def->type;
+}
+
+
 int
 qemuTranslateDiskSourcePool(virConnectPtr conn,
                             virDomainDiskDefPtr def)
@@ -1319,72 +1330,123 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     if (!(pool = virStoragePoolLookupByName(conn, def->srcpool->pool)))
         return -1;
 
+    if (virStoragePoolIsActive(pool) != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("storage pool '%s' containing volume '%s' "
+                         "is not active"),
+                       def->srcpool->pool, def->srcpool->volume);
+        goto cleanup;
+    }
+
     if (!(vol = virStorageVolLookupByName(pool, def->srcpool->volume)))
         goto cleanup;
 
     if (virStorageVolGetInfo(vol, &info) < 0)
         goto cleanup;
 
-    if (def->startupPolicy &&
-        info.type != VIR_STORAGE_VOL_FILE) {
+    if (!(poolxml = virStoragePoolGetXMLDesc(pool, 0)))
+        goto cleanup;
+
+    if (!(pooldef = virStoragePoolDefParseString(poolxml)))
+        goto cleanup;
+
+    def->srcpool->pooltype = pooldef->type;
+    def->srcpool->voltype = info.type;
+
+    if (def->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'startupPolicy' is only valid for 'file' type volume"));
+                       _("disk source mode is only valid when "
+                         "storage pool is of iscsi type"));
         goto cleanup;
     }
 
-    switch ((virStorageVolType) info.type) {
-    case VIR_STORAGE_VOL_FILE:
-    case VIR_STORAGE_VOL_DIR:
+    switch ((enum virStoragePoolType) pooldef->type) {
+    case VIR_STORAGE_POOL_DIR:
+    case VIR_STORAGE_POOL_FS:
+    case VIR_STORAGE_POOL_NETFS:
+    case VIR_STORAGE_POOL_LOGICAL:
+    case VIR_STORAGE_POOL_DISK:
+    case VIR_STORAGE_POOL_SCSI:
         if (!(def->src = virStorageVolGetPath(vol)))
             goto cleanup;
-        break;
-    case VIR_STORAGE_VOL_BLOCK:
-        if (!(poolxml = virStoragePoolGetXMLDesc(pool, 0)))
-            goto cleanup;
 
-        if (!(pooldef = virStoragePoolDefParseString(poolxml)))
-            goto cleanup;
-
-        if (def->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
+        if (def->startupPolicy && info.type != VIR_STORAGE_VOL_FILE) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("disk source mode is only valid when "
-                             "storage pool is of iscsi type"));
+                           _("'startupPolicy' is only valid for "
+                             "'file' type volume"));
             goto cleanup;
         }
 
-        def->srcpool->pooltype = pooldef->type;
-        if (pooldef->type == VIR_STORAGE_POOL_ISCSI) {
-            /* Default to use the LUN's path on host */
-            if (!def->srcpool->mode)
-                def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
 
-            if (def->srcpool->mode ==
-                VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT) {
-                if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)
-                    goto cleanup;
-            } else if (def->srcpool->mode ==
-                       VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST) {
-                if (!(def->src = virStorageVolGetPath(vol)))
-                    goto cleanup;
-            }
+        switch (info.type) {
+        case VIR_STORAGE_VOL_FILE:
+            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_FILE;
+            break;
+
+        case VIR_STORAGE_VOL_DIR:
+            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_DIR;
+            break;
+
+        case VIR_STORAGE_VOL_BLOCK:
+            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+            break;
+
+        case VIR_STORAGE_VOL_NETWORK:
+        case VIR_STORAGE_VOL_NETDIR:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected storage volume type '%s' "
+                             "for storage pool type '%s'"),
+                           virStorageVolTypeToString(info.type),
+                           virStoragePoolTypeToString(pooldef->type));
+            goto cleanup;
+        }
+
+        break;
+
+    case VIR_STORAGE_POOL_ISCSI:
+        if (def->startupPolicy) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'startupPolicy' is only valid for "
+                             "'file' type volume"));
+            goto cleanup;
+        }
+
+       switch (def->srcpool->mode) {
+        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT:
+        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST:
+            def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
+            /* fallthrough */
+        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
+            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+            if (!(def->src = virStorageVolGetPath(vol)))
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
+            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
+            def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
             if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
                 goto cleanup;
-        } else {
-            if (!(def->src = virStorageVolGetPath(vol)))
-                goto cleanup;
-        }
 
+            if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)
+                goto cleanup;
+            break;
+        }
         break;
-    case VIR_STORAGE_VOL_NETWORK:
-    case VIR_STORAGE_VOL_NETDIR:
-    case VIR_STORAGE_VOL_LAST:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Using network volume as disk source is not supported"));
+
+    case VIR_STORAGE_POOL_MPATH:
+    case VIR_STORAGE_POOL_RBD:
+    case VIR_STORAGE_POOL_SHEEPDOG:
+    case VIR_STORAGE_POOL_GLUSTER:
+    case VIR_STORAGE_POOL_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("using '%s' pools for backing 'volume' disks "
+                         "isn't yet supported"),
+                       virStoragePoolTypeToString(pooldef->type));
         goto cleanup;
     }
 
-    def->srcpool->voltype = info.type;
     ret = 0;
 cleanup:
     if (ret < 0)
