@@ -18,6 +18,7 @@
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"
 # include "datatypes.h"
+# include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
 # include "virstring.h"
 
@@ -75,6 +76,182 @@ static virSecretDriver fakeSecretDriver = {
     .secretUndefine = NULL,
 };
 
+
+# define STORAGE_POOL_XML_PATH "storagepoolxml2xmlout/"
+static const unsigned char fakeUUID[VIR_UUID_BUFLEN] = "fakeuuid";
+
+static virStoragePoolPtr
+fakeStoragePoolLookupByName(virConnectPtr conn,
+                            const char *name)
+{
+    char *xmlpath = NULL;
+    virStoragePoolPtr ret = NULL;
+
+    if (STRNEQ(name, "inactive")) {
+        if (virAsprintf(&xmlpath, "%s/%s%s.xml",
+                        abs_srcdir,
+                        STORAGE_POOL_XML_PATH,
+                        name) < 0)
+            return NULL;
+
+        if (!virFileExists(xmlpath)) {
+            virReportError(VIR_ERR_NO_STORAGE_POOL,
+                           "File '%s' not found", xmlpath);
+            goto cleanup;
+        }
+    }
+
+    ret = virGetStoragePool(conn, name, fakeUUID, NULL, NULL);
+
+cleanup:
+    VIR_FREE(xmlpath);
+    return ret;
+}
+
+
+static virStorageVolPtr
+fakeStorageVolLookupByName(virStoragePoolPtr pool,
+                           const char *name)
+{
+    char **volinfo = NULL;
+    virStorageVolPtr ret = NULL;
+
+    if (STREQ(pool->name, "inactive")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "storage pool '%s' is not active", pool->name);
+        return NULL;
+    }
+
+    if (STREQ(name, "nonexistent")) {
+        virReportError(VIR_ERR_NO_STORAGE_VOL,
+                       "no storage vol with matching name '%s'", name);
+        return NULL;
+    }
+
+    if (!strchr(name, '+'))
+        goto fallback;
+
+    if (!(volinfo = virStringSplit(name, "+", 2)))
+        return NULL;
+
+    if (!volinfo[1])
+        goto fallback;
+
+    ret = virGetStorageVol(pool->conn, pool->name, volinfo[1], volinfo[0],
+                           NULL, NULL);
+
+cleanup:
+    virStringFreeList(volinfo);
+    return ret;
+
+fallback:
+    ret = virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
+    goto cleanup;
+}
+
+static int
+fakeStorageVolGetInfo(virStorageVolPtr vol,
+                      virStorageVolInfoPtr info)
+{
+    memset(info, 0, sizeof(*info));
+
+    info->type = virStorageVolTypeFromString(vol->key);
+
+    if (info->type < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid volume type '%s'", vol->key);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static char *
+fakeStorageVolGetPath(virStorageVolPtr vol)
+{
+    char *ret = NULL;
+
+    ignore_value(virAsprintf(&ret, "/some/%s/device/%s", vol->key, vol->name));
+
+    return ret;
+}
+
+
+static char *
+fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
+                          unsigned int flags_unused ATTRIBUTE_UNUSED)
+{
+    char *xmlpath = NULL;
+    char *xmlbuf = NULL;
+
+    if (STREQ(pool->name, "inactive")) {
+        virReportError(VIR_ERR_NO_STORAGE_POOL, NULL);
+        return NULL;
+    }
+
+    if (virAsprintf(&xmlpath, "%s/%s%s.xml",
+                    abs_srcdir,
+                    STORAGE_POOL_XML_PATH,
+                    pool->name) < 0)
+        return NULL;
+
+    if (virtTestLoadFile(xmlpath, &xmlbuf) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "failed to load XML file '%s'",
+                       xmlpath);
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(xmlpath);
+
+    return xmlbuf;
+}
+
+static int
+fakeStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+fakeStoragePoolIsActive(virStoragePoolPtr pool)
+{
+    if (STREQ(pool->name, "inactive"))
+        return 0;
+
+    return 1;
+}
+
+/* Test storage pool implementation
+ *
+ * These functions aid testing of storage pool related stuff when creating a
+ * qemu command .
+ *
+ * There are a few "magic" values to pass to these functions:
+ *
+ * 1) "inactive" as
+ * a pool name for pool lookup creates a inactive pool. All other names are
+ * interpreted as file names for files of storagepooltest and are used as the
+ * definition for the pool. If the file doesn't exist the pool doesn't exist.
+ *
+ * 2) "nonexistent" returns an error while looking up a volume. Otherwise
+ * pattern VOLUME_TYPE+VOLUME_PATH can be used to simulate a volume in an pool.
+ * This creates a fake path for this volume. If the '+' sign is omitted, block
+ * type is assumed.
+ */
+static virStorageDriver fakeStorageDriver = {
+    .name = "fake_storage",
+    .storageClose = fakeStorageClose,
+    .storagePoolLookupByName = fakeStoragePoolLookupByName,
+    .storageVolLookupByName = fakeStorageVolLookupByName,
+    .storagePoolGetXMLDesc = fakeStoragePoolGetXMLDesc,
+    .storageVolGetPath = fakeStorageVolGetPath,
+    .storageVolGetInfo = fakeStorageVolGetInfo,
+    .storagePoolIsActive = fakeStoragePoolIsActive,
+};
+
 typedef enum {
     FLAG_EXPECT_ERROR       = 1 << 0,
     FLAG_EXPECT_FAILURE     = 1 << 1,
@@ -103,6 +280,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(conn = virGetConnect()))
         goto out;
     conn->secretDriver = &fakeSecretDriver;
+    conn->storageDriver = &fakeStorageDriver;
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
@@ -163,6 +341,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
             hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
             hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
         }
+    }
+
+    for (i = 0; i < vmdef->ndisks; i++) {
+        if (qemuTranslateDiskSourcePool(conn, vmdef->disks[i]) < 0)
+            goto out;
     }
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
