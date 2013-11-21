@@ -31,9 +31,6 @@
 typedef struct _virObjectEventCallback virObjectEventCallback;
 typedef virObjectEventCallback *virObjectEventCallbackPtr;
 
-typedef struct _virDomainEventCallbackList virDomainEventCallbackList;
-typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
-
 /**
  * Dispatching domain events that come in while
  * in a call / response rpc
