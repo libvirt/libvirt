@@ -85,8 +85,10 @@ struct _virObjectEventCallback {
 
 static virClassPtr virObjectEventClass;
 static virClassPtr virDomainEventClass;
+static virClassPtr virDomainEventLifecycleClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
+static void virDomainEventLifecycleDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -99,10 +101,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            int type;
-            int detail;
-        } lifecycle;
         struct {
             long long offset;
         } rtcChange;
@@ -147,6 +145,16 @@ struct _virDomainEvent {
     } data;
 };
 
+struct _virDomainEventLifecycle {
+    virDomainEvent parent;
+
+    int type;
+    int detail;
+};
+typedef struct _virDomainEventLifecycle virDomainEventLifecycle;
+typedef virDomainEventLifecycle *virDomainEventLifecyclePtr;
+
+
 static int virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
@@ -160,6 +168,12 @@ static int virObjectEventOnceInit(void)
                       "virDomainEvent",
                       sizeof(virDomainEvent),
                       virDomainEventDispose)))
+        return -1;
+    if (!(virDomainEventLifecycleClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventLifecycle",
+                      sizeof(virDomainEventLifecycle),
+                      virDomainEventLifecycleDispose)))
         return -1;
     return 0;
 }
@@ -239,6 +253,12 @@ static void virDomainEventDispose(void *obj)
     }
 
     VIR_FREE(event->meta.name);
+}
+
+static void virDomainEventLifecycleDispose(void *obj)
+{
+    virDomainEventLifecyclePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
 }
 
 /**
@@ -774,20 +794,20 @@ virDomainEventPtr virDomainEventNew(int id, const char *name,
                                     const unsigned char *uuid,
                                     int type, int detail)
 {
-    virDomainEventPtr event;
+    virDomainEventLifecyclePtr event;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(event = virDomainEventNewInternal(virDomainEventClass,
-                                      VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                      id, name, uuid)))
+    if (!(event = virDomainEventNewInternal(virDomainEventLifecycleClass,
+                                            VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                            id, name, uuid)))
         return NULL;
 
-    event->data.lifecycle.type = type;
-    event->data.lifecycle.detail = detail;
+    event->type = type;
+    event->detail = detail;
 
-    return event;
+    return (virDomainEventPtr)event;
 }
 
 virDomainEventPtr virDomainEventNewFromDom(virDomainPtr dom, int type, int detail)
@@ -1460,11 +1480,16 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 
     switch ((virDomainEventID) eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
-        ((virConnectDomainEventCallback)cb)(conn, dom,
-                                            event->data.lifecycle.type,
-                                            event->data.lifecycle.detail,
-                                            cbopaque);
-        goto cleanup;
+        {
+            virDomainEventLifecyclePtr lifecycleEvent;
+
+            lifecycleEvent = (virDomainEventLifecyclePtr)event;
+            ((virConnectDomainEventCallback)cb)(conn, dom,
+                                                lifecycleEvent->type,
+                                                lifecycleEvent->detail,
+                                                cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_REBOOT:
         (cb)(conn, dom,
