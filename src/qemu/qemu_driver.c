@@ -13449,7 +13449,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                       QEMU_ASYNC_JOB_NONE);
             if (rc < 0)
                 goto endjob;
-            virDomainEventFree(event);
+            virObjectUnref(event);
             event = NULL;
             if (was_stopped) {
                 /* Transition 2 */

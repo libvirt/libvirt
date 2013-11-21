@@ -35,6 +35,9 @@ typedef virObjectEventCallback *virObjectEventCallbackPtr;
  * Dispatching domain events that come in while
  * in a call / response rpc
  */
+typedef struct _virObjectEvent virObjectEvent;
+typedef virObjectEvent *virObjectEventPtr;
+
 typedef struct _virDomainEvent virDomainEvent;
 typedef virDomainEvent *virDomainEventPtr;
 
@@ -130,8 +133,6 @@ virDomainEventPtr virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
                                                         const char *devAlias);
 virDomainEventPtr virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
                                                         const char *devAlias);
-
-void virDomainEventFree(virDomainEventPtr event);
 
 void virObjectEventStateFree(virObjectEventStatePtr state);
 virObjectEventStatePtr

@@ -81,8 +81,20 @@ struct _virObjectEventCallback {
     int deleted;
 };
 
-struct _virDomainEvent {
+
+
+static virClassPtr virObjectEventClass;
+static virClassPtr virDomainEventClass;
+static void virObjectEventDispose(void *obj);
+static void virDomainEventDispose(void *obj);
+
+struct _virObjectEvent {
+    virObject parent;
     int eventID;
+};
+
+struct _virDomainEvent {
+    virObjectEvent parent;
 
     virObjectMeta meta;
 
@@ -134,6 +146,100 @@ struct _virDomainEvent {
         } deviceRemoved;
     } data;
 };
+
+static int virObjectEventOnceInit(void)
+{
+    if (!(virObjectEventClass =
+          virClassNew(virClassForObject(),
+                      "virObjectEvent",
+                      sizeof(virObjectEvent),
+                      virObjectEventDispose)))
+        return -1;
+    if (!(virDomainEventClass =
+          virClassNew(virObjectEventClass,
+                      "virDomainEvent",
+                      sizeof(virDomainEvent),
+                      virDomainEventDispose)))
+        return -1;
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virObjectEvent)
+
+static int virObjectEventGetEventID(void *anyobj)
+{
+    virObjectEventPtr obj = anyobj;
+
+    if (!virObjectIsClass(obj, virObjectEventClass)) {
+        VIR_WARN("Object %p (%s) is not a virObjectEvent instance",
+                 obj, obj ? virClassName(obj->parent.klass) : "(unknown)");
+        return -1;
+    }
+    return obj->eventID;
+}
+
+static void virObjectEventDispose(void *obj)
+{
+    virObjectEventPtr event = obj;
+
+    VIR_DEBUG("obj=%p", event);
+}
+
+static void virDomainEventDispose(void *obj)
+{
+    virDomainEventPtr event = obj;
+
+    VIR_DEBUG("obj=%p", event);
+
+    switch (virObjectEventGetEventID(event)) {
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR:
+        VIR_FREE(event->data.ioError.srcPath);
+        VIR_FREE(event->data.ioError.devAlias);
+        VIR_FREE(event->data.ioError.reason);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_GRAPHICS:
+        if (event->data.graphics.local) {
+            VIR_FREE(event->data.graphics.local->node);
+            VIR_FREE(event->data.graphics.local->service);
+            VIR_FREE(event->data.graphics.local);
+        }
+        if (event->data.graphics.remote) {
+            VIR_FREE(event->data.graphics.remote->node);
+            VIR_FREE(event->data.graphics.remote->service);
+            VIR_FREE(event->data.graphics.remote);
+        }
+        VIR_FREE(event->data.graphics.authScheme);
+        if (event->data.graphics.subject) {
+            size_t i;
+            for (i = 0; i < event->data.graphics.subject->nidentity; i++) {
+                VIR_FREE(event->data.graphics.subject->identities[i].type);
+                VIR_FREE(event->data.graphics.subject->identities[i].name);
+            }
+            VIR_FREE(event->data.graphics.subject);
+        }
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+        VIR_FREE(event->data.blockJob.path);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+        VIR_FREE(event->data.diskChange.oldSrcPath);
+        VIR_FREE(event->data.diskChange.newSrcPath);
+        VIR_FREE(event->data.diskChange.devAlias);
+        break;
+    case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
+        VIR_FREE(event->data.trayChange.devAlias);
+        break;
+    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
+        VIR_FREE(event->data.deviceRemoved.devAlias);
+        break;
+    }
+
+    VIR_FREE(event->meta.name);
+}
 
 /**
  * virObjectEventCallbackListFree:
@@ -486,62 +592,6 @@ virObjectEventCallbackListEventID(virConnectPtr conn,
 }
 
 
-void virDomainEventFree(virDomainEventPtr event)
-{
-    if (!event)
-        return;
-
-    switch (event->eventID) {
-    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
-    case VIR_DOMAIN_EVENT_ID_IO_ERROR:
-        VIR_FREE(event->data.ioError.srcPath);
-        VIR_FREE(event->data.ioError.devAlias);
-        VIR_FREE(event->data.ioError.reason);
-        break;
-
-    case VIR_DOMAIN_EVENT_ID_GRAPHICS:
-        if (event->data.graphics.local) {
-            VIR_FREE(event->data.graphics.local->node);
-            VIR_FREE(event->data.graphics.local->service);
-            VIR_FREE(event->data.graphics.local);
-        }
-        if (event->data.graphics.remote) {
-            VIR_FREE(event->data.graphics.remote->node);
-            VIR_FREE(event->data.graphics.remote->service);
-            VIR_FREE(event->data.graphics.remote);
-        }
-        VIR_FREE(event->data.graphics.authScheme);
-        if (event->data.graphics.subject) {
-            size_t i;
-            for (i = 0; i < event->data.graphics.subject->nidentity; i++) {
-                VIR_FREE(event->data.graphics.subject->identities[i].type);
-                VIR_FREE(event->data.graphics.subject->identities[i].name);
-            }
-            VIR_FREE(event->data.graphics.subject);
-        }
-        break;
-
-    case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
-        VIR_FREE(event->data.blockJob.path);
-        break;
-
-    case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
-        VIR_FREE(event->data.diskChange.oldSrcPath);
-        VIR_FREE(event->data.diskChange.newSrcPath);
-        VIR_FREE(event->data.diskChange.devAlias);
-        break;
-    case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
-        VIR_FREE(event->data.trayChange.devAlias);
-        break;
-    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
-        VIR_FREE(event->data.deviceRemoved.devAlias);
-        break;
-    }
-
-    VIR_FREE(event->meta.name);
-    VIR_FREE(event);
-}
-
 /**
  * virObjectEventQueueClear:
  * @queue: pointer to the queue
@@ -556,7 +606,7 @@ virObjectEventQueueClear(virObjectEventQueuePtr queue)
         return;
 
     for (i = 0; i < queue->count; i++) {
-        virDomainEventFree(queue->events[i]);
+        virObjectUnref(queue->events[i]);
     }
     VIR_FREE(queue->events);
     queue->count = 0;
@@ -665,17 +715,51 @@ error:
     return NULL;
 }
 
-static virDomainEventPtr virDomainEventNewInternal(int eventID,
-                                                   int id,
-                                                   const char *name,
-                                                   const unsigned char *uuid)
+static void *virObjectEventNew(virClassPtr klass,
+                               int eventID)
 {
-    virDomainEventPtr event;
+    virObjectEventPtr event;
 
-    if (VIR_ALLOC(event) < 0)
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!virClassIsDerivedFrom(klass, virObjectEventClass)) {
+        virReportInvalidArg(klass,
+                            _("Class %s must derive from virObjectEvent"),
+                            virClassName(klass));
+        return NULL;
+    }
+
+    if (!(event = virObjectNew(klass)))
         return NULL;
 
     event->eventID = eventID;
+
+    VIR_DEBUG("obj=%p", event);
+    return event;
+}
+
+static void *virDomainEventNewInternal(virClassPtr klass,
+                                       int eventID,
+                                       int id,
+                                       const char *name,
+                                       const unsigned char *uuid)
+{
+    virDomainEventPtr event;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!virClassIsDerivedFrom(klass, virDomainEventClass)) {
+        virReportInvalidArg(klass,
+                            _("Class %s must derive from virDomainEvent"),
+                            virClassName(klass));
+        return NULL;
+    }
+
+    if (!(event = virObjectEventNew(klass, eventID)))
+        return NULL;
+
     if (VIR_STRDUP(event->meta.name, name) < 0) {
         VIR_FREE(event);
         return NULL;
@@ -690,13 +774,18 @@ virDomainEventPtr virDomainEventNew(int id, const char *name,
                                     const unsigned char *uuid,
                                     int type, int detail)
 {
-    virDomainEventPtr event = virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                                        id, name, uuid);
+    virDomainEventPtr event;
 
-    if (event) {
-        event->data.lifecycle.type = type;
-        event->data.lifecycle.detail = detail;
-    }
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(event = virDomainEventNewInternal(virDomainEventClass,
+                                      VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                      id, name, uuid)))
+        return NULL;
+
+    event->data.lifecycle.type = type;
+    event->data.lifecycle.detail = detail;
 
     return event;
 }
@@ -719,43 +808,66 @@ virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int de
 virDomainEventPtr virDomainEventRebootNew(int id, const char *name,
                                           const unsigned char *uuid)
 {
-    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    return virDomainEventNewInternal(virDomainEventClass,
+                                     VIR_DOMAIN_EVENT_ID_REBOOT,
                                      id, name, uuid);
 }
 
 virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom)
 {
-    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    return virDomainEventNewInternal(virDomainEventClass,
+                                     VIR_DOMAIN_EVENT_ID_REBOOT,
                                      dom->id, dom->name, dom->uuid);
 }
 
 virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
 {
-    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    return virDomainEventNewInternal(virDomainEventClass,
+                                     VIR_DOMAIN_EVENT_ID_REBOOT,
                                      obj->def->id, obj->def->name, obj->def->uuid);
 }
 
 virDomainEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
                                                     long long offset)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.rtcChange.offset = offset;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
+
+    ev->data.rtcChange.offset = offset;
 
     return ev;
 }
 virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
                                                     long long offset)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.rtcChange.offset = offset;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
+                                         obj->def->id, obj->def->name,
+                                         obj->def->uuid)))
+        return NULL;
+
+    ev->data.rtcChange.offset = offset;
 
     return ev;
 }
@@ -763,24 +875,35 @@ virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
 virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom,
                                                    int action)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_WATCHDOG,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.watchdog.action = action;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_WATCHDOG,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
+
+    ev->data.watchdog.action = action;
 
     return ev;
 }
 virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
                                                    int action)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_WATCHDOG,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.watchdog.action = action;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_WATCHDOG,
+                                         obj->def->id, obj->def->name,
+                                         obj->def->uuid)))
+        return NULL;
+
+    ev->data.watchdog.action = action;
 
     return ev;
 }
@@ -792,18 +915,21 @@ static virDomainEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
                                                              int action,
                                                              const char *reason)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(event,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        ev->data.ioError.action = action;
-        if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
-            VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
-            VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
-            virDomainEventFree(ev);
-            ev = NULL;
-        }
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass, event,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
+
+    ev->data.ioError.action = action;
+    if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
+        VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
+        VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
+        virObjectUnref(ev);
+        ev = NULL;
     }
 
     return ev;
@@ -816,18 +942,22 @@ static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
                                                              int action,
                                                              const char *reason)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(event,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        ev->data.ioError.action = action;
-        if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
-            VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
-            VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
-            virDomainEventFree(ev);
-            ev = NULL;
-        }
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass, event,
+                                         obj->def->id, obj->def->name,
+                                         obj->def->uuid)))
+        return NULL;
+
+    ev->data.ioError.action = action;
+    if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
+        VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
+        VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
+        virObjectUnref(ev);
+        ev = NULL;
     }
 
     return ev;
@@ -883,20 +1013,24 @@ virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
                                                    const char *authScheme,
                                                    virDomainEventGraphicsSubjectPtr subject)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_GRAPHICS,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        ev->data.graphics.phase = phase;
-        if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
-            virDomainEventFree(ev);
-            return NULL;
-        }
-        ev->data.graphics.local = local;
-        ev->data.graphics.remote = remote;
-        ev->data.graphics.subject = subject;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_GRAPHICS,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
+
+    ev->data.graphics.phase = phase;
+    if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
+        virObjectUnref(ev);
+        return NULL;
     }
+    ev->data.graphics.local = local;
+    ev->data.graphics.remote = remote;
+    ev->data.graphics.subject = subject;
 
     return ev;
 }
@@ -908,20 +1042,25 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
                                                    const char *authScheme,
                                                    virDomainEventGraphicsSubjectPtr subject)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_GRAPHICS,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        ev->data.graphics.phase = phase;
-        if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
-            virDomainEventFree(ev);
-            return NULL;
-        }
-        ev->data.graphics.local = local;
-        ev->data.graphics.remote = remote;
-        ev->data.graphics.subject = subject;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_GRAPHICS,
+                                         obj->def->id, obj->def->name,
+                                         obj->def->uuid)))
+        return NULL;
+
+    ev->data.graphics.phase = phase;
+    if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
+        virObjectUnref(ev);
+        return NULL;
     }
+    ev->data.graphics.local = local;
+    ev->data.graphics.remote = remote;
+    ev->data.graphics.subject = subject;
 
     return ev;
 }
@@ -930,18 +1069,22 @@ static virDomainEventPtr
 virDomainEventBlockJobNew(int id, const char *name, unsigned char *uuid,
                           const char *path, int type, int status)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        if (VIR_STRDUP(ev->data.blockJob.path, path) < 0) {
-            virDomainEventFree(ev);
-            return NULL;
-        }
-        ev->data.blockJob.type = type;
-        ev->data.blockJob.status = status;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                         id, name, uuid)))
+        return NULL;
+
+    if (VIR_STRDUP(ev->data.blockJob.path, path) < 0) {
+        virObjectUnref(ev);
+        return NULL;
     }
+    ev->data.blockJob.type = type;
+    ev->data.blockJob.status = status;
 
     return ev;
 }
@@ -966,18 +1109,31 @@ virDomainEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
 
 virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
     return ev;
 }
 
 
 virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
+                                         obj->def->id, obj->def->name,
+                                         obj->def->uuid)))
+        return NULL;
     return ev;
 }
 
@@ -988,27 +1144,31 @@ virDomainEventDiskChangeNew(int id, const char *name,
                             const char *newSrcPath,
                             const char *devAlias, int reason)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_DISK_CHANGE,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        if (VIR_STRDUP(ev->data.diskChange.devAlias, devAlias) < 0)
-            goto error;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
 
-        if (VIR_STRDUP(ev->data.diskChange.oldSrcPath, oldSrcPath) < 0)
-            goto error;
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_DISK_CHANGE,
+                                         id, name, uuid)))
+        return NULL;
 
-        if (VIR_STRDUP(ev->data.diskChange.newSrcPath, newSrcPath) < 0)
-            goto error;
+    if (VIR_STRDUP(ev->data.diskChange.devAlias, devAlias) < 0)
+        goto error;
 
-        ev->data.diskChange.reason = reason;
-    }
+    if (VIR_STRDUP(ev->data.diskChange.oldSrcPath, oldSrcPath) < 0)
+        goto error;
+
+    if (VIR_STRDUP(ev->data.diskChange.newSrcPath, newSrcPath) < 0)
+        goto error;
+
+    ev->data.diskChange.reason = reason;
 
     return ev;
 
 error:
-    virDomainEventFree(ev);
+    virObjectUnref(ev);
     return NULL;
 }
 
@@ -1040,21 +1200,25 @@ virDomainEventTrayChangeNew(int id, const char *name,
                             const char *devAlias,
                             int reason)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_TRAY_CHANGE,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        if (VIR_STRDUP(ev->data.trayChange.devAlias, devAlias) < 0)
-            goto error;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
 
-        ev->data.trayChange.reason = reason;
-    }
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_TRAY_CHANGE,
+                                         id, name, uuid)))
+        return NULL;
+
+    if (VIR_STRDUP(ev->data.trayChange.devAlias, devAlias) < 0)
+        goto error;
+
+    ev->data.trayChange.reason = reason;
 
     return ev;
 
 error:
-    virDomainEventFree(ev);
+    virObjectUnref(ev);
     return NULL;
 }
 
@@ -1081,9 +1245,15 @@ static virDomainEventPtr
 virDomainEventPMWakeupNew(int id, const char *name,
                           unsigned char *uuid)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMWAKEUP,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_PMWAKEUP,
+                                         id, name, uuid)))
+        return NULL;
 
     return ev;
 }
@@ -1106,9 +1276,15 @@ static virDomainEventPtr
 virDomainEventPMSuspendNew(int id, const char *name,
                            unsigned char *uuid)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMSUSPEND,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_PMSUSPEND,
+                                         id, name, uuid)))
+        return NULL;
 
     return ev;
 }
@@ -1131,9 +1307,15 @@ static virDomainEventPtr
 virDomainEventPMSuspendDiskNew(int id, const char *name,
                                unsigned char *uuid)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
+
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                  VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
+                                  id, name, uuid)))
+        return NULL;
     return ev;
 }
 
@@ -1154,24 +1336,34 @@ virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom)
 virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
                                                         unsigned long long actual)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
-                                  dom->id, dom->name, dom->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.balloonChange.actual = actual;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
+                                         dom->id, dom->name, dom->uuid)))
+        return NULL;
+
+    ev->data.balloonChange.actual = actual;
 
     return ev;
 }
 virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
                                                         unsigned long long actual)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
-                                  obj->def->id, obj->def->name, obj->def->uuid);
+    virDomainEventPtr ev;
 
-    if (ev)
-        ev->data.balloonChange.actual = actual;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
+                                         obj->def->id, obj->def->name, obj->def->uuid)))
+        return NULL;
+
+    ev->data.balloonChange.actual = actual;
 
     return ev;
 }
@@ -1182,19 +1374,23 @@ virDomainEventDeviceRemovedNew(int id,
                                unsigned char *uuid,
                                const char *devAlias)
 {
-    virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
-                                  id, name, uuid);
+    virDomainEventPtr ev;
 
-    if (ev) {
-        if (VIR_STRDUP(ev->data.deviceRemoved.devAlias, devAlias) < 0)
-            goto error;
-    }
+    if (virObjectEventInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNewInternal(virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
+                                         id, name, uuid)))
+        return NULL;
+
+    if (VIR_STRDUP(ev->data.deviceRemoved.devAlias, devAlias) < 0)
+        goto error;
 
     return ev;
 
 error:
-    virDomainEventFree(ev);
+    virObjectUnref(ev);
     return NULL;
 }
 
@@ -1257,11 +1453,12 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   void *opaque ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
+    int eventID = virObjectEventGetEventID(event);
     if (!dom)
         return;
     dom->id = event->meta.id;
 
-    switch ((virDomainEventID) event->eventID) {
+    switch ((virDomainEventID) eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
         ((virConnectDomainEventCallback)cb)(conn, dom,
                                             event->data.lifecycle.type,
@@ -1370,7 +1567,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         break;
     }
 
-    VIR_WARN("Unexpected event ID %d", event->eventID);
+    VIR_WARN("Unexpected event ID %d", eventID);
 
 cleanup:
     virDomainFree(dom);
@@ -1384,7 +1581,7 @@ static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
         return 0;
     if (cb->deleted)
         return 0;
-    if (cb->eventID != event->eventID)
+    if (cb->eventID != virObjectEventGetEventID(event))
         return 0;
 
     if (cb->meta) {
@@ -1439,7 +1636,7 @@ virObjectEventQueueDispatch(virObjectEventQueuePtr queue,
 
     for (i = 0; i < queue->count; i++) {
         virDomainEventDispatch(queue->events[i], callbacks, dispatch, opaque);
-        virDomainEventFree(queue->events[i]);
+        virObjectUnref(queue->events[i]);
     }
     VIR_FREE(queue->events);
     queue->count = 0;
@@ -1450,7 +1647,7 @@ virObjectEventStateQueue(virObjectEventStatePtr state,
                          virDomainEventPtr event)
 {
     if (state->timer < 0) {
-        virDomainEventFree(event);
+        virObjectUnref(event);
         return;
     }
 
@@ -1458,7 +1655,7 @@ virObjectEventStateQueue(virObjectEventStatePtr state,
 
     if (virObjectEventQueuePush(state->queue, event) < 0) {
         VIR_DEBUG("Error adding event to queue");
-        virDomainEventFree(event);
+        virObjectUnref(event);
     }
 
     if (state->queue->count == 1)

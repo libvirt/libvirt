@@ -7035,7 +7035,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             } /* else transition 6 and 9 use event as-is */
         } else {
             /* Transitions 2, 5, 8 */
-            virDomainEventFree(event);
+            virObjectUnref(event);
             event = NULL;
 
             if (was_stopped) {
@@ -7089,7 +7089,7 @@ cleanup:
         if (event2)
             testDomainEventQueue(privconn, event2);
     } else {
-        virDomainEventFree(event2);
+        virObjectUnref(event2);
     }
     virObjectUnlock(vm);
     testDriverUnlock(privconn);

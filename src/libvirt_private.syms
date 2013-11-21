@@ -424,7 +424,6 @@ virDomainEventDeviceRemovedNewFromDom;
 virDomainEventDeviceRemovedNewFromObj;
 virDomainEventDiskChangeNewFromDom;
 virDomainEventDiskChangeNewFromObj;
-virDomainEventFree;
 virDomainEventGraphicsNewFromDom;
 virDomainEventGraphicsNewFromObj;
 virDomainEventIOErrorNewFromDom;
