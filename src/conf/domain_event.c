@@ -40,13 +40,16 @@ struct _virObjectMeta {
 typedef struct _virObjectMeta virObjectMeta;
 typedef virObjectMeta *virObjectMetaPtr;
 
+typedef struct _virObjectEventQueue virObjectEventQueue;
+typedef virObjectEventQueue *virObjectEventQueuePtr;
+
 struct _virDomainEventCallbackList {
     unsigned int nextID;
     unsigned int count;
     virObjectEventCallbackPtr *callbacks;
 };
 
-struct _virDomainEventQueue {
+struct _virObjectEventQueue {
     unsigned int count;
     virDomainEventPtr *events;
 };
@@ -54,8 +57,8 @@ struct _virDomainEventQueue {
 struct _virDomainEventState {
     /* The list of domain event callbacks */
     virDomainEventCallbackListPtr callbacks;
-    /* The queue of domain events */
-    virDomainEventQueuePtr queue;
+    /* The queue of object events */
+    virObjectEventQueuePtr queue;
     /* Timer for flushing events queue */
     int timer;
     /* Flag if we're in process of dispatching */
@@ -531,13 +534,13 @@ void virDomainEventFree(virDomainEventPtr event)
 }
 
 /**
- * virDomainEventQueueClear:
+ * virObjectEventQueueClear:
  * @queue: pointer to the queue
  *
  * Removes all elements from the queue
  */
 static void
-virDomainEventQueueClear(virDomainEventQueuePtr queue)
+virObjectEventQueueClear(virObjectEventQueuePtr queue)
 {
     size_t i;
     if (!queue)
@@ -551,25 +554,25 @@ virDomainEventQueueClear(virDomainEventQueuePtr queue)
 }
 
 /**
- * virDomainEventQueueFree:
+ * virObjectEventQueueFree:
  * @queue: pointer to the queue
  *
  * Free the memory in the queue. We process this like a list here
  */
 static void
-virDomainEventQueueFree(virDomainEventQueuePtr queue)
+virObjectEventQueueFree(virObjectEventQueuePtr queue)
 {
     if (!queue)
         return;
 
-    virDomainEventQueueClear(queue);
+    virObjectEventQueueClear(queue);
     VIR_FREE(queue);
 }
 
-static virDomainEventQueuePtr
-virDomainEventQueueNew(void)
+static virObjectEventQueuePtr
+virObjectEventQueueNew(void)
 {
-    virDomainEventQueuePtr ret;
+    virObjectEventQueuePtr ret;
 
     ignore_value(VIR_ALLOC(ret));
     return ret;
@@ -600,7 +603,7 @@ virDomainEventStateFree(virDomainEventStatePtr state)
         return;
 
     virDomainEventCallbackListFree(state->callbacks);
-    virDomainEventQueueFree(state->queue);
+    virObjectEventQueueFree(state->queue);
 
     if (state->timer != -1)
         virEventRemoveTimeout(state->timer);
@@ -641,7 +644,7 @@ virDomainEventStateNew(void)
     if (VIR_ALLOC(state->callbacks) < 0)
         goto error;
 
-    if (!(state->queue = virDomainEventQueueNew()))
+    if (!(state->queue = virObjectEventQueueNew()))
         goto error;
 
     state->timer = -1;
@@ -1203,16 +1206,16 @@ virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
 }
 
 /**
- * virDomainEventQueuePush:
- * @evtQueue: the dom event queue
+ * virObjectEventQueuePush:
+ * @evtQueue: the object event queue
  * @event: the event to add
  *
- * Internal function to push to the back of a virDomainEventQueue
+ * Internal function to push to the back of a virObjectEventQueue
  *
  * Returns: 0 on success, -1 on failure
  */
 static int
-virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
+virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
                         virDomainEventPtr event)
 {
     if (!evtQueue) {
@@ -1418,7 +1421,7 @@ virDomainEventDispatch(virDomainEventPtr event,
 
 
 static void
-virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
+virObjectEventQueueDispatch(virObjectEventQueuePtr queue,
                             virDomainEventCallbackListPtr callbacks,
                             virDomainEventDispatchFunc dispatch,
                             void *opaque)
@@ -1444,7 +1447,7 @@ virDomainEventStateQueue(virDomainEventStatePtr state,
 
     virDomainEventStateLock(state);
 
-    if (virDomainEventQueuePush(state->queue, event) < 0) {
+    if (virObjectEventQueuePush(state->queue, event) < 0) {
         VIR_DEBUG("Error adding event to queue");
         virDomainEventFree(event);
     }
@@ -1474,7 +1477,7 @@ virDomainEventStateDispatchFunc(virConnectPtr conn,
 static void
 virDomainEventStateFlush(virDomainEventStatePtr state)
 {
-    virDomainEventQueue tempQueue;
+    virObjectEventQueue tempQueue;
 
     virDomainEventStateLock(state);
     state->isDispatching = true;
@@ -1487,7 +1490,7 @@ virDomainEventStateFlush(virDomainEventStatePtr state)
     state->queue->events = NULL;
     virEventUpdateTimeout(state->timer, -1);
 
-    virDomainEventQueueDispatch(&tempQueue,
+    virObjectEventQueueDispatch(&tempQueue,
                                 state->callbacks,
                                 virDomainEventStateDispatchFunc,
                                 state);
@@ -1637,7 +1640,7 @@ virDomainEventStateDeregister(virConnectPtr conn,
         state->timer != -1) {
         virEventRemoveTimeout(state->timer);
         state->timer = -1;
-        virDomainEventQueueClear(state->queue);
+        virObjectEventQueueClear(state->queue);
     }
 
     virDomainEventStateUnlock(state);
@@ -1675,7 +1678,7 @@ virDomainEventStateDeregisterID(virConnectPtr conn,
         state->timer != -1) {
         virEventRemoveTimeout(state->timer);
         state->timer = -1;
-        virDomainEventQueueClear(state->queue);
+        virObjectEventQueueClear(state->queue);
     }
 
     virDomainEventStateUnlock(state);

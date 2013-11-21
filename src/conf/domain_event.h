@@ -41,9 +41,6 @@ typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
 typedef struct _virDomainEvent virDomainEvent;
 typedef virDomainEvent *virDomainEventPtr;
 
-typedef struct _virDomainEventQueue virDomainEventQueue;
-typedef virDomainEventQueue *virDomainEventQueuePtr;
-
 typedef struct _virDomainEventState virDomainEventState;
 typedef virDomainEventState *virDomainEventStatePtr;
 
