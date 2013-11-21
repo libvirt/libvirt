@@ -1509,6 +1509,7 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainControllerDefPtr cont = NULL;
     char *devstr = NULL;
     char *drvstr = NULL;
     bool teardowncgroup = false;
@@ -1520,6 +1521,10 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
                        _("SCSI passthrough is not supported by this version of qemu"));
         return -1;
     }
+
+    cont = qemuDomainFindOrCreateSCSIDiskController(driver, vm, hostdev->info->addr.drive.controller);
+    if (!cont)
+        return -1;
 
     if (qemuPrepareHostdevSCSIDevices(driver, vm->def->name,
                                       &hostdev, 1)) {
