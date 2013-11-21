@@ -3434,6 +3434,11 @@ error:
  * To use guest agent (VIR_DOMAIN_REBOOT_GUEST_AGENT) the domain XML
  * must have <channel> configured.
  *
+ * Due to implementation limitations in some drivers (the qemu driver,
+ * for instance) it is not advised to migrate or save a guest that is
+ * rebooting as a result of this API. Migrating such a guest can lead
+ * to a plain shutdown on the destination.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
