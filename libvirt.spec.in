@@ -1714,9 +1714,8 @@ fi
 # If the package is allowed to autostart:
 /bin/systemctl --no-reload enable libvirt-guests.service >/dev/null 2>&1 ||:
 
-# Run these because the SysV package being removed won't do them
+# Run this because the SysV package being removed won't do them
 /sbin/chkconfig --del libvirt-guests >/dev/null 2>&1 || :
-/bin/systemctl try-restart libvirt-guests.service >/dev/null 2>&1 || :
 %endif
 
 %if %{with_sanlock}
