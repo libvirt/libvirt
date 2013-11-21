@@ -2206,6 +2206,102 @@ vboxDomainGetMaxVcpus(virDomainPtr dom)
                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
+static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *machine)
+{
+    IUSBController *USBController = NULL;
+    PRBool enabled = PR_FALSE;
+    vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
+    size_t i;
+    PRUint32 USBFilterCount = 0;
+
+    def->nhostdevs = 0;
+    machine->vtbl->GetUSBController(machine, &USBController);
+
+    if (!USBController)
+        return;
+
+    USBController->vtbl->GetEnabled(USBController, &enabled);
+    if (!enabled)
+        goto release_controller;
+
+    vboxArrayGet(&deviceFilters, USBController,
+                 USBController->vtbl->GetDeviceFilters);
+
+    if (deviceFilters.count <= 0)
+        goto release_filters;
+
+    /* check if the filters are active and then only
+     * alloc mem and set def->nhostdevs
+     */
+
+    for (i = 0; i < deviceFilters.count; i++) {
+        PRBool active = PR_FALSE;
+        IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
+
+        deviceFilter->vtbl->GetActive(deviceFilter, &active);
+        if (active) {
+            def->nhostdevs++;
+        }
+    }
+
+    if (def->nhostdevs == 0)
+        goto release_filters;
+
+    /* Alloc mem needed for the filters now */
+    if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) < 0)
+        goto release_filters;
+
+    for (i = 0; (USBFilterCount < def->nhostdevs) || (i < deviceFilters.count); i++) {
+        PRBool active                  = PR_FALSE;
+        IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
+        PRUnichar *vendorIdUtf16       = NULL;
+        char *vendorIdUtf8             = NULL;
+        unsigned vendorId              = 0;
+        PRUnichar *productIdUtf16      = NULL;
+        char *productIdUtf8            = NULL;
+        unsigned productId             = 0;
+        char *endptr                   = NULL;
+
+        deviceFilter->vtbl->GetActive(deviceFilter, &active);
+        if (!active)
+            continue;
+
+        def->hostdevs[USBFilterCount] = virDomainHostdevDefAlloc();
+        if (!def->hostdevs[USBFilterCount])
+            continue;
+
+        def->hostdevs[USBFilterCount]->mode =
+            VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        def->hostdevs[USBFilterCount]->source.subsys.type =
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
+
+        deviceFilter->vtbl->GetVendorId(deviceFilter, &vendorIdUtf16);
+        deviceFilter->vtbl->GetProductId(deviceFilter, &productIdUtf16);
+
+        VBOX_UTF16_TO_UTF8(vendorIdUtf16, &vendorIdUtf8);
+        VBOX_UTF16_TO_UTF8(productIdUtf16, &productIdUtf8);
+
+        vendorId  = strtol(vendorIdUtf8, &endptr, 16);
+        productId = strtol(productIdUtf8, &endptr, 16);
+
+        def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
+        def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;
+
+        VBOX_UTF16_FREE(vendorIdUtf16);
+        VBOX_UTF8_FREE(vendorIdUtf8);
+
+        VBOX_UTF16_FREE(productIdUtf16);
+        VBOX_UTF8_FREE(productIdUtf8);
+
+        USBFilterCount++;
+    }
+
+release_filters:
+    vboxArrayRelease(&deviceFilters);
+release_controller:
+    VBOX_RELEASE(USBController);
+}
+
 static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
     virDomainDefPtr def  = NULL;
@@ -2236,7 +2332,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             PRUint32 netAdpCnt                  = 0;
             PRUint32 netAdpIncCnt               = 0;
             PRUint32 maxMemorySize              = 4 * 1024;
-            PRUint32 USBFilterCount             = 0;
             PRUint32 maxBootPosition            = 0;
             PRUint32 serialPortCount            = 0;
             PRUint32 serialPortIncCount         = 0;
@@ -2261,7 +2356,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             IVRDEServer *VRDxServer             = NULL;
 #endif /* VBOX_API_VERSION >= 4000 */
             IAudioAdapter *audioAdapter         = NULL;
-            IUSBController *USBController       = NULL;
 #if VBOX_API_VERSION >= 4001
             PRUint32 chipsetType                = ChipsetType_Null;
 #endif /* VBOX_API_VERSION >= 4001 */
@@ -3296,90 +3390,7 @@ sharedFoldersCleanup:
             }
 
             /* dump USB devices/filters if active */
-            def->nhostdevs = 0;
-            machine->vtbl->GetUSBController(machine, &USBController);
-            if (USBController) {
-                PRBool enabled = PR_FALSE;
-
-                USBController->vtbl->GetEnabled(USBController, &enabled);
-                if (enabled) {
-                    vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
-
-                    vboxArrayGet(&deviceFilters, USBController,
-                                 USBController->vtbl->GetDeviceFilters);
-
-                    if (deviceFilters.count > 0) {
-
-                        /* check if the filters are active and then only
-                         * alloc mem and set def->nhostdevs
-                         */
-
-                        for (i = 0; i < deviceFilters.count; i++) {
-                            PRBool active = PR_FALSE;
-                            IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
-
-                            deviceFilter->vtbl->GetActive(deviceFilter, &active);
-                            if (active) {
-                                def->nhostdevs++;
-                            }
-                        }
-
-                        if (def->nhostdevs > 0) {
-                            /* Alloc mem needed for the filters now */
-                            if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) >= 0) {
-
-                                for (i = 0; (USBFilterCount < def->nhostdevs) || (i < deviceFilters.count); i++) {
-                                    PRBool active = PR_FALSE;
-                                    IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
-
-                                    deviceFilter->vtbl->GetActive(deviceFilter, &active);
-                                    if (active) {
-                                        def->hostdevs[USBFilterCount] = virDomainHostdevDefAlloc();
-                                        if (def->hostdevs[USBFilterCount]) {
-                                            PRUnichar *vendorIdUtf16  = NULL;
-                                            char *vendorIdUtf8        = NULL;
-                                            unsigned vendorId         = 0;
-                                            PRUnichar *productIdUtf16 = NULL;
-                                            char *productIdUtf8       = NULL;
-                                            unsigned productId        = 0;
-                                            char *endptr              = NULL;
-
-                                            def->hostdevs[USBFilterCount]->mode =
-                                                VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-                                            def->hostdevs[USBFilterCount]->source.subsys.type =
-                                                VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
-
-                                            deviceFilter->vtbl->GetVendorId(deviceFilter, &vendorIdUtf16);
-                                            deviceFilter->vtbl->GetProductId(deviceFilter, &productIdUtf16);
-
-                                            VBOX_UTF16_TO_UTF8(vendorIdUtf16, &vendorIdUtf8);
-                                            VBOX_UTF16_TO_UTF8(productIdUtf16, &productIdUtf8);
-
-                                            vendorId  = strtol(vendorIdUtf8, &endptr, 16);
-                                            productId = strtol(productIdUtf8, &endptr, 16);
-
-                                            def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
-                                            def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;
-
-                                            VBOX_UTF16_FREE(vendorIdUtf16);
-                                            VBOX_UTF8_FREE(vendorIdUtf8);
-
-                                            VBOX_UTF16_FREE(productIdUtf16);
-                                            VBOX_UTF8_FREE(productIdUtf8);
-
-                                            USBFilterCount++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    /* Cleanup */
-                    vboxArrayRelease(&deviceFilters);
-                }
-                VBOX_RELEASE(USBController);
-            }
+            vboxHostDeviceGetXMLDesc(data, def, machine);
 
             /* all done so set gotAllABoutDef and pass def to virDomainDefFormat
              * to generate XML for it
