@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='volume' device='cdrom'>
-      <source pool='blk-pool0' volume='blk-pool0-vol0' startupPolicy='optional'>
+      <source pool='pool-disk' volume='block+cdrom'>
         <seclabel model='selinux' relabel='yes'>
           <label>system_u:system_r:public_content_t:s0</label>
         </seclabel>
