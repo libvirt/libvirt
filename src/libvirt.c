@@ -12801,7 +12801,7 @@ error:
  * interface was defined (that is, if virInterfaceChangeBegin() had
  * been called), the interface will be brought back down (and then
  * undefined) if virInterfaceChangeRollback() is called.
-p *
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int
