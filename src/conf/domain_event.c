@@ -790,7 +790,7 @@ static void *virDomainEventNewInternal(virClassPtr klass,
     return event;
 }
 
-virDomainEventPtr virDomainEventNew(int id, const char *name,
+virDomainEventPtr virDomainEventLifecycleNew(int id, const char *name,
                                     const unsigned char *uuid,
                                     int type, int detail)
 {
@@ -810,19 +810,21 @@ virDomainEventPtr virDomainEventNew(int id, const char *name,
     return (virDomainEventPtr)event;
 }
 
-virDomainEventPtr virDomainEventNewFromDom(virDomainPtr dom, int type, int detail)
+virDomainEventPtr virDomainEventLifecycleNewFromDom(virDomainPtr dom, int type, int detail)
 {
-    return virDomainEventNew(dom->id, dom->name, dom->uuid, type, detail);
+    return virDomainEventLifecycleNew(dom->id, dom->name, dom->uuid,
+                                      type, detail);
 }
 
-virDomainEventPtr virDomainEventNewFromObj(virDomainObjPtr obj, int type, int detail)
+virDomainEventPtr virDomainEventLifecycleNewFromObj(virDomainObjPtr obj, int type, int detail)
 {
-    return virDomainEventNewFromDef(obj->def, type, detail);
+    return virDomainEventLifecycleNewFromDef(obj->def, type, detail);
 }
 
-virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int detail)
+virDomainEventPtr virDomainEventLifecycleNewFromDef(virDomainDefPtr def, int type, int detail)
 {
-    return virDomainEventNew(def->id, def->name, def->uuid, type, detail);
+    return virDomainEventLifecycleNew(def->id, def->name, def->uuid,
+                                      type, detail);
 }
 
 virDomainEventPtr virDomainEventRebootNew(int id, const char *name,

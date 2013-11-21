@@ -6996,7 +6996,7 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
                 detail = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
             }
 
-            ev = virDomainEventNewFromDom(dom, event, detail);
+            ev = virDomainEventLifecycleNewFromDom(dom, event, detail);
 
             if (ev)
                 virObjectEventStateQueue(g_pVBoxGlobalData->domainEvents, ev);
@@ -7100,7 +7100,7 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
                 detail = VIR_DOMAIN_EVENT_UNDEFINED_REMOVED;
             }
 
-            ev = virDomainEventNewFromDom(dom, event, detail);
+            ev = virDomainEventLifecycleNewFromDom(dom, event, detail);
 
             if (ev)
                 virObjectEventStateQueue(g_pVBoxGlobalData->domainEvents, ev);

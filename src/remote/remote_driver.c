@@ -4386,7 +4386,7 @@ remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     if (!dom)
         return;
 
-    event = virDomainEventNewFromDom(dom, msg->event, msg->detail);
+    event = virDomainEventLifecycleNewFromDom(dom, msg->event, msg->detail);
     virDomainFree(dom);
 
     remoteDomainEventQueue(priv, event);

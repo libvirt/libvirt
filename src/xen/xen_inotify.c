@@ -148,7 +148,7 @@ xenInotifyDomainEventFromFile(virConnectPtr conn,
     if (xenInotifyDomainLookup(conn, filename, &name, uuid) < 0)
         return NULL;
 
-    event = virDomainEventNew(-1, name, uuid, type, detail);
+    event = virDomainEventLifecycleNew(-1, name, uuid, type, detail);
     VIR_FREE(name);
     return event;
 }

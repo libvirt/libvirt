@@ -44,10 +44,20 @@ typedef virDomainEvent *virDomainEventPtr;
 typedef struct _virObjectEventState virObjectEventState;
 typedef virObjectEventState *virObjectEventStatePtr;
 
-virDomainEventPtr virDomainEventNew(int id, const char *name, const unsigned char *uuid, int type, int detail);
-virDomainEventPtr virDomainEventNewFromDom(virDomainPtr dom, int type, int detail);
-virDomainEventPtr virDomainEventNewFromObj(virDomainObjPtr obj, int type, int detail);
-virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int detail);
+virDomainEventPtr virDomainEventLifecycleNew(int id,
+                                             const char *name,
+                                             const unsigned char *uuid,
+                                             int type,
+                                             int detail);
+virDomainEventPtr virDomainEventLifecycleNewFromDom(virDomainPtr dom,
+                                                    int type,
+                                                    int detail);
+virDomainEventPtr virDomainEventLifecycleNewFromObj(virDomainObjPtr obj,
+                                                    int type,
+                                                    int detail);
+virDomainEventPtr virDomainEventLifecycleNewFromDef(virDomainDefPtr def,
+                                                    int type,
+                                                    int detail);
 
 virDomainEventPtr virDomainEventRebootNew(int id, const char *name, const unsigned char *uuid);
 virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom);

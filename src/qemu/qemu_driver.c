@@ -879,7 +879,7 @@ static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
 
     if (newVM) {
         virDomainEventPtr event =
-            virDomainEventNewFromObj(vm,
+            virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
         if (event)
@@ -1627,7 +1627,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
     if (event && (flags & VIR_DOMAIN_START_PAUSED)) {
@@ -1636,7 +1636,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
          * no matter what, but don't care about suspend events), and
          * those that also care about running/paused.  To satisfy both
          * client types, we have to send two events.  */
-        event2 = virDomainEventNewFromObj(vm,
+        event2 = virDomainEventLifecycleNewFromObj(vm,
                                           VIR_DOMAIN_EVENT_SUSPENDED,
                                           VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
@@ -1721,7 +1721,7 @@ static int qemuDomainSuspend(virDomainPtr dom) {
         }
 
         if (eventDetail >= 0) {
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              eventDetail);
         }
@@ -1785,7 +1785,7 @@ static int qemuDomainResume(virDomainPtr dom) {
                                "%s", _("resume operation failed"));
             goto endjob;
         }
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
@@ -2124,7 +2124,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     }
 
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED, 0);
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     virDomainAuditStop(vm, "destroyed");
@@ -3107,7 +3107,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     /* Shut it down */
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
     virDomainAuditStop(vm, "saved");
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
     if (!vm->persistent) {
@@ -3125,7 +3125,7 @@ endjob:
                                           QEMU_ASYNC_JOB_SAVE);
                 if (rc < 0) {
                     VIR_WARN("Unable to resume guest CPUs after save failure");
-                    event = virDomainEventNewFromObj(vm,
+                    event = virDomainEventLifecycleNewFromObj(vm,
                                                      VIR_DOMAIN_EVENT_SUSPENDED,
                                                      VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
                 }
@@ -3568,7 +3568,7 @@ endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
         virDomainAuditStop(vm, "crashed");
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
     }
@@ -3588,7 +3588,7 @@ endjob:
         if (resume && qemuProcessStartCPUs(driver, vm, dom->conn,
                                            VIR_DOMAIN_RUNNING_UNPAUSED,
                                            QEMU_ASYNC_JOB_DUMP) < 0) {
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
             if (virGetLastError() == NULL)
@@ -3835,7 +3835,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
                          VIR_DOMAIN_CRASHED,
                          VIR_DOMAIN_CRASHED_PANICKED);
 
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_CRASHED,
                                      VIR_DOMAIN_EVENT_CRASHED_PANICKED);
 
@@ -3875,7 +3875,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         }
 
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
 
@@ -5402,7 +5402,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
     virDomainAuditStart(vm, "restored", true);
@@ -5427,7 +5427,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     } else {
         int detail = (start_paused ? VIR_DOMAIN_EVENT_SUSPENDED_PAUSED :
                       VIR_DOMAIN_EVENT_SUSPENDED_RESTORED);
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          detail);
         if (event)
@@ -6067,13 +6067,13 @@ qemuDomainObjStart(virConnectPtr conn,
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
         virDomainEventPtr event =
-            virDomainEventNewFromObj(vm,
+            virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
         if (event) {
             qemuDomainEventQueue(driver, event);
             if (start_paused) {
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_SUSPENDED,
                                                  VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
                 if (event)
@@ -6205,7 +6205,7 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
@@ -6293,7 +6293,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     if (virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm) < 0)
         goto cleanup;
 
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
@@ -11778,7 +11778,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
@@ -11794,7 +11794,7 @@ cleanup:
         qemuProcessStartCPUs(driver, vm, conn,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_NONE) < 0) {
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
         if (virGetLastError() == NULL) {
@@ -12533,7 +12533,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         virDomainEventPtr event;
 
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
@@ -12553,7 +12553,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                              VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
         if (event)
             qemuDomainEventQueue(driver, event);
@@ -12567,7 +12567,7 @@ endjob:
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
         virDomainEventPtr event = NULL;
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
         if (event)
@@ -13364,7 +13364,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                 VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
                 virDomainAuditStop(vm, "from-snapshot");
                 detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  detail);
                 if (event)
@@ -13384,7 +13384,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                  * that user will be alerted that they are now paused.
                  * If restore later succeeds, we might replace this. */
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_SUSPENDED,
                                                  detail);
                 if (!virDomainObjIsActive(vm)) {
@@ -13416,7 +13416,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                   VIR_QEMU_PROCESS_START_PAUSED);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STARTED,
                                              detail);
             if (rc < 0)
@@ -13433,7 +13433,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (was_stopped) {
                 /* Transition 3, use event as-is and add event2 */
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event2 = virDomainEventNewFromObj(vm,
+                event2 = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   detail);
             } /* else transition 6 and 9 use event as-is */
@@ -13454,13 +13454,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (was_stopped) {
                 /* Transition 2 */
                 detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_STARTED,
                                                  detail);
             } else if (was_running) {
                 /* Transition 8 */
                 detail = VIR_DOMAIN_EVENT_RESUMED;
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                                  VIR_DOMAIN_EVENT_RESUMED,
                                                  detail);
             }
@@ -13477,7 +13477,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
             virDomainAuditStop(vm, "from-snapshot");
             detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              detail);
         }
@@ -13519,12 +13519,12 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
             }
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STARTED,
                                              detail);
             if (paused) {
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event2 = virDomainEventNewFromObj(vm,
+                event2 = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   detail);
             }
@@ -14184,7 +14184,7 @@ cleanup:
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_NONE) < 0) {
         virDomainEventPtr event = NULL;
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
         if (event)

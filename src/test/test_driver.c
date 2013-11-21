@@ -1638,7 +1638,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0)
         goto cleanup;
 
-    event = virDomainEventNewFromObj(dom,
+    event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
@@ -1766,7 +1766,7 @@ static int testDomainDestroy(virDomainPtr domain)
     }
 
     testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_DESTROYED);
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
@@ -1811,7 +1811,7 @@ static int testDomainResume(virDomainPtr domain)
 
     virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
                          VIR_DOMAIN_RUNNING_UNPAUSED);
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_RESUMED,
                                      VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     ret = 0;
@@ -1853,7 +1853,7 @@ static int testDomainSuspend(virDomainPtr domain)
     }
 
     virDomainObjSetState(privdom, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_SUSPENDED,
                                      VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     ret = 0;
@@ -1896,7 +1896,7 @@ static int testDomainShutdownFlags(virDomainPtr domain,
     }
 
     testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
@@ -1971,7 +1971,7 @@ static int testDomainReboot(virDomainPtr domain,
 
     if (virDomainObjGetState(privdom, NULL) == VIR_DOMAIN_SHUTOFF) {
         testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-        event = virDomainEventNewFromObj(privdom,
+        event = virDomainEventLifecycleNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
@@ -2135,7 +2135,7 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
     fd = -1;
 
     testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SAVED);
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
@@ -2253,7 +2253,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0)
         goto cleanup;
 
-    event = virDomainEventNewFromObj(dom,
+    event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
     ret = 0;
@@ -2319,7 +2319,7 @@ static int testDomainCoreDump(virDomainPtr domain,
 
     if (flags & VIR_DUMP_CRASH) {
         testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_CRASHED);
-        event = virDomainEventNewFromObj(privdom,
+        event = virDomainEventLifecycleNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
         if (!privdom->persistent) {
@@ -2803,7 +2803,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     def = NULL;
     dom->persistent = 1;
 
-    event = virDomainEventNewFromObj(dom,
+    event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
@@ -2946,7 +2946,7 @@ static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
         goto cleanup;
     domain->id = privdom->def->id;
 
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
     ret = 0;
@@ -3011,7 +3011,7 @@ static int testDomainUndefineFlags(virDomainPtr domain,
          * behavior here. */
     }
 
-    event = virDomainEventNewFromObj(privdom,
+    event = virDomainEventLifecycleNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
     privdom->hasManagedSave = false;
@@ -6180,7 +6180,7 @@ testDomainManagedSave(virDomainPtr dom, unsigned int flags)
     }
 
     testDomainShutdownState(dom, vm, VIR_DOMAIN_SHUTOFF_SAVED);
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
     vm->hasManagedSave = true;
@@ -6719,7 +6719,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
             virDomainObjIsActive(vm)) {
             testDomainShutdownState(domain, vm,
                                     VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-            event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+            event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         }
     }
@@ -6985,7 +6985,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 virResetError(err);
                 testDomainShutdownState(snapshot->domain, vm,
                                         VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                             VIR_DOMAIN_EVENT_STOPPED,
                             VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
                 if (event)
@@ -7001,7 +7001,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 /* Create an event now in case the restore fails, so
                  * that user will be alerted that they are now paused.
                  * If restore later succeeds, we might replace this. */
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_SUSPENDED,
                                 VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
             }
@@ -7015,7 +7015,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (testDomainStartState(privconn, vm,
                                 VIR_DOMAIN_RUNNING_FROM_SNAPSHOT) < 0)
                 goto cleanup;
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_STARTED,
                                 VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
         }
@@ -7029,7 +7029,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                  VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
             if (was_stopped) {
                 /* Transition 3, use event as-is and add event2 */
-                event2 = virDomainEventNewFromObj(vm,
+                event2 = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_SUSPENDED,
                                 VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
             } /* else transition 6 and 9 use event as-is */
@@ -7040,12 +7040,12 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
             if (was_stopped) {
                 /* Transition 2 */
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_STARTED,
                                 VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
             } else if (was_running) {
                 /* Transition 8 */
-                event = virDomainEventNewFromObj(vm,
+                event = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_RESUMED,
                                 VIR_DOMAIN_EVENT_RESUMED);
             }
@@ -7058,7 +7058,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 4, 7 */
             testDomainShutdownState(snapshot->domain, vm,
                                     VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                     VIR_DOMAIN_EVENT_STOPPED,
                                     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         }
@@ -7070,11 +7070,11 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
             if (event)
                 testDomainEventQueue(privconn, event);
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                             VIR_DOMAIN_EVENT_STARTED,
                             VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
             if (paused) {
-                event2 = virDomainEventNewFromObj(vm,
+                event2 = virDomainEventLifecycleNewFromObj(vm,
                                 VIR_DOMAIN_EVENT_SUSPENDED,
                                 VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
             }

@@ -71,7 +71,7 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
     VIR_DEBUG("Killing domain");
     virLXCProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(dom, "destroyed");
-    event = virDomainEventNewFromObj(dom,
+    event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     priv->doneStopEvent = true;
@@ -502,7 +502,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     if (!priv->wantReboot) {
         virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         if (!priv->doneStopEvent) {
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              priv->stopReason);
             virDomainAuditStop(vm, "shutdown");
@@ -520,7 +520,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
         if (ret == 0) {
             event = virDomainEventRebootNewFromObj(vm);
         } else {
-            event = virDomainEventNewFromObj(vm,
+            event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              priv->stopReason);
             if (!vm->persistent) {
@@ -1395,7 +1395,7 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
                       err ? err->message : "");
         } else {
             virDomainEventPtr event =
-                virDomainEventNewFromObj(vm,
+                virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
             if (event)

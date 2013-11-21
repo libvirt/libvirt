@@ -849,9 +849,9 @@ retry:
                 continue;
             }
 
-            event = virDomainEventNew(new_domids[i], name, uuid,
-                                      VIR_DOMAIN_EVENT_STARTED,
-                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
+            event = virDomainEventLifecycleNew(new_domids[i], name, uuid,
+                                               VIR_DOMAIN_EVENT_STARTED,
+                                               VIR_DOMAIN_EVENT_STARTED_BOOTED);
             if (event)
                 xenUnifiedDomainEventDispatch(priv, event);
 
@@ -919,11 +919,11 @@ retry:
 
         if (!found) {
             virDomainEventPtr event =
-                virDomainEventNew(-1,
-                                  priv->activeDomainList->doms[j]->name,
-                                  priv->activeDomainList->doms[j]->uuid,
-                                  VIR_DOMAIN_EVENT_STOPPED,
-                                  VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+                virDomainEventLifecycleNew(-1,
+                                           priv->activeDomainList->doms[j]->name,
+                                           priv->activeDomainList->doms[j]->uuid,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
             if (event)
                 xenUnifiedDomainEventDispatch(priv, event);
 

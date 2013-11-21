@@ -195,7 +195,7 @@ umlAutostartDomain(virDomainObjPtr vm,
                       vm->def->name, err ? err->message : _("unknown error"));
         } else {
             virDomainEventPtr event =
-                virDomainEventNewFromObj(vm,
+                virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
             if (event)
@@ -347,7 +347,7 @@ reread:
 
             umlShutdownVMDaemon(driver, dom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             virDomainAuditStop(dom, "shutdown");
-            event = virDomainEventNewFromObj(dom,
+            event = virDomainEventLifecycleNewFromObj(dom,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
             if (!dom->persistent) {
@@ -381,7 +381,7 @@ reread:
                 umlShutdownVMDaemon(driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
                 virDomainAuditStop(dom, "failed");
-                event = virDomainEventNewFromObj(dom,
+                event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
                 if (!dom->persistent) {
@@ -394,7 +394,7 @@ reread:
                 umlShutdownVMDaemon(driver, dom,
                                     VIR_DOMAIN_SHUTOFF_FAILED);
                 virDomainAuditStop(dom, "failed");
-                event = virDomainEventNewFromObj(dom,
+                event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
                 if (!dom->persistent) {
@@ -605,7 +605,7 @@ static void umlNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
 
     if (newVM) {
         virDomainEventPtr event =
-            virDomainEventNewFromObj(vm,
+            virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
         if (event)
@@ -737,7 +737,7 @@ static void umlProcessAutoDestroyDom(void *payload,
     VIR_DEBUG("Killing domain");
     umlShutdownVMDaemon(data->driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(dom, "destroyed");
-    event = virDomainEventNewFromObj(dom,
+    event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
@@ -1600,7 +1600,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     }
     virDomainAuditStart(vm, "booted", true);
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
@@ -1685,7 +1685,7 @@ umlDomainDestroyFlags(virDomainPtr dom,
 
     umlShutdownVMDaemon(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(vm, "destroyed");
-    event = virDomainEventNewFromObj(vm,
+    event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     if (!vm->persistent) {
@@ -2014,7 +2014,7 @@ static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
                            (flags & VIR_DOMAIN_START_AUTODESTROY));
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret == 0)
-        event = virDomainEventNewFromObj(vm,
+        event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
 

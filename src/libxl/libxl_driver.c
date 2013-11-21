@@ -380,7 +380,7 @@ libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
             case LIBXL_SHUTDOWN_REASON_POWEROFF:
             case LIBXL_SHUTDOWN_REASON_CRASH:
                 if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
-                    dom_event = virDomainEventNewFromObj(vm,
+                    dom_event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_CRASHED);
                     reason = VIR_DOMAIN_SHUTOFF_CRASHED;
@@ -675,7 +675,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
-    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
                                      restore_fd < 0 ?
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED :
                                          VIR_DOMAIN_EVENT_STARTED_RESTORED);
@@ -1324,7 +1324,7 @@ libxlDomainSuspend(virDomainPtr dom)
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
 
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
@@ -1377,7 +1377,7 @@ libxlDomainResume(virDomainPtr dom)
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
 
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
@@ -1501,7 +1501,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
     if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED) != 0) {
@@ -1821,7 +1821,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
     if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED) != 0) {
@@ -2009,7 +2009,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
             goto cleanup_unpause;
         }
 
-        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
@@ -2699,7 +2699,7 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     if (dom)
         dom->id = vm->def->id;
 
-    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_DEFINED,
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_DEFINED,
                                      !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
@@ -2766,7 +2766,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     if (virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm) < 0)
         goto cleanup;
 
-    event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_UNDEFINED,
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     if (virDomainObjIsActive(vm)) {
