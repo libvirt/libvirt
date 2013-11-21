@@ -348,9 +348,9 @@ error:
 }
 
 
-int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
-                                        virDomainObjPtr vm,
-                                        virDomainControllerDefPtr controller)
+int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainControllerDefPtr controller)
 {
     int ret = -1;
     const char* type = virDomainControllerTypeToString(controller->type);
@@ -438,8 +438,8 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
     cont->model = -1;
 
     VIR_INFO("No SCSI controller present, hotplugging one");
-    if (qemuDomainAttachPciControllerDevice(driver,
-                                            vm, cont) < 0) {
+    if (qemuDomainAttachControllerDevice(driver,
+                                         vm, cont) < 0) {
         VIR_FREE(cont);
         return NULL;
     }
@@ -3029,9 +3029,9 @@ static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
     }
 }
 
-int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
-                                        virDomainObjPtr vm,
-                                        virDomainDeviceDefPtr dev)
+int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDeviceDefPtr dev)
 {
     int idx, ret = -1;
     virDomainControllerDefPtr detach = NULL;

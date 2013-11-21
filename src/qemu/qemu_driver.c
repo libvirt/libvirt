@@ -6328,7 +6328,7 @@ qemuDomainAttachDeviceControllerLive(virQEMUDriverPtr driver,
 
     switch (cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        ret = qemuDomainAttachPciControllerDevice(driver, vm, cont);
+        ret = qemuDomainAttachControllerDevice(driver, vm, cont);
         break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -6420,7 +6420,7 @@ qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
 
     switch (cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        ret = qemuDomainDetachPciControllerDevice(driver, vm, dev);
+        ret = qemuDomainDetachControllerDevice(driver, vm, dev);
         break;
     default :
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
