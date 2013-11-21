@@ -1,6 +1,5 @@
 <volume>
   <name>test2</name>
-  <key>(null)</key>
   <source>
   </source>
   <capacity unit='bytes'>1024</capacity>

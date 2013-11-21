@@ -1,6 +1,6 @@
 <volume>
   <name>sda1</name>
-  <key>(null)</key>
+  <key>/dev/sda1</key>
   <source>
   </source>
   <capacity unit='bytes'>106896384</capacity>

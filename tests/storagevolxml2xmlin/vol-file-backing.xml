@@ -1,5 +1,6 @@
 <volume>
   <name>sparse.img</name>
+  <key>/var/lib/libvirt/images/sparse.img</key>
   <source/>
   <capacity unit='GB'>10</capacity>
   <allocation unit='MiB'>0</allocation>
