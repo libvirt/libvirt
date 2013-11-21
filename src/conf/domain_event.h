@@ -28,8 +28,8 @@
 
 # include "domain_conf.h"
 
-typedef struct _virDomainEventCallback virDomainEventCallback;
-typedef virDomainEventCallback *virDomainEventCallbackPtr;
+typedef struct _virObjectEventCallback virObjectEventCallback;
+typedef virObjectEventCallback *virObjectEventCallbackPtr;
 
 typedef struct _virDomainEventCallbackList virDomainEventCallbackList;
 typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;

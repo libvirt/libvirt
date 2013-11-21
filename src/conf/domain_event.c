@@ -43,7 +43,7 @@ typedef virDomainMeta *virDomainMetaPtr;
 struct _virDomainEventCallbackList {
     unsigned int nextID;
     unsigned int count;
-    virDomainEventCallbackPtr *callbacks;
+    virObjectEventCallbackPtr *callbacks;
 };
 
 struct _virDomainEventQueue {
@@ -63,7 +63,7 @@ struct _virDomainEventState {
     virMutex lock;
 };
 
-struct _virDomainEventCallback {
+struct _virObjectEventCallback {
     int callbackID;
     int eventID;
     virConnectPtr conn;
@@ -355,7 +355,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
                                 virFreeCallback freecb,
                                 int *callbackID)
 {
-    virDomainEventCallbackPtr event;
+    virObjectEventCallbackPtr event;
     size_t i;
     int ret = 0;
 
@@ -1366,7 +1366,7 @@ cleanup:
 
 
 static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
-                                               virDomainEventCallbackPtr cb)
+                                               virObjectEventCallbackPtr cb)
 {
     if (!cb)
         return 0;
