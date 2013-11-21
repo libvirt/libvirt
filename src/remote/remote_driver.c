@@ -4127,6 +4127,11 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     VIR_DEBUG("Client step result complete: %d. Data %zu bytes %p",
               complete, serverinlen, serverin);
 
+    /* Previous server call showed completion & sasl_client_start() told us
+     * we are locally complete too */
+    if (complete && err == VIR_NET_SASL_COMPLETE)
+        goto done;
+
     /* Loop-the-loop...
      * Even if the server has completed, the client must *always* do at least one step
      * in this loop to verify the server isn't lying about something. Mutual auth */
@@ -4201,6 +4206,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
         priv->is_secure = 1;
     }
 
+done:
     VIR_DEBUG("SASL authentication complete");
     virNetClientSetSASLSession(priv->client, sasl);
     ret = 0;
