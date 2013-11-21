@@ -250,7 +250,6 @@ lxc_functions_failed = []
 qemu_functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
-    "virConnectGetCPUModelNames",
 ]
 lxc_functions_skipped = []
 qemu_functions_skipped = []
