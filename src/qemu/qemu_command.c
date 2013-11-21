@@ -3827,19 +3827,62 @@ cleanup:
 
 
 static int
-qemuBuildDriveURIString(virConnectPtr conn,
-                        virDomainDiskDefPtr disk,
-                        virBufferPtr opt)
+qemuGetDriveSourceString(int type,
+                         const char *src,
+                         int protocol,
+                         size_t nhosts,
+                         virDomainDiskHostDefPtr hosts,
+                         const char *username,
+                         const char *secret,
+                         char **path)
 {
+    *path = NULL;
+
+    switch ((enum virDomainDiskType) type) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+        if (!src)
+            return 1;
+
+        if (VIR_STRDUP(*path, src) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        if (!(*path = qemuBuildNetworkDriveURI(protocol,
+                                               src,
+                                               nhosts,
+                                               hosts,
+                                               username,
+                                               secret)))
+            return -1;
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+static int
+qemuDomainDiskGetSourceString(virConnectPtr conn,
+                              virDomainDiskDefPtr disk,
+                              char **source)
+{
+    int actualType = qemuDiskGetActualType(disk);
     char *secret = NULL;
-    char *builturi = NULL;
     int ret = -1;
 
-    virBufferAddLit(opt, "file=");
+    *source = NULL;
 
-    if ((disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
-         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) &&
-        disk->auth.username) {
+    if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+        disk->auth.username &&
+        (disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI ||
+         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
         bool encode = false;
         int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
@@ -3860,32 +3903,23 @@ qemuBuildDriveURIString(virConnectPtr conn,
             goto cleanup;
     }
 
-
-    if (!(builturi = qemuBuildNetworkDriveURI(disk->protocol,
-                                              disk->src,
-                                              disk->nhosts,
-                                              disk->hosts,
-                                              disk->auth.username,
-                                              secret)))
-        goto cleanup;
-
-    virBufferEscape(opt, ',', ",", "%s", builturi);
-    virBufferAddChar(opt, ',');
-
-    ret = 0;
+    ret = qemuGetDriveSourceString(qemuDiskGetActualType(disk),
+                                   disk->src,
+                                   disk->protocol,
+                                   disk->nhosts,
+                                   disk->hosts,
+                                   disk->auth.username,
+                                   secret,
+                                   source);
 
 cleanup:
     VIR_FREE(secret);
-    VIR_FREE(builturi);
-
     return ret;
 }
 
 
-
-
 char *
-qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
+qemuBuildDriveStr(virConnectPtr conn,
                   virDomainDiskDefPtr disk,
                   bool bootable,
                   virQEMUCapsPtr qemuCaps)
@@ -3896,6 +3930,7 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     int idx = virDiskNameToIndex(disk->dst);
     int busid = -1, unitid = -1;
+    char *source = NULL;
     int actualType = qemuDiskGetActualType(disk);
 
     if (idx < 0) {
@@ -3978,15 +4013,18 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         break;
     }
 
-    /* disk->src is NULL when we use nbd disks */
-    if ((disk->src ||
-        (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK &&
-         disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_NBD)) &&
+    if (qemuDomainDiskGetSourceString(conn, disk, &source) < 0)
+        goto error;
+
+    if (source &&
         !((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
            disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
           disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
 
-        if (actualType == VIR_DOMAIN_DISK_TYPE_DIR) {
+        virBufferAddLit(&opt, "file=");
+
+        switch (actualType) {
+        case VIR_DOMAIN_DISK_TYPE_DIR:
             /* QEMU only supports magic FAT format for now */
             if (disk->format > 0 && disk->format != VIR_STORAGE_FILE_FAT) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3994,32 +4032,38 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStorageFileFormatTypeToString(disk->format));
                 goto error;
             }
+
             if (!disk->readonly) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("cannot create virtual FAT disks in read-write mode"));
                 goto error;
             }
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                virBufferEscape(&opt, ',', ",", "file=fat:floppy:%s,",
-                                disk->src);
-            else
-                virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
 
-        } else if (actualType == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-            if (qemuBuildDriveURIString(conn, disk, &opt) < 0)
-                goto error;
-        } else {
-            if ((actualType == VIR_DOMAIN_DISK_TYPE_BLOCK) &&
-                (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
+            virBufferAddLit(&opt, "fat:");
+
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                virBufferAddLit(&opt, "floppy:");
+
+            break;
+
+        case VIR_DOMAIN_DISK_TYPE_BLOCK:
+            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME ?
                                _("tray status 'open' is invalid for block type volume") :
                                _("tray status 'open' is invalid for block type disk"));
                 goto error;
             }
-            virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+
+            break;
+
+        default:
+            break;
         }
+
+        virBufferEscape(&opt, ',', ",", "%s,", source);
     }
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         virBufferAddLit(&opt, "if=none");
     else
