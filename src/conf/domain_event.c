@@ -32,13 +32,13 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-struct _virDomainMeta {
+struct _virObjectMeta {
     int id;
     char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
 };
-typedef struct _virDomainMeta virDomainMeta;
-typedef virDomainMeta *virDomainMetaPtr;
+typedef struct _virObjectMeta virObjectMeta;
+typedef virObjectMeta *virObjectMetaPtr;
 
 struct _virDomainEventCallbackList {
     unsigned int nextID;
@@ -67,7 +67,7 @@ struct _virObjectEventCallback {
     int callbackID;
     int eventID;
     virConnectPtr conn;
-    virDomainMetaPtr dom;
+    virObjectMetaPtr meta;
     virConnectDomainEventGenericCallback cb;
     void *opaque;
     virFreeCallback freecb;
@@ -77,7 +77,7 @@ struct _virObjectEventCallback {
 struct _virDomainEvent {
     int eventID;
 
-    virDomainMeta dom;
+    virObjectMeta meta;
 
     union {
         struct {
@@ -369,10 +369,10 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn &&
-            ((dom && cbList->callbacks[i]->dom &&
-              memcmp(cbList->callbacks[i]->dom->uuid,
+            ((dom && cbList->callbacks[i]->meta &&
+              memcmp(cbList->callbacks[i]->meta->uuid,
                      dom->uuid, VIR_UUID_BUFLEN) == 0) ||
-             (!dom && !cbList->callbacks[i]->dom))) {
+             (!dom && !cbList->callbacks[i]->meta))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("event callback already tracked"));
             return -1;
@@ -388,12 +388,12 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     event->freecb = freecb;
 
     if (dom) {
-        if (VIR_ALLOC(event->dom) < 0)
+        if (VIR_ALLOC(event->meta) < 0)
             goto error;
-        if (VIR_STRDUP(event->dom->name, dom->name) < 0)
+        if (VIR_STRDUP(event->meta->name, dom->name) < 0)
             goto error;
-        memcpy(event->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
-        event->dom->id = dom->id;
+        memcpy(event->meta->uuid, dom->uuid, VIR_UUID_BUFLEN);
+        event->meta->id = dom->id;
     }
 
     /* Make space on list */
@@ -421,9 +421,9 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
 error:
     if (event) {
-        if (event->dom)
-            VIR_FREE(event->dom->name);
-        VIR_FREE(event->dom);
+        if (event->meta)
+            VIR_FREE(event->meta->name);
+        VIR_FREE(event->meta);
     }
     VIR_FREE(event);
     return -1;
@@ -526,7 +526,7 @@ void virDomainEventFree(virDomainEventPtr event)
         break;
     }
 
-    VIR_FREE(event->dom.name);
+    VIR_FREE(event->meta.name);
     VIR_FREE(event);
 }
 
@@ -664,12 +664,12 @@ static virDomainEventPtr virDomainEventNewInternal(int eventID,
         return NULL;
 
     event->eventID = eventID;
-    if (VIR_STRDUP(event->dom.name, name) < 0) {
+    if (VIR_STRDUP(event->meta.name, name) < 0) {
         VIR_FREE(event);
         return NULL;
     }
-    event->dom.id = id;
-    memcpy(event->dom.uuid, uuid, VIR_UUID_BUFLEN);
+    event->meta.id = id;
+    memcpy(event->meta.uuid, uuid, VIR_UUID_BUFLEN);
 
     return event;
 }
@@ -1244,10 +1244,10 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   void *cbopaque,
                                   void *opaque ATTRIBUTE_UNUSED)
 {
-    virDomainPtr dom = virGetDomain(conn, event->dom.name, event->dom.uuid);
+    virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
     if (!dom)
         return;
-    dom->id = event->dom.id;
+    dom->id = event->meta.id;
 
     switch ((virDomainEventID) event->eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
@@ -1375,14 +1375,14 @@ static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
     if (cb->eventID != event->eventID)
         return 0;
 
-    if (cb->dom) {
+    if (cb->meta) {
         /* Deliberately ignoring 'id' for matching, since that
          * will cause problems when a domain switches between
          * running & shutoff states & ignoring 'name' since
          * Xen sometimes renames guests during migration, thus
          * leaving 'uuid' as the only truly reliable ID we can use*/
 
-        if (memcmp(event->dom.uuid, cb->dom->uuid, VIR_UUID_BUFLEN) == 0)
+        if (memcmp(event->meta.uuid, cb->meta->uuid, VIR_UUID_BUFLEN) == 0)
             return 1;
 
         return 0;
