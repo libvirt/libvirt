@@ -64,6 +64,9 @@ extern virStorageDriver vbox41StorageDriver;
 extern virDriver vbox42Driver;
 extern virNetworkDriver vbox42NetworkDriver;
 extern virStorageDriver vbox42StorageDriver;
+extern virDriver vbox43Driver;
+extern virNetworkDriver vbox43NetworkDriver;
+extern virStorageDriver vbox43StorageDriver;
 
 static virDriver vboxDriverDummy;
 
@@ -132,6 +135,11 @@ int vboxRegister(void) {
             driver        = &vbox42Driver;
             networkDriver = &vbox42NetworkDriver;
             storageDriver = &vbox42StorageDriver;
+        } else if (uVersion >= 4002051 && uVersion < 4003051) {
+            VIR_DEBUG("VirtualBox API version: 4.3");
+            driver        = &vbox43Driver;
+            networkDriver = &vbox43NetworkDriver;
+            storageDriver = &vbox43StorageDriver;
         } else {
             VIR_DEBUG("Unsupported VirtualBox API version: %u", uVersion);
         }

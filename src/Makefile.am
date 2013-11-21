@@ -650,7 +650,8 @@ VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_V3_2.c vbox/vbox_CAPI_v3_2.h			\
 	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h			\
 	vbox/vbox_V4_1.c vbox/vbox_CAPI_v4_1.h			\
-	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h
+	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h			\
+	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h
 
 VBOX_DRIVER_EXTRA_DIST =					\
 		vbox/vbox_tmpl.c vbox/README			\

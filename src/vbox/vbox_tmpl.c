@@ -74,6 +74,8 @@
 # include "vbox_CAPI_v4_1.h"
 #elif VBOX_API_VERSION == 4002
 # include "vbox_CAPI_v4_2.h"
+#elif VBOX_API_VERSION == 4003
+# include "vbox_CAPI_v4_3.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif
@@ -2208,13 +2210,19 @@ vboxDomainGetMaxVcpus(virDomainPtr dom)
 
 static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *machine)
 {
+#if VBOX_API_VERSION < 4003
     IUSBController *USBController = NULL;
     PRBool enabled = PR_FALSE;
+#else
+    IUSBDeviceFilters *USBDeviceFilters = NULL;
+#endif
     vboxArray deviceFilters = VBOX_ARRAY_INITIALIZER;
     size_t i;
     PRUint32 USBFilterCount = 0;
 
     def->nhostdevs = 0;
+
+#if VBOX_API_VERSION < 4003
     machine->vtbl->GetUSBController(machine, &USBController);
 
     if (!USBController)
@@ -2226,6 +2234,16 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
 
     vboxArrayGet(&deviceFilters, USBController,
                  USBController->vtbl->GetDeviceFilters);
+
+#else
+    machine->vtbl->GetUSBDeviceFilters(machine, &USBDeviceFilters);
+
+    if (!USBDeviceFilters)
+        return;
+
+    vboxArrayGet(&deviceFilters, USBDeviceFilters,
+                 USBDeviceFilters->vtbl->GetDeviceFilters);
+#endif
 
     if (deviceFilters.count <= 0)
         goto release_filters;
@@ -2298,8 +2316,12 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
 
 release_filters:
     vboxArrayRelease(&deviceFilters);
+#if VBOX_API_VERSION < 4003
 release_controller:
     VBOX_RELEASE(USBController);
+#else
+    VBOX_RELEASE(USBDeviceFilters);
+#endif
 }
 
 static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
@@ -4850,7 +4872,11 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 static void
 vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
+#if VBOX_API_VERSION < 4003
     IUSBController *USBController = NULL;
+#else
+    IUSBDeviceFilters *USBDeviceFilters = NULL;
+#endif
     size_t i = 0;
     bool isUSB = false;
 
@@ -4884,6 +4910,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     if (!isUSB)
         return;
 
+#if VBOX_API_VERSION < 4003
     /* First Start the USB Controller and then loop
      * to attach USB Devices to it
      */
@@ -4893,10 +4920,16 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         return;
 
     USBController->vtbl->SetEnabled(USBController, 1);
-#if VBOX_API_VERSION < 4002
+# if VBOX_API_VERSION < 4002
     USBController->vtbl->SetEnabledEhci(USBController, 1);
-#else
+# else
     USBController->vtbl->SetEnabledEHCI(USBController, 1);
+# endif
+#else
+    machine->vtbl->GetUSBDeviceFilters(machine, &USBDeviceFilters);
+
+    if (!USBDeviceFilters)
+        return;
 #endif
 
     for (i = 0; i < def->nhostdevs; i++) {
@@ -4921,9 +4954,15 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if (virAsprintf(&filtername, "filter%04zu", i) >= 0) {
             VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
             VIR_FREE(filtername);
+#if VBOX_API_VERSION < 4003
             USBController->vtbl->CreateDeviceFilter(USBController,
                                                     filternameUtf16,
                                                     &filter);
+#else
+            USBDeviceFilters->vtbl->CreateDeviceFilter(USBDeviceFilters,
+                                                       filternameUtf16,
+                                                       &filter);
+#endif
         }
         VBOX_UTF16_FREE(filternameUtf16);
 
@@ -4950,12 +4989,23 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             VBOX_UTF16_FREE(productIdUtf16);
         }
         filter->vtbl->SetActive(filter, 1);
+#if VBOX_API_VERSION < 4003
         USBController->vtbl->InsertDeviceFilter(USBController,
                                                 i,
                                                 filter);
+#else
+        USBDeviceFilters->vtbl->InsertDeviceFilter(USBDeviceFilters,
+                                                   i,
+                                                   filter);
+#endif
         VBOX_RELEASE(filter);
     }
+
+#if VBOX_API_VERSION < 4003
     VBOX_RELEASE(USBController);
+#else
+    VBOX_RELEASE(USBDeviceFilters);
+#endif
 }
 
 static void
@@ -5321,12 +5371,20 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
                                                      SAFEARRAY **media,
                                                      IProgress **progress);
 
+#  if VBOX_API_VERSION < 4003
         ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
+#  else
+        ((IMachine_Delete)machine->vtbl->DeleteConfig)(machine, &safeArray, &progress);
+#  endif
 # else
         /* XPCOM doesn't like NULL as an array, even when the array size is 0.
          * Instead pass it a dummy array to avoid passing NULL. */
         IMedium *array[] = { NULL };
+#  if VBOX_API_VERSION < 4003
         machine->vtbl->Delete(machine, 0, array, &progress);
+#  else
+        machine->vtbl->DeleteConfig(machine, 0, array, &progress);
+#  endif
 # endif
         if (progress != NULL) {
             progress->vtbl->WaitForCompletion(progress, -1);
@@ -8613,7 +8671,11 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
             if (def->capacity == def->allocation)
                 variant = HardDiskVariant_Fixed;
 
+#if VBOX_API_VERSION < 4003
             rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
+#else
+            rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, 1, &variant, &progress);
+#endif
             if (NS_SUCCEEDED(rc) && progress) {
 #if VBOX_API_VERSION == 2002
                 nsresult resultCode;
@@ -9140,10 +9202,18 @@ vboxDomainScreenshot(virDomainPtr dom,
                 PRUint32 width, height, bitsPerPixel;
                 PRUint32 screenDataSize;
                 PRUint8 *screenData;
+# if VBOX_API_VERSION >= 4003
+                PRInt32 xOrigin, yOrigin;
+# endif
 
                 rc = display->vtbl->GetScreenResolution(display, screen,
                                                         &width, &height,
+# if VBOX_API_VERSION < 4003
                                                         &bitsPerPixel);
+# else
+                                                        &bitsPerPixel,
+                                                        &xOrigin, &yOrigin);
+# endif
 
                 if (NS_FAILED(rc) || !width || !height) {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
