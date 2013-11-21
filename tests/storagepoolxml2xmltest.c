@@ -85,6 +85,7 @@ mymain(void)
         ret = -1
 
     DO_TEST("pool-dir");
+    DO_TEST("pool-dir-naming");
     DO_TEST("pool-fs");
     DO_TEST("pool-logical");
     DO_TEST("pool-logical-nopath");

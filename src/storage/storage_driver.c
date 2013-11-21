@@ -1554,6 +1554,9 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    /* Wipe any key the user may have suggested, as volume creation
+     * will generate the canonical key.  */
+    VIR_FREE(voldef->key);
     if (backend->createVol(obj->conn, pool, voldef) < 0) {
         goto cleanup;
     }
@@ -1729,7 +1732,10 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
                       pool->volumes.count+1) < 0)
         goto cleanup;
 
-    /* 'Define' the new volume so we get async progress reporting */
+    /* 'Define' the new volume so we get async progress reporting.
+     * Wipe any key the user may have suggested, as volume creation
+     * will generate the canonical key.  */
+    VIR_FREE(newvol->key);
     if (backend->createVol(obj->conn, pool, newvol) < 0) {
         goto cleanup;
     }

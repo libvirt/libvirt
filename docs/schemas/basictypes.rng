@@ -291,8 +291,15 @@
   </define>
 
   <define name='volName'>
+    <!-- directory pools allow almost any file name as a volume name -->
     <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\+\-\.]+</param>
+      <param name="pattern">[^/]+</param>
+      <except>
+        <choice>
+          <value>.</value>
+          <value>..</value>
+        </choice>
+      </except>
     </data>
   </define>
 

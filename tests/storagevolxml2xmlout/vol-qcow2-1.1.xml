@@ -1,6 +1,6 @@
 <volume>
   <name>OtherDemo.img</name>
-  <key>(null)</key>
+  <key>/var/lib/libvirt/images/OtherDemo.img</key>
   <source>
   </source>
   <capacity unit='bytes'>5368709120</capacity>

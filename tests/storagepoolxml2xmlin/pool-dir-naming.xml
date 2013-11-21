@@ -1,0 +1,18 @@
+<pool type='dir'>
+  <name>virtimages</name>
+  <uuid>70a7eb15-6c34-ee9c-bf57-69e8e5ff3fb2</uuid>
+  <capacity>0</capacity>
+  <allocation>0</allocation>
+  <available>0</available>
+  <source>
+  </source>
+  <target>
+    <path>///var/////lib/libvirt/&lt;images&gt;//</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+      <label>some_label_t</label>
+    </permissions>
+  </target>
+</pool>
