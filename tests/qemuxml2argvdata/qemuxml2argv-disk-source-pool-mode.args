@@ -1,0 +1,10 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -drive \
+file=/some/block/device/unit:0:0:1,if=none,media=cdrom,id=drive-ide0-0-1 -device \
+ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 -drive \
+file=iscsi://iscsi.example.com:3260/demo-target/2,if=none,media=cdrom,id=drive-ide0-0-2 \
+-device ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 -drive \
+file=/tmp/idedisk.img,if=none,id=drive-ide0-0-3 -device \
+ide-drive,bus=ide.0,unit=3,drive=drive-ide0-0-3,id=ide0-0-3 -device \
+virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

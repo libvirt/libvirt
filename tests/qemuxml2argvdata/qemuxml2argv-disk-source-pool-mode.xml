@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='volume' device='cdrom'>
-      <source pool='blk-pool0' volume='blk-pool0-vol0' mode='host' startupPolicy='optional'>
+      <source pool='pool-iscsi-auth' volume='unit:0:0:1' mode='host'>
         <seclabel model='selinux' relabel='yes'>
           <label>system_u:system_r:public_content_t:s0</label>
         </seclabel>
@@ -25,7 +25,7 @@
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='volume' device='cdrom'>
-      <source pool='blk-pool0' volume='blk-pool0-vol1' mode='direct' startupPolicy='optional'>
+      <source pool='pool-iscsi' volume='unit:0:0:2' mode='direct'>
         <seclabel model='selinux' relabel='yes'>
           <label>system_u:system_r:public_content_t:s0</label>
         </seclabel>
