@@ -66,7 +66,7 @@ struct uml_driver {
     virDomainXMLOptionPtr xmlopt;
 
     /* Event handling */
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 
     /* Mapping of 'char *uuidstr' -> virConnectPtr
      * of guests which will be automatically killed

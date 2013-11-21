@@ -496,7 +496,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
@@ -547,7 +547,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -944,7 +944,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1054,7 +1054,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
@@ -1245,7 +1245,7 @@ lxcConnectDomainEventDeregisterAny(virConnectPtr conn,
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateDeregisterID(conn,
+    ret = virObjectEventStateDeregisterID(conn,
                                           driver->domainEventState,
                                           callbackID);
 
@@ -1302,7 +1302,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -1398,7 +1398,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->domains = virDomainObjListNew()))
         goto cleanup;
 
-    lxc_driver->domainEventState = virDomainEventStateNew();
+    lxc_driver->domainEventState = virObjectEventStateNew();
     if (!lxc_driver->domainEventState)
         goto cleanup;
 
@@ -1486,7 +1486,7 @@ static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
         if (event)
-            virDomainEventStateQueue(driver->domainEventState, event);
+            virObjectEventStateQueue(driver->domainEventState, event);
     }
 }
 
@@ -1528,7 +1528,7 @@ static int lxcStateCleanup(void)
 
     virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
     virObjectUnref(lxc_driver->domains);
-    virDomainEventStateFree(lxc_driver->domainEventState);
+    virObjectEventStateFree(lxc_driver->domainEventState);
 
     virObjectUnref(lxc_driver->closeCallbacks);
 
@@ -2372,7 +2372,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
 
 cleanup:
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);
@@ -2422,7 +2422,7 @@ static int lxcDomainResume(virDomainPtr dom)
 
 cleanup:
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);

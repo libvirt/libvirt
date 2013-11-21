@@ -102,7 +102,7 @@ libxlDomObjFromDomain(virDomainPtr dom)
 static void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
 {
-    virDomainEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static int
@@ -778,7 +778,7 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->domains);
     virObjectUnref(libxl_driver->reservedVNCPorts);
 
-    virDomainEventStateFree(libxl_driver->domainEventState);
+    virObjectEventStateFree(libxl_driver->domainEventState);
     virSysinfoDefFree(libxl_driver->hostsysinfo);
 
     virMutexDestroy(&libxl_driver->lock);
@@ -888,7 +888,7 @@ libxlStateInitialize(bool privileged,
     /* read the host sysinfo */
     libxl_driver->hostsysinfo = virSysinfoRead();
 
-    libxl_driver->domainEventState = virDomainEventStateNew();
+    libxl_driver->domainEventState = virObjectEventStateNew();
     if (!libxl_driver->domainEventState)
         goto error;
 
@@ -4145,7 +4145,7 @@ libxlConnectDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateDeregisterID(conn,
+    ret = virObjectEventStateDeregisterID(conn,
                                           driver->domainEventState,
                                           callbackID);
 

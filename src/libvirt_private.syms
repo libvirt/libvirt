@@ -447,17 +447,17 @@ virDomainEventRebootNewFromObj;
 virDomainEventRTCChangeNewFromDom;
 virDomainEventRTCChangeNewFromObj;
 virDomainEventStateDeregister;
-virDomainEventStateDeregisterID;
-virDomainEventStateEventID;
-virDomainEventStateFree;
-virDomainEventStateNew;
-virDomainEventStateQueue;
 virDomainEventStateRegister;
 virDomainEventStateRegisterID;
 virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
+virObjectEventStateDeregisterID;
+virObjectEventStateEventID;
+virObjectEventStateFree;
+virObjectEventStateNew;
+virObjectEventStateQueue;
 
 
 # conf/domain_nwfilter.h

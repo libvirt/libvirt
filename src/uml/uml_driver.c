@@ -475,7 +475,7 @@ umlStateInitialize(bool privileged,
     if (!(uml_driver->domains = virDomainObjListNew()))
         goto error;
 
-    uml_driver->domainEventState = virDomainEventStateNew();
+    uml_driver->domainEventState = virObjectEventStateNew();
     if (!uml_driver->domainEventState)
         goto error;
 
@@ -677,7 +677,7 @@ umlStateCleanup(void) {
 
     virObjectUnref(uml_driver->domains);
 
-    virDomainEventStateFree(uml_driver->domainEventState);
+    virObjectEventStateFree(uml_driver->domainEventState);
 
     VIR_FREE(uml_driver->logDir);
     VIR_FREE(uml_driver->configDir);
@@ -2680,7 +2680,7 @@ umlConnectDomainEventDeregisterAny(virConnectPtr conn,
         return -1;
 
     umlDriverLock(driver);
-    ret = virDomainEventStateDeregisterID(conn,
+    ret = virObjectEventStateDeregisterID(conn,
                                           driver->domainEventState,
                                           callbackID);
     umlDriverUnlock(driver);
@@ -2693,7 +2693,7 @@ umlConnectDomainEventDeregisterAny(virConnectPtr conn,
 static void umlDomainEventQueue(struct uml_driver *driver,
                                 virDomainEventPtr event)
 {
-    virDomainEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static int umlConnectListAllDomains(virConnectPtr conn,

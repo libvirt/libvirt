@@ -120,7 +120,7 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virDomainEventPtr event)
 {
-    virDomainEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 

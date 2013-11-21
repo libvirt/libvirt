@@ -99,7 +99,7 @@ struct _testConn {
     int numCells;
     testCell cells[MAX_CELLS];
 
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 };
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
@@ -1444,7 +1444,7 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
     privconn = conn->privateData;
     testDriverLock(privconn);
 
-    privconn->domainEventState = virDomainEventStateNew();
+    privconn->domainEventState = virObjectEventStateNew();
     if (!privconn->domainEventState) {
         testDriverUnlock(privconn);
         testConnectClose(conn);
@@ -1467,7 +1467,7 @@ static int testConnectClose(virConnectPtr conn)
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
-    virDomainEventStateFree(privconn->domainEventState);
+    virObjectEventStateFree(privconn->domainEventState);
     VIR_FREE(privconn->path);
 
     testDriverUnlock(privconn);
@@ -6018,7 +6018,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    ret = virDomainEventStateDeregisterID(conn,
+    ret = virObjectEventStateDeregisterID(conn,
                                           driver->domainEventState,
                                           callbackID);
     testDriverUnlock(driver);
@@ -6031,7 +6031,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
 static void testDomainEventQueue(testConnPtr driver,
                                  virDomainEventPtr event)
 {
-    virDomainEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static virDrvOpenStatus testSecretOpen(virConnectPtr conn,

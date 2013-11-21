@@ -208,7 +208,7 @@ struct _virQEMUDriver {
     virQEMUCapsCachePtr qemuCapsCache;
 
     /* Immutable pointer, self-locking APIs */
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 
     /* Immutable pointer. self-locking APIs */
     virSecurityManagerPtr securityManager;

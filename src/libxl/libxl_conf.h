@@ -105,7 +105,7 @@ struct _libxlDriverPrivate {
     virDomainXMLOptionPtr xmlopt;
 
     /* Immutable pointer, self-locking APIs */
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 
     /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr reservedVNCPorts;

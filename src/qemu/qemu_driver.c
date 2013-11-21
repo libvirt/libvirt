@@ -597,7 +597,7 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     /* Init domain events */
-    qemu_driver->domainEventState = virDomainEventStateNew();
+    qemu_driver->domainEventState = virObjectEventStateNew();
     if (!qemu_driver->domainEventState)
         goto error;
 
@@ -1015,7 +1015,7 @@ qemuStateCleanup(void) {
     ebtablesContextFree(qemu_driver->ebtables);
 
     /* Free domain callback list */
-    virDomainEventStateFree(qemu_driver->domainEventState);
+    virObjectEventStateFree(qemu_driver->domainEventState);
 
     virLockManagerPluginUnref(qemu_driver->lockManager);
 
@@ -10016,7 +10016,7 @@ qemuConnectDomainEventDeregisterAny(virConnectPtr conn,
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         goto cleanup;
 
-    if (virDomainEventStateDeregisterID(conn,
+    if (virObjectEventStateDeregisterID(conn,
                                         driver->domainEventState,
                                         callbackID) < 0)
         goto cleanup;

@@ -453,7 +453,7 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!(priv->domainEvents = virDomainEventStateNew())) {
+    if (!(priv->domainEvents = virObjectEventStateNew())) {
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
@@ -551,7 +551,7 @@ xenUnifiedConnectClose(virConnectPtr conn)
 
     virObjectUnref(priv->caps);
     virObjectUnref(priv->xmlopt);
-    virDomainEventStateFree(priv->domainEvents);
+    virObjectEventStateFree(priv->domainEvents);
 
 #if WITH_XEN_INOTIFY
     if (priv->opened[XEN_UNIFIED_INOTIFY_OFFSET])
@@ -2409,7 +2409,7 @@ xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventStateDeregisterID(conn,
+    ret = virObjectEventStateDeregisterID(conn,
                                           priv->domainEvents,
                                           callbackID);
 
@@ -2951,7 +2951,7 @@ void xenUnifiedDomainEventDispatch(xenUnifiedPrivatePtr priv,
     if (!priv)
         return;
 
-    virDomainEventStateQueue(priv->domainEvents, event);
+    virObjectEventStateQueue(priv->domainEvents, event);
 }
 
 void xenUnifiedLock(xenUnifiedPrivatePtr priv)

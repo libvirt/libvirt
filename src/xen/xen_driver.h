@@ -159,7 +159,7 @@ struct _xenUnifiedPrivate {
     int nbNodeCells;
     int nbNodeCpus;
 
-    virDomainEventStatePtr domainEvents;
+    virObjectEventStatePtr domainEvents;
 
     /* Location of config files, either /etc
      * or /var/lib/xen */

@@ -92,7 +92,7 @@ struct private_data {
     char *hostname;             /* Original hostname */
     bool serverKeepAlive;       /* Does server support keepalive protocol? */
 
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 };
 
 enum {
@@ -880,7 +880,7 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
     }
 
-    if (!(priv->domainEventState = virDomainEventStateNew()))
+    if (!(priv->domainEventState = virObjectEventStateNew()))
         goto failed;
 
     /* Successful. */
@@ -1085,7 +1085,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
     /* See comment for remoteType. */
     VIR_FREE(priv->type);
 
-    virDomainEventStateFree(priv->domainEventState);
+    virObjectEventStateFree(priv->domainEventState);
     priv->domainEventState = NULL;
 
     return ret;
@@ -5122,7 +5122,7 @@ static int remoteConnectDomainEventRegisterAny(virConnectPtr conn,
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER_ANY,
                  (xdrproc_t) xdr_remote_connect_domain_event_register_any_args, (char *) &args,
                  (xdrproc_t) xdr_void, (char *)NULL) == -1) {
-            virDomainEventStateDeregisterID(conn,
+            virObjectEventStateDeregisterID(conn,
                                             priv->domainEventState,
                                             callbackID);
             goto done;
@@ -5148,14 +5148,14 @@ static int remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if ((eventID = virDomainEventStateEventID(conn,
+    if ((eventID = virObjectEventStateEventID(conn,
                                               priv->domainEventState,
                                               callbackID)) < 0) {
         virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
         goto done;
     }
 
-    if ((count = virDomainEventStateDeregisterID(conn,
+    if ((count = virObjectEventStateDeregisterID(conn,
                                                  priv->domainEventState,
                                                  callbackID)) < 0) {
         virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
@@ -6692,7 +6692,7 @@ done:
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
-    virDomainEventStateQueue(priv->domainEventState, event);
+    virObjectEventStateQueue(priv->domainEventState, event);
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

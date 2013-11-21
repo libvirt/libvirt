@@ -344,7 +344,7 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
 
-    if (!(driver.domainEventState = virDomainEventStateNew()))
+    if (!(driver.domainEventState = virObjectEventStateNew()))
         return EXIT_FAILURE;
 
     driver.lockManager = virLockManagerPluginNew("nop", "qemu",

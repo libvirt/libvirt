@@ -44,7 +44,7 @@ struct _parallelsConn {
     virNetworkObjList networks;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
-    virDomainEventStatePtr domainEventState;
+    virObjectEventStatePtr domainEventState;
 };
 
 typedef struct _parallelsConn parallelsConn;

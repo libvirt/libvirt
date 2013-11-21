@@ -82,7 +82,7 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
     }
 
     if (event)
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
 
     return dom;
 }
@@ -533,7 +533,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     if (vm)
         virObjectUnlock(vm);
     if (event) {
-        virDomainEventStateQueue(driver->domainEventState, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 }
 
@@ -1399,7 +1399,7 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
             if (event)
-                virDomainEventStateQueue(data->driver->domainEventState, event);
+                virObjectEventStateQueue(data->driver->domainEventState, event);
         }
     }
     virObjectUnlock(vm);
