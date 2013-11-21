@@ -366,8 +366,23 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
-            goto cleanup;
+        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            if (STRPREFIX(vm->def->os.machine, "s390-ccw") &&
+                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+                controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+            else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+                controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+        }
+
+        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+            controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
+                goto cleanup;
+        } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            if (qemuDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
+                                           !controller->info.addr.ccw.assigned) < 0)
+                goto cleanup;
+        }
         releaseaddr = true;
         if (qemuAssignDeviceControllerAlias(controller) < 0)
             goto cleanup;
@@ -399,7 +414,8 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     qemuDomainObjExitMonitor(driver, vm);
 
     if (ret == 0) {
-        controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         virDomainControllerInsertPreAlloced(vm->def, controller);
     }
 
@@ -3049,14 +3065,24 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     detach = vm->def->controllers[idx];
 
-    if (!virDomainDeviceAddressIsValid(&detach->info,
-                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("device cannot be detached without a PCI address"));
+    if (detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+        detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+        detach->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("device with '%s' address cannot be detached"),
+                       virDomainDeviceAddressTypeToString(detach->info.type));
         goto cleanup;
     }
 
-    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+    if (!virDomainDeviceAddressIsValid(&detach->info, detach->info.type)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("device with invalid '%s' address cannot be detached"),
+                       virDomainDeviceAddressTypeToString(detach->info.type));
+        goto cleanup;
+    }
+
+    if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+        qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
                        dev->data.disk->dst);
