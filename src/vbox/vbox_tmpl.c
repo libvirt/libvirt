@@ -4852,94 +4852,99 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
      * usual
      */
     for (i = 0; i < def->nhostdevs; i++) {
-        if (def->hostdevs[i]->mode ==
-            VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-            if (def->hostdevs[i]->source.subsys.type ==
-                VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                if (def->hostdevs[i]->source.subsys.u.usb.vendor ||
-                    def->hostdevs[i]->source.subsys.u.usb.product) {
-                    VIR_DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
-                          def->hostdevs[i]->source.subsys.u.usb.vendor,
-                          def->hostdevs[i]->source.subsys.u.usb.product);
-                    isUSB = true;
-                    break;
-                }
-            }
-        }
+        if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+
+        if (def->hostdevs[i]->source.subsys.type !=
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+
+        if (!def->hostdevs[i]->source.subsys.u.usb.vendor &&
+            !def->hostdevs[i]->source.subsys.u.usb.product)
+            continue;
+
+        VIR_DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
+                  def->hostdevs[i]->source.subsys.u.usb.vendor,
+                  def->hostdevs[i]->source.subsys.u.usb.product);
+        isUSB = true;
+        break;
     }
 
-    if (isUSB) {
-        /* First Start the USB Controller and then loop
-         * to attach USB Devices to it
-         */
-        machine->vtbl->GetUSBController(machine, &USBController);
-        if (USBController) {
-            USBController->vtbl->SetEnabled(USBController, 1);
+    if (!isUSB)
+        return;
+
+    /* First Start the USB Controller and then loop
+     * to attach USB Devices to it
+     */
+    machine->vtbl->GetUSBController(machine, &USBController);
+
+    if (!USBController)
+        return;
+
+    USBController->vtbl->SetEnabled(USBController, 1);
 #if VBOX_API_VERSION < 4002
-            USBController->vtbl->SetEnabledEhci(USBController, 1);
+    USBController->vtbl->SetEnabledEhci(USBController, 1);
 #else
-            USBController->vtbl->SetEnabledEHCI(USBController, 1);
+    USBController->vtbl->SetEnabledEHCI(USBController, 1);
 #endif
 
-            for (i = 0; i < def->nhostdevs; i++) {
-                if (def->hostdevs[i]->mode ==
-                    VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-                    if (def->hostdevs[i]->source.subsys.type ==
-                        VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+    for (i = 0; i < def->nhostdevs; i++) {
+        char *filtername           = NULL;
+        PRUnichar *filternameUtf16 = NULL;
+        IUSBDeviceFilter *filter   = NULL;
+        PRUnichar *vendorIdUtf16  = NULL;
+        char vendorId[40]         = {0};
+        PRUnichar *productIdUtf16 = NULL;
+        char productId[40]        = {0};
 
-                        char *filtername           = NULL;
-                        PRUnichar *filternameUtf16 = NULL;
-                        IUSBDeviceFilter *filter   = NULL;
+        if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
 
-                        /* Zero pad for nice alignment when fewer than 9999
-                         * devices.
-                         */
-                        if (virAsprintf(&filtername, "filter%04zu", i) >= 0) {
-                            VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
-                            VIR_FREE(filtername);
-                            USBController->vtbl->CreateDeviceFilter(USBController,
-                                                                    filternameUtf16,
-                                                                    &filter);
-                        }
-                        VBOX_UTF16_FREE(filternameUtf16);
+        if (def->hostdevs[i]->source.subsys.type !=
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
 
-                        if (filter &&
-                            (def->hostdevs[i]->source.subsys.u.usb.vendor ||
-                             def->hostdevs[i]->source.subsys.u.usb.product)) {
-
-                            PRUnichar *vendorIdUtf16  = NULL;
-                            char vendorId[40]         = {0};
-                            PRUnichar *productIdUtf16 = NULL;
-                            char productId[40]        = {0};
-
-                            if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
-                                snprintf(vendorId, sizeof(vendorId), "%x",
-                                         def->hostdevs[i]->source.subsys.u.usb.vendor);
-                                VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
-                                filter->vtbl->SetVendorId(filter, vendorIdUtf16);
-                                VBOX_UTF16_FREE(vendorIdUtf16);
-                            }
-                            if (def->hostdevs[i]->source.subsys.u.usb.product) {
-                                snprintf(productId, sizeof(productId), "%x",
-                                         def->hostdevs[i]->source.subsys.u.usb.product);
-                                VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
-                                filter->vtbl->SetProductId(filter,
-                                                           productIdUtf16);
-                                VBOX_UTF16_FREE(productIdUtf16);
-                            }
-                            filter->vtbl->SetActive(filter, 1);
-                            USBController->vtbl->InsertDeviceFilter(USBController,
-                                                                    i,
-                                                                    filter);
-                            VBOX_RELEASE(filter);
-                        }
-
-                    }
-                }
-            }
-            VBOX_RELEASE(USBController);
+        /* Zero pad for nice alignment when fewer than 9999
+         * devices.
+         */
+        if (virAsprintf(&filtername, "filter%04zu", i) >= 0) {
+            VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
+            VIR_FREE(filtername);
+            USBController->vtbl->CreateDeviceFilter(USBController,
+                                                    filternameUtf16,
+                                                    &filter);
         }
+        VBOX_UTF16_FREE(filternameUtf16);
+
+        if (!filter)
+            continue;
+
+        if (!def->hostdevs[i]->source.subsys.u.usb.vendor &&
+            !def->hostdevs[i]->source.subsys.u.usb.product)
+            continue;
+
+        if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
+            snprintf(vendorId, sizeof(vendorId), "%x",
+                     def->hostdevs[i]->source.subsys.u.usb.vendor);
+            VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
+            filter->vtbl->SetVendorId(filter, vendorIdUtf16);
+            VBOX_UTF16_FREE(vendorIdUtf16);
+        }
+        if (def->hostdevs[i]->source.subsys.u.usb.product) {
+            snprintf(productId, sizeof(productId), "%x",
+                     def->hostdevs[i]->source.subsys.u.usb.product);
+            VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
+            filter->vtbl->SetProductId(filter,
+                                       productIdUtf16);
+            VBOX_UTF16_FREE(productIdUtf16);
+        }
+        filter->vtbl->SetActive(filter, 1);
+        USBController->vtbl->InsertDeviceFilter(USBController,
+                                                i,
+                                                filter);
+        VBOX_RELEASE(filter);
     }
+    VBOX_RELEASE(USBController);
 }
 
 static void
