@@ -458,6 +458,7 @@ virObjectEventStateEventID;
 virObjectEventStateFree;
 virObjectEventStateNew;
 virObjectEventStateQueue;
+virObjectEventStateRegisterID;
 
 
 # conf/domain_nwfilter.h

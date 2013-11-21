@@ -137,6 +137,19 @@ void virObjectEventStateFree(virObjectEventStatePtr state);
 virObjectEventStatePtr
 virObjectEventStateNew(void);
 
+/*
+ * virConnectObjectEventGenericCallback:
+ * @conn: the connection pointer
+ * @obj: the object pointer
+ * @opaque: application specified data
+ *
+ * A generic object event callback handler. Specific events usually
+ * have a customization with extra parameters
+ */
+typedef void (*virConnectObjectEventGenericCallback)(virConnectPtr conn,
+                                                     void *obj,
+                                                     void *opaque);
+
 void
 virObjectEventStateQueue(virObjectEventStatePtr state,
                          virDomainEventPtr event)
@@ -161,6 +174,18 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int
+virObjectEventStateRegisterID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              unsigned char *uuid,
+                              const char *name,
+                              int id,
+                              int eventID,
+                              virConnectObjectEventGenericCallback cb,
+                              void *opaque,
+                              virFreeCallback freecb,
+                              int *callbackID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7);
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
                                 virObjectEventStatePtr state,
