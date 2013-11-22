@@ -92,6 +92,7 @@ static virClassPtr virDomainEventIOErrorClass;
 static virClassPtr virDomainEventGraphicsClass;
 static virClassPtr virDomainEventBlockJobClass;
 static virClassPtr virDomainEventDiskChangeClass;
+static virClassPtr virDomainEventTrayChangeClass;
 
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
@@ -102,6 +103,7 @@ static void virDomainEventIOErrorDispose(void *obj);
 static void virDomainEventGraphicsDispose(void *obj);
 static void virDomainEventBlockJobDispose(void *obj);
 static void virDomainEventDiskChangeDispose(void *obj);
+static void virDomainEventTrayChangeDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -114,10 +116,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            char *devAlias;
-            int reason;
-        } trayChange;
         struct {
             /* In unit of 1024 bytes */
             unsigned long long actual;
@@ -197,6 +195,15 @@ struct _virDomainEventDiskChange {
 typedef struct _virDomainEventDiskChange virDomainEventDiskChange;
 typedef virDomainEventDiskChange *virDomainEventDiskChangePtr;
 
+struct _virDomainEventTrayChange {
+    virDomainEvent parent;
+
+    char *devAlias;
+    int reason;
+};
+typedef struct _virDomainEventTrayChange virDomainEventTrayChange;
+typedef virDomainEventTrayChange *virDomainEventTrayChangePtr;
+
 
 static int virObjectEventOnceInit(void)
 {
@@ -254,6 +261,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventDiskChange),
                       virDomainEventDiskChangeDispose)))
         return -1;
+    if (!(virDomainEventTrayChangeClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventTrayChange",
+                      sizeof(virDomainEventTrayChange),
+                      virDomainEventTrayChangeDispose)))
+        return -1;
     return 0;
 }
 
@@ -286,9 +299,6 @@ static void virDomainEventDispose(void *obj)
 
     switch (virObjectEventGetEventID(event)) {
 
-    case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
-        VIR_FREE(event->data.trayChange.devAlias);
-        break;
     case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
         VIR_FREE(event->data.deviceRemoved.devAlias);
         break;
@@ -366,6 +376,14 @@ static void virDomainEventDiskChangeDispose(void *obj)
 
     VIR_FREE(event->oldSrcPath);
     VIR_FREE(event->newSrcPath);
+    VIR_FREE(event->devAlias);
+}
+
+static void virDomainEventTrayChangeDispose(void *obj)
+{
+    virDomainEventTrayChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
     VIR_FREE(event->devAlias);
 }
 
@@ -1332,22 +1350,22 @@ virDomainEventTrayChangeNew(int id, const char *name,
                             const char *devAlias,
                             int reason)
 {
-    virDomainEventPtr ev;
+    virDomainEventTrayChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventTrayChangeClass,
                                  VIR_DOMAIN_EVENT_ID_TRAY_CHANGE,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->data.trayChange.devAlias, devAlias) < 0)
+    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
         goto error;
 
-    ev->data.trayChange.reason = reason;
+    ev->reason = reason;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 
 error:
     virObjectUnref(ev);
@@ -1705,11 +1723,16 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
-        ((virConnectDomainEventTrayChangeCallback)cb)(conn, dom,
-                                                      event->data.trayChange.devAlias,
-                                                      event->data.trayChange.reason,
-                                                      cbopaque);
-        goto cleanup;
+        {
+            virDomainEventTrayChangePtr trayChangeEvent;
+
+            trayChangeEvent = (virDomainEventTrayChangePtr)event;
+            ((virConnectDomainEventTrayChangeCallback)cb)(conn, dom,
+                                                          trayChangeEvent->devAlias,
+                                                          trayChangeEvent->reason,
+                                                          cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
         ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom, 0, cbopaque);
