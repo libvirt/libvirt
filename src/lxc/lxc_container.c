@@ -654,8 +654,8 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     /* ... and mount our root onto it */
     if (mount(root->src, newroot, NULL, MS_BIND|MS_REC, NULL) < 0) {
         virReportSystemError(errno,
-                             _("Failed to bind new root %s into tmpfs"),
-                             root->src);
+                             _("Failed to bind %s to new root %s"),
+                             root->src, newroot);
         goto err;
     }
 
