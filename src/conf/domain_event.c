@@ -89,12 +89,14 @@ static virClassPtr virDomainEventLifecycleClass;
 static virClassPtr virDomainEventRTCChangeClass;
 static virClassPtr virDomainEventWatchdogClass;
 static virClassPtr virDomainEventIOErrorClass;
+static virClassPtr virDomainEventGraphicsClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
 static void virDomainEventRTCChangeDispose(void *obj);
 static void virDomainEventWatchdogDispose(void *obj);
 static void virDomainEventIOErrorDispose(void *obj);
+static void virDomainEventGraphicsDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -107,13 +109,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            int phase;
-            virDomainEventGraphicsAddressPtr local;
-            virDomainEventGraphicsAddressPtr remote;
-            char *authScheme;
-            virDomainEventGraphicsSubjectPtr subject;
-        } graphics;
         struct {
             char *path;
             int type;
@@ -175,6 +170,18 @@ struct _virDomainEventIOError {
 typedef struct _virDomainEventIOError virDomainEventIOError;
 typedef virDomainEventIOError *virDomainEventIOErrorPtr;
 
+struct _virDomainEventGraphics {
+    virDomainEvent parent;
+
+    int phase;
+    virDomainEventGraphicsAddressPtr local;
+    virDomainEventGraphicsAddressPtr remote;
+    char *authScheme;
+    virDomainEventGraphicsSubjectPtr subject;
+};
+typedef struct _virDomainEventGraphics virDomainEventGraphics;
+typedef virDomainEventGraphics *virDomainEventGraphicsPtr;
+
 static int virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
@@ -213,6 +220,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventIOError),
                       virDomainEventIOErrorDispose)))
         return -1;
+    if (!(virDomainEventGraphicsClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventGraphics",
+                      sizeof(virDomainEventGraphics),
+                      virDomainEventGraphicsDispose)))
+        return -1;
     return 0;
 }
 
@@ -244,28 +257,6 @@ static void virDomainEventDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     switch (virObjectEventGetEventID(event)) {
-
-    case VIR_DOMAIN_EVENT_ID_GRAPHICS:
-        if (event->data.graphics.local) {
-            VIR_FREE(event->data.graphics.local->node);
-            VIR_FREE(event->data.graphics.local->service);
-            VIR_FREE(event->data.graphics.local);
-        }
-        if (event->data.graphics.remote) {
-            VIR_FREE(event->data.graphics.remote->node);
-            VIR_FREE(event->data.graphics.remote->service);
-            VIR_FREE(event->data.graphics.remote);
-        }
-        VIR_FREE(event->data.graphics.authScheme);
-        if (event->data.graphics.subject) {
-            size_t i;
-            for (i = 0; i < event->data.graphics.subject->nidentity; i++) {
-                VIR_FREE(event->data.graphics.subject->identities[i].type);
-                VIR_FREE(event->data.graphics.subject->identities[i].name);
-            }
-            VIR_FREE(event->data.graphics.subject);
-        }
-        break;
 
     case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
         VIR_FREE(event->data.blockJob.path);
@@ -313,6 +304,32 @@ static void virDomainEventIOErrorDispose(void *obj)
     VIR_FREE(event->srcPath);
     VIR_FREE(event->devAlias);
     VIR_FREE(event->reason);
+}
+
+static void virDomainEventGraphicsDispose(void *obj)
+{
+    virDomainEventGraphicsPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    if (event->local) {
+        VIR_FREE(event->local->node);
+        VIR_FREE(event->local->service);
+        VIR_FREE(event->local);
+    }
+    if (event->remote) {
+        VIR_FREE(event->remote->node);
+        VIR_FREE(event->remote->service);
+        VIR_FREE(event->remote);
+    }
+    VIR_FREE(event->authScheme);
+    if (event->subject) {
+        size_t i;
+        for (i = 0; i < event->subject->nidentity; i++) {
+            VIR_FREE(event->subject->identities[i].type);
+            VIR_FREE(event->subject->identities[i].name);
+        }
+        VIR_FREE(event->subject);
+    }
 }
 
 /**
@@ -1081,62 +1098,62 @@ virDomainEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
 
 
 virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
-                                                   int phase,
-                                                   virDomainEventGraphicsAddressPtr local,
-                                                   virDomainEventGraphicsAddressPtr remote,
-                                                   const char *authScheme,
-                                                   virDomainEventGraphicsSubjectPtr subject)
+                                       int phase,
+                                       virDomainEventGraphicsAddressPtr local,
+                                       virDomainEventGraphicsAddressPtr remote,
+                                       const char *authScheme,
+                                       virDomainEventGraphicsSubjectPtr subject)
 {
-    virDomainEventPtr ev;
+    virDomainEventGraphicsPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventGraphicsClass,
                                  VIR_DOMAIN_EVENT_ID_GRAPHICS,
                                  dom->id, dom->name, dom->uuid)))
         return NULL;
 
-    ev->data.graphics.phase = phase;
-    if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
+    ev->phase = phase;
+    if (VIR_STRDUP(ev->authScheme, authScheme) < 0) {
         virObjectUnref(ev);
         return NULL;
     }
-    ev->data.graphics.local = local;
-    ev->data.graphics.remote = remote;
-    ev->data.graphics.subject = subject;
+    ev->local = local;
+    ev->remote = remote;
+    ev->subject = subject;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
-                                                   int phase,
-                                                   virDomainEventGraphicsAddressPtr local,
-                                                   virDomainEventGraphicsAddressPtr remote,
-                                                   const char *authScheme,
-                                                   virDomainEventGraphicsSubjectPtr subject)
+                                       int phase,
+                                       virDomainEventGraphicsAddressPtr local,
+                                       virDomainEventGraphicsAddressPtr remote,
+                                       const char *authScheme,
+                                       virDomainEventGraphicsSubjectPtr subject)
 {
-    virDomainEventPtr ev;
+    virDomainEventGraphicsPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventGraphicsClass,
                                  VIR_DOMAIN_EVENT_ID_GRAPHICS,
                                  obj->def->id, obj->def->name,
                                  obj->def->uuid)))
         return NULL;
 
-    ev->data.graphics.phase = phase;
-    if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
+    ev->phase = phase;
+    if (VIR_STRDUP(ev->authScheme, authScheme) < 0) {
         virObjectUnref(ev);
         return NULL;
     }
-    ev->data.graphics.local = local;
-    ev->data.graphics.remote = remote;
-    ev->data.graphics.subject = subject;
+    ev->local = local;
+    ev->remote = remote;
+    ev->subject = subject;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 static virDomainEventPtr
@@ -1600,14 +1617,19 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
-        ((virConnectDomainEventGraphicsCallback)cb)(conn, dom,
-                                                    event->data.graphics.phase,
-                                                    event->data.graphics.local,
-                                                    event->data.graphics.remote,
-                                                    event->data.graphics.authScheme,
-                                                    event->data.graphics.subject,
-                                                    cbopaque);
-        goto cleanup;
+        {
+            virDomainEventGraphicsPtr graphicsEvent;
+
+            graphicsEvent = (virDomainEventGraphicsPtr)event;
+            ((virConnectDomainEventGraphicsCallback)cb)(conn, dom,
+                                                        graphicsEvent->phase,
+                                                        graphicsEvent->local,
+                                                        graphicsEvent->remote,
+                                                        graphicsEvent->authScheme,
+                                                        graphicsEvent->subject,
+                                                        cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
         (cb)(conn, dom,

@@ -89,17 +89,17 @@ virDomainEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
                                                         const char *reason);
 
 virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
-                                                   int phase,
-                                                   virDomainEventGraphicsAddressPtr local,
-                                                   virDomainEventGraphicsAddressPtr remote,
-                                                   const char *authScheme,
-                                                   virDomainEventGraphicsSubjectPtr subject);
+                                       int phase,
+                                       virDomainEventGraphicsAddressPtr local,
+                                       virDomainEventGraphicsAddressPtr remote,
+                                       const char *authScheme,
+                                       virDomainEventGraphicsSubjectPtr subject);
 virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
-                                                   int phase,
-                                                   virDomainEventGraphicsAddressPtr local,
-                                                   virDomainEventGraphicsAddressPtr remote,
-                                                   const char *authScheme,
-                                                   virDomainEventGraphicsSubjectPtr subject);
+                                       int phase,
+                                       virDomainEventGraphicsAddressPtr local,
+                                       virDomainEventGraphicsAddressPtr remote,
+                                       const char *authScheme,
+                                       virDomainEventGraphicsSubjectPtr subject);
 virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
 
