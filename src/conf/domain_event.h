@@ -28,6 +28,14 @@
 
 # include "domain_conf.h"
 
+
+/** Event IDs are computed in the following way:
+    virEventNamespaceID << 8 + vir*EventId
+  */
+typedef enum {
+    VIR_EVENT_NAMESPACE_DOMAIN = 0, /* 0 to keep value of virDomainEventId unchanged */
+} virEventNamespaceID;
+
 typedef struct _virObjectEventCallback virObjectEventCallback;
 typedef virObjectEventCallback *virObjectEventCallbackPtr;
 

@@ -1912,11 +1912,17 @@ virObjectEventStateDispatchFunc(virConnectPtr conn,
                                 void *opaque)
 {
     virObjectEventStatePtr state = opaque;
+    virEventNamespaceID namespace = (event->eventID & 0xFF00) >> 8;
 
     /* Drop the lock whle dispatching, for sake of re-entrancy */
     virObjectEventStateUnlock(state);
-    virDomainEventDispatchDefaultFunc(conn, event,
-            VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
+    switch (namespace)
+    {
+        case VIR_EVENT_NAMESPACE_DOMAIN:
+            virDomainEventDispatchDefaultFunc(conn, event,
+                    VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
+            break;
+    }
     virObjectEventStateLock(state);
 }
 
