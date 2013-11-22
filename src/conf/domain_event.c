@@ -94,6 +94,7 @@ static virClassPtr virDomainEventBlockJobClass;
 static virClassPtr virDomainEventDiskChangeClass;
 static virClassPtr virDomainEventTrayChangeClass;
 static virClassPtr virDomainEventBalloonChangeClass;
+static virClassPtr virDomainEventDeviceRemovedClass;
 
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
@@ -106,6 +107,7 @@ static void virDomainEventBlockJobDispose(void *obj);
 static void virDomainEventDiskChangeDispose(void *obj);
 static void virDomainEventTrayChangeDispose(void *obj);
 static void virDomainEventBalloonChangeDispose(void *obj);
+static void virDomainEventDeviceRemovedDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -116,12 +118,6 @@ struct _virDomainEvent {
     virObjectEvent parent;
 
     virObjectMeta meta;
-
-    union {
-        struct {
-            char *devAlias;
-        } deviceRemoved;
-    } data;
 };
 
 struct _virDomainEventLifecycle {
@@ -211,6 +207,14 @@ struct _virDomainEventBalloonChange {
 typedef struct _virDomainEventBalloonChange virDomainEventBalloonChange;
 typedef virDomainEventBalloonChange *virDomainEventBalloonChangePtr;
 
+struct _virDomainEventDeviceRemoved {
+    virDomainEvent parent;
+
+    char *devAlias;
+};
+typedef struct _virDomainEventDeviceRemoved virDomainEventDeviceRemoved;
+typedef virDomainEventDeviceRemoved *virDomainEventDeviceRemovedPtr;
+
 
 static int virObjectEventOnceInit(void)
 {
@@ -280,6 +284,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventBalloonChange),
                       virDomainEventBalloonChangeDispose)))
         return -1;
+    if (!(virDomainEventDeviceRemovedClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventDeviceRemoved",
+                      sizeof(virDomainEventDeviceRemoved),
+                      virDomainEventDeviceRemovedDispose)))
+        return -1;
     return 0;
 }
 
@@ -309,13 +319,6 @@ static void virDomainEventDispose(void *obj)
     virDomainEventPtr event = obj;
 
     VIR_DEBUG("obj=%p", event);
-
-    switch (virObjectEventGetEventID(event)) {
-
-    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
-        VIR_FREE(event->data.deviceRemoved.devAlias);
-        break;
-    }
 
     VIR_FREE(event->meta.name);
 }
@@ -404,6 +407,14 @@ static void virDomainEventBalloonChangeDispose(void *obj)
 {
     virDomainEventBalloonChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
+}
+
+static void virDomainEventDeviceRemovedDispose(void *obj)
+{
+    virDomainEventDeviceRemovedPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->devAlias);
 }
 
 /**
@@ -1537,43 +1548,40 @@ virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
     return (virDomainEventPtr)ev;
 }
 
-static virDomainEventPtr
-virDomainEventDeviceRemovedNew(int id,
-                               const char *name,
-                               unsigned char *uuid,
-                               const char *devAlias)
+static virDomainEventPtr virDomainEventDeviceRemovedNew(int id,
+                                            const char *name,
+                                            unsigned char *uuid,
+                                            const char *devAlias)
 {
-    virDomainEventPtr ev;
+    virDomainEventDeviceRemovedPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventDeviceRemovedClass,
                                  VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->data.deviceRemoved.devAlias, devAlias) < 0)
+    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
         goto error;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 
 error:
     virObjectUnref(ev);
     return NULL;
 }
 
-virDomainEventPtr
-virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
-                                      const char *devAlias)
+virDomainEventPtr virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
+                                                        const char *devAlias)
 {
     return virDomainEventDeviceRemovedNew(obj->def->id, obj->def->name,
                                           obj->def->uuid, devAlias);
 }
 
-virDomainEventPtr
-virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
-                                      const char *devAlias)
+virDomainEventPtr virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
+                                                        const char *devAlias)
 {
     return virDomainEventDeviceRemovedNew(dom->id, dom->name, dom->uuid,
                                           devAlias);
@@ -1777,10 +1785,15 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
-        ((virConnectDomainEventDeviceRemovedCallback)cb)(conn, dom,
-                                                         event->data.deviceRemoved.devAlias,
-                                                         cbopaque);
-        goto cleanup;
+        {
+            virDomainEventDeviceRemovedPtr deviceRemovedEvent;
+
+            deviceRemovedEvent = (virDomainEventDeviceRemovedPtr)event;
+            ((virConnectDomainEventDeviceRemovedCallback)cb)(conn, dom,
+                                                             deviceRemovedEvent->devAlias,
+                                                             cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_LAST:
         break;
