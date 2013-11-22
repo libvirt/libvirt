@@ -4033,6 +4033,8 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                                             virNetClientRemoteAddrString(priv->client),
                                             saslcb)))
         goto cleanup;
+    /* saslcb is now owned by sasl */
+    saslcb = NULL;
 
 # ifdef WITH_GNUTLS
     /* Initialize some connection props we care about */
