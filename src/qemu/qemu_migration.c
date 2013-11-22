@@ -1511,7 +1511,7 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
     ret = qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
                               QEMU_ASYNC_JOB_MIGRATION_OUT);
     if (ret == 0) {
-        virDomainEventPtr event;
+        virObjectEventPtr event;
 
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
@@ -2169,7 +2169,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         unsigned long flags)
 {
     virDomainObjPtr vm = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
@@ -2702,7 +2702,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
                           int retcode)
 {
     qemuMigrationCookiePtr mig;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int rv = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -4055,7 +4055,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
                         unsigned long resource,
                         bool v3proto)
 {
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     int resume = 0;
     virErrorPtr orig_err = NULL;
@@ -4169,7 +4169,7 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
                           unsigned long flags,
                           unsigned long resource)
 {
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     bool resume;
     bool hasrefs;
@@ -4365,7 +4365,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                     bool v3proto)
 {
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     bool newVM = true;
     qemuMigrationCookiePtr mig = NULL;
     virErrorPtr orig_err = NULL;

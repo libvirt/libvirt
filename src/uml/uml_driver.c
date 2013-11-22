@@ -128,7 +128,7 @@ static int umlOpenMonitor(struct uml_driver *driver,
 static int umlReadPidFile(struct uml_driver *driver,
                           virDomainObjPtr vm);
 static void umlDomainEventQueue(struct uml_driver *driver,
-                                virDomainEventPtr event);
+                                virObjectEventPtr event);
 
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
@@ -194,7 +194,7 @@ umlAutostartDomain(virDomainObjPtr vm,
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name, err ? err->message : _("unknown error"));
         } else {
-            virDomainEventPtr event =
+            virObjectEventPtr event =
                 virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
@@ -301,7 +301,7 @@ umlInotifyEvent(int watch,
     char *tmp, *name;
     struct uml_driver *driver = data;
     virDomainObjPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     umlDriverLock(driver);
     if (watch != driver->inotifyWatch)
@@ -604,7 +604,7 @@ static void umlNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
     struct uml_driver *driver = opaque;
 
     if (newVM) {
-        virDomainEventPtr event =
+        virObjectEventPtr event =
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
@@ -716,7 +716,7 @@ static void umlProcessAutoDestroyDom(void *payload,
     const char *uuidstr = name;
     unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainObjPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
 
@@ -1571,7 +1571,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
@@ -1667,7 +1667,7 @@ umlDomainDestroyFlags(virDomainPtr dom,
 {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1993,7 +1993,7 @@ static int umlConnectNumOfDefinedDomains(virConnectPtr conn) {
 static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
@@ -2691,7 +2691,7 @@ umlConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 /* driver must be locked before calling */
 static void umlDomainEventQueue(struct uml_driver *driver,
-                                virDomainEventPtr event)
+                                virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
 }

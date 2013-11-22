@@ -441,7 +441,7 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCapsPtr caps = NULL;
@@ -507,7 +507,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -902,7 +902,7 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -996,7 +996,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCapsPtr caps = NULL;
 
@@ -1268,7 +1268,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
 
@@ -1481,7 +1481,7 @@ static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
     virLXCDriverPtr driver = opaque;
 
     if (newVM) {
-        virDomainEventPtr event =
+        virObjectEventPtr event =
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
@@ -2337,7 +2337,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -2383,7 +2383,7 @@ static int lxcDomainResume(virDomainPtr dom)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);

@@ -100,7 +100,7 @@ libxlDomObjFromDomain(virDomainPtr dom)
 }
 
 static void
-libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
+libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
 }
@@ -359,7 +359,7 @@ libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     libxlDriverPrivatePtr driver = libxl_driver;
     libxlDomainObjPrivatePtr priv = ((virDomainObjPtr)data)->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainEventPtr dom_event = NULL;
+    virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
 
     if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
@@ -546,7 +546,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 {
     libxl_domain_config d_config;
     virDomainDefPtr def = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     libxlSavefileHeader hdr;
     int ret;
     uint32_t domid = 0;
@@ -1298,7 +1298,7 @@ libxlDomainSuspend(virDomainPtr dom)
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
     libxlDomainObjPrivatePtr priv;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -1350,7 +1350,7 @@ libxlDomainResume(virDomainPtr dom)
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
     libxlDomainObjPrivatePtr priv;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -1485,7 +1485,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1773,7 +1773,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
     libxlSavefileHeader hdr;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     char *xml = NULL;
     uint32_t xml_len;
     int fd = -1;
@@ -1963,7 +1963,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     bool paused = false;
     int ret = -1;
 
@@ -2665,7 +2665,7 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
 
     /* Lock the driver until the virDomainObj is created and locked */
@@ -2726,7 +2726,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     char *name = NULL;
     int ret = -1;
 

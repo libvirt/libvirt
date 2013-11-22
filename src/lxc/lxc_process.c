@@ -62,7 +62,7 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
                       void *opaque)
 {
     virLXCDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
 
     VIR_DEBUG("driver=%p dom=%s conn=%p", driver, dom->def->name, conn);
@@ -490,7 +490,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
                                           virDomainObjPtr vm)
 {
     virLXCDriverPtr driver = lxc_driver;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
 
     VIR_DEBUG("mon=%p vm=%p", mon, vm);
@@ -1394,7 +1394,7 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
                       vm->def->name,
                       err ? err->message : "");
         } else {
-            virDomainEventPtr event =
+            virObjectEventPtr event =
                 virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);

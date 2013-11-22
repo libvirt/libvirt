@@ -2946,7 +2946,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
  *
  */
 void xenUnifiedDomainEventDispatch(xenUnifiedPrivatePtr priv,
-                                    virDomainEventPtr event)
+                                    virObjectEventPtr event)
 {
     if (!priv)
         return;

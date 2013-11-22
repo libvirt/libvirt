@@ -118,7 +118,7 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 
 
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
-                          virDomainEventPtr event)
+                          virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
 }
@@ -2117,7 +2117,7 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
                                   virDomainDiskDefPtr disk)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainDiskDefPtr del_disk = NULL;
 
     virUUIDFormat(vm->def->uuid, uuid);

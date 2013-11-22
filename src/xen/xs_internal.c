@@ -835,7 +835,7 @@ retry:
         }
 
         if (!found) {
-            virDomainEventPtr event;
+            virObjectEventPtr event;
             char *name;
             unsigned char uuid[VIR_UUID_BUFLEN];
 
@@ -918,7 +918,7 @@ retry:
         }
 
         if (!found) {
-            virDomainEventPtr event =
+            virObjectEventPtr event =
                 virDomainEventLifecycleNew(-1,
                                            priv->activeDomainList->doms[j]->name,
                                            priv->activeDomainList->doms[j]->uuid,

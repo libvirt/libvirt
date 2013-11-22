@@ -286,7 +286,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
     int eventReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
     int stopReason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
@@ -348,7 +348,7 @@ qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                               void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     VIR_DEBUG("Received error on %p '%s'", vm, vm->def->name);
 
@@ -516,7 +516,7 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                        void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event;
+    virObjectEventPtr event;
     qemuDomainObjPrivatePtr priv;
 
     virObjectLock(vm);
@@ -549,7 +549,7 @@ qemuProcessFakeReboot(void *opaque)
     virQEMUDriverPtr driver = qemu_driver;
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1;
@@ -648,7 +648,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     virQEMUDriverPtr driver = opaque;
     qemuDomainObjPrivatePtr priv;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("vm=%p", vm);
@@ -702,7 +702,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -749,7 +749,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                         void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -803,7 +803,7 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                            void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -844,8 +844,8 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr watchdogEvent = NULL;
-    virDomainEventPtr lifecycleEvent = NULL;
+    virObjectEventPtr watchdogEvent = NULL;
+    virObjectEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -911,9 +911,9 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                          void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr ioErrorEvent = NULL;
-    virDomainEventPtr ioErrorEvent2 = NULL;
-    virDomainEventPtr lifecycleEvent = NULL;
+    virObjectEventPtr ioErrorEvent = NULL;
+    virObjectEventPtr ioErrorEvent2 = NULL;
+    virObjectEventPtr lifecycleEvent = NULL;
     const char *srcPath;
     const char *devAlias;
     virDomainDiskDefPtr disk;
@@ -972,7 +972,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     const char *path;
     virDomainDiskDefPtr disk;
 
@@ -1025,7 +1025,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event;
+    virObjectEventPtr event;
     virDomainEventGraphicsAddressPtr localAddr = NULL;
     virDomainEventGraphicsAddressPtr remoteAddr = NULL;
     virDomainEventGraphicsSubjectPtr subject = NULL;
@@ -1104,7 +1104,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -1140,8 +1140,8 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr lifecycleEvent = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -1181,8 +1181,8 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                            void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr lifecycleEvent = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -1226,7 +1226,7 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -1253,8 +1253,8 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr lifecycleEvent = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -4628,7 +4628,7 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 {
     virQEMUDriverPtr driver = opaque;
     qemuDomainObjPrivatePtr priv = dom->privateData;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     VIR_DEBUG("vm=%s, conn=%p", dom->def->name, conn);
 

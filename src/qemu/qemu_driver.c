@@ -878,7 +878,7 @@ static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
     virQEMUDriverPtr driver = opaque;
 
     if (newVM) {
-        virDomainEventPtr event =
+        virObjectEventPtr event =
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
@@ -1566,8 +1566,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr event2 = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
@@ -1668,7 +1668,7 @@ static int qemuDomainSuspend(virDomainPtr dom) {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainPausedReason reason;
     int eventDetail;
@@ -1749,7 +1749,7 @@ static int qemuDomainResume(virDomainPtr dom) {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int state;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
@@ -2074,7 +2074,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL, -1);
@@ -3037,7 +3037,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     bool was_running = false;
     int ret = -1;
     int rc;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps;
 
@@ -3517,7 +3517,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     bool resume = false, paused = false;
     int ret = -1;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH |
                   VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET |
@@ -3822,7 +3822,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
                        int action)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!virDomainObjIsActive(vm)) {
@@ -5344,7 +5344,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            bool start_paused)
 {
     int ret = -1;
-    virDomainEventPtr event;
+    virObjectEventPtr event;
     int intermediatefd = -1;
     virCommandPtr cmd = NULL;
     char *errbuf = NULL;
@@ -6066,7 +6066,7 @@ qemuDomainObjStart(virConnectPtr conn,
                            VIR_NETDEV_VPORT_PROFILE_OP_CREATE, start_flags);
     virDomainAuditStart(vm, "booted", ret >= 0);
     if (ret >= 0) {
-        virDomainEventPtr event =
+        virObjectEventPtr event =
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
@@ -6141,7 +6141,7 @@ static virDomainPtr qemuDomainDefineXML(virConnectPtr conn, const char *xml) {
     virDomainDefPtr oldDef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
@@ -6234,7 +6234,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     char *name = NULL;
     int ret = -1;
     int nsnapshots;
@@ -11741,7 +11741,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 {
     virDomainObjPtr vm = *vmptr;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     bool resume = false;
     int ret = -1;
 
@@ -12531,7 +12531,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
 
     /* the snapshot is complete now */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
-        virDomainEventPtr event;
+        virObjectEventPtr event;
 
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
@@ -12549,7 +12549,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         /* qemu 1.3 is unable to save a domain in pm-suspended (S3)
          * state; so we must emit an event stating that it was
          * converted to paused.  */
-        virDomainEventPtr event;
+        virObjectEventPtr event;
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                              VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
@@ -12566,7 +12566,7 @@ endjob:
         qemuProcessStartCPUs(driver, vm, conn,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
-        virDomainEventPtr event = NULL;
+        virObjectEventPtr event = NULL;
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
@@ -13227,8 +13227,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainSnapshotObjPtr snap = NULL;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr event2 = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
     int detail;
     qemuDomainObjPrivatePtr priv;
     int rc;
@@ -14183,7 +14183,7 @@ cleanup:
         qemuProcessStartCPUs(driver, vm, conn,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_NONE) < 0) {
-        virDomainEventPtr event = NULL;
+        virObjectEventPtr event = NULL;
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
@@ -14210,7 +14210,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     char *device = NULL;
     int ret = -1;
     bool async = false;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int idx;
     virDomainDiskDefPtr disk;
 

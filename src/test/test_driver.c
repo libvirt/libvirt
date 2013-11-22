@@ -122,7 +122,7 @@ static const virNodeInfo defaultNodeInfo = {
 
 static int testConnectClose(virConnectPtr conn);
 static void testDomainEventQueue(testConnPtr driver,
-                                 virDomainEventPtr event);
+                                 virObjectEventPtr event);
 
 
 static void testDriverLock(testConnPtr driver)
@@ -1615,7 +1615,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -1753,7 +1753,7 @@ static int testDomainDestroy(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1790,7 +1790,7 @@ static int testDomainResume(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1831,7 +1831,7 @@ static int testDomainSuspend(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     int state;
 
@@ -1875,7 +1875,7 @@ static int testDomainShutdownFlags(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1927,7 +1927,7 @@ static int testDomainReboot(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -2071,7 +2071,7 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
     int fd = -1;
     int len;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2184,7 +2184,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     int len;
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2284,7 +2284,7 @@ static int testDomainCoreDump(virDomainPtr domain,
     testConnPtr privconn = domain->conn->privateData;
     int fd = -1;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DUMP_CRASH, -1);
@@ -2783,7 +2783,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainDefPtr oldDef = NULL;
 
     testDriverLock(privconn);
@@ -2921,7 +2921,7 @@ cleanup:
 static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2969,7 +2969,7 @@ static int testDomainUndefineFlags(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int nsnapshots;
     int ret = -1;
 
@@ -6029,7 +6029,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 /* driver must be locked before calling */
 static void testDomainEventQueue(testConnPtr driver,
-                                 virDomainEventPtr event)
+                                 virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
 }
@@ -6151,7 +6151,7 @@ testDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     testConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -6641,7 +6641,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     char *xml = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
@@ -6890,8 +6890,8 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     testConnPtr privconn = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainSnapshotObjPtr snap = NULL;
-    virDomainEventPtr event = NULL;
-    virDomainEventPtr event2 = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
     virDomainDefPtr config = NULL;
     int ret = -1;
 

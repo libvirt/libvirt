@@ -196,7 +196,7 @@ int qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 void qemuDomainEventFlush(int timer, void *opaque);
 
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
-                          virDomainEventPtr event);
+                          virObjectEventPtr event);
 
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,

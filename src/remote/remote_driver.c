@@ -150,7 +150,7 @@ static void make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virSto
 static void make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 static void make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src);
 static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
-static void remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event);
+static void remoteDomainEventQueue(struct private_data *priv, virObjectEventPtr event);
 /*----------------------------------------------------------------------*/
 
 /* Helper functions for remoteOpen. */
@@ -4380,7 +4380,7 @@ remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_lifecycle_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4402,7 +4402,7 @@ remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_reboot_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4424,7 +4424,7 @@ remoteDomainBuildEventRTCChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_rtc_change_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4446,7 +4446,7 @@ remoteDomainBuildEventWatchdog(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_watchdog_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4468,7 +4468,7 @@ remoteDomainBuildEventIOError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_io_error_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4493,7 +4493,7 @@ remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     struct private_data *priv = conn->privateData;
     remote_domain_event_io_error_reason_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4519,7 +4519,7 @@ remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_block_job_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4542,7 +4542,7 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_graphics_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
     virDomainEventGraphicsAddressPtr localAddr = NULL;
     virDomainEventGraphicsAddressPtr remoteAddr = NULL;
     virDomainEventGraphicsSubjectPtr subject = NULL;
@@ -4622,7 +4622,7 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_control_error_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4645,7 +4645,7 @@ remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_disk_change_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4672,7 +4672,7 @@ remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_tray_change_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4696,7 +4696,7 @@ remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_pmwakeup_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4718,7 +4718,7 @@ remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     struct private_data *priv = conn->privateData;
     remote_domain_event_pmsuspend_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4741,7 +4741,7 @@ remoteDomainBuildEventBalloonChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     struct private_data *priv = conn->privateData;
     remote_domain_event_balloon_change_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4763,7 +4763,7 @@ remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     struct private_data *priv = conn->privateData;
     remote_domain_event_pmsuspend_disk_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -4786,7 +4786,7 @@ remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     struct private_data *priv = conn->privateData;
     remote_domain_event_device_removed_msg *msg = evdata;
     virDomainPtr dom;
-    virDomainEventPtr event = NULL;
+    virObjectEventPtr event = NULL;
 
     dom = get_nonnull_domain(conn, msg->dom);
     if (!dom)
@@ -6690,7 +6690,7 @@ done:
 }
 
 static void
-remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
+remoteDomainEventQueue(struct private_data *priv, virObjectEventPtr event)
 {
     virObjectEventStateQueue(priv->domainEventState, event);
 }
