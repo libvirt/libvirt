@@ -104,13 +104,13 @@ virDomainEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
 
 virDomainEventPtr virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
-                                                    const char *path,
-                                                    int type,
-                                                    int status);
+                                                   const char *path,
+                                                   int type,
+                                                   int status);
 virDomainEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
-                                                    const char *path,
-                                                    int type,
-                                                    int status);
+                                                   const char *path,
+                                                   int type,
+                                                   int status);
 
 virDomainEventPtr virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
                                                      const char *oldSrcPath,

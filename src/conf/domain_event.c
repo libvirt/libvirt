@@ -90,6 +90,7 @@ static virClassPtr virDomainEventRTCChangeClass;
 static virClassPtr virDomainEventWatchdogClass;
 static virClassPtr virDomainEventIOErrorClass;
 static virClassPtr virDomainEventGraphicsClass;
+static virClassPtr virDomainEventBlockJobClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -97,6 +98,7 @@ static void virDomainEventRTCChangeDispose(void *obj);
 static void virDomainEventWatchdogDispose(void *obj);
 static void virDomainEventIOErrorDispose(void *obj);
 static void virDomainEventGraphicsDispose(void *obj);
+static void virDomainEventBlockJobDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -109,11 +111,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            char *path;
-            int type;
-            int status;
-        } blockJob;
         struct {
             char *oldSrcPath;
             char *newSrcPath;
@@ -169,6 +166,16 @@ struct _virDomainEventIOError {
 };
 typedef struct _virDomainEventIOError virDomainEventIOError;
 typedef virDomainEventIOError *virDomainEventIOErrorPtr;
+
+struct _virDomainEventBlockJob {
+    virDomainEvent parent;
+
+    char *path;
+    int type;
+    int status;
+};
+typedef struct _virDomainEventBlockJob virDomainEventBlockJob;
+typedef virDomainEventBlockJob *virDomainEventBlockJobPtr;
 
 struct _virDomainEventGraphics {
     virDomainEvent parent;
@@ -226,6 +233,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventGraphics),
                       virDomainEventGraphicsDispose)))
         return -1;
+    if (!(virDomainEventBlockJobClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventBlockJob",
+                      sizeof(virDomainEventBlockJob),
+                      virDomainEventBlockJobDispose)))
+        return -1;
     return 0;
 }
 
@@ -257,10 +270,6 @@ static void virDomainEventDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     switch (virObjectEventGetEventID(event)) {
-
-    case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
-        VIR_FREE(event->data.blockJob.path);
-        break;
 
     case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
         VIR_FREE(event->data.diskChange.oldSrcPath);
@@ -330,6 +339,14 @@ static void virDomainEventGraphicsDispose(void *obj)
         }
         VIR_FREE(event->subject);
     }
+}
+
+static void virDomainEventBlockJobDispose(void *obj)
+{
+    virDomainEventBlockJobPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->path);
 }
 
 /**
@@ -1156,43 +1173,47 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
     return (virDomainEventPtr)ev;
 }
 
-static virDomainEventPtr
-virDomainEventBlockJobNew(int id, const char *name, unsigned char *uuid,
-                          const char *path, int type, int status)
+static
+virDomainEventPtr  virDomainEventBlockJobNew(int id,
+                                             const char *name,
+                                             unsigned char *uuid,
+                                             const char *path,
+                                             int type,
+                                             int status)
 {
-    virDomainEventPtr ev;
+    virDomainEventBlockJobPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventBlockJobClass,
                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->data.blockJob.path, path) < 0) {
+    if (VIR_STRDUP(ev->path, path) < 0) {
         virObjectUnref(ev);
         return NULL;
     }
-    ev->data.blockJob.type = type;
-    ev->data.blockJob.status = status;
+    ev->type = type;
+    ev->status = status;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 virDomainEventPtr virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
-                                                   const char *path,
-                                                   int type,
-                                                   int status)
+                                       const char *path,
+                                       int type,
+                                       int status)
 {
     return virDomainEventBlockJobNew(obj->def->id, obj->def->name,
                                      obj->def->uuid, path, type, status);
 }
 
 virDomainEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
-                                                   const char *path,
-                                                   int type,
-                                                   int status)
+                                       const char *path,
+                                       int type,
+                                       int status)
 {
     return virDomainEventBlockJobNew(dom->id, dom->name, dom->uuid,
                                      path, type, status);
@@ -1637,12 +1658,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
-        ((virConnectDomainEventBlockJobCallback)cb)(conn, dom,
-                                                    event->data.blockJob.path,
-                                                    event->data.blockJob.type,
-                                                    event->data.blockJob.status,
-                                                    cbopaque);
-        goto cleanup;
+        {
+            virDomainEventBlockJobPtr blockJobEvent;
+
+            blockJobEvent = (virDomainEventBlockJobPtr)event;
+            ((virConnectDomainEventBlockJobCallback)cb)(conn, dom,
+                                                        blockJobEvent->path,
+                                                        blockJobEvent->type,
+                                                        blockJobEvent->status,
+                                                        cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
         ((virConnectDomainEventDiskChangeCallback)cb)(conn, dom,
