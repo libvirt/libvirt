@@ -249,6 +249,7 @@ mymain(void)
     DO_TEST("hyperv");
 
     DO_TEST("pseries-nvram");
+    DO_TEST("pseries-disk");
 
     DO_TEST("nosharepages");
 

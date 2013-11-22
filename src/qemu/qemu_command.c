@@ -10032,6 +10032,7 @@ error:
 static virDomainDiskDefPtr
 qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                          const char *val,
+                         virDomainDefPtr dom,
                          int nvirtiodisk,
                          bool old_style_ceph_args)
 {
@@ -10055,7 +10056,11 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (VIR_ALLOC(def) < 0)
         goto cleanup;
 
-    def->bus = VIR_DOMAIN_DISK_BUS_IDE;
+    if (((dom->os.arch == VIR_ARCH_PPC64) &&
+        dom->os.machine && STREQ(dom->os.machine, "pseries")))
+        def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+    else
+       def->bus = VIR_DOMAIN_DISK_BUS_IDE;
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
 
@@ -10140,9 +10145,15 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 def->type = VIR_DOMAIN_DISK_TYPE_FILE;
             }
         } else if (STREQ(keywords[i], "if")) {
-            if (STREQ(values[i], "ide"))
+            if (STREQ(values[i], "ide")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            else if (STREQ(values[i], "scsi"))
+                if (((dom->os.arch == VIR_ARCH_PPC64) &&
+                     dom->os.machine && STREQ(dom->os.machine, "pseries"))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("pseries systems do not support ide devices '%s'"), val);
+                    goto error;
+                }
+            } else if (STREQ(values[i], "scsi"))
                 def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
             else if (STREQ(values[i], "virtio"))
                 def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
@@ -11368,6 +11379,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+                if (((def->os.arch == VIR_ARCH_PPC64) &&
+                    def->os.machine && STREQ(def->os.machine, "pseries")))
+                    disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
                     goto error;
                 disk->readonly = true;
@@ -11381,6 +11395,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                         disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+                   if (((def->os.arch == VIR_ARCH_PPC64) &&
+                       def->os.machine && STREQ(def->os.machine, "pseries")))
+                       disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
                 if (VIR_STRDUP(disk->dst, arg + 1) < 0)
                     goto error;
@@ -11672,7 +11689,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             }
         } else if (STREQ(arg, "-drive")) {
             WANT_VALUE();
-            if (!(disk = qemuParseCommandLineDisk(xmlopt, val,
+            if (!(disk = qemuParseCommandLineDisk(xmlopt, val, def,
                                                   nvirtiodisk,
                                                   ceph_args != NULL)))
                 goto error;
