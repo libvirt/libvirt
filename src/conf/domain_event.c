@@ -87,10 +87,12 @@ static virClassPtr virObjectEventClass;
 static virClassPtr virDomainEventClass;
 static virClassPtr virDomainEventLifecycleClass;
 static virClassPtr virDomainEventRTCChangeClass;
+static virClassPtr virDomainEventWatchdogClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
 static void virDomainEventRTCChangeDispose(void *obj);
+static void virDomainEventWatchdogDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -103,9 +105,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            int action;
-        } watchdog;
         struct {
             char *srcPath;
             char *devAlias;
@@ -161,6 +160,14 @@ struct _virDomainEventRTCChange {
 typedef struct _virDomainEventRTCChange virDomainEventRTCChange;
 typedef virDomainEventRTCChange *virDomainEventRTCChangePtr;
 
+struct _virDomainEventWatchdog {
+    virDomainEvent parent;
+
+    int action;
+};
+typedef struct _virDomainEventWatchdog virDomainEventWatchdog;
+typedef virDomainEventWatchdog *virDomainEventWatchdogPtr;
+
 static int virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
@@ -186,6 +193,12 @@ static int virObjectEventOnceInit(void)
                       "virDomainEventRTCChange",
                       sizeof(virDomainEventRTCChange),
                       virDomainEventRTCChangeDispose)))
+        return -1;
+    if (!(virDomainEventWatchdogClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventWatchdog",
+                      sizeof(virDomainEventWatchdog),
+                      virDomainEventWatchdogDispose)))
         return -1;
     return 0;
 }
@@ -276,6 +289,12 @@ static void virDomainEventLifecycleDispose(void *obj)
 static void virDomainEventRTCChangeDispose(void *obj)
 {
     virDomainEventRTCChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+}
+
+static void virDomainEventWatchdogDispose(void *obj)
+{
+    virDomainEventWatchdogPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -912,40 +931,38 @@ virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
     return (virDomainEventPtr)ev;
 }
 
-virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom,
-                                                   int action)
+virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom, int action)
 {
-    virDomainEventPtr ev;
+    virDomainEventWatchdogPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventWatchdogClass,
                                  VIR_DOMAIN_EVENT_ID_WATCHDOG,
                                  dom->id, dom->name, dom->uuid)))
         return NULL;
 
-    ev->data.watchdog.action = action;
+    ev->action = action;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
-virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
-                                                   int action)
+virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj, int action)
 {
-    virDomainEventPtr ev;
+    virDomainEventWatchdogPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventWatchdogClass,
                                  VIR_DOMAIN_EVENT_ID_WATCHDOG,
                                  obj->def->id, obj->def->name,
                                  obj->def->uuid)))
         return NULL;
 
-    ev->data.watchdog.action = action;
+    ev->action = action;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 static virDomainEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
@@ -1528,10 +1545,15 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_WATCHDOG:
-        ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
-                                                    event->data.watchdog.action,
-                                                    cbopaque);
-        goto cleanup;
+        {
+            virDomainEventWatchdogPtr watchdogEvent;
+
+            watchdogEvent = (virDomainEventWatchdogPtr)event;
+            ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
+                                                        watchdogEvent->action,
+                                                        cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         ((virConnectDomainEventIOErrorCallback)cb)(conn, dom,
