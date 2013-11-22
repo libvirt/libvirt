@@ -93,6 +93,7 @@ static virClassPtr virDomainEventGraphicsClass;
 static virClassPtr virDomainEventBlockJobClass;
 static virClassPtr virDomainEventDiskChangeClass;
 static virClassPtr virDomainEventTrayChangeClass;
+static virClassPtr virDomainEventBalloonChangeClass;
 
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
@@ -104,6 +105,7 @@ static void virDomainEventGraphicsDispose(void *obj);
 static void virDomainEventBlockJobDispose(void *obj);
 static void virDomainEventDiskChangeDispose(void *obj);
 static void virDomainEventTrayChangeDispose(void *obj);
+static void virDomainEventBalloonChangeDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -116,10 +118,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            /* In unit of 1024 bytes */
-            unsigned long long actual;
-        } balloonChange;
         struct {
             char *devAlias;
         } deviceRemoved;
@@ -204,6 +202,15 @@ struct _virDomainEventTrayChange {
 typedef struct _virDomainEventTrayChange virDomainEventTrayChange;
 typedef virDomainEventTrayChange *virDomainEventTrayChangePtr;
 
+struct _virDomainEventBalloonChange {
+    virDomainEvent parent;
+
+    /* In unit of 1024 bytes */
+    unsigned long long actual;
+};
+typedef struct _virDomainEventBalloonChange virDomainEventBalloonChange;
+typedef virDomainEventBalloonChange *virDomainEventBalloonChangePtr;
+
 
 static int virObjectEventOnceInit(void)
 {
@@ -266,6 +273,12 @@ static int virObjectEventOnceInit(void)
                       "virDomainEventTrayChange",
                       sizeof(virDomainEventTrayChange),
                       virDomainEventTrayChangeDispose)))
+        return -1;
+    if (!(virDomainEventBalloonChangeClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventBalloonChange",
+                      sizeof(virDomainEventBalloonChange),
+                      virDomainEventBalloonChangeDispose)))
         return -1;
     return 0;
 }
@@ -385,6 +398,12 @@ static void virDomainEventTrayChangeDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     VIR_FREE(event->devAlias);
+}
+
+static void virDomainEventBalloonChangeDispose(void *obj)
+{
+    virDomainEventBalloonChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
 }
 
 /**
@@ -1486,36 +1505,36 @@ virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom)
 virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
                                                         unsigned long long actual)
 {
-    virDomainEventPtr ev;
+    virDomainEventBalloonChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventBalloonChangeClass,
                                  VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
                                  dom->id, dom->name, dom->uuid)))
         return NULL;
 
-    ev->data.balloonChange.actual = actual;
+    ev->actual = actual;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
                                                         unsigned long long actual)
 {
-    virDomainEventPtr ev;
+    virDomainEventBalloonChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventBalloonChangeClass,
                                  VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
                                  obj->def->id, obj->def->name, obj->def->uuid)))
         return NULL;
 
-    ev->data.balloonChange.actual = actual;
+    ev->actual = actual;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 static virDomainEventPtr
@@ -1743,10 +1762,15 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
-        ((virConnectDomainEventBalloonChangeCallback)cb)(conn, dom,
-                                                         event->data.balloonChange.actual,
-                                                         cbopaque);
-        goto cleanup;
+        {
+            virDomainEventBalloonChangePtr balloonChangeEvent;
+
+            balloonChangeEvent = (virDomainEventBalloonChangePtr)event;
+            ((virConnectDomainEventBalloonChangeCallback)cb)(conn, dom,
+                                                             balloonChangeEvent->actual,
+                                                             cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
         ((virConnectDomainEventPMSuspendDiskCallback)cb)(conn, dom, 0, cbopaque);
