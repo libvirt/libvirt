@@ -910,6 +910,10 @@ doRemoteOpen(virConnectPtr conn,
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
     priv->client = NULL;
+#ifdef WITH_GNUTLS
+    virObjectUnref(priv->tls);
+    priv->tls = NULL;
+#endif
 
     VIR_FREE(priv->hostname);
     goto cleanup;
