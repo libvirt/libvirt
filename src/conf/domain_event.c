@@ -91,6 +91,8 @@ static virClassPtr virDomainEventWatchdogClass;
 static virClassPtr virDomainEventIOErrorClass;
 static virClassPtr virDomainEventGraphicsClass;
 static virClassPtr virDomainEventBlockJobClass;
+static virClassPtr virDomainEventDiskChangeClass;
+
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -99,6 +101,7 @@ static void virDomainEventWatchdogDispose(void *obj);
 static void virDomainEventIOErrorDispose(void *obj);
 static void virDomainEventGraphicsDispose(void *obj);
 static void virDomainEventBlockJobDispose(void *obj);
+static void virDomainEventDiskChangeDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -111,12 +114,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            char *oldSrcPath;
-            char *newSrcPath;
-            char *devAlias;
-            int reason;
-        } diskChange;
         struct {
             char *devAlias;
             int reason;
@@ -189,6 +186,18 @@ struct _virDomainEventGraphics {
 typedef struct _virDomainEventGraphics virDomainEventGraphics;
 typedef virDomainEventGraphics *virDomainEventGraphicsPtr;
 
+struct _virDomainEventDiskChange {
+    virDomainEvent parent;
+
+    char *oldSrcPath;
+    char *newSrcPath;
+    char *devAlias;
+    int reason;
+};
+typedef struct _virDomainEventDiskChange virDomainEventDiskChange;
+typedef virDomainEventDiskChange *virDomainEventDiskChangePtr;
+
+
 static int virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
@@ -239,6 +248,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventBlockJob),
                       virDomainEventBlockJobDispose)))
         return -1;
+    if (!(virDomainEventDiskChangeClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventDiskChange",
+                      sizeof(virDomainEventDiskChange),
+                      virDomainEventDiskChangeDispose)))
+        return -1;
     return 0;
 }
 
@@ -271,11 +286,6 @@ static void virDomainEventDispose(void *obj)
 
     switch (virObjectEventGetEventID(event)) {
 
-    case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
-        VIR_FREE(event->data.diskChange.oldSrcPath);
-        VIR_FREE(event->data.diskChange.newSrcPath);
-        VIR_FREE(event->data.diskChange.devAlias);
-        break;
     case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
         VIR_FREE(event->data.trayChange.devAlias);
         break;
@@ -347,6 +357,16 @@ static void virDomainEventBlockJobDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     VIR_FREE(event->path);
+}
+
+static void virDomainEventDiskChangeDispose(void *obj)
+{
+    virDomainEventDiskChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->oldSrcPath);
+    VIR_FREE(event->newSrcPath);
+    VIR_FREE(event->devAlias);
 }
 
 /**
@@ -1249,35 +1269,35 @@ virDomainEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
     return ev;
 }
 
-static virDomainEventPtr
-virDomainEventDiskChangeNew(int id, const char *name,
-                            unsigned char *uuid,
-                            const char *oldSrcPath,
-                            const char *newSrcPath,
-                            const char *devAlias, int reason)
+static
+virDomainEventPtr virDomainEventDiskChangeNew(int id, const char *name,
+                                              unsigned char *uuid,
+                                              const char *oldSrcPath,
+                                              const char *newSrcPath,
+                                              const char *devAlias, int reason)
 {
-    virDomainEventPtr ev;
+    virDomainEventDiskChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventDiskChangeClass,
                                  VIR_DOMAIN_EVENT_ID_DISK_CHANGE,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->data.diskChange.devAlias, devAlias) < 0)
+    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
         goto error;
 
-    if (VIR_STRDUP(ev->data.diskChange.oldSrcPath, oldSrcPath) < 0)
+    if (VIR_STRDUP(ev->oldSrcPath, oldSrcPath) < 0)
         goto error;
 
-    if (VIR_STRDUP(ev->data.diskChange.newSrcPath, newSrcPath) < 0)
+    if (VIR_STRDUP(ev->newSrcPath, newSrcPath) < 0)
         goto error;
 
-    ev->data.diskChange.reason = reason;
+    ev->reason = reason;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 
 error:
     virObjectUnref(ev);
@@ -1671,13 +1691,18 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
-        ((virConnectDomainEventDiskChangeCallback)cb)(conn, dom,
-                                                      event->data.diskChange.oldSrcPath,
-                                                      event->data.diskChange.newSrcPath,
-                                                      event->data.diskChange.devAlias,
-                                                      event->data.diskChange.reason,
-                                                      cbopaque);
-        goto cleanup;
+        {
+            virDomainEventDiskChangePtr diskChangeEvent;
+
+            diskChangeEvent = (virDomainEventDiskChangePtr)event;
+            ((virConnectDomainEventDiskChangeCallback)cb)(conn, dom,
+                                                          diskChangeEvent->oldSrcPath,
+                                                          diskChangeEvent->newSrcPath,
+                                                          diskChangeEvent->devAlias,
+                                                          diskChangeEvent->reason,
+                                                          cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
         ((virConnectDomainEventTrayChangeCallback)cb)(conn, dom,
