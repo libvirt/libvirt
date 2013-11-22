@@ -86,9 +86,11 @@ struct _virObjectEventCallback {
 static virClassPtr virObjectEventClass;
 static virClassPtr virDomainEventClass;
 static virClassPtr virDomainEventLifecycleClass;
+static virClassPtr virDomainEventRTCChangeClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
+static void virDomainEventRTCChangeDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -101,9 +103,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            long long offset;
-        } rtcChange;
         struct {
             int action;
         } watchdog;
@@ -154,6 +153,13 @@ struct _virDomainEventLifecycle {
 typedef struct _virDomainEventLifecycle virDomainEventLifecycle;
 typedef virDomainEventLifecycle *virDomainEventLifecyclePtr;
 
+struct _virDomainEventRTCChange {
+    virDomainEvent parent;
+
+    long long offset;
+};
+typedef struct _virDomainEventRTCChange virDomainEventRTCChange;
+typedef virDomainEventRTCChange *virDomainEventRTCChangePtr;
 
 static int virObjectEventOnceInit(void)
 {
@@ -174,6 +180,12 @@ static int virObjectEventOnceInit(void)
                       "virDomainEventLifecycle",
                       sizeof(virDomainEventLifecycle),
                       virDomainEventLifecycleDispose)))
+        return -1;
+    if (!(virDomainEventRTCChangeClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventRTCChange",
+                      sizeof(virDomainEventRTCChange),
+                      virDomainEventRTCChangeDispose)))
         return -1;
     return 0;
 }
@@ -258,6 +270,12 @@ static void virDomainEventDispose(void *obj)
 static void virDomainEventLifecycleDispose(void *obj)
 {
     virDomainEventLifecyclePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+}
+
+static void virDomainEventRTCChangeDispose(void *obj)
+{
+    virDomainEventRTCChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -861,37 +879,37 @@ virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
 virDomainEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
                                                     long long offset)
 {
-    virDomainEventPtr ev;
+    virDomainEventRTCChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventRTCChangeClass,
                                  VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
                                  dom->id, dom->name, dom->uuid)))
         return NULL;
 
-    ev->data.rtcChange.offset = offset;
+    ev->offset = offset;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
                                                     long long offset)
 {
-    virDomainEventPtr ev;
+    virDomainEventRTCChangePtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventRTCChangeClass,
                                  VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
                                  obj->def->id, obj->def->name,
                                  obj->def->uuid)))
         return NULL;
 
-    ev->data.rtcChange.offset = offset;
+    ev->offset = offset;
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom,
@@ -1499,10 +1517,15 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         goto cleanup;
 
     case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
-        ((virConnectDomainEventRTCChangeCallback)cb)(conn, dom,
-                                                     event->data.rtcChange.offset,
-                                                     cbopaque);
-        goto cleanup;
+        {
+            virDomainEventRTCChangePtr rtcChangeEvent;
+
+            rtcChangeEvent = (virDomainEventRTCChangePtr)event;
+            ((virConnectDomainEventRTCChangeCallback)cb)(conn, dom,
+                                                         rtcChangeEvent->offset,
+                                                         cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_WATCHDOG:
         ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
