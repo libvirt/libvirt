@@ -1,25 +1,26 @@
 <volume>
-  <name>sparse.img</name>
+  <!-- lines scrambled to test interleaves -->
   <key>/var/lib/libvirt/images/sparse.img</key>
-  <source/>
   <capacity unit='GB'>10</capacity>
-  <allocation unit='MiB'>0</allocation>
+  <source/>
   <target>
-    <path>/var/lib/libvirt/images/sparse.img</path>
     <permissions>
-      <mode>0</mode>
       <owner>0744</owner>
+      <mode>0</mode>
       <group>0</group>
     </permissions>
+    <path>/var/lib/libvirt/images/sparse.img</path>
   </target>
+  <allocation unit='MiB'>0</allocation>
   <backingStore>
-    <path>/var/lib/virt/images/master.img</path>
     <format type='vmdk'/>
+    <path>/var/lib/virt/images/master.img</path>
     <permissions>
       <mode>0744</mode>
+      <label>virt_image_t</label>
       <owner>1</owner>
       <group>1</group>
-      <label>virt_image_t</label>
     </permissions>
   </backingStore>
+  <name>sparse.img</name>
 </volume>

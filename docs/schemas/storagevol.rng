@@ -13,55 +13,61 @@
 
   <define name='vol'>
     <element name='volume'>
-      <element name='name'>
-        <ref name='volName'/>
-      </element>
-      <optional>
-        <element name='key'>
-          <text/>
+      <interleave>
+        <element name='name'>
+          <ref name='volName'/>
         </element>
-      </optional>
-      <optional>
-        <ref name='source'/>
-      </optional>
-      <ref name='sizing'/>
-      <ref name='target'/>
-      <optional>
-        <ref name='backingStore'/>
-      </optional>
+        <optional>
+          <element name='key'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <ref name='source'/>
+        </optional>
+        <ref name='sizing'/>
+        <ref name='target'/>
+        <optional>
+          <ref name='backingStore'/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
   <define name='sizing'>
-    <optional>
-      <element name='capacity'>
-        <ref name='scaledInteger'/>
-      </element>
-    </optional>
-    <optional>
-      <element name='allocation'>
-        <ref name='scaledInteger'/>
-      </element>
-    </optional>
+    <interleave>
+      <optional>
+        <element name='capacity'>
+          <ref name='scaledInteger'/>
+        </element>
+      </optional>
+      <optional>
+        <element name='allocation'>
+          <ref name='scaledInteger'/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <define name='permissions'>
     <optional>
       <element name='permissions'>
-        <element name='mode'>
-          <ref name='octalMode'/>
-        </element>
-        <element name='owner'>
-          <ref name='unsignedInt'/>
-        </element>
-        <element name='group'>
-          <ref name='unsignedInt'/>
-        </element>
-        <optional>
-          <element name='label'>
-            <text/>
-        </element>
-        </optional>
+        <interleave>
+          <element name='mode'>
+            <ref name='octalMode'/>
+          </element>
+          <element name='owner'>
+            <ref name='unsignedInt'/>
+          </element>
+          <element name='group'>
+            <ref name='unsignedInt'/>
+          </element>
+          <optional>
+            <element name='label'>
+              <text/>
+            </element>
+          </optional>
+        </interleave>
       </element>
     </optional>
   </define>
@@ -103,36 +109,40 @@
 
   <define name='target'>
     <element name='target'>
-      <optional>
-        <element name='path'>
-          <choice>
-            <data type='anyURI'/>
-            <ref name='absFilePath'/>
-          </choice>
-        </element>
-      </optional>
-      <ref name='format'/>
-      <ref name='permissions'/>
-      <ref name='timestamps'/>
-      <optional>
-        <ref name='encryption'/>
-      </optional>
-      <optional>
-        <ref name='compat'/>
-      </optional>
-      <optional>
-        <ref name='fileFormatFeatures'/>
-      </optional>
+      <interleave>
+        <optional>
+          <element name='path'>
+            <choice>
+              <data type='anyURI'/>
+              <ref name='absFilePath'/>
+            </choice>
+          </element>
+        </optional>
+        <ref name='format'/>
+        <ref name='permissions'/>
+        <ref name='timestamps'/>
+        <optional>
+          <ref name='encryption'/>
+        </optional>
+        <optional>
+          <ref name='compat'/>
+        </optional>
+        <optional>
+          <ref name='fileFormatFeatures'/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
   <define name='backingStore'>
     <element name='backingStore'>
-      <element name='path'>
-        <ref name='absFilePath'/>
-      </element>
-      <ref name='format'/>
-      <ref name='permissions'/>
+      <interleave>
+        <element name='path'>
+          <ref name='absFilePath'/>
+        </element>
+        <ref name='format'/>
+        <ref name='permissions'/>
+      </interleave>
     </element>
   </define>
 
