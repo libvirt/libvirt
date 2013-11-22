@@ -105,7 +105,10 @@
     <element name='target'>
       <optional>
         <element name='path'>
-          <data type='anyURI'/>
+          <choice>
+            <data type='anyURI'/>
+            <ref name='absFilePath'/>
+          </choice>
         </element>
       </optional>
       <ref name='format'/>
