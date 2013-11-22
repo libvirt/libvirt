@@ -88,11 +88,13 @@ static virClassPtr virDomainEventClass;
 static virClassPtr virDomainEventLifecycleClass;
 static virClassPtr virDomainEventRTCChangeClass;
 static virClassPtr virDomainEventWatchdogClass;
+static virClassPtr virDomainEventIOErrorClass;
 static void virObjectEventDispose(void *obj);
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
 static void virDomainEventRTCChangeDispose(void *obj);
 static void virDomainEventWatchdogDispose(void *obj);
+static void virDomainEventIOErrorDispose(void *obj);
 
 struct _virObjectEvent {
     virObject parent;
@@ -105,12 +107,6 @@ struct _virDomainEvent {
     virObjectMeta meta;
 
     union {
-        struct {
-            char *srcPath;
-            char *devAlias;
-            int action;
-            char *reason;
-        } ioError;
         struct {
             int phase;
             virDomainEventGraphicsAddressPtr local;
@@ -168,6 +164,17 @@ struct _virDomainEventWatchdog {
 typedef struct _virDomainEventWatchdog virDomainEventWatchdog;
 typedef virDomainEventWatchdog *virDomainEventWatchdogPtr;
 
+struct _virDomainEventIOError {
+    virDomainEvent parent;
+
+    char *srcPath;
+    char *devAlias;
+    int action;
+    char *reason;
+};
+typedef struct _virDomainEventIOError virDomainEventIOError;
+typedef virDomainEventIOError *virDomainEventIOErrorPtr;
+
 static int virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
@@ -200,6 +207,12 @@ static int virObjectEventOnceInit(void)
                       sizeof(virDomainEventWatchdog),
                       virDomainEventWatchdogDispose)))
         return -1;
+    if (!(virDomainEventIOErrorClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventIOError",
+                      sizeof(virDomainEventIOError),
+                      virDomainEventIOErrorDispose)))
+        return -1;
     return 0;
 }
 
@@ -231,12 +244,6 @@ static void virDomainEventDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     switch (virObjectEventGetEventID(event)) {
-    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
-    case VIR_DOMAIN_EVENT_ID_IO_ERROR:
-        VIR_FREE(event->data.ioError.srcPath);
-        VIR_FREE(event->data.ioError.devAlias);
-        VIR_FREE(event->data.ioError.reason);
-        break;
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
         if (event->data.graphics.local) {
@@ -296,6 +303,16 @@ static void virDomainEventWatchdogDispose(void *obj)
 {
     virDomainEventWatchdogPtr event = obj;
     VIR_DEBUG("obj=%p", event);
+}
+
+static void virDomainEventIOErrorDispose(void *obj)
+{
+    virDomainEventIOErrorPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->srcPath);
+    VIR_FREE(event->devAlias);
+    VIR_FREE(event->reason);
 }
 
 /**
@@ -972,24 +989,24 @@ static virDomainEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
                                                              int action,
                                                              const char *reason)
 {
-    virDomainEventPtr ev;
+    virDomainEventIOErrorPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass, event,
+    if (!(ev = virDomainEventNew(virDomainEventIOErrorClass, event,
                                  dom->id, dom->name, dom->uuid)))
         return NULL;
 
-    ev->data.ioError.action = action;
-    if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
-        VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
-        VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
+    ev->action = action;
+    if (VIR_STRDUP(ev->srcPath, srcPath) < 0 ||
+        VIR_STRDUP(ev->devAlias, devAlias) < 0 ||
+        VIR_STRDUP(ev->reason, reason) < 0) {
         virObjectUnref(ev);
         ev = NULL;
     }
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
@@ -999,25 +1016,25 @@ static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
                                                              int action,
                                                              const char *reason)
 {
-    virDomainEventPtr ev;
+    virDomainEventIOErrorPtr ev;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass, event,
+    if (!(ev = virDomainEventNew(virDomainEventIOErrorClass, event,
                                  obj->def->id, obj->def->name,
                                  obj->def->uuid)))
         return NULL;
 
-    ev->data.ioError.action = action;
-    if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
-        VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
-        VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
+    ev->action = action;
+    if (VIR_STRDUP(ev->srcPath, srcPath) < 0 ||
+        VIR_STRDUP(ev->devAlias, devAlias) < 0 ||
+        VIR_STRDUP(ev->reason, reason) < 0) {
         virObjectUnref(ev);
         ev = NULL;
     }
 
-    return ev;
+    return (virDomainEventPtr)ev;
 }
 
 virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
@@ -1556,21 +1573,31 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
-        ((virConnectDomainEventIOErrorCallback)cb)(conn, dom,
-                                                   event->data.ioError.srcPath,
-                                                   event->data.ioError.devAlias,
-                                                   event->data.ioError.action,
-                                                   cbopaque);
-        goto cleanup;
+        {
+            virDomainEventIOErrorPtr ioErrorEvent;
+
+            ioErrorEvent = (virDomainEventIOErrorPtr)event;
+            ((virConnectDomainEventIOErrorCallback)cb)(conn, dom,
+                                                       ioErrorEvent->srcPath,
+                                                       ioErrorEvent->devAlias,
+                                                       ioErrorEvent->action,
+                                                       cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
-        ((virConnectDomainEventIOErrorReasonCallback)cb)(conn, dom,
-                                                         event->data.ioError.srcPath,
-                                                         event->data.ioError.devAlias,
-                                                         event->data.ioError.action,
-                                                         event->data.ioError.reason,
-                                                         cbopaque);
-        goto cleanup;
+        {
+            virDomainEventIOErrorPtr ioErrorEvent;
+
+            ioErrorEvent = (virDomainEventIOErrorPtr)event;
+            ((virConnectDomainEventIOErrorReasonCallback)cb)(conn, dom,
+                                                             ioErrorEvent->srcPath,
+                                                             ioErrorEvent->devAlias,
+                                                             ioErrorEvent->action,
+                                                             ioErrorEvent->reason,
+                                                             cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
         ((virConnectDomainEventGraphicsCallback)cb)(conn, dom,
