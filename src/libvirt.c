@@ -16070,8 +16070,9 @@ error:
  * virNodeDeviceDestroy:
  * @dev: a device object
  *
- * Destroy the device object. The virtual device is removed from the host operating system.
- * This function may require privileged access
+ * Destroy the device object. The virtual device (only works for vHBA
+ * currently) is removed from the host operating system.  This function
+ * may require privileged access.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

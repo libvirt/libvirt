@@ -2158,9 +2158,9 @@ contains xml for a top-level <device> description of a node device.
 =item B<nodedev-destroy> I<device>
 
 Destroy (stop) a device on the host. I<device> can be either device
-name or wwn pair in "wwnn,wwpn" format (only works for HBA). Note
-that this makes libvirt quit managing a host device, and may even make
-that device unusable by the rest of the physical host until a reboot.
+name or wwn pair in "wwnn,wwpn" format (only works for vHBA currently).
+Note that this makes libvirt quit managing a host device, and may even
+make that device unusable by the rest of the physical host until a reboot.
 
 =item B<nodedev-detach> I<nodedev> [I<--driver backend_driver>]
 
