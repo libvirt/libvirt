@@ -20,8 +20,8 @@ LCOV = lcov
 GENHTML = genhtml
 
 SUBDIRS = . gnulib/lib include src daemon tools docs gnulib/tests \
-  python tests po examples/domain-events/events-c examples/hellolibvirt \
-  examples/dominfo examples/domsuspend examples/python examples/apparmor \
+  tests po examples/domain-events/events-c examples/hellolibvirt \
+  examples/dominfo examples/domsuspend examples/apparmor \
   examples/xml/nwfilter examples/openauth examples/systemtap
 
 ACLOCAL_AMFLAGS = -I m4
@@ -40,7 +40,6 @@ EXTRA_DIST = \
   Makefile.nonreentrant \
   autogen.sh \
   cfg.mk \
-  examples/domain-events/events-python \
   run.in \
   AUTHORS.in \
   $(XML_EXAMPLES)
@@ -74,8 +73,6 @@ check-local: all tests
 
 tests:
 	@(cd docs/examples ; $(MAKE) MAKEFLAGS+=--silent tests)
-	@(if [ "$(pythondir)" != "" ] ; then cd python ; \
-	  $(MAKE) MAKEFLAGS+=--silent tests ; fi)
 
 cov: clean-cov
 	mkdir $(top_builddir)/coverage

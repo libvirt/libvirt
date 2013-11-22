@@ -58,15 +58,6 @@ export LIBVIRT_LOCK_MANAGER_PLUGIN_DIR="$b/src/.libs"
 export VIRTLOCKD_PATH="$b/src/virtlockd"
 export LIBVIRTD_PATH="$b/daemon/libvirtd"
 
-# For Python.
-export PYTHON=@PYTHON@
-if [ -z "$PYTHONPATH" ]; then
-    PYTHONPATH="$b/python:$b/python/.libs"
-else
-    PYTHONPATH="$b/python:$b/python/.libs:$PYTHONPATH"
-fi
-export PYTHONPATH
-
 # This is a cheap way to find some use-after-free and uninitialized
 # read problems when using glibc.
 random_val="$(awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)"

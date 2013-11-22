@@ -126,7 +126,6 @@
 %define with_libssh2       0%{!?_without_libssh2:0}
 
 # Non-server/HV driver defaults which are always enabled
-%define with_python        0%{!?_without_python:1}
 %define with_sasl          0%{!?_without_sasl:1}
 
 
@@ -425,7 +424,7 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
-BuildRequires: python-devel
+BuildRequires: python
 %if %{with_systemd}
 BuildRequires: systemd-units
 %endif
@@ -1145,19 +1144,6 @@ Includes the Sanlock lock manager plugin for the QEMU
 driver
 %endif
 
-%if %{with_python}
-%package python
-Summary: Python bindings for the libvirt library
-Group: Development/Libraries
-Requires: %{name}-client = %{version}-%{release}
-
-%description python
-The libvirt-python package contains a module that permits applications
-written in the Python programming language to use the interface
-supplied by the libvirt library to use the virtualization capabilities
-of recent versions of Linux (and other OSes).
-%endif
-
 %prep
 %setup -q
 
@@ -1220,10 +1206,6 @@ of recent versions of Linux (and other OSes).
 
 %if ! %{with_polkit}
     %define _without_polkit --without-polkit
-%endif
-
-%if ! %{with_python}
-    %define _without_python --without-python
 %endif
 
 %if ! %{with_libvirtd}
@@ -1378,7 +1360,6 @@ of recent versions of Linux (and other OSes).
            %{?_without_sasl} \
            %{?_without_avahi} \
            %{?_without_polkit} \
-           %{?_without_python} \
            %{?_without_libvirtd} \
            %{?_without_uml} \
            %{?_without_phyp} \
@@ -1432,14 +1413,12 @@ rm -fr %{buildroot}
 # on RHEL 5, thus we need to expand it here.
 make install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
 
-for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter systemtap
+for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
 %if %{with_driver_modules}
@@ -2104,18 +2083,6 @@ exit 0
 %doc examples/openauth
 %doc examples/xml
 %doc examples/systemtap
-
-%if %{with_python}
-%files python
-%defattr(-, root, root)
-
-%{_libdir}/python*/site-packages/libvirt.py*
-%{_libdir}/python*/site-packages/libvirt_qemu.py*
-%{_libdir}/python*/site-packages/libvirt_lxc.py*
-%{_libdir}/python*/site-packages/libvirtmod*
-%doc examples/python
-%doc examples/domain-events/events-python
-%endif
 
 %changelog
 * Mon Nov  4 2013 Daniel Veillard <veillard@redhat.com> - 1.1.4-1

@@ -958,14 +958,11 @@ exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
 
 exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
 
-exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
-  ^python/(libvirt-(lxc-|qemu-)?override|typewrappers)\.c$$
-
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|src/util/virstring\.[ch]$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
-  ^(docs/|examples/|python/|src/util/virstring\.c|tests/virnetserverclientmock.c$$)
+  ^(docs/|examples/|src/util/virstring\.c|tests/virnetserverclientmock.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vir(cgroup|pci)mock\.c)$$)
@@ -1033,7 +1030,7 @@ exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
   ^src/internal\.h$$
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
-  ^(python/|tools/|examples/|include/libvirt/(virterror|libvirt-(qemu|lxc))\.h$$)
+  ^(tools/|examples/|include/libvirt/(virterror|libvirt-(qemu|lxc))\.h$$)
 
 exclude_file_name_regexp--sc_prohibit_int_ijk = \
   ^(src/remote_protocol-structs|src/remote/remote_protocol.x|cfg.mk|include/)$

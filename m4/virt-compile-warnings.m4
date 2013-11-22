@@ -217,14 +217,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
      #endif
     ])
 
-    dnl Needed to keep compile quiet on python 2.4
-    save_WARN_CFLAGS=$WARN_CFLAGS
-    WARN_CFLAGS=
-    gl_WARN_ADD([-Wno-redundant-decls])
-    WARN_PYTHON_CFLAGS=$WARN_CFLAGS
-    AC_SUBST(WARN_PYTHON_CFLAGS)
-    WARN_CFLAGS=$save_WARN_CFLAGS
-
     if test "$gl_cv_warn_c__Wlogical_op" = yes &&
        test "$lv_cv_gcc_wlogical_op_broken" = yes; then
       AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP], 1,

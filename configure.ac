@@ -2012,84 +2012,8 @@ fi
 AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
 
 
-dnl
-dnl check for python
-dnl
-
-AC_ARG_WITH([python],
-  [AS_HELP_STRING([--with-python],
-    [Build python bindings @<:@default=yes@:>@])],
-  [],[with_python=yes])
-
-if test "$enable_shared:$with_python" = no:yes; then
-  AC_MSG_WARN([Disabling shared libraries is incompatible with building Python extensions.])
-  AC_MSG_WARN([Ignoring --with-python.])
-  with_python=no
-fi
-
-PYTHON_VERSION=
-PYTHON_INCLUDES=
-if test "$with_python" != "no" ; then
-    if test -x "$with_python/bin/python"
-    then
-        AC_MSG_NOTICE(Found python in $with_python/bin/python)
-        PYTHON="$with_python/bin/python"
-        with_python=yes
-    else
-        if test -x "$with_python"
-        then
-            AC_MSG_NOTICE(Found python in $with_python)
-            PYTHON="$with_python"
-            with_python=yes
-        else
-            if test -x "$PYTHON"
-            then
-                AC_MSG_NOTICE(Found python in environment PYTHON=$PYTHON)
-                with_python=yes
-            fi
-        fi
-    fi
-
-    if test "$with_python" = "yes" ; then
-        AM_PATH_PYTHON(,, [:])
-
-        if test "$PYTHON" != : ; then
-            PYTHON_CONFIG="$PYTHON-config"
-
-            if test -x "$PYTHON_CONFIG"
-            then
-                PYTHON_INCLUDES=`$PYTHON_CONFIG --includes`
-            else
-                if test -r $PYTHON_EXEC_PREFIX/include/python$PYTHON_VERSION/Python.h
-                then
-                    PYTHON_INCLUDES=-I$PYTHON_EXEC_PREFIX/include/python$PYTHON_VERSION
-                else
-                    if test -r $prefix/include/python$PYTHON_VERSION/Python.h
-                    then
-                        PYTHON_INCLUDES=-I$prefix/include/python$PYTHON_VERSION
-                    else
-                        if test -r /usr/include/python$PYTHON_VERSION/Python.h
-                        then
-                            PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION
-                        else
-                            AC_MSG_ERROR([You must install python-devel to build Python bindings])
-                        fi
-                    fi
-                fi
-            fi
-        else
-            AC_MSG_ERROR([You must install python to build Python bindings])
-        fi
-    else
-        AC_MSG_NOTICE([Could not find python in $with_python, disabling bindings])
-        with_python=no
-    fi
-fi
-AM_CONDITIONAL([WITH_PYTHON], [test "$with_python" = "yes"])
-AC_SUBST([PYTHON_VERSION])
-AC_SUBST([PYTHON_INCLUDES])
-
-dnl Allow perl overrides
+dnl Allow perl/python overrides
+AC_PATH_PROG([PYTHON], [python])
 AC_PATH_PROG([PERL], [perl])
 
 AC_ARG_ENABLE([with-test-suite],
@@ -2227,7 +2151,6 @@ dnl Copied from libxml2 configure.in, but I removed mingw changes
 dnl for now since I'm not supporting mingw at present.  - RWMJ
 CYGWIN_EXTRA_LDFLAGS=
 CYGWIN_EXTRA_LIBADD=
-CYGWIN_EXTRA_PYTHON_LIBADD=
 MINGW_EXTRA_LDFLAGS=
 WIN32_EXTRA_CFLAGS=
 dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
@@ -2241,10 +2164,6 @@ case "$host" in
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
     CYGWIN_EXTRA_LIBADD="${INTLLIBS}"
     MSCOM_LIBS="-lole32 -loleaut32"
-
-    if test "x$PYTHON_VERSION" != "x"; then
-      CYGWIN_EXTRA_PYTHON_LIBADD="-L/usr/lib/python${PYTHON_VERSION}/config -lpython${PYTHON_VERSION}"
-    fi
     ;;
   *-*-mingw*)
     MINGW_EXTRA_LDFLAGS="-no-undefined"
@@ -2279,7 +2198,6 @@ case "$host" in
 esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
 AC_SUBST([CYGWIN_EXTRA_LIBADD])
-AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([WIN32_EXTRA_CFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
@@ -2613,7 +2531,6 @@ AC_CONFIG_FILES([\
         libvirt.pc libvirt.spec mingw-libvirt.spec \
         po/Makefile.in \
         include/libvirt/Makefile include/libvirt/libvirt.h \
-        python/Makefile \
         daemon/Makefile \
         tools/Makefile \
         tests/Makefile \
@@ -2622,7 +2539,6 @@ AC_CONFIG_FILES([\
         examples/domsuspend/Makefile \
         examples/dominfo/Makefile \
         examples/openauth/Makefile \
-        examples/python/Makefile \
         examples/hellolibvirt/Makefile \
         examples/systemtap/Makefile \
         examples/xml/nwfilter/Makefile])
@@ -2778,7 +2694,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([            Debug: $enable_debug])
 AC_MSG_NOTICE([      Use -Werror: $set_werror])
 AC_MSG_NOTICE([    Warning Flags: $WARN_CFLAGS])
-AC_MSG_NOTICE([           Python: $with_python])
 AC_MSG_NOTICE([           DTrace: $with_dtrace])
 AC_MSG_NOTICE([            numad: $with_numad])
 AC_MSG_NOTICE([      XML Catalog: $XML_CATALOG_FILE])
