@@ -457,7 +457,7 @@ int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
     int err;
     int ret = -1;
 
-    VIR_DEBUG("sasl=%p serverin=%s serverinlen=%zu prompt_need=%p clientout=%p clientoutlen=%p",
+    VIR_DEBUG("sasl=%p serverin=%p serverinlen=%zu prompt_need=%p clientout=%p clientoutlen=%p",
               sasl, serverin, serverinlen, prompt_need, clientout, clientoutlen);
 
     virObjectLock(sasl);
