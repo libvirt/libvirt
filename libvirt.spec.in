@@ -1727,6 +1727,12 @@ if getent group sanlock > /dev/null ; then
 fi
 %endif
 
+%if %{with_lxc}
+%pre login-shell
+getent group virtlogin >/dev/null || groupadd -r virtlogin
+exit 0
+%endif
+
 %files
 %defattr(-, root, root)
 
@@ -2072,7 +2078,7 @@ fi
 
 %if %{with_lxc}
 %files login-shell
-%attr(4755, root, root) %{_bindir}/virt-login-shell
+%attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
 %{_mandir}/man1/virt-login-shell.1*
 %endif
