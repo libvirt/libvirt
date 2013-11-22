@@ -49,7 +49,7 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt,
                                                 const char *hostname,
                                                 const char *localAddr,
                                                 const char *remoteAddr,
-                                                const sasl_callback_t *cbs);
+                                                sasl_callback_t *cbs);
 virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt,
                                                 const char *service,
                                                 const char *localAddr,
