@@ -4471,13 +4471,13 @@ libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
 
         ncpus = PyList_Size(list);
         if (VIR_ALLOC_N_QUIET(xmlcpus, ncpus) < 0)
-            return VIR_PY_INT_FAIL;
+            return VIR_PY_NONE;
 
         for (i = 0; i < ncpus; i++) {
             xmlcpus[i] = PyString_AsString(PyList_GetItem(list, i));
             if (xmlcpus[i] == NULL) {
                 VIR_FREE(xmlcpus);
-                return VIR_PY_INT_FAIL;
+                return VIR_PY_NONE;
             }
         }
     }
@@ -4489,13 +4489,13 @@ libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
     VIR_FREE(xmlcpus);
 
     if (base_cpu == NULL)
-        return VIR_PY_INT_FAIL;
+        return VIR_PY_NONE;
 
     pybase_cpu = PyString_FromString(base_cpu);
     VIR_FREE(base_cpu);
 
     if (pybase_cpu == NULL)
-        return VIR_PY_INT_FAIL;
+        return VIR_PY_NONE;
 
     return pybase_cpu;
 }
