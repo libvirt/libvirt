@@ -2209,6 +2209,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
+void virDomainDiskAuthClear(virDomainDiskDefPtr def);
 void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def);
 void virDomainDiskHostDefFree(size_t nhosts, virDomainDiskHostDefPtr hosts);
 virDomainDiskHostDefPtr virDomainDiskHostDefCopy(size_t nhosts,

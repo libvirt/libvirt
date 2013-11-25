@@ -1201,12 +1201,9 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->driverName);
     virStorageFileFreeMetadata(def->backingChain);
     VIR_FREE(def->mirror);
-    VIR_FREE(def->auth.username);
     VIR_FREE(def->wwn);
     VIR_FREE(def->vendor);
     VIR_FREE(def->product);
-    if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
-        VIR_FREE(def->auth.secret.usage);
     virStorageEncryptionFree(def->encryption);
     virDomainDeviceInfoClear(&def->info);
 
@@ -1217,9 +1214,23 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     }
 
     virDomainDiskHostDefFree(def->nhosts, def->hosts);
+    virDomainDiskAuthClear(def);
 
     VIR_FREE(def);
 }
+
+
+void
+virDomainDiskAuthClear(virDomainDiskDefPtr def)
+{
+    VIR_FREE(def->auth.username);
+
+    if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
+        VIR_FREE(def->auth.secret.usage);
+
+    def->auth.secretType = VIR_DOMAIN_DISK_SECRET_TYPE_NONE;
+}
+
 
 void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def)
 {
