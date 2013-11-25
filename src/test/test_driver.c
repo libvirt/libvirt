@@ -7193,7 +7193,7 @@ static virDriver testDriver = {
     .domainRevertToSnapshot = testDomainRevertToSnapshot, /* 1.1.4 */
     .domainSnapshotDelete = testDomainSnapshotDelete, /* 1.1.4 */
 
-    .connectBaselineCPU = testConnectBaselineCPU, /* 1.1.5 */
+    .connectBaselineCPU = testConnectBaselineCPU, /* 1.2.0 */
 };
 
 static virNetworkDriver testNetworkDriver = {
