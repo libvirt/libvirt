@@ -11860,8 +11860,8 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
      * offline snapshots */
     if (found_internal && external) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("mixing internal and external snapshots is not "
-                         "supported yet"));
+                       _("mixing internal and external targets for a snapshot "
+                         "is not yet supported"));
         goto cleanup;
     }
 
