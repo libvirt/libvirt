@@ -11723,6 +11723,8 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
 
         switch (disk->snapshot) {
         case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
+            found_internal = true;
+
             if (def->state != VIR_DOMAIN_DISK_SNAPSHOT &&
                 dom_disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
                 (dom_disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
@@ -11746,7 +11748,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                disk->name);
                 goto cleanup;
             }
-            found_internal = true;
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
