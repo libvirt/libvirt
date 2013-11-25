@@ -11740,13 +11740,226 @@ endjob:
 }
 
 static int
-qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
+qemuDomainSnapshotPrepareDiskExternalBacking(virDomainDiskDefPtr disk)
+{
+    int actualType = qemuDiskGetActualType(disk);
+
+    switch ((enum virDomainDiskType) actualType) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        return 0;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        switch ((enum virDomainDiskProtocol) disk->protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("external inactive snapshots are not supported on "
+                             "'network' disks using '%s' protocol"),
+                           virDomainDiskProtocolTypeToString(disk->protocol));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("external inactive snapshots are not supported on "
+                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr disk)
+{
+    int actualType = qemuSnapshotDiskGetActualType(disk);
+
+    switch ((enum virDomainDiskType) actualType) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        return 0;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("external active snapshots are not supported on "
+                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr disk)
+{
+    int actualType = qemuSnapshotDiskGetActualType(disk);
+
+    switch ((enum virDomainDiskType) actualType) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        return 0;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("external inactive snapshots are not supported on "
+                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+static int
+qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
+                                      virDomainDiskDefPtr disk,
+                                      virDomainSnapshotDiskDefPtr snapdisk,
+                                      bool active,
+                                      bool reuse)
+{
+    int actualType;
+    struct stat st;
+
+    if (qemuTranslateSnapshotDiskSourcePool(conn, snapdisk) < 0)
+        return -1;
+
+    if (!active) {
+        if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+            return -1;
+
+        if (qemuDomainSnapshotPrepareDiskExternalBacking(disk) < 0)
+            return -1;
+
+        if (qemuDomainSnapshotPrepareDiskExternalOverlayInactive(snapdisk) < 0)
+            return -1;
+    } else {
+        if (qemuDomainSnapshotPrepareDiskExternalOverlayActive(snapdisk) < 0)
+            return -1;
+    }
+
+    actualType = qemuSnapshotDiskGetActualType(snapdisk);
+
+    switch ((enum virDomainDiskType) actualType) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        if (stat(snapdisk->file, &st) < 0) {
+            if (errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("unable to stat for disk %s: %s"),
+                                     snapdisk->name, snapdisk->file);
+                return -1;
+            } else if (reuse) {
+                virReportSystemError(errno,
+                                     _("missing existing file for disk %s: %s"),
+                                     snapdisk->name, snapdisk->file);
+                return -1;
+            }
+        } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("external snapshot file for disk %s already "
+                             "exists and is not a block device: %s"),
+                           snapdisk->name, snapdisk->file);
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
+                                      virDomainDiskDefPtr disk,
+                                      bool active)
+{
+    int actualType;
+
+    /* active disks are handeled by qemu itself so no need to worry about those */
+    if (active)
+        return 0;
+
+    if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+        return -1;
+
+    actualType = qemuDiskGetActualType(disk);
+
+    switch ((enum virDomainDiskType) actualType) {
+    case VIR_DOMAIN_DISK_TYPE_BLOCK:
+    case VIR_DOMAIN_DISK_TYPE_FILE:
+        return 0;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        switch ((enum virDomainDiskProtocol) disk->protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("internal inactive snapshots are not supported on "
+                             "'network' disks using '%s' protocol"),
+                           virDomainDiskProtocolTypeToString(disk->protocol));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_DIR:
+    case VIR_DOMAIN_DISK_TYPE_VOLUME:
+    case VIR_DOMAIN_DISK_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("internal inactive snapshots are not supported on "
+                         "'%s' disks"), virDomainDiskTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSnapshotPrepare(virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          virDomainSnapshotDefPtr def,
                           unsigned int *flags)
 {
     int ret = -1;
     size_t i;
     bool active = virDomainObjIsActive(vm);
-    struct stat st;
     bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     bool atomic = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
     bool found_internal = false;
@@ -11768,8 +11981,19 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
         case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
             found_internal = true;
 
-            if (def->state != VIR_DOMAIN_DISK_SNAPSHOT &&
-                dom_disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && active) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("active qemu domains require external disk "
+                                 "snapshots; disk %s requested internal"),
+                               disk->name);
+                goto cleanup;
+            }
+
+            if (qemuDomainSnapshotPrepareDiskInternal(conn, dom_disk,
+                                                      active) < 0)
+                goto cleanup;
+
+            if (dom_disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
                 (dom_disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
                  dom_disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
                 break;
@@ -11782,13 +12006,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                disk->name,
                                virStorageFileFormatTypeToString(
                                    vm->def->disks[i]->format));
-                goto cleanup;
-            }
-            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && active) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("active qemu domains require external disk "
-                                 "snapshots; disk %s requested internal"),
-                               disk->name);
                 goto cleanup;
             }
             break;
@@ -11805,25 +12022,11 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                virStorageFileFormatTypeToString(disk->format));
                 goto cleanup;
             }
-            if (stat(disk->file, &st) < 0) {
-                if (errno != ENOENT) {
-                    virReportSystemError(errno,
-                                         _("unable to stat for disk %s: %s"),
-                                         disk->name, disk->file);
-                    goto cleanup;
-                } else if (reuse) {
-                    virReportSystemError(errno,
-                                         _("missing existing file for disk %s: %s"),
-                                         disk->name, disk->file);
-                    goto cleanup;
-                }
-            } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("external snapshot file for disk %s already "
-                                 "exists and is not a block device: %s"),
-                               disk->name, disk->file);
+
+            if (qemuDomainSnapshotPrepareDiskExternal(conn, dom_disk, disk,
+                                                      active, reuse) < 0)
                 goto cleanup;
-            }
+
             external++;
             break;
 
@@ -12328,6 +12531,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
                             unsigned int flags)
 {
+    virConnectPtr conn = domain->conn;
     virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
@@ -12466,7 +12670,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
         if (virDomainSnapshotAlignDisks(def, align_location,
                                         align_match) < 0 ||
-            qemuDomainSnapshotPrepare(vm, def, &flags) < 0)
+            qemuDomainSnapshotPrepare(conn, vm, def, &flags) < 0)
             goto cleanup;
     }
 
