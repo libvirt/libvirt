@@ -1622,7 +1622,7 @@ fi
 /sbin/ldconfig
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_postun_with_restart libvirt-guests.service
+        %systemd_postun libvirt-guests.service
     %endif
 %triggerun client -- libvirt < 0.9.4
 %{_bindir}/systemd-sysv-convert --save libvirt-guests >/dev/null 2>&1 ||:
