@@ -16526,7 +16526,7 @@ error:
  * Otherwise, creates a new secret with an automatically chosen UUID, and
  * initializes its attributes from xml.
  *
- * Returns a the secret on success, NULL on failure.
+ * Returns a secret on success, NULL on failure.
  */
 virSecretPtr
 virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
