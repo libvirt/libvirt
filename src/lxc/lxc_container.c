@@ -144,6 +144,7 @@ int lxcContainerHasReboot(void)
     int cmd, v;
     int status;
     char *tmp;
+    int stacksize = getpagesize() * 4;
 
     if (virFileReadAll("/proc/sys/kernel/ctrl-alt-del", 10, &buf) < 0)
         return -1;
@@ -160,10 +161,10 @@ int lxcContainerHasReboot(void)
     VIR_FREE(buf);
     cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
 
-    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0)
+    if (VIR_ALLOC_N(stack, stacksize) < 0)
         return -1;
 
-    childStack = stack + (getpagesize() * 4);
+    childStack = stack + stacksize;
 
     cpid = clone(lxcContainerRebootChild, childStack, flags, &cmd);
     VIR_FREE(stack);
@@ -2031,6 +2032,7 @@ int lxcContainerStart(virDomainDefPtr def,
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0)
         return -1;
+
     stacktop = stack + stacksize;
 
     cflags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
@@ -2078,6 +2080,7 @@ int lxcContainerAvailable(int features)
     int cpid;
     char *childStack;
     char *stack;
+    int stacksize = getpagesize() * 4;
 
     if (features & LXC_CONTAINER_FEATURE_USER)
         flags |= CLONE_NEWUSER;
@@ -2085,12 +2088,10 @@ int lxcContainerAvailable(int features)
     if (features & LXC_CONTAINER_FEATURE_NET)
         flags |= CLONE_NEWNET;
 
-    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
-        VIR_DEBUG("Unable to allocate stack");
+    if (VIR_ALLOC_N(stack, stacksize) < 0)
         return -1;
-    }
 
-    childStack = stack + (getpagesize() * 4);
+    childStack = stack + stacksize;
 
     cpid = clone(lxcContainerDummyChild, childStack, flags, NULL);
     VIR_FREE(stack);
