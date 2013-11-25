@@ -71,9 +71,6 @@ rpm: clean
 
 check-local: all tests
 
-tests:
-	@(cd docs/examples ; $(MAKE) MAKEFLAGS+=--silent tests)
-
 cov: clean-cov
 	mkdir $(top_builddir)/coverage
 	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
