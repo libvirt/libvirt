@@ -159,6 +159,7 @@
 /tests/networkxml2argvtest
 /tests/nodeinfotest
 /tests/nwfilterxml2xmltest
+/tests/objecteventtest
 /tests/object-locking
 /tests/object-locking-files.txt
 /tests/object-locking.cm[ix]

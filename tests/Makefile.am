@@ -303,6 +303,8 @@ EXTRA_DIST += 				\
 	$(NULL)
 endif ! WITH_LIBVIRTD
 
+test_programs += objecteventtest
+
 if WITH_SECDRIVER_APPARMOR
 test_scripts += virt-aa-helper-test
 else ! WITH_SECDRIVER_APPARMOR
@@ -894,6 +896,11 @@ sysinfotest_LDADD = $(LDADDS)
 fdstreamtest_SOURCES = \
 	fdstreamtest.c testutils.h testutils.c
 fdstreamtest_LDADD = $(LDADDS)
+
+objecteventtest_SOURCES = \
+	objecteventtest.c \
+	testutils.c testutils.h
+objecteventtest_LDADD = $(LDADDS)
 
 if WITH_LINUX
 fchosttest_SOURCES = \
