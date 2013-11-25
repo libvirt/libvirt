@@ -121,7 +121,7 @@ static const virNodeInfo defaultNodeInfo = {
 
 
 static int testConnectClose(virConnectPtr conn);
-static void testDomainEventQueue(testConnPtr driver,
+static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event);
 
 
@@ -1650,7 +1650,7 @@ cleanup:
     if (dom)
         virObjectUnlock(dom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     virDomainDefFree(def);
     testDriverUnlock(privconn);
     return ret;
@@ -1781,7 +1781,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1821,7 +1821,7 @@ cleanup:
         virObjectUnlock(privdom);
     if (event) {
         testDriverLock(privconn);
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
         testDriverUnlock(privconn);
     }
     return ret;
@@ -1864,7 +1864,7 @@ cleanup:
 
     if (event) {
         testDriverLock(privconn);
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
         testDriverUnlock(privconn);
     }
     return ret;
@@ -1911,7 +1911,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1987,7 +1987,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -2159,7 +2159,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -2265,7 +2265,7 @@ cleanup:
     if (dom)
         virObjectUnlock(dom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -2335,7 +2335,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -2819,7 +2819,7 @@ cleanup:
     if (dom)
         virObjectUnlock(dom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -2955,7 +2955,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3030,7 +3030,7 @@ cleanup:
     if (privdom)
         virObjectUnlock(privdom);
     if (event)
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -6028,7 +6028,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 
 /* driver must be locked before calling */
-static void testDomainEventQueue(testConnPtr driver,
+static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -6191,7 +6191,7 @@ cleanup:
         virObjectUnlock(vm);
     if (event) {
         testDriverLock(privconn);
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
         testDriverUnlock(privconn);
     }
 
@@ -6743,7 +6743,7 @@ cleanup:
     }
     if (event) {
         testDriverLock(privconn);
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
         testDriverUnlock(privconn);
     }
     virDomainSnapshotDefFree(def);
@@ -6989,7 +6989,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                             VIR_DOMAIN_EVENT_STOPPED,
                             VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
                 if (event)
-                    testDomainEventQueue(privconn, event);
+                    testObjectEventQueue(privconn, event);
                 goto load;
             }
 
@@ -7069,7 +7069,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
 
             if (event)
-                testDomainEventQueue(privconn, event);
+                testObjectEventQueue(privconn, event);
             event = virDomainEventLifecycleNewFromObj(vm,
                             VIR_DOMAIN_EVENT_STARTED,
                             VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
@@ -7085,9 +7085,9 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     ret = 0;
 cleanup:
     if (event) {
-        testDomainEventQueue(privconn, event);
+        testObjectEventQueue(privconn, event);
         if (event2)
-            testDomainEventQueue(privconn, event2);
+            testObjectEventQueue(privconn, event2);
     } else {
         virObjectUnref(event2);
     }
