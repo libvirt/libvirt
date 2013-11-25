@@ -1402,3 +1402,26 @@ cleanup:
     virStoragePoolDefFree(pooldef);
     return ret;
 }
+
+
+int
+qemuSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def)
+{
+    if (def->type == -1)
+        return VIR_DOMAIN_DISK_TYPE_FILE;
+
+    return def->type;
+}
+
+
+int
+qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainSnapshotDiskDefPtr def)
+{
+    if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+        return 0;
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Snapshots are not yet supported with 'pool' volumes"));
+    return -1;
+}

@@ -29,6 +29,7 @@
 # include "capabilities.h"
 # include "network_conf.h"
 # include "domain_conf.h"
+# include "snapshot_conf.h"
 # include "domain_event.h"
 # include "virthread.h"
 # include "security/security_manager.h"
@@ -306,5 +307,10 @@ virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
 
 int qemuTranslateDiskSourcePool(virConnectPtr conn,
                                 virDomainDiskDefPtr def);
+
+int qemuSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def);
+
+int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
+                                        virDomainSnapshotDiskDefPtr def);
 
 #endif /* __QEMUD_CONF_H */
