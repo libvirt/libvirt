@@ -3822,7 +3822,7 @@ cleanup:
 }
 
 
-static int
+int
 qemuGetDriveSourceString(int type,
                          const char *src,
                          int protocol,

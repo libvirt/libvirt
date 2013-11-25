@@ -11933,6 +11933,24 @@ cleanup:
     return ret;
 }
 
+
+static int
+qemuDomainSnapshotDiskGetSourceString(virDomainSnapshotDiskDefPtr disk,
+                                      char **source)
+{
+    *source = NULL;
+
+    return qemuGetDriveSourceString(virDomainSnapshotDiskGetActualType(disk),
+                                    disk->file,
+                                    disk->protocol,
+                                    disk->nhosts,
+                                    disk->hosts,
+                                    NULL,
+                                    NULL,
+                                    source);
+}
+
+
 typedef enum {
     VIR_DISK_CHAIN_NO_ACCESS,
     VIR_DISK_CHAIN_READ_ONLY,
@@ -12330,6 +12348,29 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
         return 0;
 
     case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        switch ((enum virDomainDiskProtocol) disk->protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+            return 0;
+
+        case VIR_DOMAIN_DISK_PROTOCOL_NBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_RBD:
+        case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
+        case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_HTTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_FTPS:
+        case VIR_DOMAIN_DISK_PROTOCOL_TFTP:
+        case VIR_DOMAIN_DISK_PROTOCOL_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("external active snapshots are not supported on "
+                             "'network' disks using '%s' protocol"),
+                           virDomainDiskProtocolTypeToString(disk->protocol));
+            return -1;
+
+        }
+        break;
+
     case VIR_DOMAIN_DISK_TYPE_DIR:
     case VIR_DOMAIN_DISK_TYPE_VOLUME:
     case VIR_DOMAIN_DISK_TYPE_LAST:
@@ -12637,6 +12678,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
     char *source = NULL;
+    char *newsource = NULL;
+    virDomainDiskHostDefPtr newhosts = NULL;
+    virDomainDiskHostDefPtr persistHosts = NULL;
     int format = snap->format;
     const char *formatStr = NULL;
     char *persistSource = NULL;
@@ -12651,8 +12695,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
-        (persistDisk && VIR_STRDUP(persistSource, source) < 0))
+    if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0)
         goto cleanup;
 
     /* XXX Here, we know we are about to alter disk->backingChain if
@@ -12666,13 +12709,21 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     if (!(snapfile = virStorageFileInitFromSnapshotDef(snap)))
         goto cleanup;
 
+    if (qemuDomainSnapshotDiskGetSourceString(snap, &source) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(newsource, snap->file) < 0)
+        goto cleanup;
+
+    if (persistDisk &&
+        VIR_STRDUP(persistSource, snap->file) < 0)
+        goto cleanup;
+
     switch (snap->type) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:
         reuse = true;
         /* fallthrough */
     case VIR_DOMAIN_DISK_TYPE_FILE:
-        if (VIR_STRDUP(source, snap->file) < 0)
-            goto cleanup;
 
         /* create the stub file and set selinux labels; manipulate disk in
          * place, in a way that can be reverted on failure. */
@@ -12688,6 +12739,27 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                               VIR_DISK_CHAIN_READ_WRITE) < 0) {
             qemuDomainPrepareDiskChainElement(driver, vm, disk, source,
                                               VIR_DISK_CHAIN_NO_ACCESS);
+            goto cleanup;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_TYPE_NETWORK:
+        switch (snap->protocol) {
+        case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
+            if (!(newhosts = virDomainDiskHostDefCopy(snap->nhosts, snap->hosts)))
+                goto cleanup;
+
+            if (persistDisk &&
+                !(persistHosts = virDomainDiskHostDefCopy(snap->nhosts, snap->hosts)))
+                goto cleanup;
+
+            break;
+
+        default:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("snapshots on volumes using '%s' protocol "
+                             "are not supported"),
+                           virDomainDiskProtocolTypeToString(snap->protocol));
             goto cleanup;
         }
         break;
@@ -12727,17 +12799,33 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     /* Update vm in place to match changes.  */
     need_unlink = false;
+
     VIR_FREE(disk->src);
-    disk->src = source;
-    source = NULL;
+    virDomainDiskHostDefFree(disk->nhosts, disk->hosts);
+
+    disk->src = newsource;
     disk->format = format;
     disk->type = snap->type;
+    disk->protocol = snap->protocol;
+    disk->nhosts = snap->nhosts;
+    disk->hosts = newhosts;
+
+    newsource = NULL;
+    newhosts = NULL;
+
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
+        virDomainDiskHostDefFree(persistDisk->nhosts, persistDisk->hosts);
+
         persistDisk->src = persistSource;
-        persistSource = NULL;
         persistDisk->format = format;
         persistDisk->type = snap->type;
+        persistDisk->protocol = snap->protocol;
+        persistDisk->nhosts = snap->nhosts;
+        persistDisk->hosts = persistHosts;
+
+        persistSource = NULL;
+        persistHosts = NULL;
     }
 
 cleanup:
@@ -12746,7 +12834,10 @@ cleanup:
     virStorageFileFree(snapfile);
     VIR_FREE(device);
     VIR_FREE(source);
+    VIR_FREE(newsource);
     VIR_FREE(persistSource);
+    virDomainDiskHostDefFree(snap->nhosts, newhosts);
+    virDomainDiskHostDefFree(snap->nhosts, persistHosts);
     return ret;
 }
 
@@ -12785,12 +12876,20 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     source = NULL;
     disk->format = origdisk->format;
     disk->type = origdisk->type;
+    disk->protocol = origdisk->protocol;
+    virDomainDiskHostDefFree(disk->nhosts, disk->hosts);
+    disk->nhosts = origdisk->nhosts;
+    disk->hosts = virDomainDiskHostDefCopy(origdisk->nhosts, origdisk->hosts);
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
         persistDisk->src = persistSource;
         persistSource = NULL;
         persistDisk->format = origdisk->format;
         persistDisk->type = origdisk->type;
+        persistDisk->protocol = origdisk->protocol;
+        virDomainDiskHostDefFree(persistDisk->nhosts, persistDisk->hosts);
+        persistDisk->nhosts = origdisk->nhosts;
+        persistDisk->hosts = virDomainDiskHostDefCopy(origdisk->nhosts, origdisk->hosts);
     }
 
 cleanup:

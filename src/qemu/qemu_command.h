@@ -313,4 +313,13 @@ qemuParseKeywords(const char *str,
                   int *retnkeywords,
                   int allowEmptyValue);
 
+int qemuGetDriveSourceString(int type,
+                             const char *src,
+                             int protocol,
+                             size_t nhosts,
+                             virDomainDiskHostDefPtr hosts,
+                             const char *username,
+                             const char *secret,
+                             char **path);
+
 #endif /* __QEMU_COMMAND_H__*/

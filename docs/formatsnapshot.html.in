@@ -183,8 +183,9 @@
             documentation for further information.
 
             Libvirt currently supports the <code>type</code> element in the qemu
-            driver and supported values are <code>file</code> and
-            <code>block</code> <span class="since">(since 1.2.2)</span>.
+            driver and supported values are <code>file</code>, <code>block</code>
+            and <code>network</code> with a protocol of <code>gluster</code>
+            <span class="since">(since 1.2.2)</span>.
           </dd>
         </dl>
       </dd>
