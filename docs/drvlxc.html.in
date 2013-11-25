@@ -164,6 +164,14 @@ numbered incrementally from there.
 </p>
 
 <p>
+Since /dev/ttyN and /dev/console are linked to the pts devices. The
+tty device of login program is pts device. the pam module securetty
+may prevent root user from logging in container. If you want root
+user to log in container successfully, add the pts device to the file
+/etc/securetty of container.
+</p>
+
+<p>
 Further block or character devices will be made available to containers
 depending on their configuration.
 </p>
