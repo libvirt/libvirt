@@ -21,6 +21,7 @@ src/conf/network_conf.c
 src/conf/node_device_conf.c
 src/conf/nwfilter_conf.c
 src/conf/nwfilter_params.c
+src/conf/object_event.c
 src/conf/secret_conf.c
 src/conf/snapshot_conf.c
 src/conf/storage_conf.c

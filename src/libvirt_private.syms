@@ -452,12 +452,6 @@ virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
-virObjectEventStateDeregisterID;
-virObjectEventStateEventID;
-virObjectEventStateFree;
-virObjectEventStateNew;
-virObjectEventStateQueue;
-virObjectEventStateRegisterID;
 
 
 # conf/domain_nwfilter.h
@@ -627,6 +621,15 @@ virNWFilterVarValueFree;
 virNWFilterVarValueGetCardinality;
 virNWFilterVarValueGetNthValue;
 virNWFilterVarValueGetSimple;
+
+
+# conf/object_event.h
+virObjectEventStateDeregisterID;
+virObjectEventStateEventID;
+virObjectEventStateFree;
+virObjectEventStateNew;
+virObjectEventStateQueue;
+virObjectEventStateRegisterID;
 
 
 # conf/secret_conf.h
