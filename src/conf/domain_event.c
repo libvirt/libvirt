@@ -855,7 +855,7 @@ virObjectEventStateFree(virObjectEventStatePtr state)
 static void virObjectEventStateFlush(virObjectEventStatePtr state);
 
 static void
-virDomainEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+virObjectEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     virObjectEventStatePtr state = opaque;
 
@@ -1990,7 +1990,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     if ((state->callbacks->count == 0) &&
         (state->timer == -1) &&
         (state->timer = virEventAddTimeout(-1,
-                                           virDomainEventTimer,
+                                           virObjectEventTimer,
                                            state,
                                            NULL)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2042,7 +2042,7 @@ virDomainEventStateRegister(virConnectPtr conn,
     if ((state->callbacks->count == 0) &&
         (state->timer == -1) &&
         (state->timer = virEventAddTimeout(-1,
-                                           virDomainEventTimer,
+                                           virObjectEventTimer,
                                            state,
                                            NULL)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
