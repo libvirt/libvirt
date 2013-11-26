@@ -4136,7 +4136,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
      * Even if the server has completed, the client must *always* do at least one step
      * in this loop to verify the server isn't lying about something. Mutual auth */
     for (;;) {
-    restep:
         if ((err = virNetSASLSessionClientStep(sasl,
                                                serverin,
                                                serverinlen,
@@ -4151,7 +4150,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                 VIR_FREE(iret.mechlist);
                 goto cleanup;
             }
-            goto restep;
+            continue;
         }
 
         VIR_FREE(serverin);
