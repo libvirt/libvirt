@@ -11478,7 +11478,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if ((tmp = virXPathString("string(./@state)", ctxt))) {
                 if ((def->features[val] = virDomainFeatureStateTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown state atribute '%s' of feature '%s'"),
+                                   _("unknown state attribute '%s' of feature '%s'"),
                                    tmp, virDomainFeatureTypeToString(val));
                     goto error;
                 }

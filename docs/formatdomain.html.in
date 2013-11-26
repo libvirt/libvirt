@@ -2777,7 +2777,7 @@
         (for the legacy device assignment handled directly by the KVM
         kernel module)<span class="since">Since 1.0.5 (QEMU and KVM
         only, requires kernel 3.6 or newer)</span>. The default, when
-        the driver name is not explicitly specified, is to check wether
+        the driver name is not explicitly specified, is to check whether
         VFIO is available and use it if it's the case. If VFIO is not
         available, the legacy "kvm" assignment is attempted.
       </dd>
