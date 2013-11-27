@@ -1385,24 +1385,22 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
 
 #if WITH_SELINUX
     /* XXX: make this a security driver call */
-    if (fd >= 0 && fgetfilecon_raw(fd, &filecon) == -1) {
-        if (errno != ENODATA && errno != ENOTSUP) {
-            virReportSystemError(errno,
-                                 _("cannot get file context of '%s'"),
-                                 target->path);
-            return -1;
+    if (fd >= 0) {
+        if (fgetfilecon_raw(fd, &filecon) == -1) {
+            if (errno != ENODATA && errno != ENOTSUP) {
+                virReportSystemError(errno,
+                                     _("cannot get file context of '%s'"),
+                                     target->path);
+                return -1;
+            }
         } else {
-            target->perms.label = NULL;
-        }
-    } else {
-        if (VIR_STRDUP(target->perms.label, filecon) < 0) {
+            if (VIR_STRDUP(target->perms.label, filecon) < 0) {
+                freecon(filecon);
+                return -1;
+            }
             freecon(filecon);
-            return -1;
         }
-        freecon(filecon);
     }
-#else
-    target->perms.label = NULL;
 #endif
 
     return 0;
