@@ -1591,6 +1591,118 @@ int virFileIsMountPoint(const char *file)
     return ret;
 }
 
+
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+static int
+virFileGetMountSubtreeImpl(const char *mtabpath,
+                           const char *prefix,
+                           char ***mountsret,
+                           size_t *nmountsret,
+                           bool reverse)
+{
+    FILE *procmnt;
+    struct mntent mntent;
+    char mntbuf[1024];
+    int ret = -1;
+    char **mounts = NULL;
+    size_t nmounts = 0;
+
+    VIR_DEBUG("prefix=%s", prefix);
+
+    *mountsret = NULL;
+    *nmountsret = 0;
+
+    if (!(procmnt = setmntent(mtabpath, "r"))) {
+        virReportSystemError(errno,
+                             _("Failed to read %s"), mtabpath);
+        return -1;
+    }
+
+    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        if (!STRPREFIX(mntent.mnt_dir, prefix))
+            continue;
+
+        if (VIR_EXPAND_N(mounts, nmounts, nmounts ? 1 : 2) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(mounts[nmounts - 2], mntent.mnt_dir) < 0)
+            goto cleanup;
+    }
+
+    if (mounts)
+        qsort(mounts, nmounts - 1, sizeof(mounts[0]),
+              reverse ? virStringSortRevCompare : virStringSortCompare);
+
+    *mountsret = mounts;
+    *nmountsret = nmounts ? nmounts - 1 : 0;
+    ret = 0;
+
+cleanup:
+    if (ret < 0)
+        virStringFreeList(mounts);
+    endmntent(procmnt);
+    return ret;
+}
+#else /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+static int
+virFileGetMountSubtreeImpl(const char *mtabpath ATTRIBUTE_UNUSED,
+                           const char *prefix ATTRIBUTE_UNUSED,
+                           char ***mountsret ATTRIBUTE_UNUSED,
+                           size_t *nmountsret ATTRIBUTE_UNUSED,
+                           bool reverse ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to determine mount table on this platform"));
+    return -1;
+}
+#endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+
+/**
+ * virFileGetMountSubtree:
+ * @mtabpath: mount file to parser (eg /proc/mounts)
+ * @prefix: mount path prefix to match
+ * @mountsret: allocated and filled with matching mounts
+ * @nmountsret: filled with number of matching mounts, not counting NULL terminator
+ *
+ * Return the list of mounts from @mtabpath which contain
+ * the path @prefix, sorted from shortest to longest path.
+ *
+ * The @mountsret array will be NULL terminated and should
+ * be freed with virStringFreeList
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virFileGetMountSubtree(const char *mtabpath,
+                           const char *prefix,
+                           char ***mountsret,
+                           size_t *nmountsret)
+{
+    return virFileGetMountSubtreeImpl(mtabpath, prefix, mountsret, nmountsret, false);
+}
+
+/**
+ * virFileGetMountReverseSubtree:
+ * @mtabpath: mount file to parser (eg /proc/mounts)
+ * @prefix: mount path prefix to match
+ * @mountsret: allocated and filled with matching mounts
+ * @nmountsret: filled with number of matching mounts, not counting NULL terminator
+ *
+ * Return the list of mounts from @mtabpath which contain
+ * the path @prefix, sorted from longest to shortest path.
+ * ie opposite order to which they appear in @mtabpath
+ *
+ * The @mountsret array will be NULL terminated and should
+ * be freed with virStringFreeList
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virFileGetMountReverseSubtree(const char *mtabpath,
+                                  const char *prefix,
+                                  char ***mountsret,
+                                  size_t *nmountsret)
+{
+    return virFileGetMountSubtreeImpl(mtabpath, prefix, mountsret, nmountsret, true);
+}
+
 #ifndef WIN32
 /* Check that a file is accessible under certain
  * user & gid.

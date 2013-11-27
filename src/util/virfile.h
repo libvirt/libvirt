@@ -161,6 +161,15 @@ bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 
 int virFileIsMountPoint(const char *file) ATTRIBUTE_NONNULL(1);
 
+int virFileGetMountSubtree(const char *mtabpath,
+                           const char *prefix,
+                           char ***mountsret,
+                           size_t *nmountsret) ATTRIBUTE_RETURN_CHECK;
+int virFileGetMountReverseSubtree(const char *mtabpath,
+                                  const char *prefix,
+                                  char ***mountsret,
+                                  size_t *nmountsret) ATTRIBUTE_RETURN_CHECK;
+
 char *virFileSanitizePath(const char *path);
 
 enum {

@@ -502,50 +502,6 @@ extern int pivot_root(const char * new_root, const char * put_old);
 # define MS_SLAVE                (1<<19)
 #endif
 
-static int lxcContainerGetSubtree(const char *prefix,
-                                  char ***mountsret,
-                                  size_t *nmountsret)
-{
-    FILE *procmnt;
-    struct mntent mntent;
-    char mntbuf[1024];
-    int ret = -1;
-    char **mounts = NULL;
-    size_t nmounts = 0;
-
-    VIR_DEBUG("prefix=%s", prefix);
-
-    *mountsret = NULL;
-    *nmountsret = 0;
-
-    if (!(procmnt = setmntent("/proc/mounts", "r"))) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to read /proc/mounts"));
-        return -1;
-    }
-
-    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
-        if (!STRPREFIX(mntent.mnt_dir, prefix))
-            continue;
-
-        if (VIR_REALLOC_N(mounts, nmounts+1) < 0)
-            goto cleanup;
-        if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
-            goto cleanup;
-        nmounts++;
-    }
-
-    if (mounts)
-        qsort(mounts, nmounts, sizeof(mounts[0]),
-              virStringSortRevCompare);
-
-    ret = 0;
-cleanup:
-    *mountsret = mounts;
-    *nmountsret = nmounts;
-    endmntent(procmnt);
-    return ret;
-}
 
 static int lxcContainerUnmountSubtree(const char *prefix,
                                       bool isOldRootFS)
@@ -559,7 +515,8 @@ static int lxcContainerUnmountSubtree(const char *prefix,
 
     VIR_DEBUG("Unmount subtreee from %s", prefix);
 
-    if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
+    if (virFileGetMountReverseSubtree("/proc/mounts", prefix,
+                                      &mounts, &nmounts) < 0)
         goto cleanup;
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
@@ -595,9 +552,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     ret = 0;
 
 cleanup:
-    for (i = 0; i < nmounts; i++)
-        VIR_FREE(mounts[i]);
-    VIR_FREE(mounts);
+    virStringFreeList(mounts);
 
     return ret;
 }

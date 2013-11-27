@@ -109,6 +109,7 @@ EXTRA_DIST =		\
 	sysinfodata \
 	test-lib.sh	\
 	virsh-uriprecedence \
+	virfiledata \
 	virpcitestdata \
 	vmx2xmldata \
 	xencapsdata \
@@ -131,6 +132,7 @@ test_programs = virshtest sockettest \
 	vircgrouptest \
 	virpcitest \
 	virendiantest \
+	virfiletest \
 	viridentitytest \
 	virkeycodetest \
 	virlockspacetest \
@@ -850,6 +852,10 @@ virbitmaptest_LDADD = $(LDADDS)
 virendiantest_SOURCES = \
 	virendiantest.c testutils.h testutils.c
 virendiantest_LDADD = $(LDADDS)
+
+virfiletest_SOURCES = \
+	virfiletest.c testutils.h testutils.c
+virfiletest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

@@ -1193,6 +1193,8 @@ virFileExists;
 virFileFclose;
 virFileFdopen;
 virFileFindMountPoint;
+virFileGetMountReverseSubtree;
+virFileGetMountSubtree;
 virFileHasSuffix;
 virFileIsAbsPath;
 virFileIsDir;

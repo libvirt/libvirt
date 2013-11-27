@@ -195,6 +195,7 @@
 /tests/virdbustest
 /tests/virdrivermoduletest
 /tests/virendiantest
+/tests/virfiletest
 /tests/virhashtest
 /tests/viridentitytest
 /tests/virkeycodetest
