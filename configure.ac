@@ -1454,7 +1454,7 @@ AC_ARG_WITH([numad],
 if test "$with_numad" != "no" ; then
   fail=0
 
-  AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin])
+  AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin:/usr/sbin])
 
   if test "$with_numad" = "check"; then
     test "$with_numactl" = "yes" || fail=1
