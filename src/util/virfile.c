@@ -1619,7 +1619,9 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
     }
 
     while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
-        if (!STRPREFIX(mntent.mnt_dir, prefix))
+        if (!(STREQ(mntent.mnt_dir, prefix) ||
+              (STRPREFIX(mntent.mnt_dir, prefix) &&
+               mntent.mnt_dir[strlen(prefix)] == '/')))
             continue;
 
         if (VIR_EXPAND_N(mounts, nmounts, nmounts ? 1 : 2) < 0)

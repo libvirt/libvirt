@@ -104,6 +104,12 @@ mymain(void)
     static const char *wantmounts1rev[] = {
         "/proc/sys/fs/binfmt_misc", "/proc/sys/fs/binfmt_misc", "/proc"
     };
+    static const char *wantmounts2a[] = {
+        "/etc/aliases"
+    };
+    static const char *wantmounts2b[] = {
+        "/etc/aliases.db"
+    };
 
 # define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev)    \
     do {                                                           \
@@ -116,6 +122,8 @@ mymain(void)
 
     DO_TEST_MOUNT_SUBTREE("/proc normal", MTAB_PATH1, "/proc", wantmounts1, false);
     DO_TEST_MOUNT_SUBTREE("/proc reverse", MTAB_PATH1, "/proc", wantmounts1rev, true);
+    DO_TEST_MOUNT_SUBTREE("/etc/aliases", MTAB_PATH2, "/etc/aliases", wantmounts2a, false);
+    DO_TEST_MOUNT_SUBTREE("/etc/aliases.db", MTAB_PATH2, "/etc/aliases.db", wantmounts2b, false);
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
