@@ -2642,6 +2642,7 @@ networkUpdate(virNetworkPtr net,
     size_t i;
     virNetworkIpDefPtr ipdef;
     bool oldDhcpActive = false;
+    bool needFirewallRefresh = false;
 
 
     virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
@@ -2683,8 +2684,40 @@ networkUpdate(virNetworkPtr net,
             flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
     }
 
+    if (isActive && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE)) {
+        /* Take care of anything that must be done before updating the
+         * live NetworkDef.
+         */
+        if (network->def->forward.type == VIR_NETWORK_FORWARD_NONE ||
+            network->def->forward.type == VIR_NETWORK_FORWARD_NAT ||
+            network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+            switch (section) {
+            case VIR_NETWORK_SECTION_FORWARD:
+            case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
+            case VIR_NETWORK_SECTION_IP:
+            case VIR_NETWORK_SECTION_IP_DHCP_RANGE:
+            case VIR_NETWORK_SECTION_IP_DHCP_HOST:
+                /* these could affect the firewall rules, so remove the
+                 * old rules (and remember to load new ones after the
+                 * update).
+                 */
+                networkRemoveFirewallRules(network);
+                needFirewallRefresh = true;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
     /* update the network config in memory/on disk */
-    if (virNetworkObjUpdate(network, command, section, parentIndex, xml, flags) < 0)
+    if (virNetworkObjUpdate(network, command, section, parentIndex, xml, flags) < 0) {
+        if (needFirewallRefresh)
+            ignore_value(networkAddFirewallRules(network));
+        goto cleanup;
+    }
+
+    if (needFirewallRefresh && networkAddFirewallRules(network) < 0)
         goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
@@ -2752,19 +2785,6 @@ networkUpdate(virNetworkPtr net,
              */
             if (networkRefreshRadvd(driver, network) < 0)
                 goto cleanup;
-        }
-
-        if ((section == VIR_NETWORK_SECTION_IP ||
-             section == VIR_NETWORK_SECTION_FORWARD ||
-             section == VIR_NETWORK_SECTION_FORWARD_INTERFACE) &&
-           (network->def->forward.type == VIR_NETWORK_FORWARD_NONE ||
-            network->def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-            network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
-            /* these could affect the iptables rules */
-            networkRemoveFirewallRules(network);
-            if (networkAddFirewallRules(network) < 0)
-                goto cleanup;
-
         }
 
         /* save current network state to disk */
