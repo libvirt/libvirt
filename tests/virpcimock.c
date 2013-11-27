@@ -305,14 +305,10 @@ pci_device_new_from_stub(const struct pciDevice *data)
     char *configSrc, *configDst;
     char tmp[32];
     struct stat sb;
-    char *abs_srcdir;
-
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir)
-        abs_srcdir = getcwd(NULL, 0);
 
     if (VIR_ALLOC_QUIET(dev) < 0 ||
-        virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config", abs_srcdir, data->id) < 0 ||
+        virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config",
+                         abs_srcdir, data->id) < 0 ||
         virAsprintfQuiet(&devpath, "%s/devices/%s", fakesysfsdir, data->id) < 0)
         ABORT_OOM();
 
@@ -480,7 +476,7 @@ pci_driver_bind(struct pciDriver *driver,
     char *devpath = NULL, *driverpath = NULL;
 
     if (dev->driver) {
-        /* Device already binded */
+        /* Device already bound */
         errno = ENODEV;
         return ret;
     }
@@ -527,7 +523,7 @@ pci_driver_unbind(struct pciDriver *driver,
     char *devpath = NULL, *driverpath = NULL;
 
     if (dev->driver != driver) {
-        /* Device not binded to the @driver */
+        /* Device not bound to the @driver */
         errno = ENODEV;
         return ret;
     }

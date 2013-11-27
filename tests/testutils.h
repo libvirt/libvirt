@@ -38,7 +38,11 @@
 # endif
 
 extern char *progname;
-extern char *abs_srcdir;
+
+/* Makefile.am provides these two definitions */
+# if !defined(abs_srcdir) || !defined(abs_builddir)
+#  error Fix Makefile.am
+# endif
 
 void virtTestResult(const char *name, int ret, const char *msg, ...)
     ATTRIBUTE_FMT_PRINTF(3,4);

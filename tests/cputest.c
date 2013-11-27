@@ -503,7 +503,7 @@ mymain(void)
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
-        abs_top_srcdir = "..";
+        abs_top_srcdir = abs_srcdir "/..";
 
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {

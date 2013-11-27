@@ -29,6 +29,7 @@ INCLUDES = \
 
 AM_CFLAGS = \
 	-Dabs_builddir="\"`pwd`\"" \
+	-Dabs_srcdir="\"`cd '$(srcdir)'; pwd`\"" \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \

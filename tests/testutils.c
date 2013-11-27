@@ -69,7 +69,6 @@ static size_t testStart = 0;
 static size_t testEnd = 0;
 
 char *progname;
-char *abs_srcdir;
 
 void virtTestResult(const char *name, int ret, const char *msg, ...)
 {
@@ -535,15 +534,9 @@ int virtTestMain(int argc,
                  int (*func)(void))
 {
     int ret;
-    bool abs_srcdir_cleanup = false;
     char *testRange = NULL;
 
-    abs_srcdir = getenv("abs_srcdir");
-    if (!abs_srcdir) {
-        abs_srcdir = getcwd(NULL, 0);
-        abs_srcdir_cleanup = true;
-    }
-    if (!abs_srcdir)
+    if (!virFileExists(abs_srcdir))
         return EXIT_AM_HARDFAIL;
 
     progname = last_component(argv[0]);
@@ -599,8 +592,6 @@ int virtTestMain(int argc,
 
     ret = (func)();
 
-    if (abs_srcdir_cleanup)
-        VIR_FREE(abs_srcdir);
     virResetLastError();
     if (!virTestGetVerbose() && ret != EXIT_AM_SKIP) {
         if (testCounter == 0 || testCounter % 40)

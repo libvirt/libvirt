@@ -203,7 +203,7 @@ mymain(void)
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
-        abs_top_srcdir = "..";
+        abs_top_srcdir = abs_srcdir "/..";
 
     driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
