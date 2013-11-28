@@ -231,6 +231,49 @@ cleanup:
     return ret;
 }
 
+
+static int
+testStringSortCompare(const void *opaque ATTRIBUTE_UNUSED)
+{
+    const char *randlist[] = {
+        "tasty", "astro", "goat", "chicken", "turducken",
+    };
+    const char *randrlist[] = {
+        "tasty", "astro", "goat", "chicken", "turducken",
+    };
+    const char *sortlist[] = {
+        "astro", "chicken", "goat", "tasty", "turducken",
+    };
+    const char *sortrlist[] = {
+        "turducken", "tasty", "goat", "chicken", "astro",
+    };
+    int ret = -1;
+    size_t i;
+
+    qsort(randlist, ARRAY_CARDINALITY(randlist), sizeof(randlist[0]),
+          virStringSortCompare);
+    qsort(randrlist, ARRAY_CARDINALITY(randrlist), sizeof(randrlist[0]),
+          virStringSortRevCompare);
+
+    for (i = 0; i < ARRAY_CARDINALITY(randlist); i++) {
+        if (STRNEQ(randlist[i], sortlist[i])) {
+            fprintf(stderr, "sortlist[%zu] '%s' != randlist[%zu] '%s'\n",
+                    i, sortlist[i], i, randlist[i]);
+            goto cleanup;
+        }
+        if (STRNEQ(randrlist[i], sortrlist[i])) {
+            fprintf(stderr, "sortrlist[%zu] '%s' != randrlist[%zu] '%s'\n",
+                    i, sortrlist[i], i, randrlist[i]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -280,6 +323,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("strdup", testStrndupNegative, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -223,4 +223,7 @@ size_t virStringListLength(char **strings);
     virAsprintfInternal(false, 0, NULL, NULL, 0, \
                         strp, __VA_ARGS__)
 
+int virStringSortCompare(const void *a, const void *b);
+int virStringSortRevCompare(const void *a, const void *b);
+
 #endif /* __VIR_STRING_H__ */

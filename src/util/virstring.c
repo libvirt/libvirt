@@ -616,3 +616,32 @@ size_t virStringListLength(char **strings)
 
     return i;
 }
+
+
+/**
+ * virStringSortCompare:
+ *
+ * A comparator function for sorting strings in
+ * normal order with qsort().
+ */
+int virStringSortCompare(const void *a, const void *b)
+{
+    const char **sa = (const char**)a;
+    const char **sb = (const char**)b;
+
+    return strcmp(*sa, *sb);
+}
+
+/**
+ * virStringSortRevCompare:
+ *
+ * A comparator function for sorting strings in
+ * reverse order with qsort().
+ */
+int virStringSortRevCompare(const void *a, const void *b)
+{
+    const char **sa = (const char**)a;
+    const char **sb = (const char**)b;
+
+    return strcmp(*sb, *sa);
+}

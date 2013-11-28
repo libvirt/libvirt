@@ -486,16 +486,6 @@ error_out:
 /*_syscall2(int, pivot_root, char *, newroot, const char *, oldroot)*/
 extern int pivot_root(const char * new_root, const char * put_old);
 
-static int lxcContainerChildMountSort(const void *a, const void *b)
-{
-  const char **sa = (const char**)a;
-  const char **sb = (const char**)b;
-
-  /* Deliberately reversed args - we need to unmount deepest
-     children first */
-  return strcmp(*sb, *sa);
-}
-
 #ifndef MS_REC
 # define MS_REC          16384
 #endif
@@ -547,7 +537,7 @@ static int lxcContainerGetSubtree(const char *prefix,
 
     if (mounts)
         qsort(mounts, nmounts, sizeof(mounts[0]),
-              lxcContainerChildMountSort);
+              virStringSortRevCompare);
 
     ret = 0;
 cleanup:
@@ -816,7 +806,7 @@ static int lxcContainerSetReadOnly(void)
 
     if (mounts)
         qsort(mounts, nmounts, sizeof(mounts[0]),
-              lxcContainerChildMountSort);
+              virStringSortRevCompare);
 
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Bind readonly %s", mounts[i]);
