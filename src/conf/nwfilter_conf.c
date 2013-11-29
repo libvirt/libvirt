@@ -2576,21 +2576,25 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
                 goto cleanup;
 
             if (xmlStrEqual(curr->name, BAD_CAST "rule")) {
-                if (!(entry->rule = virNWFilterRuleParse(curr)))
+                if (!(entry->rule = virNWFilterRuleParse(curr))) {
+                    virNWFilterEntryFree(entry);
                     goto cleanup;
+                }
             } else if (xmlStrEqual(curr->name, BAD_CAST "filterref")) {
-                if (!(entry->include = virNWFilterIncludeParse(curr)))
+                if (!(entry->include = virNWFilterIncludeParse(curr))) {
+                    virNWFilterEntryFree(entry);
                     goto cleanup;
+                }
             }
 
             if (entry->rule || entry->include) {
                 if (VIR_REALLOC_N(ret->filterEntries, ret->nentries+1) < 0) {
-                    VIR_FREE(entry);
+                    virNWFilterEntryFree(entry);
                     goto cleanup;
                 }
                 ret->filterEntries[ret->nentries++] = entry;
             } else
-                VIR_FREE(entry);
+                virNWFilterEntryFree(entry);
         }
         curr = curr->next;
     }
