@@ -111,7 +111,8 @@ struct __lxc_child_argv {
 };
 
 static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
-                                    const char *srcprefix);
+                                    const char *srcprefix,
+                                    const char *sec_mount_options);
 
 
 /*
@@ -559,7 +560,8 @@ cleanup:
 
 
 static int lxcContainerPrepareRoot(virDomainDefPtr def,
-                                   virDomainFSDefPtr root)
+                                   virDomainFSDefPtr root,
+                                   const char *sec_mount_options)
 {
     char *dst;
     char *tmp;
@@ -589,7 +591,7 @@ static int lxcContainerPrepareRoot(virDomainDefPtr def,
     tmp = root->dst;
     root->dst = dst;
 
-    if (lxcContainerMountFSBlock(root, "") < 0) {
+    if (lxcContainerMountFSBlock(root, "", sec_mount_options) < 0) {
         root->dst = tmp;
         VIR_FREE(dst);
         return -1;
@@ -1201,7 +1203,8 @@ lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
 static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
                                         int fsflags,
                                         const char *src,
-                                        const char *srcprefix)
+                                        const char *srcprefix,
+                                        const char *sec_mount_options)
 {
     FILE *fp = NULL;
     int ret = -1;
@@ -1276,8 +1279,9 @@ retry:
             STREQ(type, "*"))
             gotStar = true;
 
-        VIR_DEBUG("Trying mount %s with %s", src, type);
-        if (mount(src, fs->dst, type, fsflags, NULL) < 0) {
+        VIR_DEBUG("Trying mount '%s' on '%s' with '%s' opts '%s'",
+                  src, fs->dst, type, sec_mount_options);
+        if (mount(src, fs->dst, type, fsflags, sec_mount_options) < 0) {
             /* These errnos indicate a bogus filesystem type for
              * the image we have, so skip to the next type
              */
@@ -1328,7 +1332,8 @@ cleanup:
  */
 static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
                                           const char *src,
-                                          const char *srcprefix)
+                                          const char *srcprefix,
+                                          const char *sec_mount_options)
 {
     int fsflags = 0;
     int ret = -1;
@@ -1348,9 +1353,9 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         goto cleanup;
 
     if (format) {
-        VIR_DEBUG("Mount '%s' on '%s' with detected format '%s'",
-                  src, fs->dst, format);
-        if (mount(src, fs->dst, format, fsflags, NULL) < 0) {
+        VIR_DEBUG("Mount '%s' on '%s' with detected format '%s' opts '%s'",
+                  src, fs->dst, format, sec_mount_options);
+        if (mount(src, fs->dst, format, fsflags, sec_mount_options) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount device %s to %s as %s"),
                                  src, fs->dst, format);
@@ -1358,7 +1363,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         }
         ret = 0;
     } else {
-        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix);
+        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix, sec_mount_options);
     }
 
 cleanup:
@@ -1368,7 +1373,8 @@ cleanup:
 
 
 static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
-                                    const char *srcprefix)
+                                    const char *srcprefix,
+                                    const char *sec_mount_options)
 {
     char *src = NULL;
     int ret = -1;
@@ -1378,7 +1384,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
     if (virAsprintf(&src, "%s%s", srcprefix, fs->src) < 0)
         goto cleanup;
 
-    ret = lxcContainerMountFSBlockHelper(fs, src, srcprefix);
+    ret = lxcContainerMountFSBlockHelper(fs, src, srcprefix, sec_mount_options);
 
     VIR_DEBUG("Done mounting filesystem ret=%d", ret);
 
@@ -1441,7 +1447,7 @@ static int lxcContainerMountFS(virDomainFSDefPtr fs,
             return -1;
         break;
     case VIR_DOMAIN_FS_TYPE_BLOCK:
-        if (lxcContainerMountFSBlock(fs, "/.oldroot") < 0)
+        if (lxcContainerMountFSBlock(fs, "/.oldroot", sec_mount_options) < 0)
             return -1;
         break;
     case VIR_DOMAIN_FS_TYPE_RAM:
@@ -1603,7 +1609,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Ensure the root filesystem is mounted */
-    if (lxcContainerPrepareRoot(vmDef, root) < 0)
+    if (lxcContainerPrepareRoot(vmDef, root, sec_mount_options) < 0)
         goto cleanup;
 
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
