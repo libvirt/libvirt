@@ -277,19 +277,24 @@
         host, and there is a subproject to allow merging changes into the
         Windows Registry in Windows guests.
       </dd>
+
+      <dt><a href="http://sandbox.libvirt.org">libvirt-sandbox</a></dt>
+      <dd>
+        A library and command line tools for simplifying the creation of
+        application sandboxes using virtualization technology. It currently
+        supports either KVM, QEMU or LXC as backends. Integration with
+        systemd facilitates sandboxing of system services like apache.
+      </dd>
+      <dt><a href="https://github.com/ohadlevy/virt#readme">Ruby
+          Libvirt Object bindings</a></dt>
+      <dd>
+        Allows using simple ruby objects to manipulate
+        hypervisors, guests, storage, network etc.  It is
+        based on top of
+        the <a href="http://libvirt.org/ruby">native ruby bindings</a>.
+      </dd>
     </dl>
 
-        <dl>
-            <dt><a href="https://github.com/ohadlevy/virt#readme">Ruby
-            Libvirt Object bindings</a></dt>
-            <dd>
-                Allows using simple ruby objects to manipulate
-                hypervisors, guests, storage, network etc.  It is
-                based on top of
-                the <a href="http://libvirt.org/ruby">native ruby
-                bindings</a>.
-            </dd>
-        </dl>
     <h2><a name="livecd">LiveCD / Appliances</a></h2>
 
     <dl>
