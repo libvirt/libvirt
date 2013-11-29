@@ -10737,11 +10737,24 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!pci)
         goto cleanup;
 
-    if (!driverName || STREQ(driverName, "kvm")) {
-        if (virPCIDeviceSetStubDriver(pci, "pci-stub") < 0)
-            goto cleanup;
+    if (!driverName) {
+        /* prefer vfio */
+        if (qemuHostdevHostSupportsPassthroughVFIO())
+            driverName = "vfio";
+        else if (qemuHostdevHostSupportsPassthroughLegacy())
+            driverName = "kvm";
+    }
+
+    if (!driverName) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("neither VFIO nor kvm device assignment is "
+                         "currently supported on this system"));
+        goto cleanup;
     } else if (STREQ(driverName, "vfio")) {
         if (virPCIDeviceSetStubDriver(pci, "vfio-pci") < 0)
+            goto cleanup;
+    } else if (STREQ(driverName, "kvm")) {
+        if (virPCIDeviceSetStubDriver(pci, "pci-stub") < 0)
             goto cleanup;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,

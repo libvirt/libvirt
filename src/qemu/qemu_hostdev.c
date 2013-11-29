@@ -501,7 +501,7 @@ qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
 }
 
 
-static bool
+bool
 qemuHostdevHostSupportsPassthroughVFIO(void)
 {
     DIR *iommuDir = NULL;
@@ -541,7 +541,7 @@ cleanup:
 
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
-static bool
+bool
 qemuHostdevHostSupportsPassthroughLegacy(void)
 {
     int kvmfd = -1;
@@ -563,7 +563,7 @@ cleanup:
     return ret;
 }
 #else
-static bool
+bool
 qemuHostdevHostSupportsPassthroughLegacy(void)
 {
     return false;

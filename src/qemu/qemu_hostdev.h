@@ -1,7 +1,7 @@
 /*
  * qemu_hostdev.h: QEMU hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,8 @@ int qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
 int qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
                                  virDomainDefPtr def);
+bool qemuHostdevHostSupportsPassthroughLegacy(void);
+bool qemuHostdevHostSupportsPassthroughVFIO(void);
 int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  const unsigned char *uuid,
