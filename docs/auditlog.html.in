@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Audit log</h1>
+
+    <ul id="toc"></ul>
+
+    <h2><a name="intro">Introduction</a></h2>
+
+    <p>
+      A number of the libvirt virtualization drivers (QEMU/KVM and LXC) include
+      support for logging details of important operations to the host's audit
+      subsystem. This provides administrators / auditors with a canonical historical
+      record of changes to virtual machines' / containers' lifecycle states and
+      their configuration. On hosts which are running the Linux audit daemon,
+      the logs will usually end up in <code>/var/log/audit/audit.log</code>
+    </p>
+
+    <h2><a name="config">Configuration</a></h2>
+
+    <p>
+      The libvirt audit integration is enabled by default on any host which has
+      the Linux audit subsystem active, and disabled otherwise. It is possible
+      to alter this behaviour in the <code>/etc/libvirt/libvirtd.conf</code>
+      configuration file, via the <code>audit_level</code> parameter
+    </p>
+
+    <ul>
+      <li><code>audit_level=0</code> - libvirt auditing is disabled regardless
+        of host audit subsystem enablement.</li>
+      <li><code>audit_level=1</code> - libvirt auditing is enabled if the host
+        audit subsystem is enabled, otherwise it is disabled. This is the
+        default behaviour.</li>
+      <li><code>audit_level=2</code> - libvirt auditing is enabled regardless
+        of host audit subsystem enablement. If the host audit subsystem is
+        disabled, then libvirtd will refuse to complete startup and exit with
+        an error.</li>
+    </ul>
+
+    <p>
+      In addition to have formal messages sent to the audit subsystem it is
+      possible to tell libvirt to inject messages into its own logging
+      layer. This will result in messages ending up in the systemd journal
+      or <code>/var/log/libvirt/libivrtd.log</code> on non-systemd hosts.
+      This is disabled by default, but can be requested by setting the
+      <code>audit_logging=1</code> configuration parameter in the same file
+      mentioned above.
+    </p>
+
+    <h2><a name="types">Message types</a></h2>
+
+    <p>
+      Libvirt defines three core audit message types each of which will
+      be described below. There are a number of common fields that will
+      be reported for all message types.
+    </p>
+
+    <dl>
+      <dt>pid</dt>
+      <dd>Process ID of the libvirtd daemon generating the audit record.</dd>
+      <dt>uid</dt>
+      <dd>User ID of the libvirtd daemon process generating the audit record.</dd>
+      <dt>subj</dt>
+      <dd>Security context of the libvirtd daemon process generating the audit record.</dd>
+      <dt>msg</dt>
+      <dd>String containing a list of key=value pairs specific to the type of audit record being reported.</dd>
+    </dl>
+
+    <p>
+      Some fields in the <code>msg</code> string are common to audit records
+    </p>
+
+    <dl>
+      <dt>virt</dt>
+      <dd>Type of virtualization driver used. One of <code>qemu</code> or <code>lxc</code></dd>
+      <dt>vm</dt>
+      <dd>Host driver unique name of the guest</dd>
+      <dt>uuid</dt>
+      <dd>Globally unique identifier for the guest</dd>
+      <dt>exe</dt>
+      <dd>Path of the libvirtd daemon</dd>
+      <dt>hostname</dt>
+      <dd>Currently unused</dd>
+      <dt>addr</dt>
+      <dd>Currently unused</dd>
+      <dt>terminal</dt>
+      <dd>Currently unused</dd>
+      <dt>res</dt>
+      <dd>Result of the action, either <code>success</code> or <code>failed</code></dd>
+    </dl>
+
+    <h3><a name="typecontrol">VIRT_CONTROL</a></h3>
+
+    <p>
+      Reports change in the lifecycle state of a virtual machine. The <code>msg</code>
+      field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>op</dt>
+      <dd>Type of operation performed. One of <code>start</code>, <code>stop</code> or <code>init</code></dd>
+      <dt>reason</dt>
+      <dd>The reason which caused the operation to happen</dd>
+      <dt>vm-pid</dt>
+      <dd>ID of the primary/leading process associated with the guest</dd>
+      <dt>init-pid</dt>
+      <dd>ID of the <code>init</code> process in a container. Only if <code>op=init</code> and <code>virt=lxc</code></dd>
+      <dt>pid-ns</dt>
+      <dd>Namespace ID of the <code>init</code> process in a container. Only if <code>op=init</code> and <code>virt=lxc</code></dd>
+    </dl>
+
+    <h3><a name="typemachine">VIRT_MACHINE_ID</a></h3>
+
+    <p>
+      Reports the association of a security context with a guest. The <code>msg</code>
+      field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>model</dt>
+      <dd>The security driver type. One of <code>selinux</code> or <code>apparmor</code></dd>
+      <dt>vm-ctx</dt>
+      <dd>Security context for the guest process</dd>
+      <dt>img-ctx</dt>
+      <dd>Security context for the guest disk images and other assigned host resources</dd>
+    </dl>
+
+    <h3><a name="typeresource">VIRT_RESOURCE</a></h3>
+
+    <p>
+      Reports the usage of a host resource by a guest. The fields include will
+      vary according to the type of device being reported. When the guest is
+      initially booted records will be generated for all assigned resources.
+      If any changes are made to the running guest configuration, for example
+      hotplug devices, or adjust resources allocation, further records will
+      be generated.
+    </p>
+
+    <h4><a name="typeresourcevcpu">Virtual CPU</a></h4>
+
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>vcpu</code></dd>
+      <dt>old-vcpu</dt>
+      <dd>Original vCPU count, or 0</dd>
+      <dt>new-vcpu</dt>
+      <dd>Updated vCPU count</dd>
+    </dl>
+
+
+    <h4><a name="typeresourcemem">Memory</a></h4>
+
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>mem</code></dd>
+      <dt>old-mem</dt>
+      <dd>Original memory size in bytes, or 0</dd>
+      <dt>new-mem</dt>
+      <dd>Updated memory size in bytes</dd>
+    </dl>
+
+    <h4><a name="typeresourcedisk">Disk</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>disk</code></dd>
+      <dt>old-disk</dt>
+      <dd>Original host file or device path acting as the disk backing file</dd>
+      <dt>new-disk</dt>
+      <dd>Updated host file or device path acting as the disk backing file</dd>
+    </dl>
+
+    <h4><a name="typeresourcenic">Network interface</a></h4>
+
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>net</code></dd>
+      <dt>old-net</dt>
+      <dd>Original MAC address of the guest network interface</dd>
+      <dt>new-net</dt>
+      <dd>Updated MAC address of the guest network interface</dd>
+    </dl>
+
+    <p>
+      If there is a host network interace associated with the guest NIC then
+      further records may be generated
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>net</code></dd>
+      <dt>net</dt>
+      <dd>MAC address of the host network interface</dd>
+      <dt>rdev</dt>
+      <dd>Name of the host network interface</dd>
+    </dl>
+
+    <h4><a name="typeresourcefs">Filesystem</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>fs</code></dd>
+      <dt>old-fs</dt>
+      <dd>Original host directory, file or device path backing the filesystem </dd>
+      <dt>new-fs</dt>
+      <dd>Updated host directory, file or device path backing the filesystem</dd>
+    </dl>
+
+    <h4><a name="typeresourcehost">Host device</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>hostdev</code> or <code>dev</code></dd>
+      <dt>dev</dt>
+      <dd>The unique bus identifier of the USB, PCI or SCSI device, if <code>resrc=dev</code></dd>
+      <dt>disk</dt>
+      <dd>The path of the block device assigned to the guest, if <code>resrc=hostdev</code></dd>
+      <dt>chardev</dt>
+      <dd>The path of the charecter device assigned to the guest, if <code>resrc=hostdev</code></dd>
+    </dl>
+
+    <h4><a name="typeresourcetpm">TPM</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>tpm</code></dd>
+      <dt>device</dt>
+      <dd>The path of the host TPM device assigned to the guest</dd>
+    </dl>
+
+    <h4><a name="typeresourcerng">RNG</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>rng</code></dd>
+      <dt>old-rng</dt>
+      <dd>Original path of the host entropy source for the RNG</dd>
+      <dt>new-rng</dt>
+      <dd>Updated path of the host entropy source for the RNG</dd>
+    </dl>
+
+
+    <h4><a name="typeresourceredir">Redirected device</a></h4>
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>redir</code></dd>
+      <dt>bus</dt>
+      <dd>The bus type, only <code>usb</code> allowed</dd>
+      <dt>device</dt>
+      <dd>The device type, only <code>USB redir</code> allowed</dd>
+    </dl>
+
+    <h4><a name="typeresourcecgroup">Control group</a></h4>
+
+    <p>
+      The <code>msg</code> field will include the following sub-fields
+    </p>
+
+    <dl>
+      <dt>reason</dt>
+      <dd>The reason which caused the resource to be assigned to happen</dd>
+      <dt>resrc</dt>
+      <dd>The type of resource assigned. Set to <code>cgroup</code></dd>
+      <dt>cgroup</dt>
+      <dd>The name of the cgroup controller</dd>
+    </dl>
+
+  </body>
+</html>
