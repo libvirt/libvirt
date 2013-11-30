@@ -560,7 +560,7 @@ exits.
 
 If I<--pass-fds> is specified, the argument is a comma separated list
 of open file descriptors which should be pass on into the guest. The
-file descriptors will be re-numered in the guest, starting from 3. This
+file descriptors will be re-numbered in the guest, starting from 3. This
 is only supported with container based virtualization.
 
 B<Example>
@@ -889,7 +889,7 @@ also B<domblklist> for listing these names).
 
 If I<--abort> is specified, the active job on the specified disk will
 be aborted.  If I<--async> is also specified, this command will return
-immediately, rather than waiting for the cancelation to complete.  If
+immediately, rather than waiting for the cancellation to complete.  If
 I<--pivot> is specified, this requests that an active copy job
 be pivoted over to the new copy.
 If I<--info> is specified, the active job information on the specified
@@ -1158,7 +1158,7 @@ hostname which will not resolve to match one of its public IP addresses, then
 libvirt will generate an incorrect URI.  In this case I<migrateuri> should be
 explicitly specified, using an IP address, or a correct hostname.
 
-=item * The host has multiple network interaces.  If a host has multiple network
+=item * The host has multiple network interfaces.  If a host has multiple network
 interfaces, it might be desirable for the migration data stream to be sent over
 a specific interface for either security or performance reasons.  In this case
 I<migrateuri> should be explicitly specified, using an IP address associated
@@ -1739,8 +1739,8 @@ hypervisor.
 
 Suspend a running domain into one of these states (possible I<target>
 values):
-    mem equivallent of S3 ACPI state
-    disk equivallent of S4 ACPI state
+    mem equivalent of S3 ACPI state
+    disk equivalent of S4 ACPI state
     hybrid RAM is saved to disk but not powered off
 
 The I<--duration> argument specifies number of seconds before the domain is
@@ -2740,7 +2740,7 @@ B<Supported algorithms>
                sanitizing removable and non-removable hard disks:
                random x2, 0x00, verify.
   dod        - 4-pass DoD 5220.22-M section 8-306 procedure for
-               sanitizing removeable and non-removeable rigid
+               sanitizing removable and non-removable rigid
                disks: random, 0x00, 0xff, verify.
   bsi        - 9-pass method recommended by the German Center of
                Security in Information Technologies
