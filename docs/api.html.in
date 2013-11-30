@@ -207,7 +207,7 @@
     virtualization <a href="#Functions">functions</a>. Depending upon the
     driver being used, calls will be routed through the remote driver to
     the libvirtd daemon. The daemon will reference the connection specific
-    driver in order to retreive the requested information and then pass
+    driver in order to retrieve the requested information and then pass
     back status and/or data through the connection back to the application.
     The application can then decide what to do with that data, such as
     display, write log data, etc. <a href="migration.html">Migration</a>

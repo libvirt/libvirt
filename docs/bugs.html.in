@@ -148,7 +148,7 @@
 ... note the process id from the output
 # gdb /usr/sbin/libvirtd
 .... some information about gdb and loading debug data
-(gdb) attach $the_damon_process_id
+(gdb) attach $the_daemon_process_id
 ....
 (gdb) thread apply all bt
 .... information to attach to the bug

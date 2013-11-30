@@ -376,7 +376,7 @@ Note that parameter values must be
         <td> libssh2 </td>
         <td>
   A comma separated list of authentication methods to use. Default (is
-  "agent,privkey,keyboard-interactive". The order of the methods is perserved.
+  "agent,privkey,keyboard-interactive". The order of the methods is preserved.
   Some methods may require additional parameters.
 </td>
       </tr>

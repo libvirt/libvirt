@@ -743,7 +743,7 @@
 
     <p>
       The main libvirt event loop thread is responsible for performing all
-      socket I/O. It will read incoming packets from clients and willl
+      socket I/O. It will read incoming packets from clients and will
       transmit outgoing packets to clients. It will handle the I/O to/from
       streams associated with client API calls. When doing client I/O it
       will also pass the data through any applicable encryption layer

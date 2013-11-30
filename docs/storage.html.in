@@ -581,7 +581,7 @@
          &lt;/target&gt;
        &lt;/volume&gt;</pre>
 
-    <h3>Example disk attachement</h3>
+    <h3>Example disk attachment</h3>
     <p>RBD images can be attached to Qemu guests when Qemu is built
     with RBD support. Information about attaching a RBD image to a
     guest can be found

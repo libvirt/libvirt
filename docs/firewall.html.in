@@ -142,7 +142,7 @@ MASQUERADE all  --  *      *       192.168.122.0/24    !192.168.122.0/24</pre>
     <p><a href="http://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf">http://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf</a></p>
     <p>The filters are managed in libvirt as a top level, standalone object.
        This allows the filters to then be referenced by any libvirt object
-       that requires their functionality, instead tieing them only to use
+       that requires their functionality, instead tying them only to use
        by guest NICs. In the current implementation, filters can be associated
        with individual guest NICs via the libvirt domain XML format. In the
        future we might allow filters to be associated with the virtual network
@@ -272,7 +272,7 @@ f5c78134-9da4-0c60-a9f0-fb37bc21ac1f  no-other-rarp-traffic
        to update them. This ensures the guests have their iptables/ebtables
        rules recreated.
     </p>
-    <p>To associate the clean-trafffic filter with a guest, edit the
+    <p>To associate the clean-traffic filter with a guest, edit the
        guest XML config and change the <code>&lt;interface&gt;</code> element
        to include a <code>&lt;filterref&gt;</code> and also specify the
        whitelisted <code>&lt;ip address/&gt;</code> the guest is allowed to
