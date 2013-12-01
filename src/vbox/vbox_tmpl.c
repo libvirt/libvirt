@@ -2269,7 +2269,7 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
     if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) < 0)
         goto release_filters;
 
-    for (i = 0; (USBFilterCount < def->nhostdevs) || (i < deviceFilters.count); i++) {
+    for (i = 0; i < deviceFilters.count; i++) {
         PRBool active                  = PR_FALSE;
         IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
         PRUnichar *vendorIdUtf16       = NULL;
