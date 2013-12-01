@@ -2269,6 +2269,12 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
     if (VIR_ALLOC_N(def->hostdevs, def->nhostdevs) < 0)
         goto release_filters;
 
+    for (i = 0; i < def->nhostdevs; i++) {
+        def->hostdevs[i] = virDomainHostdevDefAlloc();
+        if (!def->hostdevs[i])
+            goto release_hostdevs;
+    }
+
     for (i = 0; i < deviceFilters.count; i++) {
         PRBool active                  = PR_FALSE;
         IUSBDeviceFilter *deviceFilter = deviceFilters.items[i];
@@ -2282,10 +2288,6 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
 
         deviceFilter->vtbl->GetActive(deviceFilter, &active);
         if (!active)
-            continue;
-
-        def->hostdevs[USBFilterCount] = virDomainHostdevDefAlloc();
-        if (!def->hostdevs[USBFilterCount])
             continue;
 
         def->hostdevs[USBFilterCount]->mode =
@@ -2322,6 +2324,15 @@ release_controller:
 #else
     VBOX_RELEASE(USBDeviceFilters);
 #endif
+
+    return;
+
+release_hostdevs:
+    for (i = 0; i < def->nhostdevs; i++)
+        virDomainHostdevDefFree(def->hostdevs[i]);
+    VIR_FREE(def->hostdevs);
+
+    goto release_filters;
 }
 
 static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
