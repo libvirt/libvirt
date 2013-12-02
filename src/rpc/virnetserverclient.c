@@ -743,7 +743,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
                            VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
                            processtime) < 0)
         goto error;
-#if HAVE_SASL
+#if WITH_SASL
     if (saslname &&
         virIdentitySetAttr(ret,
                            VIR_IDENTITY_ATTR_SASL_USER_NAME,
@@ -771,7 +771,7 @@ cleanup:
     VIR_FREE(processid);
     VIR_FREE(processtime);
     VIR_FREE(seccontext);
-#if HAVE_SASL
+#if WITH_SASL
     VIR_FREE(saslname);
 #endif
 #if WITH_GNUTLS
