@@ -2644,8 +2644,10 @@ static virStateDriver stateDriver = {
     .stateReload = storageStateReload,
 };
 
-int storageRegister(void) {
-    virRegisterStorageDriver(&storageDriver);
+int storageRegister(void)
+{
+    if (virRegisterStorageDriver(&storageDriver) < 0)
+        return -1;
     virRegisterStateDriver(&stateDriver);
     return 0;
 }
