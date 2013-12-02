@@ -9802,7 +9802,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     obj = xmlXPathEval(BAD_CAST buf, ctxt);
     if (obj == NULL || obj->type != XPATH_NODESET ||
         obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
-        vshError(ctl, _("No found interface whose type is %s"), type);
+        vshError(ctl, _("No interface found whose type is %s"), type);
         goto cleanup;
     }
 
@@ -9960,7 +9960,7 @@ vshFindDisk(const char *doc,
         }
     }
 
-    vshError(NULL, _("No found disk whose source path or target is %s"), path);
+    vshError(NULL, _("No disk found whose source path or target is %s"), path);
 
 cleanup:
     xmlXPathFreeObject(obj);
