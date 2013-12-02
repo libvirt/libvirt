@@ -227,17 +227,16 @@ fakeStoragePoolIsActive(virStoragePoolPtr pool)
 /* Test storage pool implementation
  *
  * These functions aid testing of storage pool related stuff when creating a
- * qemu command .
+ * qemu command line.
  *
  * There are a few "magic" values to pass to these functions:
  *
- * 1) "inactive" as
- * a pool name for pool lookup creates a inactive pool. All other names are
- * interpreted as file names for files of storagepooltest and are used as the
+ * 1) "inactive" as a pool name to create an inactive pool. All other names are
+ * interpreted as file names in storagepoolxml2xmlout/ and are used as the
  * definition for the pool. If the file doesn't exist the pool doesn't exist.
  *
  * 2) "nonexistent" returns an error while looking up a volume. Otherwise
- * pattern VOLUME_TYPE+VOLUME_PATH can be used to simulate a volume in an pool.
+ * pattern VOLUME_TYPE+VOLUME_PATH can be used to simulate a volume in a pool.
  * This creates a fake path for this volume. If the '+' sign is omitted, block
  * type is assumed.
  */
