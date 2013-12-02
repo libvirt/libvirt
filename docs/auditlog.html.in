@@ -206,7 +206,7 @@
     </dl>
 
     <p>
-      If there is a host network interace associated with the guest NIC then
+      If there is a host network interface associated with the guest NIC then
       further records may be generated
     </p>
 
@@ -252,7 +252,7 @@
       <dt>disk</dt>
       <dd>The path of the block device assigned to the guest, if <code>resrc=hostdev</code></dd>
       <dt>chardev</dt>
-      <dd>The path of the charecter device assigned to the guest, if <code>resrc=hostdev</code></dd>
+      <dd>The path of the character device assigned to the guest, if <code>resrc=hostdev</code></dd>
     </dl>
 
     <h4><a name="typeresourcetpm">TPM</a></h4>
