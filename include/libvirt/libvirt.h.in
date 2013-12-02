@@ -3587,7 +3587,7 @@ typedef enum {
 
 /**
  * virDomainEventCrashedDetailType:
-/*
+ *
  * Details on the cause of a 'crashed' lifecycle event
  */
 typedef enum {
