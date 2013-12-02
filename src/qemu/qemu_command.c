@@ -8229,6 +8229,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                               def->os.bios.rt_delay);
         }
 
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT)) {
+            if (boot_nparams++)
+                virBufferAddChar(&boot_buf, ',');
+            virBufferAddLit(&boot_buf, "strict=on");
+        }
+
         if (boot_nparams > 0) {
             virCommandAddArg(cmd, "-boot");
 

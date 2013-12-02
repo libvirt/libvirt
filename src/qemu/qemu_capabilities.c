@@ -243,6 +243,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-mmio",
               "ich9-intel-hda",
               "kvm-pit-lost-tick-policy",
+
+              "boot-strict", /* 160 */
     );
 
 struct _virQEMUCaps {
@@ -2279,6 +2281,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
+    { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
 };
 
 static int
