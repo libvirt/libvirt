@@ -9,6 +9,220 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.2.0: Dec 2 2013</h3>
+    <ul>
+      <li>Features:<br/>
+      Add support for gluster pool (Eric Blake),<br/>
+      Separation of python binding (Daniel P. Berrange),<br/>
+      vbox: add support for 4.3 APIs (Ryota Ozaki)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      fix typos in libvirt.h.in (Chen Hanxiao),<br/>
+      Link libvirt-sandbox from apps page (Daniel P. Berrange),<br/>
+      Add docs about audit subsystem logging (Daniel P. Berrange),<br/>
+      virsh: fix doc typos (Nehal J Wani),<br/>
+      Fix typos in various docs (Nehal J Wani),<br/>
+      LXC: add securetty related note in Device nodes (Gao feng),<br/>
+      Fix three minor typos (Yuri Chornoivan),<br/>
+      storage: fix typo in previous patch (Eric Blake),<br/>
+      storage: document gluster pool (Eric Blake),<br/>
+      virDomainReboot: Document that migration might be unsafe (Michal Privoznik),<br/>
+      delete extra character (Wangyufei (A)),<br/>
+      maint: fix comment typos. (Eric Blake),<br/>
+      improve job info details (Eric Blake),<br/>
+      fix a typo in formatnwfilter.html.in (Chen Hanxiao),<br/>
+      Improve cgroups docs to cover systemd integration (Daniel P. Berrange),<br/>
+      fix typos in libvirt.h.in (Chen Hanxiao),<br/>
+      fix virDomainRestoreFlags description bug (Wang Yufei),<br/>
+      grammar fixes (Eric Blake),<br/>
+      add SystemTap to apps using libvirt (Jonathan Lebon),<br/>
+      fix a typo in formatnwfilter (Chen Hanxiao),<br/>
+      caps: Fix function docs for virCapabilitiesAddHostNUMACell (Peter Krempa)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      tests: fix virpcitest with read-only srcdir (Eric Blake),<br/>
+      tests: guarantee abs_srcdir in all C tests (Eric Blake),<br/>
+      look for numad in /usr/sbin (Jim Fehlig),<br/>
+      build: Don't fail on '&amp;lt;' or '&amp;gt;' with old xmllint (Martin Kletzander),<br/>
+      spec: fix libvirt-docs subpackage on RHEL-6 (Michael Chapman),<br/>
+      Don't depend on syslog.service (Guido Günther),<br/>
+      qemuMonitorJSONGetCPUx86Data: Don't fail on ancient qemus (Michal Privoznik),<br/>
+      build: work around super-old readline.h (Ryota Ozaki),<br/>
+      Fix migration with QEMU 1.6 (Michael Avdienko),<br/>
+      nodeinfo: fix build on non-Linux (Eric Blake)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      vbox: handle errors of virDomainHostdevDefAlloc correctly (Ryota Ozaki),<br/>
+      vbox: fix incorrect loop condition in vboxHostDeviceGetXMLDesc (Ryota Ozaki),<br/>
+      Fix memory leak in virNWFilterDefParseXML() (Nehal J Wani),<br/>
+      Fix memory leak in virDomainDefParseXML() (Nehal J Wani),<br/>
+      LXC: Ensure security context is set when mounting images (Daniel P. Berrange),<br/>
+      network: properly update iptables rules during net-update (Laine Stump),<br/>
+      Fix bug in identifying sub-mounts (Daniel P. Berrange),<br/>
+      storage: skip selinux cleanup when fd not available (Eric Blake),<br/>
+      qemu: preserve netdev MAC address during 'domxml-to-native' (Bing Bu Cao),<br/>
+      storage: don't read storage volumes in nonblock mode (Eric Blake),<br/>
+      LXC: don't unmount mounts for shared root (Gao feng),<br/>
+      LXC: fix the problem that libvirt lxc fail to start on latest kernel (Gao feng),<br/>
+      sasl: Fix authentication when using PLAIN mechanism (Christophe Fergeau),<br/>
+      Fix invalid read in virNetSASLSessionClientStep debug log (Christophe Fergeau),<br/>
+      Tie SASL callbacks lifecycle to virNetSessionSASLContext (Christophe Fergeau),<br/>
+      remote: Don't leak priv-&gt;tls object on connection failure (Christophe Fergeau),<br/>
+      spec: Don't save/restore running VMs on libvirt-client update (Jiri Denemark),<br/>
+      virsh domxml-from-native to treat SCSI as the bus type for pseries by default (Shivaprasad G Bhat),<br/>
+      Don't start a nested job in qemuMigrationPrepareAny (Ján Tomko),<br/>
+      spec: Don't save/restore running VMs on libvirt-client update (Cole Robinson),<br/>
+      spec: Restrict virt-login-shell usage (Jiri Denemark),<br/>
+      storage: use valid XML for awkward volume names (Eric Blake),<br/>
+      storage: Returns earlier if source adapter of the scsi pool is a HBA (Osier Yang),<br/>
+      libvirt-guests: Run only after libvirtd (Cole Robinson),<br/>
+      Fix off-by-1 in default SELinux MCS range (Daniel P. Berrange),<br/>
+      vbox: fix segfault on virsh dumpxml with the existence of USB filters (Ryota Ozaki),<br/>
+      Add missing 'return 0;' in stub lxcStartFuse() method impl. (Daniel P. Berrange),<br/>
+      Avoid async signal safety problem in glibc's setxid (Daniel P. Berrange),<br/>
+      Don't release spice port twice when no TLS port is available (Ján Tomko),<br/>
+      Properly unref a connection with a close callback (Ján Tomko),<br/>
+      qemu: Call qemuSetupHostdevCGroup later during hotplug (Jiri Denemark),<br/>
+      qemuMonitorIO: Don't use @mon after it's unrefed (Michal Privoznik),<br/>
+      qemuProcessReconnectHelper: Don't create joinable thread (Michal Privoznik),<br/>
+      virDomainEventCallbackListFree: Don't leak @list-&gt;callbacks (Michal Privoznik),<br/>
+      networkBuildDhcpDaemonCommandLine: Don't leak @configstr and @configfile (Michal Privoznik),<br/>
+      Disable nwfilter driver when running unprivileged (Ján Tomko),<br/>
+      libxl: Fix Xen 4.4 libxlVmStart logic (Jason Andryuk),<br/>
+      qemu: Check for presence of device and properities when getting CPUID (Peter Krempa),<br/>
+      Fix busy wait loop in LXC container I/O handling (Daniel P. Berrange),<br/>
+      Don't expose 'none' machine type to capabilities (Daniel P. Berrange),<br/>
+      Fix mem leak in virQEMUCapsProbeQMPMachineTypes on OOM (Daniel P. Berrange),<br/>
+      virSecurityLabelDefParseXML: Don't parse label on model='none' (Michal Privoznik),<br/>
+      virsh-domain: Mark --live and --config mutually exclusive in vcpucount (Peter Krempa),<br/>
+      qemu: Fix SCSI hotplug on pseries guests (Vitor de Lima),<br/>
+      pci: properly handle out-of-order SRIOV virtual functions (Laine Stump),<br/>
+      util: use -w flag when calling iptables (Serge Hallyn),<br/>
+      storage: Fix a vol-clone bug on ppc64 (Li Zhang),<br/>
+      qemu: Don't access vm-&gt;priv on unlocked domain (Michal Privoznik),<br/>
+      qemu: Avoid double free of VM (Michal Privoznik),<br/>
+      Allow root directory in filesystem source dir schema (Ján Tomko),<br/>
+      qemuMigrationBeginPhase: Check for 'drive-mirror' for NBD (Michal Privoznik),<br/>
+      conf: fix incorrect error log in virCPUDefIsEqual (Chen Hanxiao),<br/>
+      qemuMonitorDispose: Reset lastError (Michal Privoznik),<br/>
+      qemu: clean up migration ports when migration cancelled (Zeng Junliang),<br/>
+      network: fix connections count in case of allocate failure (Laine Stump),<br/>
+      virpcitest: Fix variable arguments using in pci_driver_new (Michal Privoznik),<br/>
+      virpci: Don't error on unbinded devices (Michal Privoznik)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      Pull lxcContainerGetSubtree out into shared virfile module (Daniel P. Berrange),<br/>
+      Introduce standard methods for sorting strings with qsort (Daniel P. Berrange),<br/>
+      conf: Export virStorageVolType enum helper functions (Peter Krempa),<br/>
+      sasl: Replace 'restep' label with 'continue' (Christophe Fergeau),<br/>
+      storage: probe qcow2 volumes in gluster pool (Eric Blake),<br/>
+      storage: improve handling of symlinks in gluster (Eric Blake),<br/>
+      storage: improve allocation stats reported on gluster files (Eric Blake),<br/>
+      storage: improve directory support in gluster pool (Eric Blake),<br/>
+      storage: add network-dir as new storage volume type (Eric Blake),<br/>
+      storage: implement rudimentary glusterfs pool refresh (Eric Blake),<br/>
+      storage: initial support for linking with libgfapi (Eric Blake),<br/>
+      storage: expose volume meta-type in XML (Eric Blake),<br/>
+      storage: allow interleave in volume XML (Eric Blake),<br/>
+      maint: next release is 1.2.0 (Eric Blake),<br/>
+      vbox: import vbox_CAPI_v4_3.h from SDK (Ryota Ozaki),<br/>
+      vbox: pull vboxHostDeviceGetXMLDesc out from vboxDomainGetXMLDesc (Ryota Ozaki),<br/>
+      vbox: cleanup vboxAttachUSB (Ryota Ozaki),<br/>
+      lxc: don't do duplicate work when getting pagesize (Chen Hanxiao),<br/>
+      maint: update to latest gnulib (Eric Blake),<br/>
+      python: remove virConnectGetCPUModelNames from globals (Doug Goldstein),<br/>
+      python: remove virConnectGetCPUModelNames from globals (Doug Goldstein),<br/>
+      qemu: Auto-generate controller for hotplugged hostdev (Eric Farman),<br/>
+      qemu: Separate calls based on controller bus type (Eric Farman),<br/>
+      qemu: Rename controller hotplug functions to not be PCI-specific (Eric Farman),<br/>
+      qemu: Add support for virt machine type with virtio-mmio devices on armv7 (Clark Laughlin),<br/>
+      maint: enforce comma style usage (Eric Blake),<br/>
+      maint: fix comma style issues: remaining code (Eric Blake),<br/>
+      maint: fix comma style issues: remaining drivers (Eric Blake),<br/>
+      maint: fix comma style issues: vbox (Eric Blake),<br/>
+      maint: fix comma style issues: python (Eric Blake),<br/>
+      maint: fix comma style issues: util (Eric Blake),<br/>
+      maint: fix comma style issues: tests, tools (Eric Blake),<br/>
+      maint: fix comma style issues: qemu (Eric Blake),<br/>
+      maint: fix comma style issues: xen (Eric Blake),<br/>
+      maint: fix comma style issues: conf (Eric Blake),<br/>
+      maint: fix comma style issues: nwfilter (Eric Blake),<br/>
+      Error out on unterminated arrays and objects in JSON parser (Ján Tomko),<br/>
+      Test if JSON parser fails on invalid input (Ján Tomko),<br/>
+      maint: ship .pl scripts as executables (Eric Blake),<br/>
+      Fix virsh net-info output for consistency (Hao Liu),<br/>
+      Add missing break to switch-case block (Doug Goldstein),<br/>
+      qemumonitorjsontest: Introduce GetNonExistingCPUData test (Michal Privoznik),<br/>
+      Macro for testing the version you are compiling with (Doug Goldstein),<br/>
+      Return -1 in virPortAllocatorAcquire if all ports are used (Ján Tomko),<br/>
+      Add a name to virPortAllocator (Ján Tomko),<br/>
+      storage: fix RNG validation of gluster via netfs (Eric Blake),<br/>
+      virsh-secret: Unify list column alignment (Peter Krempa),<br/>
+      virsh-interface: Unify list column alignment (Peter Krempa),<br/>
+      virsh-nwfilter: Unify list command column alignment (Peter Krempa),<br/>
+      virsh-pool: Unify spacing of listing function (Peter Krempa),<br/>
+      qemu: Change return type of qemuMonitorGetGuestCPU() (Peter Krempa),<br/>
+      virsh-volume: Unify strigification of volume type (Peter Krempa),<br/>
+      virsh-volume: Unify alignment of vol-list output columns (Peter Krempa),<br/>
+      conf: Refactor virDomainDiskSourceDefParse (Peter Krempa),<br/>
+      conf: Rename virDomainDiskHostDefFree to virDomainDiskHostDefClear (Peter Krempa),<br/>
+      conf: Split out code to parse the source of a disk definition (Peter Krempa),<br/>
+      qemuDomainObjStart: Warn on corrupted image (Michal Privoznik),<br/>
+      util: use size_t instead of unsigned int for num_virtual_functions (Laine Stump),<br/>
+      qemu: assign PCI address to primary video card (Vitor de Lima),<br/>
+      qemu: process: Validate specific CPUID flags of a guest (Peter Krempa),<br/>
+      qemu: Add support for paravirtual spinlocks in the guest (Peter Krempa),<br/>
+      conf: Refactor storing and usage of feature flags (Peter Krempa),<br/>
+      cpu: x86: Add internal CPUID features support and KVM feature bits (Peter Krempa),<br/>
+      qemu: Add monitor APIs to fetch CPUID data from QEMU (Jiri Denemark),<br/>
+      cpu_x86: Refactor storage of CPUID data to add support for KVM features (Peter Krempa),<br/>
+      tests: Distribute virpcitestdata (Michal Privoznik),<br/>
+      tests: Fix virtpcitest in VPATH (Jiri Denemark),<br/>
+      conf: Refactor virDomainDiskSourcePoolDefParse (Peter Krempa),<br/>
+      storage: always probe type with buffer (Eric Blake),<br/>
+      storage: refactor backing chain division of labor (Eric Blake),<br/>
+      storage: reduce number of stat calls (Eric Blake),<br/>
+      storage: avoid short reads while chasing backing chain (Eric Blake),<br/>
+      storage: use simpler 'char *' (Eric Blake),<br/>
+      test driver: add support for .connectBaselineCPU (Giuseppe Scrivano),<br/>
+      virpcitest: Introduce testVirPCIDeviceReset (Michal Privoznik),<br/>
+      virt-login-shell: also build virAtomic.h (Guido Günther),<br/>
+      storage: recognize gluster as networked file (Eric Blake),<br/>
+      qemu: don't use deprecated -no-kvm-pit-reinjection (Ján Tomko),<br/>
+      Resolve Coverity issue regarding not checking return value (John Ferlan),<br/>
+      Skip any files which are not mounted on the host (Daniel P. Berrange),<br/>
+      Add flag to lxcBasicMounts to control use in user namespaces (Daniel P. Berrange),<br/>
+      Remove duplicate entries in lxcBasicMounts array (Daniel P. Berrange),<br/>
+      Remove pointless 'srcpath' variable in lxcContainerMountBasicFS (Daniel P. Berrange),<br/>
+      Remove unused 'opts' field from LXC basic mounts struct (Daniel P. Berrange),<br/>
+      Add virFileIsMountPoint function (Daniel P. Berrange),<br/>
+      virpcitest: Introduce check for unbinded devices (Michal Privoznik),<br/>
+      virpcitest: Introduce testVirPCIDeviceReattach (Michal Privoznik),<br/>
+      virpcitest: Test virPCIDeviceDetach (Michal Privoznik),<br/>
+      tests: Introduce virpcitest (Michal Privoznik),<br/>
+      cpu: x86: Parse the CPU feature map only once (Peter Krempa),<br/>
+      cpu: Export few x86-specific APIs (Jiri Denemark),<br/>
+      nodeinfo: Remove libnuma include (Peter Krempa),<br/>
+      numa: Add wrapper of numa_node_to_cpus and use it (Peter Krempa),<br/>
+      numa: Replace NUMA_MAX_N_CPUS macro with virNumaGetMaxCPUs() (Peter Krempa),<br/>
+      nodeinfo: Get rid of nodeGetCellMemory (Peter Krempa),<br/>
+      numa: Introduce virNumaGetNodeMemory and use it instead of numa_node_size64 (Peter Krempa),<br/>
+      numa: Introduce virNumaGetMaxNode and use it instead of numa_max_node (Peter Krempa),<br/>
+      nodeinfo: Avoid forward declarations of static functions (Peter Krempa),<br/>
+      numa: Introduce virNumaIsAvailable and use it instead of numa_available (Peter Krempa)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      Remove obsolete 'tests' makefile target (Daniel P. Berrange),<br/>
+      Mostly revert "python: remove virConnectGetCPUModelNames from globals" (Daniel P. Berrange),<br/>
+      Remove redundant braces (Ján Tomko),<br/>
+      virPCIDeviceBindToStub: Remove unused @oldDriverPath and @oldDriverName (Michal Privoznik)<br/>
+      </li>
+    </ul>
     <h3>1.1.4: Nov 4 2013</h3>
     <ul>
       <li>Features:<br/>

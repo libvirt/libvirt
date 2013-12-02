@@ -2100,6 +2100,12 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Mon Dec  2 2013 Daniel Veillard <veillard@redhat.com> - 1.2.0-1
+- Separation of python binding as libvirt-python srpm
+- Add support for gluster pool
+- vbox: add support for 4.3 APIs
+- a number of doc, bug fixes and various improvements
+
 * Mon Nov  4 2013 Daniel Veillard <veillard@redhat.com> - 1.1.4-1
 - Add support for AArch64 architecture
 - Various improvements on test code and test driver
