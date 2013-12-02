@@ -3463,7 +3463,7 @@ typedef enum {
 /**
  * virDomainEventDefinedDetailType:
  *
- * Details on the caused of the 'defined' lifecycle event
+ * Details on the causes of the 'defined' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file */
@@ -3477,7 +3477,7 @@ typedef enum {
 /**
  * virDomainEventUndefinedDetailType:
  *
- * Details on the caused of the 'undefined' lifecycle event
+ * Details on the causes of the 'undefined' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file */
@@ -3490,7 +3490,7 @@ typedef enum {
 /**
  * virDomainEventStartedDetailType:
  *
- * Details on the caused of the 'started' lifecycle event
+ * Details on the causes of the 'started' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot */
@@ -3507,7 +3507,7 @@ typedef enum {
 /**
  * virDomainEventSuspendedDetailType:
  *
- * Details on the caused of the 'suspended' lifecycle event
+ * Details on the causes of the 'suspended' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0,   /* Normal suspend due to admin pause */
@@ -3526,7 +3526,7 @@ typedef enum {
 /**
  * virDomainEventResumedDetailType:
  *
- * Details on the caused of the 'resumed' lifecycle event
+ * Details on the causes of the 'resumed' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause */
@@ -3541,7 +3541,7 @@ typedef enum {
 /**
  * virDomainEventStoppedDetailType:
  *
- * Details on the caused of the 'stopped' lifecycle event
+ * Details on the causes of the 'stopped' lifecycle event
  */
 typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0,  /* Normal shutdown */
