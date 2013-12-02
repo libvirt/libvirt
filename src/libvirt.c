@@ -20850,6 +20850,8 @@ int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
     virCheckNonNullArgGoto(disk, error);
     virCheckNonNullArgGoto(info, error);
 
+    memset(info, 0, sizeof(*info));
+
     if (conn->driver->domainGetBlockJobInfo) {
         int ret;
         ret = conn->driver->domainGetBlockJobInfo(dom, disk, info, flags);
