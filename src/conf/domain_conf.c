@@ -11482,6 +11482,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                    tmp, virDomainFeatureTypeToString(val));
                     goto error;
                 }
+                VIR_FREE(tmp);
             } else {
                 def->features[val] = VIR_DOMAIN_FEATURE_STATE_ON;
             }
