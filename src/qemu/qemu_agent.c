@@ -161,6 +161,7 @@ static void qemuAgentDispose(void *obj)
         (mon->cb->destroy)(mon, mon->vm);
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
+    virResetError(&mon->lastError);
 }
 
 static int
