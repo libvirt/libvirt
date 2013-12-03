@@ -1563,6 +1563,70 @@ cleanup:
 
 
 /*
+ * Read domain log and probably overwrite error if there's one in
+ * the domain log file. This function exists to cover the small
+ * window between fork() and exec() during which child may fail
+ * by libvirt's hand, e.g. placing onto a NUMA node failed.
+ */
+static int
+qemuProcessReadChildErrors(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           off_t originalOff)
+{
+    int ret = -1;
+    int logfd;
+    off_t off = 0;
+    ssize_t bytes;
+    char buf[1024] = {0};
+    char *eol, *filter_next = buf;
+
+    if ((logfd = qemuDomainOpenLog(driver, vm, originalOff)) < 0)
+        goto cleanup;
+
+    while (off < sizeof(buf) - 1) {
+        bytes = saferead(logfd, buf + off, sizeof(buf) - off - 1);
+        if (bytes < 0) {
+            VIR_WARN("unable to read from log file: %s",
+                     virStrerror(errno, buf, sizeof(buf)));
+            goto cleanup;
+        }
+
+        off += bytes;
+        buf[off] = '\0';
+
+        if (bytes == 0)
+            break;
+
+        while ((eol = strchr(filter_next, '\n'))) {
+            *eol = '\0';
+            if (STRPREFIX(filter_next, "libvirt: ")) {
+                filter_next = eol + 1;
+                *eol = '\n';
+                break;
+            } else {
+                memmove(filter_next, eol + 1, off - (eol - buf));
+                off -= eol + 1 - filter_next;
+            }
+        }
+    }
+
+    if (off > 0) {
+        /* Found an error in the log. Report it */
+        virResetLastError();
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Process exited prior to exec: %s"),
+                       buf);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(logfd);
+    return ret;
+}
+
+
+/*
  * Look at a chunk of data from the QEMU stdout logs and try to
  * find a TTY device, as indicated by a line like
  *
@@ -3888,6 +3952,8 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
+        /* Read errors from child that occurred between fork and exec. */
+        qemuProcessReadChildErrors(driver, vm, pos);
         goto cleanup;
     }
 
