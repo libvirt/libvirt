@@ -193,9 +193,9 @@ class Property:
 
 def open_and_print(filename):
     if filename.startswith("./"):
-        print "  GEN    " + filename[2:]
+        print "  GEN      " + filename[2:]
     else:
-        print "  GEN    " + filename
+        print "  GEN      " + filename
 
     return open(filename, "wb")
 
