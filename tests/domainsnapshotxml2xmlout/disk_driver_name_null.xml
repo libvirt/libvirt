@@ -1,0 +1,9 @@
+<domainsnapshot>
+  <name>asdf</name>
+  <description>adsf</description>
+  <disks>
+    <disk name='vda' snapshot='external'>
+      <source file='/tmp/foo'/>
+    </disk>
+  </disks>
+</domainsnapshot>
