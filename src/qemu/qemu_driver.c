@@ -8134,6 +8134,84 @@ cleanup:
 }
 
 static int
+qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
+                            virCapsPtr caps,
+                            virBitmapPtr nodeset)
+{
+    virCgroupPtr cgroup_temp = NULL;
+    virBitmapPtr temp_nodeset = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *nodeset_str = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    if (vm->def->numatune.memory.mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("change of nodeset for running domain "
+                         "requires strict numa mode"));
+        goto cleanup;
+    }
+
+    /*Get Exisitng nodeset values */
+    if (virCgroupGetCpusetMems(priv->cgroup, &nodeset_str) < 0 ||
+        virBitmapParse(nodeset_str, 0, &temp_nodeset,
+                       VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto cleanup;
+    VIR_FREE(nodeset_str);
+
+    for (i = 0; i < caps->host.nnumaCell; i++) {
+        bool result;
+        if (virBitmapGetBit(nodeset, i, &result) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to get cpuset bit values"));
+            goto cleanup;
+        }
+        if (result && (virBitmapSetBit(temp_nodeset, i) < 0)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to set temporary cpuset bit values"));
+            goto cleanup;
+        }
+    }
+
+    if (!(nodeset_str = virBitmapFormat(temp_nodeset))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to format nodeset"));
+        goto cleanup;
+    }
+
+    if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
+        goto cleanup;
+    VIR_FREE(nodeset_str);
+
+    /* Ensure the cpuset string is formated before passing to cgroup */
+    if (!(nodeset_str = virBitmapFormat(nodeset))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to format nodeset"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < priv->nvcpupids; i++) {
+        if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_temp) < 0 ||
+            virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
+            goto cleanup;
+        virCgroupFree(&cgroup_temp);
+    }
+
+    if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0 ||
+        virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0 ||
+        virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(nodeset_str);
+    virBitmapFree(temp_nodeset);
+    virCgroupFree(&cgroup_temp);
+
+    return ret;
+}
+
+static int
 qemuDomainSetNumaParameters(virDomainPtr dom,
                             virTypedParameterPtr params,
                             int nparams,
@@ -8200,7 +8278,6 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             virBitmapPtr nodeset = NULL;
-            char *nodeset_str = NULL;
 
             if (virBitmapParse(params[i].value.s,
                                0, &nodeset,
@@ -8210,32 +8287,11 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                if (vm->def->numatune.memory.mode !=
-                    VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
-                    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                   _("change of nodeset for running domain "
-                                     "requires strict numa mode"));
+                if (qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0) {
                     virBitmapFree(nodeset);
                     ret = -1;
                     continue;
                 }
-
-                /* Ensure the cpuset string is formated before passing to cgroup */
-                if (!(nodeset_str = virBitmapFormat(nodeset))) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Failed to format nodeset"));
-                    virBitmapFree(nodeset);
-                    ret = -1;
-                    continue;
-                }
-
-                if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0) {
-                    virBitmapFree(nodeset);
-                    VIR_FREE(nodeset_str);
-                    ret = -1;
-                    continue;
-                }
-                VIR_FREE(nodeset_str);
 
                 /* update vm->def here so that dumpxml can read the new
                  * values from vm->def. */
