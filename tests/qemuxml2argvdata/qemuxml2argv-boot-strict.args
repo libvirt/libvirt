@@ -1,0 +1,36 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot strict=on \
+-usb \
+-drive file=/tmp/vda.img,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,\
+id=virtio-disk0,bootindex=3 \
+-drive file=/tmp/vdb.img,if=none,id=drive-virtio-disk1 \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk1,\
+id=virtio-disk1 \
+-drive file=/dev/HostVG/hda,if=none,id=drive-ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-drive file=/dev/HostVG/hdb,if=none,id=drive-ide0-0-1 \
+-device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
+-drive file=/dev/HostVG/hdc,if=none,media=cdrom,id=drive-ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
+bootindex=1 \
+-drive file=/dev/fd0,if=none,id=drive-fdc0-0-0 \
+-global isa-fdc.driveA=drive-fdc0-0-0 \
+-global isa-fdc.bootindexA=4 \
+-drive file=/dev/fd1,if=none,id=drive-fdc0-0-1 \
+-global isa-fdc.driveB=drive-fdc0-0-1 \
+-device virtio-net-pci,vlan=0,id=net0,mac=00:11:22:33:44:11,bus=pci.0,\
+addr=0x3,bootindex=2 \
+-net user,vlan=0,name=hostnet0 \
+-device virtio-net-pci,vlan=1,id=net1,mac=00:11:22:33:44:22,bus=pci.0,\
+addr=0x4 \
+-net user,vlan=1,name=hostnet1

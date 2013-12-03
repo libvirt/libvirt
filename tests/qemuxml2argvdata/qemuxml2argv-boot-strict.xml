@@ -1,0 +1,66 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='cdrom'/>
+    <boot dev='network'/>
+    <boot dev='hd'/>
+    <boot dev='fd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='file' device='disk'>
+      <source file='/tmp/vdb.img'/>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/hdb'/>
+      <target dev='hdb' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/hda'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/vda.img'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='block' device='cdrom'>
+      <source dev='/dev/HostVG/hdc'/>
+      <target dev='hdc' bus='ide'/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='floppy'>
+      <source dev='/dev/fd1'/>
+      <target dev='fdb' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='block' device='floppy'>
+      <source dev='/dev/fd0'/>
+      <target dev='fda' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='fdc' index='0'/>
+    <controller type='ide' index='0'/>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:11'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:22'/>
+      <model type='virtio'/>
+    </interface>
+    <memballoon model='none'/>
+  </devices>
+</domain>
