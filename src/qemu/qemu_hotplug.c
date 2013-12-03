@@ -1899,7 +1899,8 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         (olddev->driver.virtio.name != newdev->driver.virtio.name ||
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
-         olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx)) {
+         olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx ||
+         olddev->driver.virtio.queues != newdev->driver.virtio.queues)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify virtio network device driver attributes"));
         goto cleanup;
