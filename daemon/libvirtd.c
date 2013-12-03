@@ -108,6 +108,8 @@ virNetServerProgramPtr remoteProgram = NULL;
 virNetServerProgramPtr qemuProgram = NULL;
 virNetServerProgramPtr lxcProgram = NULL;
 
+volatile bool driversInitialized = false;
+
 enum {
     VIR_DAEMON_ERR_NONE = 0,
     VIR_DAEMON_ERR_PIDFILE,
@@ -912,6 +914,8 @@ static void daemonRunStateInit(void *opaque)
         goto cleanup;
     }
 
+    driversInitialized = true;
+
 #ifdef HAVE_DBUS
     /* Tie the non-priviledged libvirtd to the session/shutdown lifecycle */
     if (!virNetServerIsPrivileged(srv)) {
@@ -1546,7 +1550,8 @@ cleanup:
 
     daemonConfigFree(config);
 
-    virStateCleanup();
+    if (driversInitialized)
+        virStateCleanup();
 
     return ret;
 }
