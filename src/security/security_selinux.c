@@ -414,13 +414,8 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     }
 # endif
 
-    selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0);
-    if (!selinux_conf) {
-        virReportSystemError(errno,
-                             _("cannot open SELinux lxc contexts file '%s'"),
-                             selinux_lxc_contexts_path());
+    if (!(selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0)))
         goto error;
-    }
 
     scon = virConfGetValue(selinux_conf, "process");
     if (! scon || scon->type != VIR_CONF_STRING || (! scon->str)) {
