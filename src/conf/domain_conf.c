@@ -13191,6 +13191,13 @@ virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
         return false;
     }
 
+    if (src->ram != dst->ram) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target video card ram %u does not match source %u"),
+                       dst->ram, src->ram);
+        return false;
+    }
+
     if (src->vram != dst->vram) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card vram %u does not match source %u"),
