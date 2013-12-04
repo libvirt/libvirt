@@ -4063,6 +4063,7 @@ qemuBuildDriveStr(virConnectPtr conn,
 
         virBufferEscape(&opt, ',', ",", "%s,", source);
     }
+    VIR_FREE(source);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         virBufferAddLit(&opt, "if=none");
@@ -4274,6 +4275,7 @@ qemuBuildDriveStr(virConnectPtr conn,
     return virBufferContentAndReset(&opt);
 
 error:
+    VIR_FREE(source);
     virBufferFreeAndReset(&opt);
     return NULL;
 }
