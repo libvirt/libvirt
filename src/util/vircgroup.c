@@ -1957,12 +1957,19 @@ int
 virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_MEMORY,
-                               "memory.limit_in_bytes", &limit_in_bytes);
-    if (ret == 0)
-        *kb = limit_in_bytes >> 10;
+    int ret = -1;
+
+    if (virCgroupGetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.limit_in_bytes", &limit_in_bytes) < 0)
+        goto cleanup;
+
+    *kb = limit_in_bytes >> 10;
+    if (*kb > VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    ret = 0;
+ cleanup:
     return ret;
 }
 
@@ -2012,12 +2019,19 @@ int
 virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_MEMORY,
-                               "memory.soft_limit_in_bytes", &limit_in_bytes);
-    if (ret == 0)
-        *kb = limit_in_bytes >> 10;
+    int ret = -1;
+
+    if (virCgroupGetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.soft_limit_in_bytes", &limit_in_bytes) < 0)
+        goto cleanup;
+
+    *kb = limit_in_bytes >> 10;
+    if (*kb > VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    ret = 0;
+ cleanup:
     return ret;
 }
 
@@ -2067,12 +2081,19 @@ int
 virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
     long long unsigned int limit_in_bytes;
-    int ret;
-    ret = virCgroupGetValueU64(group,
-                               VIR_CGROUP_CONTROLLER_MEMORY,
-                               "memory.memsw.limit_in_bytes", &limit_in_bytes);
-    if (ret == 0)
-        *kb = limit_in_bytes >> 10;
+    int ret = -1;
+
+    if (virCgroupGetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_MEMORY,
+                             "memory.memsw.limit_in_bytes", &limit_in_bytes) < 0)
+        goto cleanup;
+
+    *kb = limit_in_bytes >> 10;
+    if (*kb > VIR_DOMAIN_MEMORY_PARAM_UNLIMITED)
+        *kb = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    ret = 0;
+ cleanup:
     return ret;
 }
 
