@@ -7948,7 +7948,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         if (virCompareLimitUlong(mem_limit, swap_limit) > 0) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("memory hard_limit tunable value must be lower "
-                             "than swap_hard_limit"));
+                             "than or equal to swap_hard_limit"));
             goto cleanup;
         }
     }
