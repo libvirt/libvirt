@@ -8053,29 +8053,30 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         for (i = 0; i < *nparams && i < QEMU_NB_MEM_PARAM; i++) {
             virMemoryParameterPtr param = &params[i];
+            unsigned long long value;
 
             switch (i) {
             case 0: /* fill memory hard limit here */
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            persistentDef->mem.hard_limit) < 0)
+                value = persistentDef->mem.hard_limit;
+                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;
                 break;
 
             case 1: /* fill memory soft limit here */
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            persistentDef->mem.soft_limit) < 0)
+                value = persistentDef->mem.soft_limit;
+                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;
                 break;
 
             case 2: /* fill swap hard limit here */
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            persistentDef->mem.swap_hard_limit) < 0)
+                value = persistentDef->mem.swap_hard_limit;
+                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;
                 break;
 
