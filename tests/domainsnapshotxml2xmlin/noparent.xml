@@ -2,6 +2,7 @@
   <name>my snap name</name>
   <description>!@#$%^</description>
   <state>running</state>
+  <memory snapshot='internal'/>
   <creationTime>1272917631</creationTime>
   <domain>
     <uuid>9d37b878-a7cc-9f9a-b78f-49b3abad25a8</uuid>

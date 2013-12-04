@@ -1,0 +1,15 @@
+<domainsnapshot>
+  <name>my snap name</name>
+  <description>!@#$%^</description>
+  <disks>
+    <disk name='/dev/HostVG/QEMUGuest1'/>
+    <disk name='hdb' snapshot='no'/>
+    <disk name='hdc' snapshot='internal'/>
+    <disk name='hdd' snapshot='external'>
+      <driver type='qed'/>
+    </disk>
+    <disk name='hde' snapshot='external'>
+      <source file='/path/to/new'/>
+    </disk>
+  </disks>
+</domainsnapshot>

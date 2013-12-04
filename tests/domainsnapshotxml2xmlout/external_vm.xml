@@ -1,9 +1,5 @@
 <domainsnapshot>
   <name>my snap name</name>
   <description>!@#$%^</description>
-  <state>running</state>
   <memory snapshot='external' file='/dev/HostVG/GuestMemory'/>
-  <parent>
-    <name>earlier_snap</name>
-  </parent>
 </domainsnapshot>
