@@ -1518,7 +1518,10 @@ cleanup:
     }
     if (added)
         virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
-    virUSBDeviceFree(usb);
+    if (list && usb &&
+        !virUSBDeviceListFind(list, usb) &&
+        !virUSBDeviceListFind(driver->activeUsbHostdevs, usb))
+        virUSBDeviceFree(usb);
     virObjectUnref(list);
     VIR_FREE(devstr);
     return ret;
