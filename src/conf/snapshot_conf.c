@@ -532,6 +532,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
         disk->index = i;
         disk->snapshot = def->dom->disks[i]->snapshot;
+        disk->type = -1;
         if (!disk->snapshot)
             disk->snapshot = default_snapshot;
     }
@@ -548,6 +549,15 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             const char *original = def->dom->disks[i]->src;
             const char *tmp;
             struct stat sb;
+
+            if (disk->type != VIR_DOMAIN_DISK_TYPE_FILE &&
+                disk->type != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("cannot generate external snapshot name "
+                                 "for disk '%s' on a '%s' device"),
+                               disk->name, virDomainDiskTypeToString(disk->type));
+                goto cleanup;
+            }
 
             if (!original) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
