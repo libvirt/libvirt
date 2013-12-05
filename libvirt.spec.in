@@ -1524,8 +1524,9 @@ then
 fi
 
 %if %{with_libvirtd}
+    %if %{with_qemu}
 %pre daemon
-    %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+        %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
@@ -1539,6 +1540,7 @@ if ! getent passwd qemu >/dev/null; then
   fi
 fi
 exit 0
+        %endif
     %endif
 
 %post daemon
