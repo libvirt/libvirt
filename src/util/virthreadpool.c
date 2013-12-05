@@ -242,13 +242,15 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     virThreadPoolJobPtr job;
     bool priority = false;
     size_t i;
-    size_t nWorkers = pool->nWorkers;
-    size_t nPrioWorkers = pool->nPrioWorkers;
+    size_t nWorkers;
+    size_t nPrioWorkers;
 
     if (!pool)
         return;
 
     virMutexLock(&pool->mutex);
+    nWorkers = pool->nWorkers;
+    nPrioWorkers = pool->nPrioWorkers;
     pool->quit = true;
     if (pool->nWorkers > 0)
         virCondBroadcast(&pool->cond);
