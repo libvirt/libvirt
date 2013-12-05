@@ -410,13 +410,15 @@ Requires: libvirt-daemon-driver-xen = %{version}-%{release}
         %if %{with_vbox}
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
         %endif
+        %if %{with_nwfilter}
+Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
+        %endif
 
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
-Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
     %endif
 %endif
 Requires: libvirt-client = %{version}-%{release}
@@ -1752,7 +1754,9 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
     %endif
 
+    %if %{with_nwfilter}
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
+    %endif
 
     %if %{with_systemd}
 %{_unitdir}/libvirtd.service
