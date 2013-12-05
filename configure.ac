@@ -2555,7 +2555,6 @@ AC_CONFIG_FILES([\
         tests/Makefile \
         examples/apparmor/Makefile \
         examples/domain-events/events-c/Makefile \
-        examples/domsuspend/Makefile \
         examples/dominfo/Makefile \
         examples/openauth/Makefile \
         examples/hellolibvirt/Makefile \
