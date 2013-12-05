@@ -1153,6 +1153,7 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     char *configfd_name = NULL;
     bool releaseaddr = false;
     bool teardowncgroup = false;
+    bool teardownlabel = false;
     int backend = hostdev->source.subsys.u.pci.backend;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -1192,6 +1193,11 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
         goto error;
     teardowncgroup = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, hostdev, NULL) < 0)
+        goto error;
+    teardownlabel = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
@@ -1250,6 +1256,10 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
 error:
     if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
         VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+    if (teardownlabel &&
+        virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                              vm->def, hostdev, NULL) < 0)
+        VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
@@ -1445,6 +1455,7 @@ qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     bool added = false;
     bool teardowncgroup = false;
+    bool teardownlabel = false;
     int ret = -1;
 
     if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
@@ -1465,6 +1476,11 @@ qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
         goto cleanup;
     teardowncgroup = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, hostdev, NULL) < 0)
+        goto cleanup;
+    teardownlabel = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
@@ -1492,10 +1508,14 @@ qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
-    if (ret < 0 &&
-        teardowncgroup &&
-        qemuTeardownHostdevCgroup(vm, hostdev) < 0)
-        VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+    if (ret < 0) {
+        if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+        if (teardownlabel &&
+            virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, hostdev, NULL) < 0)
+            VIR_WARN("Unable to restore host device labelling on hotplug fail");
+    }
     if (added)
         virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     virUSBDeviceFree(usb);
@@ -1515,6 +1535,7 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     char *drvstr = NULL;
     bool teardowncgroup = false;
+    bool teardownlabel = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE) ||
         !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
@@ -1542,6 +1563,11 @@ qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
         goto cleanup;
     teardowncgroup = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, hostdev, NULL) < 0)
+        goto cleanup;
+    teardownlabel = true;
 
     if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
         goto cleanup;
@@ -1584,6 +1610,10 @@ cleanup:
         qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &hostdev, 1);
         if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
             VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+        if (teardownlabel &&
+            virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, hostdev, NULL) < 0)
+            VIR_WARN("Unable to restore host device labelling on hotplug fail");
     }
     VIR_FREE(drvstr);
     VIR_FREE(devstr);
@@ -1600,10 +1630,6 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                        virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
     }
-
-    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
-                                          vm->def, hostdev, NULL) < 0)
-        return -1;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
