@@ -1416,28 +1416,28 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
         }
 
        switch (def->srcpool->mode) {
-        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT:
-        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST:
-            def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
-            /* fallthrough */
-        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
-            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
-            if (!(def->src = virStorageVolGetPath(vol)))
-                goto cleanup;
-            break;
+       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DEFAULT:
+       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_LAST:
+           def->srcpool->mode = VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST;
+           /* fallthrough */
+       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_HOST:
+           def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_BLOCK;
+           if (!(def->src = virStorageVolGetPath(vol)))
+               goto cleanup;
+           break;
 
-        case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
-            def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
-            def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+       case VIR_DOMAIN_DISK_SOURCE_POOL_MODE_DIRECT:
+           def->srcpool->actualtype = VIR_DOMAIN_DISK_TYPE_NETWORK;
+           def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
 
-            if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
-                goto cleanup;
+           if (qemuTranslateDiskSourcePoolAuth(def, pooldef) < 0)
+               goto cleanup;
 
-            if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)
-                goto cleanup;
-            break;
-        }
-        break;
+           if (qemuAddISCSIPoolSourceHost(def, pooldef) < 0)
+               goto cleanup;
+           break;
+       }
+       break;
 
     case VIR_STORAGE_POOL_MPATH:
     case VIR_STORAGE_POOL_RBD:
