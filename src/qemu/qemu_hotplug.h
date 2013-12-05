@@ -47,12 +47,6 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                               virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net);
-int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainHostdevDefPtr hostdev);
-int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainHostdevDefPtr hostdev);
 int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr hostdev);

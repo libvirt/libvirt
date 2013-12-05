@@ -1124,9 +1124,10 @@ try_remove:
 }
 
 
-int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainHostdevDefPtr hostdev)
+static int
+qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainHostdevDefPtr hostdev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -1416,9 +1417,10 @@ cleanup:
     return ret;
 }
 
-int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainHostdevDefPtr hostdev)
+static int
+qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainHostdevDefPtr hostdev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virUSBDeviceList *list = NULL;
