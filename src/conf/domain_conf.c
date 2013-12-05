@@ -15832,6 +15832,11 @@ virDomainRNGDefFormat(virBufferPtr buf,
         break;
     }
 
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+    }
+
     virBufferAddLit(buf, "    </rng>\n");
 
     return 0;

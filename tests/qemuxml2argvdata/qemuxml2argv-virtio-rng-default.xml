@@ -18,6 +18,7 @@
     <memballoon model='virtio'/>
     <rng model='virtio'>
       <backend model='random'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </rng>
   </devices>
 </domain>

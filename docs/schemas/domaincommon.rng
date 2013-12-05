@@ -3956,6 +3956,12 @@
         <optional>
           <ref name="rng-rate"/>
         </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
       </interleave>
     </element>
   </define>
