@@ -7747,6 +7747,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
     virCommandAddArg(cmd, "-S"); /* freeze CPU */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+        virCommandAddArg(cmd, "-enable-fips");
 
     if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)
         goto error;

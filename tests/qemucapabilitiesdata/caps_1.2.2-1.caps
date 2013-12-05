@@ -112,4 +112,5 @@
     <flag name='usb-storage'/>
     <flag name='usb-storage.removable'/>
     <flag name='kvm-pit-lost-tick-policy'/>
+    <flag name='enable-fips'/>
   </qemuCaps>

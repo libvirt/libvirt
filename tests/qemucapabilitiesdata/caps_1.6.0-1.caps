@@ -138,4 +138,5 @@
     <flag name='boot-strict'/>
     <flag name='pvpanic'/>
     <flag name='reboot-timeout'/>
+    <flag name='enable-fips'/>
   </qemuCaps>
