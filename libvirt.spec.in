@@ -1750,12 +1750,6 @@ exit 0
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
-    %if %{with_network}
-%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
-%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
-%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
-    %endif
-
     %if %{with_nwfilter}
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
     %endif
@@ -1776,33 +1770,9 @@ exit 0
     %if 0%{?fedora} >= 14 || 0%{?rhel} >= 6
 %config(noreplace) %{_prefix}/lib/sysctl.d/libvirtd.conf
     %endif
-    %if %{with_libxl}
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
-    %endif
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
-    %if %{with_qemu}
-%config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
-%config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
-%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
-    %endif
-    %if %{with_lxc}
-%config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
-%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
-    %endif
-    %if %{with_uml}
-%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
-    %endif
-
 %dir %{_datadir}/libvirt/
-
-    %if %{with_network}
-%dir %{_datadir}/libvirt/networks/
-%{_datadir}/libvirt/networks/default.xml
-    %endif
 
 %ghost %dir %{_localstatedir}/run/libvirt/
 
@@ -1811,46 +1781,9 @@ exit 0
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/boot/
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 
-    %if %{with_qemu}
-%ghost %dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
-%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
-%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/
-%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/target/
-%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
-    %endif
-    %if %{with_lxc}
-%ghost %dir %{_localstatedir}/run/libvirt/lxc/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/lxc/
-    %endif
-    %if %{with_uml}
-%ghost %dir %{_localstatedir}/run/libvirt/uml/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
-    %endif
-    %if %{with_libxl}
-%ghost %dir %{_localstatedir}/run/libvirt/libxl/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
-    %endif
-    %if %{with_xen}
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/xen/
-    %endif
-    %if %{with_network}
-%ghost %dir %{_localstatedir}/run/libvirt/network/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
-%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
-    %endif
 
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
-
-    %if %{with_qemu}
-%{_datadir}/augeas/lenses/libvirtd_qemu.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
-    %endif
-
-    %if %{with_lxc}
-%{_datadir}/augeas/lenses/libvirtd_lxc.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
-    %endif
 
 %{_datadir}/augeas/lenses/libvirtd.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
@@ -1870,14 +1803,6 @@ exit 0
 
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 
-    %if %{with_lxc}
-%attr(0755, root, root) %{_libexecdir}/libvirt_lxc
-    %endif
-
-    %if %{with_storage_disk}
-%attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
-    %endif
-
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 
     %if %{with_apparmor}
@@ -1889,6 +1814,57 @@ exit 0
 
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlockd.8*
+
+    %if %{with_network}
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
+%dir %{_datadir}/libvirt/networks/
+%{_datadir}/libvirt/networks/default.xml
+%ghost %dir %{_localstatedir}/run/libvirt/network/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
+%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
+    %endif
+    %if %{with_storage_disk}
+%attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
+    %endif
+    %if %{with_qemu}
+%config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
+%config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
+%ghost %dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
+%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
+%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/
+%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/target/
+%dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
+%{_datadir}/augeas/lenses/libvirtd_qemu.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
+    %endif
+    %if %{with_lxc}
+%config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
+%ghost %dir %{_localstatedir}/run/libvirt/lxc/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/lxc/
+%{_datadir}/augeas/lenses/libvirtd_lxc.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
+%attr(0755, root, root) %{_libexecdir}/libvirt_lxc
+    %endif
+    %if %{with_uml}
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
+%ghost %dir %{_localstatedir}/run/libvirt/uml/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
+    %endif
+    %if %{with_libxl}
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
+%ghost %dir %{_localstatedir}/run/libvirt/libxl/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
+    %endif
+    %if %{with_xen}
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/xen/
+    %endif
 
     %if %{with_network}
 %files daemon-config-network
