@@ -1890,18 +1890,18 @@ exit 0
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlockd.8*
 
-    %if %{with_driver_modules}
-        %if %{with_network}
+    %if %{with_network}
 %files daemon-config-network
 %defattr(-, root, root)
-        %endif
+    %endif
 
-        %if %{with_nwfilter}
+    %if %{with_nwfilter}
 %files daemon-config-nwfilter
 %defattr(-, root, root)
 %{_sysconfdir}/libvirt/nwfilter/*.xml
-        %endif
+    %endif
 
+    %if %{with_driver_modules}
         %if %{with_interface}
 %files daemon-driver-interface
 %defattr(-, root, root)
