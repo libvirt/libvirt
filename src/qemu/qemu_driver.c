@@ -4201,6 +4201,14 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
         }
 
+        if (nvcpus > vm->def->vcpus) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("requested vcpu count is greater than the count "
+                             "of enabled vcpus in the domain: %d > %d"),
+                           nvcpus, vm->def->vcpus);
+            goto endjob;
+        }
+
         qemuDomainObjEnterAgent(vm);
         ncpuinfo = qemuAgentGetVCPUs(priv->agent, &cpuinfo);
         qemuDomainObjExitAgent(vm);
