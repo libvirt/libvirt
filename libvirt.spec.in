@@ -1776,9 +1776,6 @@ exit 0
     %if 0%{?fedora} >= 14 || 0%{?rhel} >= 6
 %config(noreplace) %{_prefix}/lib/sysctl.d/libvirtd.conf
     %endif
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
-%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
     %if %{with_libxl}
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
     %endif
@@ -1788,13 +1785,16 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
     %endif
     %if %{with_lxc}
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
     %endif
     %if %{with_uml}
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
     %endif
 
 %dir %{_datadir}/libvirt/
