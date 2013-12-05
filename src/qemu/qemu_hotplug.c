@@ -1498,9 +1498,9 @@ cleanup:
             virSecurityManagerRestoreHostdevLabel(driver->securityManager,
                                                   vm->def, hostdev, NULL) < 0)
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
+        if (added)
+            virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     }
-    if (added)
-        virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     if (list && usb &&
         !virUSBDeviceListFind(list, usb) &&
         !virUSBDeviceListFind(driver->activeUsbHostdevs, usb))
