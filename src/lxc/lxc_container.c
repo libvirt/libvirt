@@ -940,16 +940,14 @@ cleanup:
 static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
                                      const char *stateDir)
 {
-    int ret;
+    int ret = -1;
     char *path = NULL;
     int flags = def->idmap.nuidmap ? MS_BIND : MS_MOVE;
 
     VIR_DEBUG("Mount /dev/pts stateDir=%s", stateDir);
 
-    if ((ret = virAsprintf(&path,
-                           "/.oldroot/%s/%s.devpts",
-                           stateDir,
-                           def->name)) < 0)
+    if (virAsprintf(&path, "/.oldroot/%s/%s.devpts",
+                    stateDir, def->name) < 0)
         return ret;
 
     if (virFileMakePath("/dev/pts") < 0) {
@@ -961,16 +959,16 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     VIR_DEBUG("Trying to %s %s to /dev/pts", def->idmap.nuidmap ?
               "bind" : "move", path);
 
-    if ((ret = mount(path, "/dev/pts", NULL, flags, NULL)) < 0) {
+    if (mount(path, "/dev/pts", NULL, flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev/pts"),
                              path);
         goto cleanup;
     }
 
+    ret = 0;
 cleanup:
     VIR_FREE(path);
-
     return ret;
 }
 
