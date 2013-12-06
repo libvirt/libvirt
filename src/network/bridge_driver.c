@@ -710,9 +710,6 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                       "strict-order\n",
                       network->def->name);
 
-    if (!network->def->dns.forwardPlainNames)
-        virBufferAddLit(&configbuf, "domain-needed\n");
-
     if (network->def->dns.forwarders) {
         virBufferAddLit(&configbuf, "no-resolv\n");
         for (i = 0; i < network->def->dns.nfwds; i++) {
@@ -728,14 +725,13 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                           network->def->domain);
     }
 
-    if (network->def->domain || !network->def->dns.forwardPlainNames) {
-        /* need to specify local even if no domain specified, unless
-         * the config says we should forward "plain" names (i.e. not
-         * fully qualified, no '.' characters)
+    if (!network->def->dns.forwardPlainNames) {
+        virBufferAddLit(&configbuf, "domain-needed\n");
+        /* need to specify local=// whether or not a domain is
+         * specified, unless the config says we should forward "plain"
+         * names (i.e. not fully qualified, no '.' characters)
          */
-        virBufferAsprintf(&configbuf,
-                          "local=/%s/\n",
-                          network->def->domain ? network->def->domain : "");
+        virBufferAddLit(&configbuf, "local=//\n");
     }
 
     if (pidfile)
