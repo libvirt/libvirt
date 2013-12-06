@@ -124,16 +124,7 @@
             </attribute>
           </optional>
           <interleave>
-            <optional>
-              <element name='driver'>
-                <optional>
-                  <attribute name='type'>
-                    <ref name='storageFormat'/>
-                  </attribute>
-                </optional>
-                <empty/>
-              </element>
-            </optional>
+            <ref name='disksnapshotdriver'/>
             <optional>
               <element name='source'>
                 <optional>
@@ -148,6 +139,19 @@
         </group>
       </choice>
     </element>
+  </define>
+
+  <define name='disksnapshotdriver'>
+    <optional>
+      <element name='driver'>
+        <optional>
+          <attribute name='type'>
+            <ref name='storageFormat'/>
+          </attribute>
+        </optional>
+        <empty/>
+      </element>
+    </optional>
   </define>
 
 </grammar>
