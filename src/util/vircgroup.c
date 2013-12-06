@@ -1246,7 +1246,7 @@ virCgroupNewPartition(const char *path,
     int ret = -1;
     char *parentPath = NULL;
     virCgroupPtr parent = NULL;
-    char *newpath = NULL;
+    char *newPath = NULL;
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
 
@@ -1257,15 +1257,15 @@ virCgroupNewPartition(const char *path,
         return -1;
     }
 
-    if (virCgroupSetPartitionSuffix(path, &newpath) < 0)
+    if (virCgroupSetPartitionSuffix(path, &newPath) < 0)
         goto cleanup;
 
-    if (virCgroupNew(-1, newpath, NULL, controllers, group) < 0)
+    if (virCgroupNew(-1, newPath, NULL, controllers, group) < 0)
         goto cleanup;
 
-    if (STRNEQ(newpath, "/")) {
+    if (STRNEQ(newPath, "/")) {
         char *tmp;
-        if (VIR_STRDUP(parentPath, newpath) < 0)
+        if (VIR_STRDUP(parentPath, newPath) < 0)
             goto cleanup;
 
         tmp = strrchr(parentPath, '/');
@@ -1287,7 +1287,7 @@ cleanup:
         virCgroupFree(group);
     virCgroupFree(&parent);
     VIR_FREE(parentPath);
-    VIR_FREE(newpath);
+    VIR_FREE(newPath);
     return ret;
 }
 
