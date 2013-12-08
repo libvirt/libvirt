@@ -185,4 +185,24 @@
 
     <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
   </xsl:template>
+
+  <xsl:template match="html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">
+    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+      <xsl:apply-templates mode="copy" />
+      <xsl:if test="./html:a/@name">
+        <a class="headerlink" href="#{html:a/@name}" title="Permalink to this headline">&#xb6;</a>
+      </xsl:if>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="text()" mode="copy">
+    <xsl:value-of select="."/>
+  </xsl:template>
+
+  <xsl:template match="node()" mode="copy">
+    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+      <xsl:copy-of select="./@*"/>
+      <xsl:apply-templates mode="copy" />
+    </xsl:element>
+  </xsl:template>
 </xsl:stylesheet>

@@ -498,3 +498,16 @@ div.description pre.code {
     padding: 5px 10px 5px 10px;
     margin-left: 2.5em;
 }
+
+a.headerlink {
+    text-decoration: none!important;
+    visibility: hidden;
+}
+
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink {
+    visibility: visible;
+}
