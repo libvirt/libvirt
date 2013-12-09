@@ -77,6 +77,7 @@ enum {
     VIR_LOCK_DAEMON_ERR_NETWORK,
     VIR_LOCK_DAEMON_ERR_CONFIG,
     VIR_LOCK_DAEMON_ERR_HOOKS,
+    VIR_LOCK_DAEMON_ERR_REEXEC,
 
     VIR_LOCK_DAEMON_ERR_LAST
 };
@@ -91,7 +92,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_LOCK_DAEMON_ERR_LAST,
               "Unable to drop privileges",
               "Unable to initialize network sockets",
               "Unable to load configuration file",
-              "Unable to look for hook scripts");
+              "Unable to look for hook scripts",
+              "Unable to re-execute daemon");
 
 static void *
 virLockDaemonClientNew(virNetServerClientPtr client,
@@ -1203,18 +1205,14 @@ int main(int argc, char **argv) {
 
         case 'p':
             VIR_FREE(pid_file);
-            if (VIR_STRDUP_QUIET(pid_file, optarg) < 0) {
-                VIR_ERROR(_("Can't allocate memory"));
-                exit(EXIT_FAILURE);
-            }
+            if (VIR_STRDUP_QUIET(pid_file, optarg) < 0)
+                goto no_memory;
             break;
 
         case 'f':
             VIR_FREE(remote_config_file);
-            if (VIR_STRDUP_QUIET(remote_config_file, optarg) < 0) {
-                VIR_ERROR(_("Can't allocate memory"));
-                exit(EXIT_FAILURE);
-            }
+            if (VIR_STRDUP_QUIET(remote_config_file, optarg) < 0)
+                goto no_memory;
             break;
 
         case 'V':
@@ -1298,10 +1296,8 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0) {
-            VIR_ERROR(_("Can't allocate memory"));
-            goto cleanup;
-        }
+        if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0)
+            goto no_memory;
     } else {
         if (!(run_dir = virGetUserRuntimeDirectory())) {
             VIR_ERROR(_("Can't determine user directory"));
@@ -1395,7 +1391,7 @@ int main(int argc, char **argv) {
 
     if (execRestart &&
         virLockDaemonPreExecRestart(lockDaemon->srv, argv) < 0)
-        ret = -1;
+        ret = VIR_LOCK_DAEMON_ERR_REEXEC;
     else
         ret = 0;
 
@@ -1418,4 +1414,8 @@ cleanup:
     VIR_FREE(sock_file);
     VIR_FREE(run_dir);
     return ret;
+
+no_memory:
+    VIR_ERROR(_("Can't allocate memory"));
+    exit(EXIT_FAILURE);
 }
