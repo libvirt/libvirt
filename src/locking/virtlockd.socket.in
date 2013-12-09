@@ -5,4 +5,4 @@ Description=Virtual machine lock manager socket
 ListenStream=@localstatedir@/run/libvirt/virtlockd-sock
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sockets.target
