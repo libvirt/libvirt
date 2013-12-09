@@ -54,9 +54,9 @@ Display version information then exit.
 
 =head1 SIGNALS
 
-On receipt of B<SIGUSR1> virtlockd will re-exec() its binary, while
-maintaining all current locks and clients. This allows for live
-upgrades of the virtlockd service.
+On receipt of B<SIGUSR1> or B<SIGHUP> virtlockd will re-exec() its
+binary, while maintaining all current locks and clients. This allows
+for live upgrades of the virtlockd service.
 
 =head1 FILES
 

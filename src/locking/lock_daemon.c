@@ -590,6 +590,8 @@ virLockDaemonSetupSignals(virNetServerPtr srv)
         return -1;
     if (virNetServerAddSignalHandler(srv, SIGUSR1, virLockDaemonExecRestartHandler, NULL) < 0)
         return -1;
+    if (virNetServerAddSignalHandler(srv, SIGHUP, virLockDaemonExecRestartHandler, NULL) < 0)
+        return -1;
     return 0;
 }
 
