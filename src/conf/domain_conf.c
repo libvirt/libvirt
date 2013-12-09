@@ -1937,6 +1937,15 @@ virDomainResourceDefFree(virDomainResourceDefPtr resource)
     VIR_FREE(resource);
 }
 
+void
+virDomainPanicDefFree(virDomainPanicDefPtr panic)
+{
+    if (!panic)
+        return;
+
+    virDomainDeviceInfoClear(&panic->info);
+    VIR_FREE(panic);
+}
 
 void virDomainDefFree(virDomainDefPtr def)
 {
@@ -2024,6 +2033,8 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainRNGDefFree(def->rng);
 
     virDomainTPMDefFree(def->tpm);
+
+    virDomainPanicDefFree(def->panic);
 
     VIR_FREE(def->idmap.uidmap);
     VIR_FREE(def->idmap.gidmap);
@@ -10733,6 +10744,22 @@ cleanup:
     return idmap;
 }
 
+static virDomainPanicDefPtr
+virDomainPanicDefParseXML(xmlNodePtr node)
+{
+    virDomainPanicDefPtr panic;
+
+    if (VIR_ALLOC(panic) < 0)
+        return NULL;
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, 0) < 0)
+        goto error;
+
+    return panic;
+error:
+    virDomainPanicDefFree(panic);
+    return NULL;
+}
 
 /* Parse the XML definition for a vcpupin or emulatorpin.
  *
@@ -12561,6 +12588,27 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    /* analysis of the panic devices */
+    def->panic = NULL;
+    if ((n = virXPathNodeSet("./devices/panic", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single panic device is supported"));
+        goto error;
+    }
+    if (n > 0) {
+        virDomainPanicDefPtr panic =
+            virDomainPanicDefParseXML(nodes[0]);
+        if (!panic)
+            goto error;
+
+        def->panic = panic;
+        VIR_FREE(nodes);
+    }
+
+
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
         goto error;
@@ -13657,6 +13705,13 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
     return true;
 }
 
+static bool
+virDomainPanicCheckABIStability(virDomainPanicDefPtr src,
+                                virDomainPanicDefPtr dst)
+{
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
+}
+
 
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
@@ -13996,6 +14051,9 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
 
     if (!virDomainRNGDefCheckABIStability(src->rng, dst->rng))
+        return false;
+
+    if (!virDomainPanicCheckABIStability(src->panic, dst->panic))
         return false;
 
     return true;
@@ -15861,6 +15919,16 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static int virDomainPanicDefFormat(virBufferPtr buf,
+                                     virDomainPanicDefPtr def)
+{
+    virBufferAddLit(buf, "    <panic>\n");
+    if (virDomainDeviceInfoFormat(buf, &def->info, 0) < 0)
+        return -1;
+    virBufferAddLit(buf, "    </panic>\n");
+
+    return 0;
+}
 
 static int
 virDomainRNGDefFormat(virBufferPtr buf,
@@ -17292,6 +17360,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->nvram)
         virDomainNVRAMDefFormat(buf, def->nvram, flags);
+
+    if (def->panic &&
+        virDomainPanicDefFormat(buf, def->panic) < 0)
+        goto error;
 
     virBufferAddLit(buf, "  </devices>\n");
 

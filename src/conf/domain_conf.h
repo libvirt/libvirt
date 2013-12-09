@@ -126,6 +126,9 @@ typedef virDomainIdMapEntry *virDomainIdMapEntryPtr;
 typedef struct _virDomainIdMapDef virDomainIdMapDef;
 typedef virDomainIdMapDef *virDomainIdMapDefPtr;
 
+typedef struct _virDomainPanicDef virDomainPanicDef;
+typedef virDomainPanicDef *virDomainPanicDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -1920,6 +1923,11 @@ struct _virDomainIdMapDef {
 };
 
 
+struct _virDomainPanicDef {
+    virDomainDeviceInfo info;
+};
+
+
 void virBlkioDeviceArrayClear(virBlkioDevicePtr deviceWeights,
                               int ndevices);
 
@@ -2071,6 +2079,7 @@ struct _virDomainDef {
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
     virDomainRNGDefPtr rng;
+    virDomainPanicDefPtr panic;
 
     void *namespaceData;
     virDomainXMLNamespace ns;
@@ -2214,6 +2223,7 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
 bool virDomainObjTaint(virDomainObjPtr obj,
                        enum virDomainTaintFlags taint);
 
+void virDomainPanicDefFree(virDomainPanicDefPtr panic);
 void virDomainResourceDefFree(virDomainResourceDefPtr resource);
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);

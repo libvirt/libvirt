@@ -5088,6 +5088,34 @@ qemu-kvm -net nic,model=? /dev/null
     </dd>
   </dl>
 
+    <h4><a name="elementsPanic">panic device</a></h4>
+    <p>
+      panic device enables libvirt to receive panic notification from a QEMU
+      guest.
+      <span class="since">Since 1.2.1, QEMU and KVM only</span>
+    </p>
+    <p>
+      Example: usage of panic configuration
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;panic&gt;
+      &lt;address type='isa' iobase='0x505'/&gt;
+    &lt;/panic&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+  <dl>
+    <dt><code>address</code></dt>
+    <dd>
+      <p>
+        address of panic. The default ioport is 0x505. Most users
+        don't need to specify an address.
+      </p>
+    </dd>
+  </dl>
+
     <h3><a name="seclabel">Security label</a></h3>
 
     <p>

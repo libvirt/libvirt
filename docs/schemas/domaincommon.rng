@@ -3556,6 +3556,9 @@
         <optional>
           <ref name="nvram"/>
         </optional>
+        <optional>
+          <ref name="panic"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -4414,5 +4417,12 @@
         <param name="maxInclusive">65535</param>
       </data>
     </choice>
+  </define>
+  <define name="panic">
+    <element name="panic">
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </element>
   </define>
 </grammar>
