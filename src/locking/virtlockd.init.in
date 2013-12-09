@@ -5,7 +5,8 @@
 #
 ### BEGIN INIT INFO
 # Provides: virtlockd
-# Default-Start: 3 4 5
+# Default-Start:
+# Default-Stop: 0 1 2 3 4 5 6
 # Short-Description: virtual machine lock manager
 # Description: This is a daemon for managing locks
 #              on virtual machine disk images
@@ -15,12 +16,12 @@
 #
 # virtlockd:   virtual machine lock manager
 #
-# chkconfig: 345 97 03
+# chkconfig: - 96 04
 # description:  This is a daemon for managing locks \
 #               on virtual machine disk images
 #
 # processname: virtlockd
-# pidfile: @localstatedir@/run/libvirt/virtlockd.pid
+# pidfile: @localstatedir@/run/virtlockd.pid
 #
 
 # Source function library.
@@ -28,7 +29,7 @@
 
 SERVICE=virtlockd
 PROCESS=virtlockd
-PIDFILE=@localstatedir@/run/libvirt/lockd/$SERVICE.pid
+PIDFILE=@localstatedir@/run/$SERVICE.pid
 
 VIRTLOCKD_ARGS=
 
@@ -64,7 +65,7 @@ restart() {
 reload() {
     echo -n $"Reloading $SERVICE configuration: "
 
-    killproc -p $PIDFILE $PROCESS -HUP
+    killproc -p $PIDFILE $PROCESS -USR1
     RETVAL=$?
     echo
     return $RETVAL

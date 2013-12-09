@@ -9,9 +9,11 @@
 # Should-Start: $named
 # Should-Start: xend
 # Should-Start: avahi-daemon
+# Should-Start: virtlockd
 # Required-Stop: $network messagebus
 # Should-Stop: $named
 # Default-Start: 3 4 5
+# Default-Stop: 0 1 2 6
 # Short-Description: daemon for libvirt virtualization API
 # Description: This is a daemon for managing guest instances
 #              and libvirt virtual networks
