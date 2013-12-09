@@ -1591,12 +1591,11 @@ done
 
     %if %{with_systemd}
         %if %{with_systemd_macros}
-            %systemd_post libvirtd.service
+            %systemd_post virtlockd.socket libvirtd.service
         %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
-    /bin/systemctl enable virtlockd.socket >/dev/null 2>&1 || :
-    /bin/systemctl enable libvirtd.service >/dev/null 2>&1 || :
+    /bin/systemctl enable virtlockd.socket libvirtd.service >/dev/null 2>&1 || :
 fi
         %endif
     %else
@@ -1611,46 +1610,50 @@ fi
         %endif
 
 /sbin/chkconfig --add libvirtd
-if [ "$1" -ge "1" ]; then
-    /sbin/service libvirtd condrestart > /dev/null 2>&1
-fi
+/sbin/chkconfig --add virtlockd
     %endif
 
 %preun daemon
     %if %{with_systemd}
         %if %{with_systemd_macros}
-            %systemd_preun libvirtd.service
+            %systemd_preun libvirtd.service virtlockd.socket virtlockd.service
         %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable virtlockd.socket > /dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable libvirtd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop libvirtd.service > /dev/null 2>&1 || :
-    /bin/systemctl stop virtlockd.service > /dev/null 2>&1 || :
+    /bin/systemctl --no-reload disable libvirtd.service virtlockd.socket virtlockd.service > /dev/null 2>&1 || :
+    /bin/systemctl stop libvirtd.service virtlockd.socket virtlockd.service > /dev/null 2>&1 || :
 fi
         %endif
     %else
 if [ $1 = 0 ]; then
     /sbin/service libvirtd stop 1>/dev/null 2>&1
     /sbin/chkconfig --del libvirtd
+    /sbin/service virtlockd stop 1>/dev/null 2>&1
+    /sbin/chkconfig --del virtlockd
 fi
     %endif
 
 %postun daemon
     %if %{with_systemd}
-        %if %{with_systemd_macros}
-            %systemd_postun_with_restart libvirtd.service
-        %else
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl status virtlockd.service >/dev/null 2>&1
-    if [ $? = 1 ] ; then
-        /bin/systemctl kill --signal=USR1 virtlockd.service >/dev/null 2>&1 || :
-    fi
+    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
 fi
-        %endif
+    %else
+if [ $1 -ge 1 ]; then
+    /sbin/service virtlockd reload > /dev/null 2>&1 || :
+    /sbin/service libvirtd condrestart > /dev/null 2>&1
+fi
+    %endif
+
+    %if %{with_systemd}
+    %else
+%triggerpostun daemon -- libvirt-daemon < 1.2.1
+if [ "$1" -ge "1" ]; then
+    /sbin/service virtlockd reload > /dev/null 2>&1 || :
+    /sbin/service libvirtd condrestart > /dev/null 2>&1
+fi
     %endif
 
     %if %{with_network}
