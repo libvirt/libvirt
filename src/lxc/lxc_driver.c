@@ -884,15 +884,17 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                              int *nparams,
                              unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
-    int i;
+    virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
+    virLXCDomainObjPrivatePtr priv = NULL;
+    virLXCDriverPtr driver = dom->conn->privateData;
     unsigned long long val;
     int ret = -1;
     int rc;
-    virLXCDomainObjPrivatePtr priv;
+    int i;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     lxcDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
@@ -906,8 +908,17 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     }
     priv = vm->privateData;
 
-    if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0 ||
+        virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
+                                        vm, &flags, &vmdef) < 0)
         goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cgroup memory controller is not mounted"));
+        goto cleanup;
+    }
 
     if ((*nparams) == 0) {
         /* Current number of memory parameters supported by cgroups */
@@ -922,8 +933,10 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
         switch (i) {
         case 0: /* fill memory hard limit here */
-            rc = virCgroupGetMemoryHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                val = vmdef->mem.hard_limit;
+                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+            } else if ((rc = virCgroupGetMemoryHardLimit(priv->cgroup, &val)) != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get memory hard limit"));
                 goto cleanup;
@@ -933,8 +946,10 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                 goto cleanup;
             break;
         case 1: /* fill memory soft limit here */
-            rc = virCgroupGetMemorySoftLimit(priv->cgroup, &val);
-            if (rc != 0) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                val = vmdef->mem.soft_limit;
+                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+            } else if ((rc = virCgroupGetMemorySoftLimit(priv->cgroup, &val)) != 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get memory soft limit"));
                 goto cleanup;
@@ -944,8 +959,10 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                 goto cleanup;
             break;
         case 2: /* fill swap hard limit here */
-            rc = virCgroupGetMemSwapHardLimit(priv->cgroup, &val);
-            if (rc != 0) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                val = vmdef->mem.swap_hard_limit;
+                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+            } else if ((rc = virCgroupGetMemSwapHardLimit(priv->cgroup, &val)) < 0) {
                 virReportSystemError(-rc, "%s",
                                      _("unable to get swap hard limit"));
                 goto cleanup;
