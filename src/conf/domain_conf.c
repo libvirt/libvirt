@@ -16643,28 +16643,32 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     /* add memtune only if there are any */
-    if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
-        def->mem.swap_hard_limit)
+    if ((def->mem.hard_limit &&
+         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+        (def->mem.soft_limit &&
+         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+        (def->mem.swap_hard_limit &&
+         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+        def->mem.min_guarantee) {
         virBufferAddLit(buf, "  <memtune>\n");
-    if (def->mem.hard_limit) {
-        virBufferAsprintf(buf, "    <hard_limit unit='KiB'>"
-                          "%llu</hard_limit>\n", def->mem.hard_limit);
-    }
-    if (def->mem.soft_limit) {
-        virBufferAsprintf(buf, "    <soft_limit unit='KiB'>"
-                          "%llu</soft_limit>\n", def->mem.soft_limit);
-    }
-    if (def->mem.min_guarantee) {
-        virBufferAsprintf(buf, "    <min_guarantee unit='KiB'>"
-                          "%llu</min_guarantee>\n", def->mem.min_guarantee);
-    }
-    if (def->mem.swap_hard_limit) {
-        virBufferAsprintf(buf, "    <swap_hard_limit unit='KiB'>"
-                          "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
-    }
-    if (def->mem.hard_limit || def->mem.soft_limit || def->mem.min_guarantee ||
-        def->mem.swap_hard_limit)
+        if (def->mem.hard_limit) {
+            virBufferAsprintf(buf, "    <hard_limit unit='KiB'>"
+                              "%llu</hard_limit>\n", def->mem.hard_limit);
+        }
+        if (def->mem.soft_limit) {
+            virBufferAsprintf(buf, "    <soft_limit unit='KiB'>"
+                              "%llu</soft_limit>\n", def->mem.soft_limit);
+        }
+        if (def->mem.min_guarantee) {
+            virBufferAsprintf(buf, "    <min_guarantee unit='KiB'>"
+                              "%llu</min_guarantee>\n", def->mem.min_guarantee);
+        }
+        if (def->mem.swap_hard_limit) {
+            virBufferAsprintf(buf, "    <swap_hard_limit unit='KiB'>"
+                              "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
+        }
         virBufferAddLit(buf, "  </memtune>\n");
+    }
 
     if (def->mem.hugepage_backed || def->mem.nosharepages || def->mem.locked) {
         virBufferAddLit(buf, "  <memoryBacking>\n");

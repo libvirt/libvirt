@@ -1126,6 +1126,7 @@ mymain(void)
                     QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
 
     DO_TEST("memtune", QEMU_CAPS_NAME);
+    DO_TEST("memtune-unlimited", QEMU_CAPS_NAME);
     DO_TEST("blkiotune", QEMU_CAPS_NAME);
     DO_TEST("blkiotune-device", QEMU_CAPS_NAME);
     DO_TEST("cputune", QEMU_CAPS_NAME);
