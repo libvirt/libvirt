@@ -1306,6 +1306,9 @@ mymain(void)
     DO_TEST("kvm-pit-device", QEMU_CAPS_NO_KVM_PIT,
             QEMU_CAPS_KVM_PIT_TICK_POLICY);
 
+    DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

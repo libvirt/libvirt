@@ -199,6 +199,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_ICH9_INTEL_HDA = 158, /* -device ich9-intel-hda */
     QEMU_CAPS_KVM_PIT_TICK_POLICY = 159, /* kvm-pit.lost_tick_policy */
     QEMU_CAPS_BOOT_STRICT        = 160, /* -boot strict */
+    QEMU_CAPS_DEVICE_PANIC       = 161, /* -device pvpanic */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

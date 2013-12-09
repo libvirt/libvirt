@@ -323,6 +323,8 @@ mymain(void)
     DO_TEST("pcihole64-none");
     DO_TEST("pcihole64-q35");
 
+    DO_TEST("panic");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

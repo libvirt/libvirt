@@ -9621,6 +9621,22 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
     }
 
+    if (def->panic) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
+            if (def->panic->info.addr.isa.iobase > 0) {
+                virCommandAddArg(cmd, "-device");
+                virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
+                                       def->panic->info.addr.isa.iobase);
+            } else {
+                virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
+            }
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("your QEMU is too old to support pvpanic"));
+            goto error;
+        }
+    }
+
     if (mlock) {
         unsigned long long memKB;
 

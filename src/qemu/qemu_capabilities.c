@@ -245,6 +245,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "kvm-pit-lost-tick-policy",
 
               "boot-strict", /* 160 */
+              "pvpanic", /* 161 */
     );
 
 struct _virQEMUCaps {
@@ -1396,6 +1397,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-storage", QEMU_CAPS_DEVICE_USB_STORAGE },
     { "virtio-mmio", QEMU_CAPS_DEVICE_VIRTIO_MMIO },
     { "ich9-intel-hda", QEMU_CAPS_DEVICE_ICH9_INTEL_HDA },
+    { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
