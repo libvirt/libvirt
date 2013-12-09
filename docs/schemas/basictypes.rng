@@ -380,4 +380,21 @@
     </element>
   </define>
 
+  <define name="isaaddress">
+    <optional>
+      <attribute name="iobase">
+        <data type="string">
+          <param name="pattern">0x[a-fA-F0-9]{1,4}</param>
+        </data>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="irq">
+        <data type="string">
+          <param name="pattern">0x[a-fA-F0-9]</param>
+        </data>
+      </attribute>
+    </optional>
+  </define>
+
 </grammar>

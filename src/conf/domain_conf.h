@@ -208,6 +208,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -284,6 +285,13 @@ struct _virDomainDeviceUSBMaster {
     unsigned int startport;
 };
 
+typedef struct _virDomainDeviceISAAddress virDomainDeviceISAAddress;
+typedef virDomainDeviceISAAddress *virDomainDeviceISAAddressPtr;
+struct _virDomainDeviceISAAddress {
+    unsigned int iobase;
+    unsigned int irq;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -301,6 +309,7 @@ struct _virDomainDeviceInfo {
         virDomainDeviceUSBAddress usb;
         virDomainDeviceSpaprVioAddress spaprvio;
         virDomainDeviceCCWAddress ccw;
+        virDomainDeviceISAAddress isa;
     } addr;
     int mastertype;
     union {

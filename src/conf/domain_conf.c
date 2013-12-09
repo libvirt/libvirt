@@ -212,7 +212,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "spapr-vio",
               "virtio-s390",
               "ccw",
-              "virtio-mmio")
+              "virtio-mmio",
+              "isa")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -3113,6 +3114,13 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+        if (info->addr.isa.iobase > 0)
+            virBufferAsprintf(buf, " iobase='0x%x'", info->addr.isa.iobase);
+        if (info->addr.isa.irq > 0)
+            virBufferAsprintf(buf, " irq='0x%x'", info->addr.isa.irq);
+        break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown address type '%d'"), info->type);
@@ -3449,6 +3457,40 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainDeviceISAAddressParseXML(xmlNodePtr node,
+                                  virDomainDeviceISAAddressPtr addr)
+{
+    int ret = -1;
+    char *iobase;
+    char *irq;
+
+    memset(addr, 0, sizeof(*addr));
+
+    iobase = virXMLPropString(node, "iobase");
+    irq = virXMLPropString(node, "irq");
+
+    if (iobase &&
+        virStrToLong_ui(iobase, NULL, 16, &addr->iobase) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <address> 'iobase' attribute"));
+        goto cleanup;
+    }
+
+    if (irq &&
+        virStrToLong_ui(irq, NULL, 16, &addr->irq) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <address> 'irq' attribute"));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(iobase);
+    VIR_FREE(irq);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -3578,6 +3620,11 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+        if (virDomainDeviceISAAddressParseXML(address, &info->addr.isa) < 0)
+            goto cleanup;
         break;
 
     default:
@@ -12974,6 +13021,20 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
                            dst->addr.ccid.slot,
                            src->addr.ccid.controller,
                            src->addr.ccid.slot);
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+        if (src->addr.isa.iobase != dst->addr.isa.iobase ||
+            src->addr.isa.irq != dst->addr.isa.irq) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target device isa address %d:%d "
+                             "does not match source %d:%d"),
+                           dst->addr.isa.iobase,
+                           dst->addr.isa.irq,
+                           src->addr.isa.iobase,
+                           src->addr.isa.irq);
             return false;
         }
         break;

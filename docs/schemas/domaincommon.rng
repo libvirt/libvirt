@@ -3921,6 +3921,12 @@
           </attribute>
           <ref name="ccwaddress"/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>isa</value>
+          </attribute>
+          <ref name="isaaddress"/>
+        </group>
       </choice>
     </element>
   </define>

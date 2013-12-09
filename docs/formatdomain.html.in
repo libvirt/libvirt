@@ -2428,6 +2428,11 @@
         operating system.
         <span class="since">Since 1.0.4</span>
       </dd>
+      <dt><code>type='isa'</code></dt>
+      <dd>ISA addresses have the following additional
+        attributes: <code>iobase</code> and <code>irq</code>.
+        <span class="since">Since 1.2.1</span>
+      </dd>
     </dl>
 
     <h4><a name="elementsControllers">Controllers</a></h4>
