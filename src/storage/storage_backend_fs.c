@@ -962,11 +962,9 @@ virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 /**
  * @conn connection to report errors against
- * @pool storage pool to build
+ * @pool storage pool to delete
  *
- * Build a directory or FS based storage pool.
- *
- *  - If it is a FS based pool, mounts the unlying source device on the pool
+ * Delete a directory based storage pool
  *
  * Returns 0 on success, -1 on error
  */
