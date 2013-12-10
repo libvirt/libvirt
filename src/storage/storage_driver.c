@@ -1495,7 +1495,98 @@ cleanup:
     return ret;
 }
 
-static int storageVolDelete(virStorageVolPtr obj, unsigned int flags);
+
+static int
+storageVolDelete(virStorageVolPtr obj,
+                 unsigned int flags)
+{
+    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
+    virStoragePoolObjPtr pool;
+    virStorageBackendPtr backend;
+    virStorageVolDefPtr vol = NULL;
+    size_t i;
+    int ret = -1;
+
+    storageDriverLock(driver);
+    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
+    storageDriverUnlock(driver);
+
+    if (!pool) {
+        virReportError(VIR_ERR_NO_STORAGE_POOL,
+                       _("no storage pool with matching name '%s'"),
+                       obj->pool);
+        goto cleanup;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is not active"), pool->def->name);
+        goto cleanup;
+    }
+
+    if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
+        goto cleanup;
+
+    vol = virStorageVolDefFindByName(pool, obj->name);
+
+    if (!vol) {
+        virReportError(VIR_ERR_NO_STORAGE_VOL,
+                       _("no storage vol with matching name '%s'"),
+                       obj->name);
+        goto cleanup;
+    }
+
+    if (virStorageVolDeleteEnsureACL(obj->conn, pool->def, vol) < 0)
+        goto cleanup;
+
+    if (vol->building) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume '%s' is still being allocated."),
+                       vol->name);
+        goto cleanup;
+    }
+
+    if (!backend->deleteVol) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       "%s", _("storage pool does not support vol deletion"));
+
+        goto cleanup;
+    }
+
+    if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
+        goto cleanup;
+
+    /* Update pool metadata */
+    pool->def->allocation -= vol->allocation;
+    pool->def->available += vol->allocation;
+
+    for (i = 0; i < pool->volumes.count; i++) {
+        if (pool->volumes.objs[i] == vol) {
+            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
+                     vol->name, pool->def->name);
+            virStorageVolDefFree(vol);
+            vol = NULL;
+
+            if (i < (pool->volumes.count - 1))
+                memmove(pool->volumes.objs + i, pool->volumes.objs + i + 1,
+                        sizeof(*(pool->volumes.objs)) * (pool->volumes.count - (i + 1)));
+
+            if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            pool->volumes.count--;
+
+            break;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+    return ret;
+}
+
 
 static virStorageVolPtr
 storageVolCreateXML(virStoragePoolPtr obj,
@@ -2320,95 +2411,6 @@ storageVolWipe(virStorageVolPtr obj,
     return storageVolWipePattern(obj, VIR_STORAGE_VOL_WIPE_ALG_ZERO, flags);
 }
 
-static int
-storageVolDelete(virStorageVolPtr obj,
-                 unsigned int flags) {
-    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
-    virStoragePoolObjPtr pool;
-    virStorageBackendPtr backend;
-    virStorageVolDefPtr vol = NULL;
-    size_t i;
-    int ret = -1;
-
-    storageDriverLock(driver);
-    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
-    storageDriverUnlock(driver);
-
-    if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching name '%s'"),
-                       obj->pool);
-        goto cleanup;
-    }
-
-    if (!virStoragePoolObjIsActive(pool)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("storage pool '%s' is not active"), pool->def->name);
-        goto cleanup;
-    }
-
-    if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
-        goto cleanup;
-
-    vol = virStorageVolDefFindByName(pool, obj->name);
-
-    if (!vol) {
-        virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("no storage vol with matching name '%s'"),
-                       obj->name);
-        goto cleanup;
-    }
-
-    if (virStorageVolDeleteEnsureACL(obj->conn, pool->def, vol) < 0)
-        goto cleanup;
-
-    if (vol->building) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("volume '%s' is still being allocated."),
-                       vol->name);
-        goto cleanup;
-    }
-
-    if (!backend->deleteVol) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       "%s", _("storage pool does not support vol deletion"));
-
-        goto cleanup;
-    }
-
-    if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
-        goto cleanup;
-
-    /* Update pool metadata */
-    pool->def->allocation -= vol->allocation;
-    pool->def->available += vol->allocation;
-
-    for (i = 0; i < pool->volumes.count; i++) {
-        if (pool->volumes.objs[i] == vol) {
-            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
-                     vol->name, pool->def->name);
-            virStorageVolDefFree(vol);
-            vol = NULL;
-
-            if (i < (pool->volumes.count - 1))
-                memmove(pool->volumes.objs + i, pool->volumes.objs + i + 1,
-                        sizeof(*(pool->volumes.objs)) * (pool->volumes.count - (i + 1)));
-
-            if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            pool->volumes.count--;
-
-            break;
-        }
-    }
-    ret = 0;
-
-cleanup:
-    if (pool)
-        virStoragePoolObjUnlock(pool);
-    return ret;
-}
 
 static int
 storageVolGetInfo(virStorageVolPtr obj,
