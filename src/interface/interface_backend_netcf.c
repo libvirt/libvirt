@@ -944,6 +944,7 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
     struct netcf_if *iface = NULL;
     virInterfaceDefPtr def = NULL;
     int ret = -1;
+    bool active;
 
     virCheckFlags(0, -1);
 
@@ -961,6 +962,15 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
 
     if (virInterfaceCreateEnsureACL(ifinfo->conn, def) < 0)
        goto cleanup;
+
+    if (netcfInterfaceObjIsActive(iface, &active) < 0)
+        goto cleanup;
+
+    if (active) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("interface is already running"));
+        goto cleanup;
+    }
 
     ret = ncf_if_up(iface);
     if (ret < 0) {
@@ -987,6 +997,7 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
     struct netcf_if *iface = NULL;
     virInterfaceDefPtr def = NULL;
     int ret = -1;
+    bool active;
 
     virCheckFlags(0, -1);
 
@@ -1004,6 +1015,15 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
 
     if (virInterfaceDestroyEnsureACL(ifinfo->conn, def) < 0)
        goto cleanup;
+
+    if (netcfInterfaceObjIsActive(iface, &active) < 0)
+        goto cleanup;
+
+    if (!active) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("interface is not running"));
+        goto cleanup;
+    }
 
     ret = ncf_if_down(iface);
     if (ret < 0) {
