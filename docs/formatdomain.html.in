@@ -639,7 +639,7 @@
       <dd>When set and supported by the hypervisor, memory pages belonging
         to the domain will be locked in host's memory and the host will not
         be allowed to swap them out. For QEMU/KVM this requires
-        <code>hard_limit</code> <a href="#elementsMemoryTuning">memory tunning</a>
+        <code>hard_limit</code> <a href="#elementsMemoryTuning">memory tuning</a>
         element to be used and set to the maximum memory configured for the
         domain plus any memory consumed by the QEMU process itself.
         <span class="since">Since 1.0.6</span></dd>
