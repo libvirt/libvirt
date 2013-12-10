@@ -227,7 +227,10 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
 
     tmp = state->uri->path;
-    state->uri->path = vol->key;
+    if (virAsprintf(&vol->key, "%s%s", state->uri->path, name) < 0) {
+        state->uri->path = tmp;
+        goto cleanup;
+    }
     if (!(vol->target.path = virURIFormat(state->uri))) {
         state->uri->path = tmp;
         goto cleanup;
