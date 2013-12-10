@@ -1093,13 +1093,6 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
         }
-    } else {
-        VIR_DEBUG("Binding %s readwrite", fs->dst);
-        if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT, NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to make directory %s readwrite"),
-                                 fs->dst);
-        }
     }
 
     ret = 0;
