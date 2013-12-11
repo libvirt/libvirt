@@ -382,8 +382,72 @@ cleanup:
     return ret;
 }
 
+
+static int
+virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol,
+                                  unsigned int flags)
+{
+    virStorageBackendGlusterStatePtr state = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    switch ((virStorageVolType) vol->type) {
+    case VIR_STORAGE_VOL_FILE:
+    case VIR_STORAGE_VOL_DIR:
+    case VIR_STORAGE_VOL_BLOCK:
+    case VIR_STORAGE_VOL_LAST:
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("removing of '%s' volumes is not supported "
+                         "by the gluster backend: %s"),
+                       virStorageVolTypeToString(vol->type),
+                       vol->target.path);
+        goto cleanup;
+        break;
+
+    case VIR_STORAGE_VOL_NETWORK:
+        if (!(state = virStorageBackendGlusterOpen(pool)))
+            goto cleanup;
+
+        if (glfs_unlink(state->vol, vol->name) < 0) {
+            if (errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("cannot remove gluster volume file '%s'"),
+                                     vol->target.path);
+                goto cleanup;
+            }
+        }
+        break;
+
+    case VIR_STORAGE_VOL_NETDIR:
+        if (!(state = virStorageBackendGlusterOpen(pool)))
+            goto cleanup;
+
+        if (glfs_rmdir(state->vol, vol->target.path) < 0) {
+            if (errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("cannot remove gluster volume dir '%s'"),
+                                     vol->target.path);
+                goto cleanup;
+            }
+        }
+        break;
+    }
+
+    ret = 0;
+
+cleanup:
+    virStorageBackendGlusterClose(state);
+    return ret;
+}
+
+
 virStorageBackend virStorageBackendGluster = {
     .type = VIR_STORAGE_POOL_GLUSTER,
 
     .refreshPool = virStorageBackendGlusterRefreshPool,
+
+    .deleteVol = virStorageBackendGlusterVolDelete,
 };
