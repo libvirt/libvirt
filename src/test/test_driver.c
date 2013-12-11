@@ -45,6 +45,7 @@
 #include "interface_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
+#include "network_event.h"
 #include "snapshot_conf.h"
 #include "fdstream.h"
 #include "storage_conf.h"
@@ -3529,6 +3530,7 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml) {
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
     virNetworkPtr ret = NULL;
+    virObjectEventPtr event = NULL;
 
     testDriverLock(privconn);
     if ((def = virNetworkDefParseString(xml)) == NULL)
@@ -3539,10 +3541,15 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml) {
     def = NULL;
     net->active = 1;
 
+    event = virNetworkEventLifecycleNew(net->def->name, net->def->uuid,
+                                        VIR_NETWORK_EVENT_STARTED);
+
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
 cleanup:
     virNetworkDefFree(def);
+    if (event)
+        testObjectEventQueue(privconn, event);
     if (net)
         virNetworkObjUnlock(net);
     testDriverUnlock(privconn);
@@ -3556,6 +3563,7 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
     virNetworkPtr ret = NULL;
+    virObjectEventPtr event = NULL;
 
     testDriverLock(privconn);
     if ((def = virNetworkDefParseString(xml)) == NULL)
@@ -3566,10 +3574,15 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     def = NULL;
     net->persistent = 1;
 
+    event = virNetworkEventLifecycleNew(net->def->name, net->def->uuid,
+                                        VIR_NETWORK_EVENT_DEFINED);
+
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
 cleanup:
     virNetworkDefFree(def);
+    if (event)
+        testObjectEventQueue(privconn, event);
     if (net)
         virNetworkObjUnlock(net);
     testDriverUnlock(privconn);
@@ -3580,6 +3593,7 @@ static int testNetworkUndefine(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
+    virObjectEventPtr event = NULL;
 
     testDriverLock(privconn);
     privnet = virNetworkFindByName(&privconn->networks,
@@ -3596,12 +3610,17 @@ static int testNetworkUndefine(virNetworkPtr network) {
         goto cleanup;
     }
 
+    event = virNetworkEventLifecycleNew(network->name, network->uuid,
+                                        VIR_NETWORK_EVENT_UNDEFINED);
+
     virNetworkRemoveInactive(&privconn->networks,
                              privnet);
     privnet = NULL;
     ret = 0;
 
 cleanup:
+    if (event)
+        testObjectEventQueue(privconn, event);
     if (privnet)
         virNetworkObjUnlock(privnet);
     testDriverUnlock(privconn);
@@ -3660,6 +3679,7 @@ static int testNetworkCreate(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
+    virObjectEventPtr event = NULL;
 
     testDriverLock(privconn);
     privnet = virNetworkFindByName(&privconn->networks,
@@ -3678,9 +3698,13 @@ static int testNetworkCreate(virNetworkPtr network) {
     }
 
     privnet->active = 1;
+    event = virNetworkEventLifecycleNew(privnet->def->name, privnet->def->uuid,
+                                        VIR_NETWORK_EVENT_STARTED);
     ret = 0;
 
 cleanup:
+    if (event)
+        testObjectEventQueue(privconn, event);
     if (privnet)
         virNetworkObjUnlock(privnet);
     return ret;
@@ -3690,6 +3714,7 @@ static int testNetworkDestroy(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
+    virObjectEventPtr event = NULL;
 
     testDriverLock(privconn);
     privnet = virNetworkFindByName(&privconn->networks,
@@ -3701,6 +3726,8 @@ static int testNetworkDestroy(virNetworkPtr network) {
     }
 
     privnet->active = 0;
+    event = virNetworkEventLifecycleNew(privnet->def->name, privnet->def->uuid,
+                                        VIR_NETWORK_EVENT_STOPPED);
     if (!privnet->persistent) {
         virNetworkRemoveInactive(&privconn->networks,
                                  privnet);
@@ -3709,6 +3736,8 @@ static int testNetworkDestroy(virNetworkPtr network) {
     ret = 0;
 
 cleanup:
+    if (event)
+        testObjectEventQueue(privconn, event);
     if (privnet)
         virNetworkObjUnlock(privnet);
     testDriverUnlock(privconn);
@@ -6027,6 +6056,46 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
 }
 
 
+static int
+testConnectNetworkEventRegisterAny(virConnectPtr conn,
+                                   virNetworkPtr net,
+                                   int eventID,
+                                   virConnectNetworkEventGenericCallback callback,
+                                   void *opaque,
+                                   virFreeCallback freecb)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    if (virNetworkEventStateRegisterID(conn,
+                                       driver->domainEventState,
+                                       net, eventID,
+                                       VIR_OBJECT_EVENT_CALLBACK(callback),
+                                       opaque, freecb, &ret) < 0)
+        ret = -1;
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
+static int
+testConnectNetworkEventDeregisterAny(virConnectPtr conn,
+                                     int callbackID)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    ret = virObjectEventStateDeregisterID(conn,
+                                          driver->domainEventState,
+                                          callbackID);
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
+
 /* driver must be locked before calling */
 static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event)
@@ -7205,6 +7274,8 @@ static virNetworkDriver testNetworkDriver = {
     .connectNumOfDefinedNetworks = testConnectNumOfDefinedNetworks, /* 0.3.2 */
     .connectListDefinedNetworks = testConnectListDefinedNetworks, /* 0.3.2 */
     .connectListAllNetworks = testConnectListAllNetworks, /* 0.10.2 */
+    .connectNetworkEventRegisterAny = testConnectNetworkEventRegisterAny, /* 1.2.1 */
+    .connectNetworkEventDeregisterAny = testConnectNetworkEventDeregisterAny, /* 1.2.1 */
     .networkLookupByUUID = testNetworkLookupByUUID, /* 0.3.2 */
     .networkLookupByName = testNetworkLookupByName, /* 0.3.2 */
     .networkCreateXML = testNetworkCreateXML, /* 0.3.2 */
