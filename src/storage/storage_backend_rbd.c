@@ -314,8 +314,8 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
         goto cleanup;
     }
 
-    struct rados_cluster_stat_t stat;
-    if (rados_cluster_stat(ptr.cluster, &stat) < 0) {
+    struct rados_cluster_stat_t clusterstat;
+    if (rados_cluster_stat(ptr.cluster, &clusterstat) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to stat the RADOS cluster"));
         goto cleanup;
@@ -329,13 +329,13 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
         goto cleanup;
     }
 
-    pool->def->capacity = stat.kb * 1024;
-    pool->def->available = stat.kb_avail * 1024;
+    pool->def->capacity = clusterstat.kb * 1024;
+    pool->def->available = clusterstat.kb_avail * 1024;
     pool->def->allocation = poolstat.num_bytes;
 
     VIR_DEBUG("Utilization of RBD pool %s: (kb: %llu kb_avail: %llu num_bytes: %llu)",
-              pool->def->source.name, (unsigned long long)stat.kb,
-              (unsigned long long)stat.kb_avail,
+              pool->def->source.name, (unsigned long long)clusterstat.kb,
+              (unsigned long long)clusterstat.kb_avail,
               (unsigned long long)poolstat.num_bytes);
 
     while (true) {
