@@ -646,6 +646,8 @@ virObjectEventStateDispatchFunc(virConnectPtr conn,
         virNetworkEventDispatchDefaultFunc(conn, event,
                 VIR_NETWORK_EVENT_CALLBACK(cb), cbopaque, NULL);
         break;
+    default:
+        VIR_ERROR(_("Unknown event namespace to dispatch"));
     }
     virObjectEventStateLock(state);
 }
