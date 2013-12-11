@@ -702,32 +702,16 @@ cleanup:
 
 
 static int
-virStorageBackendLogicalCreateVol(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
-                                  virStorageVolDefPtr vol)
+virStorageBackendLogicalBuildVol(virConnectPtr conn,
+                                 virStoragePoolObjPtr pool,
+                                 virStorageVolDefPtr vol,
+                                 unsigned int flags)
 {
     int fd = -1;
     virCommandPtr cmd = NULL;
     virErrorPtr err;
 
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
-        return -1;
-    }
-
-    vol->type = VIR_STORAGE_VOL_BLOCK;
-
-    if (vol->target.path != NULL) {
-        /* A target path passed to CreateVol has no meaning */
-        VIR_FREE(vol->target.path);
-    }
-
-    if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->target.path,
-                    vol->name) == -1)
-        return -1;
+    virCheckFlags(0, -1);
 
     cmd = virCommandNewArgList(LVCREATE,
                                "--name", vol->name,
@@ -786,7 +770,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 
     return 0;
 
- error:
+error:
     err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
     virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
@@ -794,6 +778,36 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     virSetError(err);
     virFreeError(err);
     return -1;
+}
+
+
+static int
+virStorageBackendLogicalCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol)
+{
+    if (vol->target.encryption != NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool does not support encrypted volumes"));
+        return -1;
+    }
+
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
+    VIR_FREE(vol->target.path);
+    if (virAsprintf(&vol->target.path, "%s/%s",
+                    pool->def->target.path,
+                    vol->name) == -1)
+        return -1;
+
+    if (virFileExists(vol->target.path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume target path '%s' already exists"),
+                       vol->target.path);
+        return -1;
+    }
+
+    return 0;
 }
 
 static int
@@ -823,7 +837,7 @@ virStorageBackend virStorageBackendLogical = {
     .refreshPool = virStorageBackendLogicalRefreshPool,
     .stopPool = virStorageBackendLogicalStopPool,
     .deletePool = virStorageBackendLogicalDeletePool,
-    .buildVol = NULL,
+    .buildVol = virStorageBackendLogicalBuildVol,
     .buildVolFrom = virStorageBackendLogicalBuildVolFrom,
     .createVol = virStorageBackendLogicalCreateVol,
     .deleteVol = virStorageBackendLogicalDeleteVol,
