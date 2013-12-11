@@ -1250,6 +1250,22 @@ static const vshCmdOptDef opts_blkiotune[] = {
      .type = VSH_OT_STRING,
      .help = N_("per-device IO Weights, in the form of /path/to/device,weight,...")
     },
+    {.name = "device-read-iops-sec",
+     .type = VSH_OT_STRING,
+     .help = N_("per-device read I/O limit per second, in the form of /path/to/device,read_iops_sec,...")
+    },
+    {.name = "device-write-iops-sec",
+     .type = VSH_OT_STRING,
+     .help = N_("per-device write I/O limit per second, in the form of /path/to/device,write_iops_sec,...")
+    },
+    {.name = "device-read-bytes-sec",
+     .type = VSH_OT_STRING,
+     .help = N_("per-device bytes read per second, in the form of /path/to/device,read_bytes_sec,...")
+    },
+    {.name = "device-write-bytes-sec",
+     .type = VSH_OT_STRING,
+     .help = N_("per-device bytes wrote per second, in the form of /path/to/device,write_bytes_sec,...")
+    },
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -1270,6 +1286,10 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 {
     virDomainPtr dom;
     const char *device_weight = NULL;
+    const char *device_riops = NULL;
+    const char *device_wiops = NULL;
+    const char *device_rbps = NULL;
+    const char *device_wbps = NULL;
     int weight = 0;
     int nparams = 0;
     int maxparams = 0;
@@ -1314,6 +1334,50 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         if (virTypedParamsAddString(&params, &nparams, &maxparams,
                                     VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
                                     device_weight) < 0)
+            goto save_error;
+    }
+
+    rv = vshCommandOptString(cmd, "device-read-iops-sec", &device_riops);
+    if (rv < 0) {
+        vshError(ctl, "%s", _("Unable to parse string parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS,
+                                    device_riops) < 0)
+            goto save_error;
+    }
+
+    rv = vshCommandOptString(cmd, "device-write-iops-sec", &device_wiops);
+    if (rv < 0) {
+        vshError(ctl, "%s", _("Unable to parse string parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS,
+                                    device_wiops) < 0)
+            goto save_error;
+    }
+
+    rv = vshCommandOptString(cmd, "device-read-bytes-sec", &device_rbps);
+    if (rv < 0) {
+        vshError(ctl, "%s", _("Unable to parse string parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLKIO_DEVICE_READ_BPS,
+                                    device_rbps) < 0)
+            goto save_error;
+    }
+
+    rv = vshCommandOptString(cmd, "device-write-bytes-sec", &device_wbps);
+    if (rv < 0) {
+        vshError(ctl, "%s", _("Unable to parse string parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                   VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS,
+                                   device_wbps) < 0)
             goto save_error;
     }
 

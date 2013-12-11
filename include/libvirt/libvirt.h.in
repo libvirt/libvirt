@@ -1806,6 +1806,51 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
 
 #define VIR_DOMAIN_BLKIO_DEVICE_WEIGHT "device_weight"
 
+/**
+ * VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS:
+ *
+ * Macro for the blkio tunable throttle.read_iops_device: it represents
+ * the number of reading the block device per second, as a string. The
+ * string is parsed as a series of /path/to/device, read_iops elements,
+ * separated by ','.
+ */
+
+#define VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS "device_read_iops_sec"
+
+
+/**
+ * VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS:
+ *
+ * Macro for the blkio tunable throttle.write_iops_device: it represents
+ * the number of writing the block device per second, as a string. The
+ * string is parsed as a series of /path/to/device, write_iops elements,
+ * separated by ','.
+ */
+#define VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS "device_write_iops_sec"
+
+
+/**
+ * VIR_DOMAIN_BLKIO_DEVICE_READ_BPS:
+ *
+ * Macro for the blkio tunable throttle.read_iops_device: it represents
+ * the bytes of reading the block device per second, as a string. The
+ * string is parsed as a series of /path/to/device, read_bps elements,
+ * separated by ','.
+ */
+#define VIR_DOMAIN_BLKIO_DEVICE_READ_BPS "device_read_bytes_sec"
+
+
+/**
+ * VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS:
+ *
+ * Macro for the blkio tunable throttle.read_iops_device: it represents
+ * the number of reading the block device per second, as a string. The
+ * string is parsed as a series of /path/to/device, write_bps elements,
+ * separated by ','.
+ */
+#define VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS "device_write_bytes_sec"
+
+
 /* Set Blkio tunables for the domain*/
 int     virDomainSetBlkioParameters(virDomainPtr domain,
                                     virTypedParameterPtr params,

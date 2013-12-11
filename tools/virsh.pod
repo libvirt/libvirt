@@ -1625,8 +1625,12 @@ The guaranteed minimum memory allocation for the guest.
 Specifying -1 as a value for these limits is interpreted as unlimited.
 
 =item B<blkiotune> I<domain> [I<--weight> B<weight>]
-[I<--device-weights> B<device-weights>] [[I<--config>]
-[I<--live>] | [I<--current>]]
+[I<--device-weights> B<device-weights>]
+[I<--device-read-iops-sec> B<device-read-iops-sec>]
+[I<--device-write-iops-sec> B<device-write-iops-sec>]
+[I<--device-read-bytes-sec> B<device-read-bytes-sec>]
+[I<--device-write-bytes-sec> B<device-write-bytes-sec>]
+[[I<--config>] [I<--live>] | [I<--current>]]
 
 Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
 I<--weight> is in range [100, 1000]. After kernel 2.6.39, the value
@@ -1638,6 +1642,34 @@ Each weight is in the range [100, 1000], [10, 1000] after kernel 2.6.39,
 or the value 0 to remove that device from per-device listings.
 Only the devices listed in the string are modified;
 any existing per-device weights for other devices remain unchanged.
+
+B<device-read-iops-sec> is a single string listing one or more device/read_iops_sec
+pairs, int the format of /path/to/device,read_iops_sec,/path/to/device,read_iops_sec.
+Each read_iops_sec is a number which type is unsigned int, value 0 to remove that
+device from per-decice listing.
+Only the devices listed in the string are modified;
+any existing per-device read_iops_sec for other devices remain unchanged.
+
+B<device-write-iops-sec> is a single string listing one or more device/write_iops_sec
+pairs, int the format of /path/to/device,write_iops_sec,/path/to/device,write_iops_sec.
+Each write_iops_sec is a number which type is unsigned int, value 0 to remove that
+device from per-decice listing.
+Only the devices listed in the string are modified;
+any existing per-device write_iops_sec for other devices remain unchanged.
+
+B<device-read-bytes-sec> is a single string listing one or more device/read_bytes_sec
+pairs, int the format of /path/to/device,read_bytes_sec,/path/to/device,read_bytes_sec.
+Each read_bytes_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-decice listing.
+Only the devices listed in the string are modified;
+any existing per-device read_bytes_sec for other devices remain unchanged.
+
+B<device-write-bytes-sec> is a single string listing one or more device/write_bytes_sec
+pairs, int the format of /path/to/device,write_bytes_sec,/path/to/device,write_bytes_sec.
+Each write_bytes_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-decice listing.
+Only the devices listed in the string are modified;
+any existing per-device write_bytes_sec for other devices remain unchanged.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
