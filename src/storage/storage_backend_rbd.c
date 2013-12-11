@@ -435,9 +435,35 @@ cleanup:
     return ret;
 }
 
-static int virStorageBackendRBDCreateVol(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool,
-                                         virStorageVolDefPtr vol)
+
+static int
+virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool,
+                              virStorageVolDefPtr vol)
+{
+    vol->type = VIR_STORAGE_VOL_NETWORK;
+
+    VIR_FREE(vol->target.path);
+    if (virAsprintf(&vol->target.path, "%s/%s",
+                    pool->def->source.name,
+                    vol->name) == -1)
+        return -1;
+
+    VIR_FREE(vol->key);
+    if (virAsprintf(&vol->key, "%s/%s",
+                    pool->def->source.name,
+                    vol->name) == -1)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virStorageBackendRBDBuildVol(virConnectPtr conn,
+                             virStoragePoolObjPtr pool,
+                             virStorageVolDefPtr vol,
+                             unsigned int flags)
 {
     virStorageBackendRBDState ptr;
     ptr.cluster = NULL;
@@ -449,9 +475,10 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
               pool->def->source.name,
               vol->name, vol->capacity);
 
-    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0) {
+    virCheckFlags(0, -1);
+
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, pool) < 0)
         goto cleanup;
-    }
 
     if (rados_ioctx_create(ptr.cluster,
                            pool->def->source.name, &ptr.ioctx) < 0) {
@@ -475,9 +502,8 @@ static int virStorageBackendRBDCreateVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0) {
+    if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -572,6 +598,7 @@ virStorageBackend virStorageBackendRBD = {
 
     .refreshPool = virStorageBackendRBDRefreshPool,
     .createVol = virStorageBackendRBDCreateVol,
+    .buildVol = virStorageBackendRBDBuildVol,
     .refreshVol = virStorageBackendRBDRefreshVol,
     .deleteVol = virStorageBackendRBDDeleteVol,
     .resizeVol = virStorageBackendRBDResizeVol,
