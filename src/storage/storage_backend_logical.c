@@ -667,10 +667,38 @@ cleanup:
 
 
 static int
-virStorageBackendLogicalDeleteVol(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
-                                  unsigned int flags);
+                                  unsigned int flags)
+{
+    int ret = -1;
+
+    virCommandPtr lvchange_cmd = NULL;
+    virCommandPtr lvremove_cmd = NULL;
+
+    virCheckFlags(0, -1);
+
+    virFileWaitForDevices();
+
+    lvchange_cmd = virCommandNewArgList(LVCHANGE, "-aln", vol->target.path, NULL);
+    lvremove_cmd = virCommandNewArgList(LVREMOVE, "-f", vol->target.path, NULL);
+
+    if (virCommandRun(lvremove_cmd, NULL) < 0) {
+        if (virCommandRun(lvchange_cmd, NULL) < 0) {
+            goto cleanup;
+        } else {
+            if (virCommandRun(lvremove_cmd, NULL) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+cleanup:
+    virCommandFree(lvchange_cmd);
+    virCommandFree(lvremove_cmd);
+    return ret;
+}
 
 
 static int
@@ -784,39 +812,6 @@ virStorageBackendLogicalBuildVolFrom(virConnectPtr conn,
     return build_func(conn, pool, vol, inputvol, flags);
 }
 
-static int
-virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                  virStorageVolDefPtr vol,
-                                  unsigned int flags)
-{
-    int ret = -1;
-
-    virCommandPtr lvchange_cmd = NULL;
-    virCommandPtr lvremove_cmd = NULL;
-
-    virCheckFlags(0, -1);
-
-    virFileWaitForDevices();
-
-    lvchange_cmd = virCommandNewArgList(LVCHANGE, "-aln", vol->target.path, NULL);
-    lvremove_cmd = virCommandNewArgList(LVREMOVE, "-f", vol->target.path, NULL);
-
-    if (virCommandRun(lvremove_cmd, NULL) < 0) {
-        if (virCommandRun(lvchange_cmd, NULL) < 0) {
-            goto cleanup;
-        } else {
-            if (virCommandRun(lvremove_cmd, NULL) < 0)
-                goto cleanup;
-        }
-    }
-
-    ret = 0;
-cleanup:
-    virCommandFree(lvchange_cmd);
-    virCommandFree(lvremove_cmd);
-    return ret;
-}
 
 virStorageBackend virStorageBackendLogical = {
     .type = VIR_STORAGE_POOL_LOGICAL,
