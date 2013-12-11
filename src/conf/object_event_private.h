@@ -60,6 +60,7 @@ struct _virObjectEventState {
 
 struct _virObjectEventCallback {
     int callbackID;
+    virClassPtr klass;
     int eventID;
     virConnectPtr conn;
     virObjectMetaPtr meta;
@@ -94,6 +95,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 unsigned char *uuid,
                                 const char *name,
                                 int id,
+                                virClassPtr klass,
                                 int eventID,
                                 virConnectObjectEventGenericCallback callback,
                                 void *opaque,

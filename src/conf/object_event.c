@@ -230,6 +230,7 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
  * @uuid: the uuid of the object to filter on
  * @name: the name of the object to filter on
  * @id: the ID of the object to filter on
+ * @klass: the base event class
  * @eventID: the event ID
  * @callback: the callback to add
  * @opaque: opaque data tio pass to callback
@@ -243,6 +244,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 unsigned char uuid[VIR_UUID_BUFLEN],
                                 const char *name,
                                 int id,
+                                virClassPtr klass,
                                 int eventID,
                                 virConnectObjectEventGenericCallback callback,
                                 void *opaque,
@@ -261,6 +263,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     /* check if we already have this callback on our list */
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->cb == VIR_OBJECT_EVENT_CALLBACK(callback) &&
+            cbList->callbacks[i]->klass == klass &&
             cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn &&
             ((uuid && cbList->callbacks[i]->meta &&
@@ -277,6 +280,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
         goto error;
     event->conn = conn;
     event->cb = callback;
+    event->klass = klass;
     event->eventID = eventID;
     event->opaque = opaque;
     event->freecb = freecb;
@@ -302,7 +306,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     event->callbackID = cbList->nextID++;
 
     for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->eventID == eventID &&
+        if (cbList->callbacks[i]->klass == klass &&
+            cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn &&
             !cbList->callbacks[i]->deleted)
             ret++;
@@ -540,6 +545,8 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
         return 0;
     if (cb->deleted)
         return 0;
+    if (!virObjectIsClass(event, cb->klass))
+        return 0;
     if (cb->eventID != virObjectEventGetEventID(event))
         return 0;
 
@@ -655,6 +662,7 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
  * virObjectEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: domain event state
+ * @klass: the base event class
  * @eventID: ID of the event type to register for
  * @cb: function to remove from event
  * @opaque: data blob to pass to callback
@@ -672,6 +680,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
                               unsigned char *uuid,
                               const char *name,
                               int id,
+                              virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
@@ -694,7 +703,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     }
 
     ret = virObjectEventCallbackListAddID(conn, state->callbacks,
-                                          uuid, name, id, eventID, cb, opaque, freecb,
+                                          uuid, name, id, klass, eventID,
+                                          cb, opaque, freecb,
                                           callbackID);
 
     if (ret == -1 &&
@@ -769,9 +779,6 @@ virObjectEventStateEventID(virConnectPtr conn,
     virObjectEventStateLock(state);
     ret = virObjectEventCallbackListEventID(conn,
                                             state->callbacks, callbackID);
-    /* Callers don't need to know we are namespacing the event Ids */
-    if (ret >= 0)
-        ret = (0xFF & ret);
     virObjectEventStateUnlock(state);
     return ret;
 }

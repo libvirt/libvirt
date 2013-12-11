@@ -24,16 +24,10 @@
 
 #include "internal.h"
 
+#include "virobject.h"
+
 #ifndef __OBJECT_EVENT_H__
 # define __OBJECT_EVENT_H__
-
-/** Event IDs are computed in the following way:
-    virEventNamespaceID << 8 + vir*EventId
-  */
-typedef enum {
-    VIR_EVENT_NAMESPACE_DOMAIN = 0, /* 0 to keep value of virDomainEventId unchanged */
-    VIR_EVENT_NAMESPACE_NETWORK = 1,
-} virEventNamespaceID;
 
 typedef struct _virObjectEventCallback virObjectEventCallback;
 typedef virObjectEventCallback *virObjectEventCallbackPtr;
@@ -78,12 +72,13 @@ virObjectEventStateRegisterID(virConnectPtr conn,
                               unsigned char *uuid,
                               const char *name,
                               int id,
+                              virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
                               virFreeCallback freecb,
                               int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(8);
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
                                 virObjectEventStatePtr state,

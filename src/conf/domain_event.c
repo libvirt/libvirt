@@ -442,6 +442,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
                               virFreeCallback freecb)
 {
     return virObjectEventCallbackListAddID(conn, cbList, NULL, NULL, 0,
+                                           virDomainEventClass,
                                            VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                            VIR_OBJECT_EVENT_CALLBACK(callback),
                                            opaque, freecb, NULL);
@@ -1372,6 +1373,9 @@ virDomainEventStateRegister(virConnectPtr conn,
 {
     int ret = -1;
 
+    if (virDomainEventsInitialize() < 0)
+        return -1;
+
     virObjectEventStateLock(state);
 
     if ((state->callbacks->count == 0) &&
@@ -1426,14 +1430,17 @@ virDomainEventStateRegisterID(virConnectPtr conn,
                               virFreeCallback freecb,
                               int *callbackID)
 {
+    if (virDomainEventsInitialize() < 0)
+        return -1;
+
     if (dom)
         return virObjectEventStateRegisterID(conn, state, dom->uuid, dom->name,
-                                             dom->id, eventID,
+                                             dom->id, virDomainEventClass, eventID,
                                              VIR_OBJECT_EVENT_CALLBACK(cb),
                                              opaque, freecb, callbackID);
      else
         return virObjectEventStateRegisterID(conn, state, NULL, NULL, 0,
-                                             eventID,
+                                             virDomainEventClass, eventID,
                                              VIR_OBJECT_EVENT_CALLBACK(cb),
                                              opaque, freecb, callbackID);
 }

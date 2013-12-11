@@ -97,7 +97,7 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
     if (!net)
         return;
 
-    switch ((virNetworkEventID) (event->eventID &0xFF)) {
+    switch ((virNetworkEventID)event->eventID) {
     case VIR_NETWORK_EVENT_ID_LIFECYCLE:
         {
             virNetworkEventLifecyclePtr networkLifecycleEvent;
@@ -146,14 +146,18 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                virFreeCallback freecb,
                                int *callbackID)
 {
-    int nsEventID = (VIR_EVENT_NAMESPACE_NETWORK << 8) + eventID;
+    if (virNetworkEventsInitialize() < 0)
+        return -1;
+
     if (net)
         return virObjectEventStateRegisterID(conn, state,
-                                             net->uuid, net->name, 0, nsEventID,
+                                             net->uuid, net->name, 0,
+                                             virNetworkEventClass, eventID,
                                              cb, opaque, freecb, callbackID);
     else
         return virObjectEventStateRegisterID(conn, state,
-                                             NULL, NULL, 0, nsEventID,
+                                             NULL, NULL, 0,
+                                             virNetworkEventClass, eventID,
                                              cb, opaque, freecb, callbackID);
 }
 
@@ -164,14 +168,13 @@ virNetworkEventLifecycleNew(const char *name,
                             int detail)
 {
     virNetworkEventLifecyclePtr event;
-    int eventId = (VIR_EVENT_NAMESPACE_NETWORK << 8) + VIR_NETWORK_EVENT_ID_LIFECYCLE;
 
     if (virNetworkEventsInitialize() < 0)
         return NULL;
 
     if (!(event = virObjectEventNew(virNetworkEventLifecycleClass,
                                     virNetworkEventDispatchDefaultFunc,
-                                    eventId,
+                                    VIR_NETWORK_EVENT_ID_LIFECYCLE,
                                     0, name, uuid)))
         return NULL;
 
