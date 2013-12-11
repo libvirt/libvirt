@@ -4974,6 +4974,86 @@ int virConnectDomainEventRegisterAny(virConnectPtr conn,
 int virConnectDomainEventDeregisterAny(virConnectPtr conn,
                                        int callbackID);
 
+/**
+ * virNetworkEventLifecycleType:
+ *
+ * a virNetworkEventLifecycleType is emitted during network lifecycle events
+ */
+typedef enum {
+    VIR_NETWORK_EVENT_DEFINED = 0,
+    VIR_NETWORK_EVENT_UNDEFINED = 1,
+    VIR_NETWORK_EVENT_STARTED = 2,
+    VIR_NETWORK_EVENT_STOPPED = 3,
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_NETWORK_EVENT_LAST
+#endif
+} virNetworkEventLifecycleType;
+
+/**
+ * virConnectNetworkEventLifecycleCallback:
+ * @conn: connection object
+ * @net: network on which the event occurred
+ * @event: The specific virNetworkEventLifeCycleType which occurred
+ * @detail: contains some details on the reason of the event.
+ *          It will be 0 for the while.
+ * @opaque: application specified data
+ *
+ * This callback occurs when the network is started or stopped.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_NETWORK_EVENT_ID_LIFECYCLE with virConnectNetworkEventRegisterAny()
+ */
+typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
+                                                        virNetworkPtr net,
+                                                        int event,
+                                                        int detail,
+                                                        void *opaque);
+
+/**
+ * VIR_NETWORK_EVENT_CALLBACK:
+ *
+ * Used to cast the event specific callback into the generic one
+ * for use for virNetworkEventRegister
+ */
+#define VIR_NETWORK_EVENT_CALLBACK(cb) ((virConnectNetworkEventGenericCallback)(cb))
+
+typedef enum {
+    VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_NETWORK_EVENT_ID_LAST
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last event ID supported
+     * by this version of the libvirt API.
+     */
+#endif
+} virNetworkEventID;
+
+/*
+ * virConnectNetworkEventGenericCallback:
+ * @conn: the connection pointer
+ * @net: the network pointer
+ * @opaque: application specified data
+ *
+ * A generic network event callback handler. Specific events usually
+ * have a customization with extra parameters
+ */
+typedef void (*virConnectNetworkEventGenericCallback)(virConnectPtr conn,
+                                                      virNetworkPtr net,
+                                                      void *opaque);
+
+/* Use VIR_NETWORK_EVENT_CALLBACK() to cast the 'cb' parameter  */
+int virConnectNetworkEventRegisterAny(virConnectPtr conn,
+                                      virNetworkPtr net, /* Optional, to filter */
+                                      int eventID,
+                                      virConnectNetworkEventGenericCallback cb,
+                                      void *opaque,
+                                      virFreeCallback freecb);
+
+int virConnectNetworkEventDeregisterAny(virConnectPtr conn,
+                                        int callbackID);
 
 /**
  * virNWFilter:

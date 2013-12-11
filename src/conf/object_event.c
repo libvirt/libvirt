@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include "domain_event.h"
+#include "network_event.h"
 #include "object_event.h"
 #include "object_event_private.h"
 #include "virlog.h"
@@ -42,6 +43,7 @@ struct _virObjectEventQueue {
 
 static virClassPtr virObjectEventClass;
 
+static virClassPtr virObjectEventClass;
 static void virObjectEventDispose(void *obj);
 
 static int virObjectEventOnceInit(void)
@@ -635,6 +637,10 @@ virObjectEventStateDispatchFunc(virConnectPtr conn,
             virDomainEventDispatchDefaultFunc(conn, event,
                     VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
             break;
+        case VIR_EVENT_NAMESPACE_NETWORK:
+            virNetworkEventDispatchDefaultFunc(conn, event,
+                    VIR_NETWORK_EVENT_CALLBACK(cb), cbopaque, NULL);
+            break;
     }
     virObjectEventStateLock(state);
 }
@@ -787,6 +793,9 @@ virObjectEventStateEventID(virConnectPtr conn,
     virObjectEventStateLock(state);
     ret = virObjectEventCallbackListEventID(conn,
                                             state->callbacks, callbackID);
+    /* Callers don't need to know we are namespacing the event Ids */
+    if (ret >= 0)
+        ret = (0xFF & ret);
     virObjectEventStateUnlock(state);
     return ret;
 }

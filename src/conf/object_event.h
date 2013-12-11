@@ -32,6 +32,7 @@
   */
 typedef enum {
     VIR_EVENT_NAMESPACE_DOMAIN = 0, /* 0 to keep value of virDomainEventId unchanged */
+    VIR_EVENT_NAMESPACE_NETWORK = 1,
 } virEventNamespaceID;
 
 typedef struct _virObjectEventCallback virObjectEventCallback;

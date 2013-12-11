@@ -639,4 +639,11 @@ LIBVIRT_1.1.3 {
         virConnectGetCPUModelNames;
 } LIBVIRT_1.1.1;
 
+LIBVIRT_1.2.1 {
+    global:
+        virConnectNetworkEventRegisterAny;
+        virConnectNetworkEventDeregisterAny;
+} LIBVIRT_1.1.3;
+
+
 # .... define new API here using predicted next version number ....

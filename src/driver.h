@@ -1366,6 +1366,18 @@ typedef int
                                 virNetworkPtr **nets,
                                 unsigned int flags);
 
+typedef int
+(*virDrvConnectNetworkEventRegisterAny)(virConnectPtr conn,
+                                        virNetworkPtr dom,
+                                        int eventID,
+                                        virConnectNetworkEventGenericCallback cb,
+                                        void *opaque,
+                                        virFreeCallback freecb);
+
+typedef int
+(*virDrvConnectNetworkEventDeregisterAny)(virConnectPtr conn,
+                                          int callbackID);
+
 typedef virNetworkPtr
 (*virDrvNetworkLookupByUUID)(virConnectPtr conn,
                              const unsigned char *uuid);
@@ -1444,6 +1456,8 @@ struct _virNetworkDriver {
     virDrvConnectNumOfDefinedNetworks connectNumOfDefinedNetworks;
     virDrvConnectListDefinedNetworks connectListDefinedNetworks;
     virDrvConnectListAllNetworks connectListAllNetworks;
+    virDrvConnectNetworkEventRegisterAny connectNetworkEventRegisterAny;
+    virDrvConnectNetworkEventDeregisterAny connectNetworkEventDeregisterAny;
     virDrvNetworkLookupByUUID networkLookupByUUID;
     virDrvNetworkLookupByName networkLookupByName;
     virDrvNetworkCreateXML networkCreateXML;
