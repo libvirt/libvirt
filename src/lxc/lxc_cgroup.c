@@ -112,10 +112,10 @@ static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
 
     if (def->blkio.ndevices) {
         for (i = 0; i < def->blkio.ndevices; i++) {
-            virBlkioDeviceWeightPtr dw = &def->blkio.devices[i];
-            if (!dw->weight)
+            virBlkioDevicePtr dev = &def->blkio.devices[i];
+            if (!dev->weight)
                 continue;
-            if (virCgroupSetBlkioDeviceWeight(cgroup, dw->path, dw->weight) < 0)
+            if (virCgroupSetBlkioDeviceWeight(cgroup, dev->path, dev->weight) < 0)
                 return -1;
         }
     }

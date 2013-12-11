@@ -7432,15 +7432,15 @@ cleanup:
  */
 static int
 qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
-                               virBlkioDeviceWeightPtr *dw, size_t *size)
+                               virBlkioDevicePtr *dev, size_t *size)
 {
     char *temp;
     int ndevices = 0;
     int nsep = 0;
     size_t i;
-    virBlkioDeviceWeightPtr result = NULL;
+    virBlkioDevicePtr result = NULL;
 
-    *dw = NULL;
+    *dev = NULL;
     *size = 0;
 
     if (STREQ(deviceWeightStr, ""))
@@ -7496,7 +7496,7 @@ qemuDomainParseDeviceWeightStr(char *deviceWeightStr,
     if (!i)
         VIR_FREE(result);
 
-    *dw = result;
+    *dev = result;
     *size = i;
 
     return 0;
@@ -7513,13 +7513,13 @@ cleanup:
 /* Modify dest_array to reflect all device weight changes described in
  * src_array.  */
 static int
-qemuDomainMergeDeviceWeights(virBlkioDeviceWeightPtr *dest_array,
+qemuDomainMergeDeviceWeights(virBlkioDevicePtr *dest_array,
                              size_t *dest_size,
-                             virBlkioDeviceWeightPtr src_array,
+                             virBlkioDevicePtr src_array,
                              size_t src_size)
 {
     size_t i, j;
-    virBlkioDeviceWeightPtr dest, src;
+    virBlkioDevicePtr dest, src;
 
     for (i = 0; i < src_size; i++) {
         bool found = false;
@@ -7614,7 +7614,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                     ret = -1;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                 size_t ndevices;
-                virBlkioDeviceWeightPtr devices = NULL;
+                virBlkioDevicePtr devices = NULL;
                 size_t j;
 
                 if (qemuDomainParseDeviceWeightStr(params[i].value.s,
@@ -7660,7 +7660,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
 
                 persistentDef->blkio.weight = params[i].value.ui;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
-                virBlkioDeviceWeightPtr devices = NULL;
+                virBlkioDevicePtr devices = NULL;
                 size_t ndevices;
 
                 if (qemuDomainParseDeviceWeightStr(params[i].value.s,

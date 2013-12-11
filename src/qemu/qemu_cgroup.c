@@ -399,11 +399,11 @@ qemuSetupBlkioCgroup(virDomainObjPtr vm)
 
     if (vm->def->blkio.ndevices) {
         for (i = 0; i < vm->def->blkio.ndevices; i++) {
-            virBlkioDeviceWeightPtr dw = &vm->def->blkio.devices[i];
-            if (!dw->weight)
+            virBlkioDevicePtr dev = &vm->def->blkio.devices[i];
+            if (!dev->weight)
                 continue;
-            if (virCgroupSetBlkioDeviceWeight(priv->cgroup, dw->path,
-                                              dw->weight) < 0)
+            if (virCgroupSetBlkioDeviceWeight(priv->cgroup, dev->path,
+                                              dev->weight) < 0)
                 return -1;
         }
     }

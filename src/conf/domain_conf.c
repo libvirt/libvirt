@@ -882,13 +882,13 @@ virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 
 
 void
-virBlkioDeviceArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+virBlkioDeviceArrayClear(virBlkioDevicePtr devices,
                          int ndevices)
 {
     size_t i;
 
     for (i = 0; i < ndevices; i++)
-        VIR_FREE(deviceWeights[i].path);
+        VIR_FREE(devices[i].path);
 }
 
 /**
@@ -901,11 +901,11 @@ virBlkioDeviceArrayClear(virBlkioDeviceWeightPtr deviceWeights,
  *     <weight>weight</weight>
  *   </device>
  *
- * and fills a virBlkioDeviceWeight struct.
+ * and fills a virBlkioDeviceTune struct.
  */
 static int
 virDomainBlkioDeviceParseXML(xmlNodePtr root,
-                             virBlkioDeviceWeightPtr dw)
+                             virBlkioDevicePtr dev)
 {
     char *c;
     xmlNodePtr node;
@@ -913,16 +913,16 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
     node = root->children;
     while (node) {
         if (node->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(node->name, BAD_CAST "path") && !dw->path) {
-                dw->path = (char *)xmlNodeGetContent(node);
+            if (xmlStrEqual(node->name, BAD_CAST "path") && !dev->path) {
+                dev->path = (char *)xmlNodeGetContent(node);
             } else if (xmlStrEqual(node->name, BAD_CAST "weight")) {
                 c = (char *)xmlNodeGetContent(node);
-                if (virStrToLong_ui(c, NULL, 10, &dw->weight) < 0) {
+                if (virStrToLong_ui(c, NULL, 10, &dev->weight) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("could not parse weight %s"),
                                    c);
                     VIR_FREE(c);
-                    VIR_FREE(dw->path);
+                    VIR_FREE(dev->path);
                     return -1;
                 }
                 VIR_FREE(c);
@@ -930,7 +930,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
         }
         node = node->next;
     }
-    if (!dw->path) {
+    if (!dev->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("missing per-device path"));
         return -1;

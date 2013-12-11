@@ -1860,9 +1860,9 @@ virDomainVcpuPinDefPtr virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
 
-typedef struct _virBlkioDeviceWeight virBlkioDeviceWeight;
-typedef virBlkioDeviceWeight *virBlkioDeviceWeightPtr;
-struct _virBlkioDeviceWeight {
+typedef struct _virBlkioDevice virBlkioDevice;
+typedef virBlkioDevice *virBlkioDevicePtr;
+struct _virBlkioDevice {
     char *path;
     unsigned int weight;
 };
@@ -1911,7 +1911,7 @@ struct _virDomainIdMapDef {
 };
 
 
-void virBlkioDeviceArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+void virBlkioDeviceArrayClear(virBlkioDevicePtr deviceWeights,
                               int ndevices);
 
 typedef struct _virDomainResourceDef virDomainResourceDef;
@@ -1940,7 +1940,7 @@ struct _virDomainDef {
         unsigned int weight;
 
         size_t ndevices;
-        virBlkioDeviceWeightPtr devices;
+        virBlkioDevicePtr devices;
     } blkio;
 
     struct {
