@@ -892,7 +892,7 @@ virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
 }
 
 /**
- * virDomainBlkioDeviceWeightParseXML
+ * virDomainBlkioDeviceParseXML
  *
  * this function parses a XML node:
  *
@@ -904,8 +904,8 @@ virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
  * and fills a virBlkioDeviceWeight struct.
  */
 static int
-virDomainBlkioDeviceWeightParseXML(xmlNodePtr root,
-                                   virBlkioDeviceWeightPtr dw)
+virDomainBlkioDeviceParseXML(xmlNodePtr root,
+                             virBlkioDeviceWeightPtr dw)
 {
     char *c;
     xmlNodePtr node;
@@ -11097,8 +11097,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         size_t j;
-        if (virDomainBlkioDeviceWeightParseXML(nodes[i],
-                                               &def->blkio.devices[i]) < 0)
+        if (virDomainBlkioDeviceParseXML(nodes[i],
+                                         &def->blkio.devices[i]) < 0)
             goto error;
         def->blkio.ndevices++;
         for (j = 0; j < i; j++) {
