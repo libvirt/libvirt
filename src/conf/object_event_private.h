@@ -75,9 +75,11 @@ struct _virObjectEvent {
     virObjectMeta meta;
 };
 
-virClassPtr virClassForObjectEvent(void);
+virClassPtr
+virClassForObjectEvent(void);
 
-int virObjectEventGetEventID(void *anyobj);
+int
+virObjectEventGetEventID(void *anyobj);
 
 int
 virObjectEventCallbackListAddID(virConnectPtr conn,
@@ -101,13 +103,15 @@ void
 virObjectEventStateUnlock(virObjectEventStatePtr state);
 
 void
-virObjectEventTimer(int timer, void *opaque);
+virObjectEventTimer(int timer,
+                    void *opaque);
 
-void *virObjectEventNew(virClassPtr klass,
-                        int eventID,
-                        int id,
-                        const char *name,
-                        const unsigned char *uuid);
+void *
+virObjectEventNew(virClassPtr klass,
+                  int eventID,
+                  int id,
+                  const char *name,
+                  const unsigned char *uuid);
 
 
 #endif

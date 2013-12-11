@@ -31,120 +31,165 @@
 # include "domain_conf.h"
 
 
-virObjectEventPtr virDomainEventLifecycleNew(int id,
-                                             const char *name,
-                                             const unsigned char *uuid,
-                                             int type,
-                                             int detail);
-virObjectEventPtr virDomainEventLifecycleNewFromDom(virDomainPtr dom,
-                                                    int type,
-                                                    int detail);
-virObjectEventPtr virDomainEventLifecycleNewFromObj(virDomainObjPtr obj,
-                                                    int type,
-                                                    int detail);
-virObjectEventPtr virDomainEventLifecycleNewFromDef(virDomainDefPtr def,
-                                                    int type,
-                                                    int detail);
+virObjectEventPtr
+virDomainEventLifecycleNew(int id,
+                           const char *name,
+                           const unsigned char *uuid,
+                           int type,
+                           int detail);
+virObjectEventPtr
+virDomainEventLifecycleNewFromDom(virDomainPtr dom,
+                                  int type,
+                                  int detail);
+virObjectEventPtr
+virDomainEventLifecycleNewFromObj(virDomainObjPtr obj,
+                                  int type,
+                                  int detail);
+virObjectEventPtr
+virDomainEventLifecycleNewFromDef(virDomainDefPtr def,
+                                  int type,
+                                  int detail);
 
-virObjectEventPtr virDomainEventRebootNew(int id, const char *name, const unsigned char *uuid);
-virObjectEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom);
-virObjectEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj);
+virObjectEventPtr
+virDomainEventRebootNew(int id,
+                        const char *name,
+                        const unsigned char *uuid);
+virObjectEventPtr
+virDomainEventRebootNewFromDom(virDomainPtr dom);
+virObjectEventPtr
+virDomainEventRebootNewFromObj(virDomainObjPtr obj);
 
-virObjectEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom, long long offset);
-virObjectEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj, long long offset);
+virObjectEventPtr
+virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
+                                  long long offset);
+virObjectEventPtr
+virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
+                                  long long offset);
 
-virObjectEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom, int action);
-virObjectEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj, int action);
+virObjectEventPtr
+virDomainEventWatchdogNewFromDom(virDomainPtr dom,
+                                 int action);
+virObjectEventPtr
+virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
+                                 int action);
 
-virObjectEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action);
-virObjectEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action);
-virObjectEventPtr virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
-                                                        const char *srcPath,
-                                                        const char *devAlias,
-                                                        int action,
-                                                        const char *reason);
-virObjectEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
-                                                        const char *srcPath,
-                                                        const char *devAlias,
-                                                        int action,
-                                                        const char *reason);
+virObjectEventPtr
+virDomainEventIOErrorNewFromDom(virDomainPtr dom,
+                                const char *srcPath,
+                                const char *devAlias,
+                                int action);
+virObjectEventPtr
+virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
+                                const char *srcPath,
+                                const char *devAlias,
+                                int action);
+virObjectEventPtr
+virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
+                                      const char *srcPath,
+                                      const char *devAlias,
+                                      int action,
+                                      const char *reason);
+virObjectEventPtr
+virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
+                                      const char *srcPath,
+                                      const char *devAlias,
+                                      int action,
+                                      const char *reason);
 
-virObjectEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
-                                       int phase,
-                                       virDomainEventGraphicsAddressPtr local,
-                                       virDomainEventGraphicsAddressPtr remote,
-                                       const char *authScheme,
-                                       virDomainEventGraphicsSubjectPtr subject);
-virObjectEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
-                                       int phase,
-                                       virDomainEventGraphicsAddressPtr local,
-                                       virDomainEventGraphicsAddressPtr remote,
-                                       const char *authScheme,
-                                       virDomainEventGraphicsSubjectPtr subject);
-virObjectEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom);
-virObjectEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
+virObjectEventPtr
+virDomainEventGraphicsNewFromDom(virDomainPtr dom,
+                                 int phase,
+                                 virDomainEventGraphicsAddressPtr local,
+                                 virDomainEventGraphicsAddressPtr remote,
+                                 const char *authScheme,
+                                 virDomainEventGraphicsSubjectPtr subject);
+virObjectEventPtr
+virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
+                                int phase,
+                                virDomainEventGraphicsAddressPtr local,
+                                virDomainEventGraphicsAddressPtr remote,
+                                const char *authScheme,
+                                virDomainEventGraphicsSubjectPtr subject);
+virObjectEventPtr
+virDomainEventControlErrorNewFromDom(virDomainPtr dom);
+virObjectEventPtr
+virDomainEventControlErrorNewFromObj(virDomainObjPtr obj);
 
-virObjectEventPtr virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
-                                                   const char *path,
-                                                   int type,
-                                                   int status);
-virObjectEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
-                                                   const char *path,
-                                                   int type,
-                                                   int status);
+virObjectEventPtr
+virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
+                                 const char *path,
+                                 int type,
+                                 int status);
+virObjectEventPtr
+virDomainEventBlockJobNewFromDom(virDomainPtr dom,
+                                 const char *path,
+                                 int type,
+                                 int status);
 
-virObjectEventPtr virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
-                                                     const char *oldSrcPath,
-                                                     const char *newSrcPath,
-                                                     const char *devAlias,
-                                                     int reason);
-virObjectEventPtr virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
-                                                     const char *oldSrcPath,
-                                                     const char *newSrcPath,
-                                                     const char *devAlias,
-                                                     int reason);
-virObjectEventPtr virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
-                                                     const char *devAlias,
-                                                     int reason);
-virObjectEventPtr virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
-                                                     const char *devAlias,
-                                                     int reason);
-virObjectEventPtr virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj);
-virObjectEventPtr virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
-virObjectEventPtr virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj);
-virObjectEventPtr virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
+virObjectEventPtr
+virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
+                                   const char *oldSrcPath,
+                                   const char *newSrcPath,
+                                   const char *devAlias,
+                                   int reason);
+virObjectEventPtr
+virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
+                                   const char *oldSrcPath,
+                                   const char *newSrcPath,
+                                   const char *devAlias,
+                                   int reason);
+virObjectEventPtr
+virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
+                                   const char *devAlias,
+                                   int reason);
+virObjectEventPtr
+virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
+                                   const char *devAlias,
+                                   int reason);
+virObjectEventPtr
+virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj);
+virObjectEventPtr
+virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
+virObjectEventPtr
+virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj);
+virObjectEventPtr
+virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
 
-virObjectEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom, unsigned long long actual);
-virObjectEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj, unsigned long long actual);
+virObjectEventPtr
+virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
+                                      unsigned long long actual);
+virObjectEventPtr
+virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
+                                      unsigned long long actual);
 
-virObjectEventPtr virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj);
-virObjectEventPtr virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom);
+virObjectEventPtr
+virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj);
+virObjectEventPtr
+virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom);
 
-virObjectEventPtr virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
-                                                        const char *devAlias);
-virObjectEventPtr virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
-                                                        const char *devAlias);
+virObjectEventPtr
+virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
+                                      const char *devAlias);
+virObjectEventPtr
+virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
+                                      const char *devAlias);
 
-int virDomainEventStateRegister(virConnectPtr conn,
-                                virObjectEventStatePtr state,
-                                virConnectDomainEventCallback callback,
-                                void *opaque,
-                                virFreeCallback freecb)
+int
+virDomainEventStateRegister(virConnectPtr conn,
+                            virObjectEventStatePtr state,
+                            virConnectDomainEventCallback callback,
+                            void *opaque,
+                            virFreeCallback freecb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-int virDomainEventStateRegisterID(virConnectPtr conn,
-                                  virObjectEventStatePtr state,
-                                  virDomainPtr dom,
-                                  int eventID,
-                                  virConnectDomainEventGenericCallback cb,
-                                  void *opaque,
-                                  virFreeCallback freecb,
-                                  int *callbackID)
+int
+virDomainEventStateRegisterID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              virDomainPtr dom,
+                              int eventID,
+                              virConnectDomainEventGenericCallback cb,
+                              void *opaque,
+                              virFreeCallback freecb,
+                              int *callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 int
 virDomainEventStateDeregister(virConnectPtr conn,

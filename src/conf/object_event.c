@@ -46,7 +46,8 @@ static virClassPtr virObjectEventClass;
 static virClassPtr virObjectEventClass;
 static void virObjectEventDispose(void *obj);
 
-static int virObjectEventOnceInit(void)
+static int
+virObjectEventOnceInit(void)
 {
     if (!(virObjectEventClass =
           virClassNew(virClassForObject(),
@@ -59,14 +60,16 @@ static int virObjectEventOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virObjectEvent)
 
-virClassPtr virClassForObjectEvent(void)
+virClassPtr
+virClassForObjectEvent(void)
 {
     if (virObjectEventInitialize() < 0)
         return NULL;
     return virObjectEventClass;
 }
 
-int virObjectEventGetEventID(void *anyobj)
+int
+virObjectEventGetEventID(void *anyobj)
 {
     virObjectEventPtr obj = anyobj;
 
@@ -78,7 +81,8 @@ int virObjectEventGetEventID(void *anyobj)
     return obj->eventID;
 }
 
-static void virObjectEventDispose(void *obj)
+static void
+virObjectEventDispose(void *obj)
 {
     virObjectEventPtr event = obj;
 
@@ -460,11 +464,12 @@ error:
     return NULL;
 }
 
-void *virObjectEventNew(virClassPtr klass,
-                        int eventID,
-                        int id,
-                        const char *name,
-                        const unsigned char *uuid)
+void *
+virObjectEventNew(virClassPtr klass,
+                  int eventID,
+                  int id,
+                  const char *name,
+                  const unsigned char *uuid)
 {
     virObjectEventPtr event;
 
@@ -529,8 +534,9 @@ typedef void (*virObjectEventDispatchFunc)(virConnectPtr conn,
                                            void *opaque);
 
 
-static int virObjectEventDispatchMatchCallback(virObjectEventPtr event,
-                                               virObjectEventCallbackPtr cb)
+static int
+virObjectEventDispatchMatchCallback(virObjectEventPtr event,
+                                    virObjectEventCallbackPtr cb)
 {
     if (!cb)
         return 0;
@@ -631,16 +637,15 @@ virObjectEventStateDispatchFunc(virConnectPtr conn,
 
     /* Drop the lock whle dispatching, for sake of re-entrancy */
     virObjectEventStateUnlock(state);
-    switch (namespace)
-    {
-        case VIR_EVENT_NAMESPACE_DOMAIN:
-            virDomainEventDispatchDefaultFunc(conn, event,
-                    VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
-            break;
-        case VIR_EVENT_NAMESPACE_NETWORK:
-            virNetworkEventDispatchDefaultFunc(conn, event,
-                    VIR_NETWORK_EVENT_CALLBACK(cb), cbopaque, NULL);
-            break;
+    switch (namespace) {
+    case VIR_EVENT_NAMESPACE_DOMAIN:
+        virDomainEventDispatchDefaultFunc(conn, event,
+                VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
+        break;
+    case VIR_EVENT_NAMESPACE_NETWORK:
+        virNetworkEventDispatchDefaultFunc(conn, event,
+                VIR_NETWORK_EVENT_CALLBACK(cb), cbopaque, NULL);
+        break;
     }
     virObjectEventStateLock(state);
 }

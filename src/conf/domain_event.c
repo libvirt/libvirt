@@ -443,11 +443,12 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
 }
 
 
-static void *virDomainEventNew(virClassPtr klass,
-                               int eventID,
-                               int id,
-                               const char *name,
-                               const unsigned char *uuid)
+static void *
+virDomainEventNew(virClassPtr klass,
+                  int eventID,
+                  int id,
+                  const char *name,
+                  const unsigned char *uuid)
 {
     virDomainEventPtr event;
 
@@ -468,9 +469,12 @@ static void *virDomainEventNew(virClassPtr klass,
     return (virObjectEventPtr)event;
 }
 
-virObjectEventPtr virDomainEventLifecycleNew(int id, const char *name,
-                                 const unsigned char *uuid,
-                                 int type, int detail)
+virObjectEventPtr
+virDomainEventLifecycleNew(int id,
+                           const char *name,
+                           const unsigned char *uuid,
+                           int type,
+                           int detail)
 {
     virDomainEventLifecyclePtr event;
 
@@ -488,25 +492,36 @@ virObjectEventPtr virDomainEventLifecycleNew(int id, const char *name,
     return (virObjectEventPtr)event;
 }
 
-virObjectEventPtr virDomainEventLifecycleNewFromDom(virDomainPtr dom, int type, int detail)
+virObjectEventPtr
+virDomainEventLifecycleNewFromDom(virDomainPtr dom,
+                                  int type,
+                                  int detail)
 {
     return virDomainEventLifecycleNew(dom->id, dom->name, dom->uuid,
                                       type, detail);
 }
 
-virObjectEventPtr virDomainEventLifecycleNewFromObj(virDomainObjPtr obj, int type, int detail)
+virObjectEventPtr
+virDomainEventLifecycleNewFromObj(virDomainObjPtr obj,
+                                  int type,
+                                  int detail)
 {
     return virDomainEventLifecycleNewFromDef(obj->def, type, detail);
 }
 
-virObjectEventPtr virDomainEventLifecycleNewFromDef(virDomainDefPtr def, int type, int detail)
+virObjectEventPtr
+virDomainEventLifecycleNewFromDef(virDomainDefPtr def,
+                                  int type,
+                                  int detail)
 {
     return virDomainEventLifecycleNew(def->id, def->name, def->uuid,
                                       type, detail);
 }
 
-virObjectEventPtr virDomainEventRebootNew(int id, const char *name,
-                                          const unsigned char *uuid)
+virObjectEventPtr
+virDomainEventRebootNew(int id,
+                        const char *name,
+                        const unsigned char *uuid)
 {
     if (virDomainEventsInitialize() < 0)
         return NULL;
@@ -516,7 +531,8 @@ virObjectEventPtr virDomainEventRebootNew(int id, const char *name,
                              id, name, uuid);
 }
 
-virObjectEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom)
+virObjectEventPtr
+virDomainEventRebootNewFromDom(virDomainPtr dom)
 {
     if (virDomainEventsInitialize() < 0)
         return NULL;
@@ -526,7 +542,8 @@ virObjectEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom)
                              dom->id, dom->name, dom->uuid);
 }
 
-virObjectEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
+virObjectEventPtr
+virDomainEventRebootNewFromObj(virDomainObjPtr obj)
 {
     if (virDomainEventsInitialize() < 0)
         return NULL;
@@ -536,8 +553,9 @@ virObjectEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
                              obj->def->id, obj->def->name, obj->def->uuid);
 }
 
-virObjectEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
-                                                    long long offset)
+virObjectEventPtr
+virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
+                                  long long offset)
 {
     virDomainEventRTCChangePtr ev;
 
@@ -553,8 +571,9 @@ virObjectEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
 
     return (virObjectEventPtr)ev;
 }
-virObjectEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
-                                                    long long offset)
+virObjectEventPtr
+virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
+                                  long long offset)
 {
     virDomainEventRTCChangePtr ev;
 
@@ -572,7 +591,9 @@ virObjectEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
     return (virObjectEventPtr)ev;
 }
 
-virObjectEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom, int action)
+virObjectEventPtr
+virDomainEventWatchdogNewFromDom(virDomainPtr dom,
+                                 int action)
 {
     virDomainEventWatchdogPtr ev;
 
@@ -588,7 +609,9 @@ virObjectEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom, int action)
 
     return (virObjectEventPtr)ev;
 }
-virObjectEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj, int action)
+virObjectEventPtr
+virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
+                                 int action)
 {
     virDomainEventWatchdogPtr ev;
 
@@ -606,12 +629,13 @@ virObjectEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj, int acti
     return (virObjectEventPtr)ev;
 }
 
-static virObjectEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
-                                                             virDomainPtr dom,
-                                                             const char *srcPath,
-                                                             const char *devAlias,
-                                                             int action,
-                                                             const char *reason)
+static virObjectEventPtr
+virDomainEventIOErrorNewFromDomImpl(int event,
+                                    virDomainPtr dom,
+                                    const char *srcPath,
+                                    const char *devAlias,
+                                    int action,
+                                    const char *reason)
 {
     virDomainEventIOErrorPtr ev;
 
@@ -633,12 +657,13 @@ static virObjectEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
     return (virObjectEventPtr)ev;
 }
 
-static virObjectEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
-                                                             virDomainObjPtr obj,
-                                                             const char *srcPath,
-                                                             const char *devAlias,
-                                                             int action,
-                                                             const char *reason)
+static virObjectEventPtr
+virDomainEventIOErrorNewFromObjImpl(int event,
+                                    virDomainObjPtr obj,
+                                    const char *srcPath,
+                                    const char *devAlias,
+                                    int action,
+                                    const char *reason)
 {
     virDomainEventIOErrorPtr ev;
 
@@ -661,42 +686,46 @@ static virObjectEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
     return (virObjectEventPtr)ev;
 }
 
-virObjectEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action)
+virObjectEventPtr
+virDomainEventIOErrorNewFromDom(virDomainPtr dom,
+                                const char *srcPath,
+                                const char *devAlias,
+                                int action)
 {
     return virDomainEventIOErrorNewFromDomImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR,
                                                dom, srcPath, devAlias,
                                                action, NULL);
 }
 
-virObjectEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action)
+virObjectEventPtr
+virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
+                                const char *srcPath,
+                                const char *devAlias,
+                                int action)
 {
     return virDomainEventIOErrorNewFromObjImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR,
                                                obj, srcPath, devAlias,
                                                action, NULL);
 }
 
-virObjectEventPtr virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
-                                                        const char *srcPath,
-                                                        const char *devAlias,
-                                                        int action,
-                                                        const char *reason)
+virObjectEventPtr
+virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
+                                      const char *srcPath,
+                                      const char *devAlias,
+                                      int action,
+                                      const char *reason)
 {
     return virDomainEventIOErrorNewFromDomImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON,
                                                dom, srcPath, devAlias,
                                                action, reason);
 }
 
-virObjectEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
-                                                        const char *srcPath,
-                                                        const char *devAlias,
-                                                        int action,
-                                                        const char *reason)
+virObjectEventPtr
+virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
+                                      const char *srcPath,
+                                      const char *devAlias,
+                                      int action,
+                                      const char *reason)
 {
     return virDomainEventIOErrorNewFromObjImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON,
                                                obj, srcPath, devAlias,
@@ -704,12 +733,13 @@ virObjectEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
 }
 
 
-virObjectEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
-                                       int phase,
-                                       virDomainEventGraphicsAddressPtr local,
-                                       virDomainEventGraphicsAddressPtr remote,
-                                       const char *authScheme,
-                                       virDomainEventGraphicsSubjectPtr subject)
+virObjectEventPtr
+virDomainEventGraphicsNewFromDom(virDomainPtr dom,
+                                 int phase,
+                                 virDomainEventGraphicsAddressPtr local,
+                                 virDomainEventGraphicsAddressPtr remote,
+                                 const char *authScheme,
+                                 virDomainEventGraphicsSubjectPtr subject)
 {
     virDomainEventGraphicsPtr ev;
 
@@ -733,12 +763,13 @@ virObjectEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
     return (virObjectEventPtr)ev;
 }
 
-virObjectEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
-                                       int phase,
-                                       virDomainEventGraphicsAddressPtr local,
-                                       virDomainEventGraphicsAddressPtr remote,
-                                       const char *authScheme,
-                                       virDomainEventGraphicsSubjectPtr subject)
+virObjectEventPtr
+virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
+                                 int phase,
+                                 virDomainEventGraphicsAddressPtr local,
+                                 virDomainEventGraphicsAddressPtr remote,
+                                 const char *authScheme,
+                                 virDomainEventGraphicsSubjectPtr subject)
 {
     virDomainEventGraphicsPtr ev;
 
@@ -763,13 +794,13 @@ virObjectEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
     return (virObjectEventPtr)ev;
 }
 
-static
-virObjectEventPtr  virDomainEventBlockJobNew(int id,
-                                             const char *name,
-                                             unsigned char *uuid,
-                                             const char *path,
-                                             int type,
-                                             int status)
+static virObjectEventPtr
+virDomainEventBlockJobNew(int id,
+                          const char *name,
+                          unsigned char *uuid,
+                          const char *path,
+                          int type,
+                          int status)
 {
     virDomainEventBlockJobPtr ev;
 
@@ -791,25 +822,28 @@ virObjectEventPtr  virDomainEventBlockJobNew(int id,
     return (virObjectEventPtr)ev;
 }
 
-virObjectEventPtr virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
-                                       const char *path,
-                                       int type,
-                                       int status)
+virObjectEventPtr
+virDomainEventBlockJobNewFromObj(virDomainObjPtr obj,
+                                 const char *path,
+                                 int type,
+                                 int status)
 {
     return virDomainEventBlockJobNew(obj->def->id, obj->def->name,
                                      obj->def->uuid, path, type, status);
 }
 
-virObjectEventPtr virDomainEventBlockJobNewFromDom(virDomainPtr dom,
-                                       const char *path,
-                                       int type,
-                                       int status)
+virObjectEventPtr
+virDomainEventBlockJobNewFromDom(virDomainPtr dom,
+                                 const char *path,
+                                 int type,
+                                 int status)
 {
     return virDomainEventBlockJobNew(dom->id, dom->name, dom->uuid,
                                      path, type, status);
 }
 
-virObjectEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
+virObjectEventPtr
+virDomainEventControlErrorNewFromDom(virDomainPtr dom)
 {
     virObjectEventPtr ev;
 
@@ -824,7 +858,8 @@ virObjectEventPtr virDomainEventControlErrorNewFromDom(virDomainPtr dom)
 }
 
 
-virObjectEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
+virObjectEventPtr
+virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
 {
     virObjectEventPtr ev;
 
@@ -839,12 +874,14 @@ virObjectEventPtr virDomainEventControlErrorNewFromObj(virDomainObjPtr obj)
     return ev;
 }
 
-static
-virObjectEventPtr virDomainEventDiskChangeNew(int id, const char *name,
-                                              unsigned char *uuid,
-                                              const char *oldSrcPath,
-                                              const char *newSrcPath,
-                                              const char *devAlias, int reason)
+static virObjectEventPtr
+virDomainEventDiskChangeNew(int id,
+                            const char *name,
+                            unsigned char *uuid,
+                            const char *oldSrcPath,
+                            const char *newSrcPath,
+                            const char *devAlias,
+                            int reason)
 {
     virDomainEventDiskChangePtr ev;
 
@@ -874,22 +911,24 @@ error:
     return NULL;
 }
 
-virObjectEventPtr virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
-                                                     const char *oldSrcPath,
-                                                     const char *newSrcPath,
-                                                     const char *devAlias,
-                                                     int reason)
+virObjectEventPtr
+virDomainEventDiskChangeNewFromObj(virDomainObjPtr obj,
+                                   const char *oldSrcPath,
+                                   const char *newSrcPath,
+                                   const char *devAlias,
+                                   int reason)
 {
     return virDomainEventDiskChangeNew(obj->def->id, obj->def->name,
                                        obj->def->uuid, oldSrcPath,
                                        newSrcPath, devAlias, reason);
 }
 
-virObjectEventPtr virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
-                                                     const char *oldSrcPath,
-                                                     const char *newSrcPath,
-                                                     const char *devAlias,
-                                                     int reason)
+virObjectEventPtr
+virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
+                                   const char *oldSrcPath,
+                                   const char *newSrcPath,
+                                   const char *devAlias,
+                                   int reason)
 {
     return virDomainEventDiskChangeNew(dom->id, dom->name, dom->uuid,
                                        oldSrcPath, newSrcPath,
@@ -897,7 +936,8 @@ virObjectEventPtr virDomainEventDiskChangeNewFromDom(virDomainPtr dom,
 }
 
 static virObjectEventPtr
-virDomainEventTrayChangeNew(int id, const char *name,
+virDomainEventTrayChangeNew(int id,
+                            const char *name,
                             unsigned char *uuid,
                             const char *devAlias,
                             int reason)
@@ -924,9 +964,10 @@ error:
     return NULL;
 }
 
-virObjectEventPtr virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
-                                                     const char *devAlias,
-                                                     int reason)
+virObjectEventPtr
+virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
+                                  const char *devAlias,
+                                  int reason)
 {
     return virDomainEventTrayChangeNew(obj->def->id,
                                        obj->def->name,
@@ -935,16 +976,18 @@ virObjectEventPtr virDomainEventTrayChangeNewFromObj(virDomainObjPtr obj,
                                        reason);
 }
 
-virObjectEventPtr virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
-                                                     const char *devAlias,
-                                                     int reason)
+virObjectEventPtr
+virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
+                                   const char *devAlias,
+                                   int reason)
 {
     return virDomainEventTrayChangeNew(dom->id, dom->name, dom->uuid,
                                        devAlias, reason);
 }
 
 static virObjectEventPtr
-virDomainEventPMWakeupNew(int id, const char *name,
+virDomainEventPMWakeupNew(int id,
+                          const char *name,
                           unsigned char *uuid)
 {
     virObjectEventPtr ev;
@@ -975,7 +1018,8 @@ virDomainEventPMWakeupNewFromDom(virDomainPtr dom)
 }
 
 static virObjectEventPtr
-virDomainEventPMSuspendNew(int id, const char *name,
+virDomainEventPMSuspendNew(int id,
+                           const char *name,
                            unsigned char *uuid)
 {
     virObjectEventPtr ev;
@@ -1006,7 +1050,8 @@ virDomainEventPMSuspendNewFromDom(virDomainPtr dom)
 }
 
 static virObjectEventPtr
-virDomainEventPMSuspendDiskNew(int id, const char *name,
+virDomainEventPMSuspendDiskNew(int id,
+                               const char *name,
                                unsigned char *uuid)
 {
     virObjectEventPtr ev;
@@ -1035,8 +1080,9 @@ virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom)
     return virDomainEventPMSuspendDiskNew(dom->id, dom->name, dom->uuid);
 }
 
-virObjectEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
-                                                        unsigned long long actual)
+virObjectEventPtr
+virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
+                                      unsigned long long actual)
 {
     virDomainEventBalloonChangePtr ev;
 
@@ -1052,8 +1098,9 @@ virObjectEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
 
     return (virObjectEventPtr)ev;
 }
-virObjectEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
-                                                        unsigned long long actual)
+virObjectEventPtr
+virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
+                                      unsigned long long actual)
 {
     virDomainEventBalloonChangePtr ev;
 
@@ -1070,10 +1117,11 @@ virObjectEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
     return (virObjectEventPtr)ev;
 }
 
-static virObjectEventPtr virDomainEventDeviceRemovedNew(int id,
-                                            const char *name,
-                                            unsigned char *uuid,
-                                            const char *devAlias)
+static virObjectEventPtr
+virDomainEventDeviceRemovedNew(int id,
+                               const char *name,
+                               unsigned char *uuid,
+                               const char *devAlias)
 {
     virDomainEventDeviceRemovedPtr ev;
 
@@ -1095,15 +1143,17 @@ error:
     return NULL;
 }
 
-virObjectEventPtr virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
-                                                        const char *devAlias)
+virObjectEventPtr
+virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,
+                                      const char *devAlias)
 {
     return virDomainEventDeviceRemovedNew(obj->def->id, obj->def->name,
                                           obj->def->uuid, devAlias);
 }
 
-virObjectEventPtr virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
-                                                        const char *devAlias)
+virObjectEventPtr
+virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
+                                      const char *devAlias)
 {
     return virDomainEventDeviceRemovedNew(dom->id, dom->name, dom->uuid,
                                           devAlias);
