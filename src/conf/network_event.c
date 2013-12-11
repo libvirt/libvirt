@@ -32,6 +32,7 @@ struct _virNetworkEventLifecycle {
     virObjectEvent parent;
 
     int type;
+    int detail;
 };
 typedef struct _virNetworkEventLifecycle virNetworkEventLifecycle;
 typedef virNetworkEventLifecycle *virNetworkEventLifecyclePtr;
@@ -80,7 +81,7 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
             networkLifecycleEvent = (virNetworkEventLifecyclePtr)event;
             ((virConnectNetworkEventLifecycleCallback)cb)(conn, net,
                                                           networkLifecycleEvent->type,
-                                                          0,
+                                                          networkLifecycleEvent->detail,
                                                           cbopaque);
             goto cleanup;
         }
@@ -135,7 +136,8 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
 virObjectEventPtr
 virNetworkEventLifecycleNew(const char *name,
                             const unsigned char *uuid,
-                            int type)
+                            int type,
+                            int detail)
 {
     virNetworkEventLifecyclePtr event;
     int eventId = (VIR_EVENT_NAMESPACE_NETWORK << 8) + VIR_NETWORK_EVENT_ID_LIFECYCLE;
@@ -149,6 +151,7 @@ virNetworkEventLifecycleNew(const char *name,
         return NULL;
 
     event->type = type;
+    event->detail = detail;
 
     return (virObjectEventPtr)event;
 }

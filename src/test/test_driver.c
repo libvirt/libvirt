@@ -3542,7 +3542,8 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml) {
     net->active = 1;
 
     event = virNetworkEventLifecycleNew(net->def->name, net->def->uuid,
-                                        VIR_NETWORK_EVENT_STARTED);
+                                        VIR_NETWORK_EVENT_STARTED,
+                                        0);
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
@@ -3575,7 +3576,8 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     net->persistent = 1;
 
     event = virNetworkEventLifecycleNew(net->def->name, net->def->uuid,
-                                        VIR_NETWORK_EVENT_DEFINED);
+                                        VIR_NETWORK_EVENT_DEFINED,
+                                        0);
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
@@ -3611,7 +3613,8 @@ static int testNetworkUndefine(virNetworkPtr network) {
     }
 
     event = virNetworkEventLifecycleNew(network->name, network->uuid,
-                                        VIR_NETWORK_EVENT_UNDEFINED);
+                                        VIR_NETWORK_EVENT_UNDEFINED,
+                                        0);
 
     virNetworkRemoveInactive(&privconn->networks,
                              privnet);
@@ -3699,7 +3702,8 @@ static int testNetworkCreate(virNetworkPtr network) {
 
     privnet->active = 1;
     event = virNetworkEventLifecycleNew(privnet->def->name, privnet->def->uuid,
-                                        VIR_NETWORK_EVENT_STARTED);
+                                        VIR_NETWORK_EVENT_STARTED,
+                                        0);
     ret = 0;
 
 cleanup:
@@ -3727,7 +3731,8 @@ static int testNetworkDestroy(virNetworkPtr network) {
 
     privnet->active = 0;
     event = virNetworkEventLifecycleNew(privnet->def->name, privnet->def->uuid,
-                                        VIR_NETWORK_EVENT_STOPPED);
+                                        VIR_NETWORK_EVENT_STOPPED,
+                                        0);
     if (!privnet->persistent) {
         virNetworkRemoveInactive(&privconn->networks,
                                  privnet);

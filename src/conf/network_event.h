@@ -40,7 +40,8 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
 virObjectEventPtr
 virNetworkEventLifecycleNew(const char *name,
                             const unsigned char *uuid,
-                            int type);
+                            int type,
+                            int detail);
 
 void
 virNetworkEventDispatchDefaultFunc(virConnectPtr conn,

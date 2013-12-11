@@ -4918,7 +4918,7 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     if (!net)
         return;
 
-    event = virNetworkEventLifecycleNew(net->name, net->uuid, msg->event);
+    event = virNetworkEventLifecycleNew(net->name, net->uuid, msg->event, msg->detail);
     virNetworkFree(net);
 
     remoteDomainEventQueue(priv, event);

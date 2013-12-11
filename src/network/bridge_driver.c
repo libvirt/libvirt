@@ -2559,7 +2559,8 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml) {
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
-                                        VIR_NETWORK_EVENT_STARTED);
+                                        VIR_NETWORK_EVENT_STARTED,
+                                        0);
 
     VIR_INFO("Creating network '%s'", network->def->name);
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
@@ -2621,7 +2622,8 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
     }
 
     event = virNetworkEventLifecycleNew(def->name, def->uuid,
-                                        VIR_NETWORK_EVENT_DEFINED);
+                                        VIR_NETWORK_EVENT_DEFINED,
+                                        0);
 
     VIR_INFO("Defining network '%s'", def->name);
     ret = virGetNetwork(conn, def->name, def->uuid);
@@ -2673,7 +2675,8 @@ networkUndefine(virNetworkPtr net) {
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
-                                        VIR_NETWORK_EVENT_UNDEFINED);
+                                        VIR_NETWORK_EVENT_UNDEFINED,
+                                        0);
 
     VIR_INFO("Undefining network '%s'", network->def->name);
     if (!active) {
@@ -2890,7 +2893,8 @@ static int networkCreate(virNetworkPtr net) {
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
-                                        VIR_NETWORK_EVENT_STARTED);
+                                        VIR_NETWORK_EVENT_STARTED,
+                                        0);
 
 cleanup:
     if (event)
@@ -2930,7 +2934,8 @@ static int networkDestroy(virNetworkPtr net) {
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,
-                                        VIR_NETWORK_EVENT_STOPPED);
+                                        VIR_NETWORK_EVENT_STOPPED,
+                                        0);
 
     if (!network->persistent) {
         if (networkRemoveInactive(driver, network) < 0) {
