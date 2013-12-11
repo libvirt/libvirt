@@ -963,7 +963,7 @@ exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
 exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/virstring\.[ch]$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
+  ^(bootstrap.conf$$|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/virnetserverclientmock.c$$)

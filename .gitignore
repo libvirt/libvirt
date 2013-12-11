@@ -69,7 +69,7 @@
 /docs/libvirt-refs.xml
 /docs/search.php
 /docs/todo.html.in
-/examples/domain-events/events-c/event-test
+/examples/object-events/event-test
 /examples/dominfo/info1
 /examples/hellolibvirt/hellolibvirt
 /examples/openauth/openauth

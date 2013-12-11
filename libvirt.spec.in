@@ -1430,7 +1430,7 @@ rm -fr %{buildroot}
 # on RHEL 5, thus we need to expand it here.
 make install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
 
-for i in domain-events/events-c dominfo hellolibvirt openauth xml/nwfilter systemtap
+for i in object-events dominfo hellolibvirt openauth xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -2132,7 +2132,7 @@ exit 0
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/libvirt-api.xml
 %doc examples/hellolibvirt
-%doc examples/domain-events/events-c
+%doc examples/object-events
 %doc examples/dominfo
 %doc examples/openauth
 %doc examples/xml

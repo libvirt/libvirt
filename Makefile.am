@@ -20,7 +20,7 @@ LCOV = lcov
 GENHTML = genhtml
 
 SUBDIRS = . gnulib/lib include src daemon tools docs gnulib/tests \
-  tests po examples/domain-events/events-c examples/hellolibvirt \
+  tests po examples/object-events examples/hellolibvirt \
   examples/dominfo examples/apparmor examples/xml/nwfilter \
   examples/openauth examples/systemtap
 
