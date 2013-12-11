@@ -223,6 +223,27 @@ static const char *eventDetailToString(int event, int detail) {
     return ret;
 }
 
+static const char *
+networkEventToString(int event)
+{
+    const char *ret = "";
+    switch ((virNetworkEventLifecycleType) event) {
+        case VIR_NETWORK_EVENT_DEFINED:
+            ret ="Defined";
+            break;
+        case VIR_NETWORK_EVENT_UNDEFINED:
+            ret ="Undefined";
+            break;
+        case VIR_NETWORK_EVENT_STARTED:
+            ret ="Started";
+            break;
+        case VIR_NETWORK_EVENT_STOPPED:
+            ret ="Stopped";
+            break;
+    }
+    return ret;
+}
+
 static int myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virDomainPtr dom,
                                   int event,
@@ -432,6 +453,18 @@ myDomainEventDeviceRemovedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myNetworkEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virNetworkPtr dom,
+                                  int event,
+                                  int detail,
+                                  void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Network %s %s %d\n", __func__, virNetworkGetName(dom),
+           networkEventToString(event), detail);
+    return 0;
+}
+
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -472,6 +505,7 @@ int main(int argc, char **argv)
     int callback13ret = -1;
     int callback14ret = -1;
     int callback15ret = -1;
+    int callback16ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof(action_stop));
@@ -510,7 +544,7 @@ int main(int argc, char **argv)
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
 
-    VIR_DEBUG("Registering domain event cbs");
+    VIR_DEBUG("Registering event cbs");
 
     /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
@@ -585,6 +619,11 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventDeviceRemovedCallback),
                                                      strdup("device removed"), myFreeFunc);
+    callback16ret = virConnectNetworkEventRegisterAny(dconn,
+                                                      NULL,
+                                                      VIR_NETWORK_EVENT_ID_LIFECYCLE,
+                                                      VIR_NETWORK_EVENT_CALLBACK(myNetworkEventCallback),
+                                                      strdup("net callback"), myFreeFunc);
 
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
@@ -599,7 +638,8 @@ int main(int argc, char **argv)
         (callback12ret != -1) &&
         (callback13ret != -1) &&
         (callback14ret != -1) &&
-        (callback15ret != -1)) {
+        (callback15ret != -1) &&
+        (callback16ret != -1)) {
         if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
             virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to start keepalive protocol: %s\n",
@@ -630,6 +670,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback13ret);
         virConnectDomainEventDeregisterAny(dconn, callback14ret);
         virConnectDomainEventDeregisterAny(dconn, callback15ret);
+        virConnectNetworkEventDeregisterAny(dconn, callback16ret);
         if (callback8ret != -1)
             virConnectDomainEventDeregisterAny(dconn, callback8ret);
     }
