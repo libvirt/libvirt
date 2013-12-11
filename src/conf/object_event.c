@@ -255,6 +255,11 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     size_t i;
     int ret = 0;
 
+    VIR_DEBUG("conn=%p cblist=%p uuid=%p name=%s id=%d "
+              "klass=%p eventID=%d callback=%p opaque=%p",
+              conn, cbList, uuid, name, id, klass, eventID,
+              callback, opaque);
+
     /* Check incoming */
     if (!cbList) {
         return -1;
