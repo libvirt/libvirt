@@ -1911,8 +1911,8 @@ struct _virDomainIdMapDef {
 };
 
 
-void virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
-                                    int ndevices);
+void virBlkioDeviceArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+                              int ndevices);
 
 typedef struct _virDomainResourceDef virDomainResourceDef;
 typedef virDomainResourceDef *virDomainResourceDefPtr;

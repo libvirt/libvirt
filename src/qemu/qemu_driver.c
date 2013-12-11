@@ -7505,7 +7505,7 @@ error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("unable to parse device weight '%s'"), deviceWeightStr);
 cleanup:
-    virBlkioDeviceWeightArrayClear(result, ndevices);
+    virBlkioDeviceArrayClear(result, ndevices);
     VIR_FREE(result);
     return -1;
 }
@@ -7636,7 +7636,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                                                  &vm->def->blkio.ndevices,
                                                  devices, ndevices) < 0)
                     ret = -1;
-                virBlkioDeviceWeightArrayClear(devices, ndevices);
+                virBlkioDeviceArrayClear(devices, ndevices);
                 VIR_FREE(devices);
             }
         }
@@ -7673,7 +7673,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                                                  &persistentDef->blkio.ndevices,
                                                  devices, ndevices) < 0)
                     ret = -1;
-                virBlkioDeviceWeightArrayClear(devices, ndevices);
+                virBlkioDeviceArrayClear(devices, ndevices);
                 VIR_FREE(devices);
             }
         }

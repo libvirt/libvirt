@@ -882,8 +882,8 @@ virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 
 
 void
-virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
-                               int ndevices)
+virBlkioDeviceArrayClear(virBlkioDeviceWeightPtr deviceWeights,
+                         int ndevices)
 {
     size_t i;
 
@@ -2050,8 +2050,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->description);
     VIR_FREE(def->title);
 
-    virBlkioDeviceWeightArrayClear(def->blkio.devices,
-                                   def->blkio.ndevices);
+    virBlkioDeviceArrayClear(def->blkio.devices,
+                             def->blkio.ndevices);
     VIR_FREE(def->blkio.devices);
 
     virDomainWatchdogDefFree(def->watchdog);
