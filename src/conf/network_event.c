@@ -28,8 +28,17 @@
 #include "datatypes.h"
 #include "virlog.h"
 
-struct _virNetworkEventLifecycle {
+struct _virNetworkEvent {
     virObjectEvent parent;
+
+    /* Unused attribute to get virNetworkEvent class being created */
+    bool dummy;
+};
+typedef struct _virNetworkEvent virNetworkEvent;
+typedef virNetworkEvent *virNetworkEventPtr;
+
+struct _virNetworkEventLifecycle {
+    virNetworkEvent parent;
 
     int type;
     int detail;
@@ -37,14 +46,22 @@ struct _virNetworkEventLifecycle {
 typedef struct _virNetworkEventLifecycle virNetworkEventLifecycle;
 typedef virNetworkEventLifecycle *virNetworkEventLifecyclePtr;
 
+static virClassPtr virNetworkEventClass;
 static virClassPtr virNetworkEventLifecycleClass;
+static void virNetworkEventDispose(void *obj);
 static void virNetworkEventLifecycleDispose(void *obj);
 
 static int
 virNetworkEventsOnceInit(void)
 {
-    if (!(virNetworkEventLifecycleClass =
+    if (!(virNetworkEventClass =
           virClassNew(virClassForObjectEvent(),
+                      "virNetworkEvent",
+                      sizeof(virNetworkEvent),
+                      virNetworkEventDispose)))
+        return -1;
+    if (!(virNetworkEventLifecycleClass =
+          virClassNew(virNetworkEventClass,
                       "virNetworkEventLifecycle",
                       sizeof(virNetworkEventLifecycle),
                       virNetworkEventLifecycleDispose)))
@@ -53,6 +70,14 @@ virNetworkEventsOnceInit(void)
 }
 
 VIR_ONCE_GLOBAL_INIT(virNetworkEvents)
+
+void
+virNetworkEventDispose(void *obj)
+{
+    virNetworkEventPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+}
+
 
 void
 virNetworkEventLifecycleDispose(void *obj)
