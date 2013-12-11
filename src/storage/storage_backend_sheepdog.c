@@ -154,14 +154,36 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool,
                                    virStorageVolDefPtr vol)
 {
-
-    int ret = -1;
-
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Sheepdog does not support encrypted volumes"));
         return -1;
     }
+
+    vol->type = VIR_STORAGE_VOL_NETWORK;
+
+    VIR_FREE(vol->key);
+    if (virAsprintf(&vol->key, "%s/%s",
+                    pool->def->source.name, vol->name) == -1)
+        return -1;
+
+    VIR_FREE(vol->target.path);
+    if (VIR_STRDUP(vol->target.path, vol->name) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virStorageBackendSheepdogBuildVol(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol,
+                                  unsigned int flags)
+{
+    int ret = -1;
+
+    virCheckFlags(0, -1);
 
     virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->capacity);
@@ -301,6 +323,7 @@ virStorageBackend virStorageBackendSheepdog = {
 
     .refreshPool = virStorageBackendSheepdogRefreshPool,
     .createVol = virStorageBackendSheepdogCreateVol,
+    .buildVol = virStorageBackendSheepdogBuildVol,
     .refreshVol = virStorageBackendSheepdogRefreshVol,
     .deleteVol = virStorageBackendSheepdogDeleteVol,
     .resizeVol = virStorageBackendSheepdogResizeVol,
