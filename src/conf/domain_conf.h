@@ -1877,6 +1877,10 @@ typedef virBlkioDevice *virBlkioDevicePtr;
 struct _virBlkioDevice {
     char *path;
     unsigned int weight;
+    unsigned int riops;
+    unsigned int wiops;
+    unsigned long long rbps;
+    unsigned long long wbps;
 };
 
 enum virDomainRNGModel {

@@ -900,15 +900,19 @@ virBlkioDeviceArrayClear(virBlkioDevicePtr devices,
  *   <device>
  *     <path>/fully/qualified/device/path</path>
  *     <weight>weight</weight>
+ *     <read_bytes_sec>bps</read_bytes_sec>
+ *     <write_bytes_sec>bps</write_bytes_sec>
+ *     <read_iops_sec>iops</read_iops_sec>
+ *     <write_iops_sec>iops</write_iops_sec>
  *   </device>
  *
- * and fills a virBlkioDeviceTune struct.
+ * and fills a virBlkioDevicePtr struct.
  */
 static int
 virDomainBlkioDeviceParseXML(xmlNodePtr root,
                              virBlkioDevicePtr dev)
 {
-    char *c;
+    char *c = NULL;
     xmlNodePtr node;
 
     node = root->children;
@@ -922,9 +926,43 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("could not parse weight %s"),
                                    c);
-                    VIR_FREE(c);
-                    VIR_FREE(dev->path);
-                    return -1;
+                        goto error;
+                }
+                VIR_FREE(c);
+            } else if (xmlStrEqual(node->name, BAD_CAST "read_bytes_sec")) {
+                c = (char *)xmlNodeGetContent(node);
+                if (virStrToLong_ull(c, NULL, 10, &dev->rbps) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("could not parse read bytes sec %s"),
+                                   c);
+                    goto error;
+                }
+                VIR_FREE(c);
+            } else if (xmlStrEqual(node->name, BAD_CAST "write_bytes_sec")) {
+                c = (char *)xmlNodeGetContent(node);
+                if (virStrToLong_ull(c, NULL, 10, &dev->wbps) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("could not parse write bytes sec %s"),
+                                   c);
+                    goto error;
+                }
+                VIR_FREE(c);
+            } else if (xmlStrEqual(node->name, BAD_CAST "read_iops_sec")) {
+                c = (char *)xmlNodeGetContent(node);
+                if (virStrToLong_ui(c, NULL, 10, &dev->riops) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("could not parse read iops sec %s"),
+                                   c);
+                    goto error;
+                }
+                VIR_FREE(c);
+            } else if (xmlStrEqual(node->name, BAD_CAST "write_iops_sec")) {
+                c = (char *)xmlNodeGetContent(node);
+                if (virStrToLong_ui(c, NULL, 10, &dev->wiops) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("could not parse write iops sec %s"),
+                                   c);
+                    goto error;
                 }
                 VIR_FREE(c);
             }
@@ -938,6 +976,11 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
     }
 
     return 0;
+
+error:
+    VIR_FREE(c);
+    VIR_FREE(dev->path);
+    return -1;
 }
 
 
@@ -11180,7 +11223,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if (STREQ(def->blkio.devices[j].path,
                       def->blkio.devices[i].path)) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("duplicate device weight path '%s'"),
+                               _("duplicate blkio device path '%s'"),
                                def->blkio.devices[i].path);
                 goto error;
             }
@@ -16758,7 +16801,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         blkio = true;
     } else {
         for (n = 0; n < def->blkio.ndevices; n++) {
-            if (def->blkio.devices[n].weight) {
+            if (def->blkio.devices[n].weight ||
+                def->blkio.devices[n].riops ||
+                def->blkio.devices[n].wiops ||
+                def->blkio.devices[n].rbps ||
+                def->blkio.devices[n].wbps) {
                 blkio = true;
                 break;
             }
@@ -16773,13 +16820,29 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                               def->blkio.weight);
 
         for (n = 0; n < def->blkio.ndevices; n++) {
-            if (def->blkio.devices[n].weight == 0)
+            virBlkioDevicePtr dev = &def->blkio.devices[n];
+
+            if (!dev->weight && !dev->riops && !dev->wiops &&
+                !dev->rbps && !dev->wbps)
                 continue;
             virBufferAddLit(buf, "    <device>\n");
             virBufferEscapeString(buf, "      <path>%s</path>\n",
-                                  def->blkio.devices[n].path);
-            virBufferAsprintf(buf, "      <weight>%u</weight>\n",
-                              def->blkio.devices[n].weight);
+                                  dev->path);
+            if (dev->weight)
+                virBufferAsprintf(buf, "      <weight>%u</weight>\n",
+                                  dev->weight);
+            if (dev->riops)
+                virBufferAsprintf(buf, "      <read_iops_sec>%u</read_iops_sec>\n",
+                                  dev->riops);
+            if (dev->wiops)
+                virBufferAsprintf(buf, "      <write_iops_sec>%u</write_iops_sec>\n",
+                                  dev->wiops);
+            if (dev->rbps)
+                virBufferAsprintf(buf, "      <read_bytes_sec>%llu</read_bytes_sec>\n",
+                                  dev->rbps);
+            if (dev->wbps)
+                virBufferAsprintf(buf, "      <write_bytes_sec>%llu</write_bytes_sec>\n",
+                                  dev->wbps);
             virBufferAddLit(buf, "    </device>\n");
         }
 

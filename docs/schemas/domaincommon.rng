@@ -646,9 +646,31 @@
               <element name="path">
                 <ref name="absFilePath"/>
               </element>
-              <element name="weight">
-                <ref name="weight"/>
-              </element>
+              <optional>
+                <element name="weight">
+                  <ref name="weight"/>
+                </element>
+              </optional>
+              <optional>
+                <element name="read_iops_sec">
+                  <data type='unsignedInt'/>
+                </element>
+              </optional>
+              <optional>
+                <element name="write_iops_sec">
+                  <data type='unsignedInt'/>
+                </element>
+              </optional>
+              <optional>
+                <element name="read_bytes_sec">
+                  <data type='unsignedLong'/>
+                </element>
+              </optional>
+              <optional>
+                <element name="write_bytes_sec">
+                  <data type='unsignedLong'/>
+                </element>
+              </optional>
             </interleave>
           </element>
         </zeroOrMore>
