@@ -1824,12 +1824,189 @@ virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
     return ret;
 }
 
+/**
+ * virCgroupSetBlkioDeviceReadIops:
+ * @group: The cgroup to change block io setting for
+ * @path: The path of device
+ * @riops: The new device read iops throttle, or 0 to clear
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
+                                const char *path,
+                                unsigned int riops)
+{
+    char *str;
+    struct stat sb;
+    int ret;
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Path '%s' is not accessible"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportSystemError(EINVAL,
+                             _("Path '%s' must be a block device"),
+                             path);
+        return -1;
+    }
+
+    if (virAsprintf(&str, "%d:%d %u", major(sb.st_rdev),
+                    minor(sb.st_rdev), riops) < 0)
+        return -1;
+
+    ret = virCgroupSetValueStr(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.throttle.read_iops_device",
+                               str);
+
+    VIR_FREE(str);
+    return ret;
+}
+
+
+/**
+ * virCgroupSetBlkioDeviceWriteIops:
+ * @group: The cgroup to change block io setting for
+ * @path: The path of device
+ * @wiops: The new device write iops throttle, or 0 to clear
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
+                                 const char *path,
+                                 unsigned int wiops)
+{
+    char *str;
+    struct stat sb;
+    int ret;
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Path '%s' is not accessible"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportSystemError(EINVAL,
+                             _("Path '%s' must be a block device"),
+                             path);
+        return -1;
+    }
+
+    if (virAsprintf(&str, "%d:%d %u", major(sb.st_rdev),
+                    minor(sb.st_rdev), wiops) < 0)
+        return -1;
+
+    ret = virCgroupSetValueStr(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.throttle.write_iops_device",
+                               str);
+
+    VIR_FREE(str);
+    return ret;
+}
+
+
+/**
+ * virCgroupSetBlkioDeviceReadBps:
+ * @group: The cgroup to change block io setting for
+ * @path: The path of device
+ * @rbps: The new device read bps throttle, or 0 to clear
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
+                               const char *path,
+                               unsigned long long rbps)
+{
+    char *str;
+    struct stat sb;
+    int ret;
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Path '%s' is not accessible"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportSystemError(EINVAL,
+                             _("Path '%s' must be a block device"),
+                             path);
+        return -1;
+    }
+
+    if (virAsprintf(&str, "%d:%d %llu", major(sb.st_rdev),
+                    minor(sb.st_rdev), rbps) < 0)
+        return -1;
+
+    ret = virCgroupSetValueStr(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.throttle.read_bps_device",
+                               str);
+
+    VIR_FREE(str);
+    return ret;
+}
+
+/**
+ * virCgroupSetBlkioDeviceWriteBps:
+ * @group: The cgroup to change block io setting for
+ * @path: The path of device
+ * @wbps: The new device write bps throttle, or 0 to clear
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
+                                const char *path,
+                                unsigned long long wbps)
+{
+    char *str;
+    struct stat sb;
+    int ret;
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Path '%s' is not accessible"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportSystemError(EINVAL,
+                             _("Path '%s' must be a block device"),
+                             path);
+        return -1;
+    }
+
+    if (virAsprintf(&str, "%d:%d %llu", major(sb.st_rdev),
+                    minor(sb.st_rdev), wbps) < 0)
+        return -1;
+
+    ret = virCgroupSetValueStr(group,
+                               VIR_CGROUP_CONTROLLER_BLKIO,
+                               "blkio.throttle.write_bps_device",
+                               str);
+
+    VIR_FREE(str);
+    return ret;
+}
+
 
 /**
  * virCgroupSetBlkioDeviceWeight:
- *
- * @group: The cgroup to change io device weight device for
- * @path: The device with a weight to alter
+ * @group: The cgroup to change block io setting for
+ * @path: The path of device
  * @weight: The new device weight (100-1000),
  * (10-1000) after kernel 2.6.39, or 0 to clear
  *
@@ -1872,7 +2049,6 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
     VIR_FREE(str);
     return ret;
 }
-
 
 
 /**
@@ -3306,6 +3482,46 @@ int
 virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
                               const char *path ATTRIBUTE_UNUSED,
                               unsigned int weight ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupSetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                const char *path ATTRIBUTE_UNUSED,
+                                unsigned int riops ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                 const char *path ATTRIBUTE_UNUSED,
+                                 unsigned int wiops ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupSetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
+                               const char *path ATTRIBUTE_UNUSED,
+                               unsigned long long rbps ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                const char *path ATTRIBUTE_UNUSED,
+                                unsigned long long wbps ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));

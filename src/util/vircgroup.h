@@ -126,6 +126,22 @@ int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                                   const char *path,
                                   unsigned int weight);
 
+int virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
+                                    const char *path,
+                                    unsigned int riops);
+
+int virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
+                                     const char *path,
+                                     unsigned int wiops);
+
+int virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
+                                   const char *path,
+                                   unsigned long long rbps);
+
+int virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
+                                    const char *path,
+                                    unsigned long long wbps);
+
 int virCgroupSetMemory(virCgroupPtr group, unsigned long long kb);
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
 
