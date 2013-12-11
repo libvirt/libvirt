@@ -617,28 +617,43 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
 
 static int
 virStorageBackendDiskCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
+                               virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                virStorageVolDefPtr vol)
+{
+    if (vol->target.encryption != NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool does not support encrypted volumes"));
+        return -1;
+    }
+
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
+    return 0;
+}
+
+
+static int
+virStorageBackendDiskBuildVol(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool,
+                              virStorageVolDefPtr vol,
+                              unsigned int flags)
 {
     int res = -1;
     char *partFormat = NULL;
     unsigned long long startOffset = 0, endOffset = 0;
-    virCommandPtr cmd = virCommandNewArgList(PARTED,
-                                             pool->def->source.devices[0].path,
-                                             "mkpart",
-                                             "--script",
-                                             NULL);
+    virCommandPtr cmd = NULL;
 
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
-        goto cleanup;
-    }
+    virCheckFlags(0, -1);
 
-    if (virStorageBackendDiskPartFormat(pool, vol, &partFormat) != 0) {
+    cmd = virCommandNewArgList(PARTED,
+                               pool->def->source.devices[0].path,
+                               "mkpart",
+                               "--script",
+                               NULL);
+
+    if (virStorageBackendDiskPartFormat(pool, vol, &partFormat) != 0)
         goto cleanup;
-    }
+
     virCommandAddArg(cmd, partFormat);
 
     if (virStorageBackendDiskPartBoundries(pool, &startOffset,
@@ -768,5 +783,6 @@ virStorageBackend virStorageBackendDisk = {
 
     .createVol = virStorageBackendDiskCreateVol,
     .deleteVol = virStorageBackendDiskDeleteVol,
+    .buildVol = virStorageBackendDiskBuildVol,
     .buildVolFrom = virStorageBackendDiskBuildVolFrom,
 };
