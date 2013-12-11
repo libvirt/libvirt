@@ -29,6 +29,7 @@
 # include "virthread.h"
 # include "virdnsmasq.h"
 # include "network_conf.h"
+# include "object_event.h"
 
 /* Main driver state */
 struct _virNetworkDriverState {
@@ -43,6 +44,8 @@ struct _virNetworkDriverState {
     char *dnsmasqStateDir;
     char *radvdStateDir;
     dnsmasqCapsPtr dnsmasqCaps;
+
+    virObjectEventStatePtr networkEventState;
 };
 
 typedef struct _virNetworkDriverState virNetworkDriverState;
