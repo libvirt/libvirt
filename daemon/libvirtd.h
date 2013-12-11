@@ -50,6 +50,7 @@ struct daemonClientPrivate {
     virMutex lock;
 
     int domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LAST];
+    int networkEventCallbackID[VIR_NETWORK_EVENT_ID_LAST];
 
 # if WITH_SASL
     virNetSASLSessionPtr sasl;

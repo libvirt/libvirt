@@ -2849,6 +2849,30 @@ struct remote_connect_get_cpu_model_names_ret {
     int ret;
 };
 
+struct remote_connect_network_event_register_any_args {
+    int eventID;
+};
+
+struct remote_connect_network_event_register_any_ret {
+    int cb_registered;
+};
+
+struct remote_connect_network_event_deregister_any_args {
+    int eventID;
+};
+
+struct remote_connect_network_event_deregister_any_ret {
+    int cb_registered;
+};
+
+struct remote_network_event_lifecycle_msg {
+    remote_nonnull_network net;
+    int event;
+    int detail;
+};
+
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5018,5 +5042,25 @@ enum remote_procedure {
      * @generate: none
      * @acl: connect:read
      */
-    REMOTE_PROC_CONNECT_GET_CPU_MODEL_NAMES = 312
+    REMOTE_PROC_CONNECT_GET_CPU_MODEL_NAMES = 312,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_NETWORK_EVENT_REGISTER_ANY = 313,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_NETWORK_EVENT_DEREGISTER_ANY = 314,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_NETWORK_EVENT_LIFECYCLE = 315
 };

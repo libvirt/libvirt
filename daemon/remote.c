@@ -49,6 +49,7 @@
 #include "qemu_protocol.h"
 #include "lxc_protocol.h"
 #include "virstring.h"
+#include "object_event.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -653,6 +654,39 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
 
+static int remoteRelayNetworkEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                            virNetworkPtr net,
+                                            int event,
+                                            int detail,
+                                            void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+    remote_network_event_lifecycle_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying network lifecycle event %d, detail %d", event, detail);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_network(&data.net, net);
+    data.event = event;
+    data.detail = detail;
+
+    remoteDispatchObjectEventSend(client, remoteProgram,
+                                  REMOTE_PROC_NETWORK_EVENT_LIFECYCLE,
+                                  (xdrproc_t)xdr_remote_network_event_lifecycle_msg, &data);
+
+    return 0;
+}
+
+static virConnectNetworkEventGenericCallback networkEventCallbacks[] = {
+    VIR_NETWORK_EVENT_CALLBACK(remoteRelayNetworkEventLifecycle),
+};
+
+verify(ARRAY_CARDINALITY(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
+
 /*
  * You must hold lock for at least the client
  * We don't free stuff here, merely disconnect the client's
@@ -678,6 +712,15 @@ void remoteClientFreeFunc(void *data)
                                                    priv->domainEventCallbackID[i]);
             }
             priv->domainEventCallbackID[i] = -1;
+        }
+
+        for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++) {
+            if (priv->networkEventCallbackID[i] != -1) {
+                VIR_DEBUG("Deregistering to relay remote events %zu", i);
+                virConnectNetworkEventDeregisterAny(priv->conn,
+                                                    priv->networkEventCallbackID[i]);
+            }
+            priv->networkEventCallbackID[i] = -1;
         }
 
         virConnectClose(priv->conn);
@@ -715,6 +758,9 @@ void *remoteClientInitHook(virNetServerClientPtr client,
 
     for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++)
         priv->domainEventCallbackID[i] = -1;
+
+    for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++)
+        priv->networkEventCallbackID[i] = -1;
 
     virNetServerClientSetCloseHook(client, remoteClientCloseFunc);
     return priv;
@@ -5215,6 +5261,100 @@ cleanup:
     return rv;
 }
 
+
+static int
+remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                             virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                             virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                             virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                             remote_connect_network_event_register_any_args *args,
+                                             remote_connect_network_event_register_any_ret *ret ATTRIBUTE_UNUSED)
+{
+    int callbackID;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported network event ID %d"), args->eventID);
+        goto cleanup;
+    }
+
+    if (priv->networkEventCallbackID[args->eventID] != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("network event %d already registered"), args->eventID);
+        goto cleanup;
+    }
+
+    if ((callbackID = virConnectNetworkEventRegisterAny(priv->conn,
+                                                        NULL,
+                                                        args->eventID,
+                                                        networkEventCallbacks[args->eventID],
+                                                        client, NULL)) < 0)
+        goto cleanup;
+
+    priv->networkEventCallbackID[args->eventID] = callbackID;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
+
+
+static int
+remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                               virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                               remote_connect_network_event_deregister_any_args *args,
+                                               remote_connect_network_event_deregister_any_ret *ret ATTRIBUTE_UNUSED)
+{
+    int callbackID = -1;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unsupported event ID %d"), args->eventID);
+        goto cleanup;
+    }
+
+    callbackID = priv->networkEventCallbackID[args->eventID];
+    if (callbackID < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("network event %d not registered"), args->eventID);
+        goto cleanup;
+    }
+
+    if (virConnectNetworkEventDeregisterAny(priv->conn, callbackID) < 0)
+        goto cleanup;
+
+    priv->networkEventCallbackID[args->eventID] = -1;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
 
 
 /*----- Helpers. -----*/

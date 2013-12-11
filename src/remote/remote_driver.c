@@ -33,6 +33,7 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "domain_event.h"
+#include "network_event.h"
 #include "driver.h"
 #include "virbuffer.h"
 #include "remote_driver.h"
@@ -273,6 +274,11 @@ remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog,
                                     virNetClientPtr client,
                                     void *evdata, void *opaque);
 
+static void
+remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteDomainEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
       remoteDomainBuildEventRTCChange,
@@ -338,6 +344,10 @@ static virNetClientProgramEvent remoteDomainEvents[] = {
       remoteDomainBuildEventDeviceRemoved,
       sizeof(remote_domain_event_device_removed_msg),
       (xdrproc_t)xdr_remote_domain_event_device_removed_msg },
+    { REMOTE_PROC_NETWORK_EVENT_LIFECYCLE,
+      remoteNetworkBuildEventLifecycle,
+      sizeof(remote_network_event_lifecycle_msg),
+      (xdrproc_t)xdr_remote_network_event_lifecycle_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -2902,6 +2912,99 @@ done:
 }
 
 static int
+remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
+                                     virNetworkPtr net,
+                                     int eventID,
+                                     virConnectNetworkEventGenericCallback callback,
+                                     void *opaque,
+                                     virFreeCallback freecb)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_connect_network_event_register_any_args args;
+    int callbackID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if ((count = virNetworkEventStateRegisterID(conn,
+                                                priv->domainEventState,
+                                                net, eventID,
+                                                VIR_OBJECT_EVENT_CALLBACK(callback),
+                                                opaque, freecb,
+                                                &callbackID)) < 0) {
+        virReportError(VIR_ERR_RPC, "%s", _("adding cb to list"));
+        goto done;
+    }
+
+    /* If this is the first callback for this eventID, we need to enable
+     * events on the server */
+    if (count == 1) {
+        args.eventID = eventID;
+
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NETWORK_EVENT_REGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_network_event_register_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *)NULL) == -1) {
+            virObjectEventStateDeregisterID(conn,
+                                            priv->domainEventState,
+                                            callbackID);
+            goto done;
+        }
+    }
+
+    rv = callbackID;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
+                                       int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    remote_connect_network_event_deregister_any_args args;
+    int eventID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if ((eventID = virObjectEventStateEventID(conn,
+                                              priv->domainEventState,
+                                              callbackID)) < 0) {
+        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+        goto done;
+    }
+
+    if ((count = virObjectEventStateDeregisterID(conn,
+                                                 priv->domainEventState,
+                                                 callbackID)) < 0) {
+        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+        goto done;
+    }
+
+    /* If that was the last callback for this eventID, we need to disable
+     * events on the server */
+    if (count == 0) {
+        args.eventID = eventID;
+
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NETWORK_EVENT_DEREGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_network_event_deregister_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteConnectListAllInterfaces(virConnectPtr conn,
                                virInterfacePtr **ifaces,
                                unsigned int flags)
@@ -4795,6 +4898,28 @@ remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     event = virDomainEventDeviceRemovedNewFromDom(dom, msg->devAlias);
 
     virDomainFree(dom);
+
+    remoteDomainEventQueue(priv, event);
+}
+
+
+static void
+remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_network_event_lifecycle_msg *msg = evdata;
+    virNetworkPtr net;
+    virObjectEventPtr event = NULL;
+
+    net = get_nonnull_network(conn, msg->net);
+    if (!net)
+        return;
+
+    event = virNetworkEventLifecycleNew(net->name, net->uuid, msg->event);
+    virNetworkFree(net);
 
     remoteDomainEventQueue(priv, event);
 }
@@ -7035,6 +7160,8 @@ static virNetworkDriver network_driver = {
     .connectNumOfDefinedNetworks = remoteConnectNumOfDefinedNetworks, /* 0.3.0 */
     .connectListDefinedNetworks = remoteConnectListDefinedNetworks, /* 0.3.0 */
     .connectListAllNetworks = remoteConnectListAllNetworks, /* 0.10.2 */
+    .connectNetworkEventDeregisterAny = remoteConnectNetworkEventDeregisterAny, /* 1.2.1 */
+    .connectNetworkEventRegisterAny = remoteConnectNetworkEventRegisterAny, /* 1.2.1 */
     .networkLookupByUUID = remoteNetworkLookupByUUID, /* 0.3.0 */
     .networkLookupByName = remoteNetworkLookupByName, /* 0.3.0 */
     .networkCreateXML = remoteNetworkCreateXML, /* 0.3.0 */
