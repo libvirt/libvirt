@@ -469,6 +469,7 @@ error:
 
 void *
 virObjectEventNew(virClassPtr klass,
+                  virObjectEventDispatchFunc dispatcher,
                   int eventID,
                   int id,
                   const char *name,
@@ -489,6 +490,7 @@ virObjectEventNew(virClassPtr klass,
     if (!(event = virObjectNew(klass)))
         return NULL;
 
+    event->dispatch = dispatcher;
     event->eventID = eventID;
 
     if (VIR_STRDUP(event->meta.name, name) < 0) {
@@ -530,13 +532,6 @@ virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
 }
 
 
-typedef void (*virObjectEventDispatchFunc)(virConnectPtr conn,
-                                           virObjectEventPtr event,
-                                           virConnectObjectEventGenericCallback cb,
-                                           void *cbopaque,
-                                           void *opaque);
-
-
 static int
 virObjectEventDispatchMatchCallback(virObjectEventPtr event,
                                     virObjectEventCallbackPtr cb)
@@ -566,10 +561,9 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
 
 
 static void
-virObjectEventDispatch(virObjectEventPtr event,
-                       virObjectEventCallbackListPtr callbacks,
-                       virObjectEventDispatchFunc dispatch,
-                       void *opaque)
+virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
+                                     virObjectEventPtr event,
+                                     virObjectEventCallbackListPtr callbacks)
 {
     size_t i;
     /* Cache this now, since we may be dropping the lock,
@@ -581,25 +575,26 @@ virObjectEventDispatch(virObjectEventPtr event,
         if (!virObjectEventDispatchMatchCallback(event, callbacks->callbacks[i]))
             continue;
 
-        (*dispatch)(callbacks->callbacks[i]->conn,
-                    event,
-                    callbacks->callbacks[i]->cb,
-                    callbacks->callbacks[i]->opaque,
-                    opaque);
+        /* Drop the lock whle dispatching, for sake of re-entrancy */
+        virObjectEventStateUnlock(state);
+        event->dispatch(callbacks->callbacks[i]->conn,
+                        event,
+                        callbacks->callbacks[i]->cb,
+                        callbacks->callbacks[i]->opaque);
+        virObjectEventStateLock(state);
     }
 }
 
 
 static void
-virObjectEventQueueDispatch(virObjectEventQueuePtr queue,
-                            virObjectEventCallbackListPtr callbacks,
-                            virObjectEventDispatchFunc dispatch,
-                            void *opaque)
+virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
+                                 virObjectEventQueuePtr queue,
+                                 virObjectEventCallbackListPtr callbacks)
 {
     size_t i;
 
     for (i = 0; i < queue->count; i++) {
-        virObjectEventDispatch(queue->events[i], callbacks, dispatch, opaque);
+        virObjectEventStateDispatchCallbacks(state, queue->events[i], callbacks);
         virObjectUnref(queue->events[i]);
     }
     VIR_FREE(queue->events);
@@ -629,34 +624,6 @@ virObjectEventStateQueue(virObjectEventStatePtr state,
 
 
 static void
-virObjectEventStateDispatchFunc(virConnectPtr conn,
-                                virObjectEventPtr event,
-                                virConnectObjectEventGenericCallback cb,
-                                void *cbopaque,
-                                void *opaque)
-{
-    virObjectEventStatePtr state = opaque;
-    virEventNamespaceID namespace = (event->eventID & 0xFF00) >> 8;
-
-    /* Drop the lock whle dispatching, for sake of re-entrancy */
-    virObjectEventStateUnlock(state);
-    switch (namespace) {
-    case VIR_EVENT_NAMESPACE_DOMAIN:
-        virDomainEventDispatchDefaultFunc(conn, event,
-                VIR_DOMAIN_EVENT_CALLBACK(cb), cbopaque, NULL);
-        break;
-    case VIR_EVENT_NAMESPACE_NETWORK:
-        virNetworkEventDispatchDefaultFunc(conn, event,
-                VIR_NETWORK_EVENT_CALLBACK(cb), cbopaque, NULL);
-        break;
-    default:
-        VIR_ERROR(_("Unknown event namespace to dispatch"));
-    }
-    virObjectEventStateLock(state);
-}
-
-
-static void
 virObjectEventStateFlush(virObjectEventStatePtr state)
 {
     virObjectEventQueue tempQueue;
@@ -672,10 +639,9 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
     state->queue->events = NULL;
     virEventUpdateTimeout(state->timer, -1);
 
-    virObjectEventQueueDispatch(&tempQueue,
-                                state->callbacks,
-                                virObjectEventStateDispatchFunc,
-                                state);
+    virObjectEventStateQueueDispatch(state,
+                                     &tempQueue,
+                                     state->callbacks);
 
     /* Purge any deleted callbacks */
     virObjectEventCallbackListPurgeMarked(state->callbacks);

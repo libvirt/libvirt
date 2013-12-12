@@ -43,10 +43,4 @@ virNetworkEventLifecycleNew(const char *name,
                             int type,
                             int detail);
 
-void
-virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
-                                   virObjectEventPtr event,
-                                   virConnectNetworkEventGenericCallback cb,
-                                   void *cbopaque,
-                                   void *opaque);
 #endif

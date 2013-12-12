@@ -61,6 +61,11 @@ static void virDomainEventTrayChangeDispose(void *obj);
 static void virDomainEventBalloonChangeDispose(void *obj);
 static void virDomainEventDeviceRemovedDispose(void *obj);
 
+static void
+virDomainEventDispatchDefaultFunc(virConnectPtr conn,
+                                  virObjectEventPtr event,
+                                  virConnectObjectEventGenericCallback cb,
+                                  void *cbopaque);
 
 struct _virDomainEvent {
     virObjectEvent parent;
@@ -462,7 +467,9 @@ virDomainEventNew(virClassPtr klass,
         return NULL;
     }
 
-    if (!(event = virObjectEventNew(klass, eventID,
+    if (!(event = virObjectEventNew(klass,
+                                    virDomainEventDispatchDefaultFunc,
+                                    eventID,
                                     id, name, uuid)))
         return NULL;
 
@@ -1160,12 +1167,11 @@ virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
 }
 
 
-void
+static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virObjectEventPtr event,
-                                  virConnectDomainEventGenericCallback cb,
-                                  void *cbopaque,
-                                  void *opaque ATTRIBUTE_UNUSED)
+                                  virConnectObjectEventGenericCallback cb,
+                                  void *cbopaque)
 {
     virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
     int eventID = virObjectEventGetEventID(event);

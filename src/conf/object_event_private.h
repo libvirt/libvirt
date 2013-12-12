@@ -69,10 +69,17 @@ struct _virObjectEventCallback {
     int deleted;
 };
 
+typedef void
+(*virObjectEventDispatchFunc)(virConnectPtr conn,
+                              virObjectEventPtr event,
+                              virConnectObjectEventGenericCallback cb,
+                              void *cbopaque);
+
 struct _virObjectEvent {
     virObject parent;
     int eventID;
     virObjectMeta meta;
+    virObjectEventDispatchFunc dispatch;
 };
 
 virClassPtr
@@ -108,10 +115,10 @@ virObjectEventTimer(int timer,
 
 void *
 virObjectEventNew(virClassPtr klass,
+                  virObjectEventDispatchFunc dispatcher,
                   int eventID,
                   int id,
                   const char *name,
                   const unsigned char *uuid);
-
 
 #endif

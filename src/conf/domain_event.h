@@ -197,11 +197,4 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-void
-virDomainEventDispatchDefaultFunc(virConnectPtr conn,
-                                  virObjectEventPtr event,
-                                  virConnectDomainEventGenericCallback cb,
-                                  void *cbopaque,
-                                  void *opaque);
-
 #endif

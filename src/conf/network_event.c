@@ -87,12 +87,11 @@ virNetworkEventLifecycleDispose(void *obj)
 }
 
 
-void
+static void
 virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
                                    virObjectEventPtr event,
-                                   virConnectNetworkEventGenericCallback cb ATTRIBUTE_UNUSED,
-                                   void *cbopaque ATTRIBUTE_UNUSED,
-                                   void *opaque ATTRIBUTE_UNUSED)
+                                   virConnectObjectEventGenericCallback cb,
+                                   void *cbopaque)
 {
     virNetworkPtr net = virGetNetwork(conn, event->meta.name, event->meta.uuid);
     if (!net)
@@ -171,6 +170,7 @@ virNetworkEventLifecycleNew(const char *name,
         return NULL;
 
     if (!(event = virObjectEventNew(virNetworkEventLifecycleClass,
+                                    virNetworkEventDispatchDefaultFunc,
                                     eventId,
                                     0, name, uuid)))
         return NULL;
