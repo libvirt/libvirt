@@ -821,7 +821,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
 
     PROBE(QEMU_MONITOR_NEW,
           "mon=%p refs=%d fd=%d",
-          mon, mon->parent.parent.refs, mon->fd);
+          mon, mon->parent.parent.u.s.refs, mon->fd);
     virObjectUnlock(mon);
 
     return mon;
@@ -893,7 +893,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
 
     virObjectLock(mon);
     PROBE(QEMU_MONITOR_CLOSE,
-          "mon=%p refs=%d", mon, mon->parent.parent.refs);
+          "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
 
     if (mon->fd >= 0) {
         if (mon->watch) {

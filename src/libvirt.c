@@ -1563,7 +1563,7 @@ virConnectRef(virConnectPtr conn)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("conn=%p refs=%d", conn, conn->object.refs);
+    VIR_DEBUG("conn=%p refs=%d", conn, conn->object.u.s.refs);
     virObjectRef(conn);
     return 0;
 }
@@ -2469,7 +2469,7 @@ virDomainRef(virDomainPtr domain)
         return -1;
     }
 
-    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->object.refs);
+    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->object.u.s.refs);
     virObjectRef(domain);
     return 0;
 }
@@ -11977,7 +11977,7 @@ virNetworkRef(virNetworkPtr network)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("network=%p refs=%d", network, network->object.refs);
+    VIR_DEBUG("network=%p refs=%d", network, network->object.u.s.refs);
     virObjectRef(network);
     return 0;
 }
@@ -12921,7 +12921,7 @@ virInterfaceRef(virInterfacePtr iface)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("iface=%p refs=%d", iface, iface->object.refs);
+    VIR_DEBUG("iface=%p refs=%d", iface, iface->object.u.s.refs);
     virObjectRef(iface);
     return 0;
 }
@@ -13980,7 +13980,7 @@ virStoragePoolRef(virStoragePoolPtr pool)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("pool=%p refs=%d", pool, pool->object.refs);
+    VIR_DEBUG("pool=%p refs=%d", pool, pool->object.u.s.refs);
     virObjectRef(pool);
     return 0;
 }
@@ -15101,7 +15101,7 @@ virStorageVolRef(virStorageVolPtr vol)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("vol=%p refs=%d", vol, vol->object.refs);
+    VIR_DEBUG("vol=%p refs=%d", vol, vol->object.u.s.refs);
     virObjectRef(vol);
     return 0;
 }
@@ -15792,7 +15792,7 @@ virNodeDeviceRef(virNodeDevicePtr dev)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("dev=%p refs=%d", dev, dev->object.refs);
+    VIR_DEBUG("dev=%p refs=%d", dev, dev->object.u.s.refs);
     virObjectRef(dev);
     return 0;
 }
@@ -16900,7 +16900,7 @@ virSecretRef(virSecretPtr secret)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("secret=%p refs=%d", secret, secret->object.refs);
+    VIR_DEBUG("secret=%p refs=%d", secret, secret->object.u.s.refs);
     virObjectRef(secret);
     return 0;
 }
@@ -16994,7 +16994,7 @@ virStreamRef(virStreamPtr stream)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("stream=%p refs=%d", stream, stream->object.refs);
+    VIR_DEBUG("stream=%p refs=%d", stream, stream->object.u.s.refs);
     virObjectRef(stream);
     return 0;
 }
@@ -18400,7 +18400,7 @@ virNWFilterRef(virNWFilterPtr nwfilter)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->object.refs);
+    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->object.u.s.refs);
     virObjectRef(nwfilter);
     return 0;
 }
@@ -20699,7 +20699,7 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->object.refs);
+    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->object.u.s.refs);
     virObjectRef(snapshot);
     return 0;
 }
