@@ -1981,7 +1981,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
 %ghost %dir %{_localstatedir}/run/libvirt/uml/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
-{_libdir}/%{name}/connection-driver/libvirt_driver_uml.so
+%{_libdir}/%{name}/connection-driver/libvirt_driver_uml.so
         %endif
 
         %if %{with_xen}
