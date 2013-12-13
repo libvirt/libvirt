@@ -2589,7 +2589,7 @@ with autostarting disabled.
 You may also want to list pools with specified types using I<type>, the
 pool types must be separated by comma, e.g. --type dir,disk. The valid pool
 types include 'dir', 'fs', 'netfs', 'logical', 'disk', 'iscsi', 'scsi',
-'mpath', 'rbd', and 'sheepdog'.
+'mpath', 'rbd', 'sheepdog' and 'gluster'.
 
 The I<--details> option instructs virsh to additionally
 display pool persistence and capacity related information where available.

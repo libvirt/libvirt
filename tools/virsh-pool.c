@@ -1006,7 +1006,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 return false;
             }
 
-            switch (poolType) {
+            switch ((enum virStoragePoolType) poolType) {
             case VIR_STORAGE_POOL_DIR:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_DIR;
                 break;
@@ -1034,7 +1034,13 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             case VIR_STORAGE_POOL_RBD:
                 flags |= VIR_CONNECT_LIST_STORAGE_POOLS_RBD;
                 break;
-            default:
+            case VIR_STORAGE_POOL_SHEEPDOG:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG;
+                break;
+            case VIR_STORAGE_POOL_GLUSTER:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER;
+                break;
+            case VIR_STORAGE_POOL_LAST:
                 break;
             }
         }
