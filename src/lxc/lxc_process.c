@@ -711,7 +711,11 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     } else {
         /* If cgroup doesn't exist, just try cleaning up the
          * libvirt_lxc process */
-        virProcessKillPainfully(vm->pid, true);
+        if (virProcessKillPainfully(vm->pid, true) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Processes %d refused to die"), (int)vm->pid);
+            return -1;
+        }
     }
 
     virLXCProcessCleanup(driver, vm, reason);
