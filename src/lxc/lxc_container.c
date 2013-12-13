@@ -196,10 +196,33 @@ int lxcContainerHasReboot(void)
  *
  * Returns a virCommandPtr
  */
-static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
+static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
+                                              char **ttyPaths,
+                                              size_t nttyPaths)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    /* 'container_ptys' must exclude the PTY associated with
+     * the /dev/console device, hence start at 1 not 0
+     */
+    for (i = 1; i < nttyPaths; i++) {
+        if (!STRPREFIX(ttyPaths[i], "/dev/")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Expected a /dev path for '%s'"),
+                           ttyPaths[i]);
+            virBufferFreeAndReset(&buf);
+            return NULL;
+        }
+        virBufferAdd(&buf, ttyPaths[i] + 5, -1);
+        virBufferAddChar(&buf, ' ');
+    }
+    virBufferTrim(&buf, NULL, 1);
+
+    if (virBufferError(&buf))
+        return NULL;
 
     virUUIDFormat(vmDef->uuid, uuidstr);
 
@@ -212,11 +235,14 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef)
     virCommandAddEnvString(cmd, "TERM=linux");
     virCommandAddEnvString(cmd, "container=lxc-libvirt");
     virCommandAddEnvPair(cmd, "container_uuid", uuidstr);
+    if (nttyPaths > 1)
+        virCommandAddEnvPair(cmd, "container_ttys", virBufferCurrentContent(&buf));
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_UUID", uuidstr);
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
     if (vmDef->os.cmdline)
         virCommandAddEnvPair(cmd, "LIBVIRT_LXC_CMDLINE", vmDef->os.cmdline);
 
+    virBufferFreeAndReset(&buf);
     return cmd;
 }
 
@@ -1789,7 +1815,9 @@ static int lxcContainerChild(void *data)
     if ((hasReboot = lxcContainerHasReboot()) < 0)
         goto cleanup;
 
-    cmd = lxcContainerBuildInitCmd(vmDef);
+    cmd = lxcContainerBuildInitCmd(vmDef,
+                                   argv->ttyPaths,
+                                   argv->nttyPaths);
     virCommandWriteArgLog(cmd, 1);
 
     if (lxcContainerSetID(vmDef) < 0)
