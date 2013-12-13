@@ -1915,6 +1915,14 @@ exit 0
         %if %{with_network}
 %files daemon-driver-network
 %defattr(-, root, root)
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
+%dir %{_datadir}/libvirt/networks/
+%{_datadir}/libvirt/networks/default.xml
+%ghost %dir %{_localstatedir}/run/libvirt/network/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
+%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
         %endif
 
