@@ -1146,7 +1146,8 @@ virStorageBackendForType(int type)
             return backends[i];
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("missing backend for pool type %d"), type);
+                   _("missing backend for pool type %d (%s)"),
+                   type, NULLSTR(virStoragePoolTypeToString(type)));
     return NULL;
 }
 
