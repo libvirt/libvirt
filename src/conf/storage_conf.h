@@ -332,6 +332,7 @@ struct _virStoragePoolObj {
     int active;
     int autostart;
     unsigned int asyncjobs;
+    bool internal;
 
     virStoragePoolDefPtr def;
     virStoragePoolDefPtr newDef;
