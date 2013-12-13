@@ -60,8 +60,6 @@
 # include "libvirt/libvirt-qemu.h"
 # include "libvirt/virterror.h"
 
-# include "libvirt_internal.h"
-
 # include "c-strcase.h"
 # include "ignore-value.h"
 

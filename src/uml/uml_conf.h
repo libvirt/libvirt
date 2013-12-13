@@ -25,6 +25,7 @@
 # define __UML_CONF_H
 
 # include "internal.h"
+# include "libvirt_internal.h"
 # include "capabilities.h"
 # include "network_conf.h"
 # include "domain_conf.h"

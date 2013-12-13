@@ -25,6 +25,7 @@
 # include <unistd.h>
 
 # include "internal.h"
+# include "libvirt_internal.h"
 # include "viruri.h"
 /*
  * List of registered drivers numbers
