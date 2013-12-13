@@ -137,6 +137,9 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
             virObjectUnref(cbList->callbacks[i]->conn);
+            if (cbList->callbacks[i]->meta)
+                VIR_FREE(cbList->callbacks[i]->meta->name);
+            VIR_FREE(cbList->callbacks[i]->meta);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
