@@ -133,4 +133,5 @@
     <flag name='kvm-pit-lost-tick-policy'/>
     <flag name='boot-strict'/>
     <flag name='pvpanic'/>
+    <flag name='reboot-timeout'/>
   </qemuCaps>

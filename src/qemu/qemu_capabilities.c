@@ -2284,6 +2284,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
+    { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
 };
 
 static int
