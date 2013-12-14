@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-11-06 12:29-0500\n"
+"POT-Creation-Date: 2013-12-14 14:24-0500\n"
 "PO-Revision-Date: 2013-04-26 08:02+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
@@ -207,7 +207,7 @@ msgstr ""
 
 #: daemon/libvirtd.c:1108 daemon/libvirtd.c:1122
 #: src/locking/lock_daemon.c:1198 src/locking/sanlock_helper.c:76
-#: src/lxc/lxc_controller.c:1547 src/security/virt-aa-helper.c:1186
+#: src/lxc/lxc_controller.c:1549 src/security/virt-aa-helper.c:1186
 #: src/storage/parthelper.c:75 src/util/iohelper.c:237 src/util/iohelper.c:243
 #, c-format
 msgid "%s: initialization failed\n"
@@ -3646,7 +3646,7 @@ msgstr "അപ്രതീക്ഷിതമായ ഇന്റര്‍ഫെ�
 
 #: src/conf/interface_conf.c:1276 src/conf/network_conf.c:348
 #: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3038
-#: src/conf/storage_conf.c:1636 src/libxl/libxl_driver.c:1176
+#: src/conf/storage_conf.c:1636 src/libxl/libxl_driver.c:1178
 #: src/parallels/parallels_driver.c:920 src/qemu/qemu_driver.c:565
 #: src/remote/remote_driver.c:902 src/test/test_driver.c:544
 #: src/test/test_driver.c:800 src/xen/xen_driver.c:365
@@ -8986,137 +8986,137 @@ msgstr "ക്ലോണ്‍ കണ്ടെയിനര്‍ പ്രവര�
 msgid "cannot get the host uuid"
 msgstr "ഹോസ്റ്റ് uuid ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:304
+#: src/lxc/lxc_controller.c:302
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "കണ്‍സോള്‍ ഫയല്‍ വിവരണം നോണ്‍-ബ്ലോക്കിങ് ആയി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:316
+#: src/lxc/lxc_controller.c:314
 msgid "error sending continue signal to daemon"
 msgstr "തുടരെയുള്ള സിഗ്നല്‍ ഡെമണിലേക്കു് അയയ്ക്കുന്നതില്‍ പിശക്"
 
-#: src/lxc/lxc_controller.c:328
+#: src/lxc/lxc_controller.c:326
 #, c-format
 msgid "expecting %zu veths, but got %zu"
 msgstr "%zu veths പ്രതീക്ഷിയ്ക്കുന്നു, പക്ഷേ ലഭ്യമായതു് %zu"
 
-#: src/lxc/lxc_controller.c:341
+#: src/lxc/lxc_controller.c:339
 #, c-format
 msgid "expecting %zu consoles, but got %zu tty file handlers"
 msgstr "%zu കണ്‍സോളുകള്‍ പ്രതീക്ഷിയ്ക്കുന്നു, പക്ഷേ കിട്ടിയതു് %zu tty ഫയല്‍ ഹാന്‍ഡിലറുകള്‍"
 
-#: src/lxc/lxc_controller.c:434
+#: src/lxc/lxc_controller.c:432
 #, c-format
 msgid "disk driver %s is not supported"
 msgstr "ഡിസ്ക് ഡ്രൈവര്‍ %s പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_controller.c:446
+#: src/lxc/lxc_controller.c:444
 #, c-format
 msgid "disk format %s is not supported"
 msgstr "ഡിസ്ക് ശൈലി %s പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_controller.c:682
+#: src/lxc/lxc_controller.c:680
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "സവിശേഷതകള്‍ ഉപയോഗിക്കുന്നതില്‍ പരാജയം:%d"
 
-#: src/lxc/lxc_controller.c:757 src/lxc/lxc_controller.c:793
+#: src/lxc/lxc_controller.c:762 src/lxc/lxc_controller.c:799
 msgid "Unable to add epoll fd"
 msgstr "epoll fd ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:768 src/lxc/lxc_controller.c:805
+#: src/lxc/lxc_controller.c:773 src/lxc/lxc_controller.c:811
 msgid "Unable to remove epoll fd"
 msgstr "epoll fd നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:835
+#: src/lxc/lxc_controller.c:841
 msgid "Unable to wait on epoll"
 msgstr "epoll-ല്‍ കാത്തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:893
+#: src/lxc/lxc_controller.c:899
 msgid "Unable to read container pty"
 msgstr "കണ്ടെയിനര്‍ pty ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:921
+#: src/lxc/lxc_controller.c:927
 msgid "Unable to write to container pty"
 msgstr "കണ്ടെയിനര്‍ pty-ലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:987
+#: src/lxc/lxc_controller.c:989
 msgid "Unable to create epoll fd"
 msgstr "epoll fd തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:997
+#: src/lxc/lxc_controller.c:999
 msgid "Unable to watch epoll FD"
 msgstr "epoll FD നിരീക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1007 src/lxc/lxc_controller.c:1017
+#: src/lxc/lxc_controller.c:1009 src/lxc/lxc_controller.c:1019
 msgid "Unable to watch host console PTY"
 msgstr "ഹോസ്റ്റ് കണ്‍സോള്‍ PTY നിരീക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1109
+#: src/lxc/lxc_controller.c:1111
 #, c-format
 msgid "Unable to request personality for %s on %s"
 msgstr "%sല്‍ %sനു വേണ്ടി വ്യതിരിക്തത ആവശ്യപ്പെടാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1178
+#: src/lxc/lxc_controller.c:1180
 msgid "Cannot unshare mount namespace"
 msgstr "മൌണ്ട് namespace അണ്‍ഷെയര്‍ ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1184
+#: src/lxc/lxc_controller.c:1186
 msgid "Failed to switch root mount into slave mode"
 msgstr "റൂട്ട് മൌണ്ട് സ്ലേവ് മോഡിലേക്ക് മാറ്റുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_controller.c:1206
+#: src/lxc/lxc_controller.c:1208
 #, c-format
 msgid "Expected exactly one console, but got %zu"
 msgstr "ഒരു കണ്‍സോള്‍ മാത്രം പ്രതീക്ഷിച്ചു, പക്ഷേ കിട്ടിയതു് %zu"
 
-#: src/lxc/lxc_controller.c:1248
+#: src/lxc/lxc_controller.c:1250
 #, c-format
 msgid "Failed to make path %s"
 msgstr "പാഥ് %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_controller.c:1265
+#: src/lxc/lxc_controller.c:1267
 #, c-format
 msgid "Failed to mount devpts on %s"
 msgstr "%s-ല്‍ devpts മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/lxc/lxc_controller.c:1272
+#: src/lxc/lxc_controller.c:1274
 msgid "Kernel does not support private devpts"
 msgstr ""
 
-#: src/lxc/lxc_controller.c:1303 src/lxc/lxc_process.c:1163
+#: src/lxc/lxc_controller.c:1305 src/lxc/lxc_process.c:1163
 msgid "Failed to allocate tty"
 msgstr "tty ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_controller.c:1424
+#: src/lxc/lxc_controller.c:1426
 msgid "sockpair failed"
 msgstr "sockpair പരാജയപ്പെട്ടു"
 
-#: src/lxc/lxc_controller.c:1430
+#: src/lxc/lxc_controller.c:1432
 msgid "socketpair failed"
 msgstr "socketpair പരാജയപ്പെട്ടു"
 
-#: src/lxc/lxc_controller.c:1475
+#: src/lxc/lxc_controller.c:1477
 msgid "Unable to send container continue message"
 msgstr "കണ്ടെയിനര്‍ തുടരുന്നതിനുള്ള സന്ദേശം അയയ്ക്കുവാന്‍ സാധിച്ചില്ല"
 
-#: src/lxc/lxc_controller.c:1481
+#: src/lxc/lxc_controller.c:1483
 msgid "error receiving signal from container"
 msgstr "കണ്ടയിനറില്‍ നിന്നും പിശക് സിഗ്നല്‍ ലഭ്യമാകുന്നു"
 
-#: src/lxc/lxc_controller.c:1691
+#: src/lxc/lxc_controller.c:1693
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
 msgstr "pid ഫയല്‍ '%s/%s.pid' റൈറ്റ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1705
+#: src/lxc/lxc_controller.c:1707
 msgid "Unable to change to root dir"
 msgstr "റൂട്ട് ഡയറക്ടറിയിലേക്ക് മാറ്റുവാന്‍ അസാധ്യം"
 
-#: src/lxc/lxc_controller.c:1711
+#: src/lxc/lxc_controller.c:1713
 msgid "Unable to become session leader"
 msgstr "സെഷന്‍ ലീഡര്‍ ആകുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_controller.c:1725
+#: src/lxc/lxc_controller.c:1727
 msgid "Unknown failure in libvirt_lxc startup"
 msgstr "libvirt_lxc ആരംഭത്തില്‍ അപരിചിതമായ പരാജയം"
 
@@ -9143,13 +9143,13 @@ msgstr "id %d-മായി പൊരുത്തപ്പെടുന്ന ഡ�
 #: src/lxc/lxc_driver.c:2246 src/lxc/lxc_driver.c:2273
 #: src/lxc/lxc_driver.c:2434 src/lxc/lxc_driver.c:2485
 #: src/lxc/lxc_driver.c:2713 src/lxc/lxc_driver.c:2802
-#: src/libxl/libxl_driver.c:1624 src/libxl/libxl_driver.c:1682
-#: src/libxl/libxl_driver.c:1740 src/libxl/libxl_driver.c:1793
-#: src/libxl/libxl_driver.c:1836 src/libxl/libxl_driver.c:1891
-#: src/libxl/libxl_driver.c:2228 src/libxl/libxl_driver.c:2335
-#: src/libxl/libxl_driver.c:2425 src/libxl/libxl_driver.c:2500
-#: src/libxl/libxl_driver.c:2529 src/libxl/libxl_driver.c:3040
-#: src/libxl/libxl_driver.c:3781 src/libxl/libxl_driver.c:3809
+#: src/libxl/libxl_driver.c:1626 src/libxl/libxl_driver.c:1684
+#: src/libxl/libxl_driver.c:1742 src/libxl/libxl_driver.c:1795
+#: src/libxl/libxl_driver.c:1838 src/libxl/libxl_driver.c:1893
+#: src/libxl/libxl_driver.c:2230 src/libxl/libxl_driver.c:2337
+#: src/libxl/libxl_driver.c:2427 src/libxl/libxl_driver.c:2502
+#: src/libxl/libxl_driver.c:2531 src/libxl/libxl_driver.c:3042
+#: src/libxl/libxl_driver.c:3783 src/libxl/libxl_driver.c:3811
 #: src/vmware/vmware_driver.c:681
 #, c-format
 msgid "No domain with matching uuid '%s'"
@@ -9189,13 +9189,13 @@ msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവു�
 #: src/lxc/lxc_driver.c:2197 src/lxc/lxc_driver.c:2440
 #: src/lxc/lxc_driver.c:2493 src/lxc/lxc_driver.c:2721
 #: src/lxc/lxc_driver.c:2810 src/lxc/lxc_driver.c:4363
-#: src/libxl/libxl_driver.c:1628 src/libxl/libxl_driver.c:1687
-#: src/libxl/libxl_driver.c:1746 src/libxl/libxl_driver.c:1799
-#: src/libxl/libxl_driver.c:1842 src/libxl/libxl_driver.c:2233
-#: src/libxl/libxl_driver.c:2340 src/libxl/libxl_driver.c:2430
-#: src/libxl/libxl_driver.c:2727 src/libxl/libxl_driver.c:2835
-#: src/libxl/libxl_driver.c:3584 src/libxl/libxl_driver.c:3882
-#: src/libxl/libxl_driver.c:3949 src/libxl/libxl_driver.c:4030
+#: src/libxl/libxl_driver.c:1630 src/libxl/libxl_driver.c:1689
+#: src/libxl/libxl_driver.c:1748 src/libxl/libxl_driver.c:1801
+#: src/libxl/libxl_driver.c:1844 src/libxl/libxl_driver.c:2235
+#: src/libxl/libxl_driver.c:2342 src/libxl/libxl_driver.c:2432
+#: src/libxl/libxl_driver.c:2729 src/libxl/libxl_driver.c:2837
+#: src/libxl/libxl_driver.c:3586 src/libxl/libxl_driver.c:3884
+#: src/libxl/libxl_driver.c:3951 src/libxl/libxl_driver.c:4032
 #: src/openvz/openvz_driver.c:606 src/openvz/openvz_driver.c:644
 #: tools/virsh-domain.c:8664 tools/virsh-domain.c:8833
 msgid "Domain is not running"
@@ -9229,14 +9229,14 @@ msgstr "മെമ്മറി സോഫ്റ്റ് പരിധി ലഭ്
 msgid "unable to get swap hard limit"
 msgstr "സ്വാപ്പ് ഹാര്‍ഡ് പരിധി ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:974 src/libxl/libxl_driver.c:3046
+#: src/lxc/lxc_driver.c:974 src/libxl/libxl_driver.c:3048
 #: src/vmware/vmware_driver.c:690
 msgid "Domain is already running"
 msgstr "ഡൊമെയിന്‍ നിലവില്‍ പ്രവര്‍ത്തിയ്ക്കുന്നു"
 
 #: src/lxc/lxc_driver.c:1102 src/lxc/lxc_driver.c:2544
 #: src/lxc/lxc_driver.c:2623 src/lxc/lxc_driver.c:4170
-#: src/lxc/lxc_driver.c:4356 src/libxl/libxl_driver.c:3136
+#: src/lxc/lxc_driver.c:4356 src/libxl/libxl_driver.c:3138
 #: src/openvz/openvz_driver.c:2023 src/parallels/parallels_driver.c:66
 #: src/parallels/parallels_driver.c:1157 src/qemu/qemu_driver.c:1307
 #: src/test/test_driver.c:2170 src/uml/uml_driver.c:1693
@@ -9359,13 +9359,13 @@ msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനുള�
 msgid "Cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2309 src/libxl/libxl_driver.c:3837
+#: src/lxc/lxc_driver.c:2309 src/libxl/libxl_driver.c:3839
 #: src/qemu/qemu_driver.c:6568 src/uml/uml_driver.c:2328
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s -> '%s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_driver.c:2316 src/libxl/libxl_driver.c:3844
+#: src/lxc/lxc_driver.c:2316 src/libxl/libxl_driver.c:3846
 #: src/network/bridge_driver.c:3599 src/qemu/qemu_driver.c:6575
 #: src/storage/storage_driver.c:1047 src/uml/uml_driver.c:2335
 #, c-format
@@ -9422,7 +9422,7 @@ msgstr "കണ്ടെയിനര്‍ initctl പൈപ്പ് ലഭ്�
 msgid "Unable to send SIGTERM to init pid %llu"
 msgstr "pid %llu init ചെയ്യുന്നതിനായി SIGTERM അയയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2878 src/libxl/libxl_driver.c:3401
+#: src/lxc/lxc_driver.c:2878 src/libxl/libxl_driver.c:3403
 #, c-format
 msgid "target %s already exists."
 msgstr "ലക്ഷ്യം %s നിലവിലുണ്ടു്."
@@ -9431,7 +9431,7 @@ msgstr "ലക്ഷ്യം %s നിലവിലുണ്ടു്."
 msgid "device is already in the domain configuration"
 msgstr "ഡിവൈസ് നിലവില്‍ ഡൊമെയിന്‍ ക്രമീകരണത്തിലാണു്"
 
-#: src/lxc/lxc_driver.c:2917 src/libxl/libxl_driver.c:3414
+#: src/lxc/lxc_driver.c:2917 src/libxl/libxl_driver.c:3416
 #: src/qemu/qemu_driver.c:6137
 msgid "persistent attach of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
@@ -9448,12 +9448,12 @@ msgstr "മാക് വിലാസം %s-മായി പൊരുത്തപ
 msgid "no matching network device was found"
 msgstr "ചേരുന്ന നെറ്റ്‌‌വര്‍ക്ക് ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2960 src/libxl/libxl_driver.c:3536
+#: src/lxc/lxc_driver.c:2960 src/libxl/libxl_driver.c:3538
 #: src/qemu/qemu_driver.c:6301
 msgid "persistent update of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_driver.c:2985 src/libxl/libxl_driver.c:3452
+#: src/lxc/lxc_driver.c:2985 src/libxl/libxl_driver.c:3454
 #: src/qemu/qemu_driver.c:6161
 #, c-format
 msgid "no target device %s"
@@ -9464,7 +9464,7 @@ msgstr "ലക്ഷ്യ ഡിവൈസ് %s ലഭ്യമല്ല"
 msgid "device not present in domain configuration"
 msgstr "ഡൊമെയിന്‍ ക്രമീകരണത്തില്‍ ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3025 src/libxl/libxl_driver.c:3460
+#: src/lxc/lxc_driver.c:3025 src/libxl/libxl_driver.c:3462
 #: src/qemu/qemu_driver.c:6222
 msgid "persistent detach of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ വേര്‍പെടുത്തലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
@@ -9475,7 +9475,7 @@ msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ വേ�
 msgid "Cannot attach disk until init PID is known"
 msgstr "init PID പരിചിതമാകുന്നതു് വരെ ഡിസ്ക് ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3067 src/libxl/libxl_driver.c:3269
+#: src/lxc/lxc_driver.c:3067 src/libxl/libxl_driver.c:3271
 #: src/qemu/qemu_driver.c:6060 src/qemu/qemu_hotplug.c:242
 #: src/qemu/qemu_hotplug.c:485 src/qemu/qemu_hotplug.c:608
 #: src/uml/uml_driver.c:2037
@@ -9537,13 +9537,13 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഹോസ്റ്റ�
 msgid "Cannot attach hostdev until init PID is known"
 msgstr "init PID പരിചിതമാകുന്നതു് വരെ hostdev ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3708 src/libxl/libxl_driver.c:3383
+#: src/lxc/lxc_driver.c:3708 src/libxl/libxl_driver.c:3385
 #: src/qemu/qemu_driver.c:5836 src/uml/uml_driver.c:2119
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "ഡിവൈസ് രീതി '%s' ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3736 src/libxl/libxl_driver.c:3331
+#: src/lxc/lxc_driver.c:3736 src/libxl/libxl_driver.c:3333
 #: src/qemu/qemu_hotplug.c:2078 src/qemu/qemu_hotplug.c:2187
 #: src/uml/uml_driver.c:2168
 #, c-format
@@ -9574,7 +9574,7 @@ msgstr "യുഎസ്ബി ഡിവൈസ് ലഭ്യമല്ല"
 msgid "hostdev %s not found"
 msgstr "hostdev %s ലഭ്യമായില്ല"
 
-#: src/lxc/lxc_driver.c:4128 src/libxl/libxl_driver.c:3433
+#: src/lxc/lxc_driver.c:4128 src/libxl/libxl_driver.c:3435
 #: src/xen/xm_internal.c:1451
 #, c-format
 msgid "device type '%s' cannot be detached"
@@ -9584,13 +9584,13 @@ msgstr "ഡിവൈസ് തരം '%s' വേര്‍പെടുത്ത�
 msgid "cannot do live update a device on inactive domain"
 msgstr "നിര്‍ജീവ ഡൊമെയിനിലുള്ളൊരു ഡിവൈസില്‍ ഒരു ലൈവ് പരിഷ്കരണം സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:4191 src/libxl/libxl_driver.c:3591
+#: src/lxc/lxc_driver.c:4191 src/libxl/libxl_driver.c:3593
 #: src/qemu/qemu_driver.c:6368
 msgid "cannot modify device on transient domain"
 msgstr "ക്ഷണികമായ ഡൊമെയിനിലെ ഉപകരണത്തിന് മാറ്റം വരുത്താന്‍ കഴിയില്ല"
 
 #: src/lxc/lxc_driver.c:4233 src/lxc/lxc_driver.c:4254
-#: src/libxl/libxl_driver.c:3620 src/libxl/libxl_driver.c:3646
+#: src/libxl/libxl_driver.c:3622 src/libxl/libxl_driver.c:3648
 #: src/qemu/qemu_driver.c:6414 src/qemu/qemu_driver.c:6438
 #, c-format
 msgid "unknown domain modify action %d"
@@ -9726,11 +9726,11 @@ msgstr "libxl കോണ്‍ടെക്സ്റ്റ് ഇനീഷ്യ�
 msgid "unknown error"
 msgstr "അപരിചിതമായ പിശക്"
 
-#: src/libxl/libxl_driver.c:501 src/libxl/libxl_driver.c:3719
+#: src/libxl/libxl_driver.c:501 src/libxl/libxl_driver.c:3721
 msgid "libxl_get_physinfo_info failed"
 msgstr "libxl_get_physinfo_info പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:507 src/libxl/libxl_driver.c:3725
+#: src/libxl/libxl_driver.c:507 src/libxl/libxl_driver.c:3727
 msgid "libxl_get_version_info failed"
 msgstr "libxl_get_version_info പരാജയപ്പെട്ടു"
 
@@ -9771,12 +9771,12 @@ msgstr "XML വായിക്കുന്നതില്‍ പരാജയം"
 msgid "Unable to cleanup domain %d"
 msgstr "%d ഡൊമെയിന്‍ വെടിപ്പാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:844 src/libxl/libxl_driver.c:2779
+#: src/libxl/libxl_driver.c:846 src/libxl/libxl_driver.c:2781
 #, c-format
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് '%d' vcpu ഉറപ്പിക്കാന്‍ സാധിച്ചില്ല"
 
-#: src/libxl/libxl_driver.c:940 src/qemu/qemu_driver.c:5055
+#: src/libxl/libxl_driver.c:942 src/qemu/qemu_driver.c:5055
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -9785,99 +9785,99 @@ msgstr ""
 "'%s' ഡൊമെയിനിലുള്ള %s യുയുഐഡിലെ ഒരു ഫയലില്‍ നിന്ന് %s ഡൊമെയിനിലെ %s യുയുഐഡി "
 "പുനഃസ്ഥാപിക്കാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:965
+#: src/libxl/libxl_driver.c:967
 #, c-format
 msgid "libxenlight failed to get free memory for domain '%s'"
 msgstr "ഡൊമെയിന്‍ '%s'നു വേണ്ടി ഒഴിഞ്ഞ മെമ്മറി കണ്ടെത്തുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:982
+#: src/libxl/libxl_driver.c:984
 #, c-format
 msgid "libxenlight failed to create new domain '%s'"
 msgstr "പുതിയ ഡൊമെയിന്‍ '%s' ഉണ്ടാക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:986
+#: src/libxl/libxl_driver.c:988
 #, c-format
 msgid "libxenlight failed to restore domain '%s'"
 msgstr "ഡൊമെയിന്‍ '%s' വീണ്ടെടുക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:998
+#: src/libxl/libxl_driver.c:1000
 msgid "libxenlight failed to store userdata"
 msgstr "ഉപയോക്തൃഡേറ്റാ സൂക്ഷിയ്ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1216
+#: src/libxl/libxl_driver.c:1218
 #, c-format
 msgid "Failed to create log dir '%s': %s"
 msgstr "ലോഗ് ഡയറക്ടറി '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/libxl/libxl_driver.c:1221 src/qemu/qemu_driver.c:599
+#: src/libxl/libxl_driver.c:1223 src/qemu/qemu_driver.c:599
 #, c-format
 msgid "Failed to create state dir '%s': %s"
 msgstr "അവസ്ഥ ഡയറക്ടറി '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/libxl/libxl_driver.c:1226 src/qemu/qemu_driver.c:604
+#: src/libxl/libxl_driver.c:1228 src/qemu/qemu_driver.c:604
 #, c-format
 msgid "Failed to create lib dir '%s': %s"
 msgstr "lib ഡയറക്ടറി '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/libxl/libxl_driver.c:1231 src/qemu/qemu_driver.c:614
+#: src/libxl/libxl_driver.c:1233 src/qemu/qemu_driver.c:614
 #: src/qemu/qemu_driver.c:619 src/xen/xen_driver.c:452
 #, c-format
 msgid "Failed to create save dir '%s': %s"
 msgstr "സൂക്ഷിപ്പു ഡയരക്ടറി '%s' ഉണ്ടാക്കുന്നത്തില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/libxl/libxl_driver.c:1242 src/qemu/qemu_domain.c:1588
+#: src/libxl/libxl_driver.c:1244 src/qemu/qemu_domain.c:1588
 #: src/uml/uml_driver.c:1067
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "ലോഗ്ഫയല്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/libxl/libxl_driver.c:1275
+#: src/libxl/libxl_driver.c:1277
 msgid "cannot create capabilities for libxenlight"
 msgstr "libxenlight-നുള്ള വിശേഷതകള്‍ തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:1380
+#: src/libxl/libxl_driver.c:1382
 msgid "libxenlight state driver is not active"
 msgstr "libxenlight അവസ്ഥാ പ്രവര്‍ത്തകം സജീവമല്ല"
 
-#: src/libxl/libxl_driver.c:1390 src/xen/xen_driver.c:333
+#: src/libxl/libxl_driver.c:1392 src/xen/xen_driver.c:333
 #, c-format
 msgid "unexpected Xen URI path '%s', try xen:///"
 msgstr "അപ്രതീക്ഷിതമായ Xen URI പാഥ് '%s', xen:/// ശ്രമിക്കുക"
 
-#: src/libxl/libxl_driver.c:1637
+#: src/libxl/libxl_driver.c:1639
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' താല്‍ക്കാലികമായി നിര്‍ത്തുവെക്കുന്നത്തില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1696
+#: src/libxl/libxl_driver.c:1698
 #, c-format
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' പുനരാരംഭിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1753
+#: src/libxl/libxl_driver.c:1755
 #, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' അടച്ചുപൂട്ടുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1806
+#: src/libxl/libxl_driver.c:1808
 #, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' റീബൂട്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1851 src/libxl/libxl_driver.c:2190
-#: src/libxl/libxl_driver.c:2370
+#: src/libxl/libxl_driver.c:1853 src/libxl/libxl_driver.c:2192
+#: src/libxl/libxl_driver.c:2372
 #, c-format
 msgid "Failed to destroy domain '%d'"
 msgstr "'%d' ഡൊമെയിന്‍ ഇല്ലാതാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1916 src/libxl/libxl_driver.c:1947
-#: src/libxl/libxl_driver.c:2069 src/libxl/libxl_driver.c:2116
-#: src/libxl/libxl_driver.c:2587 src/libxl/libxl_driver.c:2706
-#: src/libxl/libxl_driver.c:2763 src/libxl/libxl_driver.c:2830
-#: src/libxl/libxl_driver.c:2894 src/libxl/libxl_driver.c:3571
-#: src/libxl/libxl_driver.c:3877 src/libxl/libxl_driver.c:3943
-#: src/libxl/libxl_driver.c:4025 src/openvz/openvz_driver.c:287
+#: src/libxl/libxl_driver.c:1918 src/libxl/libxl_driver.c:1949
+#: src/libxl/libxl_driver.c:2071 src/libxl/libxl_driver.c:2118
+#: src/libxl/libxl_driver.c:2589 src/libxl/libxl_driver.c:2708
+#: src/libxl/libxl_driver.c:2765 src/libxl/libxl_driver.c:2832
+#: src/libxl/libxl_driver.c:2896 src/libxl/libxl_driver.c:3573
+#: src/libxl/libxl_driver.c:3879 src/libxl/libxl_driver.c:3945
+#: src/libxl/libxl_driver.c:4027 src/openvz/openvz_driver.c:287
 #: src/openvz/openvz_driver.c:434 src/openvz/openvz_driver.c:482
 #: src/openvz/openvz_driver.c:556 src/openvz/openvz_driver.c:600
 #: src/openvz/openvz_driver.c:638 src/openvz/openvz_driver.c:681
@@ -9899,115 +9899,115 @@ msgstr "'%d' ഡൊമെയിന്‍ ഇല്ലാതാക്കുന്
 msgid "no domain with matching uuid"
 msgstr "ചേരുന്ന uuid-യുള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:1968
+#: src/libxl/libxl_driver.c:1970
 msgid "cannot set memory on an inactive domain"
 msgstr "സജീവമല്ലാത്ത ഒരു ഡൊമെയിനില്‍ മെമ്മറി സജ്ജീകരിക്കാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:1975 src/libxl/libxl_driver.c:2599
+#: src/libxl/libxl_driver.c:1977 src/libxl/libxl_driver.c:2601
 msgid "cannot change persistent config of a transient domain"
 msgstr "ഒരു ട്രാന്‍സിയന്റ് ഡൊമെയിന്റെ ക്രമീകരണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:1991
+#: src/libxl/libxl_driver.c:1993
 #, c-format
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ക്കു വേണ്ടി പരമാവധി മെമ്മറി സജ്ജീകരിക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2012 src/qemu/qemu_driver.c:2096
+#: src/libxl/libxl_driver.c:2014 src/qemu/qemu_driver.c:2096
 #: src/uml/uml_driver.c:1763
 msgid "cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2021
+#: src/libxl/libxl_driver.c:2023
 #, c-format
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ക്കു വേണ്ടി മെമ്മറി സജ്ജീകരിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2080
+#: src/libxl/libxl_driver.c:2082
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "'%d' ഡൊമെയിനുള്ള libxl_domain_info പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2145
+#: src/libxl/libxl_driver.c:2147
 #, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
 msgstr ""
 "ഡൊമെയിന്‍ '%d' പ്രവര്‍ത്തിക്കേണ്ടതായുണ്ട്, കാരണം libxenlight അതിനെ താല്‍ക്കാലികമായി "
 "നിര്‍ത്തിവെക്കും"
 
-#: src/libxl/libxl_driver.c:2153
+#: src/libxl/libxl_driver.c:2155
 #, c-format
 msgid "Failed to create domain save file '%s'"
 msgstr "ഡൊമെയിന്‍ സൂക്ഷിപ്പ് ഫയല്‍ '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2168
+#: src/libxl/libxl_driver.c:2170
 msgid "Failed to write save file header"
 msgstr "സൂക്ഷിപ്പ് ഫയലിന്റെ തലക്കെട്ട് എഴുതുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2174
+#: src/libxl/libxl_driver.c:2176
 msgid "Failed to write xml description"
 msgstr "xml വിവരണം സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2180
+#: src/libxl/libxl_driver.c:2182
 #, c-format
 msgid "Failed to save domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' സൂക്ഷിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2200 src/libxl/libxl_driver.c:2301
+#: src/libxl/libxl_driver.c:2202 src/libxl/libxl_driver.c:2303
 msgid "cannot close file"
 msgstr "ഫയല്‍ അടയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2217 src/libxl/libxl_driver.c:2274
+#: src/libxl/libxl_driver.c:2219 src/libxl/libxl_driver.c:2276
 #: src/test/test_driver.c:1797 src/test/test_driver.c:1910
 #: src/xen/xen_driver.c:1119 src/xen/xen_driver.c:1214
 msgid "xml modification unsupported"
 msgstr "xml മാറ്റം വരുത്തല്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libxl/libxl_driver.c:2350
+#: src/libxl/libxl_driver.c:2352
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%d' with libxenlight"
 msgstr ""
 "കോര്‍ ഡമ്പ് ചെയ്യുന്നതിനു മുമ്പ്, libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' താല്‍ക്കാലികമായി "
 "നിര്‍ത്തിവെക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2361
+#: src/libxl/libxl_driver.c:2363
 #, c-format
 msgid "Failed to dump core of domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ കോര്‍ ഡമ്പ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2391
+#: src/libxl/libxl_driver.c:2393
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 "കോര്‍ ഡമ്പ് ചെയ്തതിനു ശേഷം libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' പുനരാരംഭിക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2435 src/qemu/qemu_driver.c:3002
+#: src/libxl/libxl_driver.c:2437 src/qemu/qemu_driver.c:3002
 msgid "cannot do managed save for transient domain"
 msgstr "ക്ഷണിക ഡൊമെയിനിനെ നിയന്ത്രിത സൂക്ഷിപ്പ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2573 src/libxl/libxl_driver.c:2720
+#: src/libxl/libxl_driver.c:2575 src/libxl/libxl_driver.c:2722
 #: src/test/test_driver.c:2215 src/xen/xen_driver.c:1256
 #, c-format
 msgid "invalid flag combination: (0x%x)"
 msgstr "തെറ്റായ ഫ്ലാഗ് കൂട്ടം: (0x%x)"
 
-#: src/libxl/libxl_driver.c:2578
+#: src/libxl/libxl_driver.c:2580
 msgid "nvcpus is zero"
 msgstr "nvcpus പൂജ്യമാണു്"
 
-#: src/libxl/libxl_driver.c:2593
+#: src/libxl/libxl_driver.c:2595
 msgid "cannot set vcpus on an inactive domain"
 msgstr "vcpuകള്‍ നിര്‍ജ്ജീവമായ ഒരു ഡൊമെയിനില്‍ സജ്ജീകരിക്കാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2605 src/xen/xend_internal.c:2071
+#: src/libxl/libxl_driver.c:2607 src/xen/xend_internal.c:2071
 #: src/xen/xm_internal.c:712
 msgid "could not determine max vcpus for the domain"
 msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/libxl/libxl_driver.c:2615 src/qemu/qemu_driver.c:3728
+#: src/libxl/libxl_driver.c:2617 src/qemu/qemu_driver.c:3728
 #: src/xen/xend_internal.c:2076 src/xen/xm_internal.c:721
 #, c-format
 msgid ""
@@ -10015,157 +10015,157 @@ msgid ""
 msgstr ""
 "ആവശ്യപ്പെട്ട vcpuകള്‍ ഡൊമെയിനിന് പരമാവധി അനുവദനീയമായ vcpuകളേക്കാള്‍ കൂടുതലാണ്: %d > %d"
 
-#: src/libxl/libxl_driver.c:2653 src/libxl/libxl_driver.c:2662
+#: src/libxl/libxl_driver.c:2655 src/libxl/libxl_driver.c:2664
 #, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് vcpuകള്‍ ഡൊമെയിന്‍ '%d'ന് സജ്ജീകരിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2734
+#: src/libxl/libxl_driver.c:2736
 msgid "domain is transient"
 msgstr "ഡൊമെയിന്‍ ക്ഷണികമാണ്"
 
-#: src/libxl/libxl_driver.c:2769 src/test/test_driver.c:2405
+#: src/libxl/libxl_driver.c:2771 src/test/test_driver.c:2405
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനില്‍ vcpus പിന്‍ ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2796
+#: src/libxl/libxl_driver.c:2798
 msgid "failed to update or add vcpupin xml"
 msgstr "vcpupin എക്സ്.എം.എല്‍ ഉണ്ടാക്കുവാനോ പുതുക്കുവാനോ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2843
+#: src/libxl/libxl_driver.c:2845
 #, c-format
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ vcpuകള്‍ നിരത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2921 src/libxl/libxl_driver.c:2964
+#: src/libxl/libxl_driver.c:2923 src/libxl/libxl_driver.c:2966
 #: src/qemu/qemu_driver.c:5155 src/qemu/qemu_driver.c:5203
 #: src/xen/xen_driver.c:1413 src/xen/xen_driver.c:1462
 #, c-format
 msgid "unsupported config type %s"
 msgstr "പിന്തുണ ലഭ്യമല്ലാത്ത ക്രമീകരണ രീതി %s"
 
-#: src/libxl/libxl_driver.c:2926 src/libxl/libxl_driver.c:2969
+#: src/libxl/libxl_driver.c:2928 src/libxl/libxl_driver.c:2971
 msgid "cannot get version information from libxenlight"
 msgstr "libxenlightല്‍ നിന്നും പതിപ്പിന്റെ വിവരങ്ങള്‍ ലഭിച്ചില്ല"
 
-#: src/libxl/libxl_driver.c:2934
+#: src/libxl/libxl_driver.c:2936
 msgid "parsing xm config failed"
 msgstr "xm ക്രമീകരണം പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3142 src/qemu/qemu_driver.c:5573
+#: src/libxl/libxl_driver.c:3144 src/qemu/qemu_driver.c:5573
 #: src/uml/uml_driver.c:1997 src/vmware/vmware_driver.c:733
 msgid "cannot undefine transient domain"
 msgstr "ക്ഷണിക ഡൊമെയിന്‍ വേണ്ടെന്നു് വയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3154 src/qemu/qemu_driver.c:5598
+#: src/libxl/libxl_driver.c:3156 src/qemu/qemu_driver.c:5598
 msgid "Failed to remove domain managed save image"
 msgstr "ഡൊമെയിന്‍ നിയന്ത്രിത സൂക്ഷിപ്പ് തത്സ്വരൂപം (ഇമേജ്) നീക്കം ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3159 src/qemu/qemu_driver.c:5604
+#: src/libxl/libxl_driver.c:3161 src/qemu/qemu_driver.c:5604
 #: tools/virsh-domain.c:3054
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
 "ഡൊമെയിന്‍ നിയന്ത്രിത സൂക്ഷിപ്പ് തത്സ്വരൂപം (ഇമേജ്) നിലവിലുള്ളപ്പോള്‍, വേണ്ടെന്നു വയ്ക്കാനുള്ള അപേക്ഷ "
 "നിരസിക്കുന്നു"
 
-#: src/libxl/libxl_driver.c:3217 src/qemu/qemu_driver.c:5690
+#: src/libxl/libxl_driver.c:3219 src/qemu/qemu_driver.c:5690
 #: src/qemu/qemu_driver.c:5959
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "ബസ് '%s', ടാര്‍ഗറ്റ് '%s' എന്ന ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3224 src/qemu/qemu_hotplug.c:75
+#: src/libxl/libxl_driver.c:3226 src/qemu/qemu_hotplug.c:75
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "മാറ്റിവയ്ക്കാവുന്ന മാദ്ധ്യമം %s ഉപകരണത്തില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libxl/libxl_driver.c:3234
+#: src/libxl/libxl_driver.c:3236
 #, c-format
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ഡിസ്ക് '%s'നു വേണ്ടി മാദ്ധ്യമം മാറ്റുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3275 src/qemu/qemu_hotplug.c:627
+#: src/libxl/libxl_driver.c:3277 src/qemu/qemu_hotplug.c:627
 #: src/uml/uml_driver.c:2044
 msgid "disk source path is missing"
 msgstr "ഡിസ്ക് ഉറവിട വഴി കാണ്മാനില്ല"
 
-#: src/libxl/libxl_driver.c:3290
+#: src/libxl/libxl_driver.c:3292
 #, c-format
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3299 src/qemu/qemu_driver.c:5737
+#: src/libxl/libxl_driver.c:3301 src/qemu/qemu_driver.c:5737
 #: src/uml/uml_driver.c:2114
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
-#: src/libxl/libxl_driver.c:3305 src/qemu/qemu_driver.c:5743
+#: src/libxl/libxl_driver.c:3307 src/qemu/qemu_driver.c:5743
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ഡിസ്ക് ഡിവൈസ് തരം '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
-#: src/libxl/libxl_driver.c:3343
+#: src/libxl/libxl_driver.c:3345
 #, c-format
 msgid "libxenlight failed to detach disk '%s'"
 msgstr "ഡിസ്ക് '%s' വേര്‍പെടുത്തുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:3353
+#: src/libxl/libxl_driver.c:3355
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട് അണ്‍പ്ല ചെയ്യാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3359
+#: src/libxl/libxl_driver.c:3361
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr "ഉപകരണത്തിന്റെ തരം '%s' ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3485 src/qemu/qemu_driver.c:5998
+#: src/libxl/libxl_driver.c:3487 src/qemu/qemu_driver.c:5998
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ഡിസ്ക് ബസ് '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല."
 
-#: src/libxl/libxl_driver.c:3492 src/qemu/qemu_driver.c:6036
+#: src/libxl/libxl_driver.c:3494 src/qemu/qemu_driver.c:6036
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr "ഡിവൈസ് തരം '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3513 src/openvz/openvz_driver.c:2069
+#: src/libxl/libxl_driver.c:3515 src/openvz/openvz_driver.c:2069
 #: src/qemu/qemu_driver.c:6245
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "ലക്ഷ്യം %s നിലവിലില്ല."
 
-#: src/libxl/libxl_driver.c:3519 src/qemu/qemu_driver.c:6252
+#: src/libxl/libxl_driver.c:3521 src/qemu/qemu_driver.c:6252
 msgid "this disk doesn't support update"
 msgstr "ഈ ഡിസ്ക് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libxl/libxl_driver.c:3815 src/qemu/qemu_driver.c:6546
+#: src/libxl/libxl_driver.c:3817 src/qemu/qemu_driver.c:6546
 #: src/uml/uml_driver.c:2306
 msgid "cannot set autostart for transient domain"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനു് autostart സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3830 src/qemu/qemu_driver.c:6561
+#: src/libxl/libxl_driver.c:3832 src/qemu/qemu_driver.c:6561
 #: src/storage/storage_driver.c:1032 src/uml/uml_driver.c:2321
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3908
+#: src/libxl/libxl_driver.c:3910
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
 msgstr "ഡൊമെയിന്‍ '%d'ന്റെ ഷെഡ്യൂളര്‍ ഐഡി libxenlight ഉപയോഗിച്ച് കിട്ടിയില്ല"
 
-#: src/libxl/libxl_driver.c:3959 src/libxl/libxl_driver.c:4040
+#: src/libxl/libxl_driver.c:3961 src/libxl/libxl_driver.c:4042
 msgid "Only 'credit' scheduler is supported"
 msgstr "'credit' ഷെഡ്യൂളര്‍ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
-#: src/libxl/libxl_driver.c:3965 src/libxl/libxl_driver.c:4046
+#: src/libxl/libxl_driver.c:3967 src/libxl/libxl_driver.c:4048
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
 msgstr "ഡൊമെയിന്‍ '%d'ന്റെ ഷെഡ്യൂളര്‍ പരാമീറ്ററുകള്‍ libxenlight ഉപയോഗിച്ച് കിട്ടിയില്ല"
 
-#: src/libxl/libxl_driver.c:4063
+#: src/libxl/libxl_driver.c:4065
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
@@ -17319,7 +17319,7 @@ msgstr "സുരക്ഷ doi ഏറ്റവും കൂടിയതിനേ
 msgid "caller ignores cookie or cookielen"
 msgstr "കോളര്‍ cookie അല്ലെങ്കില്‍ cookielen ഉപേക്ഷിയ്ക്കുന്നു"
 
-#: src/remote/remote_driver.c:2368 src/remote/remote_driver.c:5222
+#: src/remote/remote_driver.c:2368 src/remote/remote_driver.c:5224
 msgid "caller ignores uri_out"
 msgstr "കോളര്‍ uri_out ഉപേക്ഷിച്ചിരിയ്ക്കുന്നു"
 
@@ -17379,45 +17379,45 @@ msgstr "auth-നുള്ള ആധികാരികത വിവരങ്ങ�
 msgid "No authentication callback available"
 msgstr "ഓഥന്റിക്കേഷന്‍ കോള്‍ബാക്ക് ലഭ്യമല്ല"
 
-#: src/remote/remote_driver.c:3893 src/remote/remote_driver.c:4203
+#: src/remote/remote_driver.c:3893 src/remote/remote_driver.c:4205
 msgid "Failed to collect auth credentials"
 msgstr "auth-നുള്ള ആധികാരികത വിവരങ്ങള്‍ ശേഖരിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#: src/remote/remote_driver.c:3997
+#: src/remote/remote_driver.c:3999
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "സര്‍വര്‍, എസ്എഎസ്എല്‍ സംവിധാനം %s പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/remote/remote_driver.c:4027
+#: src/remote/remote_driver.c:4029
 #, c-format
 msgid "SASL negotiation data too long: %zu bytes"
 msgstr "എസ്എഎസ്എല്‍ ഇടപാടു് ഡേറ്റാ വളരെ വലുത്: %zu bytes"
 
-#: src/remote/remote_driver.c:4122
+#: src/remote/remote_driver.c:4124
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "ചോദ്യോത്തര എസ്എസ്എഫ് %d ശക്തമല്ല"
 
-#: src/remote/remote_driver.c:4243 src/remote/remote_driver.c:5010
+#: src/remote/remote_driver.c:4245 src/remote/remote_driver.c:5012
 msgid "adding cb to list"
 msgstr "പട്ടികയിലേക്ക് cb ചേര്‍ക്കുന്നു"
 
-#: src/remote/remote_driver.c:4724
+#: src/remote/remote_driver.c:4726
 msgid "no internalFlags support"
 msgstr "internalFlags-ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/remote/remote_driver.c:5051 src/remote/remote_driver.c:5058
+#: src/remote/remote_driver.c:5053 src/remote/remote_driver.c:5060
 #, c-format
 msgid "unable to find callback ID %d"
 msgstr "കോള്‍ബാക്ക് ഐഡി %d കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/remote/remote_driver.c:5154 src/remote/remote_driver.c:5213
-#: src/remote/remote_driver.c:5296 src/remote/remote_driver.c:5357
-#: src/remote/remote_driver.c:5416
+#: src/remote/remote_driver.c:5156 src/remote/remote_driver.c:5215
+#: src/remote/remote_driver.c:5298 src/remote/remote_driver.c:5359
+#: src/remote/remote_driver.c:5418
 msgid "caller ignores cookieout or cookieoutlen"
 msgstr "cookieout അല്ലെങ്കില്‍ cookieoutlen കോളര്‍ ഉപേക്ഷിയ്ക്കുന്നു"
 
-#: src/remote/remote_driver.c:5515
+#: src/remote/remote_driver.c:5517
 msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
@@ -17642,86 +17642,86 @@ msgstr "%zu സ്ലോട്ടില്‍ FD ലഭ്യമല്ല"
 msgid "Unable to duplicate FD %d"
 msgstr "FD %d ആവര്‍ത്തിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:84 src/rpc/virnetsaslcontext.c:106
+#: src/rpc/virnetsaslcontext.c:85 src/rpc/virnetsaslcontext.c:107
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL ലൈബ്രറി ആരംഭിക്കുന്നതില്‍ പരാജയം: %d (%s)"
 
-#: src/rpc/virnetsaslcontext.c:142 src/rpc/virnettlscontext.c:380
+#: src/rpc/virnetsaslcontext.c:143 src/rpc/virnettlscontext.c:380
 #, c-format
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "തെറ്റായ TLS വൈറ്റ് ലിസ്റ്റ് റെഗുലര്‍ എക്സ്പ്രെഷന്‍ '%s'"
 
-#: src/rpc/virnetsaslcontext.c:151
+#: src/rpc/virnetsaslcontext.c:152
 #, c-format
 msgid "SASL client identity '%s' not allowed in whitelist"
 msgstr "എസ്എഎസ്എല്‍ ക്ലയന്റ് '%s' വൈറ്റ്‌ലിസ്റ്റില്‍ അനുവദിയ്ക്കുന്നില്ല"
 
-#: src/rpc/virnetsaslcontext.c:155
+#: src/rpc/virnetsaslcontext.c:156
 msgid "Client's username is not on the list of allowed clients"
 msgstr "അനുവദിയ്ക്കുന്ന ക്ലയന്റുകളുടെ പട്ടികയില്‍ ക്ലയന്റിന്റെ ഉപയോക്തൃനാമം ലഭ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:189 src/rpc/virnetsaslcontext.c:225
+#: src/rpc/virnetsaslcontext.c:190 src/rpc/virnetsaslcontext.c:227
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "എസ്എഎസ്എല്‍ ക്ലയന്റ് കോണ്ടെക്സ്റ്റ് തയ്യാറാക്കുന്നതില്‍ പരാജയം: %d (%s)"
 
-#: src/rpc/virnetsaslcontext.c:247
+#: src/rpc/virnetsaslcontext.c:249
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "എക്സ്റ്റേര്‍ണല്‍ SSF %d (%s) ക്രമികരിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:268
+#: src/rpc/virnetsaslcontext.c:270
 #, c-format
 msgid "cannot query SASL username on connection %d (%s)"
 msgstr " %d (%s) കണക്ഷനില്‍ SASL ഉപയോക്തൃനാമം ചോദ്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:275
+#: src/rpc/virnetsaslcontext.c:277
 msgid "no client username was found"
 msgstr "ക്ലയന്റിനുള്ള ഉപയോക്തൃനാമം ലഭ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:296
+#: src/rpc/virnetsaslcontext.c:298
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "%d (%s) കണക്ഷനിലുള്ള  SASL ssf ചോദ്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:332
+#: src/rpc/virnetsaslcontext.c:334
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "%d (%s) സുരക്ഷാ വിശേഷതകള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:356
+#: src/rpc/virnetsaslcontext.c:358
 #, c-format
 msgid "cannot get security props %d (%s)"
 msgstr "സുരക്ഷ വിശേഷതകള്‍ %d (%s) ലഭ്യമായില്ല"
 
-#: src/rpc/virnetsaslcontext.c:384
+#: src/rpc/virnetsaslcontext.c:386
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr "SASL സംവിധാനങ്ങള്‍ %d (%s) ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/rpc/virnetsaslcontext.c:437 src/rpc/virnetsaslcontext.c:532
-#: src/rpc/virnetsaslcontext.c:577
+#: src/rpc/virnetsaslcontext.c:439 src/rpc/virnetsaslcontext.c:534
+#: src/rpc/virnetsaslcontext.c:579
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "എസ്എഎസ്എല്‍ ചോദ്യോത്തരം ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %d (%s)"
 
-#: src/rpc/virnetsaslcontext.c:486
+#: src/rpc/virnetsaslcontext.c:488
 #, c-format
 msgid "Failed to step SASL negotiation: %d (%s)"
 msgstr "SASL ഇടപാടില്‍ പരാജയപ്പെട്ടു: %d (%s)"
 
-#: src/rpc/virnetsaslcontext.c:610 src/rpc/virnetsaslcontext.c:649
+#: src/rpc/virnetsaslcontext.c:612 src/rpc/virnetsaslcontext.c:651
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
 msgstr "SASL ഡേറ്റാ വ്യാപ്തി %zu വളരെ കൂടുതല്‍, ഏറ്റവും കൂടിയതു് %zu"
 
-#: src/rpc/virnetsaslcontext.c:624
+#: src/rpc/virnetsaslcontext.c:626
 #, c-format
 msgid "failed to encode SASL data: %d (%s)"
 msgstr "SASL ഡേറ്റാ എന്‍കോഡ് ചെയ്യുന്നതില്‍ പരാജയം: %d (%s)"
 
-#: src/rpc/virnetsaslcontext.c:662
+#: src/rpc/virnetsaslcontext.c:664
 #, c-format
 msgid "failed to decode SASL data: %d (%s)"
 msgstr "SASL ഡേറ്റാ ഡീക്കോഡ് ചെയ്യുന്നതില്‍ പരാജയം: %d (%s)"
@@ -22518,22 +22518,22 @@ msgstr "'%s' എന്ന ഫയല്‍ കാലിയാക്കുന്�
 msgid "Unable to save '%s'"
 msgstr "'%s' സൂക്ഷിക്കുവാന്‍ സാധിക്കുന്നില്ല"
 
-#: src/util/virstoragefile.c:1114
+#: src/util/virstoragefile.c:1120
 #, c-format
 msgid "Invalid relative path '%s'"
 msgstr "അസാധുവായ ആപേക്ഷിക പാത്ത് '%s'"
 
-#: src/util/virstoragefile.c:1132
+#: src/util/virstoragefile.c:1138
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "%s-നുള്ള ഫയല്‍സിസ്റ്റം കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virstoragefile.c:1244
+#: src/util/virstoragefile.c:1258
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "%s-നുള്ള എല്‍വിഎം കീ കാണുന്നില്ല"
 
-#: src/util/virstoragefile.c:1294
+#: src/util/virstoragefile.c:1308
 #, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s-നുള്ള സ്കസി കീ കാണുന്നില്ല"
