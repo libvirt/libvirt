@@ -2029,6 +2029,8 @@ storageVolResize(virStorageVolPtr obj,
         goto out;
 
     vol->capacity = abs_capacity;
+    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE)
+        vol->allocation = abs_capacity;
 
     /* Update pool metadata */
     pool->def->allocation += (abs_capacity - vol->capacity);
