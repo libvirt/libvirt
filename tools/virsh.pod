@@ -226,7 +226,7 @@ This command is only available in interactive mode.
 
 Will print the current directory.
 
-=item B<connect> I<URI> [I<--readonly>]
+=item B<connect> [I<URI>] [I<--readonly>]
 
 (Re)-Connect to the hypervisor. When the shell is first started, this
 is automatically run with the I<URI> parameter requested by the C<-c>
@@ -239,7 +239,7 @@ common are:
 
 =item xen:///
 
-this is used to connect to the local Xen hypervisor, this is the default
+this is used to connect to the local Xen hypervisor
 
 =item qemu:///system
 
