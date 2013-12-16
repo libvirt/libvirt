@@ -3829,7 +3829,7 @@ int qemuProcessStart(virConnectPtr conn,
      * Normally PCI addresses are assigned in the virDomainCreate
      * or virDomainDefine methods. We might still need to assign
      * some here to cope with the question of upgrades. Regardless
-     * we also need to populate the PCi address set cache for later
+     * we also need to populate the PCI address set cache for later
      * use in hotplug
      */
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -4560,7 +4560,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      * Normally PCI addresses are assigned in the virDomainCreate
      * or virDomainDefine methods. We might still need to assign
      * some here to cope with the question of upgrades. Regardless
-     * we also need to populate the PCi address set cache for later
+     * we also need to populate the PCI address set cache for later
      * use in hotplug
      */
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
