@@ -12564,7 +12564,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virDomainDiskDefPtr disk,
                                          virDomainDiskDefPtr persistDisk,
                                          virJSONValuePtr actions,
-                                         bool reuse)
+                                         bool reuse,
+                                         enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
@@ -12616,8 +12617,25 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     /* create the actual snapshot */
     if (snap->format)
         formatStr = virStorageFileFormatTypeToString(snap->format);
+
+    /* The monitor is only accessed if qemu doesn't support transactions.
+     * Otherwise the following monitor command only constructs the command.
+     */
+    if (!actions &&
+        qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
     ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
                                   formatStr, reuse);
+    if (!actions) {
+        qemuDomainObjExitMonitor(driver, vm);
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("domain crashed while taking the snapshot"));
+            ret = -1;
+        }
+    }
+
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;
@@ -12723,9 +12741,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
      * Based on earlier qemuDomainSnapshotPrepare, all
      * disks in this list are now either SNAPSHOT_NO, or
      * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
-
     for (i = 0; i < snap->def->ndisks; i++) {
         virDomainDiskDefPtr persistDisk = NULL;
 
@@ -12735,24 +12750,36 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             int indx = virDomainDiskIndexByName(vm->newDef,
                                                 vm->def->disks[i]->dst,
                                                 false);
-            if (indx >= 0) {
+            if (indx >= 0)
                 persistDisk = vm->newDef->disks[indx];
-                persist = true;
-            }
         }
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
                                                        vm->def->disks[i],
                                                        persistDisk, actions,
-                                                       reuse);
+                                                       reuse, asyncJob);
         if (ret < 0)
             break;
     }
     if (actions) {
-        if (ret == 0)
-            ret = qemuMonitorTransaction(priv->mon, actions);
+        if (ret == 0) {
+            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+                ret = qemuMonitorTransaction(priv->mon, actions);
+                qemuDomainObjExitMonitor(driver, vm);
+                if (!virDomainObjIsActive(vm)) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("domain crashed while taking the snapshot"));
+                    ret = -1;
+                }
+            } else {
+                /* failed to enter monitor, clean stuff up and quit */
+                ret = -1;
+            }
+        }
+
         virJSONValueFree(actions);
+
         if (ret < 0) {
             /* Transaction failed; undo the changes to vm.  */
             bool need_unlink = !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
@@ -12766,8 +12793,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                     int indx = virDomainDiskIndexByName(vm->newDef,
                                                         vm->def->disks[i]->dst,
                                                         false);
-                    if (indx >= 0)
+                    if (indx >= 0) {
                         persistDisk = vm->newDef->disks[indx];
+                        persist = true;
+                    }
+
                 }
 
                 qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
@@ -12778,7 +12808,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             }
         }
     }
-    qemuDomainObjExitMonitor(driver, vm);
 
 cleanup:
 
