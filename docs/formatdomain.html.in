@@ -2355,7 +2355,7 @@
       address to use for a given device is constrained in part by the
       device and the architecture of the guest.  For example,
       a <code>&lt;disk&gt;</code> device
-      uses <code>type='disk'</code>, while
+      uses <code>type='drive'</code>, while
       a <code>&lt;console&gt;</code> device would
       use <code>type='pci'</code> on i686 or x86_64 guests,
       or <code>type='spapr-vio'</code> on PowerPC64 pseries guests.
