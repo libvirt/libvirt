@@ -2032,7 +2032,7 @@ AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
 
 
 dnl Allow perl/python overrides
-AC_PATH_PROG([PYTHON], [python])
+AC_PATH_PROGS([PYTHON], [python2 python])
 AC_PATH_PROG([PERL], [perl])
 
 AC_ARG_ENABLE([with-test-suite],
