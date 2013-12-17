@@ -87,12 +87,26 @@ testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
     virCommandPtr cmd = NULL;
+    char *buf = NULL;
+    bool compat = false;
 
     qemuimg = virFindFileInPath("kvm-img");
     if (!qemuimg)
         qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
         goto skip;
+
+    /* See if qemu-img supports '-o compat=xxx'.  If so, we force the
+     * use of both v2 and v3 files; if not, it is v2 only but the test
+     * still works. */
+    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2",
+                               "-o?", "/dev/null", NULL);
+    virCommandSetOutputBuffer(cmd, &buf);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto skip;
+    if (strstr(buf, "compat "))
+        compat = true;
+    VIR_FREE(buf);
 
     if (virAsprintf(&absraw, "%s/raw", datadir) < 0 ||
         virAsprintf(&absqcow2, "%s/qcow2", datadir) < 0 ||
@@ -111,10 +125,8 @@ testPrepImages(void)
         goto cleanup;
     }
 
-    /* I'm lazy enough to use a shell one-liner instead of open/write/close */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList("sh", "-c", "printf %1024d 0 > raw", NULL);
-    if (virCommandRun(cmd, NULL) < 0) {
+    if (virAsprintf(&buf, "%1024d", 0) < 0 ||
+        virFileWriteStr("raw", buf, 0600) < 0) {
         fprintf(stderr, "unable to create raw file\n");
         goto cleanup;
     }
@@ -126,9 +138,10 @@ testPrepImages(void)
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2",
-                               "-obacking_file=raw,backing_fmt=raw", "qcow2",
-                               NULL);
+    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2", NULL);
+    virCommandAddArgFormat(cmd, "-obacking_file=raw,backing_fmt=raw%s",
+                           compat ? ",compat=0.10" : "");
+    virCommandAddArg(cmd, "qcow2");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
     /* Make sure our later uses of 'qemu-img rebase' will work */
@@ -146,8 +159,8 @@ testPrepImages(void)
      * can correctly avoid insecure probing.  */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2", NULL);
-    virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=qcow2",
-                           absqcow2);
+    virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=qcow2%s",
+                           absqcow2, compat ? ",compat=1.1" : "");
     virCommandAddArg(cmd, "wrap");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
@@ -172,6 +185,7 @@ testPrepImages(void)
 
     ret = 0;
 cleanup:
+    VIR_FREE(buf);
     virCommandFree(cmd);
     if (ret)
         testCleanupImages();
