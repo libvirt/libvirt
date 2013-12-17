@@ -40,6 +40,13 @@ int              iptablesRemoveUdpInput          (int family,
                                                   const char *iface,
                                                   int port);
 
+int              iptablesAddUdpOutput            (int family,
+                                                  const char *iface,
+                                                  int port);
+int              iptablesRemoveUdpOutput         (int family,
+                                                  const char *iface,
+                                                  int port);
+
 int              iptablesAddForwardAllowOut      (virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,

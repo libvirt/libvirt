@@ -184,6 +184,28 @@ iptablesInput(int family,
                                  NULL);
 }
 
+static int
+iptablesOutput(int family,
+               const char *iface,
+               int port,
+               int action,
+               int tcp)
+{
+    char portstr[32];
+
+    snprintf(portstr, sizeof(portstr), "%d", port);
+    portstr[sizeof(portstr) - 1] = '\0';
+
+    return iptablesAddRemoveRule("filter", "OUTPUT",
+                                 family,
+                                 action,
+                                 "--out-interface", iface,
+                                 "--protocol", tcp ? "tcp" : "udp",
+                                 "--destination-port", portstr,
+                                 "--jump", "ACCEPT",
+                                 NULL);
+}
+
 /**
  * iptablesAddTcpInput:
  * @ctx: pointer to the IP table context
@@ -260,6 +282,45 @@ iptablesRemoveUdpInput(int family,
                        int port)
 {
     return iptablesInput(family, iface, port, REMOVE, 0);
+}
+
+/**
+ * iptablesAddUdpOutput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to add
+ *
+ * Add an output to the IP table allowing access to the given @port from
+ * the given @iface interface for UDP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
+
+int
+iptablesAddUdpOutput(int family,
+                     const char *iface,
+                     int port)
+{
+    return iptablesOutput(family, iface, port, ADD, 0);
+}
+
+/**
+ * iptablesRemoveUdpOutput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to remove
+ *
+ * Removes an output from the IP table, hence forbidding access to the given
+ * @port from the given @iface interface for UDP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
+int
+iptablesRemoveUdpOutput(int family,
+                        const char *iface,
+                        int port)
+{
+    return iptablesOutput(family, iface, port, REMOVE, 0);
 }
 
 

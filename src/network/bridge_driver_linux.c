@@ -564,6 +564,13 @@ int networkAddGeneralFirewallRules(virNetworkObjPtr network)
         goto err2;
     }
 
+    if (iptablesAddUdpOutput(AF_INET, network->def->bridge, 68) < 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("failed to add iptables rule to allow DHCP replies to '%s'"),
+                       network->def->bridge);
+        goto err3;
+    }
+
     /* If we are doing local DHCP service on this network, attempt to
      * add a rule that will fixup the checksum of DHCP response
      * packets back to the guests (but report failure without
@@ -582,14 +589,14 @@ int networkAddGeneralFirewallRules(virNetworkObjPtr network)
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
-        goto err3;
+        goto err4;
     }
 
     if (iptablesAddUdpInput(AF_INET, network->def->bridge, 53) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow DNS requests from '%s'"),
                        network->def->bridge);
-        goto err4;
+        goto err5;
     }
 
     /* allow TFTP requests through to dnsmasq if necessary */
@@ -598,7 +605,7 @@ int networkAddGeneralFirewallRules(virNetworkObjPtr network)
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow TFTP requests from '%s'"),
                        network->def->bridge);
-        goto err5;
+        goto err6;
     }
 
     /* Catch all rules to block forwarding to/from bridges */
@@ -607,14 +614,14 @@ int networkAddGeneralFirewallRules(virNetworkObjPtr network)
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to block outbound traffic from '%s'"),
                        network->def->bridge);
-        goto err6;
+        goto err7;
     }
 
     if (iptablesAddForwardRejectIn(AF_INET, network->def->bridge) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to block inbound traffic to '%s'"),
                        network->def->bridge);
-        goto err7;
+        goto err8;
     }
 
     /* Allow traffic between guests on the same bridge */
@@ -622,31 +629,33 @@ int networkAddGeneralFirewallRules(virNetworkObjPtr network)
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
                        network->def->bridge);
-        goto err8;
+        goto err9;
     }
 
     /* add IPv6 general rules, if needed */
     if (networkAddGeneralIp6tablesRules(network) < 0) {
-        goto err9;
+        goto err10;
     }
 
     return 0;
 
     /* unwind in reverse order from the point of failure */
-err9:
+err10:
     iptablesRemoveForwardAllowCross(AF_INET, network->def->bridge);
-err8:
+err9:
     iptablesRemoveForwardRejectIn(AF_INET, network->def->bridge);
-err7:
+err8:
     iptablesRemoveForwardRejectOut(AF_INET, network->def->bridge);
-err6:
+err7:
     if (ipv4def && ipv4def->tftproot) {
         iptablesRemoveUdpInput(AF_INET, network->def->bridge, 69);
     }
-err5:
+err6:
     iptablesRemoveUdpInput(AF_INET, network->def->bridge, 53);
-err4:
+err5:
     iptablesRemoveTcpInput(AF_INET, network->def->bridge, 53);
+err4:
+    iptablesRemoveUdpOutput(AF_INET, network->def->bridge, 68);
 err3:
     iptablesRemoveUdpInput(AF_INET, network->def->bridge, 67);
 err2:
@@ -680,6 +689,7 @@ void networkRemoveGeneralFirewallRules(virNetworkObjPtr network)
     if (ipv4def && (ipv4def->nranges || ipv4def->nhosts)) {
         iptablesRemoveOutputFixUdpChecksum(network->def->bridge, 68);
     }
+    iptablesRemoveUdpOutput(AF_INET, network->def->bridge, 68);
     iptablesRemoveUdpInput(AF_INET, network->def->bridge, 67);
     iptablesRemoveTcpInput(AF_INET, network->def->bridge, 67);
 }

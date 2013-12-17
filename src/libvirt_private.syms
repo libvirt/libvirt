@@ -1293,6 +1293,7 @@ iptablesAddForwardRejectOut;
 iptablesAddOutputFixUdpChecksum;
 iptablesAddTcpInput;
 iptablesAddUdpInput;
+iptablesAddUdpOutput;
 iptablesRemoveDontMasquerade;
 iptablesRemoveForwardAllowCross;
 iptablesRemoveForwardAllowIn;
@@ -1304,6 +1305,7 @@ iptablesRemoveForwardRejectOut;
 iptablesRemoveOutputFixUdpChecksum;
 iptablesRemoveTcpInput;
 iptablesRemoveUdpInput;
+iptablesRemoveUdpOutput;
 
 
 # util/virjson.h
