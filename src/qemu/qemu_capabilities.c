@@ -2151,7 +2151,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
                        machines[i]->name) < 0)
             goto cleanup;
         if (machines[i]->isDefault)
-            defIdx = i;
+            defIdx = qemuCaps->nmachineTypes - 1;
         qemuCaps->machineMaxCpus[qemuCaps->nmachineTypes - 1] =
             machines[i]->maxCpus;
     }
