@@ -1980,6 +1980,9 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
     char writeThrough_name[32] = "";
     bool writeThrough = false;
 
+    char mode_name[32] = "";
+    char *mode = NULL;
+
     if (def == NULL || *def != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
@@ -2093,6 +2096,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
     VMX_BUILD_NAME(fileType);
     VMX_BUILD_NAME(fileName);
     VMX_BUILD_NAME(writeThrough);
+    VMX_BUILD_NAME(mode);
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0) {
@@ -2118,6 +2122,11 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
     /* vmx:clientDevice */
     if (virVMXGetConfigBoolean(conf, clientDevice_name, &clientDevice, false,
                                true) < 0) {
+        goto cleanup;
+    }
+
+    /* vmx:mode -> def:transient */
+    if (virVMXGetConfigString(conf, mode_name, &mode, true) < 0) {
         goto cleanup;
     }
 
@@ -2172,6 +2181,9 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
             (*def)->cachemode = writeThrough ? VIR_DOMAIN_DISK_CACHE_WRITETHRU
                                              : VIR_DOMAIN_DISK_CACHE_DEFAULT;
+            if (mode)
+                (*def)->transient = STRCASEEQ(mode,
+                                              "independent-nonpersistent");
 
             if ((*def)->src == NULL) {
                 goto cleanup;
@@ -2290,6 +2302,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
     VIR_FREE(deviceType);
     VIR_FREE(fileType);
     VIR_FREE(fileName);
+    VIR_FREE(mode);
 
     return result;
 
@@ -3498,6 +3511,10 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
         }
     }
 
+    if (def->transient)
+        virBufferAsprintf(buffer,
+                          "%s%d:%d.mode = \"independent-nonpersistent\"\n",
+                          busType, controllerOrBus, unit);
     return 0;
 }
 
