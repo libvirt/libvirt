@@ -2140,7 +2140,8 @@ int                     virDomainBlockResize (virDomainPtr dom,
 
 /** virDomainBlockInfo:
  *
- * This struct provides information about the size of a block device backing store
+ * This struct provides information about the size of a block device
+ * backing store
  *
  * Examples:
  *
@@ -2153,11 +2154,12 @@ int                     virDomainBlockResize (virDomainPtr dom,
  *
  *  - qcow2 file in filesystem
  *       * capacity: logical size from qcow2 header
- *       * allocation, physical: logical size of the file / highest qcow extent (identical)
+ *       * allocation, physical: logical size of the file /
+ *                               highest qcow extent (identical)
  *
  *  - qcow2 file in a block device
  *       * capacity: logical size from qcow2 header
- *       * allocation: highest qcow extent written
+ *       * allocation: highest qcow extent written for an active domain
  *       * physical: size of the block device container
  */
 typedef struct _virDomainBlockInfo virDomainBlockInfo;

@@ -10166,6 +10166,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     struct stat sb;
     int idx;
     int format;
+    int activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
     char *alias = NULL;
 
@@ -10265,14 +10266,22 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     /* Set default value .. */
     info->allocation = info->physical;
 
-    /* ..but if guest is running & not using raw
-       disk format and on a block device, then query
-       highest allocated extent from QEMU */
+    /* ..but if guest is not using raw disk format and on a block device,
+     * then query highest allocated extent from QEMU
+     */
     if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         format != VIR_STORAGE_FILE_RAW &&
-        S_ISBLK(sb.st_mode) &&
-        virDomainObjIsActive(vm)) {
+        S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
+
+        /* If the guest is not running, then success/failure return
+         * depends on whether domain is persistent
+         */
+        if (!virDomainObjIsActive(vm)) {
+            activeFail = true;
+            ret = 0;
+            goto cleanup;
+        }
 
         if (VIR_STRDUP(alias, disk->info.alias) < 0)
             goto cleanup;
@@ -10287,6 +10296,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
                                             &info->allocation);
             qemuDomainObjExitMonitor(driver, vm);
         } else {
+            activeFail = true;
             ret = 0;
         }
 
@@ -10300,6 +10310,15 @@ cleanup:
     VIR_FREE(alias);
     virStorageFileFreeMetadata(meta);
     VIR_FORCE_CLOSE(fd);
+
+    /* If we failed to get data from a domain because it's inactive and
+     * it's not a persistent domain, then force failure.
+     */
+    if (activeFail && vm && !vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        ret = -1;
+    }
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);

@@ -8403,6 +8403,59 @@ error:
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
+ * For QEMU domains, the allocation and physical virDomainBlockInfo
+ * values returned will generally be the same, except when using a
+ * non raw, block backing device, such as qcow2 for an active domain.
+ * When the persistent domain is not active, QEMU will return the
+ * default which is the same value for allocation and physical.
+ *
+ * Active QEMU domains can return an allocation value which is more
+ * representative of the currently used blocks by the device compared
+ * to the physical size of the device. Applications can use/monitor
+ * the allocation value with the understanding that if the domain
+ * becomes inactive during an attempt to get the value, the default
+ * values will be returned. Thus, the application should check
+ * after the call for the domain being inactive if the values are
+ * the same. Optionally, the application could be watching for a
+ * shutdown event and then ignore any values received afterwards.
+ * This can be an issue when a domain is being migrated and the
+ * exact timing of the domain being made inactive and check of
+ * the allocation value results the default being returned. For
+ * a transient domain in the similar situation, this call will return
+ * -1 and an error message indicating the "domain is not running".
+ *
+ * The following is some pseudo code illustrating the call sequence:
+ *
+ *   ...
+ *   virDomainPtr dom;
+ *   virDomainBlockInfo info;
+ *   char *device;
+ *   ...
+ *   // Either get a list of all domains or a specific domain
+ *   // via a virDomainLookupBy*() call.
+ *   //
+ *   // It's also required to fill in the device pointer, but that's
+ *   // specific to the implementation. For the purposes of this example
+ *   // a qcow2 backed device name string would need to be provided.
+ *   ...
+ *   // If the following call is made on a persistent domain with a
+ *   // qcow2 block backed block device, then it's possible the returned
+ *   // allocation equals the physical value. In that case, the domain
+ *   // that may have been active prior to calling has become inactive,
+ *   // such as is the case during a domain migration. Thus once we
+ *   // get data returned, check for active domain when the values are
+ *   // the same.
+ *   if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
+ *       goto failure;
+ *   if (info.allocation == info.physical) {
+ *       // If the domain is no longer active,
+ *       // then the defaults are being returned.
+ *       if (!virDomainIsActive())
+ *               goto ignore_return;
+ *   }
+ *   // Do something with the allocation and physical values
+ *   ...
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
