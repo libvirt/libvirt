@@ -2939,6 +2939,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     int nvol_nodes;
     char *source = NULL;
     char *target = NULL;
+    char *pool = NULL;
     size_t i;
     size_t j;
 
@@ -3048,6 +3049,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             vshUndefineVolume vol;
             VIR_FREE(source);
             VIR_FREE(target);
+            VIR_FREE(pool);
 
             /* get volume source and target paths */
             if (!(target = virXPathString("string(./target/@dev)", ctxt)))
@@ -3057,8 +3059,11 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                                           "./source/@file|"
                                           "./source/@dir|"
                                           "./source/@name|"
-                                          "./source/@dev)", ctxt)))
+                                          "./source/@dev|"
+                                          "./source/@volume)", ctxt)))
                 continue;
+
+            pool = virXPathString("string(./source/@pool)", ctxt);
 
             /* lookup if volume was selected by user */
             if (vol_list) {
@@ -3075,7 +3080,33 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                     continue;
             }
 
-            if (!(vol.vol = virStorageVolLookupByPath(ctl->conn, source))) {
+            if (pool) {
+                virStoragePoolPtr storagepool = NULL;
+
+                if (!source) {
+                    vshPrint(ctl,
+                             _("Missing storage volume name for disk '%s'"),
+                             target);
+                    continue;
+                }
+
+                if (!(storagepool = virStoragePoolLookupByName(ctl->conn,
+                                                               pool))) {
+                    vshPrint(ctl,
+                             _("Storage pool '%s' for volume '%s' not found."),
+                             pool, target);
+                    vshResetLibvirtError();
+                    continue;
+                }
+
+                vol.vol = virStorageVolLookupByName(storagepool, source);
+                virStoragePoolFree(storagepool);
+
+            } else {
+               vol.vol = virStorageVolLookupByPath(ctl->conn, source);
+            }
+
+            if (!vol.vol) {
                 vshPrint(ctl,
                          _("Storage volume '%s'(%s) is not managed by libvirt. "
                            "Remove it manually.\n"), target, source);
@@ -3190,6 +3221,7 @@ out:
 cleanup:
     VIR_FREE(source);
     VIR_FREE(target);
+    VIR_FREE(pool);
     for (i = 0; i < nvols; i++) {
         VIR_FREE(vols[i].source);
         VIR_FREE(vols[i].target);
