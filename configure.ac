@@ -2129,7 +2129,7 @@ AC_ARG_ENABLE([test-locking],
 enable_locking=$enableval
 
 if test "$enable_locking" = "yes"; then
-  LOCK_CHECKING_CFLAGS="-Dbool=char -D_Bool=char -save-temps"
+  LOCK_CHECKING_CFLAGS="-save-temps"
   AC_SUBST([LOCK_CHECKING_CFLAGS])
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_locking" = "yes"])
