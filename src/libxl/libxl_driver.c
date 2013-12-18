@@ -1101,9 +1101,11 @@ libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 
     cfg = libxlDriverConfigGet(driver);
     ret = libxl_get_max_cpus(cfg->ctx);
-    /* libxl_get_max_cpus() will return 0 if there were any failures,
-       e.g. xc_physinfo() failing */
-    if (ret == 0)
+    /* On failure, libxl_get_max_cpus() will return ERROR_FAIL from Xen 4.4
+     * onward, but it ever returning 0 is obviously wrong too (and it is
+     * what happens, on failure, on Xen 4.3 and earlier). Therefore, a 'less
+     * or equal' is the catchall we want. */
+    if (ret <= 0)
         ret = -1;
 
     virObjectUnref(cfg);
@@ -3980,6 +3982,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
 
     for (i = 0; i < LIBXL_NUMA_NPARAM && i < *nparams; i++) {
         virMemoryParameterPtr param = &params[i];
+        int numnodes;
 
         switch (i) {
         case 0:
@@ -3998,8 +4001,12 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
             /* Node affinity */
 
             /* Let's allocate both libxl and libvirt bitmaps */
+            numnodes = libxl_get_max_nodes(priv->ctx);
+            if (numnodes <= 0)
+                goto cleanup;
+
             if (libxl_node_bitmap_alloc(priv->ctx, &nodemap, 0) ||
-                !(nodes = virBitmapNew(libxl_get_max_nodes(priv->ctx)))) {
+                !(nodes = virBitmapNew(numnodes))) {
                 virReportOOMError();
                 goto cleanup;
             }
