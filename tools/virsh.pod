@@ -1794,7 +1794,8 @@ on inactive domains. Volume deletion is only attempted after the domain is
 undefined; if not all of the requested volumes could be deleted, the
 error message indicates what still remains behind. If a volume path is not
 found in the domain definition, it's treated as if the volume was successfully
-deleted.
+deleted. Only volumes managed by libvirt in storage pools can be removed this
+way.
 (See B<domblklist> for list of target names associated to a domain).
 Example: --storage vda,/path/to/storage.img
 
