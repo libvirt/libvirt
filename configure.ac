@@ -2035,14 +2035,14 @@ dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python2 python])
 AC_PATH_PROG([PERL], [perl])
 
-AC_ARG_ENABLE([with-test-suite],
-              [AS_HELP_STRING([--with-test-suite],
-                 [build test suite by default @<:@default=check@:>@])],
-              [case "${withval}" in
-                 yes|no|check) ;;
-                 *)      AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
-              esac],
-              [withval=check])
+AC_ARG_WITH([test-suite],
+            [AS_HELP_STRING([--with-test-suite],
+               [build test suite by default @<:@default=check@:>@])],
+            [case "${withval}" in
+               yes|no|check) ;;
+               *)      AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
+            esac],
+            [withval=check])
 
 AC_MSG_CHECKING([Whether to build test suite by default])
 if test "$withval" = "check" ; then
