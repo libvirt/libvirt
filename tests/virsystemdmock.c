@@ -31,11 +31,6 @@ void dbus_connection_set_change_sigpipe(dbus_bool_t will_modify_sigpipe ATTRIBUT
 {
 }
 
-dbus_bool_t dbus_threads_init_default(void)
-{
-    return 1;
-}
-
 DBusConnection *dbus_bus_get(DBusBusType type ATTRIBUTE_UNUSED,
                              DBusError *error ATTRIBUTE_UNUSED)
 {
