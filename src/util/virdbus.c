@@ -238,15 +238,15 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
 # else
     fd = dbus_watch_get_fd(watch);
 # endif
+    dbus_watch_set_data(watch, info, virDBusWatchFree);
     info->bus = (DBusConnection *)data;
     info->watch = virEventAddHandle(fd, flags,
                                     virDBusWatchCallback,
                                     watch, NULL);
     if (info->watch < 0) {
-        VIR_FREE(info);
+        dbus_watch_set_data(watch, NULL, NULL);
         return 0;
     }
-    dbus_watch_set_data(watch, info, virDBusWatchFree);
 
     return 1;
 }
