@@ -981,9 +981,9 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
     /* go through the protocol headers */
     switch (ntohs(pep->eh_type)) {
     case ETHERTYPE_IP:
-        VIR_WARNINGS_NO_CAST_ALIGN;
+        VIR_WARNINGS_NO_CAST_ALIGN
         pip = (struct iphdr *) pep->eh_data;
-        VIR_WARNINGS_RESET;
+        VIR_WARNINGS_RESET
         len -= offsetof(virNWFilterSnoopEthHdr, eh_data);
         break;
     default:
