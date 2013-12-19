@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              qemu specific methods
  *
- * Copyright (C) 2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,6 +53,40 @@ typedef enum {
 
 char *virDomainQemuAgentCommand(virDomainPtr domain, const char *cmd,
                                 int timeout, unsigned int flags);
+
+/**
+ * virConnectDomainQemuMonitorEventCallback:
+ * @conn: the connection pointer
+ * @dom: the domain pointer
+ * @event: the name of the event
+ * @seconds: the qemu timestamp of the event: seconds since Epoch, or -1 if
+ *           not available
+ * @micros: the qemu timestamp of the event: microseconds within the second
+ * @details: the JSON details of the event, if any were given
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for a qemu monitor
+ * event with virConnectDomainQemuMonitorEventRegister().
+ */
+typedef void (*virConnectDomainQemuMonitorEventCallback)(virConnectPtr conn,
+                                                         virDomainPtr dom,
+                                                         const char *event,
+                                                         long long seconds,
+                                                         unsigned int micros,
+                                                         const char *details,
+                                                         void *opaque);
+
+int virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
+                                             virDomainPtr dom,
+                                             const char *event,
+                                             virConnectDomainQemuMonitorEventCallback cb,
+                                             void *opaque,
+                                             virFreeCallback freecb,
+                                             unsigned int flags);
+
+int virConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
+                                               int callbackID);
+
 
 # ifdef __cplusplus
 }

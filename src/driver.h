@@ -843,6 +843,19 @@ typedef virDomainPtr
                           unsigned int flags);
 
 typedef int
+(*virDrvConnectDomainQemuMonitorEventRegister)(virConnectPtr conn,
+                                               virDomainPtr dom,
+                                               const char *event,
+                                               virConnectDomainQemuMonitorEventCallback cb,
+                                               void *opaque,
+                                               virFreeCallback freecb,
+                                               unsigned int flags);
+
+typedef int
+(*virDrvConnectDomainQemuMonitorEventDeregister)(virConnectPtr conn,
+                                                 int callbackID);
+
+typedef int
 (*virDrvDomainOpenConsole)(virDomainPtr dom,
                            const char *dev_name,
                            virStreamPtr st,
@@ -1302,6 +1315,8 @@ struct _virDriver {
     virDrvDomainQemuMonitorCommand domainQemuMonitorCommand;
     virDrvDomainQemuAttach domainQemuAttach;
     virDrvDomainQemuAgentCommand domainQemuAgentCommand;
+    virDrvConnectDomainQemuMonitorEventRegister connectDomainQemuMonitorEventRegister;
+    virDrvConnectDomainQemuMonitorEventDeregister connectDomainQemuMonitorEventDeregister;
     virDrvDomainOpenConsole domainOpenConsole;
     virDrvDomainOpenChannel domainOpenChannel;
     virDrvDomainOpenGraphics domainOpenGraphics;
