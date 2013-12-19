@@ -2379,7 +2379,6 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     size_t i;
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-    virDevicePCIAddressPtr addrptr;
     char *addrStr = NULL;
     qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_HOTPLUGGABLE | QEMU_PCI_CONNECT_TYPE_PCI;
 
@@ -2446,22 +2445,17 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
          */
         virDomainVideoDefPtr primaryVideo = def->videos[0];
         if (primaryVideo->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            primaryVideo->info.addr.pci.domain = 0;
-            primaryVideo->info.addr.pci.bus = 0;
-            primaryVideo->info.addr.pci.slot = 2;
-            primaryVideo->info.addr.pci.function = 0;
-            addrptr = &primaryVideo->info.addr.pci;
+            memset(&tmp_addr, 0, sizeof(tmp_addr));
+            tmp_addr.slot = 2;
 
-            if (!(addrStr = qemuDomainPCIAddressAsString(addrptr)))
+            if (!(addrStr = qemuDomainPCIAddressAsString(&tmp_addr)))
                 goto cleanup;
-            if (!qemuDomainPCIAddressValidate(addrs, addrptr,
+            if (!qemuDomainPCIAddressValidate(addrs, &tmp_addr,
                                               addrStr, flags, false))
                 goto cleanup;
 
-            if (qemuDomainPCIAddressSlotInUse(addrs, addrptr)) {
+            if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
                 if (qemuDeviceVideoUsable) {
-                    virResetLastError();
                     if (qemuDomainPCIAddressReserveNextSlot(addrs,
                                                             &primaryVideo->info,
                                                             flags) < 0)
@@ -2472,8 +2466,11 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                                      "QEMU needs it for primary video"));
                     goto cleanup;
                 }
-            } else if (qemuDomainPCIAddressReserveSlot(addrs, addrptr, flags) < 0) {
-                goto cleanup;
+            } else {
+                if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr, flags) < 0)
+                    goto cleanup;
+                primaryVideo->info.addr.pci = tmp_addr;
+                primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             }
         } else if (!qemuDeviceVideoUsable) {
             if (primaryVideo->info.addr.pci.domain != 0 ||
@@ -2535,7 +2532,6 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     size_t i;
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-    virDevicePCIAddressPtr addrptr;
     char *addrStr = NULL;
     qemuDomainPCIConnectFlags flags = QEMU_PCI_CONNECT_TYPE_PCIE;
 
@@ -2619,22 +2615,17 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
          */
         virDomainVideoDefPtr primaryVideo = def->videos[0];
         if (primaryVideo->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            primaryVideo->info.addr.pci.domain = 0;
-            primaryVideo->info.addr.pci.bus = 0;
-            primaryVideo->info.addr.pci.slot = 1;
-            primaryVideo->info.addr.pci.function = 0;
-            addrptr = &primaryVideo->info.addr.pci;
+            memset(&tmp_addr, 0, sizeof(tmp_addr));
+            tmp_addr.slot = 1;
 
-            if (!(addrStr = qemuDomainPCIAddressAsString(addrptr)))
+            if (!(addrStr = qemuDomainPCIAddressAsString(&tmp_addr)))
                 goto cleanup;
-            if (!qemuDomainPCIAddressValidate(addrs, addrptr,
+            if (!qemuDomainPCIAddressValidate(addrs, &tmp_addr,
                                               addrStr, flags, false))
                 goto cleanup;
 
-            if (qemuDomainPCIAddressSlotInUse(addrs, addrptr)) {
+            if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
                 if (qemuDeviceVideoUsable) {
-                    virResetLastError();
                     if (qemuDomainPCIAddressReserveNextSlot(addrs,
                                                             &primaryVideo->info,
                                                             flags) < 0)
@@ -2645,8 +2636,11 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                                      "QEMU needs it for primary video"));
                     goto cleanup;
                 }
-            } else if (qemuDomainPCIAddressReserveSlot(addrs, addrptr, flags) < 0) {
-                goto cleanup;
+            } else {
+                if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr, flags) < 0)
+                    goto cleanup;
+                primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                primaryVideo->info.addr.pci = tmp_addr;
             }
         } else if (!qemuDeviceVideoUsable) {
             if (primaryVideo->info.addr.pci.domain != 0 ||
