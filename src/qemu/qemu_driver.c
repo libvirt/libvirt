@@ -8946,26 +8946,6 @@ qemuDomainBlockStats(virDomainPtr dom,
     if (virDomainBlockStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto cleanup;
-    }
-
-    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path: %s"), path);
-        goto cleanup;
-    }
-    disk = vm->def->disks[idx];
-
-    if (!disk->info.alias) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), disk->dst);
-        goto cleanup;
-    }
-
-    priv = vm->privateData;
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
@@ -8974,6 +8954,21 @@ qemuDomainBlockStats(virDomainPtr dom,
                        "%s", _("domain is not running"));
         goto endjob;
     }
+
+    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path: %s"), path);
+        goto endjob;
+    }
+    disk = vm->def->disks[idx];
+
+    if (!disk->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing disk device alias name for %s"), disk->dst);
+        goto endjob;
+    }
+
+    priv = vm->privateData;
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
