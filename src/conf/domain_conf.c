@@ -12101,9 +12101,12 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         def->nets[def->nnets++] = net;
 
-        /* <interface type='hostdev'> must also be in the hostdevs array */
-        if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-            virDomainHostdevInsert(def, &net->data.hostdev.def) < 0) {
+        /* <interface type='hostdev'> (and <interface type='net'>
+         * where the actual network type is already known to be
+         * hostdev) must also be in the hostdevs array.
+         */
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            virDomainHostdevInsert(def, virDomainNetGetActualHostdev(net)) < 0) {
             goto error;
         }
     }
