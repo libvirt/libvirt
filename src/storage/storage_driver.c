@@ -1565,17 +1565,8 @@ storageVolDelete(virStorageVolPtr obj,
             VIR_INFO("Deleting volume '%s' from storage pool '%s'",
                      vol->name, pool->def->name);
             virStorageVolDefFree(vol);
-            vol = NULL;
 
-            if (i < (pool->volumes.count - 1))
-                memmove(pool->volumes.objs + i, pool->volumes.objs + i + 1,
-                        sizeof(*(pool->volumes.objs)) * (pool->volumes.count - (i + 1)));
-
-            if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            pool->volumes.count--;
-
+            VIR_DELETE_ELEMENT(pool->volumes.objs, pool->volumes.count, i);
             break;
         }
     }
