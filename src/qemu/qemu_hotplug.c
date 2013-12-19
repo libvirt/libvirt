@@ -1666,9 +1666,6 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
     return 0;
 
 error:
-    if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                              vm->def, hostdev, NULL) < 0)
-        VIR_WARN("Unable to restore host device labelling on hotplug fail");
     return -1;
 }
 
