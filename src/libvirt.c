@@ -16127,7 +16127,7 @@ error:
  * occurring on a connection
  *
  * Use of this method is no longer recommended. Instead applications
- * should try virConnectDomainEventRegisterAny which has a more flexible
+ * should try virConnectDomainEventRegisterAny() which has a more flexible
  * API contract
  *
  * The virDomainPtr object handle passed into the callback upon delivery
@@ -16178,7 +16178,7 @@ error:
  * function.
  *
  * Use of this method is no longer recommended. Instead applications
- * should try virConnectDomainEventUnregisterAny which has a more flexible
+ * should try virConnectDomainEventDeregisterAny() which has a more flexible
  * API contract
  *
  * Returns 0 on success, -1 on failure
@@ -19069,7 +19069,7 @@ error:
  * Adds a callback to receive notifications of arbitrary domain events
  * occurring on a domain.
  *
- * If dom is NULL, then events will be monitored for any domain. If dom
+ * If @dom is NULL, then events will be monitored for any domain. If @dom
  * is non-NULL, then only the specific domain will be monitored
  *
  * Most types of event have a callback providing a custom set of parameters
@@ -19080,13 +19080,13 @@ error:
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
  * If the callback wishes to keep the domain object after the callback returns,
- * it shall take a reference to it, by calling virDomainRef.
+ * it shall take a reference to it, by calling virDomainRef().
  * The reference can be released once the object is no longer required
- * by calling virDomainFree.
+ * by calling virDomainFree().
  *
  * The return value from this method is a positive integer identifier
  * for the callback. To unregister a callback, this callback ID should
- * be passed to the virDomainEventUnregisterAny method
+ * be passed to the virConnectDomainEventDeregisterAny() method.
  *
  * Returns a callback identifier on success, -1 on failure
  */
@@ -19143,7 +19143,7 @@ error:
  * @callbackID: the callback identifier
  *
  * Removes an event callback. The callbackID parameter should be the
- * vaule obtained from a previous virDomainEventRegisterAny method.
+ * value obtained from a previous virConnectDomainEventRegisterAny() method.
  *
  * Returns 0 on success, -1 on failure
  */
@@ -19188,7 +19188,7 @@ error:
  * Adds a callback to receive notifications of arbitrary network events
  * occurring on a network.
  *
- * If net is NULL, then events will be monitored for any network. If net
+ * If @net is NULL, then events will be monitored for any network. If @net
  * is non-NULL, then only the specific network will be monitored
  *
  * Most types of event have a callback providing a custom set of parameters
@@ -19199,13 +19199,13 @@ error:
  * The virNetworkPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
  * If the callback wishes to keep the network object after the callback
- * returns, it shall take a reference to it, by calling virNetworkRef.
+ * returns, it shall take a reference to it, by calling virNetworkRef().
  * The reference can be released once the object is no longer required
- * by calling virNetworkFree.
+ * by calling virNetworkFree().
  *
  * The return value from this method is a positive integer identifier
  * for the callback. To unregister a callback, this callback ID should
- * be passed to the virNetworkEventUnregisterAny method
+ * be passed to the virConnectNetworkEventDeregisterAny() method.
  *
  * Returns a callback identifier on success, -1 on failure
  */
@@ -19266,7 +19266,7 @@ error:
  * @callbackID: the callback identifier
  *
  * Removes an event callback. The callbackID parameter should be the
- * vaule obtained from a previous virNetworkEventRegisterAny method.
+ * value obtained from a previous virConnectNetworkEventRegisterAny() method.
  *
  * Returns 0 on success, -1 on failure
  */

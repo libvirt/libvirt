@@ -4508,14 +4508,17 @@ int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 int virDomainSnapshotRef(virDomainSnapshotPtr snapshot);
 int virDomainSnapshotFree(virDomainSnapshotPtr snapshot);
 
-/*
+/**
  * virConnectDomainEventGenericCallback:
  * @conn: the connection pointer
  * @dom: the domain pointer
  * @opaque: application specified data
  *
- * A generic domain event callback handler. Specific events usually
- * have a customization with extra parameters
+ * A generic domain event callback handler, for use with
+ * virConnectDomainEventRegisterAny(). Specific events usually
+ * have a customization with extra parameters, often with @opaque being
+ * passed in a different parameter position; use VIR_DOMAIN_EVENT_CALLBACK()
+ * when registering an appropriate handler.
  */
 typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -4930,11 +4933,18 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
- * for use for virDomainEventRegister
+ * for use for virConnectDomainEventRegisterAny()
  */
 #define VIR_DOMAIN_EVENT_CALLBACK(cb) ((virConnectDomainEventGenericCallback)(cb))
 
 
+/**
+ * virDomainEventID:
+ *
+ * An enumeration of supported eventId parameters for
+ * virConnectDomainEventRegisterAny().  Each event id determines which
+ * signature of callback function will be used.
+ */
 typedef enum {
     VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
     VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback */
@@ -5015,10 +5025,17 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  * VIR_NETWORK_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
- * for use for virNetworkEventRegister
+ * for use for virConnectNetworkEventRegisterAny()
  */
 #define VIR_NETWORK_EVENT_CALLBACK(cb) ((virConnectNetworkEventGenericCallback)(cb))
 
+/**
+ * virNetworkEventID:
+ *
+ * An enumeration of supported eventId parameters for
+ * virConnectNetworkEventRegisterAny().  Each event id determines which
+ * signature of callback function will be used.
+ */
 typedef enum {
     VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback */
 
@@ -5032,14 +5049,17 @@ typedef enum {
 #endif
 } virNetworkEventID;
 
-/*
+/**
  * virConnectNetworkEventGenericCallback:
  * @conn: the connection pointer
  * @net: the network pointer
  * @opaque: application specified data
  *
- * A generic network event callback handler. Specific events usually
- * have a customization with extra parameters
+ * A generic network event callback handler, for use with
+ * virConnectNetworkEventRegisterAny(). Specific events usually
+ * have a customization with extra parameters, often with @opaque being
+ * passed in a different parameter position; use VIR_NETWORK_EVENT_CALLBACK()
+ * when registering an appropriate handler.
  */
 typedef void (*virConnectNetworkEventGenericCallback)(virConnectPtr conn,
                                                       virNetworkPtr net,
