@@ -7049,7 +7049,7 @@ vshKeyCodeGetInt(const char *key_name)
 {
     unsigned int val;
 
-    if (virStrToLong_ui(key_name, NULL, 0, &val) < 0 || val > 0xffff || !val)
+    if (virStrToLong_ui(key_name, NULL, 0, &val) < 0 || val > 0xffff)
         return -1;
     return val;
 }
@@ -7090,8 +7090,8 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        if ((keycode = vshKeyCodeGetInt(opt->data)) <= 0) {
-            if ((keycode = virKeycodeValueFromString(codeset, opt->data)) <= 0) {
+        if ((keycode = vshKeyCodeGetInt(opt->data)) < 0) {
+            if ((keycode = virKeycodeValueFromString(codeset, opt->data)) < 0) {
                 vshError(ctl, _("invalid keycode: '%s'"), opt->data);
                 goto cleanup;
             }

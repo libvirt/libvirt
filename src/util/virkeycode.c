@@ -50,7 +50,7 @@ static const char **virKeymapNames[] = {
 };
 verify(ARRAY_CARDINALITY(virKeymapNames) == VIR_KEYCODE_SET_LAST);
 
-static unsigned short *virKeymapValues[] = {
+static int *virKeymapValues[] = {
     [VIR_KEYCODE_SET_LINUX] =
       virKeymapValues_linux,
     [VIR_KEYCODE_SET_XT] =
@@ -113,7 +113,7 @@ int virKeycodeValueTranslate(virKeycodeSet from_codeset,
 {
     size_t i;
 
-    if (key_value <= 0)
+    if (key_value < 0)
         return -1;
 
 

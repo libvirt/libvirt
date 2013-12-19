@@ -86,12 +86,12 @@ for i in range(len(cols)):
     if isname:
         print "const char *virKeymapNames_" + name + "[] = {"
     else:
-        print "unsigned short virKeymapValues_" + name + "[] = {"
+        print "int virKeymapValues_" + name + "[] = {"
 
     for entry in keycodes:
         if isname:
             print "  " + quotestring(entry[i] or "NULL") + ","
         else:
-            print "  " + (entry[i] or "0") + ","
+            print "  " + (entry[i] or "-1") + ","
 
     print "};\n"
