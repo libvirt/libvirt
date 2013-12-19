@@ -1,7 +1,7 @@
 /*
  * viruuid.h: helper APIs for dealing with UUIDs
  *
- * Copyright (C) 2007, 2011, 2012 Red Hat, Inc.
+ * Copyright (C) 2007, 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,24 @@
 # define __VIR_UUID_H__
 
 # include "internal.h"
+
+
+/**
+ * VIR_UUID_DEBUG:
+ * @conn: connection
+ * @uuid: possibly null UUID array
+ */
+# define VIR_UUID_DEBUG(conn, uuid)                             \
+    do {                                                        \
+        if (uuid) {                                             \
+            char _uuidstr[VIR_UUID_STRING_BUFLEN];              \
+            virUUIDFormat(uuid, _uuidstr);                      \
+            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr);      \
+        } else {                                                \
+            VIR_DEBUG("conn=%p, uuid=(null)", conn);            \
+        }                                                       \
+    } while (0)
+
 
 int virSetHostUUIDStr(const char *host_uuid);
 int virGetHostUUID(unsigned char *host_uuid) ATTRIBUTE_NONNULL(1);

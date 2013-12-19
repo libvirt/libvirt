@@ -2,7 +2,7 @@
  * libvirt-lxc.c: Interfaces for the libvirt library to handle lxc-specific
  *                 APIs.
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virprocess.h"
+#include "viruuid.h"
 #include "datatypes.h"
 #ifdef WITH_SELINUX
 # include <selinux/selinux.h>
@@ -69,8 +70,7 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("domain=%p, fdlist=%p flags=%x",
-              domain, fdlist, flags);
+    VIR_DOMAIN_DEBUG(domain, "fdlist=%p flags=%x", fdlist, flags);
 
     virResetLastError();
 

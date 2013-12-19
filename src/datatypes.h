@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -92,6 +92,64 @@ extern virClassPtr virStoragePoolClass;
     (virObjectIsClass((obj), virDomainSnapshotClass))
 # define VIR_IS_DOMAIN_SNAPSHOT(obj) \
     (VIR_IS_SNAPSHOT(obj) && VIR_IS_DOMAIN((obj)->domain))
+
+
+/* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
+ * assumes you pass fewer than 15 arguments to VIR_DOMAIN_DEBUG, but
+ * can easily be expanded if needed.
+ *
+ * Note that gcc provides extensions of "define a(b...) b" or
+ * "define a(b,...) b,##__VA_ARGS__" as a means of eliding a comma
+ * when no var-args are present, but we don't want to require gcc.
+ */
+# define VIR_ARG15(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
+                   _11, _12, _13, _14, _15, ...) _15
+# define VIR_HAS_COMMA(...) VIR_ARG15(__VA_ARGS__, \
+                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+/* Form the name VIR_DOMAIN_DEBUG_[01], then call that macro,
+ * according to how many arguments are present.  Two-phase due to
+ * macro expansion rules.  */
+# define VIR_DOMAIN_DEBUG_EXPAND(a, b, ...)      \
+    VIR_DOMAIN_DEBUG_PASTE(a, b, __VA_ARGS__)
+# define VIR_DOMAIN_DEBUG_PASTE(a, b, ...)       \
+    a##b(__VA_ARGS__)
+
+/* Internal use only, when VIR_DOMAIN_DEBUG has one argument.  */
+# define VIR_DOMAIN_DEBUG_0(dom)                 \
+    VIR_DOMAIN_DEBUG_2(dom, "%s", "")
+
+/* Internal use only, when VIR_DOMAIN_DEBUG has three or more arguments.  */
+# define VIR_DOMAIN_DEBUG_1(dom, fmt, ...)       \
+    VIR_DOMAIN_DEBUG_2(dom, ", " fmt, __VA_ARGS__)
+
+/* Internal use only, with final format.  */
+# define VIR_DOMAIN_DEBUG_2(dom, fmt, ...)                              \
+    do {                                                                \
+        char _uuidstr[VIR_UUID_STRING_BUFLEN];                          \
+        const char *_domname = NULL;                                    \
+                                                                        \
+        if (!VIR_IS_DOMAIN(dom)) {                                      \
+            memset(_uuidstr, 0, sizeof(_uuidstr));                      \
+        } else {                                                        \
+            virUUIDFormat((dom)->uuid, _uuidstr);                       \
+            _domname = (dom)->name;                                     \
+        }                                                               \
+                                                                        \
+        VIR_DEBUG("dom=%p, (VM: name=%s, uuid=%s)" fmt,                 \
+                  dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__);       \
+    } while (0)
+
+/**
+ * VIR_DOMAIN_DEBUG:
+ * @dom: domain
+ * @fmt: optional format for additional information
+ * @...: optional arguments corresponding to @fmt.
+ */
+# define VIR_DOMAIN_DEBUG(...)                          \
+    VIR_DOMAIN_DEBUG_EXPAND(VIR_DOMAIN_DEBUG_,          \
+                            VIR_HAS_COMMA(__VA_ARGS__), \
+                            __VA_ARGS__)
 
 
 typedef struct _virConnectCloseCallbackData virConnectCloseCallbackData;
