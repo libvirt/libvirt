@@ -11749,11 +11749,6 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device)
-        goto cleanup;
-    disk = vm->def->disks[idx];
-
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -11762,6 +11757,11 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                         _("domain is not running"));
         goto endjob;
     }
+
+    device = qemuDiskPathToAlias(vm, path, &idx);
+    if (!device)
+        goto endjob;
+    disk = vm->def->disks[idx];
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     /* XXX - libvirt should really be tracking the backing file chain
