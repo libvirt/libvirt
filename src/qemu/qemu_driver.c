@@ -14239,7 +14239,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv;
     char *device = NULL;
-    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr disk = NULL;
     int ret = -1;
     int idx;
     struct stat st;
@@ -14254,40 +14254,6 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not running"));
-        goto cleanup;
-    }
-
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device) {
-        goto cleanup;
-    }
-    disk = vm->def->disks[idx];
-    if (disk->mirror) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block copy job"),
-                       disk->dst);
-        goto cleanup;
-    }
-
-    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR) &&
-          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block copy is not supported with this QEMU binary"));
-        goto cleanup;
-    }
-    if (vm->persistent) {
-        /* XXX if qemu ever lets us start a new domain with mirroring
-         * already active, we can relax this; but for now, the risk of
-         * 'managedsave' due to libvirt-guests means we can't risk
-         * this on persistent domains.  */
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not transient"));
-        goto cleanup;
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -14296,6 +14262,35 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
                        _("domain is not running"));
         goto endjob;
     }
+
+    device = qemuDiskPathToAlias(vm, path, &idx);
+    if (!device) {
+        goto endjob;
+    }
+    disk = vm->def->disks[idx];
+    if (disk->mirror) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("disk '%s' already in active block copy job"),
+                       disk->dst);
+        goto endjob;
+    }
+
+    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR) &&
+          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("block copy is not supported with this QEMU binary"));
+        goto endjob;
+    }
+    if (vm->persistent) {
+        /* XXX if qemu ever lets us start a new domain with mirroring
+         * already active, we can relax this; but for now, the risk of
+         * 'managedsave' due to libvirt-guests means we can't risk
+         * this on persistent domains.  */
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not transient"));
+        goto endjob;
+    }
+
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
         goto endjob;
 
@@ -14385,7 +14380,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
 endjob:
     if (need_unlink && unlink(dest))
         VIR_WARN("unable to unlink just-created %s", dest);
-    if (ret < 0)
+    if (ret < 0 && disk)
         disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
     VIR_FREE(mirror);
     if (qemuDomainObjEndJob(driver, vm) == 0) {
