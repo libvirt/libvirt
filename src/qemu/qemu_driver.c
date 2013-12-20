@@ -14849,18 +14849,17 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         goto cleanup;
     }
 
-    device = qemuDiskPathToAlias(vm, disk, NULL);
-
-    if (!device) {
-        goto cleanup;
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
         goto endjob;
+
+    device = qemuDiskPathToAlias(vm, disk, NULL);
+    if (!device) {
+        goto endjob;
+    }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         priv = vm->privateData;
