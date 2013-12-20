@@ -13709,6 +13709,17 @@ static bool
 virDomainPanicCheckABIStability(virDomainPanicDefPtr src,
                                 virDomainPanicDefPtr dst)
 {
+    if (!src && !dst)
+        return true;
+
+    if (!src || !dst) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain panic device count '%d' "
+                         "does not match source count '%d'"),
+                       src ? 1 : 0, dst ? 1 : 0);
+        return false;
+    }
+
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
