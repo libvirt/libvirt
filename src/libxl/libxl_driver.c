@@ -2417,6 +2417,83 @@ cleanup:
     return ret;
 }
 
+static int
+libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
+                          unsigned char *cpumaps, int maplen,
+                          unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr targetDef = NULL;
+    virDomainVcpuPinDefPtr *vcpupin_list;
+    virBitmapPtr cpumask = NULL;
+    int maxcpu, hostcpus, vcpu, pcpu, n, ret = -1;
+    unsigned char *cpumap;
+    bool pinned;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetVcpuPinInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainLiveConfigHelperMethod(cfg->caps, driver->xmlopt, vm,
+                                        &flags, &targetDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        targetDef = vm->def;
+    }
+
+    /* Make sure coverity knows targetDef is valid at this point. */
+    sa_assert(targetDef);
+
+    /* Clamp to actual number of vcpus */
+    if (ncpumaps > targetDef->vcpus)
+        ncpumaps = targetDef->vcpus;
+
+    /* we use cfg->ctx, as vm->privateData->ctx may be NULL if VM is down. */
+    if ((hostcpus = libxl_get_max_cpus(cfg->ctx)) < 0)
+        goto cleanup;
+
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    /* initialize cpumaps */
+    memset(cpumaps, 0xff, maplen * ncpumaps);
+    if (maxcpu % 8) {
+        for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
+            cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+            cpumap[maplen - 1] &= (1 << maxcpu % 8) - 1;
+        }
+    }
+
+    /* if vcpupin setting exists, there may be unused pcpus */
+    for (n = 0; n < targetDef->cputune.nvcpupin; n++) {
+        vcpupin_list = targetDef->cputune.vcpupin;
+        vcpu = vcpupin_list[n]->vcpuid;
+        cpumask = vcpupin_list[n]->cpumask;
+        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+        for (pcpu = 0; pcpu < maxcpu; pcpu++) {
+            if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
+                goto cleanup;
+            if (!pinned)
+                VIR_UNUSE_CPU(cpumap, pcpu);
+        }
+    }
+    ret = ncpumaps;
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    virObjectUnref(cfg);
+    return ret;
+}
 
 static int
 libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
@@ -4244,6 +4321,7 @@ static virDriver libxlDriver = {
     .domainGetVcpusFlags = libxlDomainGetVcpusFlags, /* 0.9.0 */
     .domainPinVcpu = libxlDomainPinVcpu, /* 0.9.0 */
     .domainGetVcpus = libxlDomainGetVcpus, /* 0.9.0 */
+    .domainGetVcpuPinInfo = libxlDomainGetVcpuPinInfo, /* 1.2.1 */
     .domainGetXMLDesc = libxlDomainGetXMLDesc, /* 0.9.0 */
     .connectDomainXMLFromNative = libxlConnectDomainXMLFromNative, /* 0.9.0 */
     .connectDomainXMLToNative = libxlConnectDomainXMLToNative, /* 0.9.0 */
