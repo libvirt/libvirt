@@ -2365,6 +2365,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr targetDef = NULL;
+    virBitmapPtr pcpumap = NULL;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -2394,6 +2395,10 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     /* Make sure coverity knows targetDef is valid at this point. */
     sa_assert(targetDef);
 
+    pcpumap = virBitmapNewData(cpumap, maplen);
+    if (!pcpumap)
+        goto cleanup;
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         libxl_bitmap map = { .size = maplen, .map = cpumap };
         libxlDomainObjPrivatePtr priv;
@@ -2405,6 +2410,17 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
                            vcpu);
             goto cleanup;
         }
+    }
+
+    /* full bitmap means reset the settings (if any). */
+    if (virBitmapIsAllSet(pcpumap)) {
+        if (virDomainVcpuPinDel(targetDef, vcpu) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to delete vcpupin xml for vcpu '%d'"),
+                           vcpu);
+            goto cleanup;
+        }
+        goto out;
     }
 
     if (!targetDef->cputune.vcpupin) {
@@ -2422,6 +2438,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
         goto cleanup;
     }
 
+out:
     ret = 0;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -2433,6 +2450,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
 cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virBitmapFree(pcpumap);
     virObjectUnref(cfg);
     return ret;
 }
