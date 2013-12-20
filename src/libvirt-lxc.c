@@ -83,11 +83,7 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckNonNullArgGoto(fdlist, error);
-
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainLxcOpenNamespace) {
         int ret;

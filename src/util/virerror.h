@@ -159,6 +159,9 @@ void virReportSystemErrorFull(int domcode,
 # define virReportUnsupportedError()                                    \
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_NO_SUPPORT,             \
                          __FILE__, __FUNCTION__, __LINE__, __FUNCTION__)
+# define virReportRestrictedError(...)                                  \
+    virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_OPERATION_DENIED,       \
+                         __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 void virReportOOMErrorFull(int domcode,

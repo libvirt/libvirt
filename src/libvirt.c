@@ -2020,10 +2020,7 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
         return NULL;
     }
     virCheckNonNullArgGoto(xmlDesc, error);
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainCreateXML) {
         virDomainPtr ret;
@@ -2092,10 +2089,7 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
         return NULL;
     }
     virCheckNonNullArgGoto(xmlDesc, error);
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainCreateXMLWithFiles) {
         virDomainPtr ret;
@@ -2336,10 +2330,7 @@ virDomainDestroy(virDomainPtr domain)
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainDestroy) {
         int ret;
@@ -2403,10 +2394,7 @@ virDomainDestroyFlags(virDomainPtr domain,
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainDestroyFlags) {
         int ret;
@@ -2513,10 +2501,7 @@ virDomainSuspend(virDomainPtr domain)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -2562,10 +2547,7 @@ virDomainResume(virDomainPtr domain)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -2632,10 +2614,7 @@ virDomainPMSuspendForDuration(virDomainPtr dom,
 
     conn = dom->conn;
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainPMSuspendForDuration) {
         int ret;
@@ -2684,10 +2663,7 @@ virDomainPMWakeup(virDomainPtr dom,
 
     conn = dom->conn;
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainPMWakeup) {
         int ret;
@@ -2735,10 +2711,7 @@ virDomainSave(virDomainPtr domain, const char *to)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
     virCheckNonNullArgGoto(to, error);
 
@@ -2825,10 +2798,7 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
     virCheckNonNullArgGoto(to, error);
 
@@ -2890,10 +2860,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(from, error);
 
     if (conn->driver->domainRestore) {
@@ -2967,10 +2934,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(from, error);
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
@@ -3118,10 +3082,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(file, error);
     virCheckNonNullArgGoto(dxml, error);
 
@@ -3200,10 +3161,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
     virCheckNonNullArgGoto(to, error);
 
@@ -3295,11 +3253,7 @@ virDomainScreenshot(virDomainPtr domain,
         virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
         return NULL;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO ||
-        stream->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags | stream->conn->flags, error);
 
     if (domain->conn->driver->domainScreenshot) {
         char * ret;
@@ -3353,10 +3307,7 @@ virDomainShutdown(virDomainPtr domain)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -3417,10 +3368,7 @@ virDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -3482,10 +3430,7 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -3533,10 +3478,7 @@ virDomainReset(virDomainPtr domain, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -3792,10 +3734,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
 
     conn = domain->conn;
@@ -3845,10 +3784,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
 
     conn = domain->conn;
@@ -3910,10 +3846,7 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
 
     conn = domain->conn;
@@ -3972,10 +3905,7 @@ virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* This must be positive to set the balloon collection period */
     virCheckNonNegativeArgGoto(period, error);
@@ -4071,10 +4001,7 @@ virDomainSetMemoryParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
 
@@ -4217,10 +4144,7 @@ virDomainSetNumaParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
     if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
@@ -4346,10 +4270,7 @@ virDomainSetBlkioParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
@@ -4685,10 +4606,7 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(nativeFormat, error);
     virCheckNonNullArgGoto(nativeConfig, error);
@@ -4742,10 +4660,7 @@ virConnectDomainXMLToNative(virConnectPtr conn,
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(nativeFormat, error);
     virCheckNonNullArgGoto(domainXml, error);
@@ -5597,21 +5512,14 @@ virDomainMigrate(virDomainPtr domain,
         virDispatchError(NULL);
         return NULL;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
     if (!VIR_IS_CONNECT(dconn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         goto error;
     }
-    if (dconn->flags & VIR_CONNECT_RO) {
-        /* NB, deliberately report error against source object, not dest */
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
@@ -5837,21 +5745,14 @@ virDomainMigrate2(virDomainPtr domain,
         virDispatchError(NULL);
         return NULL;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
     if (!VIR_IS_CONNECT(dconn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         goto error;
     }
-    if (dconn->flags & VIR_CONNECT_RO) {
-        /* NB, deliberately report error against source object, not dest */
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
@@ -6028,21 +5929,14 @@ virDomainMigrate3(virDomainPtr domain,
         virDispatchError(NULL);
         return NULL;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
     if (!VIR_IS_CONNECT(dconn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         goto error;
     }
-    if (dconn->flags & VIR_CONNECT_RO) {
-        /* NB, deliberately report error against source object, not dest */
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
@@ -6261,10 +6155,7 @@ virDomainMigrateToURI(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     virCheckNonNullArgGoto(duri, error);
 
@@ -6427,10 +6318,7 @@ virDomainMigrateToURI2(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
@@ -6543,10 +6431,7 @@ virDomainMigrateToURI3(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
@@ -6655,10 +6540,7 @@ virDomainMigratePrepare(virConnectPtr dconn,
         return -1;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare) {
         int ret;
@@ -6706,10 +6588,7 @@ virDomainMigratePerform(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigratePerform) {
         int ret;
@@ -6753,10 +6632,7 @@ virDomainMigrateFinish(virConnectPtr dconn,
         return NULL;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish) {
         virDomainPtr ret;
@@ -6804,10 +6680,7 @@ virDomainMigratePrepare2(virConnectPtr dconn,
         return -1;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare2) {
         int ret;
@@ -6853,10 +6726,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
         return NULL;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish2) {
         virDomainPtr ret;
@@ -6901,10 +6771,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
         virReportInvalidArg(conn,
@@ -6959,10 +6826,7 @@ virDomainMigrateBegin3(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigrateBegin3) {
         char *xml;
@@ -7014,10 +6878,7 @@ virDomainMigratePrepare3(virConnectPtr dconn,
         return -1;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare3) {
         int ret;
@@ -7070,10 +6931,7 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
         virReportInvalidArg(conn,
@@ -7136,10 +6994,7 @@ virDomainMigratePerform3(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigratePerform3) {
         int ret;
@@ -7190,10 +7045,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
         return NULL;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish3) {
         virDomainPtr ret;
@@ -7241,10 +7093,7 @@ virDomainMigrateConfirm3(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigrateConfirm3) {
         int ret;
@@ -7292,10 +7141,7 @@ virDomainMigrateBegin3Params(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigrateBegin3Params) {
         char *xml;
@@ -7345,10 +7191,7 @@ virDomainMigratePrepare3Params(virConnectPtr dconn,
         return -1;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare3Params) {
         int ret;
@@ -7398,10 +7241,7 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
         virReportInvalidArg(conn,
@@ -7460,10 +7300,7 @@ virDomainMigratePerform3Params(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigratePerform3Params) {
         int ret;
@@ -7512,10 +7349,7 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
-    if (dconn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish3Params) {
         virDomainPtr ret;
@@ -7564,10 +7398,7 @@ virDomainMigrateConfirm3Params(virDomainPtr domain,
     }
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainMigrateConfirm3Params) {
         int ret;
@@ -7931,10 +7762,7 @@ virNodeSuspendForDuration(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->nodeSuspendForDuration) {
         int ret;
@@ -8057,10 +7885,7 @@ virNodeSetMemoryParameters(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
@@ -8302,10 +8127,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
@@ -8367,10 +8189,7 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
@@ -8652,10 +8471,7 @@ virDomainSetInterfaceParameters(virDomainPtr domain,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
 
@@ -8893,10 +8709,7 @@ virDomainBlockPeek(virDomainPtr dom,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -8967,10 +8780,7 @@ virDomainBlockResize(virDomainPtr dom,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -9045,10 +8855,7 @@ virDomainMemoryPeek(virDomainPtr dom,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     /* Note on access to physical memory: A VIR_MEMORY_PHYSICAL flag is
      * a possibility.  However it isn't really useful unless the caller
@@ -9194,10 +9001,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->driver->domainDefineXML) {
@@ -9246,10 +9050,7 @@ virDomainUndefine(virDomainPtr domain)
         return -1;
     }
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainUndefine) {
         int ret;
@@ -9307,10 +9108,7 @@ virDomainUndefineFlags(virDomainPtr domain,
         return -1;
     }
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainUndefineFlags) {
         int ret;
@@ -9545,10 +9343,7 @@ virDomainCreate(virDomainPtr domain)
         return -1;
     }
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainCreate) {
         int ret;
@@ -9614,10 +9409,7 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
         return -1;
     }
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainCreateWithFlags) {
         int ret;
@@ -9694,10 +9486,7 @@ virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
         return -1;
     }
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainCreateWithFiles) {
         int ret;
@@ -9791,10 +9580,7 @@ virDomainSetAutostart(virDomainPtr domain,
 
     conn = domain->conn;
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (conn->driver->domainSetAutostart) {
         int ret;
@@ -9834,10 +9620,7 @@ virDomainInjectNMI(virDomainPtr domain, unsigned int flags)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -9890,6 +9673,9 @@ virDomainSendKey(virDomainPtr domain,
         return -1;
     }
 
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(keycodes, error);
     virCheckPositiveArgGoto(nkeycodes, error);
 
@@ -9899,13 +9685,6 @@ virDomainSendKey(virDomainPtr domain,
                             __FUNCTION__, VIR_DOMAIN_SEND_KEY_MAX_KEYS);
         goto error;
     }
-
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
-
-    conn = domain->conn;
 
     if (conn->driver->domainSendKey) {
         int ret;
@@ -9977,10 +9756,7 @@ virDomainSendProcessSignal(virDomainPtr domain,
 
     virCheckNonZeroArgGoto(pid_value, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     conn = domain->conn;
 
@@ -10034,10 +9810,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     virCheckNonZeroArgGoto(nvcpus, error);
 
@@ -10110,10 +9883,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     if (flags & VIR_DOMAIN_VCPU_GUEST &&
         flags & VIR_DOMAIN_VCPU_MAXIMUM) {
@@ -10255,10 +10025,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         virDispatchError(NULL);
         return -1;
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     virCheckNonNullArgGoto(cpumap, error);
     virCheckPositiveArgGoto(maplen, error);
@@ -10336,10 +10103,7 @@ virDomainPinVcpuFlags(virDomainPtr domain, unsigned int vcpu,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     virCheckNonNullArgGoto(cpumap, error);
     virCheckPositiveArgGoto(maplen, error);
@@ -10495,10 +10259,7 @@ virDomainPinEmulator(virDomainPtr domain, unsigned char *cpumap,
         return -1;
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
 
     virCheckNonNullArgGoto(cpumap, error);
     virCheckPositiveArgGoto(maplen, error);
@@ -10857,10 +10618,7 @@ virDomainSetMetadata(virDomainPtr domain,
 
     conn = domain->conn;
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     switch (type) {
     case VIR_DOMAIN_METADATA_TITLE:
@@ -11056,10 +10814,7 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
 
     virCheckNonNullArgGoto(xml, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
 
     if (conn->driver->domainAttachDevice) {
@@ -11120,10 +10875,7 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
 
     virCheckNonNullArgGoto(xml, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
 
     if (conn->driver->domainAttachDeviceFlags) {
@@ -11169,10 +10921,7 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
 
     virCheckNonNullArgGoto(xml, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
 
     if (conn->driver->domainDetachDevice) {
@@ -11249,10 +10998,7 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
 
     virCheckNonNullArgGoto(xml, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
 
     if (conn->driver->domainDetachDeviceFlags) {
@@ -11313,10 +11059,7 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
 
     virCheckNonNullArgGoto(xml, error);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(domain->conn->flags, error);
     conn = domain->conn;
 
     if (conn->driver->domainUpdateDeviceFlags) {
@@ -11804,10 +11547,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
     }
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkCreateXML) {
         virNetworkPtr ret;
@@ -11846,10 +11586,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->networkDriver && conn->networkDriver->networkDefineXML) {
@@ -11890,10 +11627,7 @@ virNetworkUndefine(virNetworkPtr network)
         return -1;
     }
     conn = network->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkUndefine) {
         int ret;
@@ -11950,10 +11684,7 @@ virNetworkUpdate(virNetworkPtr network,
         return -1;
     }
     conn = network->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(xml, error);
 
@@ -11997,10 +11728,7 @@ virNetworkCreate(virNetworkPtr network)
         return -1;
     }
     conn = network->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkCreate) {
         int ret;
@@ -12044,10 +11772,7 @@ virNetworkDestroy(virNetworkPtr network)
     }
 
     conn = network->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkDestroy) {
         int ret;
@@ -12377,10 +12102,7 @@ virNetworkSetAutostart(virNetworkPtr network,
         return -1;
     }
 
-    if (network->conn->flags & VIR_CONNECT_RO) {
-        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(network->conn->flags, error);
 
     conn = network->conn;
 
@@ -12880,10 +12602,7 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceDefineXML) {
@@ -12935,10 +12654,7 @@ virInterfaceUndefine(virInterfacePtr iface)
         return -1;
     }
     conn = iface->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceUndefine) {
         int ret;
@@ -12984,10 +12700,7 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
         return -1;
     }
     conn = iface->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceCreate) {
         int ret;
@@ -13038,10 +12751,7 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
     }
 
     conn = iface->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceDestroy) {
         int ret;
@@ -13149,10 +12859,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeBegin) {
         int ret;
@@ -13197,10 +12904,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeCommit) {
         int ret;
@@ -13245,10 +12949,7 @@ virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
         return -1;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibInterfaceError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver &&
         conn->interfaceDriver->interfaceChangeRollback) {
@@ -13599,10 +13300,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(type, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->connectFindStoragePoolSources) {
         char *ret;
@@ -13805,10 +13503,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolCreateXML) {
         virStoragePoolPtr ret;
@@ -13851,10 +13546,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolDefineXML) {
@@ -13900,10 +13592,7 @@ virStoragePoolBuild(virStoragePoolPtr pool,
         return -1;
     }
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolBuild) {
         int ret;
@@ -13943,10 +13632,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
         return -1;
     }
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolUndefine) {
         int ret;
@@ -13988,10 +13674,7 @@ virStoragePoolCreate(virStoragePoolPtr pool,
         return -1;
     }
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolCreate) {
         int ret;
@@ -14036,10 +13719,7 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
     }
 
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolDestroy) {
         int ret;
@@ -14084,10 +13764,7 @@ virStoragePoolDelete(virStoragePoolPtr pool,
     }
 
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolDelete) {
         int ret;
@@ -14193,10 +13870,7 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
     }
 
     conn = pool->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolRefresh) {
         int ret;
@@ -14463,10 +14137,7 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
         return -1;
     }
 
-    if (pool->conn->flags & VIR_CONNECT_RO) {
-        virLibStoragePoolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(pool->conn->flags, error);
 
     conn = pool->conn;
 
@@ -14860,10 +14531,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
 
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (pool->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(pool->conn->flags, error);
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->storageVolCreateXML) {
         virStorageVolPtr ret;
@@ -14923,12 +14591,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     virCheckNonNullArgGoto(xmlDesc, error);
-
-    if (pool->conn->flags & VIR_CONNECT_RO ||
-        clonevol->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(pool->conn->flags | clonevol->conn->flags, error);
 
     if (pool->conn->storageDriver &&
         pool->conn->storageDriver->storageVolCreateXMLFrom) {
@@ -14990,11 +14653,7 @@ virStorageVolDownload(virStorageVolPtr vol,
         return -1;
     }
 
-    if (vol->conn->flags & VIR_CONNECT_RO ||
-        stream->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(vol->conn->flags | stream->conn->flags, error);
 
     if (vol->conn->storageDriver &&
         vol->conn->storageDriver->storageVolDownload) {
@@ -15061,11 +14720,7 @@ virStorageVolUpload(virStorageVolPtr vol,
         return -1;
     }
 
-    if (vol->conn->flags & VIR_CONNECT_RO ||
-        stream->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(vol->conn->flags | stream->conn->flags, error);
 
     if (vol->conn->storageDriver &&
         vol->conn->storageDriver->storageVolUpload) {
@@ -15113,10 +14768,7 @@ virStorageVolDelete(virStorageVolPtr vol,
     }
 
     conn = vol->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storageVolDelete) {
         int ret;
@@ -15159,10 +14811,7 @@ virStorageVolWipe(virStorageVolPtr vol,
     }
 
     conn = vol->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storageVolWipe) {
         int ret;
@@ -15209,10 +14858,7 @@ virStorageVolWipePattern(virStorageVolPtr vol,
     }
 
     conn = vol->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibStorageVolError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storageVolWipePattern) {
         int ret;
@@ -15477,10 +15123,7 @@ virStorageVolResize(virStorageVolPtr vol,
 
     conn = vol->conn;
 
-    if (conn->flags & VIR_CONNECT_RO) {
-       virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-       goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     /* Zero capacity is only valid with either delta or shrink.  */
     if (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
@@ -16042,10 +15685,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceDettach) {
         int ret;
@@ -16107,10 +15747,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
         return -1;
     }
 
-    if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceDetachFlags) {
         int ret;
@@ -16156,10 +15793,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceReAttach) {
         int ret;
@@ -16207,10 +15841,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceReset) {
         int ret;
@@ -16254,10 +15885,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
         return NULL;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(xmlDesc, error);
 
@@ -16300,10 +15928,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->nodeDeviceDriver &&
         dev->conn->nodeDeviceDriver->nodeDeviceDestroy) {
@@ -16760,10 +16385,7 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         virDispatchError(NULL);
         return NULL;
     }
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->secretDefineXML != NULL) {
@@ -16982,10 +16604,7 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
         return -1;
     }
     conn = secret->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(value, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->secretSetValue != NULL) {
@@ -17031,10 +16650,7 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
         return NULL;
     }
     conn = secret->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(value_size, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->secretGetValue != NULL) {
@@ -17078,10 +16694,7 @@ virSecretUndefine(virSecretPtr secret)
         return -1;
     }
     conn = secret->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibSecretError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->secretUndefine != NULL) {
         int ret;
@@ -18526,10 +18139,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
     }
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterDefineXML) {
         virNWFilterPtr ret;
@@ -18572,10 +18182,7 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
     }
 
     conn = nwfilter->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibNWFilterError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterUndefine) {
         int ret;
@@ -19067,10 +18674,7 @@ virDomainAbortJob(virDomainPtr domain)
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainAbortJob) {
         int ret;
@@ -19118,10 +18722,7 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainMigrateSetMaxDowntime) {
         if (conn->driver->domainMigrateSetMaxDowntime(domain, downtime, flags) < 0)
@@ -19214,10 +18815,7 @@ virDomainMigrateSetCompressionCache(virDomainPtr domain,
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainMigrateSetCompressionCache) {
         if (conn->driver->domainMigrateSetCompressionCache(domain, cacheSize,
@@ -19263,10 +18861,7 @@ virDomainMigrateSetMaxSpeed(virDomainPtr domain,
     }
 
     conn = domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainMigrateSetMaxSpeed) {
         if (conn->driver->domainMigrateSetMaxSpeed(domain, bandwidth, flags) < 0)
@@ -19313,10 +18908,7 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
 
     virCheckNonNullArgGoto(bandwidth, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainMigrateGetMaxSpeed) {
         if (conn->driver->domainMigrateGetMaxSpeed(domain, bandwidth, flags) < 0)
@@ -19628,10 +19220,7 @@ virDomainManagedSave(virDomainPtr dom, unsigned int flags)
     }
 
     conn = dom->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
         virReportInvalidArg(flags,
@@ -19729,10 +19318,7 @@ virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     }
 
     conn = dom->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainManagedSaveRemove) {
         int ret;
@@ -19955,10 +19541,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
@@ -20889,10 +20472,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     conn = snapshot->domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
         (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
@@ -20959,10 +20539,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     }
 
     conn = snapshot->domain->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) &&
         (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
@@ -21100,10 +20677,7 @@ virDomainOpenConsole(virDomainPtr dom,
     }
 
     conn = dom->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainOpenConsole) {
         int ret;
@@ -21163,10 +20737,7 @@ virDomainOpenChannel(virDomainPtr dom,
     }
 
     conn = dom->conn;
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainOpenChannel) {
         int ret;
@@ -21241,10 +20812,7 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -21358,10 +20926,7 @@ virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -21432,10 +20997,7 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -21552,10 +21114,7 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -21671,10 +21230,7 @@ virDomainBlockCommit(virDomainPtr dom, const char *disk,
     }
     conn = dom->conn;
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
 
@@ -21752,10 +21308,7 @@ virDomainOpenGraphics(virDomainPtr dom,
         goto error;
     }
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     if (!VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
                                   VIR_DRV_FEATURE_FD_PASSING)) {
@@ -22045,10 +21598,7 @@ virDomainSetBlockIoTune(virDomainPtr dom,
         return -1;
     }
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     virCheckNonNullArgGoto(disk, error);
     virCheckPositiveArgGoto(nparams, error);
@@ -22513,10 +22063,7 @@ virDomainFSTrim(virDomainPtr dom,
         return -1;
     }
 
-    if (dom->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(dom->conn->flags, error);
 
     if (dom->conn->driver->domainFSTrim) {
         int ret = dom->conn->driver->domainFSTrim(dom, mountPoint,

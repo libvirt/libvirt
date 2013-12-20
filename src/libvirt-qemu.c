@@ -90,11 +90,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
     conn = domain->conn;
 
     virCheckNonNullArgGoto(result, error);
-
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainQemuMonitorCommand) {
         int ret;
@@ -167,10 +163,7 @@ virDomainQemuAttach(virConnectPtr conn,
         goto error;
     }
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainQemuAttach) {
         virDomainPtr ret;
@@ -229,10 +222,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
 
     conn = domain->conn;
 
-    if (conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainQemuAgentCommand) {
         ret = conn->driver->domainQemuAgentCommand(domain, cmd,

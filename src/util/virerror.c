@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006, 2008-2013 Red Hat, Inc.
+ * Copyright (C) 2006, 2008-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -888,7 +888,7 @@ virErrorMsg(virErrorNumber error, const char *info)
             if (info == NULL)
                 errmsg = _("operation forbidden for read only access");
             else
-                errmsg = _("operation %s forbidden for read only access");
+                errmsg = _("operation forbidden: %s");
             break;
         case VIR_ERR_OPEN_FAILED:
             if (info == NULL)

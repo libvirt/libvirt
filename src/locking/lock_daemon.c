@@ -1,7 +1,7 @@
 /*
  * lock_daemon.c: lock management daemon
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -800,18 +800,16 @@ virLockDaemonClientNew(virNetServerClientPtr client,
 
     if (!privileged) {
         if (geteuid() != clientuid) {
-            virReportError(VIR_ERR_OPERATION_DENIED,
-                           _("Disallowing client %llu with uid %llu"),
-                           (unsigned long long)priv->clientPid,
-                           (unsigned long long)clientuid);
+            virReportRestrictedError(_("Disallowing client %llu with uid %llu"),
+                                     (unsigned long long)priv->clientPid,
+                                     (unsigned long long)clientuid);
             goto error;
         }
     } else {
         if (clientuid != 0) {
-            virReportError(VIR_ERR_OPERATION_DENIED,
-                           _("Disallowing client %llu with uid %llu"),
-                           (unsigned long long)priv->clientPid,
-                           (unsigned long long)clientuid);
+            virReportRestrictedError(_("Disallowing client %llu with uid %llu"),
+                                     (unsigned long long)priv->clientPid,
+                                     (unsigned long long)clientuid);
             goto error;
         }
     }

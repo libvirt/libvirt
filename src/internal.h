@@ -1,7 +1,7 @@
 /*
  * internal.h: internal definitions just used by code from the library
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -350,6 +350,15 @@
             goto label;                                 \
         }                                               \
     } while (0)
+# define virCheckReadOnlyGoto(flags, label)                             \
+    do {                                                                \
+        if ((flags) & VIR_CONNECT_RO) {                                 \
+            virReportRestrictedError(_("read only access prevents %s"), \
+                                     __FUNCTION__);                     \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 
 
 /* divide value by size, rounding up */
