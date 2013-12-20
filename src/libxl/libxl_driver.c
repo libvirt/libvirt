@@ -2358,45 +2358,62 @@ cleanup:
 }
 
 static int
-libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
-                   int maplen)
+libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
+                        unsigned char *cpumap, int maplen,
+                        unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    libxlDomainObjPrivatePtr priv;
+    virDomainDefPtr targetDef = NULL;
     virDomainObjPtr vm;
     int ret = -1;
-    libxl_bitmap map;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainPinVcpuEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainPinVcpuFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && !virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot pin vcpus on an inactive domain"));
+                       _("domain is inactive"));
         goto cleanup;
     }
 
-    priv = vm->privateData;
-
-    map.size = maplen;
-    map.map = cpumap;
-    if (libxl_set_vcpuaffinity(priv->ctx, dom->id, vcpu, &map) != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
+    if (virDomainLiveConfigHelperMethod(cfg->caps, driver->xmlopt, vm,
+                                        &flags, &targetDef) < 0)
         goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        targetDef = vm->def;
     }
 
-    if (!vm->def->cputune.vcpupin) {
-        if (VIR_ALLOC(vm->def->cputune.vcpupin) < 0)
+    /* Make sure coverity knows targetDef is valid at this point. */
+    sa_assert(targetDef);
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        libxl_bitmap map = { .size = maplen, .map = cpumap };
+        libxlDomainObjPrivatePtr priv;
+
+        priv = vm->privateData;
+        if (libxl_set_vcpuaffinity(priv->ctx, dom->id, vcpu, &map) != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to pin vcpu '%d' with libxenlight"),
+                           vcpu);
             goto cleanup;
-        vm->def->cputune.nvcpupin = 0;
+        }
     }
-    if (virDomainVcpuPinAdd(&vm->def->cputune.vcpupin,
-                            &vm->def->cputune.nvcpupin,
+
+    if (!targetDef->cputune.vcpupin) {
+        if (VIR_ALLOC(targetDef->cputune.vcpupin) < 0)
+            goto cleanup;
+        targetDef->cputune.nvcpupin = 0;
+    }
+    if (virDomainVcpuPinAdd(&targetDef->cputune.vcpupin,
+                            &targetDef->cputune.nvcpupin,
                             cpumap,
                             maplen,
                             vcpu) < 0) {
@@ -2405,16 +2422,27 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
         goto cleanup;
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
-
     ret = 0;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm);
+    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        ret = virDomainSaveConfig(cfg->configDir, targetDef);
+    }
 
 cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);
     return ret;
+}
+
+static int
+libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
+                   int maplen)
+{
+    return libxlDomainPinVcpuFlags(dom, vcpu, cpumap, maplen,
+                                   VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int
@@ -4320,6 +4348,7 @@ static virDriver libxlDriver = {
     .domainSetVcpusFlags = libxlDomainSetVcpusFlags, /* 0.9.0 */
     .domainGetVcpusFlags = libxlDomainGetVcpusFlags, /* 0.9.0 */
     .domainPinVcpu = libxlDomainPinVcpu, /* 0.9.0 */
+    .domainPinVcpuFlags = libxlDomainPinVcpuFlags, /* 1.2.1 */
     .domainGetVcpus = libxlDomainGetVcpus, /* 0.9.0 */
     .domainGetVcpuPinInfo = libxlDomainGetVcpuPinInfo, /* 1.2.1 */
     .domainGetXMLDesc = libxlDomainGetXMLDesc, /* 0.9.0 */
