@@ -9191,10 +9191,12 @@ cleanup:
 }
 
 
-static int qemuDomainGetBlockInfo(virDomainPtr dom,
-                                  const char *path,
-                                  virDomainBlockInfoPtr info,
-                                  unsigned int flags) {
+static int
+qemuDomainGetBlockInfo(virDomainPtr dom,
+                       const char *path,
+                       virDomainBlockInfoPtr info,
+                       unsigned int flags)
+{
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -9206,6 +9208,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     int i;
     int format;
     virQEMUDriverConfigPtr cfg = NULL;
+    char *alias = NULL;
 
     virCheckFlags(0, -1);
 
@@ -9312,13 +9315,18 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
 
+        if (!(alias = strdup(disk->info.alias))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             goto cleanup;
 
         if (virDomainObjIsActive(vm)) {
             qemuDomainObjEnterMonitor(driver, vm);
             ret = qemuMonitorGetBlockExtent(priv->mon,
-                                            disk->info.alias,
+                                            alias,
                                             &info->allocation);
             qemuDomainObjExitMonitor(driver, vm);
         } else {
@@ -9332,6 +9340,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
 cleanup:
+    VIR_FREE(alias);
     virStorageFileFreeMetadata(meta);
     VIR_FORCE_CLOSE(fd);
     if (vm)
