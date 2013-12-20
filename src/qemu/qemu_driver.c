@@ -13283,16 +13283,25 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     }
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
+    }
+
     device = qemuDiskPathToAlias(vm, path, &idx);
     if (!device)
-        goto cleanup;
+        goto endjob;
     disk = vm->def->disks[idx];
 
     if (mode == BLOCK_JOB_PULL && disk->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
                        _("disk '%s' already in active block copy job"),
                        disk->dst);
-        goto cleanup;
+        goto endjob;
     }
     if (mode == BLOCK_JOB_ABORT &&
         (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
@@ -13300,15 +13309,6 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("pivot of disk '%s' requires an active copy job"),
                        disk->dst);
-        goto cleanup;
-    }
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not running"));
         goto endjob;
     }
 
