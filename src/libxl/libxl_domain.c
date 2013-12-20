@@ -354,12 +354,11 @@ libxlDomainObjPrivateDispose(void *obj)
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
 
     virChrdevFree(priv->devs);
-
-    xtl_logger_destroy(priv->logger);
+    libxl_ctx_free(priv->ctx);
     if (priv->logger_file)
         VIR_FORCE_FCLOSE(priv->logger_file);
 
-    libxl_ctx_free(priv->ctx);
+    xtl_logger_destroy(priv->logger);
 }
 
 static void
