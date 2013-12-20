@@ -99,7 +99,7 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);

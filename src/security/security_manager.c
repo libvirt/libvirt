@@ -1,7 +1,7 @@
 /*
  * security_manager.c: Internal security manager API
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -256,7 +256,7 @@ virSecurityManagerGetDOI(virSecurityManagerPtr mgr)
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return NULL;
 }
 
@@ -271,7 +271,7 @@ virSecurityManagerGetModel(virSecurityManagerPtr mgr)
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return NULL;
 }
 
@@ -317,7 +317,7 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -332,7 +332,7 @@ int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -347,7 +347,7 @@ int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -362,7 +362,7 @@ int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -378,7 +378,7 @@ int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -395,7 +395,7 @@ int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -412,7 +412,7 @@ int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -428,7 +428,7 @@ int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -444,7 +444,7 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -512,7 +512,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
         }
 
         if (!sec_managers[i]->drv->domainGenSecurityLabel) {
-            virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
         } else {
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
@@ -553,7 +553,7 @@ int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -568,7 +568,7 @@ int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -584,7 +584,7 @@ int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -600,7 +600,7 @@ int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -617,7 +617,7 @@ int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -632,7 +632,7 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -643,7 +643,7 @@ int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
     if (mgr->drv->domainSetSecurityChildProcessLabel)
        return mgr->drv->domainSetSecurityChildProcessLabel(mgr, vm, cmd);
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -671,7 +671,7 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -687,7 +687,7 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -703,7 +703,7 @@ int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 
@@ -718,7 +718,7 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
     return NULL;
 }
 

@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2320,7 +2320,7 @@ xenUnifiedConnectDomainEventRegister(virConnectPtr conn,
     xenUnifiedLock(priv);
 
     if (priv->xsWatch == -1) {
-        virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         xenUnifiedUnlock(priv);
         return -1;
     }
@@ -2346,7 +2346,7 @@ xenUnifiedConnectDomainEventDeregister(virConnectPtr conn,
     xenUnifiedLock(priv);
 
     if (priv->xsWatch == -1) {
-        virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         xenUnifiedUnlock(priv);
         return -1;
     }
@@ -2377,7 +2377,7 @@ xenUnifiedConnectDomainEventRegisterAny(virConnectPtr conn,
     xenUnifiedLock(priv);
 
     if (priv->xsWatch == -1) {
-        virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         xenUnifiedUnlock(priv);
         return -1;
     }
@@ -2404,7 +2404,7 @@ xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
     xenUnifiedLock(priv);
 
     if (priv->xsWatch == -1) {
-        virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         xenUnifiedUnlock(priv);
         return -1;
     }

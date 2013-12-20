@@ -1,7 +1,7 @@
 /*
  * virinitctl.c: API for talking to init systems via initctl
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -168,7 +168,7 @@ cleanup:
 int virInitctlSetRunLevel(virInitctlRunLevel level ATTRIBUTE_UNUSED,
                           const char *vroot ATTRIBUTE_UNUSED)
 {
-   virReportError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
-   return -1;
+    virReportUnsupportedError();
+    return -1;
 }
 #endif

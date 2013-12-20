@@ -105,7 +105,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -180,7 +180,7 @@ virDomainQemuAttach(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -242,9 +242,8 @@ virDomainQemuAgentCommand(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
-    /* Copy to connection error object for back compatibility */
 error:
     virDispatchError(conn);
     return NULL;

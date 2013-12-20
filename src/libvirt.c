@@ -1656,7 +1656,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -1740,7 +1740,7 @@ virConnectGetHostname(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -1821,7 +1821,7 @@ virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -1861,7 +1861,7 @@ virConnectGetMaxVcpus(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -1908,7 +1908,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -1943,7 +1943,7 @@ virConnectNumOfDomains(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -2033,7 +2033,7 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -2107,7 +2107,7 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -2168,7 +2168,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2208,7 +2208,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2288,7 +2288,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
         return dom;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2349,7 +2349,7 @@ virDomainDestroy(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2416,7 +2416,7 @@ virDomainDestroyFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2528,7 +2528,7 @@ virDomainSuspend(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -2577,7 +2577,7 @@ virDomainResume(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -2646,7 +2646,7 @@ virDomainPMSuspendForDuration(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2697,7 +2697,7 @@ virDomainPMWakeup(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -2762,7 +2762,7 @@ virDomainSave(virDomainPtr domain, const char *to)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -2859,7 +2859,7 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -2916,7 +2916,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -3001,7 +3001,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -3070,7 +3070,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -3153,7 +3153,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -3245,7 +3245,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3311,7 +3311,7 @@ virDomainScreenshot(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3368,7 +3368,7 @@ virDomainShutdown(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3432,7 +3432,7 @@ virDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3497,7 +3497,7 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3548,7 +3548,7 @@ virDomainReset(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3705,7 +3705,7 @@ virDomainGetOSType(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3754,7 +3754,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3808,7 +3808,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3861,7 +3861,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3926,7 +3926,7 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -3990,7 +3990,7 @@ virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4091,7 +4091,7 @@ virDomainSetMemoryParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4178,7 +4178,7 @@ virDomainGetMemoryParameters(virDomainPtr domain,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4237,7 +4237,7 @@ virDomainSetNumaParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4307,7 +4307,7 @@ virDomainGetNumaParameters(virDomainPtr domain,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4366,7 +4366,7 @@ virDomainSetBlkioParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4444,7 +4444,7 @@ virDomainGetBlkioParameters(virDomainPtr domain,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4491,7 +4491,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4541,7 +4541,7 @@ virDomainGetState(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4587,7 +4587,7 @@ virDomainGetControlInfo(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4647,7 +4647,7 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -4704,7 +4704,7 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -4761,7 +4761,7 @@ virConnectDomainXMLToNative(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -5455,7 +5455,7 @@ virDomainMigrateDirect(virDomainPtr domain,
                      bandwidth);
 
     if (!domain->conn->driver->domainMigratePerform) {
-        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         virDispatchError(domain->conn);
         return -1;
     }
@@ -5660,7 +5660,7 @@ virDomainMigrate(virDomainPtr domain,
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
             /* This driver does not support peer to peer migration */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     } else {
@@ -5707,7 +5707,7 @@ virDomainMigrate(virDomainPtr domain,
                                                dname, uri, bandwidth);
         } else {
             /* This driver does not support any migration method */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     }
@@ -5897,7 +5897,7 @@ virDomainMigrate2(virDomainPtr domain,
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
             /* This driver does not support peer to peer migration */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     } else {
@@ -5954,7 +5954,7 @@ virDomainMigrate2(virDomainPtr domain,
                                                dname, uri, bandwidth);
         } else {
             /* This driver does not support any migration method */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     }
@@ -6156,7 +6156,7 @@ virDomainMigrate3(virDomainPtr domain,
                                            dname, uri, bandwidth);
     } else {
         /* This driver does not support any migration method */
-        virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportUnsupportedError();
         goto error;
     }
 
@@ -6295,7 +6295,7 @@ virDomainMigrateToURI(virDomainPtr domain,
                 goto error;
         } else {
             /* No peer to peer migration supported */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     } else {
@@ -6450,7 +6450,7 @@ virDomainMigrateToURI2(virDomainPtr domain,
                 goto error;
         } else {
             /* No peer to peer migration supported */
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             goto error;
         }
     } else {
@@ -6670,7 +6670,7 @@ virDomainMigratePrepare(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -6721,7 +6721,7 @@ virDomainMigratePerform(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -6768,7 +6768,7 @@ virDomainMigrateFinish(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -6820,7 +6820,7 @@ virDomainMigratePrepare2(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -6869,7 +6869,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -6922,7 +6922,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
         return rv;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -6975,7 +6975,7 @@ virDomainMigrateBegin3(virDomainPtr domain,
         return xml;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7032,7 +7032,7 @@ virDomainMigratePrepare3(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -7093,7 +7093,7 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
         return rv;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7153,7 +7153,7 @@ virDomainMigratePerform3(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7207,7 +7207,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -7256,7 +7256,7 @@ virDomainMigrateConfirm3(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7308,7 +7308,7 @@ virDomainMigrateBegin3Params(virDomainPtr domain,
         return xml;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7361,7 +7361,7 @@ virDomainMigratePrepare3Params(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -7420,7 +7420,7 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
         return rv;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7475,7 +7475,7 @@ virDomainMigratePerform3Params(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7527,7 +7527,7 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dconn);
@@ -7579,7 +7579,7 @@ virDomainMigrateConfirm3Params(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -7618,7 +7618,7 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7658,7 +7658,7 @@ virConnectGetCapabilities(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7754,7 +7754,7 @@ virNodeGetCPUStats(virConnectPtr conn,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7846,7 +7846,7 @@ virNodeGetMemoryStats(virConnectPtr conn,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7885,7 +7885,7 @@ virNodeGetFreeMemory(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -7945,7 +7945,7 @@ virNodeSuspendForDuration(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -8010,7 +8010,7 @@ virNodeGetMemoryParameters(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -8077,7 +8077,7 @@ virNodeSetMemoryParameters(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -8119,7 +8119,7 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
         return schedtype;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8177,7 +8177,7 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8262,7 +8262,7 @@ virDomainGetSchedulerParametersFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8322,7 +8322,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8390,7 +8390,7 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8458,7 +8458,7 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
         return 0;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -8540,7 +8540,7 @@ virDomainBlockStatsFlags(virDomainPtr dom,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -8606,7 +8606,7 @@ virDomainInterfaceStats(virDomainPtr dom, const char *path,
         return 0;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -8674,7 +8674,7 @@ virDomainSetInterfaceParameters(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8746,7 +8746,7 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
             goto error;
         return ret;
     }
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -8819,7 +8819,7 @@ virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
         return nr_stats_ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -8913,7 +8913,7 @@ virDomainBlockPeek(virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -8982,7 +8982,7 @@ virDomainBlockResize(virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -9095,7 +9095,7 @@ virDomainMemoryPeek(virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -9151,7 +9151,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9208,7 +9208,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -9259,7 +9259,7 @@ virDomainUndefine(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9320,7 +9320,7 @@ virDomainUndefineFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9357,7 +9357,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -9408,7 +9408,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -9511,7 +9511,7 @@ virConnectListAllDomains(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -9558,7 +9558,7 @@ virDomainCreate(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9627,7 +9627,7 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9709,7 +9709,7 @@ virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9755,7 +9755,7 @@ virDomainGetAutostart(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9804,7 +9804,7 @@ virDomainSetAutostart(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9849,7 +9849,7 @@ virDomainInjectNMI(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9916,7 +9916,7 @@ virDomainSendKey(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -9995,7 +9995,7 @@ virDomainSendProcessSignal(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10051,7 +10051,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10140,7 +10140,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10210,7 +10210,7 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10278,7 +10278,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10359,7 +10359,7 @@ virDomainPinVcpuFlags(virDomainPtr domain, unsigned int vcpu,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10438,7 +10438,7 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10513,7 +10513,7 @@ virDomainPinEmulator(virDomainPtr domain, unsigned char *cpumap,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10581,7 +10581,7 @@ virDomainGetEmulatorPinInfo(virDomainPtr domain, unsigned char *cpumap,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10658,7 +10658,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10703,7 +10703,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10749,7 +10749,7 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10797,7 +10797,7 @@ virDomainGetSecurityLabelList(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10895,7 +10895,7 @@ virDomainSetMetadata(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -10975,7 +10975,7 @@ virDomainGetMetadata(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11017,7 +11017,7 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11070,7 +11070,7 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
        return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11134,7 +11134,7 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11183,7 +11183,7 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
          return ret;
      }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11263,7 +11263,7 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11327,7 +11327,7 @@ virDomainUpdateDeviceFlags(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -11379,7 +11379,7 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11479,7 +11479,7 @@ virConnectListAllNetworks(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11516,7 +11516,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11564,7 +11564,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11601,7 +11601,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11650,7 +11650,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11690,7 +11690,7 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11731,7 +11731,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11817,7 +11817,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11860,7 +11860,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -11903,7 +11903,7 @@ virNetworkUndefine(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -11966,7 +11966,7 @@ virNetworkUpdate(virNetworkPtr network,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12010,7 +12010,7 @@ virNetworkCreate(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12057,7 +12057,7 @@ virNetworkDestroy(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12257,7 +12257,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12299,7 +12299,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12344,7 +12344,7 @@ virNetworkGetAutostart(virNetworkPtr network,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12392,7 +12392,7 @@ virNetworkSetAutostart(virNetworkPtr network,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(network->conn);
@@ -12484,7 +12484,7 @@ virConnectListAllInterfaces(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12521,7 +12521,7 @@ virConnectNumOfInterfaces(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12570,7 +12570,7 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12607,7 +12607,7 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12658,7 +12658,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12698,7 +12698,7 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12738,7 +12738,7 @@ virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12840,7 +12840,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(iface->conn);
@@ -12894,7 +12894,7 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -12948,7 +12948,7 @@ virInterfaceUndefine(virInterfacePtr iface)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(iface->conn);
@@ -12997,7 +12997,7 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(iface->conn);
@@ -13051,7 +13051,7 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(iface->conn);
@@ -13162,7 +13162,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13210,7 +13210,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13259,7 +13259,7 @@ virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13374,7 +13374,7 @@ virConnectListAllStoragePools(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13411,7 +13411,7 @@ virConnectNumOfStoragePools(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13463,7 +13463,7 @@ virConnectListStoragePools(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13500,7 +13500,7 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13552,7 +13552,7 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13612,7 +13612,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13652,7 +13652,7 @@ virStoragePoolLookupByName(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13692,7 +13692,7 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13769,7 +13769,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -13818,7 +13818,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13865,7 +13865,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -13913,7 +13913,7 @@ virStoragePoolBuild(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -13956,7 +13956,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14001,7 +14001,7 @@ virStoragePoolCreate(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14049,7 +14049,7 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14097,7 +14097,7 @@ virStoragePoolDelete(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14206,7 +14206,7 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14343,7 +14343,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14387,7 +14387,7 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14431,7 +14431,7 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14478,7 +14478,7 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14528,7 +14528,7 @@ virStoragePoolListAllVolumes(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14565,7 +14565,7 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14612,7 +14612,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14684,7 +14684,7 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14726,7 +14726,7 @@ virStorageVolLookupByKey(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -14767,7 +14767,7 @@ virStorageVolLookupByPath(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -14873,7 +14873,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -14940,7 +14940,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(pool->conn);
@@ -15009,7 +15009,7 @@ virStorageVolDownload(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15080,7 +15080,7 @@ virStorageVolUpload(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15126,7 +15126,7 @@ virStorageVolDelete(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15173,7 +15173,7 @@ virStorageVolWipe(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15223,7 +15223,7 @@ virStorageVolWipePattern(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15329,7 +15329,7 @@ virStorageVolGetInfo(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15372,7 +15372,7 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15417,7 +15417,7 @@ virStorageVolGetPath(virStorageVolPtr vol)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15500,7 +15500,7 @@ virStorageVolResize(virStorageVolPtr vol,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(vol->conn);
@@ -15542,7 +15542,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -15616,7 +15616,7 @@ virConnectListAllNodeDevices(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -15668,7 +15668,7 @@ virNodeListDevices(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -15708,7 +15708,7 @@ virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -15756,7 +15756,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -15795,7 +15795,7 @@ virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -15854,7 +15854,7 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
         if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetParent) {
             dev->parent = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
         } else {
-            virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            virReportUnsupportedError();
             virDispatchError(dev->conn);
             return NULL;
         }
@@ -15892,7 +15892,7 @@ virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -15937,7 +15937,7 @@ virNodeDeviceListCaps(virNodeDevicePtr dev,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16055,7 +16055,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16120,7 +16120,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16169,7 +16169,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16220,7 +16220,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16269,7 +16269,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
         return dev;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16315,7 +16315,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dev->conn);
@@ -16376,7 +16376,7 @@ virConnectDomainEventRegister(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -16420,7 +16420,7 @@ virConnectDomainEventDeregister(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -16486,7 +16486,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16554,7 +16554,7 @@ virConnectListAllSecrets(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16596,7 +16596,7 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16638,7 +16638,7 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16725,7 +16725,7 @@ virSecretLookupByUsage(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16775,7 +16775,7 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16946,7 +16946,7 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -16997,7 +16997,7 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -17046,7 +17046,7 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -17092,7 +17092,7 @@ virSecretUndefine(virSecretPtr secret)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -17325,7 +17325,7 @@ virStreamSend(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17423,7 +17423,7 @@ virStreamRecv(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17670,7 +17670,7 @@ virStreamEventAddCallback(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17713,7 +17713,7 @@ virStreamEventUpdateCallback(virStreamPtr stream,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17751,7 +17751,7 @@ virStreamEventRemoveCallback(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17796,7 +17796,7 @@ virStreamFinish(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17843,7 +17843,7 @@ virStreamAbort(virStreamPtr stream)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(stream->conn);
@@ -17913,7 +17913,7 @@ virDomainIsActive(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -17949,7 +17949,7 @@ virDomainIsPersistent(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -17984,7 +17984,7 @@ virDomainIsUpdated(virDomainPtr dom)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(dom->conn);
     return -1;
@@ -18019,7 +18019,7 @@ virNetworkIsActive(virNetworkPtr net)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(net->conn);
     return -1;
@@ -18055,7 +18055,7 @@ virNetworkIsPersistent(virNetworkPtr net)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(net->conn);
     return -1;
@@ -18090,7 +18090,7 @@ virStoragePoolIsActive(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(pool->conn);
     return -1;
@@ -18126,7 +18126,7 @@ virStoragePoolIsPersistent(virStoragePoolPtr pool)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(pool->conn);
     return -1;
@@ -18162,7 +18162,7 @@ virConnectNumOfNWFilters(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18214,7 +18214,7 @@ virConnectListAllNWFilters(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18256,7 +18256,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18296,7 +18296,7 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18336,7 +18336,7 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18539,7 +18539,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18585,7 +18585,7 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(nwfilter->conn);
@@ -18628,7 +18628,7 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(nwfilter->conn);
@@ -18699,7 +18699,7 @@ virInterfaceIsActive(virInterfacePtr iface)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(iface->conn);
     return -1;
@@ -18734,7 +18734,7 @@ virConnectIsEncrypted(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -18773,7 +18773,7 @@ virConnectIsSecure(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -18815,7 +18815,7 @@ virConnectCompareCPU(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18866,7 +18866,7 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18925,7 +18925,7 @@ virConnectBaselineCPU(virConnectPtr conn,
         return cpu;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -18974,7 +18974,7 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -19034,7 +19034,7 @@ virDomainGetJobStats(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -19080,7 +19080,7 @@ virDomainAbortJob(virDomainPtr domain)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -19129,7 +19129,7 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19175,7 +19175,7 @@ virDomainMigrateGetCompressionCache(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19226,7 +19226,7 @@ virDomainMigrateSetCompressionCache(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19274,7 +19274,7 @@ virDomainMigrateSetMaxSpeed(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19324,7 +19324,7 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
         return 0;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19407,7 +19407,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19447,7 +19447,7 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19534,7 +19534,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19576,7 +19576,7 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -19650,7 +19650,7 @@ virDomainManagedSave(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -19696,7 +19696,7 @@ virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -19743,7 +19743,7 @@ virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -19993,7 +19993,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -20047,7 +20047,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -20118,7 +20118,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20210,7 +20210,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20296,7 +20296,7 @@ virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20368,7 +20368,7 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20466,7 +20466,7 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20555,7 +20555,7 @@ virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20603,7 +20603,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
         return dom;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -20643,7 +20643,7 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20687,7 +20687,7 @@ virDomainSnapshotCurrent(virDomainPtr domain,
         return snap;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -20732,7 +20732,7 @@ virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
         return snap;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return NULL;
@@ -20776,7 +20776,7 @@ virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20821,7 +20821,7 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20910,7 +20910,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -20980,7 +20980,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -21113,7 +21113,7 @@ virDomainOpenConsole(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -21176,7 +21176,7 @@ virDomainOpenChannel(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -21256,7 +21256,7 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21313,7 +21313,7 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21373,7 +21373,7 @@ virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21447,7 +21447,7 @@ virDomainBlockPull(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21579,7 +21579,7 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21687,7 +21687,7 @@ virDomainBlockCommit(virDomainPtr dom, const char *disk,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21759,7 +21759,8 @@ virDomainOpenGraphics(virDomainPtr dom,
 
     if (!VIR_DRV_SUPPORTS_FEATURE(dom->conn->driver, dom->conn,
                                   VIR_DRV_FEATURE_FD_PASSING)) {
-        virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("fd passing is not supported by this connection"));
         goto error;
     }
 
@@ -21771,7 +21772,7 @@ virDomainOpenGraphics(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -21829,7 +21830,7 @@ virConnectSetKeepAlive(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -21868,7 +21869,7 @@ virConnectIsAlive(virConnectPtr conn)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 error:
     virDispatchError(conn);
     return -1;
@@ -22066,7 +22067,7 @@ virDomainSetBlockIoTune(virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -22157,7 +22158,7 @@ virDomainGetBlockIoTune(virDomainPtr dom,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -22304,7 +22305,7 @@ virDomainGetCPUStats(virDomainPtr domain,
         return ret;
     }
 
-    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -22370,7 +22371,7 @@ virDomainGetDiskErrors(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);
@@ -22416,7 +22417,7 @@ virDomainGetHostname(virDomainPtr domain, unsigned int flags)
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(domain->conn);
@@ -22468,7 +22469,7 @@ virNodeGetCPUMap(virConnectPtr conn,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(conn);
@@ -22525,7 +22526,7 @@ virDomainFSTrim(virDomainPtr dom,
         return ret;
     }
 
-    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virReportUnsupportedError();
 
 error:
     virDispatchError(dom->conn);

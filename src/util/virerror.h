@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -155,6 +155,11 @@ void virReportSystemErrorFull(int domcode,
                       NULL,                                          \
                       0, 0,                                          \
                       "%s", message);
+
+# define virReportUnsupportedError()                                    \
+    virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_NO_SUPPORT,             \
+                         __FILE__, __FUNCTION__, __LINE__, __FUNCTION__)
+
 
 void virReportOOMErrorFull(int domcode,
                            const char *filename,

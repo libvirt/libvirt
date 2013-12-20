@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -2257,7 +2257,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path ATTRIBUTE_UNUSED,
                         struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
 {
-    virReportError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
+    virReportUnsupportedError();
     return -1;
 }
 #endif
