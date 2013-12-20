@@ -3945,6 +3945,8 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
      * the filtering on behalf of older clients that can't parse it. */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
+    libxl_bitmap_init(&nodemap);
+
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -3958,8 +3960,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     }
 
     priv = vm->privateData;
-
-    libxl_bitmap_init(&nodemap);
 
     if ((*nparams) == 0) {
         *nparams = LIBXL_NUMA_NPARAM;
