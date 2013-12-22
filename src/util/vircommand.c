@@ -197,28 +197,28 @@ virCommandFDSet(virCommandPtr cmd,
 
 /**
  * virFork:
- * @pid - a pointer to a pid_t that will receive the return value from
- *        fork()
  *
  * Wrapper around fork() that avoids various race/deadlock conditions.
  *
- * on return from virFork(), if *pid < 0, the fork failed and there is
- * no new process. Otherwise, just like fork(), if *pid == 0, it is the
- * child process returning, and if *pid > 0, it is the parent.
- *
- * Even if *pid >= 0, if the return value from virFork() is < 0, it
- * indicates a failure that occurred in the parent or child process
- * after the fork. In this case, the child process should call
- * _exit(EXIT_CANCELED) after doing any additional error reporting.
+ * Like fork(), there are several return possibilities:
+ * 1. No child was created: the return is -1, errno is set, and an error
+ * message has been reported.  The semantics of virWaitProcess() recognize
+ * this to avoid clobbering the error message from here.
+ * 2. This is the parent: the return is > 0.  The parent can now attempt
+ * to interact with the child (but be aware that unlike raw fork(), the
+ * child may not return - some failures in the child result in this
+ * function calling _exit(EXIT_CANCELED) if the child cannot be set up
+ * correctly).
+ * 3. This is the child: the return is 0.  If this happens, the parent
+ * is also guaranteed to return.
  */
-int
-virFork(pid_t *pid)
+pid_t
+virFork(void)
 {
     sigset_t oldmask, newmask;
     struct sigaction sig_action;
-    int saved_errno, ret = -1;
-
-    *pid = -1;
+    int saved_errno;
+    pid_t pid;
 
     /*
      * Need to block signals now, so that child process can safely
@@ -226,54 +226,47 @@ virFork(pid_t *pid)
      */
     sigfillset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
-        saved_errno = errno;
         virReportSystemError(errno,
                              "%s", _("cannot block signals"));
-        goto cleanup;
+        return -1;
     }
 
     /* Ensure we hold the logging lock, to protect child processes
      * from deadlocking on another thread's inherited mutex state */
     virLogLock();
 
-    *pid = fork();
+    pid = fork();
     saved_errno = errno; /* save for caller */
 
     /* Unlock for both parent and child process */
     virLogUnlock();
 
-    if (*pid < 0) {
+    if (pid < 0) {
         /* attempt to restore signal mask, but ignore failure, to
-           avoid obscuring the fork failure */
+         * avoid obscuring the fork failure */
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
         virReportSystemError(saved_errno,
                              "%s", _("cannot fork child process"));
-        goto cleanup;
-    }
+        errno = saved_errno;
 
-    if (*pid) {
-
+    } else if (pid) {
         /* parent process */
 
         /* Restore our original signal mask now that the child is
-           safely running */
-        if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
-            saved_errno = errno; /* save for caller */
-            virReportSystemError(errno, "%s", _("cannot unblock signals"));
-            goto cleanup;
-        }
-        ret = 0;
+         * safely running. Only documented failures are EFAULT (not
+         * possible, since we are using just-grabbed mask) or EINVAL
+         * (not possible, since we are using correct arguments).  */
+        ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 
     } else {
-
         /* child process */
 
         int logprio;
         size_t i;
 
-        /* Remove any error callback so errors in child now
-           get sent to stderr where they stand a fighting chance
-           of being seen / logged */
+        /* Remove any error callback so errors in child now get sent
+         * to stderr where they stand a fighting chance of being seen
+         * and logged */
         virSetErrorFunc(NULL, NULL);
         virSetErrorLogPriorityFunc(NULL);
 
@@ -284,37 +277,30 @@ virFork(pid_t *pid)
         virLogSetDefaultPriority(logprio);
 
         /* Clear out all signal handlers from parent so nothing
-           unexpected can happen in our child once we unblock
-           signals */
+         * unexpected can happen in our child once we unblock
+         * signals */
         sig_action.sa_handler = SIG_DFL;
         sig_action.sa_flags = 0;
         sigemptyset(&sig_action.sa_mask);
 
         for (i = 1; i < NSIG; i++) {
-            /* Only possible errors are EFAULT or EINVAL
-               The former wont happen, the latter we
-               expect, so no need to check return value */
-
-            sigaction(i, &sig_action, NULL);
+            /* Only possible errors are EFAULT or EINVAL The former
+             * won't happen, the latter we expect, so no need to check
+             * return value */
+            ignore_value(sigaction(i, &sig_action, NULL));
         }
 
-        /* Unmask all signals in child, since we've no idea
-           what the caller's done with their signal mask
-           and don't want to propagate that to children */
+        /* Unmask all signals in child, since we've no idea what the
+         * caller's done with their signal mask and don't want to
+         * propagate that to children */
         sigemptyset(&newmask);
         if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
-            saved_errno = errno; /* save for caller */
             virReportSystemError(errno, "%s", _("cannot unblock signals"));
             virDispatchError(NULL);
             _exit(EXIT_CANCELED);
         }
-        ret = 0;
     }
-
-cleanup:
-    if (ret < 0)
-        errno = saved_errno;
-    return ret;
+    return pid;
 }
 
 /*
@@ -412,7 +398,7 @@ virExec(virCommandPtr cmd)
     int tmpfd;
     char *binarystr = NULL;
     const char *binary = NULL;
-    int forkRet, ret;
+    int ret;
     struct sigaction waxon, waxoff;
     gid_t *groups = NULL;
     int ngroups;
@@ -489,17 +475,13 @@ virExec(virCommandPtr cmd)
     if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
         goto cleanup;
 
-    forkRet = virFork(&pid);
+    pid = virFork();
 
     if (pid < 0) {
         goto cleanup;
     }
 
     if (pid) { /* parent */
-        if (forkRet < 0) {
-            goto cleanup;
-        }
-
         VIR_FORCE_CLOSE(null);
         if (cmd->outfdptr && *cmd->outfdptr == -1) {
             VIR_FORCE_CLOSE(pipeout[1]);
@@ -521,13 +503,6 @@ virExec(virCommandPtr cmd)
     /* child */
 
     ret = EXIT_CANCELED;
-    if (forkRet < 0) {
-        /* The fork was successful, but after that there was an error
-         * in the child (which was already logged).
-        */
-        goto fork_error;
-    }
-
     openmax = sysconf(_SC_OPEN_MAX);
     if (openmax < 0) {
         virReportSystemError(errno,  "%s",
@@ -598,12 +573,10 @@ virExec(virCommandPtr cmd)
 
         if (pid > 0) {
             if (cmd->pidfile && (virPidFileWritePath(cmd->pidfile, pid) < 0)) {
-                kill(pid, SIGTERM);
-                usleep(500*1000);
-                kill(pid, SIGTERM);
-                virReportSystemError(errno,
-                                     _("could not write pidfile %s for %d"),
-                                     cmd->pidfile, pid);
+                if (virProcessKillPainfully(pid, true) >= 0)
+                    virReportSystemError(errno,
+                                         _("could not write pidfile %s for %d"),
+                                         cmd->pidfile, pid);
                 goto fork_error;
             }
             _exit(EXIT_SUCCESS);
@@ -785,10 +758,9 @@ virExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
     return -1;
 }
 
-int
-virFork(pid_t *pid)
+pid_t
+virFork(void)
 {
-    *pid = -1;
     errno = ENOTSUP;
 
     return -1;

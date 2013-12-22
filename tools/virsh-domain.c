@@ -8177,9 +8177,10 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Fork once because we don't want to affect
-     * virsh's namespace itself
+     * virsh's namespace itself, and because user namespace
+     * can only be changed in single-threaded process
      */
-    if (virFork(&pid) < 0)
+    if ((pid = virFork()) < 0)
         goto cleanup;
     if (pid == 0) {
         if (setlabel &&
@@ -8200,7 +8201,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         /* Fork a second time because entering the
          * pid namespace only takes effect after fork
          */
-        if (virFork(&pid) < 0)
+        if ((pid = virFork()) < 0)
             _exit(255);
         if (pid == 0) {
             execv(cmdargv[0], cmdargv);

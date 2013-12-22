@@ -972,12 +972,10 @@ test23(const void *unused ATTRIBUTE_UNUSED)
     int status = -1;
     pid_t pid;
 
-    if (virFork(&pid) < 0)
-        goto cleanup;
-    if (pid < 0)
+    if ((pid = virFork()) < 0)
         goto cleanup;
     if (pid == 0) {
-        if (virFork(&pid) < 0)
+        if ((pid = virFork()) < 0)
             _exit(EXIT_FAILURE);
         if (pid == 0)
             _exit(42);
@@ -994,12 +992,10 @@ test23(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virFork(&pid) < 0)
-        goto cleanup;
-    if (pid < 0)
+    if ((pid = virFork()) < 0)
         goto cleanup;
     if (pid == 0) {
-        if (virFork(&pid) < 0)
+        if ((pid = virFork()) < 0)
             _exit(EXIT_FAILURE);
         if (pid == 0) {
             raise(SIGKILL);

@@ -157,12 +157,16 @@ virProcessAbort(pid_t pid)
  * @exitstatus: optional status collection
  * @raw: whether to pass non-normal status back to caller
  *
- * Wait for a child process to complete.  If @exitstatus is NULL, then the
- * child must exit normally with status 0.  Otherwise, if @raw is false,
- * the child must exit normally, and @exitstatus will contain the final
- * exit status (no need for the caller to use WEXITSTATUS()).  If @raw is
- * true, then the result of wait() is returned in @exitstatus, and the
- * caller must use WIFEXITED() and friends to decipher the child's status.
+ * Wait for a child process to complete.  If @pid is -1, do nothing, but
+ * return -1 (useful for error cleanup, and assumes an earlier message was
+ * already issued).  All other pids issue an error message on failure.
+ *
+ * If @exitstatus is NULL, then the child must exit normally with status 0.
+ * Otherwise, if @raw is false, the child must exit normally, and
+ * @exitstatus will contain the final exit status (no need for the caller
+ * to use WEXITSTATUS()).  If @raw is true, then the result of waitpid() is
+ * returned in @exitstatus, and the caller must use WIFEXITED() and friends
+ * to decipher the child's status.
  *
  * Returns 0 on a successful wait.  Returns -1 on any error waiting for
  * completion, or if the command completed with a status that cannot be
@@ -175,8 +179,9 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
     int status;
 
     if (pid <= 0) {
-        virReportSystemError(EINVAL, _("unable to wait for process %lld"),
-                             (long long) pid);
+        if (pid != -1)
+            virReportSystemError(EINVAL, _("unable to wait for process %lld"),
+                                 (long long) pid);
         return -1;
     }
 
@@ -956,16 +961,8 @@ virProcessRunInMountNamespace(pid_t pid,
         return -1;
     }
 
-    ret = virFork(&child);
-
-    if (ret < 0 || child < 0) {
-        if (child == 0)
-            _exit(EXIT_CANCELED);
-
-        /* parent */
-        virProcessAbort(child);
+    if ((child = virFork()) < 0)
         goto cleanup;
-    }
 
     if (child == 0) {
         VIR_FORCE_CLOSE(errfd[0]);

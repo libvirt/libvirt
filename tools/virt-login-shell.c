@@ -309,7 +309,10 @@ main(int argc, char **argv)
     if (virDomainGetSecurityLabel(dom, seclabel) < 0)
         goto cleanup;
 
-    if (virFork(&cpid) < 0)
+    /* Fork once because we don't want to affect virt-login-shell's
+     * namespace itself.  FIXME: is this necessary?
+     */
+    if ((cpid = virFork()) < 0)
         goto cleanup;
 
     if (cpid == 0) {
@@ -318,9 +321,6 @@ main(int argc, char **argv)
         int openmax = sysconf(_SC_OPEN_MAX);
         int fd;
 
-        /* Fork once because we don't want to affect
-         * virt-login-shell's namespace itself
-         */
         if (virSetUIDGID(0, 0, NULL, 0) < 0)
             return EXIT_FAILURE;
 
@@ -355,7 +355,9 @@ main(int argc, char **argv)
             VIR_MASS_CLOSE(tmpfd);
         }
 
-        if (virFork(&ccpid) < 0)
+        /* A fork is required to create new process in correct pid
+         * namespace.  */
+        if ((ccpid = virFork()) < 0)
             return EXIT_FAILURE;
 
         if (ccpid == 0) {

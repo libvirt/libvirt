@@ -33,7 +33,7 @@ typedef virCommand *virCommandPtr;
  * call any function that is not async-signal-safe.  */
 typedef int (*virExecHook)(void *data);
 
-int virFork(pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+pid_t virFork(void) ATTRIBUTE_RETURN_CHECK;
 
 int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
 
