@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -265,10 +265,12 @@ mymain(void)
 
     /* Technically a CA cert with basic constraints
      * key purpose == key signing + non-critical should
-     * be rejected. GNUTLS < 3 does not reject it and
+     * be rejected. GNUTLS < 3.1 does not reject it and
      * we don't anticipate them changing this behaviour
      */
-    DO_CTX_TEST(true, cacert4req.filename, servercert4req.filename, GNUTLS_VERSION_MAJOR >= 3);
+    DO_CTX_TEST(true, cacert4req.filename, servercert4req.filename,
+                (GNUTLS_VERSION_MAJOR == 3 && GNUTLS_VERSION_MINOR >= 1) ||
+                GNUTLS_VERSION_MAJOR > 3);
     DO_CTX_TEST(true, cacert5req.filename, servercert5req.filename, true);
     DO_CTX_TEST(true, cacert6req.filename, servercert6req.filename, true);
 
