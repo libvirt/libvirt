@@ -357,7 +357,7 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
-#ifndef IN_VIRT_LOGIN_SHELL
+#ifndef LIBVIRT_SETUID_RPC_CLIENT
     if (virIsSUID()) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libvirt.so is not safe to use from setuid programs"));
