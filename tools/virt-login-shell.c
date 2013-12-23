@@ -41,23 +41,7 @@
 #include "vircommand.h"
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static ssize_t nfdlist;
-static int *fdlist;
 static const char *conf_file = SYSCONFDIR "/libvirt/virt-login-shell.conf";
-
-static void virLoginShellFini(virConnectPtr conn, virDomainPtr dom)
-{
-    size_t i;
-
-    for (i = 0; i < nfdlist; i++)
-        VIR_FORCE_CLOSE(fdlist[i]);
-    VIR_FREE(fdlist);
-    nfdlist = 0;
-    if (dom)
-        virDomainFree(dom);
-    if (conn)
-        virConnectClose(conn);
-}
 
 static int virLoginShellAllowedUser(virConfPtr conf,
                                     const char *name,
@@ -187,7 +171,6 @@ main(int argc, char **argv)
     pid_t cpid;
     int ret = EXIT_FAILURE;
     int status;
-    int status2;
     uid_t uid = getuid();
     gid_t gid = getgid();
     char *name = NULL;
@@ -201,6 +184,10 @@ main(int argc, char **argv)
     int longindex = -1;
     int ngroups;
     gid_t *groups = NULL;
+    ssize_t nfdlist = 0;
+    int *fdlist = NULL;
+    int openmax;
+    size_t i;
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
@@ -298,6 +285,13 @@ main(int argc, char **argv)
         }
     }
 
+    openmax = sysconf(_SC_OPEN_MAX);
+    if (openmax < 0) {
+        virReportSystemError(errno,  "%s",
+                             _("sysconf(_SC_OPEN_MAX) failed"));
+        goto cleanup;
+    }
+
     if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
         goto cleanup;
     if (VIR_ALLOC(secmodel) < 0)
@@ -308,76 +302,52 @@ main(int argc, char **argv)
         goto cleanup;
     if (virDomainGetSecurityLabel(dom, seclabel) < 0)
         goto cleanup;
+    if (virSetUIDGID(0, 0, NULL, 0) < 0)
+        goto cleanup;
+    if (virDomainLxcEnterSecurityLabel(secmodel, seclabel, NULL, 0) < 0)
+        goto cleanup;
+    if (nfdlist > 0 &&
+        virDomainLxcEnterNamespace(dom, nfdlist, fdlist, NULL, NULL, 0) < 0)
+        goto cleanup;
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0)
+        goto cleanup;
+    if (chdir(homedir) < 0) {
+        virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
+        goto cleanup;
+    }
 
-    /* Fork once because we don't want to affect virt-login-shell's
-     * namespace itself.  FIXME: is this necessary?
-     */
+    /* A fork is required to create new process in correct pid namespace.  */
     if ((cpid = virFork()) < 0)
         goto cleanup;
 
     if (cpid == 0) {
-        pid_t ccpid;
+        int tmpfd;
 
-        int openmax = sysconf(_SC_OPEN_MAX);
-        int fd;
-
-        if (virSetUIDGID(0, 0, NULL, 0) < 0)
-            return EXIT_FAILURE;
-
-        if (virDomainLxcEnterSecurityLabel(secmodel,
-                                           seclabel,
-                                           NULL,
-                                           0) < 0)
-            return EXIT_FAILURE;
-
-        if (nfdlist > 0) {
-            if (virDomainLxcEnterNamespace(dom,
-                                           nfdlist,
-                                           fdlist,
-                                           NULL,
-                                           NULL,
-                                           0) < 0)
-                return EXIT_FAILURE;
-        }
-
-        ret = virSetUIDGID(uid, gid, groups, ngroups);
-        VIR_FREE(groups);
-        if (ret < 0)
-            return EXIT_FAILURE;
-
-        if (openmax < 0) {
-            virReportSystemError(errno,  "%s",
-                                 _("sysconf(_SC_OPEN_MAX) failed"));
-            return EXIT_FAILURE;
-        }
-        for (fd = 3; fd < openmax; fd++) {
-            int tmpfd = fd;
+        for (i = 3; i < openmax; i++) {
+            tmpfd = i;
             VIR_MASS_CLOSE(tmpfd);
         }
-
-        /* A fork is required to create new process in correct pid
-         * namespace.  */
-        if ((ccpid = virFork()) < 0)
+        if (execv(shargv[0], (char *const*) shargv) < 0) {
+            virReportSystemError(errno, _("Unable to exec shell %s"),
+                                 shargv[0]);
             return EXIT_FAILURE;
-
-        if (ccpid == 0) {
-            if (chdir(homedir) < 0) {
-                virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
-                return EXIT_FAILURE;
-            }
-            if (execv(shargv[0], (char *const*) shargv) < 0) {
-                virReportSystemError(errno, _("Unable to exec shell %s"),
-                                     shargv[0]);
-                return EXIT_FAILURE;
-            }
         }
-        return virProcessWait(ccpid, &status2, true);
+        return EXIT_SUCCESS;
     }
-    ret = virProcessWait(cpid, &status, true);
+
+    if (virProcessWait(cpid, &status, true) < 0)
+        goto cleanup;
+    ret = EXIT_SUCCESS;
 
 cleanup:
+    for (i = 0; i < nfdlist; i++)
+        VIR_FORCE_CLOSE(fdlist[i]);
+    VIR_FREE(fdlist);
     virConfFree(conf);
-    virLoginShellFini(conn, dom);
+    if (dom)
+        virDomainFree(dom);
+    if (conn)
+        virConnectClose(conn);
     virStringFreeList(shargv);
     VIR_FREE(name);
     VIR_FREE(homedir);
