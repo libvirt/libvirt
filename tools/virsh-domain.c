@@ -8183,12 +8183,14 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     if ((pid = virFork()) < 0)
         goto cleanup;
     if (pid == 0) {
+        int status;
+
         if (setlabel &&
             virDomainLxcEnterSecurityLabel(secmodel,
                                            seclabel,
                                            NULL,
                                            0) < 0)
-            _exit(255);
+            _exit(EXIT_CANCELED);
 
         if (virDomainLxcEnterNamespace(dom,
                                        nfdlist,
@@ -8196,27 +8198,28 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
                                        NULL,
                                        NULL,
                                        0) < 0)
-            _exit(255);
+            _exit(EXIT_CANCELED);
 
         /* Fork a second time because entering the
          * pid namespace only takes effect after fork
          */
         if ((pid = virFork()) < 0)
-            _exit(255);
+            _exit(EXIT_CANCELED);
         if (pid == 0) {
             execv(cmdargv[0], cmdargv);
-            _exit(255);
-        } else {
-            if (virProcessWait(pid, NULL, false) < 0)
-                _exit(255);
+            _exit(errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE);
         }
-        _exit(0);
+        if (virProcessWait(pid, &status, true) < 0)
+            _exit(EXIT_CANNOT_INVOKE);
+        virProcessExitWithStatus(status);
     } else {
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
         VIR_FREE(fdlist);
-        if (virProcessWait(pid, NULL, false) < 0)
+        if (virProcessWait(pid, NULL, false) < 0) {
+            vshReportError(ctl);
             goto cleanup;
+        }
     }
 
     ret = true;

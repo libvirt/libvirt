@@ -3371,7 +3371,8 @@ Enter the namespace of I<domain> and execute the command C</path/to/binary>
 passing the requested args. The binary path is relative to the container
 root filesystem, not the host root filesystem. The binary will inherit the
 environment variables / console visible to virsh. This command only works
-when connected to the LXC hypervisor driver.
+when connected to the LXC hypervisor driver.  This command succeeds only
+if C</path/to/binary> has 0 exit status.
 
 =back
 
@@ -3486,7 +3487,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005, 2007-2010 Red Hat, Inc., and the authors listed in the
+Copyright (C) 2005, 2007-2014 Red Hat, Inc., and the authors listed in the
 libvirt AUTHORS file.
 
 =head1 LICENSE
