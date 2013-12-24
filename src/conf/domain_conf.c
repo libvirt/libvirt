@@ -6752,7 +6752,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         model = NULL;
     }
 
-    if (def->model && STREQ(def->model, "virtio")) {
+    if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        STREQ_NULLABLE(def->model, "virtio")) {
         if (backend != NULL) {
             int name;
             if ((name = virDomainNetBackendTypeFromString(backend)) < 0 ||
