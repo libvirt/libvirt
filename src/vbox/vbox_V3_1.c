@@ -30,7 +30,7 @@
 #include <config.h>
 
 /** The API Version */
-#define VBOX_API_VERSION    3001
+#define VBOX_API_VERSION    3001000
 /** Version specific prefix. */
 #define NAME(name)  vbox31##name
 

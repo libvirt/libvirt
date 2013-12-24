@@ -60,22 +60,26 @@
 #include "virstring.h"
 
 /* This one changes from version to version. */
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
 # include "vbox_CAPI_v2_2.h"
-#elif VBOX_API_VERSION == 3000
+#elif VBOX_API_VERSION == 3000000
 # include "vbox_CAPI_v3_0.h"
-#elif VBOX_API_VERSION == 3001
+#elif VBOX_API_VERSION == 3001000
 # include "vbox_CAPI_v3_1.h"
-#elif VBOX_API_VERSION == 3002
+#elif VBOX_API_VERSION == 3002000
 # include "vbox_CAPI_v3_2.h"
-#elif VBOX_API_VERSION == 4000
+#elif VBOX_API_VERSION == 4000000
 # include "vbox_CAPI_v4_0.h"
-#elif VBOX_API_VERSION == 4001
+#elif VBOX_API_VERSION == 4001000
 # include "vbox_CAPI_v4_1.h"
-#elif VBOX_API_VERSION == 4002
+#elif VBOX_API_VERSION == 4002000
 # include "vbox_CAPI_v4_2.h"
-#elif VBOX_API_VERSION == 4003
+#elif VBOX_API_VERSION == 4002020
+# include "vbox_CAPI_v4_2_20.h"
+#elif VBOX_API_VERSION == 4003000
 # include "vbox_CAPI_v4_3.h"
+#elif VBOX_API_VERSION == 4003004
+# include "vbox_CAPI_v4_3_4.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif
@@ -141,7 +145,7 @@ if (!host) {\
     return ret;\
 }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
 
 # define VBOX_MEDIUM_RELEASE(arg) \
 if (arg)\
@@ -151,7 +155,7 @@ if (arg)\
 # define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
     (object)->vtbl->imedium.func((IMedium *)(object), arg1, arg2)
 
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
 
 typedef IMedium IHardDisk;
 typedef IMediumAttachment IHardDiskAttachment;
@@ -164,7 +168,7 @@ typedef IMediumAttachment IHardDiskAttachment;
 # define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
     (object)->vtbl->func(object, arg1, arg2)
 
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 
 #define DEBUGPRUnichar(msg, strUtf16) \
 if (strUtf16) {\
@@ -206,20 +210,20 @@ typedef struct {
     /** Our version specific API table pointer. */
     PCVBOXXPCOM pFuncs;
 
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
 
 } vboxGlobalData;
 
-#else /* !(VBOX_API_VERSION == 2002) */
+#else /* !(VBOX_API_VERSION == 2002000) */
 
     /* Async event handling */
     virObjectEventStatePtr domainEvents;
     int fdWatch;
 
-# if VBOX_API_VERSION <= 3002
+# if VBOX_API_VERSION <= 3002000
     /* IVirtualBoxCallback is used in VirtualBox 3.x only */
     IVirtualBoxCallback *vboxCallback;
-# endif /* VBOX_API_VERSION <= 3002 */
+# endif /* VBOX_API_VERSION <= 3002000 */
 
     nsIEventQueue  *vboxQueue;
     int volatile vboxCallBackRefCount;
@@ -241,9 +245,9 @@ typedef struct {
 
 static vboxGlobalData *g_pVBoxGlobalData = NULL;
 
-#endif /* !(VBOX_API_VERSION == 2002) */
+#endif /* !(VBOX_API_VERSION == 2002000) */
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
 
 # define VBOX_OBJECT_GET_MACHINE(/* in */ iid_value, /* out */ machine) \
     data->vboxObj->vtbl->GetMachine(data->vboxObj, iid_value, machine)
@@ -257,7 +261,7 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 # define VBOX_SESSION_CLOSE() \
     data->vboxSession->vtbl->Close(data->vboxSession)
 
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
 
 # define VBOX_OBJECT_GET_MACHINE(/* in */ iid_value, /* out */ machine) \
     data->vboxObj->vtbl->FindMachine(data->vboxObj, iid_value, machine)
@@ -271,7 +275,7 @@ static vboxGlobalData *g_pVBoxGlobalData = NULL;
 # define VBOX_SESSION_CLOSE() \
     data->vboxSession->vtbl->UnlockMachine(data->vboxSession)
 
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
@@ -285,7 +289,7 @@ static void vboxDriverUnlock(vboxGlobalData *data) {
     virMutexUnlock(&data->lock);
 }
 
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
 
 static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
@@ -502,7 +506,7 @@ vboxIIDFromArrayItem_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
 
 # endif /* !WIN32 */
 
-#else /* VBOX_API_VERSION != 2002 */
+#else /* VBOX_API_VERSION != 2002000 */
 
 typedef struct _vboxIID_v3_x vboxIID;
 typedef struct _vboxIID_v3_x vboxIID_v3_x;
@@ -592,7 +596,7 @@ vboxIIDFromArrayItem_v3_x(vboxGlobalData *data, vboxIID_v3_x *iid,
     vboxIIDFromArrayItem_v3_x(data, iid, array, idx)
 # define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
 
-# if VBOX_API_VERSION >= 3001
+# if VBOX_API_VERSION >= 3001000
 
 /**
  * function to generate the name for medium,
@@ -805,9 +809,9 @@ static PRUnichar *PRUnicharFromInt(int n) {
     return strUtf16;
 }
 
-# endif /* VBOX_API_VERSION >= 3001 */
+# endif /* VBOX_API_VERSION >= 3001000 */
 
-#endif /* !(VBOX_API_VERSION == 2002) */
+#endif /* !(VBOX_API_VERSION == 2002000) */
 
 static PRUnichar *
 vboxSocketFormatAddrUtf16(vboxGlobalData *data, virSocketAddrPtr addr)
@@ -912,11 +916,11 @@ vboxInitialize(vboxGlobalData *data)
     data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj,
                                ISESSION_IID_STR, &data->vboxSession);
 
-# if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002000
 
     /* No event queue functionality in 2.2.* as of now */
 
-# else  /* !(VBOX_API_VERSION == 2002) */
+# else  /* !(VBOX_API_VERSION == 2002000) */
 
     /* Initial the fWatch needed for Event Callbacks */
     data->fdWatch = -1;
@@ -929,7 +933,7 @@ vboxInitialize(vboxGlobalData *data)
         goto cleanup;
     }
 
-# endif /* !(VBOX_API_VERSION == 2002) */
+# endif /* !(VBOX_API_VERSION == 2002000) */
 #endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
 
     if (data->vboxObj == NULL) {
@@ -987,11 +991,11 @@ static void vboxUninitialize(vboxGlobalData *data) {
 
     virObjectUnref(data->caps);
     virObjectUnref(data->xmlopt);
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
     /* No domainEventCallbacks in 2.2.* version */
-#else  /* !(VBOX_API_VERSION == 2002) */
+#else  /* !(VBOX_API_VERSION == 2002000) */
     virObjectEventStateFree(data->domainEvents);
-#endif /* !(VBOX_API_VERSION == 2002) */
+#endif /* !(VBOX_API_VERSION == 2002000) */
     VIR_FREE(data);
 }
 
@@ -1049,11 +1053,11 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
 
     /* No domainEventCallbacks in 2.2.* version */
 
-#else  /* !(VBOX_API_VERSION == 2002) */
+#else  /* !(VBOX_API_VERSION == 2002000) */
 
     if (!(data->domainEvents = virObjectEventStateNew())) {
         vboxUninitialize(data);
@@ -1063,7 +1067,7 @@ static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
     data->conn = conn;
     g_pVBoxGlobalData = data;
 
-#endif /* !(VBOX_API_VERSION == 2002) */
+#endif /* !(VBOX_API_VERSION == 2002000) */
 
     conn->privateData = data;
     VIR_DEBUG("in vboxOpen");
@@ -1818,7 +1822,7 @@ vboxDomainDestroyFlags(virDomainPtr dom,
         data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
         if (console) {
 
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
             console->vtbl->PowerDown(console);
 #else
             IProgress *progress = NULL;
@@ -2067,7 +2071,7 @@ static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
 
     /* Open a Session for the machine */
     vboxIIDFromUUID(&iid, dom->uuid);
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
     /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
@@ -2086,7 +2090,7 @@ static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
             console->vtbl->SaveState(console, &progress);
 
             if (progress) {
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
                 nsresult resultCode;
 #else
                 PRInt32 resultCode;
@@ -2127,7 +2131,7 @@ vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     vboxIIDFromUUID(&iid, dom->uuid);
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
     /* Get machine for the call to VBOX_SESSION_OPEN */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
@@ -2210,7 +2214,7 @@ vboxDomainGetMaxVcpus(virDomainPtr dom)
 
 static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *machine)
 {
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
     IUSBController *USBController = NULL;
     PRBool enabled = PR_FALSE;
 #else
@@ -2222,7 +2226,7 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
 
     def->nhostdevs = 0;
 
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
     machine->vtbl->GetUSBController(machine, &USBController);
 
     if (!USBController)
@@ -2318,7 +2322,7 @@ static void vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, 
 
 release_filters:
     vboxArrayRelease(&deviceFilters);
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
 release_controller:
     VBOX_RELEASE(USBController);
 #else
@@ -2371,7 +2375,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             PRUint32 parallelPortCount          = 0;
             PRUint32 parallelPortIncCount       = 0;
             IBIOSSettings *bios                 = NULL;
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
             PRInt32       hddNum                = 0;
             IDVDDrive    *dvdDrive              = NULL;
             IHardDisk    *hardDiskPM            = NULL;
@@ -2380,18 +2384,18 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             const char   *hddBus                = "IDE";
             PRUnichar    *hddBusUtf16           = NULL;
             IFloppyDrive *floppyDrive           = NULL;
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
             vboxArray mediumAttachments         = VBOX_ARRAY_INITIALIZER;
-#endif /* VBOX_API_VERSION >= 3001 */
-#if VBOX_API_VERSION < 4000
+#endif /* VBOX_API_VERSION >= 3001000 */
+#if VBOX_API_VERSION < 4000000
             IVRDPServer *VRDxServer             = NULL;
-#else  /* VBOX_API_VERSION >= 4000 */
+#else  /* VBOX_API_VERSION >= 4000000 */
             IVRDEServer *VRDxServer             = NULL;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
             IAudioAdapter *audioAdapter         = NULL;
-#if VBOX_API_VERSION >= 4001
+#if VBOX_API_VERSION >= 4001000
             PRUint32 chipsetType                = ChipsetType_Null;
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
             ISystemProperties *systemProperties = NULL;
 
 
@@ -2404,19 +2408,19 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             machine->vtbl->GetMemorySize(machine, &memorySize);
             def->mem.cur_balloon = memorySize * 1024;
 
-#if VBOX_API_VERSION >= 4001
+#if VBOX_API_VERSION >= 4001000
             machine->vtbl->GetChipsetType(machine, &chipsetType);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
             data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
             if (systemProperties) {
                 systemProperties->vtbl->GetMaxGuestRAM(systemProperties, &maxMemorySize);
                 systemProperties->vtbl->GetMaxBootPosition(systemProperties, &maxBootPosition);
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 systemProperties->vtbl->GetNetworkAdapterCount(systemProperties, &netAdpCnt);
-#else  /* VBOX_API_VERSION >= 4000 */
+#else  /* VBOX_API_VERSION >= 4000000 */
                 systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipsetType, &netAdpCnt);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
                 systemProperties->vtbl->GetSerialPortCount(systemProperties, &serialPortCount);
                 systemProperties->vtbl->GetParallelPortCount(systemProperties, &parallelPortCount);
                 VBOX_RELEASE(systemProperties);
@@ -2465,11 +2469,11 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 }
             }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
             machine->vtbl->GetPAEEnabled(machine, &PAEEnabled);
-#elif VBOX_API_VERSION == 3001
+#elif VBOX_API_VERSION == 3001000
             machine->vtbl->GetCpuProperty(machine, CpuPropertyType_PAE, &PAEEnabled);
-#elif VBOX_API_VERSION >= 3002
+#elif VBOX_API_VERSION >= 3002000
             machine->vtbl->GetCPUProperty(machine, CPUPropertyType_PAE, &PAEEnabled);
 #endif
             if (PAEEnabled)
@@ -2507,9 +2511,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                         machine->vtbl->GetVRAMSize(machine, &VRAMSize);
                         machine->vtbl->GetMonitorCount(machine, &monitorCount);
                         machine->vtbl->GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
-#if VBOX_API_VERSION >= 3001
+#if VBOX_API_VERSION >= 3001000
                         machine->vtbl->GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 
                         def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
                         def->videos[0]->vram            = VRAMSize * 1024;
@@ -2620,11 +2624,11 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     }
                 }
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
                 machine->vtbl->GetVRDPServer(machine, &VRDxServer);
-#else  /* VBOX_API_VERSION >= 4000 */
+#else  /* VBOX_API_VERSION >= 4000000 */
                 machine->vtbl->GetVRDEServer(machine, &VRDxServer);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
                 if (VRDxServer) {
                     VRDxServer->vtbl->GetEnabled(VRDxServer, &VRDxEnabled);
                     if (VRDxEnabled) {
@@ -2637,19 +2641,19 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                             char      *netAddressUtf8    = NULL;
                             PRBool allowMultiConnection  = PR_FALSE;
                             PRBool reuseSingleConnection = PR_FALSE;
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                             PRUint32 VRDPport = 0;
                             VRDxServer->vtbl->GetPort(VRDxServer, &VRDPport);
                             if (VRDPport) {
                                 def->graphics[def->ngraphics]->data.rdp.port = VRDPport;
-#elif VBOX_API_VERSION < 4000 /* 3001 <= VBOX_API_VERSION < 4000 */
+#elif VBOX_API_VERSION < 4000000 /* 3001000 <= VBOX_API_VERSION < 4000000 */
                             PRUnichar *VRDPport = NULL;
                             VRDxServer->vtbl->GetPorts(VRDxServer, &VRDPport);
                             if (VRDPport) {
                                 /* even if vbox supports mutilpe ports, single port for now here */
                                 def->graphics[def->ngraphics]->data.rdp.port = PRUnicharToInt(VRDPport);
                                 VBOX_UTF16_FREE(VRDPport);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
                             PRUnichar *VRDEPortsKey = NULL;
                             PRUnichar *VRDEPortsValue = NULL;
                             VBOX_UTF8_TO_UTF16("TCP/Ports", &VRDEPortsKey);
@@ -2659,21 +2663,21 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 /* even if vbox supports mutilpe ports, single port for now here */
                                 def->graphics[def->ngraphics]->data.rdp.port = PRUnicharToInt(VRDEPortsValue);
                                 VBOX_UTF16_FREE(VRDEPortsValue);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
                             } else {
                                 def->graphics[def->ngraphics]->data.rdp.autoport = true;
                             }
 
                             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
 
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
                             PRUnichar *VRDENetAddressKey = NULL;
                             VBOX_UTF8_TO_UTF16("TCP/Address", &VRDENetAddressKey);
                             VRDxServer->vtbl->GetVRDEProperty(VRDxServer, VRDENetAddressKey, &netAddressUtf16);
                             VBOX_UTF16_FREE(VRDENetAddressKey);
-#else /* VBOX_API_VERSION < 4000 */
+#else /* VBOX_API_VERSION < 4000000 */
                             VRDxServer->vtbl->GetNetAddress(VRDxServer, &netAddressUtf16);
-#endif /* VBOX_API_VERSION < 4000 */
+#endif /* VBOX_API_VERSION < 4000000 */
                             if (netAddressUtf16) {
                                 VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
                                 if (STRNEQ(netAddressUtf8, ""))
@@ -2701,7 +2705,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 }
             }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
             /* dump IDE hdds if present */
             VBOX_UTF8_TO_UTF16(hddBus, &hddBusUtf16);
 
@@ -2792,7 +2796,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 VBOX_UTF16_FREE(hddlocationUtf16);
                 VBOX_MEDIUM_RELEASE(hardDiskSS);
             }
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
             /* dump IDE hdds if present */
 
             bool error = false;
@@ -2941,7 +2945,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 def->ndisks = 0;
             }
 
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 
             /* shared folders */
             vboxArray sharedFolders = VBOX_ARRAY_INITIALIZER;
@@ -3051,11 +3055,11 @@ sharedFoldersCleanup:
 
                             def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                             adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                             adapter->vtbl->GetBridgedInterface(adapter, &hostIntUtf16);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
                             ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.bridge.brname, hostInt));
@@ -3083,11 +3087,11 @@ sharedFoldersCleanup:
 
                             def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                             adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                             adapter->vtbl->GetHostOnlyInterface(adapter, &hostIntUtf16);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
                             ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.network.name, hostInt));
@@ -3113,10 +3117,10 @@ sharedFoldersCleanup:
                             ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82545EM"));
                         } else if (adapterType == NetworkAdapterType_I82543GC) {
                             ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82543GC"));
-#if VBOX_API_VERSION >= 3001
+#if VBOX_API_VERSION >= 3001000
                         } else if (adapterType == NetworkAdapterType_Virtio) {
                             ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "virtio"));
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                         }
 
                         adapter->vtbl->GetMACAddress(adapter, &MACAddressUtf16);
@@ -3175,7 +3179,7 @@ sharedFoldersCleanup:
                 VBOX_RELEASE(audioAdapter);
             }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
             /* dump CDROM/DVD if the drive is attached and has DVD/CD in it */
             machine->vtbl->GetDVDDrive(machine, &dvdDrive);
             if (dvdDrive) {
@@ -3265,8 +3269,8 @@ sharedFoldersCleanup:
 
                 VBOX_RELEASE(floppyDrive);
             }
-#else  /* VBOX_API_VERSION >= 3001 */
-#endif /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 
             /* dump serial port if active */
             def->nserials = 0;
@@ -3317,10 +3321,10 @@ sharedFoldersCleanup:
                             def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
                         } else if (hostMode == PortMode_HostDevice) {
                             def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
-#if VBOX_API_VERSION >= 3000
+#if VBOX_API_VERSION >= 3000000
                         } else if (hostMode == PortMode_RawFile) {
                             def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
-#endif /* VBOX_API_VERSION >= 3000 */
+#endif /* VBOX_API_VERSION >= 3000000 */
                         } else {
                             def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_NULL;
                         }
@@ -3648,17 +3652,17 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine,
         VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
     }
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
                                                 data->vboxSession,
                                                 iid->value,
                                                 sessionType,
                                                 env,
                                                 &progress);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
     rc = machine->vtbl->LaunchVMProcess(machine, data->vboxSession,
                                         sessionType, env, &progress);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -3666,7 +3670,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine,
         ret = -1;
     } else {
         PRBool completed = 0;
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
         nsresult resultCode;
 #else
         PRInt32  resultCode;
@@ -3829,7 +3833,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     size_t i;
     nsresult rc;
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
     if (def->ndisks == 0)
         return;
 
@@ -3923,7 +3927,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                                   &hardDisk);
 
                 if (!hardDisk) {
-# if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002000
                     data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
                                                       hddfileUtf16,
                                                       AccessMode_ReadWrite,
@@ -4064,7 +4068,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             }
         }
     }
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
     PRUnichar *storageCtlName = NULL;
@@ -4136,7 +4140,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             PRUnichar *mediumFileUtf16 = NULL;
             PRUint32   storageBus      = StorageBus_Null;
             PRUint32   deviceType      = DeviceType_Null;
-# if VBOX_API_VERSION >= 4000
+# if VBOX_API_VERSION >= 4000000
             PRUint32   accessMode      = AccessMode_ReadOnly;
 # endif
             PRInt32    deviceInst      = 0;
@@ -4147,7 +4151,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
             if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 deviceType = DeviceType_HardDisk;
-# if VBOX_API_VERSION < 4000
+# if VBOX_API_VERSION < 4000000
                 data->vboxObj->vtbl->FindHardDisk(data->vboxObj,
                                                   mediumFileUtf16, &medium);
 # else
@@ -4155,7 +4159,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 # endif
             } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 deviceType = DeviceType_DVD;
-# if VBOX_API_VERSION < 4000
+# if VBOX_API_VERSION < 4000000
                 data->vboxObj->vtbl->FindDVDImage(data->vboxObj,
                                                   mediumFileUtf16, &medium);
 # else
@@ -4163,7 +4167,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 # endif
             } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
                 deviceType = DeviceType_Floppy;
-# if VBOX_API_VERSION < 4000
+# if VBOX_API_VERSION < 4000000
                 data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
                                                      mediumFileUtf16, &medium);
 # else
@@ -4174,10 +4178,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 continue;
             }
 
-# if VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+# if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
             data->vboxObj->vtbl->FindMedium(data->vboxObj, mediumFileUtf16,
                                             deviceType, &medium);
-# elif VBOX_API_VERSION >= 4002
+# elif VBOX_API_VERSION >= 4002000
             data->vboxObj->vtbl->OpenMedium(data->vboxObj, mediumFileUtf16,
                                             deviceType, accessMode, PR_FALSE, &medium);
 # endif
@@ -4187,7 +4191,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
                 VBOX_UTF8_TO_UTF16("", &mediumEmpty);
 
-# if VBOX_API_VERSION < 4000
+# if VBOX_API_VERSION < 4000000
                 if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                     rc = data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
                                                            mediumFileUtf16,
@@ -4212,18 +4216,18 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 } else {
                     rc = 0;
                 }
-# elif VBOX_API_VERSION == 4000
+# elif VBOX_API_VERSION == 4000000
                 rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj,
                                                      mediumFileUtf16,
                                                      deviceType, accessMode,
                                                      &medium);
-# elif VBOX_API_VERSION >= 4001
+# elif VBOX_API_VERSION >= 4001000
                 rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj,
                                                      mediumFileUtf16,
                                                      deviceType, accessMode,
                                                      false,
                                                      &medium);
-# endif /* VBOX_API_VERSION >= 4001 */
+# endif /* VBOX_API_VERSION >= 4001000 */
 
                 VBOX_UTF16_FREE(mediumEmpty);
             }
@@ -4297,11 +4301,11 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                              devicePort,
                                              deviceSlot,
                                              deviceType,
-# if VBOX_API_VERSION < 4000
+# if VBOX_API_VERSION < 4000000
                                              mediumUUID);
-# else /* VBOX_API_VERSION >= 4000 */
+# else /* VBOX_API_VERSION >= 4000000 */
                                              medium);
-# endif /* VBOX_API_VERSION >= 4000 */
+# endif /* VBOX_API_VERSION >= 4000000 */
 
             if (NS_FAILED(rc)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4318,7 +4322,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             VBOX_UTF16_FREE(storageCtlName);
         }
     }
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 }
 
 static void
@@ -4353,25 +4357,25 @@ static void
 vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     ISystemProperties *systemProperties = NULL;
-#if VBOX_API_VERSION >= 4001
+#if VBOX_API_VERSION >= 4001000
     PRUint32 chipsetType                = ChipsetType_Null;
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
     PRUint32 networkAdapterCount        = 0;
     size_t i = 0;
 
-#if VBOX_API_VERSION >= 4001
+#if VBOX_API_VERSION >= 4001000
     machine->vtbl->GetChipsetType(machine, &chipsetType);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
     data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
     if (systemProperties) {
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
         systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
                                                        &networkAdapterCount);
-#else  /* VBOX_API_VERSION >= 4000 */
+#else  /* VBOX_API_VERSION >= 4000000 */
         systemProperties->vtbl->GetMaxNetworkAdapters(systemProperties, chipsetType,
                                                       &networkAdapterCount);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
         VBOX_RELEASE(systemProperties);
         systemProperties = NULL;
     }
@@ -4429,10 +4433,10 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     adapterType = NetworkAdapterType_I82545EM;
                 } else if (STRCASEEQ(def->nets[i]->model, "82543GC")) {
                     adapterType = NetworkAdapterType_I82543GC;
-#if VBOX_API_VERSION >= 3001
+#if VBOX_API_VERSION >= 3001000
                 } else if (STRCASEEQ(def->nets[i]->model, "virtio")) {
                     adapterType = NetworkAdapterType_Virtio;
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                 }
             } else {
                 adapterType = NetworkAdapterType_Am79C973;
@@ -4444,31 +4448,31 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 PRUnichar *hostInterface = NULL;
                 /* Bridged Network */
 
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 adapter->vtbl->AttachToBridgedInterface(adapter);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                 adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_Bridged);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
                 if (def->nets[i]->data.bridge.brname) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.bridge.brname,
                                        &hostInterface);
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                     adapter->vtbl->SetHostInterface(adapter, hostInterface);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                     adapter->vtbl->SetBridgedInterface(adapter, hostInterface);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
                     VBOX_UTF16_FREE(hostInterface);
                 }
             } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
                 PRUnichar *internalNetwork = NULL;
                 /* Internal Network */
 
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 adapter->vtbl->AttachToInternalNetwork(adapter);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                 adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_Internal);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
                 if (def->nets[i]->data.internal.name) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.internal.name,
@@ -4482,38 +4486,38 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                  * on *nix and mac, on windows you can create and configure
                  * as many as you want)
                  */
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 adapter->vtbl->AttachToHostOnlyInterface(adapter);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                 adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_HostOnly);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
 
                 if (def->nets[i]->data.network.name) {
                     VBOX_UTF8_TO_UTF16(def->nets[i]->data.network.name,
                                        &hostInterface);
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                     adapter->vtbl->SetHostInterface(adapter, hostInterface);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                     adapter->vtbl->SetHostOnlyInterface(adapter, hostInterface);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
                     VBOX_UTF16_FREE(hostInterface);
                 }
             } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
                 /* NAT */
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 adapter->vtbl->AttachToNAT(adapter);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                 adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_NAT);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
             } else {
                 /* else always default to NAT if we don't understand
                  * what option is been passed to us
                  */
-#if VBOX_API_VERSION < 4001
+#if VBOX_API_VERSION < 4001000
                 adapter->vtbl->AttachToNAT(adapter);
-#else /* VBOX_API_VERSION >= 4001 */
+#else /* VBOX_API_VERSION >= 4001000 */
                 adapter->vtbl->SetAttachmentType(adapter, NetworkAttachmentType_NAT);
-#endif /* VBOX_API_VERSION >= 4001 */
+#endif /* VBOX_API_VERSION >= 4001000 */
             }
 
             VBOX_UTF8_TO_UTF16(macaddrvbox, &MACAddress);
@@ -4584,10 +4588,10 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 serialPort->vtbl->SetHostMode(serialPort, PortMode_HostDevice);
             } else if (def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) {
                 serialPort->vtbl->SetHostMode(serialPort, PortMode_HostPipe);
-#if VBOX_API_VERSION >= 3000
+#if VBOX_API_VERSION >= 3000000
             } else if (def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE) {
                 serialPort->vtbl->SetHostMode(serialPort, PortMode_RawFile);
-#endif /* VBOX_API_VERSION >= 3000 */
+#endif /* VBOX_API_VERSION >= 3000000 */
             } else {
                 serialPort->vtbl->SetHostMode(serialPort,
                                               PortMode_Disconnected);
@@ -4674,15 +4678,15 @@ vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
         if (def->videos[0]->accel) {
             machine->vtbl->SetAccelerate3DEnabled(machine,
                                                   def->videos[0]->accel->support3d);
-#if VBOX_API_VERSION >= 3001
+#if VBOX_API_VERSION >= 3001000
             machine->vtbl->SetAccelerate2DVideoEnabled(machine,
                                                        def->videos[0]->accel->support2d);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
         } else {
             machine->vtbl->SetAccelerate3DEnabled(machine, 0);
-#if VBOX_API_VERSION >= 3001
+#if VBOX_API_VERSION >= 3001000
             machine->vtbl->SetAccelerate2DVideoEnabled(machine, 0);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
         }
     }
 }
@@ -4698,21 +4702,21 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     size_t i = 0;
 
     for (i = 0; i < def->ngraphics; i++) {
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
         IVRDPServer *VRDxServer = NULL;
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
         IVRDEServer *VRDxServer = NULL;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
         if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) &&
             (vrdpPresent == 0)) {
 
             vrdpPresent = 1;
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
             machine->vtbl->GetVRDPServer(machine, &VRDxServer);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
             machine->vtbl->GetVRDEServer(machine, &VRDxServer);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
             if (VRDxServer) {
                 const char *listenAddr
                     = virDomainGraphicsListenGetAddress(def->graphics[i], 0);
@@ -4720,7 +4724,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 VRDxServer->vtbl->SetEnabled(VRDxServer, PR_TRUE);
                 VIR_DEBUG("VRDP Support turned ON.");
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                 if (def->graphics[i]->data.rdp.port) {
                     VRDxServer->vtbl->SetPort(VRDxServer,
                                               def->graphics[i]->data.rdp.port);
@@ -4733,12 +4737,12 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     VRDxServer->vtbl->SetPort(VRDxServer, 0);
                     VIR_DEBUG("VRDP Port changed to default, which is 3389 currently");
                 }
-#elif VBOX_API_VERSION < 4000 /* 3001 <= VBOX_API_VERSION < 4000 */
+#elif VBOX_API_VERSION < 4000000 /* 3001000 <= VBOX_API_VERSION < 4000000 */
                 PRUnichar *portUtf16 = NULL;
                 portUtf16 = PRUnicharFromInt(def->graphics[i]->data.rdp.port);
                 VRDxServer->vtbl->SetPorts(VRDxServer, portUtf16);
                 VBOX_UTF16_FREE(portUtf16);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
                 PRUnichar *VRDEPortsKey = NULL;
                 PRUnichar *VRDEPortsValue = NULL;
                 VBOX_UTF8_TO_UTF16("TCP/Ports", &VRDEPortsKey);
@@ -4747,7 +4751,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                                   VRDEPortsValue);
                 VBOX_UTF16_FREE(VRDEPortsKey);
                 VBOX_UTF16_FREE(VRDEPortsValue);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
                 if (def->graphics[i]->data.rdp.replaceUser) {
                     VRDxServer->vtbl->SetReuseSingleConnection(VRDxServer,
@@ -4762,21 +4766,21 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 }
 
                 if (listenAddr) {
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
                     PRUnichar *netAddressKey = NULL;
 #endif
                     PRUnichar *netAddressUtf16 = NULL;
 
                     VBOX_UTF8_TO_UTF16(listenAddr, &netAddressUtf16);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
                     VRDxServer->vtbl->SetNetAddress(VRDxServer,
                                                     netAddressUtf16);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
                     VBOX_UTF8_TO_UTF16("TCP/Address", &netAddressKey);
                     VRDxServer->vtbl->SetVRDEProperty(VRDxServer, netAddressKey,
                                                       netAddressUtf16);
                     VBOX_UTF16_FREE(netAddressKey);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
                     VIR_DEBUG("VRDP listen address is set to: %s",
                               listenAddr);
 
@@ -4883,7 +4887,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 static void
 vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
     IUSBController *USBController = NULL;
 #else
     IUSBDeviceFilters *USBDeviceFilters = NULL;
@@ -4921,7 +4925,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     if (!isUSB)
         return;
 
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
     /* First Start the USB Controller and then loop
      * to attach USB Devices to it
      */
@@ -4931,7 +4935,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         return;
 
     USBController->vtbl->SetEnabled(USBController, 1);
-# if VBOX_API_VERSION < 4002
+# if VBOX_API_VERSION < 4002000
     USBController->vtbl->SetEnabledEhci(USBController, 1);
 # else
     USBController->vtbl->SetEnabledEHCI(USBController, 1);
@@ -4965,7 +4969,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if (virAsprintf(&filtername, "filter%04zu", i) >= 0) {
             VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
             VIR_FREE(filtername);
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
             USBController->vtbl->CreateDeviceFilter(USBController,
                                                     filternameUtf16,
                                                     &filter);
@@ -5000,7 +5004,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             VBOX_UTF16_FREE(productIdUtf16);
         }
         filter->vtbl->SetActive(filter, 1);
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
         USBController->vtbl->InsertDeviceFilter(USBController,
                                                 i,
                                                 filter);
@@ -5012,7 +5016,7 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VBOX_RELEASE(filter);
     }
 
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
     VBOX_RELEASE(USBController);
 #else
     VBOX_RELEASE(USBDeviceFilters);
@@ -5038,13 +5042,13 @@ vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *mach
         VBOX_UTF8_TO_UTF16(def->fss[i]->src, &hostPathUtf16);
         writable = !def->fss[i]->readonly;
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
         machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
                                           writable);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
         machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
                                           writable, PR_FALSE);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
         VBOX_UTF16_FREE(nameUtf16);
         VBOX_UTF16_FREE(hostPathUtf16);
@@ -5059,12 +5063,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     vboxIID mchiid = VBOX_IID_INITIALIZER;
     virDomainDefPtr def         = NULL;
     PRUnichar *machineNameUtf16 = NULL;
-#if VBOX_API_VERSION >= 3002 && VBOX_API_VERSION < 4002
+#if VBOX_API_VERSION >= 3002000 && VBOX_API_VERSION < 4002000
     PRBool override             = PR_FALSE;
 #endif
     nsresult rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-#if VBOX_API_VERSION >= 4002
+#if VBOX_API_VERSION >= 4002000
     const char *flagsUUIDPrefix = "UUID=";
     const char *flagsForceOverwrite = "forceOverwrite=0";
     const char *flagsSeparator = ",";
@@ -5082,14 +5086,14 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     vboxIIDFromUUID(&iid, def->uuid);
     virUUIDFormat(def->uuid, uuidstr);
 
-#if VBOX_API_VERSION < 3002
+#if VBOX_API_VERSION < 3002000
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             machineNameUtf16,
                                             NULL,
                                             NULL,
                                             iid.value,
                                             &machine);
-#elif VBOX_API_VERSION < 4000 /* 3002 <= VBOX_API_VERSION < 4000 */
+#elif VBOX_API_VERSION < 4000000 /* 3002000 <= VBOX_API_VERSION < 4000000 */
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             machineNameUtf16,
                                             NULL,
@@ -5097,7 +5101,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             iid.value,
                                             override,
                                             &machine);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             NULL,
                                             machineNameUtf16,
@@ -5105,7 +5109,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             iid.value,
                                             override,
                                             &machine);
-#else /* VBOX_API_VERSION >= 4002 */
+#else /* VBOX_API_VERSION >= 4002000 */
     snprintf(createFlags, sizeof(createFlags), "%s%s%s%s",
              flagsUUIDPrefix,
              uuidstr,
@@ -5121,7 +5125,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             nsnull,
                                             createFlagsUtf16,
                                             &machine);
-#endif /* VBOX_API_VERSION >= 4002 */
+#endif /* VBOX_API_VERSION >= 4002000 */
     VBOX_UTF16_FREE(machineNameUtf16);
 
     if (NS_FAILED(rc)) {
@@ -5150,15 +5154,15 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                        def->maxvcpus, (unsigned)rc);
     }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
     rc = machine->vtbl->SetPAEEnabled(machine,
                                       def->features[VIR_DOMAIN_FEATURE_PAE] ==
                                       VIR_DOMAIN_FEATURE_STATE_ON);
-#elif VBOX_API_VERSION == 3001
+#elif VBOX_API_VERSION == 3001000
     rc = machine->vtbl->SetCpuProperty(machine, CpuPropertyType_PAE,
                                        def->features[VIR_DOMAIN_FEATURE_PAE] ==
                                        VIR_DOMAIN_FEATURE_STATE_ON);
-#elif VBOX_API_VERSION >= 3002
+#elif VBOX_API_VERSION >= 3002000
     rc = machine->vtbl->SetCPUProperty(machine, CPUPropertyType_PAE,
                                        def->features[VIR_DOMAIN_FEATURE_PAE] ==
                                        VIR_DOMAIN_FEATURE_STATE_ON);
@@ -5249,7 +5253,7 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
     IMachine *machine    = NULL;
     vboxIID iid = VBOX_IID_INITIALIZER;
     nsresult rc;
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
     vboxArray media = VBOX_ARRAY_INITIALIZER;
 #endif
     /* No managed save, so we explicitly reject
@@ -5259,7 +5263,7 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 
     vboxIIDFromUUID(&iid, dom->uuid);
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     /* Block for checking if HDD's are attched to VM.
      * considering just IDE bus for now. Also skipped
      * chanel=1 and device=0 (Secondary Master) as currenlty
@@ -5282,12 +5286,12 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
             rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
             if (NS_SUCCEEDED(rc) && machine) {
 
-# if VBOX_API_VERSION < 3001
+# if VBOX_API_VERSION < 3001000
                 /* Disconnect all the drives if present */
                 machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 0);
                 machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 0, 1);
                 machine->vtbl->DetachHardDisk(machine, hddcnameUtf16, 1, 1);
-# else  /* VBOX_API_VERSION >= 3001 */
+# else  /* VBOX_API_VERSION >= 3001000 */
                 /* get all the controller first, then the attachments and
                  * remove them all so that the machine can be undefined
                  */
@@ -5336,7 +5340,7 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
                 }
 
                 vboxArrayRelease(&storageControllers);
-# endif /* VBOX_API_VERSION >= 3001 */
+# endif /* VBOX_API_VERSION >= 3001000 */
 
                 machine->vtbl->SaveSettings(machine);
             }
@@ -5346,9 +5350,9 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
     }
 #endif
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->UnregisterMachine(data->vboxObj, iid.value, &machine);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s",
@@ -5362,13 +5366,13 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
      * wrapper here. */
     rc = vboxArrayGetWithUintArg(&media, machine, machine->vtbl->Unregister,
                                  CleanupMode_DetachAllReturnNone);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     DEBUGIID("UUID of machine being undefined", iid.value);
 
     if (NS_SUCCEEDED(rc)) {
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
         machine->vtbl->DeleteSettings(machine);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
         IProgress *progress = NULL;
 
         /* The IMachine Delete method takes an array of IMedium items to be
@@ -5382,7 +5386,7 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
                                                      SAFEARRAY **media,
                                                      IProgress **progress);
 
-#  if VBOX_API_VERSION < 4003
+#  if VBOX_API_VERSION < 4003000
         ((IMachine_Delete)machine->vtbl->Delete)(machine, &safeArray, &progress);
 #  else
         ((IMachine_Delete)machine->vtbl->DeleteConfig)(machine, &safeArray, &progress);
@@ -5391,7 +5395,7 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
         /* XPCOM doesn't like NULL as an array, even when the array size is 0.
          * Instead pass it a dummy array to avoid passing NULL. */
         IMedium *array[] = { NULL };
-#  if VBOX_API_VERSION < 4003
+#  if VBOX_API_VERSION < 4003000
         machine->vtbl->Delete(machine, 0, array, &progress);
 #  else
         machine->vtbl->DeleteConfig(machine, 0, array, &progress);
@@ -5401,14 +5405,14 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
             progress->vtbl->WaitForCompletion(progress, -1);
             VBOX_RELEASE(progress);
         }
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
         ret = 0;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("could not delete the domain, rc=%08x"), (unsigned)rc);
     }
 
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
     vboxArrayUnalloc(&media);
 #endif
     vboxIIDUnalloc(&iid);
@@ -5466,7 +5470,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
             rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
             if (NS_SUCCEEDED(rc) && machine) {
                 if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                     if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                         if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE &&
                             dev->data.disk->src != NULL) {
@@ -5569,8 +5573,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                         } else if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
                     }
-#else  /* VBOX_API_VERSION >= 3001 */
-#endif /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                 } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
                 } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
                     if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
@@ -5587,13 +5591,13 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                     VBOX_UTF8_TO_UTF16(dev->data.fs->src, &hostPathUtf16);
                     writable = !dev->data.fs->readonly;
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
                     rc = machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
                                                            writable);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
                     rc = machine->vtbl->CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
                                                            writable, PR_FALSE);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
                     if (NS_FAILED(rc)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5696,7 +5700,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
             rc = data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
             if (NS_SUCCEEDED(rc) && machine) {
                 if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                     if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                         if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
                             IDVDDrive *dvdDrive = NULL;
@@ -5747,8 +5751,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
                         } else if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
                     }
-#else  /* VBOX_API_VERSION >= 3001 */
-#endif /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                 } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
                 } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
                     if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
@@ -5828,11 +5832,11 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
     if (VIR_ALLOC_N(list, count) < 0)
         goto error;
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = machine->vtbl->GetSnapshot(machine, empty.value, list);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
     rc = machine->vtbl->FindSnapshot(machine, empty.value, list);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_FAILED(rc) || !list[0]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("could not get root snapshot for domain %s"),
@@ -5958,7 +5962,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     PRUnichar *description = NULL;
     PRUint32 state;
     nsresult rc;
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
     nsresult result;
 #else
     PRInt32 result;
@@ -6252,11 +6256,11 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
 
         if (VIR_ALLOC_N(snapshots, 1) < 0)
             goto cleanup;
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
         rc = machine->vtbl->GetSnapshot(machine, empty.value, snapshots);
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
         rc = machine->vtbl->FindSnapshot(machine, empty.value, snapshots);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
         if (NS_FAILED(rc) || !snapshots[0]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("could not get root snapshot for domain %s"),
@@ -6600,7 +6604,7 @@ cleanup:
     return ret;
 }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
 static int
 vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
@@ -6791,7 +6795,7 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
     vboxIID iid = VBOX_IID_INITIALIZER;
     int ret = -1;
     nsresult rc;
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
     nsresult result;
 #else
     PRInt32 result;
@@ -6804,7 +6808,7 @@ vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
         goto cleanup;
     }
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
     rc = console->vtbl->DiscardSnapshot(console, iid.value, &progress);
 #else
     rc = console->vtbl->DeleteSnapshot(console, iid.value, &progress);
@@ -6937,10 +6941,10 @@ cleanup:
     return ret;
 }
 
-#if VBOX_API_VERSION <= 2002 || VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     /* No Callback support for VirtualBox 2.2.* series */
     /* No Callback support for VirtualBox 4.* series */
-#else /* !(VBOX_API_VERSION == 2002 || VBOX_API_VERSION >= 4000) */
+#else /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
 
 /* Functions needed for Callbacks */
 static nsresult PR_COM_METHOD
@@ -7046,7 +7050,7 @@ vboxCallbackOnExtraDataChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
     return NS_OK;
 }
 
-# if VBOX_API_VERSION < 3001
+# if VBOX_API_VERSION < 3001000
 static nsresult PR_COM_METHOD
 vboxCallbackOnMediaRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
                               PRUnichar *mediaId,
@@ -7059,8 +7063,8 @@ vboxCallbackOnMediaRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
 
     return NS_OK;
 }
-# else  /* VBOX_API_VERSION >= 3001 */
-# endif /* VBOX_API_VERSION >= 3001 */
+# else  /* VBOX_API_VERSION >= 3001000 */
+# endif /* VBOX_API_VERSION >= 3001000 */
 
 static nsresult PR_COM_METHOD
 vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
@@ -7247,18 +7251,18 @@ static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
         vboxCallback->vtbl->OnMachineDataChange         = &vboxCallbackOnMachineDataChange;
         vboxCallback->vtbl->OnExtraDataCanChange        = &vboxCallbackOnExtraDataCanChange;
         vboxCallback->vtbl->OnExtraDataChange           = &vboxCallbackOnExtraDataChange;
-# if VBOX_API_VERSION < 3001
+# if VBOX_API_VERSION < 3001000
         vboxCallback->vtbl->OnMediaRegistered           = &vboxCallbackOnMediaRegistered;
-# else  /* VBOX_API_VERSION >= 3001 */
-# endif /* VBOX_API_VERSION >= 3001 */
+# else  /* VBOX_API_VERSION >= 3001000 */
+# endif /* VBOX_API_VERSION >= 3001000 */
         vboxCallback->vtbl->OnMachineRegistered         = &vboxCallbackOnMachineRegistered;
         vboxCallback->vtbl->OnSessionStateChange        = &vboxCallbackOnSessionStateChange;
         vboxCallback->vtbl->OnSnapshotTaken             = &vboxCallbackOnSnapshotTaken;
-# if VBOX_API_VERSION < 3002
+# if VBOX_API_VERSION < 3002000
         vboxCallback->vtbl->OnSnapshotDiscarded         = &vboxCallbackOnSnapshotDiscarded;
-# else /* VBOX_API_VERSION >= 3002 */
+# else /* VBOX_API_VERSION >= 3002000 */
         vboxCallback->vtbl->OnSnapshotDeleted           = &vboxCallbackOnSnapshotDiscarded;
-# endif /* VBOX_API_VERSION >= 3002 */
+# endif /* VBOX_API_VERSION >= 3002000 */
         vboxCallback->vtbl->OnSnapshotChange            = &vboxCallbackOnSnapshotChange;
         vboxCallback->vtbl->OnGuestPropertyChange       = &vboxCallbackOnGuestPropertyChange;
         g_pVBoxGlobalData->vboxCallBackRefCount = 1;
@@ -7480,7 +7484,7 @@ vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
     return ret;
 }
 
-#endif /* !(VBOX_API_VERSION == 2002 || VBOX_API_VERSION >= 4000) */
+#endif /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
 
 /**
  * The Network Functions here on
@@ -7785,7 +7789,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
      * these paramters are ignored here for now.
      */
 
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
     if (STREQ(def->name, "vboxnet0")) {
         PRUint32 interfaceType = 0;
 
@@ -7798,7 +7802,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             networkInterface = NULL;
         }
     }
-#else /* VBOX_API_VERSION != 2002 */
+#else /* VBOX_API_VERSION != 2002000 */
     {
         IProgress *progress = NULL;
         host->vtbl->CreateHostOnlyNetworkInterface(host, &networkInterface,
@@ -7809,7 +7813,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             VBOX_RELEASE(progress);
         }
     }
-#endif /* VBOX_API_VERSION != 2002 */
+#endif /* VBOX_API_VERSION != 2002000 */
 
     if (networkInterface) {
         unsigned char uuid[VIR_UUID_BUFLEN];
@@ -7913,7 +7917,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
              * IP and enables the interface so even if the dhcpserver is not
              * started the interface is still up and running
              */
-#if VBOX_API_VERSION < 4002
+#if VBOX_API_VERSION < 4002000
             networkInterface->vtbl->EnableStaticIpConfig(networkInterface,
                                                          ipAddressUtf16,
                                                          networkMaskUtf16);
@@ -7926,7 +7930,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
             VBOX_UTF16_FREE(ipAddressUtf16);
             VBOX_UTF16_FREE(networkMaskUtf16);
         } else {
-#if VBOX_API_VERSION < 4002
+#if VBOX_API_VERSION < 4002000
             networkInterface->vtbl->EnableDynamicIpConfig(networkInterface);
             networkInterface->vtbl->DhcpRediscover(networkInterface);
 #else
@@ -7995,7 +7999,7 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
             PRUnichar *networkNameUtf16 = NULL;
             IDHCPServer *dhcpServer     = NULL;
 
-#if VBOX_API_VERSION != 2002
+#if VBOX_API_VERSION != 2002000
             if (removeinterface) {
                 PRUnichar *iidUtf16 = NULL;
                 IProgress *progress = NULL;
@@ -8003,13 +8007,13 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
                 networkInterface->vtbl->GetId(networkInterface, &iidUtf16);
 
                 if (iidUtf16) {
-# if VBOX_API_VERSION == 3000
+# if VBOX_API_VERSION == 3000000
                     IHostNetworkInterface *netInt = NULL;
                     host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &netInt, &progress);
                     VBOX_RELEASE(netInt);
-# else  /* VBOX_API_VERSION > 3000 */
+# else  /* VBOX_API_VERSION > 3000000 */
                     host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &progress);
-# endif /* VBOX_API_VERSION > 3000 */
+# endif /* VBOX_API_VERSION > 3000000 */
                     VBOX_UTF16_FREE(iidUtf16);
                 }
 
@@ -8018,7 +8022,7 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
                     VBOX_RELEASE(progress);
                 }
             }
-#endif /* VBOX_API_VERSION != 2002 */
+#endif /* VBOX_API_VERSION != 2002000 */
 
             VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
@@ -8515,16 +8519,16 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
@@ -8576,16 +8580,16 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
     if (!hddPathUtf16)
         return ret;
 
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddPathUtf16, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddPathUtf16,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddPathUtf16,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
@@ -8694,13 +8698,13 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
             if (def->capacity == def->allocation)
                 variant = HardDiskVariant_Fixed;
 
-#if VBOX_API_VERSION < 4003
+#if VBOX_API_VERSION < 4003000
             rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, variant, &progress);
 #else
             rc = hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, 1, &variant, &progress);
 #endif
             if (NS_SUCCEEDED(rc) && progress) {
-#if VBOX_API_VERSION == 2002
+#if VBOX_API_VERSION == 2002000
                 nsresult resultCode;
 #else
                 PRInt32  resultCode;
@@ -8760,16 +8764,16 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
@@ -8778,13 +8782,13 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
             PRUint32  machineIdsSize = 0;
             vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
             vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->imedium.GetMachineIds);
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
             vboxArrayGet(&machineIds, hardDisk, hardDisk->vtbl->GetMachineIds);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
 
-#if VBOX_API_VERSION == 2002 && defined WIN32
+#if VBOX_API_VERSION == 2002000 && defined WIN32
             /* VirtualBox 2.2 on Windows represents IIDs as GUIDs and the
              * machineIds array contains direct instances of the GUID struct
              * instead of pointers to the actual struct instances. But there
@@ -8794,7 +8798,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
              * we divide the size of the SafeArray by two, to compensate for
              * this workaround in VirtualBox */
             machineIds.count /= 2;
-#endif /* VBOX_API_VERSION >= 2002 */
+#endif /* VBOX_API_VERSION >= 2002000 */
 
             machineIdsSize = machineIds.count;
 
@@ -8804,7 +8808,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
 
                 vboxIIDFromArrayItem(&machineId, &machineIds, i);
 
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
                 rc = VBOX_OBJECT_GET_MACHINE(machineId.value, &machine);
                 if (NS_FAILED(rc)) {
                     virReportError(VIR_ERR_NO_DOMAIN, "%s",
@@ -8821,24 +8825,24 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
                     if (NS_SUCCEEDED(rc)) {
                         vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                         vboxArrayGet(&hddAttachments, machine,
                                      machine->vtbl->GetHardDiskAttachments);
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
                         vboxArrayGet(&hddAttachments, machine,
                                      machine->vtbl->GetMediumAttachments);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                         for (j = 0; j < hddAttachments.count; j++) {
                             IHardDiskAttachment *hddAttachment = hddAttachments.items[j];
 
                             if (hddAttachment) {
                                 IHardDisk *hdd = NULL;
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                                 rc = hddAttachment->vtbl->GetHardDisk(hddAttachment, &hdd);
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
                                 rc = hddAttachment->vtbl->GetMedium(hddAttachment, &hdd);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                                 if (NS_SUCCEEDED(rc) && hdd) {
                                     vboxIID iid = VBOX_IID_INITIALIZER;
 
@@ -8859,11 +8863,11 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
                                             hddAttachment->vtbl->GetPort(hddAttachment, &port);
                                             hddAttachment->vtbl->GetDevice(hddAttachment, &device);
 
-#if VBOX_API_VERSION < 3001
+#if VBOX_API_VERSION < 3001000
                                             rc = machine->vtbl->DetachHardDisk(machine, controller, port, device);
-#else  /* VBOX_API_VERSION >= 3001 */
+#else  /* VBOX_API_VERSION >= 3001000 */
                                             rc = machine->vtbl->DetachDevice(machine, controller, port, device);
-#endif /* VBOX_API_VERSION >= 3001 */
+#endif /* VBOX_API_VERSION >= 3001000 */
                                             if (NS_SUCCEEDED(rc)) {
                                                 rc = machine->vtbl->SaveSettings(machine);
                                                 VIR_DEBUG("saving machine settings");
@@ -8932,37 +8936,37 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
         VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
         if (hddstate != MediaState_Inaccessible) {
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
             PRUint64 hddLogicalSize;
             PRUint64 hddActualSize;
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
             PRInt64 hddLogicalSize;
             PRInt64 hddActualSize;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
             info->type = VIR_STORAGE_VOL_FILE;
 
             hardDisk->vtbl->GetLogicalSize(hardDisk, &hddLogicalSize);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
             info->capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
             info->capacity = hddLogicalSize;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
             VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetSize, &hddActualSize);
             info->allocation = hddActualSize;
@@ -9006,29 +9010,29 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
         VBOX_MEDIUM_FUNC_ARG1(hardDisk, GetState, &hddstate);
         if (NS_SUCCEEDED(rc) && hddstate != MediaState_Inaccessible) {
             PRUnichar *hddFormatUtf16 = NULL;
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
             PRUint64 hddLogicalSize;
             PRUint64 hddActualSize;
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
             PRInt64 hddLogicalSize;
             PRInt64 hddActualSize;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
             /* since there is currently one default pool now
              * and virStorageVolDefFormat() just checks it type
@@ -9041,11 +9045,11 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
             rc = hardDisk->vtbl->GetLogicalSize(hardDisk, &hddLogicalSize);
             if (NS_SUCCEEDED(rc) && defOk) {
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
                 def.capacity = hddLogicalSize * 1024 * 1024; /* MB => Bytes */
-#else /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4000000 */
                 def.capacity = hddLogicalSize;
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
             } else
                 defOk = 0;
 
@@ -9115,16 +9119,16 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     }
 
     vboxIIDFromUUID(&hddIID, uuid);
-#if VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION < 4000000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
+#elif VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
 #else
     rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, AccessMode_ReadWrite,
                                          PR_FALSE, &hardDisk);
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
 
@@ -9158,7 +9162,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     return ret;
 }
 
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
 static char *
 vboxDomainScreenshot(virDomainPtr dom,
                      virStreamPtr st,
@@ -9225,13 +9229,13 @@ vboxDomainScreenshot(virDomainPtr dom,
                 PRUint32 width, height, bitsPerPixel;
                 PRUint32 screenDataSize;
                 PRUint8 *screenData;
-# if VBOX_API_VERSION >= 4003
+# if VBOX_API_VERSION >= 4003000
                 PRInt32 xOrigin, yOrigin;
 # endif
 
                 rc = display->vtbl->GetScreenResolution(display, screen,
                                                         &width, &height,
-# if VBOX_API_VERSION < 4003
+# if VBOX_API_VERSION < 4003000
                                                         &bitsPerPixel);
 # else
                                                         &bitsPerPixel,
@@ -9290,7 +9294,7 @@ endjob:
     vboxIIDUnalloc(&iid);
     return ret;
 }
-#endif /* VBOX_API_VERSION >= 4000 */
+#endif /* VBOX_API_VERSION >= 4000000 */
 
 
 #define MATCH(FLAG) (flags & (FLAG))
@@ -9526,10 +9530,10 @@ virDriver NAME(Driver) = {
     .domainUpdateDeviceFlags = vboxDomainUpdateDeviceFlags, /* 0.8.0 */
     .nodeGetCellsFreeMemory = vboxNodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = vboxNodeGetFreeMemory, /* 0.6.5 */
-#if VBOX_API_VERSION >= 4000
+#if VBOX_API_VERSION >= 4000000
     .domainScreenshot = vboxDomainScreenshot, /* 0.9.2 */
 #endif
-#if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
     .connectDomainEventRegister = vboxConnectDomainEventRegister, /* 0.7.0 */
     .connectDomainEventDeregister = vboxConnectDomainEventDeregister, /* 0.7.0 */
 #endif
@@ -9538,7 +9542,7 @@ virDriver NAME(Driver) = {
     .domainIsActive = vboxDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = vboxDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = vboxDomainIsUpdated, /* 0.8.6 */
-#if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
+#if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
     .connectDomainEventRegisterAny = vboxConnectDomainEventRegisterAny, /* 0.8.0 */
     .connectDomainEventDeregisterAny = vboxConnectDomainEventDeregisterAny, /* 0.8.0 */
 #endif
