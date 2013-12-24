@@ -1,7 +1,7 @@
 /*
  * virinitctl.h: API for talking to init systems via initctl
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,6 @@ enum virInitctlRunLevel {
     VIR_INITCTL_RUNLEVEL_LAST
 };
 
-int virInitctlSetRunLevel(virInitctlRunLevel level,
-                          const char *vroot);
+int virInitctlSetRunLevel(virInitctlRunLevel level);
 
 #endif
