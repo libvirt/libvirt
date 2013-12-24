@@ -3337,12 +3337,20 @@ lxcConnectListAllDomains(virConnectPtr conn,
 
 
 static int
+lxcDomainInitctlCallback(pid_t pid ATTRIBUTE_UNUSED,
+                         void *opaque)
+{
+    int *command = opaque;
+    return virInitctlSetRunLevel(*command);
+}
+
+
+static int
 lxcDomainShutdownFlags(virDomainPtr dom,
                        unsigned int flags)
 {
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    char *vroot = NULL;
     int ret = -1;
     int rc;
 
@@ -3369,16 +3377,14 @@ lxcDomainShutdownFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0)
-        goto cleanup;
-
     if (flags == 0 ||
         (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
-        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF,
-                                        vroot)) < 0) {
+        int command = VIR_INITCTL_RUNLEVEL_POWEROFF;
+
+        if ((rc = virProcessRunInMountNamespace(priv->initpid,
+                                                lxcDomainInitctlCallback,
+                                                &command)) < 0)
             goto cleanup;
-        }
         if (rc == 0 && flags != 0 &&
             ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3404,7 +3410,6 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     ret = 0;
 
 cleanup:
-    VIR_FREE(vroot);
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -3416,13 +3421,13 @@ lxcDomainShutdown(virDomainPtr dom)
     return lxcDomainShutdownFlags(dom, 0);
 }
 
+
 static int
 lxcDomainReboot(virDomainPtr dom,
                 unsigned int flags)
 {
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    char *vroot = NULL;
     int ret = -1;
     int rc;
 
@@ -3449,16 +3454,14 @@ lxcDomainReboot(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0)
-        goto cleanup;
-
     if (flags == 0 ||
         (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
-        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_REBOOT,
-                                        vroot)) < 0) {
+        int command = VIR_INITCTL_RUNLEVEL_REBOOT;
+
+        if ((rc = virProcessRunInMountNamespace(priv->initpid,
+                                                lxcDomainInitctlCallback,
+                                                &command)) < 0)
             goto cleanup;
-        }
         if (rc == 0 && flags != 0 &&
             ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3484,7 +3487,6 @@ lxcDomainReboot(virDomainPtr dom,
     ret = 0;
 
 cleanup:
-    VIR_FREE(vroot);
     if (vm)
         virObjectUnlock(vm);
     return ret;
