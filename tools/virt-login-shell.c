@@ -161,10 +161,10 @@ usage(void)
     fprintf(stdout,
             _("\n"
               "Usage:\n"
-              "  %s [options]\n\n"
+              "  %s [option]\n\n"
               "Options:\n"
-              "  -h | --help            Display program help:\n"
-              "  -V | --version         Display program version:\n"
+              "  -h | --help            Display program help\n"
+              "  -V | --version         Display program version\n"
               "\n"
               "libvirt login shell\n"),
             progname);
