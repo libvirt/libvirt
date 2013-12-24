@@ -21,13 +21,14 @@
  */
 #include <config.h>
 
-#include <stdarg.h>
-#include <getopt.h>
-#include <stdio.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <fnmatch.h>
+#include <getopt.h>
 #include <locale.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "internal.h"
 #include "virerror.h"
@@ -168,8 +169,8 @@ main(int argc, char **argv)
 {
     virConfPtr conf = NULL;
     const char *login_shell_path = conf_file;
-    pid_t cpid;
-    int ret = EXIT_FAILURE;
+    pid_t cpid = -1;
+    int ret = EXIT_CANCELED;
     int status;
     uid_t uid = getuid();
     gid_t gid = getgid();
@@ -195,8 +196,8 @@ main(int argc, char **argv)
         {NULL, 0, NULL, 0}
     };
     if (virInitialize() < 0) {
-        fprintf(stderr, _("Failed to initialize libvirt Error Handling"));
-        return EXIT_FAILURE;
+        fprintf(stderr, _("Failed to initialize libvirt error handling"));
+        return EXIT_CANCELED;
     }
 
     setenv("PATH", "/bin:/usr/bin", 1);
@@ -231,7 +232,7 @@ main(int argc, char **argv)
         case '?':
         default:
             usage();
-            exit(EXIT_FAILURE);
+            exit(EXIT_CANCELED);
         }
     }
 
@@ -330,15 +331,13 @@ main(int argc, char **argv)
         if (execv(shargv[0], (char *const*) shargv) < 0) {
             virReportSystemError(errno, _("Unable to exec shell %s"),
                                  shargv[0]);
-            return EXIT_FAILURE;
+            virDispatchError(NULL);
+            return errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
         }
-        return EXIT_SUCCESS;
     }
 
-    if (virProcessWait(cpid, &status, true) < 0)
-        goto cleanup;
-    ret = EXIT_SUCCESS;
-
+    /* At this point, the parent is now waiting for the child to exit,
+     * but as that may take a long time, we release resources now.  */
 cleanup:
     for (i = 0; i < nfdlist; i++)
         VIR_FORCE_CLOSE(fdlist[i]);
@@ -354,7 +353,11 @@ cleanup:
     VIR_FREE(seclabel);
     VIR_FREE(secmodel);
     VIR_FREE(groups);
-    if (ret)
+
+    if (virProcessWait(cpid, &status, true) == 0)
+        virProcessExitWithStatus(status);
+
+    if (virGetLastError())
         virDispatchError(NULL);
     return ret;
 }
