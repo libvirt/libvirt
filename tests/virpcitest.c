@@ -183,6 +183,31 @@ cleanup:
     return ret;
 }
 
+struct testPCIDevData {
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int slot;
+    unsigned int function;
+};
+
+static int
+testVirPCIDeviceIsAssignable(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    int ret = -1;
+    virPCIDevicePtr dev;
+
+    if (!(dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function)))
+        goto cleanup;
+
+    if (virPCIDeviceIsAssignable(dev, true))
+        ret = 0;
+
+    virPCIDeviceFree(dev);
+cleanup:
+    return ret;
+}
+
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
 static int
@@ -209,10 +234,19 @@ mymain(void)
             ret = -1;                                   \
     } while (0)
 
+# define DO_TEST_PCI(fnc, domain, bus, slot, function)                  \
+    do {                                                                \
+        struct testPCIDevData data = { domain, bus, slot, function };   \
+        if (virtTestRun(#fnc, fnc, &data) < 0)                          \
+            ret = -1;                                                   \
+    } while (0)
+
     DO_TEST(testVirPCIDeviceNew);
     DO_TEST(testVirPCIDeviceDetach);
     DO_TEST(testVirPCIDeviceReset);
     DO_TEST(testVirPCIDeviceReattach);
+    DO_TEST_PCI(testVirPCIDeviceIsAssignable, 5, 0x90, 1, 0);
+    DO_TEST_PCI(testVirPCIDeviceIsAssignable, 1, 1, 0, 0);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakesysfsdir);

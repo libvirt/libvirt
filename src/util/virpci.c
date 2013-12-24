@@ -344,6 +344,37 @@ virPCIDeviceRead32(virPCIDevicePtr dev, int cfgfd, unsigned int pos)
 }
 
 static int
+virPCIDeviceReadClass(virPCIDevicePtr dev, uint16_t *device_class)
+{
+    char *path = NULL;
+    char *id_str = NULL;
+    int ret = -1;
+    unsigned int value;
+
+    if (virPCIFile(&path, dev->name, "class") < 0)
+        return ret;
+
+    /* class string is '0xNNNNNN\n' ... i.e. 9 bytes */
+    if (virFileReadAll(path, 9, &id_str) < 0)
+        goto cleanup;
+
+    id_str[8] = '\0';
+    if (virStrToLong_ui(id_str, NULL, 16, &value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unusual value in %s/devices/%s/class: %s"),
+                       PCI_SYSFS, dev->name, id_str);
+        goto cleanup;
+    }
+
+    *device_class = (value >> 8) & 0xFFFF;
+    ret = 0;
+cleanup:
+    VIR_FREE(id_str);
+    VIR_FREE(path);
+    return ret;
+}
+
+static int
 virPCIDeviceWrite(virPCIDevicePtr dev,
                   int cfgfd,
                   unsigned int pos,
@@ -645,8 +676,8 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
         return 0;
 
     /* Is it a bridge? */
-    device_class = virPCIDeviceRead16(check, fd, PCI_CLASS_DEVICE);
-    if (device_class != PCI_CLASS_BRIDGE_PCI)
+    ret = virPCIDeviceReadClass(check, &device_class);
+    if (ret < 0 || device_class != PCI_CLASS_BRIDGE_PCI)
         goto cleanup;
 
     /* Is it a plane? */
@@ -2110,6 +2141,7 @@ virPCIDeviceDownstreamLacksACS(virPCIDevicePtr dev)
     unsigned int pos;
     int fd;
     int ret = 0;
+    uint16_t device_class;
 
     if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
         return -1;
@@ -2119,8 +2151,11 @@ virPCIDeviceDownstreamLacksACS(virPCIDevicePtr dev)
         goto cleanup;
     }
 
+    if (virPCIDeviceReadClass(dev, &device_class) < 0)
+        goto cleanup;
+
     pos = dev->pcie_cap_pos;
-    if (!pos || virPCIDeviceRead16(dev, fd, PCI_CLASS_DEVICE) != PCI_CLASS_BRIDGE_PCI)
+    if (!pos || device_class != PCI_CLASS_BRIDGE_PCI)
         goto cleanup;
 
     flags = virPCIDeviceRead16(dev, fd, pos + PCI_EXP_FLAGS);

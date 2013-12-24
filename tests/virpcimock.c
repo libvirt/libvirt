@@ -29,6 +29,7 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <stdarg.h>
+# include <dirent.h>
 # include "viralloc.h"
 # include "virstring.h"
 # include "virfile.h"
@@ -42,6 +43,7 @@ static int (*real__xstat)(int ver, const char *path, struct stat *sb);
 static char *(*realcanonicalize_file_name)(const char *path);
 static int (*realopen)(const char *path, int flags, ...);
 static int (*realclose)(int fd);
+static DIR * (*realopendir)(const char *name);
 
 /* Don't make static, since it causes problems with clang
  * when passed as an arg to virAsprintf()
@@ -112,6 +114,7 @@ struct pciDevice {
     char *id;
     int vendor;
     int device;
+    int class;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
 };
 
@@ -350,6 +353,10 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->device) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "device", tmp, -1);
+
+    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->class) < 0)
+        ABORT("@tmp overflow");
+    make_file(devpath, "class", tmp, -1);
 
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", data->id);
@@ -747,6 +754,7 @@ init_syms(void)
     LOAD_SYM(canonicalize_file_name);
     LOAD_SYM(open);
     LOAD_SYM(close);
+    LOAD_SYM(opendir);
 }
 
 static void
@@ -776,6 +784,13 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:00:01.0", 0x8086, 0x0044);
     MAKE_PCI_DEVICE("0000:00:02.0", 0x8086, 0x0046);
     MAKE_PCI_DEVICE("0000:00:03.0", 0x8086, 0x0048);
+    MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, .class = 0x060400);
+    MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e);
+    MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e);
+    MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, .class = 0x060400);
+    MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035);
+    MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035);
+    MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0);
 }
 
 
@@ -929,6 +944,24 @@ open(const char *path, int flags, ...)
         realclose(ret);
         ret = -1;
     }
+
+    VIR_FREE(newpath);
+    return ret;
+}
+
+DIR *
+opendir(const char *path)
+{
+    DIR *ret;
+    char *newpath = NULL;
+
+    init_syms();
+
+    if (STRPREFIX(path, PCI_SYSFS_PREFIX) &&
+        getrealpath(&newpath, path) < 0)
+        return NULL;
+
+    ret = realopendir(newpath ? newpath : path);
 
     VIR_FREE(newpath);
     return ret;
