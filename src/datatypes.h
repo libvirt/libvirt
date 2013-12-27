@@ -60,10 +60,6 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_DOMAIN(obj) \
-    (virObjectIsClass((obj), virDomainClass))
-# define VIR_IS_CONNECTED_DOMAIN(obj) \
-    (VIR_IS_DOMAIN(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 # define virCheckDomainReturn(obj, retval)                              \
     do {                                                                \
         virDomainPtr _dom = (obj);                                      \
@@ -131,7 +127,7 @@ extern virClassPtr virStoragePoolClass;
 # define VIR_IS_SNAPSHOT(obj) \
     (virObjectIsClass((obj), virDomainSnapshotClass))
 # define VIR_IS_DOMAIN_SNAPSHOT(obj) \
-    (VIR_IS_SNAPSHOT(obj) && VIR_IS_DOMAIN((obj)->domain))
+    (VIR_IS_SNAPSHOT(obj) && virObjectIsClass((obj)->domain, virDomainClass))
 
 
 /* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
@@ -169,7 +165,7 @@ extern virClassPtr virStoragePoolClass;
         char _uuidstr[VIR_UUID_STRING_BUFLEN];                          \
         const char *_domname = NULL;                                    \
                                                                         \
-        if (!VIR_IS_DOMAIN(dom)) {                                      \
+        if (!virObjectIsClass(dom, virDomainClass)) {                   \
             memset(_uuidstr, 0, sizeof(_uuidstr));                      \
         } else {                                                        \
             virUUIDFormat((dom)->uuid, _uuidstr);                       \

@@ -203,9 +203,6 @@ xenDomainUsedCpus(virDomainPtr dom, virDomainDefPtr def)
     virNodeInfo nodeinfo;
     xenUnifiedPrivatePtr priv;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(dom))
-        return NULL;
-
     priv = dom->conn->privateData;
 
     if (priv->nbNodeCpus <= 0)
