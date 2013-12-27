@@ -84,10 +84,31 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_NETWORK(obj) \
-    (virObjectIsClass((obj), virNetworkClass))
-# define VIR_IS_CONNECTED_NETWORK(obj) \
-    (VIR_IS_NETWORK(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckNetworkReturn(obj, retval)                             \
+    do {                                                                \
+        virNetworkPtr _net = (obj);                                     \
+        if (!virObjectIsClass(_net, virNetworkClass) ||                 \
+            !virObjectIsClass(_net->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_NETWORK,                      \
+                                 VIR_ERR_INVALID_NETWORK,               \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckNetworkGoto(obj, label)                                \
+    do {                                                                \
+        virNetworkPtr _net = (obj);                                     \
+        if (!virObjectIsClass(_net, virNetworkClass) ||                 \
+            !virObjectIsClass(_net->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_NETWORK,                      \
+                                 VIR_ERR_INVALID_NETWORK,               \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_INTERFACE(obj) \
     (virObjectIsClass((obj), virInterfaceClass))

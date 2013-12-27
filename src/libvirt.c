@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibNetworkError(code, ...)                             \
-    virReportErrorHelper(VIR_FROM_NETWORK, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStoragePoolError(code, ...)                         \
     virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -10528,11 +10525,8 @@ virNetworkGetConnect(virNetworkPtr net)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(net)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNetworkReturn(net, NULL);
+
     return net->conn;
 }
 
@@ -10953,12 +10947,9 @@ virNetworkUndefine(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     conn = network->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkUndefine) {
@@ -11010,14 +11001,10 @@ virNetworkUpdate(virNetworkPtr network,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     conn = network->conn;
-    virCheckReadOnlyGoto(conn->flags, error);
 
+    virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
     if (conn->networkDriver && conn->networkDriver->networkUpdate) {
@@ -11054,12 +11041,9 @@ virNetworkCreate(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     conn = network->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkCreate) {
@@ -11097,13 +11081,9 @@ virNetworkDestroy(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNetworkReturn(network, -1);
     conn = network->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkDestroy) {
@@ -11138,11 +11118,8 @@ virNetworkFree(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
+
     virObjectUnref(network);
     return 0;
 }
@@ -11173,11 +11150,8 @@ virNetworkRef(virNetworkPtr network)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_NETWORK(network))) {
-        virLibConnError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
+
     virObjectRef(network);
     return 0;
 }
@@ -11199,11 +11173,8 @@ virNetworkGetName(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNetworkReturn(network, NULL);
+
     return network->name;
 }
 
@@ -11224,11 +11195,7 @@ virNetworkGetUUID(virNetworkPtr network, unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     virCheckNonNullArgGoto(uuid, error);
 
     memcpy(uuid, &network->uuid[0], VIR_UUID_BUFLEN);
@@ -11258,11 +11225,7 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
 
     virResetLastError();
 
-    if (!VIR_IS_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     virCheckNonNullArgGoto(buf, error);
 
     virUUIDFormat(network->uuid, buf);
@@ -11298,12 +11261,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckNetworkReturn(network, NULL);
     conn = network->conn;
 
     if (conn->networkDriver && conn->networkDriver->networkGetXMLDesc) {
@@ -11340,12 +11298,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckNetworkReturn(network, NULL);
     conn = network->conn;
 
     if (conn->networkDriver && conn->networkDriver->networkGetBridgeName) {
@@ -11384,11 +11337,7 @@ virNetworkGetAutostart(virNetworkPtr network,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(network, -1);
     virCheckNonNullArgGoto(autostart, error);
 
     conn = network->conn;
@@ -11428,15 +11377,10 @@ virNetworkSetAutostart(virNetworkPtr network,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
-    virCheckReadOnlyGoto(network->conn->flags, error);
-
+    virCheckNetworkReturn(network, -1);
     conn = network->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkSetAutostart) {
         int ret;
@@ -16772,11 +16716,8 @@ virNetworkIsActive(virNetworkPtr net)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(net)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(net, -1);
+
     if (net->conn->networkDriver->networkIsActive) {
         int ret;
         ret = net->conn->networkDriver->networkIsActive(net);
@@ -16808,11 +16749,8 @@ virNetworkIsPersistent(virNetworkPtr net)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NETWORK(net)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNetworkReturn(net, -1);
+
     if (net->conn->networkDriver->networkIsPersistent) {
         int ret;
         ret = net->conn->networkDriver->networkIsPersistent(net);
@@ -18159,11 +18097,14 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    if (net != NULL &&
-        !(VIR_IS_CONNECTED_NETWORK(net) && net->conn == conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(conn);
-        return -1;
+    if (net) {
+        virCheckNetworkGoto(net, error);
+        if (net->conn != conn) {
+            virReportInvalidArg(net,
+                                _("network '%s' in %s must match connection"),
+                                net->name, __FUNCTION__);
+            goto error;
+        }
     }
     virCheckNonNullArgGoto(cb, error);
     virCheckNonNegativeArgGoto(eventID, error);
