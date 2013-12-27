@@ -3599,11 +3599,15 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
         virDispatchError(NULL);
         return -1;
     }
-    virCheckNonNullArgReturn(uuid, -1);
+    virCheckNonNullArgGoto(uuid, error);
 
     memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
 
     return 0;
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
 }
 
 
@@ -9882,18 +9886,22 @@ virDomainSendKey(virDomainPtr domain,
 
     virResetLastError();
 
-    if (keycodes == NULL ||
-        nkeycodes <= 0 || nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
-        virLibDomainError(VIR_ERR_OPERATION_INVALID, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
+
+    virCheckNonNullArgGoto(keycodes, error);
+    virCheckPositiveArgGoto(nkeycodes, error);
+
+    if (nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
+        virReportInvalidArg(nkeycodes,
+                            _("nkeycodes in %s must be <= %d"),
+                            __FUNCTION__, VIR_DOMAIN_SEND_KEY_MAX_KEYS);
+        goto error;
+    }
+
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
@@ -10494,10 +10502,8 @@ virDomainPinEmulator(virDomainPtr domain, unsigned char *cpumap,
         goto error;
     }
 
-    if ((cpumap == NULL) || (maplen < 1)) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
+    virCheckNonNullArgGoto(cpumap, error);
+    virCheckPositiveArgGoto(maplen, error);
 
     conn = domain->conn;
 
@@ -10554,15 +10560,16 @@ virDomainGetEmulatorPinInfo(virDomainPtr domain, unsigned char *cpumap,
         return -1;
     }
 
-    if (!cpumap || maplen <= 0) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
+    virCheckNonNullArgGoto(cpumap, error);
+    virCheckPositiveArgGoto(maplen, error);
 
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virReportInvalidArg(flags,
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
+                            __FUNCTION__);
         goto error;
     }
     conn = domain->conn;
@@ -10776,10 +10783,7 @@ virDomainGetSecurityLabelList(virDomainPtr domain,
         return -1;
     }
 
-    if (seclabels == NULL) {
-        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        goto error;
-    }
+    virCheckNonNullArgGoto(seclabels, error);
 
     conn = domain->conn;
 
@@ -18840,7 +18844,7 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
         virDispatchError(NULL);
         return -1;
     }
-    virCheckNonNullArgReturn(arch, -1);
+    virCheckNonNullArgGoto(arch, error);
 
     if (conn->driver->connectGetCPUModelNames) {
         int ret;
@@ -21922,10 +21926,10 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     return 0;
 
 error:
+    virDispatchError(conn);
     virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
     virObjectUnref(conn);
-    virDispatchError(NULL);
     return -1;
 }
 
@@ -21980,9 +21984,9 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     return 0;
 
 error:
+    virDispatchError(conn);
     virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
-    virDispatchError(NULL);
     return -1;
 }
 
@@ -22341,10 +22345,10 @@ virDomainGetDiskErrors(virDomainPtr dom,
         return -1;
     }
 
-    if ((!errors && maxerrors) || (errors && !maxerrors)) {
-        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-        goto error;
-    }
+    if (maxerrors)
+        virCheckNonNullArgGoto(errors, error);
+    else
+        virCheckNullArgGoto(errors, error);
 
     if (dom->conn->driver->domainGetDiskErrors) {
         int ret = dom->conn->driver->domainGetDiskErrors(dom, errors,
