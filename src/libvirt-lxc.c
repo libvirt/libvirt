@@ -142,6 +142,8 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
                      "noldfdlist=%p, oldfdlist=%p, flags=%x",
                      nfdlist, fdlist, noldfdlist, oldfdlist, flags);
 
+    virResetLastError();
+
     virCheckFlagsGoto(0, error);
 
     if (noldfdlist && oldfdlist) {
@@ -202,6 +204,8 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
 {
     VIR_DEBUG("model=%p, label=%p, oldlabel=%p, flags=%x",
               model, label, oldlabel, flags);
+
+    virResetLastError();
 
     virCheckFlagsGoto(0, error);
 

@@ -112,6 +112,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainQemuAttach:
  * @conn: pointer to a hypervisor connection
@@ -186,6 +187,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainQemuAgentCommand:
  * @domain: a domain object
@@ -216,6 +218,8 @@ virDomainQemuAgentCommand(virDomainPtr domain,
 
     VIR_DOMAIN_DEBUG(domain, "cmd=%s, timeout=%d, flags=%x",
                      cmd, timeout, flags);
+
+    virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);

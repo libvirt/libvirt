@@ -929,6 +929,7 @@ virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
         goto error;
     VIR_DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
 
+    virResetLastError();
     if (libVer == NULL)
         goto error;
     *libVer = LIBVIR_VERSION_NUMBER;
@@ -1108,8 +1109,6 @@ do_open(const char *name,
     int res;
     virConnectPtr ret;
     virConfPtr conf = NULL;
-
-    virResetLastError();
 
     ret = virGetConnect();
     if (ret == NULL)
@@ -1542,6 +1541,8 @@ int
 virConnectRef(virConnectPtr conn)
 {
     VIR_DEBUG("conn=%p refs=%d", conn, conn ? conn->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECT(conn))) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -2470,6 +2471,8 @@ int
 virDomainRef(virDomainPtr domain)
 {
     VIR_DOMAIN_DEBUG(domain, "refs=%d", domain ? domain->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_DOMAIN(domain))) {
         virLibConnError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -10731,6 +10734,8 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
 
     VIR_DOMAIN_DEBUG(domain, "seclabel=%p", seclabel);
 
+    virResetLastError();
+
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
@@ -10776,6 +10781,8 @@ virDomainGetSecurityLabelList(virDomainPtr domain,
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "seclabels=%p", seclabels);
+
+    virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -10845,6 +10852,8 @@ virDomainSetMetadata(virDomainPtr domain,
                      "type=%d, metadata='%s', key='%s', uri='%s', flags=%x",
                      type, NULLSTR(metadata), NULLSTR(key), NULLSTR(uri),
                      flags);
+
+    virResetLastError();
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -10933,6 +10942,8 @@ virDomainGetMetadata(virDomainPtr domain,
     VIR_DOMAIN_DEBUG(domain, "type=%d, uri='%s', flags=%x",
                      type, NULLSTR(uri), flags);
 
+    virResetLastError();
+
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         goto error;
@@ -10992,6 +11003,8 @@ int
 virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 {
     VIR_DEBUG("conn=%p secmodel=%p", conn, secmodel);
+
+    virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -12106,6 +12119,8 @@ virNetworkRef(virNetworkPtr network)
     VIR_DEBUG("network=%p refs=%d", network,
               network ? network->object.u.s.refs : 0);
 
+    virResetLastError();
+
     if ((!VIR_IS_CONNECTED_NETWORK(network))) {
         virLibConnError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
@@ -13074,6 +13089,8 @@ int
 virInterfaceRef(virInterfacePtr iface)
 {
     VIR_DEBUG("iface=%p refs=%d", iface, iface ? iface->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_INTERFACE(iface))) {
         virLibConnError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
@@ -14145,6 +14162,8 @@ int
 virStoragePoolRef(virStoragePoolPtr pool)
 {
     VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_STORAGE_POOL(pool))) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
@@ -15273,6 +15292,8 @@ virStorageVolRef(virStorageVolPtr vol)
 {
     VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->object.u.s.refs : 0);
 
+    virResetLastError();
+
     if ((!VIR_IS_CONNECTED_STORAGE_VOL(vol))) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
@@ -15808,6 +15829,8 @@ virNodeDeviceGetName(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
+    virResetLastError();
+
     if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
         virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
@@ -15982,6 +16005,8 @@ int
 virNodeDeviceRef(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p refs=%d", dev, dev ? dev->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_NODE_DEVICE(dev))) {
         virLibConnError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
@@ -17114,6 +17139,8 @@ virSecretRef(virSecretPtr secret)
     VIR_DEBUG("secret=%p refs=%d", secret,
               secret ? secret->object.u.s.refs : 0);
 
+    virResetLastError();
+
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
         virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
@@ -17210,6 +17237,8 @@ virStreamRef(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p refs=%d", stream,
               stream ? stream->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_STREAM(stream))) {
         virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
@@ -18650,6 +18679,8 @@ virNWFilterRef(virNWFilterPtr nwfilter)
 {
     VIR_DEBUG("nwfilter=%p refs=%d", nwfilter,
               nwfilter ? nwfilter->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_CONNECTED_NWFILTER(nwfilter))) {
         virLibConnError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
@@ -20999,6 +21030,8 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
 {
     VIR_DEBUG("snapshot=%p, refs=%d", snapshot,
               snapshot ? snapshot->object.u.s.refs : 0);
+
+    virResetLastError();
 
     if ((!VIR_IS_DOMAIN_SNAPSHOT(snapshot))) {
         virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
