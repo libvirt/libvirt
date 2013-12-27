@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006-2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -121,7 +121,7 @@ void virReportSystemErrorFull(int domcode,
                       #argname,                                      \
                       NULL,                                          \
                       0, 0,                                          \
-                      _("%s in %s must  be zero"),                   \
+                      _("%s in %s must be zero"),                    \
                       #argname, __FUNCTION__)
 # define virReportInvalidNonNegativeArg(argname)                     \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,              \
