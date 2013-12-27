@@ -348,6 +348,11 @@ static virOnceControl virGlobalOnce = VIR_ONCE_CONTROL_INITIALIZER;
 static void
 virGlobalInit(void)
 {
+    /* It would be nice if we could trace the use of this call, to
+     * help diagnose in log files if a user calls something other than
+     * virConnectOpen first.  But we can't rely on VIR_DEBUG working
+     * until after initialization is complete, and since this is
+     * one-shot, we never get here again.  */
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0)
         goto error;
@@ -455,13 +460,18 @@ error:
  *
  * Initialize the library.
  *
- * This method is invoked automatically by any of the virConnectOpen API
- * calls. Since release 1.0.0, there is no need to call this method even
- * in a multithreaded application, since initialization is performed in
- * a thread safe manner.
+ * This method is invoked automatically by any of the virConnectOpen() API
+ * calls, and by virGetVersion(). Since release 1.0.0, there is no need to
+ * call this method even in a multithreaded application, since
+ * initialization is performed in a thread safe manner; but applications
+ * using an older version of the library should manually call this before
+ * setting up competing threads that attempt virConnectOpen in parallel.
  *
- * The only time it would be necessary to call virInitialize is if the
- * application did not invoke virConnectOpen as its first API call.
+ * The only other time it would be necessary to call virInitialize is if the
+ * application did not invoke virConnectOpen as its first API call, such
+ * as when calling virEventRegisterImpl() before setting up connections,
+ * or when using virSetErrorFunc() to alter error reporting of the first
+ * connection attempt.
  *
  * Returns 0 in case of success, -1 in case of error
  */
@@ -902,9 +912,11 @@ virStateStop(void)
  * compatibility; if it is not NULL it will duplicate @libVer (it was
  * originally intended to return hypervisor information based on @type,
  * but due to the design of remote clients this is not reliable). To
- * get the version of the running hypervisor use the virConnectGetVersion
+ * get the version of the running hypervisor use the virConnectGetVersion()
  * function instead. To get the libvirt library version used by a
- * connection use the virConnectGetLibVersion instead.
+ * connection use the virConnectGetLibVersion() instead.
+ *
+ * This function includes a call to virInitialize() when necessary.
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
  *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
@@ -913,10 +925,9 @@ int
 virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
               unsigned long *typeVer)
 {
-    VIR_DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
-
     if (virInitialize() < 0)
         goto error;
+    VIR_DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
 
     if (libVer == NULL)
         goto error;
@@ -1530,12 +1541,13 @@ error:
 int
 virConnectRef(virConnectPtr conn)
 {
+    VIR_DEBUG("conn=%p refs=%d", conn, conn ? conn->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECT(conn))) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("conn=%p refs=%d", conn, conn->object.u.s.refs);
     virObjectRef(conn);
     return 0;
 }
@@ -2457,13 +2469,14 @@ virDomainFree(virDomainPtr domain)
 int
 virDomainRef(virDomainPtr domain)
 {
+    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain ? domain->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_DOMAIN(domain))) {
         virLibConnError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
 
-    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain->object.u.s.refs);
     virObjectRef(domain);
     return 0;
 }
@@ -12074,12 +12087,14 @@ virNetworkFree(virNetworkPtr network)
 int
 virNetworkRef(virNetworkPtr network)
 {
+    VIR_DEBUG("network=%p refs=%d", network,
+              network ? network->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_NETWORK(network))) {
         virLibConnError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("network=%p refs=%d", network, network->object.u.s.refs);
     virObjectRef(network);
     return 0;
 }
@@ -13042,12 +13057,13 @@ error:
 int
 virInterfaceRef(virInterfacePtr iface)
 {
+    VIR_DEBUG("iface=%p refs=%d", iface, iface ? iface->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_INTERFACE(iface))) {
         virLibConnError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("iface=%p refs=%d", iface, iface->object.u.s.refs);
     virObjectRef(iface);
     return 0;
 }
@@ -14112,12 +14128,13 @@ virStoragePoolFree(virStoragePoolPtr pool)
 int
 virStoragePoolRef(virStoragePoolPtr pool)
 {
+    VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_STORAGE_POOL(pool))) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("pool=%p refs=%d", pool, pool->object.u.s.refs);
     virObjectRef(pool);
     return 0;
 }
@@ -15238,12 +15255,13 @@ virStorageVolFree(virStorageVolPtr vol)
 int
 virStorageVolRef(virStorageVolPtr vol)
 {
+    VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_STORAGE_VOL(vol))) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("vol=%p refs=%d", vol, vol->object.u.s.refs);
     virObjectRef(vol);
     return 0;
 }
@@ -15946,12 +15964,13 @@ virNodeDeviceFree(virNodeDevicePtr dev)
 int
 virNodeDeviceRef(virNodeDevicePtr dev)
 {
+    VIR_DEBUG("dev=%p refs=%d", dev, dev ? dev->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_NODE_DEVICE(dev))) {
         virLibConnError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("dev=%p refs=%d", dev, dev->object.u.s.refs);
     virObjectRef(dev);
     return 0;
 }
@@ -17075,12 +17094,14 @@ error:
 int
 virSecretRef(virSecretPtr secret)
 {
+    VIR_DEBUG("secret=%p refs=%d", secret,
+              secret ? secret->object.u.s.refs : 0);
+
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
         virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("secret=%p refs=%d", secret, secret->object.u.s.refs);
     virObjectRef(secret);
     return 0;
 }
@@ -17170,12 +17191,14 @@ virStreamNew(virConnectPtr conn,
 int
 virStreamRef(virStreamPtr stream)
 {
+    VIR_DEBUG("stream=%p refs=%d", stream,
+              stream ? stream->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_STREAM(stream))) {
         virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("stream=%p refs=%d", stream, stream->object.u.s.refs);
     virObjectRef(stream);
     return 0;
 }
@@ -17598,7 +17621,8 @@ virStreamEventAddCallback(virStreamPtr stream,
                           void *opaque,
                           virFreeCallback ff)
 {
-    VIR_DEBUG("stream=%p, events=%d, cb=%p, opaque=%p, ff=%p", stream, events, cb, opaque, ff);
+    VIR_DEBUG("stream=%p, events=%d, cb=%p, opaque=%p, ff=%p",
+              stream, events, cb, opaque, ff);
 
     virResetLastError();
 
@@ -18607,12 +18631,14 @@ error:
 int
 virNWFilterRef(virNWFilterPtr nwfilter)
 {
+    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter,
+              nwfilter ? nwfilter->object.u.s.refs : 0);
+
     if ((!VIR_IS_CONNECTED_NWFILTER(nwfilter))) {
         virLibConnError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->object.u.s.refs);
     virObjectRef(nwfilter);
     return 0;
 }
@@ -20949,13 +20975,15 @@ error:
 int
 virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
 {
+    VIR_DEBUG("snapshot=%p, refs=%d", snapshot,
+              snapshot ? snapshot->object.u.s.refs : 0);
+
     if ((!VIR_IS_DOMAIN_SNAPSHOT(snapshot))) {
         virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
                                   __FUNCTION__);
         virDispatchError(NULL);
         return -1;
     }
-    VIR_DEBUG("snapshot=%p, refs=%d", snapshot, snapshot->object.u.s.refs);
     virObjectRef(snapshot);
     return 0;
 }

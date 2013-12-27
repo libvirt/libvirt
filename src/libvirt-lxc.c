@@ -138,6 +138,10 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
 {
     size_t i;
 
+    VIR_DOMAIN_DEBUG(domain, "nfdlist=%d, fdlist=%p, "
+                     "noldfdlist=%p, oldfdlist=%p, flags=%x",
+                     nfdlist, fdlist, noldfdlist, oldfdlist, flags);
+
     virCheckFlagsGoto(0, error);
 
     if (noldfdlist && oldfdlist) {
@@ -196,6 +200,9 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                                virSecurityLabelPtr oldlabel,
                                unsigned int flags)
 {
+    VIR_DEBUG("model=%p, label=%p, oldlabel=%p, flags=%x",
+              model, label, oldlabel, flags);
+
     virCheckFlagsGoto(0, error);
 
     virCheckNonNullArgGoto(model, error);
