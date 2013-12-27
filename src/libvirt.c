@@ -4144,10 +4144,11 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckDomainReturn(domain, -1);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(virDomainInfo));
 
     conn = domain->conn;
 
@@ -8449,11 +8450,12 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckDomainReturn(domain, -1);
     virCheckNonNullArgGoto(disk, error);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(virDomainBlockInfo));
 
     conn = domain->conn;
 
@@ -13082,10 +13084,11 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(virStoragePoolInfo));
 
     conn = pool->conn;
 
@@ -13951,10 +13954,11 @@ virStorageVolGetInfo(virStorageVolPtr vol,
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckStorageVolReturn(vol, -1);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(virStorageVolInfo));
 
     conn = vol->conn;
 
@@ -17240,10 +17244,11 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckDomainReturn(domain, -1);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(virDomainJobInfo));
 
     conn = domain->conn;
 
@@ -19379,13 +19384,14 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
 
     virResetLastError();
 
+    if (info)
+        memset(info, 0, sizeof(*info));
+
     virCheckDomainReturn(dom, -1);
     conn = dom->conn;
 
     virCheckNonNullArgGoto(disk, error);
     virCheckNonNullArgGoto(info, error);
-
-    memset(info, 0, sizeof(*info));
 
     if (conn->driver->domainGetBlockJobInfo) {
         int ret;
