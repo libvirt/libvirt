@@ -40,11 +40,9 @@ extern virClassPtr virStreamClass;
 extern virClassPtr virStorageVolClass;
 extern virClassPtr virStoragePoolClass;
 
-# define VIR_IS_CONNECT(obj) \
-    (virObjectIsClass((obj), virConnectClass))
 # define virCheckConnectReturn(obj, retval)                             \
     do {                                                                \
-        if (!VIR_IS_CONNECT(obj)) {                                     \
+        if (!virObjectIsClass(obj, virConnectClass)) {                  \
             virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
                                  __FILE__, __FUNCTION__, __LINE__,      \
                                  __FUNCTION__);                         \
@@ -54,7 +52,7 @@ extern virClassPtr virStoragePoolClass;
     } while (0)
 # define virCheckConnectGoto(obj, label)                                \
     do {                                                                \
-        if (!VIR_IS_CONNECT(obj)) {                                     \
+        if (!virObjectIsClass(obj, virConnectClass)) {                  \
             virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
                                  __FILE__, __FUNCTION__, __LINE__,      \
                                  __FUNCTION__);                         \
@@ -65,47 +63,47 @@ extern virClassPtr virStoragePoolClass;
 # define VIR_IS_DOMAIN(obj) \
     (virObjectIsClass((obj), virDomainClass))
 # define VIR_IS_CONNECTED_DOMAIN(obj) \
-    (VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_DOMAIN(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_NETWORK(obj) \
     (virObjectIsClass((obj), virNetworkClass))
 # define VIR_IS_CONNECTED_NETWORK(obj) \
-    (VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_NETWORK(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_INTERFACE(obj) \
     (virObjectIsClass((obj), virInterfaceClass))
 # define VIR_IS_CONNECTED_INTERFACE(obj) \
-    (VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_INTERFACE(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_STORAGE_POOL(obj) \
     (virObjectIsClass((obj), virStoragePoolClass))
 # define VIR_IS_CONNECTED_STORAGE_POOL(obj) \
-    (VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_STORAGE_POOL(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_STORAGE_VOL(obj) \
     (virObjectIsClass((obj), virStorageVolClass))
 # define VIR_IS_CONNECTED_STORAGE_VOL(obj) \
-    (VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_STORAGE_VOL(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_NODE_DEVICE(obj) \
     (virObjectIsClass((obj), virNodeDeviceClass))
 # define VIR_IS_CONNECTED_NODE_DEVICE(obj) \
-    (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_NODE_DEVICE(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_SECRET(obj) \
     (virObjectIsClass((obj), virSecretClass))
 # define VIR_IS_CONNECTED_SECRET(obj) \
-    (VIR_IS_SECRET(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_SECRET(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_STREAM(obj) \
     (virObjectIsClass((obj), virStreamClass))
 # define VIR_IS_CONNECTED_STREAM(obj) \
-    (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_STREAM(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_NWFILTER(obj) \
     (virObjectIsClass((obj), virNWFilterClass))
 # define VIR_IS_CONNECTED_NWFILTER(obj) \
-    (VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
+    (VIR_IS_NWFILTER(obj) && virObjectIsClass((obj)->conn, virConnectClass))
 
 # define VIR_IS_SNAPSHOT(obj) \
     (virObjectIsClass((obj), virDomainSnapshotClass))
