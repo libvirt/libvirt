@@ -110,10 +110,19 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_INTERFACE(obj) \
-    (virObjectIsClass((obj), virInterfaceClass))
-# define VIR_IS_CONNECTED_INTERFACE(obj) \
-    (VIR_IS_INTERFACE(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckInterfaceReturn(obj, retval)                           \
+    do {                                                                \
+        virInterfacePtr _iface = (obj);                                 \
+        if (!virObjectIsClass(_iface, virInterfaceClass) ||             \
+            !virObjectIsClass(_iface->conn, virConnectClass)) {         \
+            virReportErrorHelper(VIR_FROM_INTERFACE,                    \
+                                 VIR_ERR_INVALID_INTERFACE,             \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_STORAGE_POOL(obj) \
     (virObjectIsClass((obj), virStoragePoolClass))

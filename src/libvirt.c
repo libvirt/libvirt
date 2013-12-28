@@ -534,9 +534,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibStorageVolError(code, ...)                          \
     virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibInterfaceError(code, ...)                           \
-    virReportErrorHelper(VIR_FROM_INTERFACE, code, __FILE__,      \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibNodeDeviceError(code, ...)                          \
     virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -11419,11 +11416,8 @@ virInterfaceGetConnect(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckInterfaceReturn(iface, NULL);
+
     return iface->conn;
 }
 
@@ -11730,11 +11724,8 @@ virInterfaceGetName(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckInterfaceReturn(iface, NULL);
+
     return iface->name;
 }
 
@@ -11757,11 +11748,8 @@ virInterfaceGetMACString(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckInterfaceReturn(iface, NULL);
+
     return iface->mac;
 }
 
@@ -11792,12 +11780,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckInterfaceReturn(iface, NULL);
     conn = iface->conn;
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceGetXMLDesc) {
@@ -11890,12 +11873,9 @@ virInterfaceUndefine(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckInterfaceReturn(iface, -1);
     conn = iface->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceUndefine) {
@@ -11936,12 +11916,9 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckInterfaceReturn(iface, -1);
     conn = iface->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceCreate) {
@@ -11986,13 +11963,9 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckInterfaceReturn(iface, -1);
     conn = iface->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceDestroy) {
@@ -12035,11 +12008,8 @@ virInterfaceRef(virInterfacePtr iface)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_INTERFACE(iface))) {
-        virLibConnError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckInterfaceReturn(iface, -1);
+
     virObjectRef(iface);
     return 0;
 }
@@ -12061,11 +12031,8 @@ virInterfaceFree(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibInterfaceError(VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckInterfaceReturn(iface, -1);
+
     virObjectUnref(iface);
     return 0;
 }
@@ -17354,11 +17321,8 @@ virInterfaceIsActive(virInterfacePtr iface)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckInterfaceReturn(iface, -1);
+
     if (iface->conn->interfaceDriver->interfaceIsActive) {
         int ret;
         ret = iface->conn->interfaceDriver->interfaceIsActive(iface);
