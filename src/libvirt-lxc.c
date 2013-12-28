@@ -36,10 +36,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virLibConnError(conn, error, info)                              \
-    virReportErrorHelper(VIR_FROM_NONE, error, __FILE__, __FUNCTION__,  \
-                         __LINE__, info)
-
 #define virLibDomainError(domain, error, info)                          \
     virReportErrorHelper(VIR_FROM_DOM, error, __FILE__, __FUNCTION__,   \
                          __LINE__, info)

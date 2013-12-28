@@ -180,12 +180,13 @@
         being called and its parameters;</li>
       <li>MUST call virResetLastError();</li>
       <li>SHOULD confirm that the connection is valid with
-        VIR_IS_CONNECT(conn);</li>
+        virCheckConnectReturn() or virCheckConnectGoto();</li>
       <li><strong>SECURITY: If the API requires a connection with write
           privileges, MUST confirm that the connection flags do not
-          indicate that the connection is read-only;</strong></li>
+          indicate that the connection is read-only with
+          virCheckReadOnlyGoto();</strong></li>
       <li>SHOULD do basic validation of the parameters that are being
-        passed in;</li>
+        passed in, using helpers like virCheckNonNullArgGoto();</li>
       <li>MUST confirm that the driver for this connection exists and that
         it implements this function;</li>
       <li>MUST call the internal API;</li>

@@ -1500,23 +1500,15 @@ error:
 int
 virConnectClose(virConnectPtr conn)
 {
-    int ret = -1;
     VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (!virObjectUnref(conn))
         return 0;
     return 1;
-
-error:
-    virDispatchError(NULL);
-    return ret;
 }
 
 
@@ -1544,11 +1536,7 @@ virConnectRef(virConnectPtr conn)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECT(conn))) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virObjectRef(conn);
     return 0;
 }
@@ -1566,11 +1554,7 @@ virConnectSupportsFeature(virConnectPtr conn, int feature)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (!conn->driver->connectSupportsFeature)
         ret = 0;
@@ -1607,11 +1591,7 @@ virConnectGetType(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     if (conn->driver->connectGetType) {
         ret = conn->driver->connectGetType(conn);
@@ -1641,12 +1621,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(hvVer, error);
 
     if (conn->driver->connectGetVersion) {
@@ -1683,12 +1658,7 @@ virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(libVer, error);
 
     if (conn->driver->connectGetLibVersion) {
@@ -1727,11 +1697,7 @@ virConnectGetHostname(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     if (conn->driver->connectGetHostname) {
         char *ret = conn->driver->connectGetHostname(conn);
@@ -1771,11 +1737,7 @@ virConnectGetURI(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     if (!(name = virURIFormat(conn->uri)))
         goto error;
@@ -1808,11 +1770,7 @@ virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     if (conn->driver->connectGetSysinfo) {
         char *ret = conn->driver->connectGetSysinfo(conn, flags);
@@ -1848,11 +1806,7 @@ virConnectGetMaxVcpus(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectGetMaxVcpus) {
         int ret = conn->driver->connectGetMaxVcpus(conn, type);
@@ -1892,12 +1846,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(ids, error);
     virCheckNonNegativeArgGoto(maxids, error);
 
@@ -1930,11 +1879,7 @@ virConnectNumOfDomains(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectNumOfDomains) {
         int ret = conn->driver->connectNumOfDomains(conn);
@@ -2014,11 +1959,7 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
     virCheckReadOnlyGoto(conn->flags, error);
 
@@ -2083,11 +2024,7 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
     virCheckReadOnlyGoto(conn->flags, error);
 
@@ -2147,11 +2084,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNegativeArgGoto(id, error);
 
     if (conn->driver->domainLookupByID) {
@@ -2187,11 +2120,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->driver->domainLookupByUUID) {
@@ -2228,11 +2157,7 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
@@ -2267,11 +2192,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->driver->domainLookupByName) {
@@ -2855,11 +2776,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(from, error);
 
@@ -2929,11 +2846,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(from, error);
 
@@ -3000,11 +2913,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(file, error);
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
@@ -3077,11 +2986,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(file, error);
     virCheckNonNullArgGoto(dxml, error);
@@ -4601,11 +4506,7 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(nativeFormat, error);
@@ -4655,11 +4556,7 @@ virConnectDomainXMLToNative(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
 
     virCheckNonNullArgGoto(nativeFormat, error);
@@ -5515,10 +5412,7 @@ virDomainMigrate(virDomainPtr domain,
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
+    virCheckConnectGoto(dconn, error);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
@@ -5748,10 +5642,7 @@ virDomainMigrate2(virDomainPtr domain,
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
+    virCheckConnectGoto(dconn, error);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
@@ -5932,10 +5823,7 @@ virDomainMigrate3(virDomainPtr domain,
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
     /* Now checkout the destination */
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
+    virCheckConnectGoto(dconn, error);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
@@ -6534,12 +6422,7 @@ virDomainMigratePrepare(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare) {
@@ -6626,12 +6509,7 @@ virDomainMigrateFinish(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish) {
@@ -6674,12 +6552,7 @@ virDomainMigratePrepare2(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare2) {
@@ -6720,12 +6593,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish2) {
@@ -6765,12 +6633,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
@@ -6872,12 +6735,7 @@ virDomainMigratePrepare3(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare3) {
@@ -6925,12 +6783,7 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
@@ -7039,12 +6892,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish3) {
@@ -7185,12 +7033,7 @@ virDomainMigratePrepare3Params(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(dconn, -1);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigratePrepare3Params) {
@@ -7235,12 +7078,7 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
@@ -7343,12 +7181,7 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(dconn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(dconn, NULL);
     virCheckReadOnlyGoto(dconn->flags, error);
 
     if (dconn->driver->domainMigrateFinish3Params) {
@@ -7434,11 +7267,7 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(info, error);
 
     if (conn->driver->nodeGetInfo) {
@@ -7474,11 +7303,7 @@ virConnectGetCapabilities(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     if (conn->driver->connectGetCapabilities) {
         char *ret;
@@ -7562,12 +7387,7 @@ virNodeGetCPUStats(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(nparams, error);
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cpuNum < 0 && cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS) {
@@ -7654,12 +7474,7 @@ virNodeGetMemoryStats(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(nparams, error);
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cellNum < 0 && cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS) {
@@ -7702,11 +7517,7 @@ virNodeGetFreeMemory(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return 0;
-    }
+    virCheckConnectReturn(conn, 0);
 
     if (conn->driver->nodeGetFreeMemory) {
         unsigned long long ret;
@@ -7756,12 +7567,7 @@ virNodeSuspendForDuration(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->nodeSuspendForDuration) {
@@ -7814,12 +7620,7 @@ virNodeGetMemoryParameters(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(nparams, error);
     virCheckNonNegativeArgGoto(*nparams, error);
     if (*nparams != 0)
@@ -7879,14 +7680,8 @@ virNodeSetMemoryParameters(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
-
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
@@ -8996,11 +8791,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
@@ -9141,11 +8932,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectNumOfDefinedDomains) {
         int ret;
@@ -9189,12 +8976,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -9295,11 +9077,7 @@ virConnectListAllDomains(virConnectPtr conn,
     if (domains)
         *domains = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectListAllDomains) {
         int ret;
@@ -10759,12 +10537,7 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(secmodel, error);
 
     if (conn->driver->nodeGetSecurityModel) {
@@ -11104,12 +10877,7 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(freeMems, error);
     virCheckPositiveArgGoto(maxCells, error);
     virCheckNonNegativeArgGoto(startCell, error);
@@ -11207,11 +10975,7 @@ virConnectListAllNetworks(virConnectPtr conn,
     if (nets)
         *nets = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->networkDriver &&
         conn->networkDriver->connectListAllNetworks) {
@@ -11245,11 +11009,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->networkDriver && conn->networkDriver->connectNumOfNetworks) {
         int ret;
@@ -11290,12 +11050,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -11330,11 +11085,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->networkDriver && conn->networkDriver->connectNumOfDefinedNetworks) {
         int ret;
@@ -11376,12 +11127,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -11418,11 +11164,7 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->networkDriver && conn->networkDriver->networkLookupByName) {
@@ -11458,12 +11200,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->networkDriver && conn->networkDriver->networkLookupByUUID){
@@ -11500,12 +11237,7 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
@@ -11540,13 +11272,8 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
-
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->networkDriver && conn->networkDriver->networkCreateXML) {
@@ -11581,11 +11308,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
@@ -12191,11 +11914,7 @@ virConnectListAllInterfaces(virConnectPtr conn,
     if (ifaces)
         *ifaces = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->interfaceDriver &&
         conn->interfaceDriver->connectListAllInterfaces) {
@@ -12229,11 +11948,7 @@ virConnectNumOfInterfaces(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->interfaceDriver && conn->interfaceDriver->connectNumOfInterfaces) {
         int ret;
@@ -12275,12 +11990,7 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -12315,11 +12025,7 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->interfaceDriver && conn->interfaceDriver->connectNumOfDefinedInterfaces) {
         int ret;
@@ -12363,12 +12069,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -12405,11 +12106,7 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceLookupByName) {
@@ -12445,11 +12142,7 @@ virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(macstr, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceLookupByMACString) {
@@ -12597,11 +12290,7 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
@@ -12853,12 +12542,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeBegin) {
@@ -12898,12 +12582,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->interfaceChangeCommit) {
@@ -12943,12 +12622,7 @@ virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->interfaceDriver &&
@@ -13060,11 +12734,7 @@ virConnectListAllStoragePools(virConnectPtr conn,
     if (pools)
         *pools = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->storageDriver &&
         conn->storageDriver->connectListAllStoragePools) {
@@ -13098,11 +12768,7 @@ virConnectNumOfStoragePools(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->storageDriver && conn->storageDriver->connectNumOfStoragePools) {
         int ret;
@@ -13147,12 +12813,7 @@ virConnectListStoragePools(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -13187,11 +12848,7 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->storageDriver && conn->storageDriver->connectNumOfDefinedStoragePools) {
         int ret;
@@ -13236,12 +12893,7 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -13293,13 +12945,8 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(type, error);
-
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->connectFindStoragePoolSources) {
@@ -13335,11 +12982,7 @@ virStoragePoolLookupByName(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolLookupByName) {
@@ -13375,11 +13018,7 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolLookupByUUID) {
@@ -13416,11 +13055,7 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
@@ -13496,13 +13131,8 @@ virStoragePoolCreateXML(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
-
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolCreateXML) {
@@ -13541,11 +13171,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
@@ -14381,12 +14007,7 @@ virStorageVolLookupByKey(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(key, error);
 
     if (conn->storageDriver && conn->storageDriver->storageVolLookupByKey) {
@@ -14423,11 +14044,7 @@ virStorageVolLookupByPath(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(path, error);
 
     if (conn->storageDriver && conn->storageDriver->storageVolLookupByPath) {
@@ -15171,11 +14788,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeNumOfDevices) {
         int ret;
@@ -15244,11 +14857,7 @@ virConnectListAllNodeDevices(virConnectPtr conn,
     if (devices)
         *devices = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->nodeDeviceDriver &&
         conn->nodeDeviceDriver->connectListAllNodeDevices) {
@@ -15295,11 +14904,7 @@ virNodeListDevices(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -15335,12 +14940,7 @@ virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeDeviceLookupByName) {
@@ -15380,12 +14980,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(wwnn, error);
     virCheckNonNullArgGoto(wwpn, error);
 
@@ -15879,14 +15474,8 @@ virNodeDeviceCreateXML(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
-
     virCheckNonNullArgGoto(xmlDesc, error);
 
     if (conn->nodeDeviceDriver &&
@@ -15986,11 +15575,7 @@ virConnectDomainEventRegister(virConnectPtr conn,
     VIR_DEBUG("conn=%p, cb=%p, opaque=%p, freecb=%p", conn, cb, opaque, freecb);
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(cb, error);
 
     if (conn->driver && conn->driver->connectDomainEventRegister) {
@@ -16030,11 +15615,7 @@ virConnectDomainEventDeregister(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(cb, error);
 
     if (conn->driver && conn->driver->connectDomainEventDeregister) {
@@ -16095,11 +15676,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->secretDriver != NULL &&
         conn->secretDriver->connectNumOfSecrets != NULL) {
@@ -16164,11 +15741,7 @@ virConnectListAllSecrets(virConnectPtr conn,
     if (secrets)
         *secrets = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->secretDriver &&
         conn->secretDriver->connectListAllSecrets) {
@@ -16204,11 +15777,7 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(uuids, error);
     virCheckNonNegativeArgGoto(maxuuids, error);
 
@@ -16247,11 +15816,7 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->secretDriver &&
@@ -16290,11 +15855,7 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
@@ -16334,11 +15895,7 @@ virSecretLookupByUsage(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(usageID, error);
 
     if (conn->secretDriver &&
@@ -16380,11 +15937,7 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(xml, error);
 
@@ -16801,11 +16354,7 @@ virStreamNew(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
 
     st = virGetStream(conn);
     if (st)
@@ -17761,11 +17310,7 @@ virConnectNumOfNWFilters(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->connectNumOfNWFilters) {
         int ret;
@@ -17812,11 +17357,7 @@ virConnectListAllNWFilters(virConnectPtr conn,
     if (filters)
         *filters = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->nwfilterDriver &&
         conn->nwfilterDriver->connectListAllNWFilters) {
@@ -17852,12 +17393,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -17894,11 +17430,7 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByName) {
@@ -17934,11 +17466,7 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByUUID){
@@ -17975,11 +17503,7 @@ virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
@@ -18132,13 +17656,8 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
-
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterDefineXML) {
@@ -18328,11 +17847,7 @@ virConnectIsEncrypted(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     if (conn->driver->connectIsEncrypted) {
         int ret;
         ret = conn->driver->connectIsEncrypted(conn);
@@ -18367,11 +17882,7 @@ virConnectIsSecure(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     if (conn->driver->connectIsSecure) {
         int ret;
         ret = conn->driver->connectIsSecure(conn);
@@ -18406,11 +17917,7 @@ virConnectCompareCPU(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return VIR_CPU_COMPARE_ERROR;
-    }
+    virCheckConnectReturn(conn, VIR_CPU_COMPARE_ERROR);
     virCheckNonNullArgGoto(xmlDesc, error);
 
     if (conn->driver->connectCompareCPU) {
@@ -18456,11 +17963,7 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
     if (models)
         *models = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(arch, error);
 
     if (conn->driver->connectGetCPUModelNames) {
@@ -18516,11 +18019,7 @@ virConnectBaselineCPU(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlCPUs, error);
 
     if (conn->driver->connectBaselineCPU) {
@@ -18971,11 +18470,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     if (dom != NULL &&
         !(VIR_IS_CONNECTED_DOMAIN(dom) && dom->conn == conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -19024,11 +18519,7 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNegativeArgGoto(callbackID, error);
 
     if (conn->driver && conn->driver->connectDomainEventDeregisterAny) {
@@ -19094,11 +18585,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     if (net != NULL &&
         !(VIR_IS_CONNECTED_NETWORK(net) && net->conn == conn)) {
         virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -19151,11 +18638,7 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     virCheckNonNegativeArgGoto(callbackID, error);
 
     if (conn->networkDriver &&
@@ -21370,11 +20853,7 @@ virConnectSetKeepAlive(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectSetKeepAlive) {
         ret = conn->driver->connectSetKeepAlive(conn, interval, count);
@@ -21409,11 +20888,7 @@ virConnectIsAlive(virConnectPtr conn)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
     if (conn->driver->connectIsAlive) {
         int ret;
         ret = conn->driver->connectIsAlive(conn);
@@ -21462,11 +20937,7 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     virObjectRef(conn);
 
@@ -21521,11 +20992,7 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     virMutexLock(&conn->lock);
     virObjectLock(conn->closeCallback);
@@ -22006,11 +21473,7 @@ virNodeGetCPUMap(virConnectPtr conn,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckConnectReturn(conn, -1);
 
     if (conn->driver->nodeGetCPUMap) {
         int ret = conn->driver->nodeGetCPUMap(conn, cpumap, online, flags);

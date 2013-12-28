@@ -42,6 +42,25 @@ extern virClassPtr virStoragePoolClass;
 
 # define VIR_IS_CONNECT(obj) \
     (virObjectIsClass((obj), virConnectClass))
+# define virCheckConnectReturn(obj, retval)                             \
+    do {                                                                \
+        if (!VIR_IS_CONNECT(obj)) {                                     \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckConnectGoto(obj, label)                                \
+    do {                                                                \
+        if (!VIR_IS_CONNECT(obj)) {                                     \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_DOMAIN(obj) \
     (virObjectIsClass((obj), virDomainClass))
