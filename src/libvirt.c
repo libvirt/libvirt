@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibNodeDeviceError(code, ...)                          \
-    virReportErrorHelper(VIR_FROM_NODEDEV, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibSecretError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_SECRET, code, __FILE__,         \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -14385,11 +14382,7 @@ virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNodeDeviceReturn(dev, NULL);
 
     if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetXMLDesc) {
         char *ret;
@@ -14422,11 +14415,7 @@ virNodeDeviceGetName(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNodeDeviceReturn(dev, NULL);
 
     return dev->name;
 }
@@ -14448,11 +14437,7 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNodeDeviceReturn(dev, NULL);
 
     if (!dev->parent) {
         if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetParent) {
@@ -14482,11 +14467,7 @@ virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNodeDeviceReturn(dev, -1);
 
     if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceNumOfCaps) {
         int ret;
@@ -14524,12 +14505,7 @@ virNodeDeviceListCaps(virNodeDevicePtr dev,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -14565,11 +14541,8 @@ virNodeDeviceFree(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNodeDeviceReturn(dev, -1);
+
     virObjectUnref(dev);
     return 0;
 }
@@ -14599,11 +14572,8 @@ virNodeDeviceRef(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_NODE_DEVICE(dev))) {
-        virLibConnError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNodeDeviceReturn(dev, -1);
+
     virObjectRef(dev);
     return 0;
 }
@@ -14640,12 +14610,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceDettach) {
@@ -14702,12 +14667,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceDetachFlags) {
@@ -14748,12 +14708,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceReAttach) {
@@ -14796,12 +14751,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->driver->nodeDeviceReset) {
@@ -14877,12 +14827,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
-        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNodeDeviceReturn(dev, -1);
     virCheckReadOnlyGoto(dev->conn->flags, error);
 
     if (dev->conn->nodeDeviceDriver &&

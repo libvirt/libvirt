@@ -164,10 +164,19 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_NODE_DEVICE(obj) \
-    (virObjectIsClass((obj), virNodeDeviceClass))
-# define VIR_IS_CONNECTED_NODE_DEVICE(obj) \
-    (VIR_IS_NODE_DEVICE(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckNodeDeviceReturn(obj, retval)                          \
+    do {                                                                \
+        virNodeDevicePtr _node = (obj);                                 \
+        if (!virObjectIsClass(_node, virNodeDeviceClass) ||             \
+            !virObjectIsClass(_node->conn, virConnectClass)) {          \
+            virReportErrorHelper(VIR_FROM_NODEDEV,                      \
+                                 VIR_ERR_INVALID_NODE_DEVICE,           \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_SECRET(obj) \
     (virObjectIsClass((obj), virSecretClass))
