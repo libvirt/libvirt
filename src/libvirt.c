@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibStreamError(code, ...)                              \
-    virReportErrorHelper(VIR_FROM_STREAMS, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibNWFilterError(code, ...)                            \
     virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,       \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -3087,14 +3084,18 @@ virDomainScreenshot(virDomainPtr domain,
     virResetLastError();
 
     virCheckDomainReturn(domain, NULL);
-    if (!VIR_IS_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
-        return NULL;
+    virCheckStreamGoto(stream, error);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    if (domain->conn != stream->conn) {
+        virReportInvalidArg(stream,
+                            _("stream in %s must match connection of domain '%s'"),
+                            __FUNCTION__, domain->name);
+        goto error;
     }
-    virCheckReadOnlyGoto(domain->conn->flags | stream->conn->flags, error);
 
     if (domain->conn->driver->domainScreenshot) {
-        char * ret;
+        char *ret;
         ret = domain->conn->driver->domainScreenshot(domain, stream,
                                                      screen, flags);
 
@@ -13664,13 +13665,15 @@ virStorageVolDownload(virStorageVolPtr vol,
     virResetLastError();
 
     virCheckStorageVolReturn(vol, -1);
+    virCheckStreamGoto(stream, error);
+    virCheckReadOnlyGoto(vol->conn->flags, error);
 
-    if (!VIR_IS_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
-        return -1;
+    if (vol->conn != stream->conn) {
+        virReportInvalidArg(stream,
+                            _("stream in %s must match connection of volume '%s'"),
+                            __FUNCTION__, vol->name);
+        goto error;
     }
-
-    virCheckReadOnlyGoto(vol->conn->flags | stream->conn->flags, error);
 
     if (vol->conn->storageDriver &&
         vol->conn->storageDriver->storageVolDownload) {
@@ -13728,13 +13731,15 @@ virStorageVolUpload(virStorageVolPtr vol,
     virResetLastError();
 
     virCheckStorageVolReturn(vol, -1);
+    virCheckStreamGoto(stream, error);
+    virCheckReadOnlyGoto(vol->conn->flags, error);
 
-    if (!VIR_IS_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
-        return -1;
+    if (vol->conn != stream->conn) {
+        virReportInvalidArg(stream,
+                            _("stream in %s must match connection of volume '%s'"),
+                            __FUNCTION__, vol->name);
+        goto error;
     }
-
-    virCheckReadOnlyGoto(vol->conn->flags | stream->conn->flags, error);
 
     if (vol->conn->storageDriver &&
         vol->conn->storageDriver->storageVolUpload) {
@@ -15661,11 +15666,8 @@ virStreamRef(virStreamPtr stream)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_STREAM(stream))) {
-        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
+
     virObjectRef(stream);
     return 0;
 }
@@ -15744,12 +15746,7 @@ virStreamSend(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(data, error);
 
     if (stream->driver &&
@@ -15842,12 +15839,7 @@ virStreamRecv(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(data, error);
 
     if (stream->driver &&
@@ -15921,12 +15913,7 @@ virStreamSendAll(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
@@ -16019,12 +16006,7 @@ virStreamRecvAll(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
@@ -16093,11 +16075,7 @@ virStreamEventAddCallback(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     if (stream->driver &&
         stream->driver->streamEventAddCallback) {
@@ -16136,11 +16114,7 @@ virStreamEventUpdateCallback(virStreamPtr stream,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     if (stream->driver &&
         stream->driver->streamEventUpdateCallback) {
@@ -16174,11 +16148,7 @@ virStreamEventRemoveCallback(virStreamPtr stream)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     if (stream->driver &&
         stream->driver->streamEventRemoveCallback) {
@@ -16219,11 +16189,7 @@ virStreamFinish(virStreamPtr stream)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     if (stream->driver &&
         stream->driver->streamFinish) {
@@ -16262,11 +16228,7 @@ virStreamAbort(virStreamPtr stream)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     if (!stream->driver) {
         VIR_DEBUG("aborting unused stream");
@@ -16310,11 +16272,7 @@ virStreamFree(virStreamPtr stream)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STREAM(stream)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStreamReturn(stream, -1);
 
     /* XXX Enforce shutdown before free'ing resources ? */
 
@@ -19332,7 +19290,15 @@ virDomainOpenConsole(virDomainPtr dom,
     virCheckDomainReturn(dom, -1);
     conn = dom->conn;
 
+    virCheckStreamGoto(st, error);
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn != st->conn) {
+        virReportInvalidArg(st,
+                            _("stream in %s must match connection of domain '%s'"),
+                            __FUNCTION__, dom->name);
+        goto error;
+    }
 
     if (conn->driver->domainOpenConsole) {
         int ret;
@@ -19388,7 +19354,15 @@ virDomainOpenChannel(virDomainPtr dom,
     virCheckDomainReturn(dom, -1);
     conn = dom->conn;
 
+    virCheckStreamGoto(st, error);
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn != st->conn) {
+        virReportInvalidArg(st,
+                            _("stream in %s must match connection of domain '%s'"),
+                            __FUNCTION__, dom->name);
+        goto error;
+    }
 
     if (conn->driver->domainOpenChannel) {
         int ret;

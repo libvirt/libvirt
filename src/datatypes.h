@@ -192,10 +192,31 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_STREAM(obj) \
-    (virObjectIsClass((obj), virStreamClass))
-# define VIR_IS_CONNECTED_STREAM(obj) \
-    (VIR_IS_STREAM(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckStreamReturn(obj, retval)                              \
+    do {                                                                \
+        virStreamPtr _st = (obj);                                       \
+        if (!virObjectIsClass(_st, virStreamClass) ||                   \
+            !virObjectIsClass(_st->conn, virConnectClass)) {            \
+            virReportErrorHelper(VIR_FROM_STREAMS,                      \
+                                 VIR_ERR_INVALID_STREAM,                \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckStreamGoto(obj, label)                                 \
+    do {                                                                \
+        virStreamPtr _st = (obj);                                       \
+        if (!virObjectIsClass(_st, virStreamClass) ||                   \
+            !virObjectIsClass(_st->conn, virConnectClass)) {            \
+            virReportErrorHelper(VIR_FROM_STREAMS,                      \
+                                 VIR_ERR_INVALID_STREAM,                \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_NWFILTER(obj) \
     (virObjectIsClass((obj), virNWFilterClass))
