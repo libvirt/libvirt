@@ -178,10 +178,19 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_SECRET(obj) \
-    (virObjectIsClass((obj), virSecretClass))
-# define VIR_IS_CONNECTED_SECRET(obj) \
-    (VIR_IS_SECRET(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckSecretReturn(obj, retval)                              \
+    do {                                                                \
+        virSecretPtr _secret = (obj);                                   \
+        if (!virObjectIsClass(_secret, virSecretClass) ||               \
+            !virObjectIsClass(_secret->conn, virConnectClass)) {        \
+            virReportErrorHelper(VIR_FROM_SECRET,                       \
+                                 VIR_ERR_INVALID_SECRET,                \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_STREAM(obj) \
     (virObjectIsClass((obj), virStreamClass))

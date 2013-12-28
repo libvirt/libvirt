@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibSecretError(code, ...)                              \
-    virReportErrorHelper(VIR_FROM_SECRET, code, __FILE__,         \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStreamError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_STREAMS, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -14967,11 +14964,8 @@ virSecretGetConnect(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckSecretReturn(secret, NULL);
+
     return secret->conn;
 }
 
@@ -15290,11 +15284,7 @@ virSecretGetUUID(virSecretPtr secret, unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
     virCheckNonNullArgGoto(uuid, error);
 
     memcpy(uuid, &secret->uuid[0], VIR_UUID_BUFLEN);
@@ -15324,11 +15314,7 @@ virSecretGetUUIDString(virSecretPtr secret, char *buf)
 
     virResetLastError();
 
-    if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
     virCheckNonNullArgGoto(buf, error);
 
     virUUIDFormat(secret->uuid, buf);
@@ -15360,11 +15346,8 @@ virSecretGetUsageType(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
+
     return secret->usageType;
 }
 
@@ -15392,11 +15375,8 @@ virSecretGetUsageID(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckSecretReturn(secret, NULL);
+
     return secret->usageID;
 }
 
@@ -15420,13 +15400,9 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckSecretReturn(secret, NULL);
     conn = secret->conn;
+
     if (conn->secretDriver != NULL && conn->secretDriver->secretGetXMLDesc != NULL) {
         char *ret;
 
@@ -15466,12 +15442,9 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
     conn = secret->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(value, error);
 
@@ -15512,12 +15485,9 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckSecretReturn(secret, NULL);
     conn = secret->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonNullArgGoto(value_size, error);
 
@@ -15556,12 +15526,9 @@ virSecretUndefine(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
     conn = secret->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->secretUndefine != NULL) {
@@ -15605,11 +15572,8 @@ virSecretRef(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
+
     virObjectRef(secret);
     return 0;
 }
@@ -15630,11 +15594,8 @@ virSecretFree(virSecretPtr secret)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_SECRET(secret)) {
-        virLibSecretError(VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckSecretReturn(secret, -1);
+
     virObjectUnref(secret);
     return 0;
 }
