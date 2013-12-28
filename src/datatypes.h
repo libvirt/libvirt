@@ -138,10 +138,31 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_STORAGE_VOL(obj) \
-    (virObjectIsClass((obj), virStorageVolClass))
-# define VIR_IS_CONNECTED_STORAGE_VOL(obj) \
-    (VIR_IS_STORAGE_VOL(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckStorageVolReturn(obj, retval)                          \
+    do {                                                                \
+        virStorageVolPtr _vol = (obj);                                  \
+        if (!virObjectIsClass(_vol, virStorageVolClass) ||              \
+            !virObjectIsClass(_vol->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_STORAGE,                      \
+                                 VIR_ERR_INVALID_STORAGE_VOL,           \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckStorageVolGoto(obj, label)                             \
+    do {                                                                \
+        virStorageVolPtr _vol = (obj);                                  \
+        if (!virObjectIsClass(_vol, virStorageVolClass) ||              \
+            !virObjectIsClass(_vol->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_STORAGE,                      \
+                                 VIR_ERR_INVALID_STORAGE_VOL,           \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_NODE_DEVICE(obj) \
     (virObjectIsClass((obj), virNodeDeviceClass))
