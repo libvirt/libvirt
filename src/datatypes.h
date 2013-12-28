@@ -232,10 +232,20 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_SNAPSHOT(obj) \
-    (virObjectIsClass((obj), virDomainSnapshotClass))
-# define VIR_IS_DOMAIN_SNAPSHOT(obj) \
-    (VIR_IS_SNAPSHOT(obj) && virObjectIsClass((obj)->domain, virDomainClass))
+# define virCheckDomainSnapshotReturn(obj, retval)                      \
+    do {                                                                \
+        virDomainSnapshotPtr _snap = (obj);                             \
+        if (!virObjectIsClass(_snap, virDomainSnapshotClass) ||         \
+            !virObjectIsClass(_snap->domain, virDomainClass) ||         \
+            !virObjectIsClass(_snap->domain->conn, virConnectClass)) {  \
+            virReportErrorHelper(VIR_FROM_DOMAIN_SNAPSHOT,              \
+                                 VIR_ERR_INVALID_DOMAIN_SNAPSHOT,       \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 
 /* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This

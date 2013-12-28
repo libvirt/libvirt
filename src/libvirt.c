@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibDomainSnapshotError(code, ...)                       \
-    virReportErrorHelper(VIR_FROM_DOMAIN_SNAPSHOT, code, __FILE__, \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 /**
@@ -17975,12 +17972,8 @@ virDomainSnapshotGetName(virDomainSnapshotPtr snapshot)
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckDomainSnapshotReturn(snapshot, NULL);
+
     return snapshot->name;
 }
 
@@ -18005,12 +17998,8 @@ virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot)
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckDomainSnapshotReturn(snapshot, NULL);
+
     return snapshot->domain;
 }
 
@@ -18035,12 +18024,8 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckDomainSnapshotReturn(snapshot, NULL);
+
     return snapshot->domain->conn;
 }
 
@@ -18223,13 +18208,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, NULL);
     conn = snapshot->domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
@@ -18538,14 +18517,9 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
+
     if (conn->driver->domainSnapshotNumChildren) {
         int ret = conn->driver->domainSnapshotNumChildren(snapshot, flags);
         if (ret < 0)
@@ -18629,13 +18603,7 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
 
     virCheckNonNullArgGoto(names, error);
@@ -18723,13 +18691,7 @@ virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
     if (snaps)
         *snaps = NULL;
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
 
     if (conn->driver->domainSnapshotListAllChildren) {
@@ -18885,13 +18847,7 @@ virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, NULL);
     conn = snapshot->domain->conn;
 
     if (conn->driver->domainSnapshotGetParent) {
@@ -18929,13 +18885,7 @@ virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
 
     if (conn->driver->domainSnapshotIsCurrent) {
@@ -18974,13 +18924,7 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
 
     if (conn->driver->domainSnapshotHasMetadata) {
@@ -19051,14 +18995,9 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
@@ -19118,14 +19057,9 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) &&
@@ -19176,12 +19110,8 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
 
     virResetLastError();
 
-    if ((!VIR_IS_DOMAIN_SNAPSHOT(snapshot))) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckDomainSnapshotReturn(snapshot, -1);
+
     virObjectRef(snapshot);
     return 0;
 }
@@ -19203,12 +19133,8 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
 
     virResetLastError();
 
-    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
-        virLibDomainSnapshotError(VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
-                                  __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckDomainSnapshotReturn(snapshot, -1);
+
     virObjectUnref(snapshot);
     return 0;
 }
