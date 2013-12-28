@@ -4468,8 +4468,8 @@ virDomainMigrateVersion1(virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("domainMigratePrepare did not set uri"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("domainMigratePrepare did not set uri"));
         goto done;
     }
     if (uri_out)
@@ -4560,7 +4560,7 @@ virDomainMigrateVersion2(virDomainPtr domain,
      * and pass it to Prepare2.
      */
     if (!domain->conn->driver->domainGetXMLDesc) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virReportUnsupportedError();
         return NULL;
     }
 
@@ -4590,8 +4590,8 @@ virDomainMigrateVersion2(virDomainPtr domain,
         goto done;
 
     if (uri == NULL && uri_out == NULL) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("domainMigratePrepare2 did not set uri"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("domainMigratePrepare2 did not set uri"));
         cancelled = 1;
         /* Make sure Finish doesn't overwrite the error */
         orig_err = virSaveLastError();
@@ -4715,7 +4715,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
           !domain->conn->driver->domainMigrateConfirm3Params ||
           !dconn->driver->domainMigratePrepare3Params ||
           !dconn->driver->domainMigrateFinish3Params))) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virReportUnsupportedError();
         return NULL;
     }
 
@@ -4797,8 +4797,8 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
     } else if (!uri &&
                virTypedParamsGetString(params, nparams,
                                        VIR_MIGRATE_PARAM_URI, &uri) <= 0) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("domainMigratePrepare3 did not set uri"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("domainMigratePrepare3 did not set uri"));
         cancelled = 1;
         orig_err = virSaveLastError();
         goto finish;
@@ -5010,7 +5010,7 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
         (!useParams &&
          !domain->conn->driver->domainMigratePerform &&
          !domain->conn->driver->domainMigratePerform3)) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virReportUnsupportedError();
         return -1;
     }
 
@@ -5039,14 +5039,14 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
     } else {
         VIR_DEBUG("Using migration protocol 2");
         if (xmlin) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("Unable to change target guest XML "
-                              "during migration"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Unable to change target guest XML during "
+                             "migration"));
             return -1;
         }
         if (uri) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to override peer2peer migration URI"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to override peer2peer migration URI"));
             return -1;
         }
         return domain->conn->driver->domainMigratePerform
@@ -5132,8 +5132,8 @@ virDomainMigrateDirect(virDomainPtr domain,
     } else {
         VIR_DEBUG("Using migration protocol 2");
         if (xmlin) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to change target guest XML during migration"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Unable to change target guest XML during migration"));
             return -1;
         }
         return domain->conn->driver->domainMigratePerform(domain,
@@ -5261,16 +5261,16 @@ virDomainMigrate(virDomainPtr domain,
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the source host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the source host"));
             goto error;
         }
         if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the destination host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the destination host"));
             goto error;
         }
     }
@@ -5308,14 +5308,14 @@ virDomainMigrate(virDomainPtr domain,
         if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
             !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("cannot enforce change protection"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("cannot enforce change protection"));
             goto error;
         }
         flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("cannot perform tunnelled migration without using peer2peer flag"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot perform tunnelled migration without using peer2peer flag"));
             goto error;
         }
 
@@ -5487,16 +5487,16 @@ virDomainMigrate2(virDomainPtr domain,
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the source host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the source host"));
             goto error;
         }
         if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the destination host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the destination host"));
             goto error;
         }
     }
@@ -5531,14 +5531,14 @@ virDomainMigrate2(virDomainPtr domain,
         if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
             !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("cannot enforce change protection"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("cannot enforce change protection"));
             goto error;
         }
         flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
         if (flags & VIR_MIGRATE_TUNNELLED) {
-            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("cannot perform tunnelled migration without using peer2peer flag"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot perform tunnelled migration without using peer2peer flag"));
             goto error;
         }
 
@@ -5556,8 +5556,8 @@ virDomainMigrate2(virDomainPtr domain,
                                           VIR_DRV_FEATURE_MIGRATION_V2)) {
             VIR_DEBUG("Using migration protocol 2");
             if (dxml) {
-                virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to change target guest XML during migration"));
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("Unable to change target guest XML during migration"));
                 goto error;
             }
             ddomain = virDomainMigrateVersion2(domain, dconn, flags,
@@ -5568,8 +5568,8 @@ virDomainMigrate2(virDomainPtr domain,
                                             VIR_DRV_FEATURE_MIGRATION_V1)) {
             VIR_DEBUG("Using migration protocol 1");
             if (dxml) {
-                virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to change target guest XML during migration"));
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("Unable to change target guest XML during migration"));
                 goto error;
             }
             ddomain = virDomainMigrateVersion1(domain, dconn, flags,
@@ -5670,16 +5670,16 @@ virDomainMigrate3(virDomainPtr domain,
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the source host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the source host"));
             goto error;
         }
         if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("offline migration is not supported by "
-                              "the destination host"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("offline migration is not supported by "
+                             "the destination host"));
             goto error;
         }
     }
@@ -5692,8 +5692,8 @@ virDomainMigrate3(virDomainPtr domain,
     if (flags & VIR_MIGRATE_CHANGE_PROTECTION &&
         !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                   VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION)) {
-        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("cannot enforce change protection"));
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("cannot enforce change protection"));
         goto error;
     }
     flags &= ~VIR_MIGRATE_CHANGE_PROTECTION;
@@ -5712,9 +5712,9 @@ virDomainMigrate3(virDomainPtr domain,
 
     if (!virTypedParamsCheck(params, nparams, compatParams,
                              ARRAY_CARDINALITY(compatParams))) {
-        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("Migration APIs with extensible parameters are not "
-                          "supported but extended parameters were passed"));
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Migration APIs with extensible parameters are not "
+                         "supported but extended parameters were passed"));
         goto error;
     }
 
@@ -5742,9 +5742,9 @@ virDomainMigrate3(virDomainPtr domain,
                                       VIR_DRV_FEATURE_MIGRATION_V2)) {
         VIR_DEBUG("Using migration protocol 2");
         if (dxml) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("Unable to change target guest XML during "
-                              "migration"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Unable to change target guest XML during "
+                             "migration"));
             goto error;
         }
         ddomain = virDomainMigrateVersion2(domain, dconn, flags,
@@ -5755,9 +5755,9 @@ virDomainMigrate3(virDomainPtr domain,
                                         VIR_DRV_FEATURE_MIGRATION_V1)) {
         VIR_DEBUG("Using migration protocol 1");
         if (dxml) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("Unable to change target guest XML during "
-                              "migration"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Unable to change target guest XML during "
+                             "migration"));
             goto error;
         }
         ddomain = virDomainMigrateVersion1(domain, dconn, flags,
@@ -5881,9 +5881,9 @@ virDomainMigrateToURI(virDomainPtr domain,
     if (flags & VIR_MIGRATE_OFFLINE &&
         !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                   VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                        _("offline migration is not supported by "
-                          "the source host"));
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("offline migration is not supported by "
+                         "the source host"));
         goto error;
     }
 
@@ -5908,9 +5908,9 @@ virDomainMigrateToURI(virDomainPtr domain,
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
-            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("direct migration is not supported by the"
-                              " connection driver"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("direct migration is not supported by the"
+                             " connection driver"));
             goto error;
         }
     }
@@ -6056,9 +6056,9 @@ virDomainMigrateToURI2(virDomainPtr domain,
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
-            virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                            _("direct migration is not supported by the"
-                              " connection driver"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("direct migration is not supported by the"
+                             " connection driver"));
             goto error;
         }
     }
@@ -6161,9 +6161,9 @@ virDomainMigrateToURI3(virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            virLibConnError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                            _("Peer-to-peer migration is not supported by "
-                              "the connection driver"));
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("Peer-to-peer migration is not supported by "
+                             "the connection driver"));
             goto error;
         }
 
@@ -6179,26 +6179,26 @@ virDomainMigrateToURI3(virDomainPtr domain,
                                           dconnuri, uri, bandwidth) < 0)
                 goto error;
         } else {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("Peer-to-peer migration with extensible "
-                              "parameters is not supported but extended "
-                              "parameters were passed"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Peer-to-peer migration with extensible "
+                             "parameters is not supported but extended "
+                             "parameters were passed"));
             goto error;
         }
     } else {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
             /* Cannot do a migration with only the perform step */
-            virLibConnError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                            _("Direct migration is not supported by the"
-                              " connection driver"));
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("Direct migration is not supported by the"
+                             " connection driver"));
             goto error;
         }
 
         if (!compat) {
-            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                            _("Direct migration does not support extensible "
-                              "parameters"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Direct migration does not support extensible "
+                             "parameters"));
             goto error;
         }
 
