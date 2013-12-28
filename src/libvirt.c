@@ -128,7 +128,9 @@ static int virStateDriverTabCount = 0;
 
 
 #if defined(POLKIT_AUTH)
-static int virConnectAuthGainPolkit(const char *privilege) {
+static int
+virConnectAuthGainPolkit(const char *privilege)
+{
     virCommandPtr cmd;
     int status;
     int ret = -1;
@@ -148,9 +150,12 @@ cleanup:
 }
 #endif
 
-static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
-                                         unsigned int ncred,
-                                         void *cbdata ATTRIBUTE_UNUSED) {
+
+static int
+virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
+                              unsigned int ncred,
+                              void *cbdata ATTRIBUTE_UNUSED)
+{
     size_t i;
 
     for (i = 0; i < ncred; i++) {
@@ -225,6 +230,7 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
     return 0;
 }
 
+
 /* Don't typically want VIR_CRED_USERNAME. It enables you to authenticate
  * as one user, and act as another. It just results in annoying
  * prompts for the username twice & is very rarely what you want
@@ -273,7 +279,8 @@ winsock_init(void)
 
 
 #ifdef WITH_GNUTLS_GCRYPT
-static int virTLSMutexInit(void **priv)
+static int
+virTLSMutexInit(void **priv)
 {
     virMutexPtr lock = NULL;
 
@@ -289,7 +296,9 @@ static int virTLSMutexInit(void **priv)
     return 0;
 }
 
-static int virTLSMutexDestroy(void **priv)
+
+static int
+virTLSMutexDestroy(void **priv)
 {
     virMutexPtr lock = *priv;
     virMutexDestroy(lock);
@@ -297,19 +306,24 @@ static int virTLSMutexDestroy(void **priv)
     return 0;
 }
 
-static int virTLSMutexLock(void **priv)
+
+static int
+virTLSMutexLock(void **priv)
 {
     virMutexPtr lock = *priv;
     virMutexLock(lock);
     return 0;
 }
 
-static int virTLSMutexUnlock(void **priv)
+
+static int
+virTLSMutexUnlock(void **priv)
 {
     virMutexPtr lock = *priv;
     virMutexUnlock(lock);
     return 0;
 }
+
 
 static struct gcry_thread_cbs virTLSThreadImpl = {
     /* GCRY_THREAD_OPTION_VERSION was added in gcrypt 1.4.2 */
@@ -506,6 +520,7 @@ error:
     virGlobalError = true;
 }
 
+
 /**
  * virInitialize:
  *
@@ -531,6 +546,7 @@ virInitialize(void)
         return -1;
     return 0;
 }
+
 
 #ifdef WIN32
 BOOL WINAPI
@@ -565,6 +581,7 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
     return TRUE;
 }
 #endif
+
 
 #define virLibConnError(code, ...)                                \
     virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,           \
@@ -628,6 +645,7 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
     return virNetworkDriverTabCount++;
 }
 
+
 /**
  * virRegisterInterfaceDriver:
  * @driver: pointer to an interface driver block
@@ -654,6 +672,7 @@ virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
     virInterfaceDriverTab[virInterfaceDriverTabCount] = driver;
     return virInterfaceDriverTabCount++;
 }
+
 
 /**
  * virRegisterStorageDriver:
@@ -682,6 +701,7 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
     return virStorageDriverTabCount++;
 }
 
+
 /**
  * virRegisterNodeDeviceDriver:
  * @driver: pointer to a device monitor block
@@ -709,6 +729,7 @@ virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr driver)
     return virNodeDeviceDriverTabCount++;
 }
 
+
 /**
  * virRegisterSecretDriver:
  * @driver: pointer to a secret driver block
@@ -735,6 +756,7 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
     virSecretDriverTab[virSecretDriverTabCount] = driver;
     return virSecretDriverTabCount++;
 }
+
 
 /**
  * virRegisterNWFilterDriver:
@@ -793,6 +815,7 @@ virRegisterDriver(virDriverPtr driver)
     return virDriverTabCount++;
 }
 
+
 #ifdef WITH_LIBVIRTD
 /**
  * virRegisterStateDriver:
@@ -818,6 +841,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
     return virStateDriverTabCount++;
 }
 
+
 /**
  * virStateInitialize:
  * @privileged: set to true if running with root privilege, false otherwise
@@ -832,9 +856,10 @@ virRegisterStateDriver(virStateDriverPtr driver)
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
-int virStateInitialize(bool privileged,
-                       virStateInhibitCallback callback,
-                       void *opaque)
+int
+virStateInitialize(bool privileged,
+                   virStateInhibitCallback callback,
+                   void *opaque)
 {
     size_t i;
 
@@ -867,6 +892,7 @@ int virStateInitialize(bool privileged,
     return 0;
 }
 
+
 /**
  * virStateCleanup:
  *
@@ -874,7 +900,9 @@ int virStateInitialize(bool privileged,
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
-int virStateCleanup(void) {
+int
+virStateCleanup(void)
+{
     size_t i;
     int ret = 0;
 
@@ -886,6 +914,7 @@ int virStateCleanup(void) {
     return ret;
 }
 
+
 /**
  * virStateReload:
  *
@@ -893,7 +922,9 @@ int virStateCleanup(void) {
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
-int virStateReload(void) {
+int
+virStateReload(void)
+{
     size_t i;
     int ret = 0;
 
@@ -905,6 +936,7 @@ int virStateReload(void) {
     return ret;
 }
 
+
 /**
  * virStateStop:
  *
@@ -912,7 +944,9 @@ int virStateReload(void) {
  *
  * Returns 0 if successful, -1 on failure
  */
-int virStateStop(void) {
+int
+virStateStop(void)
+{
     size_t i;
     int ret = 0;
 
@@ -923,9 +957,7 @@ int virStateStop(void) {
     }
     return ret;
 }
-
-#endif
-
+#endif /* WITH_LIBVIRTD */
 
 
 /**
@@ -971,6 +1003,7 @@ error:
     return -1;
 }
 
+
 static char *
 virConnectGetConfigFilePath(void)
 {
@@ -994,6 +1027,7 @@ virConnectGetConfigFilePath(void)
 
     return path;
 }
+
 
 static int
 virConnectGetConfigFile(virConfPtr *conf)
@@ -1024,8 +1058,10 @@ cleanup:
 
 #define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
+
 static int
-virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char **uri)
+virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias,
+                                char **uri)
 {
     virConfValuePtr entry;
     size_t alias_len;
@@ -1078,6 +1114,7 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
     return 0;
 }
 
+
 static int
 virConnectOpenResolveURIAlias(virConfPtr conf,
                               const char *alias, char **uri)
@@ -1120,6 +1157,7 @@ virConnectGetDefaultURI(virConfPtr conf,
 cleanup:
     return ret;
 }
+
 
 static virConnectPtr
 do_open(const char *name,
@@ -1372,6 +1410,7 @@ failed:
     return NULL;
 }
 
+
 /**
  * virConnectOpen:
  * @name: (optional) URI of the hypervisor
@@ -1414,6 +1453,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virConnectOpenReadOnly:
  * @name: (optional) URI of the hypervisor
@@ -1448,6 +1488,7 @@ error:
     virDispatchError(NULL);
     return NULL;
 }
+
 
 /**
  * virConnectOpenAuth:
@@ -1487,6 +1528,7 @@ error:
     virDispatchError(NULL);
     return NULL;
 }
+
 
 /**
  * virConnectClose:
@@ -1538,6 +1580,7 @@ error:
     return ret;
 }
 
+
 /**
  * virConnectRef:
  * @conn: the connection to hold a reference on
@@ -1568,6 +1611,7 @@ virConnectRef(virConnectPtr conn)
     return 0;
 }
 
+
 /*
  * Not for public use.  This function is part of the internal
  * implementation of driver features in the remote case.
@@ -1596,6 +1640,7 @@ virConnectSupportsFeature(virConnectPtr conn, int feature)
 
     return ret;
 }
+
 
 /**
  * virConnectGetType:
@@ -1632,6 +1677,7 @@ virConnectGetType(virConnectPtr conn)
     }
     return conn->driver->name;
 }
+
 
 /**
  * virConnectGetVersion:
@@ -1675,6 +1721,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectGetLibVersion:
  * @conn: pointer to the hypervisor connection
@@ -1717,6 +1764,7 @@ error:
     return ret;
 }
 
+
 /**
  * virConnectGetHostname:
  * @conn: pointer to a hypervisor connection
@@ -1757,6 +1805,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virConnectGetURI:
  * @conn: pointer to a hypervisor connection
@@ -1795,6 +1844,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virConnectGetSysinfo:
@@ -1836,6 +1886,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virConnectGetMaxVcpus:
  * @conn: pointer to the hypervisor connection
@@ -1873,6 +1924,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListDomains:
@@ -1920,6 +1972,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectNumOfDomains:
  * @conn: pointer to the hypervisor connection
@@ -1954,6 +2007,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetConnect:
  * @dom: pointer to a domain
@@ -1982,6 +2036,7 @@ virDomainGetConnect(virDomainPtr dom)
     }
     return dom->conn;
 }
+
 
 /**
  * virDomainCreateXML:
@@ -2041,6 +2096,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainCreateXMLWithFiles:
@@ -2115,6 +2171,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
@@ -2133,6 +2190,7 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
 {
     return virDomainCreateXML(conn, xmlDesc, flags);
 }
+
 
 /**
  * virDomainLookupByID:
@@ -2175,6 +2233,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainLookupByUUID:
  * @conn: pointer to the hypervisor connection
@@ -2213,6 +2272,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainLookupByUUIDString:
@@ -2253,6 +2313,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainLookupByName:
  * @conn: pointer to the hypervisor connection
@@ -2291,6 +2352,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainDestroy:
@@ -2351,6 +2413,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainDestroyFlags:
@@ -2418,6 +2481,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainFree:
  * @domain: a domain object
@@ -2442,6 +2506,7 @@ virDomainFree(virDomainPtr domain)
     virObjectUnref(domain);
     return 0;
 }
+
 
 /**
  * virDomainRef:
@@ -2525,6 +2590,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainResume:
  * @domain: a domain object
@@ -2572,6 +2638,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainPMSuspendForDuration:
@@ -2641,6 +2708,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainPMWakeup:
  * @dom: a domain object
@@ -2690,6 +2758,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainSave:
@@ -2754,6 +2823,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainSaveFlags:
@@ -2850,6 +2920,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainRestore:
  * @conn: pointer to the hypervisor connection
@@ -2906,6 +2977,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainRestoreFlags:
  * @conn: pointer to the hypervisor connection
@@ -2937,7 +3009,7 @@ error:
  */
 int
 virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
-    unsigned int flags)
+                      unsigned int flags)
 {
     VIR_DEBUG("conn=%p, from=%s, dxml=%s, flags=%x",
               conn, from, NULLSTR(dxml), flags);
@@ -2988,6 +3060,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainSaveImageGetXMLDesc:
@@ -3056,6 +3129,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainSaveImageDefineXML:
@@ -3137,6 +3211,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainCoreDump:
@@ -3229,6 +3304,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainScreenshot:
  * @domain: a domain object
@@ -3294,6 +3370,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainShutdown:
  * @domain: a domain object
@@ -3349,6 +3426,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainShutdownFlags:
@@ -3412,6 +3490,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainReboot:
@@ -3477,6 +3556,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainReset:
  * @domain: a domain object
@@ -3527,6 +3607,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetName:
  * @domain: a domain object
@@ -3550,6 +3631,7 @@ virDomainGetName(virDomainPtr domain)
     }
     return domain->name;
 }
+
 
 /**
  * virDomainGetUUID:
@@ -3578,6 +3660,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
 
     return 0;
 }
+
 
 /**
  * virDomainGetUUIDString:
@@ -3616,6 +3699,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetID:
  * @domain: a domain object
@@ -3638,6 +3722,7 @@ virDomainGetID(virDomainPtr domain)
     }
     return domain->id;
 }
+
 
 /**
  * virDomainGetOSType:
@@ -3679,6 +3764,7 @@ error:
     virDispatchError(domain->conn);
     return NULL;
 }
+
 
 /**
  * virDomainGetMaxMemory:
@@ -3727,6 +3813,7 @@ error:
     virDispatchError(domain->conn);
     return 0;
 }
+
 
 /**
  * virDomainSetMaxMemory:
@@ -3781,6 +3868,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetMemory:
  * @domain: a domain object or NULL
@@ -3833,6 +3921,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetMemoryFlags:
  * @domain: a domain object or NULL
@@ -3858,7 +3947,6 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
 int
 virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
                         unsigned int flags)
@@ -3898,6 +3986,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetMemoryStatsPeriod:
  * @domain: a domain object or NULL
@@ -3920,7 +4009,6 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
 int
 virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
                               unsigned int flags)
@@ -3962,6 +4050,7 @@ error:
     return -1;
 }
 
+
 /* Helper function called to validate incoming client array on any
  * interface that sets typed parameters in the hypervisor.  */
 static int
@@ -4002,6 +4091,7 @@ virTypedParameterValidateSet(virConnectPtr conn,
     }
     return 0;
 }
+
 
 /**
  * virDomainSetMemoryParameters:
@@ -4061,6 +4151,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetMemoryParameters:
  * @domain: pointer to domain object
@@ -4082,8 +4173,8 @@ error:
  *
  * Here is a sample code snippet:
  *
- *   if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
- *       (nparams != 0)) {
+ *   if (virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0 &&
+ *       nparams != 0) {
  *       if ((params = malloc(sizeof(*params) * nparams)) == NULL)
  *           goto error;
  *       memset(params, 0, sizeof(*params) * nparams);
@@ -4146,6 +4237,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetNumaParameters:
  * @domain: pointer to domain object
@@ -4204,6 +4296,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetNumaParameters:
  * @domain: pointer to domain object
@@ -4230,7 +4323,6 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-
 int
 virDomainGetNumaParameters(virDomainPtr domain,
                            virTypedParameterPtr params,
@@ -4274,6 +4366,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetBlkioParameters:
  * @domain: pointer to domain object
@@ -4289,8 +4382,8 @@ error:
  */
 int
 virDomainSetBlkioParameters(virDomainPtr domain,
-                             virTypedParameterPtr params,
-                             int nparams, unsigned int flags)
+                            virTypedParameterPtr params,
+                            int nparams, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -4332,6 +4425,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetBlkioParameters:
  * @domain: pointer to domain object
@@ -4360,8 +4454,8 @@ error:
  */
 int
 virDomainGetBlkioParameters(virDomainPtr domain,
-                             virTypedParameterPtr params,
-                             int *nparams, unsigned int flags)
+                            virTypedParameterPtr params,
+                            int *nparams, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -4408,6 +4502,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetInfo:
  * @domain: a domain object
@@ -4453,6 +4548,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetState:
@@ -4503,6 +4599,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetControlInfo:
  * @domain: a domain object
@@ -4547,6 +4644,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetXMLDesc:
@@ -4607,6 +4705,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virConnectDomainXMLFromNative:
  * @conn: a connection object
@@ -4621,10 +4720,11 @@ error:
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
  */
-char *virConnectDomainXMLFromNative(virConnectPtr conn,
-                                    const char *nativeFormat,
-                                    const char *nativeConfig,
-                                    unsigned int flags)
+char *
+virConnectDomainXMLFromNative(virConnectPtr conn,
+                              const char *nativeFormat,
+                              const char *nativeConfig,
+                              unsigned int flags)
 {
     VIR_DEBUG("conn=%p, format=%s, config=%s, flags=%x",
               conn, nativeFormat, nativeConfig, flags);
@@ -4662,6 +4762,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virConnectDomainXMLToNative:
  * @conn: a connection object
@@ -4676,10 +4777,11 @@ error:
  * Returns a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error.
  *         the caller must free() the returned value.
  */
-char *virConnectDomainXMLToNative(virConnectPtr conn,
-                                  const char *nativeFormat,
-                                  const char *domainXml,
-                                  unsigned int flags)
+char *
+virConnectDomainXMLToNative(virConnectPtr conn,
+                            const char *nativeFormat,
+                            const char *domainXml,
+                            unsigned int flags)
 {
     VIR_DEBUG("conn=%p, format=%s, xml=%s, flags=%x",
               conn, nativeFormat, domainXml, flags);
@@ -4802,11 +4904,12 @@ virDomainMigrateVersion1(virDomainPtr domain,
     else
         ddomain = virDomainLookupByName(dconn, dname);
 
- done:
+done:
     VIR_FREE(uri_out);
     VIR_FREE(cookie);
     return ddomain;
 }
+
 
 /*
  * Sequence v2:
@@ -4933,7 +5036,7 @@ finish:
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, cookie, cookielen, uri, destflags, cancelled);
 
- done:
+done:
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -5228,7 +5331,7 @@ confirm:
         }
     }
 
- done:
+done:
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -5240,6 +5343,7 @@ confirm:
     virTypedParamsFree(params, nparams);
     return ddomain;
 }
+
 
 static virDomainPtr
 virDomainMigrateVersion3(virDomainPtr domain,
@@ -5254,6 +5358,7 @@ virDomainMigrateVersion3(virDomainPtr domain,
                                         bandwidth, NULL, 0, false, flags);
 }
 
+
 static virDomainPtr
 virDomainMigrateVersion3Params(virDomainPtr domain,
                                virConnectPtr dconn,
@@ -5266,20 +5371,20 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
 }
 
 
- /*
-  * In normal migration, the libvirt client co-ordinates communication
-  * between the 2 libvirtd instances on source & dest hosts.
-  *
-  * In this peer-2-peer migration alternative, the libvirt client
-  * only talks to the source libvirtd instance. The source libvirtd
-  * then opens its own connection to the destination and co-ordinates
-  * migration itself.
-  *
-  * If useParams is true, params and nparams contain migration parameters and
-  * we know it's safe to call the API which supports extensible parameters.
-  * Otherwise, we have to use xmlin, dname, uri, and bandwidth and pass them
-  * to the old-style APIs.
-  */
+/*
+ * In normal migration, the libvirt client co-ordinates communication
+ * between the 2 libvirtd instances on source & dest hosts.
+ *
+ * In this peer-2-peer migration alternative, the libvirt client
+ * only talks to the source libvirtd instance. The source libvirtd
+ * then opens its own connection to the destination and co-ordinates
+ * migration itself.
+ *
+ * If useParams is true, params and nparams contain migration parameters and
+ * we know it's safe to call the API which supports extensible parameters.
+ * Otherwise, we have to use xmlin, dname, uri, and bandwidth and pass them
+ * to the old-style APIs.
+ */
 static int
 virDomainMigratePeer2PeerFull(virDomainPtr domain,
                               const char *dconnuri,
@@ -5349,6 +5454,7 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
     }
 }
 
+
 static int
 virDomainMigratePeer2Peer(virDomainPtr domain,
                           const char *xmlin,
@@ -5361,6 +5467,7 @@ virDomainMigratePeer2Peer(virDomainPtr domain,
     return virDomainMigratePeer2PeerFull(domain, dconnuri, xmlin, dname, uri,
                                          bandwidth, NULL, 0, false, flags);
 }
+
 
 static int
 virDomainMigratePeer2PeerParams(virDomainPtr domain,
@@ -6621,6 +6728,7 @@ error:
     return -1;
 }
 
+
 /*
  * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
@@ -6670,6 +6778,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /*
  * Not for public use.  This function is part of the internal
@@ -6768,6 +6877,7 @@ error:
     virDispatchError(dconn);
     return -1;
 }
+
 
 /*
  * Not for public use.  This function is part of the internal
@@ -6869,6 +6979,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /*
  * Not for public use.  This function is part of the internal
@@ -6979,6 +7090,7 @@ error:
     return -1;
 }
 
+
 /*
  * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
@@ -6994,7 +7106,6 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
                                const char *dname,
                                unsigned long bandwidth,
                                const char *dom_xml)
-
 {
     VIR_DEBUG("conn=%p, stream=%p, cookiein=%p, cookieinlen=%d, cookieout=%p, "
               "cookieoutlen=%p, flags=%lx, dname=%s, bandwidth=%lu, "
@@ -7323,7 +7434,6 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
                                      char **cookieout,
                                      int *cookieoutlen,
                                      unsigned int flags)
-
 {
     VIR_DEBUG("conn=%p, stream=%p, params=%p, nparams=%d, cookiein=%p, "
               "cookieinlen=%d, cookieout=%p, cookieoutlen=%p, flags=%x",
@@ -7566,6 +7676,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectGetCapabilities:
  * @conn: pointer to the hypervisor connection
@@ -7604,6 +7715,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virNodeGetCPUStats:
@@ -7659,10 +7771,11 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virNodeGetCPUStats(virConnectPtr conn,
-                       int cpuNum,
-                       virNodeCPUStatsPtr params,
-                       int *nparams, unsigned int flags)
+int
+virNodeGetCPUStats(virConnectPtr conn,
+                   int cpuNum,
+                   virNodeCPUStatsPtr params,
+                   int *nparams, unsigned int flags)
 {
     VIR_DEBUG("conn=%p, cpuNum=%d, params=%p, nparams=%d, flags=%x",
               conn, cpuNum, params, nparams ? *nparams : -1, flags);
@@ -7677,7 +7790,7 @@ int virNodeGetCPUStats(virConnectPtr conn,
 
     virCheckNonNullArgGoto(nparams, error);
     virCheckNonNegativeArgGoto(*nparams, error);
-    if (((cpuNum < 0) && (cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS))) {
+    if (cpuNum < 0 && cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS) {
         virReportInvalidArg(cpuNum,
                             _("cpuNum in %s only accepts %d as a negative value"),
                             __FUNCTION__, VIR_NODE_CPU_STATS_ALL_CPUS);
@@ -7697,6 +7810,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virNodeGetMemoryStats:
@@ -7748,10 +7862,11 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virNodeGetMemoryStats(virConnectPtr conn,
-                          int cellNum,
-                          virNodeMemoryStatsPtr params,
-                          int *nparams, unsigned int flags)
+int
+virNodeGetMemoryStats(virConnectPtr conn,
+                      int cellNum,
+                      virNodeMemoryStatsPtr params,
+                      int *nparams, unsigned int flags)
 {
     VIR_DEBUG("conn=%p, cellNum=%d, params=%p, nparams=%d, flags=%x",
               conn, cellNum, params, nparams ? *nparams : -1, flags);
@@ -7766,7 +7881,7 @@ int virNodeGetMemoryStats(virConnectPtr conn,
 
     virCheckNonNullArgGoto(nparams, error);
     virCheckNonNegativeArgGoto(*nparams, error);
-    if (((cellNum < 0) && (cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS))) {
+    if (cellNum < 0 && cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS) {
         virReportInvalidArg(cpuNum,
                             _("cellNum in %s only accepts %d as a negative value"),
                             __FUNCTION__, VIR_NODE_MEMORY_STATS_ALL_CELLS);
@@ -7786,6 +7901,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virNodeGetFreeMemory:
@@ -7825,6 +7941,7 @@ error:
     return 0;
 }
 
+
 /**
  * virNodeSuspendForDuration:
  * @conn: pointer to the hypervisor connection
@@ -7852,7 +7969,6 @@ virNodeSuspendForDuration(virConnectPtr conn,
                           unsigned long long duration,
                           unsigned int flags)
 {
-
     VIR_DEBUG("conn=%p, target=%d, duration=%lld, flags=%x",
               conn, target, duration, flags);
 
@@ -7884,6 +8000,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /*
  * virNodeGetMemoryParameters:
@@ -7948,6 +8065,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /*
  * virNodeSetMemoryParameters:
@@ -8014,6 +8132,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainGetSchedulerType:
@@ -8114,6 +8233,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetSchedulerParametersFlags:
  * @domain: pointer to domain object
@@ -8196,6 +8316,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainSetSchedulerParameters:
@@ -8392,6 +8513,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainBlockStatsFlags:
  * @dom: pointer to domain object
@@ -8429,11 +8551,12 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virDomainBlockStatsFlags(virDomainPtr dom,
-                             const char *disk,
-                             virTypedParameterPtr params,
-                             int *nparams,
-                             unsigned int flags)
+int
+virDomainBlockStatsFlags(virDomainPtr dom,
+                         const char *disk,
+                         virTypedParameterPtr params,
+                         int *nparams,
+                         unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -8538,7 +8661,8 @@ error:
     return -1;
 }
 
- /**
+
+/**
  * virDomainSetInterfaceParameters:
  * @domain: pointer to domain object
  * @device: the interface name or mac address
@@ -8605,7 +8729,8 @@ error:
     return -1;
 }
 
- /**
+
+/**
  * virDomainGetInterfaceParameters:
  * @domain: pointer to domain object
  * @device: the interface name or mac address
@@ -8631,7 +8756,6 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-
 int
 virDomainGetInterfaceParameters(virDomainPtr domain,
                                 const char *device,
@@ -8677,6 +8801,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainMemoryStats:
  * @dom: pointer to the domain object
@@ -8709,8 +8834,9 @@ error:
  *
  * Returns: The number of stats provided or -1 in case of failure.
  */
-int virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
-                         unsigned int nr_stats, unsigned int flags)
+int
+virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
+                     unsigned int nr_stats, unsigned int flags)
 {
     virConnectPtr conn;
     unsigned long nr_stats_ret = 0;
@@ -8747,6 +8873,7 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
 
 /**
  * virDomainBlockPeek:
@@ -8841,6 +8968,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainBlockResize:
  * @dom: pointer to the domain object
@@ -8868,7 +8996,6 @@ error:
  *
  * Returns: 0 in case of success or -1 in case of failure.
  */
-
 int
 virDomainBlockResize(virDomainPtr dom,
                      const char *disk,
@@ -8909,6 +9036,7 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
 
 /**
  * virDomainMemoryPeek:
@@ -9102,7 +9230,8 @@ error:
  * Returns NULL in case of error, a pointer to the domain otherwise
  */
 virDomainPtr
-virDomainDefineXML(virConnectPtr conn, const char *xml) {
+virDomainDefineXML(virConnectPtr conn, const char *xml)
+{
     VIR_DEBUG("conn=%p, xml=%s", conn, xml);
 
     virResetLastError();
@@ -9133,6 +9262,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainUndefine:
  * @domain: pointer to a defined domain
@@ -9149,7 +9279,8 @@ error:
  * Returns 0 in case of success, -1 in case of error
  */
 int
-virDomainUndefine(virDomainPtr domain) {
+virDomainUndefine(virDomainPtr domain)
+{
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain);
@@ -9181,6 +9312,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainUndefineFlags:
@@ -9279,6 +9411,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectListDefinedDomains:
  * @conn: pointer to the hypervisor connection
@@ -9299,7 +9432,8 @@ error:
  */
 int
 virConnectListDefinedDomains(virConnectPtr conn, char **const names,
-                             int maxnames) {
+                             int maxnames)
+{
     VIR_DEBUG("conn=%p, names=%p, maxnames=%d", conn, names, maxnames);
 
     virResetLastError();
@@ -9327,6 +9461,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListAllDomains:
@@ -9430,6 +9565,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainCreate:
  * @domain: pointer to a defined domain
@@ -9442,7 +9578,8 @@ error:
  * Returns 0 in case of success, -1 in case of error
  */
 int
-virDomainCreate(virDomainPtr domain) {
+virDomainCreate(virDomainPtr domain)
+{
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain);
@@ -9474,6 +9611,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainCreateWithFlags:
@@ -9509,7 +9647,8 @@ error:
  * Returns 0 in case of success, -1 in case of error
  */
 int
-virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
+virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
+{
     virConnectPtr conn;
 
     VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
@@ -9541,6 +9680,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainCreateWithFiles:
@@ -9623,6 +9763,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetAutostart:
  * @domain: a domain object
@@ -9667,6 +9808,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainSetAutostart:
@@ -9716,6 +9858,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainInjectNMI:
  * @domain: pointer to domain object, or NULL for Domain0
@@ -9725,8 +9868,8 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
-int virDomainInjectNMI(virDomainPtr domain, unsigned int flags)
+int
+virDomainInjectNMI(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
     VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
@@ -9760,6 +9903,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSendKey:
  * @domain:    pointer to domain object, or NULL for Domain0
@@ -9773,13 +9917,13 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
-int virDomainSendKey(virDomainPtr domain,
-                     unsigned int codeset,
-                     unsigned int holdtime,
-                     unsigned int *keycodes,
-                     int nkeycodes,
-                     unsigned int flags)
+int
+virDomainSendKey(virDomainPtr domain,
+                 unsigned int codeset,
+                 unsigned int holdtime,
+                 unsigned int *keycodes,
+                 int nkeycodes,
+                 unsigned int flags)
 {
     virConnectPtr conn;
     VIR_DOMAIN_DEBUG(domain, "codeset=%u, holdtime=%u, nkeycodes=%u, flags=%x",
@@ -9856,10 +10000,11 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-int virDomainSendProcessSignal(virDomainPtr domain,
-                               long long pid_value,
-                               unsigned int signum,
-                               unsigned int flags)
+int
+virDomainSendProcessSignal(virDomainPtr domain,
+                           long long pid_value,
+                           unsigned int signum,
+                           unsigned int flags)
 {
     virConnectPtr conn;
     VIR_DOMAIN_DEBUG(domain, "pid=%lld, signum=%u flags=%x",
@@ -9918,7 +10063,6 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
 int
 virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
@@ -9957,6 +10101,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetVcpusFlags:
  * @domain: pointer to domain object, or NULL for Domain0
@@ -9993,7 +10138,6 @@ error:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-
 int
 virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
                        unsigned int flags)
@@ -10046,6 +10190,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetVcpusFlags:
  * @domain: pointer to domain object, or NULL for Domain0
@@ -10074,7 +10219,6 @@ error:
  *
  * Returns the number of vCPUs in case of success, -1 in case of failure.
  */
-
 int
 virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
@@ -10115,6 +10259,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainPinVcpu:
@@ -10182,6 +10327,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainPinVcpuFlags:
@@ -10261,8 +10407,8 @@ virDomainPinVcpuFlags(virDomainPtr domain, unsigned int vcpu,
 error:
     virDispatchError(domain->conn);
     return -1;
-
 }
+
 
 /**
  * virDomainGetVcpuPinInfo:
@@ -10341,6 +10487,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainPinEmulator:
  * @domain: pointer to domain object, or NULL for Domain0
@@ -10417,6 +10564,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetEmulatorPinInfo:
  * @domain: pointer to domain object, or NULL for Domain0
@@ -10482,6 +10630,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetVcpus:
@@ -10559,6 +10708,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetMaxVcpus:
  * @domain: pointer to domain object
@@ -10603,6 +10753,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetSecurityLabel:
  * @domain: a domain object
@@ -10645,6 +10796,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetSecurityLabelList:
@@ -10789,6 +10941,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetMetadata:
  * @domain: a domain object
@@ -10865,6 +11018,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNodeGetSecurityModel:
  * @conn: a connection object
@@ -10903,6 +11057,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainAttachDevice:
@@ -10955,6 +11110,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainAttachDeviceFlags:
@@ -11019,6 +11175,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainDetachDevice:
  * @domain: pointer to domain object
@@ -11066,6 +11223,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainDetachDeviceFlags:
@@ -11146,6 +11304,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainUpdateDeviceFlags:
  * @domain: pointer to domain object
@@ -11209,6 +11368,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNodeGetCellsFreeMemory:
  * @conn: pointer to the hypervisor connection
@@ -11226,7 +11386,6 @@ error:
  *
  * Returns the number of entries filled in freeMems, or -1 in case of error.
  */
-
 int
 virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
                           int startCell, int maxCells)
@@ -11261,6 +11420,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNetworkGetConnect:
  * @net: pointer to a network
@@ -11289,6 +11449,7 @@ virNetworkGetConnect(virNetworkPtr net)
     }
     return net->conn;
 }
+
 
 /**
  * virConnectListAllNetworks:
@@ -11396,6 +11557,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectListNetworks:
  * @conn: pointer to the hypervisor connection
@@ -11443,6 +11605,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectNumOfDefinedNetworks:
  * @conn: pointer to the hypervisor connection
@@ -11478,6 +11641,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListDefinedNetworks:
@@ -11527,6 +11691,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNetworkLookupByName:
  * @conn: pointer to the hypervisor connection
@@ -11565,6 +11730,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virNetworkLookupByUUID:
@@ -11606,6 +11772,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNetworkLookupByUUIDString:
  * @conn: pointer to the hypervisor connection
@@ -11645,6 +11812,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virNetworkCreateXML:
@@ -11690,6 +11858,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNetworkDefineXML:
  * @conn: pointer to the hypervisor connection
@@ -11732,6 +11901,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNetworkUndefine:
  * @network: pointer to a defined network
@@ -11741,7 +11911,8 @@ error:
  * Returns 0 in case of success, -1 in case of error
  */
 int
-virNetworkUndefine(virNetworkPtr network) {
+virNetworkUndefine(virNetworkPtr network)
+{
     virConnectPtr conn;
     VIR_DEBUG("network=%p", network);
 
@@ -11772,6 +11943,7 @@ error:
     virDispatchError(network->conn);
     return -1;
 }
+
 
 /**
  * virNetworkUpdate:
@@ -11835,6 +12007,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNetworkCreate:
  * @network: pointer to a defined network
@@ -11877,6 +12050,7 @@ error:
     virDispatchError(network->conn);
     return -1;
 }
+
 
 /**
  * virNetworkDestroy:
@@ -11924,6 +12098,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNetworkFree:
  * @network: a network object
@@ -11948,6 +12123,7 @@ virNetworkFree(virNetworkPtr network)
     virObjectUnref(network);
     return 0;
 }
+
 
 /**
  * virNetworkRef:
@@ -11979,6 +12155,7 @@ virNetworkRef(virNetworkPtr network)
     return 0;
 }
 
+
 /**
  * virNetworkGetName:
  * @network: a network object
@@ -12002,6 +12179,7 @@ virNetworkGetName(virNetworkPtr network)
     }
     return network->name;
 }
+
 
 /**
  * virNetworkGetUUID:
@@ -12034,6 +12212,7 @@ error:
     virDispatchError(network->conn);
     return -1;
 }
+
 
 /**
  * virNetworkGetUUIDString:
@@ -12070,6 +12249,7 @@ error:
     virDispatchError(network->conn);
     return -1;
 }
+
 
 /**
  * virNetworkGetXMLDesc:
@@ -12118,6 +12298,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNetworkGetBridgeName:
  * @network: a network object
@@ -12158,6 +12339,7 @@ error:
     virDispatchError(network->conn);
     return NULL;
 }
+
 
 /**
  * virNetworkGetAutostart:
@@ -12202,6 +12384,7 @@ error:
     virDispatchError(network->conn);
     return -1;
 }
+
 
 /**
  * virNetworkSetAutostart:
@@ -12250,6 +12433,7 @@ error:
     return -1;
 }
 
+
 /**
  * virInterfaceGetConnect:
  * @iface: pointer to an interface
@@ -12278,6 +12462,7 @@ virInterfaceGetConnect(virInterfacePtr iface)
     }
     return iface->conn;
 }
+
 
 /**
  * virConnectListAllInterfaces:
@@ -12340,6 +12525,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectNumOfInterfaces:
  * @conn: pointer to the hypervisor connection
@@ -12375,6 +12561,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListInterfaces:
@@ -12424,6 +12611,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectNumOfDefinedInterfaces:
  * @conn: pointer to the hypervisor connection
@@ -12459,6 +12647,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListDefinedInterfaces:
@@ -12510,6 +12699,7 @@ error:
     return -1;
 }
 
+
 /**
  * virInterfaceLookupByName:
  * @conn: pointer to the hypervisor connection
@@ -12548,6 +12738,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virInterfaceLookupByMACString:
@@ -12588,6 +12779,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virInterfaceGetName:
  * @iface: an interface object
@@ -12611,6 +12803,7 @@ virInterfaceGetName(virInterfacePtr iface)
     }
     return iface->name;
 }
+
 
 /**
  * virInterfaceGetMACString:
@@ -12637,6 +12830,7 @@ virInterfaceGetMACString(virInterfacePtr iface)
     }
     return iface->mac;
 }
+
 
 /**
  * virInterfaceGetXMLDesc:
@@ -12686,6 +12880,7 @@ error:
     virDispatchError(iface->conn);
     return NULL;
 }
+
 
 /**
  * virInterfaceDefineXML:
@@ -12740,6 +12935,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virInterfaceUndefine:
  * @iface: pointer to a defined interface
@@ -12760,7 +12956,8 @@ error:
  * Returns 0 in case of success, -1 in case of error
  */
 int
-virInterfaceUndefine(virInterfacePtr iface) {
+virInterfaceUndefine(virInterfacePtr iface)
+{
     virConnectPtr conn;
     VIR_DEBUG("iface=%p", iface);
 
@@ -12791,6 +12988,7 @@ error:
     virDispatchError(iface->conn);
     return -1;
 }
+
 
 /**
  * virInterfaceCreate:
@@ -12839,6 +13037,7 @@ error:
     virDispatchError(iface->conn);
     return -1;
 }
+
 
 /**
  * virInterfaceDestroy:
@@ -12893,6 +13092,7 @@ error:
     return -1;
 }
 
+
 /**
  * virInterfaceRef:
  * @iface: the interface to hold a reference on
@@ -12923,6 +13123,7 @@ virInterfaceRef(virInterfacePtr iface)
     return 0;
 }
 
+
 /**
  * virInterfaceFree:
  * @iface: an interface object
@@ -12947,6 +13148,7 @@ virInterfaceFree(virInterfacePtr iface)
     virObjectUnref(iface);
     return 0;
 }
+
 
 /**
  * virInterfaceChangeBegin:
@@ -12998,6 +13200,7 @@ error:
     return -1;
 }
 
+
 /**
  * virInterfaceChangeCommit:
  * @conn: pointer to hypervisor connection
@@ -13044,6 +13247,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virInterfaceChangeRollback:
@@ -13122,6 +13326,7 @@ virStoragePoolGetConnect(virStoragePoolPtr pool)
     }
     return pool->conn;
 }
+
 
 /**
  * virConnectListAllStoragePools:
@@ -13207,6 +13412,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectNumOfStoragePools:
  * @conn: pointer to hypervisor connection
@@ -13242,6 +13448,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListStoragePools:
@@ -13600,6 +13807,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virStoragePoolCreateXML:
  * @conn: pointer to hypervisor connection
@@ -13648,6 +13856,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virStoragePoolDefineXML:
  * @conn: pointer to hypervisor connection
@@ -13693,6 +13902,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virStoragePoolBuild:
@@ -13877,6 +14087,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStoragePoolDelete:
  * @pool: pointer to storage pool
@@ -13982,6 +14193,7 @@ virStoragePoolRef(virStoragePoolPtr pool)
     return 0;
 }
 
+
 /**
  * virStoragePoolRefresh:
  * @pool: pointer to storage pool
@@ -14086,6 +14298,7 @@ error:
     virDispatchError(pool->conn);
     return -1;
 }
+
 
 /**
  * virStoragePoolGetUUIDString:
@@ -14304,6 +14517,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStoragePoolListAllVolumes:
  * @pool: Pointer to storage pool
@@ -14352,6 +14566,7 @@ error:
     virDispatchError(pool->conn);
     return -1;
 }
+
 
 /**
  * virStoragePoolNumOfVolumes:
@@ -14509,7 +14724,6 @@ error:
 }
 
 
-
 /**
  * virStorageVolLookupByKey:
  * @conn: pointer to hypervisor connection
@@ -14550,6 +14764,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virStorageVolLookupByPath:
@@ -15047,6 +15262,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStorageVolFree:
  * @vol: pointer to storage volume
@@ -15102,6 +15318,7 @@ virStorageVolRef(virStorageVolPtr vol)
     virObjectRef(vol);
     return 0;
 }
+
 
 /**
  * virStorageVolGetInfo:
@@ -15236,6 +15453,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virStorageVolResize:
  * @vol: pointer to storage volume
@@ -15317,6 +15535,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNodeNumOfDevices:
  * @conn: pointer to the hypervisor connection
@@ -15357,6 +15576,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListAllNodeDevices:
@@ -15431,6 +15651,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNodeListDevices:
  * @conn: pointer to the hypervisor connection
@@ -15492,7 +15713,8 @@ error:
  *
  * Returns a virNodeDevicePtr if found, NULL otherwise.
  */
-virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
+virNodeDevicePtr
+virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 {
     VIR_DEBUG("conn=%p, name=%p", conn, name);
 
@@ -15520,6 +15742,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virNodeDeviceLookupSCSIHostByWWN:
@@ -15568,6 +15791,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNodeDeviceGetXMLDesc:
  * @dev: pointer to the node device
@@ -15578,7 +15802,8 @@ error:
  *
  * Returns the XML document, or NULL on error
  */
-char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
+char *
+virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
 {
     VIR_DEBUG("dev=%p, conn=%p, flags=%x", dev, dev ? dev->conn : NULL, flags);
 
@@ -15614,7 +15839,8 @@ error:
  *
  * Returns the device name or NULL in case of error
  */
-const char *virNodeDeviceGetName(virNodeDevicePtr dev)
+const char *
+virNodeDeviceGetName(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
@@ -15627,6 +15853,7 @@ const char *virNodeDeviceGetName(virNodeDevicePtr dev)
     return dev->name;
 }
 
+
 /**
  * virNodeDeviceGetParent:
  * @dev: the device
@@ -15636,7 +15863,8 @@ const char *virNodeDeviceGetName(virNodeDevicePtr dev)
  * Returns the name of the device's parent, or NULL if the
  * device has no parent.
  */
-const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
+const char *
+virNodeDeviceGetParent(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
@@ -15660,6 +15888,7 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
     return dev->parent;
 }
 
+
 /**
  * virNodeDeviceNumOfCaps:
  * @dev: the device
@@ -15668,7 +15897,8 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
  *
  * Returns the number of capabilities supported by the device.
  */
-int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
+int
+virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
@@ -15695,6 +15925,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNodeDeviceListCaps:
  * @dev: the device
@@ -15705,9 +15936,10 @@ error:
  *
  * Returns the number of capability names listed in @names.
  */
-int virNodeDeviceListCaps(virNodeDevicePtr dev,
-                          char **const names,
-                          int maxnames)
+int
+virNodeDeviceListCaps(virNodeDevicePtr dev,
+                      char **const names,
+                      int maxnames)
 {
     VIR_DEBUG("dev=%p, conn=%p, names=%p, maxnames=%d",
           dev, dev ? dev->conn : NULL, names, maxnames);
@@ -15748,7 +15980,8 @@ error:
  *
  * Returns the 0 for success, -1 for error.
  */
-int virNodeDeviceFree(virNodeDevicePtr dev)
+int
+virNodeDeviceFree(virNodeDevicePtr dev)
 {
     VIR_DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
 
@@ -15793,6 +16026,7 @@ virNodeDeviceRef(virNodeDevicePtr dev)
     virObjectRef(dev);
     return 0;
 }
+
 
 /**
  * virNodeDeviceDettach:
@@ -15850,6 +16084,7 @@ error:
     virDispatchError(dev->conn);
     return -1;
 }
+
 
 /**
  * virNodeDeviceDetachFlags:
@@ -15915,6 +16150,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNodeDeviceReAttach:
  * @dev: pointer to the node device
@@ -15962,6 +16198,7 @@ error:
     virDispatchError(dev->conn);
     return -1;
 }
+
 
 /**
  * virNodeDeviceReset:
@@ -16154,7 +16391,7 @@ virConnectDomainEventRegister(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(cb, error);
 
-    if ((conn->driver) && (conn->driver->connectDomainEventRegister)) {
+    if (conn->driver && conn->driver->connectDomainEventRegister) {
         int ret;
         ret = conn->driver->connectDomainEventRegister(conn, cb, opaque, freecb);
         if (ret < 0)
@@ -16167,6 +16404,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectDomainEventDeregister:
@@ -16197,7 +16435,7 @@ virConnectDomainEventDeregister(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(cb, error);
 
-    if ((conn->driver) && (conn->driver->connectDomainEventDeregister)) {
+    if (conn->driver && conn->driver->connectDomainEventDeregister) {
         int ret;
         ret = conn->driver->connectDomainEventDeregister(conn, cb);
         if (ret < 0)
@@ -16210,6 +16448,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virSecretGetConnect:
@@ -16237,6 +16476,7 @@ virSecretGetConnect(virSecretPtr secret)
     }
     return secret->conn;
 }
+
 
 /**
  * virConnectNumOfSecrets:
@@ -16275,6 +16515,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListAllSecrets:
@@ -16343,6 +16584,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectListSecrets:
  * @conn: virConnect connection
@@ -16384,6 +16626,7 @@ error:
     return -1;
 }
 
+
 /**
  * virSecretLookupByUUID:
  * @conn: pointer to the hypervisor connection
@@ -16424,6 +16667,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virSecretLookupByUUIDString:
@@ -16561,6 +16805,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virSecretGetUUID:
  * @secret: A virSecret secret
@@ -16593,6 +16838,7 @@ error:
     virDispatchError(secret->conn);
     return -1;
 }
+
 
 /**
  * virSecretGetUUIDString:
@@ -16630,6 +16876,7 @@ error:
     return -1;
 }
 
+
 /**
  * virSecretGetUsageType:
  * @secret: a secret object
@@ -16657,6 +16904,7 @@ virSecretGetUsageType(virSecretPtr secret)
     }
     return secret->usageType;
 }
+
 
 /**
  * virSecretGetUsageID:
@@ -16732,6 +16980,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virSecretSetValue:
  * @secret: A virSecret secret
@@ -16782,6 +17031,7 @@ error:
     return -1;
 }
 
+
 /**
  * virSecretGetValue:
  * @secret: A virSecret connection
@@ -16830,6 +17080,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virSecretUndefine:
  * @secret: A virSecret secret
@@ -16875,6 +17126,7 @@ error:
     return -1;
 }
 
+
 /**
  * virSecretRef:
  * @secret: the secret to hold a reference on
@@ -16903,6 +17155,7 @@ virSecretRef(virSecretPtr secret)
     virObjectRef(secret);
     return 0;
 }
+
 
 /**
  * virSecretFree:
@@ -17063,9 +17316,10 @@ virStreamRef(virStreamPtr stream)
  * Returns -2 if the outgoing transmit buffers are full &
  * the stream is marked as non-blocking.
  */
-int virStreamSend(virStreamPtr stream,
-                  const char *data,
-                  size_t nbytes)
+int
+virStreamSend(virStreamPtr stream,
+              const char *data,
+              size_t nbytes)
 {
     VIR_DEBUG("stream=%p, data=%p, nbytes=%zi", stream, data, nbytes);
 
@@ -17160,9 +17414,10 @@ error:
  * Returns -2 if there is no data pending to be read & the
  * stream is marked as non-blocking.
  */
-int virStreamRecv(virStreamPtr stream,
-                  char *data,
-                  size_t nbytes)
+int
+virStreamRecv(virStreamPtr stream,
+              char *data,
+              size_t nbytes)
 {
     VIR_DEBUG("stream=%p, data=%p, nbytes=%zi", stream, data, nbytes);
 
@@ -17235,9 +17490,10 @@ error:
  * having been called,  so the caller need only call
  * virStreamFree()
  */
-int virStreamSendAll(virStreamPtr stream,
-                     virStreamSourceFunc handler,
-                     void *opaque)
+int
+virStreamSendAll(virStreamPtr stream,
+                 virStreamSourceFunc handler,
+                 void *opaque)
 {
     char *bytes = NULL;
     int want = 1024*64;
@@ -17332,9 +17588,10 @@ cleanup:
  * having been called,  so the caller need only call
  * virStreamFree()
  */
-int virStreamRecvAll(virStreamPtr stream,
-                     virStreamSinkFunc handler,
-                     void *opaque)
+int
+virStreamRecvAll(virStreamPtr stream,
+                 virStreamSinkFunc handler,
+                 void *opaque)
 {
     char *bytes = NULL;
     int want = 1024*64;
@@ -17405,11 +17662,12 @@ cleanup:
  *
  * Returns 0 on success, -1 upon error
  */
-int virStreamEventAddCallback(virStreamPtr stream,
-                              int events,
-                              virStreamEventCallback cb,
-                              void *opaque,
-                              virFreeCallback ff)
+int
+virStreamEventAddCallback(virStreamPtr stream,
+                          int events,
+                          virStreamEventCallback cb,
+                          void *opaque,
+                          virFreeCallback ff)
 {
     VIR_DEBUG("stream=%p, events=%d, cb=%p, opaque=%p, ff=%p", stream, events, cb, opaque, ff);
 
@@ -17450,8 +17708,9 @@ error:
  *
  * Returns 0 on success, -1 if no callback is registered
  */
-int virStreamEventUpdateCallback(virStreamPtr stream,
-                                 int events)
+int
+virStreamEventUpdateCallback(virStreamPtr stream,
+                             int events)
 {
     VIR_DEBUG("stream=%p, events=%d", stream, events);
 
@@ -17479,6 +17738,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStreamEventRemoveCallback:
  * @stream: pointer to the stream object
@@ -17487,7 +17747,8 @@ error:
  *
  * Returns 0 on success, -1 on error
  */
-int virStreamEventRemoveCallback(virStreamPtr stream)
+int
+virStreamEventRemoveCallback(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p", stream);
 
@@ -17515,6 +17776,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStreamFinish:
  * @stream: pointer to the stream object
@@ -17530,7 +17792,8 @@ error:
  *
  * Returns 0 on success, -1 upon error
  */
-int virStreamFinish(virStreamPtr stream)
+int
+virStreamFinish(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p", stream);
 
@@ -17558,6 +17821,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStreamAbort:
  * @stream: pointer to the stream object
@@ -17571,7 +17835,8 @@ error:
  *
  * Returns 0 on success, -1 upon error
  */
-int virStreamAbort(virStreamPtr stream)
+int
+virStreamAbort(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p", stream);
 
@@ -17603,6 +17868,7 @@ error:
     return -1;
 }
 
+
 /**
  * virStreamFree:
  * @stream: pointer to the stream object
@@ -17617,7 +17883,8 @@ error:
  *
  * Returns 0 upon success, or -1 on error
  */
-int virStreamFree(virStreamPtr stream)
+int
+virStreamFree(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p", stream);
 
@@ -17644,7 +17911,8 @@ int virStreamFree(virStreamPtr stream)
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  */
-int virDomainIsActive(virDomainPtr dom)
+int
+virDomainIsActive(virDomainPtr dom)
 {
     VIR_DEBUG("dom=%p", dom);
 
@@ -17669,6 +17937,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainIsPersistent:
  * @dom: pointer to the domain object
@@ -17678,7 +17947,8 @@ error:
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  */
-int virDomainIsPersistent(virDomainPtr dom)
+int
+virDomainIsPersistent(virDomainPtr dom)
 {
     VIR_DOMAIN_DEBUG(dom);
 
@@ -17703,6 +17973,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainIsUpdated:
  * @dom: pointer to the domain object
@@ -17711,7 +17982,8 @@ error:
  *
  * Returns 1 if updated, 0 if not, -1 on error
  */
-int virDomainIsUpdated(virDomainPtr dom)
+int
+virDomainIsUpdated(virDomainPtr dom)
 {
     VIR_DOMAIN_DEBUG(dom);
 
@@ -17736,6 +18008,7 @@ error:
     return -1;
 }
 
+
 /**
  * virNetworkIsActive:
  * @net: pointer to the network object
@@ -17744,7 +18017,8 @@ error:
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  */
-int virNetworkIsActive(virNetworkPtr net)
+int
+virNetworkIsActive(virNetworkPtr net)
 {
     VIR_DEBUG("net=%p", net);
 
@@ -17779,7 +18053,8 @@ error:
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  */
-int virNetworkIsPersistent(virNetworkPtr net)
+int
+virNetworkIsPersistent(virNetworkPtr net)
 {
     VIR_DEBUG("net=%p", net);
 
@@ -17813,7 +18088,8 @@ error:
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  */
-int virStoragePoolIsActive(virStoragePoolPtr pool)
+int
+virStoragePoolIsActive(virStoragePoolPtr pool)
 {
     VIR_DEBUG("pool=%p", pool);
 
@@ -17848,7 +18124,8 @@ error:
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  */
-int virStoragePoolIsPersistent(virStoragePoolPtr pool)
+int
+virStoragePoolIsPersistent(virStoragePoolPtr pool)
 {
     VIR_DEBUG("pool=%p", pool);
 
@@ -17872,7 +18149,6 @@ error:
     virDispatchError(pool->conn);
     return -1;
 }
-
 
 
 /**
@@ -17910,6 +18186,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListAllNWFilters:
@@ -17961,6 +18238,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectListNWFilters:
@@ -18043,6 +18321,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNWFilterLookupByUUID:
  * @conn: pointer to the hypervisor connection
@@ -18081,6 +18360,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virNWFilterLookupByUUIDString:
@@ -18121,6 +18401,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virNWFilterFree:
  * @nwfilter: a nwfilter object
@@ -18147,6 +18428,7 @@ virNWFilterFree(virNWFilterPtr nwfilter)
     return 0;
 }
 
+
 /**
  * virNWFilterGetName:
  * @nwfilter: a nwfilter object
@@ -18170,6 +18452,7 @@ virNWFilterGetName(virNWFilterPtr nwfilter)
     }
     return nwfilter->name;
 }
+
 
 /**
  * virNWFilterGetUUID:
@@ -18202,6 +18485,7 @@ error:
     virDispatchError(nwfilter->conn);
     return -1;
 }
+
 
 /**
  * virNWFilterGetUUIDString:
@@ -18413,7 +18697,8 @@ virNWFilterRef(virNWFilterPtr nwfilter)
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  */
-int virInterfaceIsActive(virInterfacePtr iface)
+int
+virInterfaceIsActive(virInterfacePtr iface)
 {
     VIR_DEBUG("iface=%p", iface);
 
@@ -18447,7 +18732,8 @@ error:
  *
  * Returns 1 if encrypted, 0 if not encrypted, -1 on error
  */
-int virConnectIsEncrypted(virConnectPtr conn)
+int
+virConnectIsEncrypted(virConnectPtr conn)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -18472,6 +18758,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectIsSecure:
  * @conn: pointer to the connection object
@@ -18484,7 +18771,8 @@ error:
  *
  * Returns 1 if secure, 0 if not secure, -1 on error
  */
-int virConnectIsSecure(virConnectPtr conn)
+int
+virConnectIsSecure(virConnectPtr conn)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -18865,6 +19153,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainMigrateGetCompressionCache:
  * @domain: a domain object
@@ -18909,6 +19198,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainMigrateSetCompressionCache:
@@ -18960,6 +19250,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainMigrateSetMaxSpeed:
  * @domain: a domain object
@@ -19006,6 +19297,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainMigrateGetMaxSpeed:
@@ -19055,6 +19347,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectDomainEventRegisterAny:
@@ -19124,7 +19417,7 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         goto error;
     }
 
-    if ((conn->driver) && (conn->driver->connectDomainEventRegisterAny)) {
+    if (conn->driver && conn->driver->connectDomainEventRegisterAny) {
         int ret;
         ret = conn->driver->connectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb);
         if (ret < 0)
@@ -19137,6 +19430,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectDomainEventDeregisterAny:
@@ -19163,7 +19457,7 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
     }
     virCheckNonNegativeArgGoto(callbackID, error);
 
-    if ((conn->driver) && (conn->driver->connectDomainEventDeregisterAny)) {
+    if (conn->driver && conn->driver->connectDomainEventDeregisterAny) {
         int ret;
         ret = conn->driver->connectDomainEventDeregisterAny(conn, callbackID);
         if (ret < 0)
@@ -19176,6 +19470,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectNetworkEventRegisterAny:
@@ -19246,7 +19541,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
         goto error;
     }
 
-    if ((conn->networkDriver) && (conn->networkDriver->connectNetworkEventRegisterAny)) {
+    if (conn->networkDriver && conn->networkDriver->connectNetworkEventRegisterAny) {
         int ret;
         ret = conn->networkDriver->connectNetworkEventRegisterAny(conn, net,
                                                                   eventID,
@@ -19262,6 +19557,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virConnectNetworkEventDeregisterAny:
@@ -19288,8 +19584,8 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
     }
     virCheckNonNegativeArgGoto(callbackID, error);
 
-    if ((conn->networkDriver) &&
-        (conn->networkDriver->connectNetworkEventDeregisterAny)) {
+    if (conn->networkDriver &&
+        conn->networkDriver->connectNetworkEventDeregisterAny) {
         int ret;
         ret = conn->networkDriver->connectNetworkEventDeregisterAny(conn,
                                                                     callbackID);
@@ -19303,6 +19599,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainManagedSave:
@@ -19333,7 +19630,8 @@ error:
  *
  * Returns 0 in case of success or -1 in case of failure
  */
-int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
+int
+virDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -19376,6 +19674,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainHasManagedSaveImage:
  * @dom: pointer to the domain
@@ -19388,7 +19687,8 @@ error:
  * Returns 0 if no image is present, 1 if an image is present, and
  *         -1 in case of error
  */
-int virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+int
+virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -19420,6 +19720,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainManagedSaveRemove:
  * @dom: pointer to the domain
@@ -19429,7 +19730,8 @@ error:
  *
  * Returns 0 in case of success, and -1 in case of error
  */
-int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
+int
+virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -19465,6 +19767,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotGetName:
  * @snapshot: a snapshot object
@@ -19489,6 +19792,7 @@ virDomainSnapshotGetName(virDomainSnapshotPtr snapshot)
     }
     return snapshot->name;
 }
+
 
 /**
  * virDomainSnapshotGetDomain:
@@ -19519,6 +19823,7 @@ virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot)
     return snapshot->domain;
 }
 
+
 /**
  * virDomainSnapshotGetConnect:
  * @snapshot: a snapshot object
@@ -19547,6 +19852,7 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
     }
     return snapshot->domain->conn;
 }
+
 
 /**
  * virDomainSnapshotCreateXML:
@@ -19707,6 +20013,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainSnapshotGetXMLDesc:
  * @snapshot: a domain snapshot object
@@ -19759,6 +20066,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainSnapshotNum:
@@ -19829,6 +20137,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainSnapshotListNames:
@@ -19921,6 +20230,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainListAllSnapshots:
  * @domain: a domain object
@@ -20006,6 +20316,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotNumChildren:
  * @snapshot: a domain snapshot object
@@ -20076,6 +20387,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainSnapshotListChildrenNames:
@@ -20174,6 +20486,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotListAllChildren:
  * @snapshot: a domain snapshot object
@@ -20262,6 +20575,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotLookupByName:
  * @domain: a domain object
@@ -20309,6 +20623,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainHasCurrentSnapshot:
  * @domain: pointer to the domain object
@@ -20347,6 +20662,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainSnapshotCurrent:
@@ -20390,6 +20706,7 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
 
 /**
  * virDomainSnapshotGetParent:
@@ -20435,6 +20752,7 @@ error:
     return NULL;
 }
 
+
 /**
  * virDomainSnapshotIsCurrent:
  * @snapshot: a snapshot object
@@ -20445,8 +20763,9 @@ error:
  *
  * Returns 1 if current, 0 if not current, or -1 on error.
  */
-int virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
-                               unsigned int flags)
+int
+virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
+                           unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20477,6 +20796,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotHasMetadata:
  * @snapshot: a snapshot object
@@ -20488,8 +20808,9 @@ error:
  * Returns 1 if the snapshot has metadata, 0 if the snapshot exists without
  * help from libvirt, or -1 on error.
  */
-int virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
-                                 unsigned int flags)
+int
+virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                             unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20519,6 +20840,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainRevertToSnapshot:
@@ -20607,6 +20929,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotDelete:
  * @snapshot: a domain snapshot object
@@ -20676,6 +20999,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSnapshotRef:
  * @snapshot: the snapshot to hold a reference on
@@ -20707,6 +21031,7 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
     return 0;
 }
 
+
 /**
  * virDomainSnapshotFree:
  * @snapshot: a domain snapshot object
@@ -20732,6 +21057,7 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
     virObjectUnref(snapshot);
     return 0;
 }
+
 
 /**
  * virDomainOpenConsole:
@@ -20763,10 +21089,11 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
  *
  * Returns 0 if the console was opened, -1 on error
  */
-int virDomainOpenConsole(virDomainPtr dom,
-                         const char *dev_name,
-                         virStreamPtr st,
-                         unsigned int flags)
+int
+virDomainOpenConsole(virDomainPtr dom,
+                     const char *dev_name,
+                     virStreamPtr st,
+                     unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20802,6 +21129,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainOpenChannel:
  * @dom: a domain object
@@ -20824,10 +21152,11 @@ error:
  *
  * Returns 0 if the channel was opened, -1 on error
  */
-int virDomainOpenChannel(virDomainPtr dom,
-                         const char *name,
-                         virStreamPtr st,
-                         unsigned int flags)
+int
+virDomainOpenChannel(virDomainPtr dom,
+                     const char *name,
+                     virStreamPtr st,
+                     unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20862,6 +21191,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainBlockJobAbort:
@@ -20903,8 +21233,9 @@ error:
  *
  * Returns -1 in case of failure, 0 when successful.
  */
-int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
-                           unsigned int flags)
+int
+virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
+                       unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20941,6 +21272,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetBlockJobInfo:
  * @dom: pointer to domain object
@@ -20960,8 +21292,9 @@ error:
  *
  * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
  */
-int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
-                             virDomainBlockJobInfoPtr info, unsigned int flags)
+int
+virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
+                         virDomainBlockJobInfoPtr info, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -20996,6 +21329,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainBlockJobSetSpeed:
  * @dom: pointer to domain object
@@ -21015,8 +21349,9 @@ error:
  *
  * Returns -1 in case of failure, 0 when successful.
  */
-int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
-                              unsigned long bandwidth, unsigned int flags)
+int
+virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
+                          unsigned long bandwidth, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21054,6 +21389,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainBlockPull:
  * @dom: pointer to domain object
@@ -21087,8 +21423,9 @@ error:
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
-int virDomainBlockPull(virDomainPtr dom, const char *disk,
-                       unsigned long bandwidth, unsigned int flags)
+int
+virDomainBlockPull(virDomainPtr dom, const char *disk,
+                   unsigned long bandwidth, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21205,9 +21542,10 @@ error:
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
-int virDomainBlockRebase(virDomainPtr dom, const char *disk,
-                         const char *base, unsigned long bandwidth,
-                         unsigned int flags)
+int
+virDomainBlockRebase(virDomainPtr dom, const char *disk,
+                     const char *base, unsigned long bandwidth,
+                     unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21323,9 +21661,10 @@ error:
  *
  * Returns 0 if the operation has started, -1 on failure.
  */
-int virDomainBlockCommit(virDomainPtr dom, const char *disk,
-                         const char *base, const char *top,
-                         unsigned long bandwidth, unsigned int flags)
+int
+virDomainBlockCommit(virDomainPtr dom, const char *disk,
+                     const char *base, const char *top,
+                     unsigned long bandwidth, unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21389,10 +21728,11 @@ error:
  *
  * Returns 0 on success, -1 on failure
  */
-int virDomainOpenGraphics(virDomainPtr dom,
-                          unsigned int idx,
-                          int fd,
-                          unsigned int flags)
+int
+virDomainOpenGraphics(virDomainPtr dom,
+                      unsigned int idx,
+                      int fd,
+                      unsigned int flags)
 {
     struct stat sb;
     VIR_DOMAIN_DEBUG(dom, "idx=%u, fd=%d, flags=%x",
@@ -21474,9 +21814,10 @@ error:
  * Returns -1 on error, 0 on success, 1 when remote party doesn't support
  * keepalive messages.
  */
-int virConnectSetKeepAlive(virConnectPtr conn,
-                           int interval,
-                           unsigned int count)
+int
+virConnectSetKeepAlive(virConnectPtr conn,
+                       int interval,
+                       unsigned int count)
 {
     int ret = -1;
 
@@ -21504,6 +21845,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectIsAlive:
  * @conn: pointer to the connection object
@@ -21515,7 +21857,8 @@ error:
  *
  * Returns 1 if alive, 0 if dead, -1 on error
  */
-int virConnectIsAlive(virConnectPtr conn)
+int
+virConnectIsAlive(virConnectPtr conn)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -21564,10 +21907,11 @@ error:
  *
  * Returns 0 on success, -1 on error
  */
-int virConnectRegisterCloseCallback(virConnectPtr conn,
-                                    virConnectCloseFunc cb,
-                                    void *opaque,
-                                    virFreeCallback freecb)
+int
+virConnectRegisterCloseCallback(virConnectPtr conn,
+                                virConnectCloseFunc cb,
+                                void *opaque,
+                                virFreeCallback freecb)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -21610,6 +21954,7 @@ error:
     return -1;
 }
 
+
 /**
  * virConnectUnregisterCloseCallback:
  * @conn: pointer to connection object
@@ -21623,8 +21968,9 @@ error:
  *
  * Returns 0 on success, -1 on error
  */
-int virConnectUnregisterCloseCallback(virConnectPtr conn,
-                                      virConnectCloseFunc cb)
+int
+virConnectUnregisterCloseCallback(virConnectPtr conn,
+                                  virConnectCloseFunc cb)
 {
     VIR_DEBUG("conn=%p", conn);
 
@@ -21665,6 +22011,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainSetBlockIoTune:
  * @dom: pointer to domain object
@@ -21685,11 +22032,12 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virDomainSetBlockIoTune(virDomainPtr dom,
-                            const char *disk,
-                            virTypedParameterPtr params,
-                            int nparams,
-                            unsigned int flags)
+int
+virDomainSetBlockIoTune(virDomainPtr dom,
+                        const char *disk,
+                        virTypedParameterPtr params,
+                        int nparams,
+                        unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21734,6 +22082,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetBlockIoTune:
  * @dom: pointer to domain object
@@ -21767,11 +22116,12 @@ error:
  *
  * Returns -1 in case of error, 0 in case of success.
  */
-int virDomainGetBlockIoTune(virDomainPtr dom,
-                            const char *disk,
-                            virTypedParameterPtr params,
-                            int *nparams,
-                            unsigned int flags)
+int
+virDomainGetBlockIoTune(virDomainPtr dom,
+                        const char *disk,
+                        virTypedParameterPtr params,
+                        int *nparams,
+                        unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21821,6 +22171,7 @@ error:
     virDispatchError(dom->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetCPUStats:
@@ -21896,12 +22247,13 @@ error:
  * @ncpus is too large).  The caller is responsible for freeing any
  * returned string parameters.
  */
-int virDomainGetCPUStats(virDomainPtr domain,
-                         virTypedParameterPtr params,
-                         unsigned int nparams,
-                         int start_cpu,
-                         unsigned int ncpus,
-                         unsigned int flags)
+int
+virDomainGetCPUStats(virDomainPtr domain,
+                     virTypedParameterPtr params,
+                     unsigned int nparams,
+                     int start_cpu,
+                     unsigned int ncpus,
+                     unsigned int flags)
 {
     virConnectPtr conn;
 
@@ -21966,6 +22318,7 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
 
 /**
  * virDomainGetDiskErrors:
@@ -22032,6 +22385,7 @@ error:
     return -1;
 }
 
+
 /**
  * virDomainGetHostname:
  * @domain: a domain object
@@ -22076,6 +22430,7 @@ error:
     virDispatchError(domain->conn);
     return NULL;
 }
+
 
 /**
  * virNodeGetCPUMap:
@@ -22127,6 +22482,7 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
 
 /**
  * virDomainFSTrim:
