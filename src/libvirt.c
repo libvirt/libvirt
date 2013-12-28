@@ -1150,9 +1150,9 @@ do_open(const char *name,
     }
 
     /*
-     *  If no URI is passed, then check for an environment string if not
-     *  available probe the compiled in drivers to find a default hypervisor
-     *  if detectable.
+     * If no URI is passed, then check for an environment string if not
+     * available probe the compiled in drivers to find a default hypervisor
+     * if detectable.
      */
     if (!name &&
         virConnectGetDefaultURI(conf, &name) < 0)
@@ -7629,14 +7629,14 @@ error:
  *
  * Here is a sample code snippet:
  *
- * if ((virNodeGetCPUStats(conn, cpuNum, NULL, &nparams, 0) == 0) &&
- *     (nparams != 0)) {
- *     if ((params = malloc(sizeof(virNodeCPUStats) * nparams)) == NULL)
- *         goto error;
- *     memset(params, 0, sizeof(virNodeCPUStats) * nparams);
- *     if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, 0))
- *         goto error;
- * }
+ *   if (virNodeGetCPUStats(conn, cpuNum, NULL, &nparams, 0) == 0 &&
+ *       nparams != 0) {
+ *       if ((params = malloc(sizeof(virNodeCPUStats) * nparams)) == NULL)
+ *           goto error;
+ *       memset(params, 0, sizeof(virNodeCPUStats) * nparams);
+ *       if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, 0))
+ *           goto error;
+ *   }
  *
  * This function doesn't require privileged access to the hypervisor.
  * This function expects the caller to allocate the @params.
@@ -7722,14 +7722,14 @@ error:
  *
  * Here is the sample code snippet:
  *
- * if ((virNodeGetMemoryStats(conn, cellNum, NULL, &nparams, 0) == 0) &&
- *     (nparams != 0)) {
- *     if ((params = malloc(sizeof(virNodeMemoryStats) * nparams)) == NULL)
- *         goto error;
- *     memset(params, cellNum, 0, sizeof(virNodeMemoryStats) * nparams);
- *     if (virNodeGetMemoryStats(conn, params, &nparams, 0))
- *         goto error;
- * }
+ *   if (virNodeGetMemoryStats(conn, cellNum, NULL, &nparams, 0) == 0 &&
+ *       nparams != 0) {
+ *       if ((params = malloc(sizeof(virNodeMemoryStats) * nparams)) == NULL)
+ *           goto error;
+ *       memset(params, cellNum, 0, sizeof(virNodeMemoryStats) * nparams);
+ *       if (virNodeGetMemoryStats(conn, params, &nparams, 0))
+ *           goto error;
+ *   }
  *
  * This function doesn't require privileged access to the hypervisor.
  * This function expects the caller to allocate the @params.
@@ -8134,14 +8134,14 @@ error:
  *
  * Here is a sample code snippet:
  *
- * char *ret = virDomainGetSchedulerType(dom, &nparams);
- * if (ret && nparams != 0) {
- *     if ((params = malloc(sizeof(*params) * nparams)) == NULL)
- *         goto error;
- *     memset(params, 0, sizeof(*params) * nparams);
- *     if (virDomainGetSchedulerParametersFlags(dom, params, &nparams, 0))
- *         goto error;
- * }
+ *   char *ret = virDomainGetSchedulerType(dom, &nparams);
+ *   if (ret && nparams != 0) {
+ *       if ((params = malloc(sizeof(*params) * nparams)) == NULL)
+ *           goto error;
+ *       memset(params, 0, sizeof(*params) * nparams);
+ *       if (virDomainGetSchedulerParametersFlags(dom, params, &nparams, 0))
+ *           goto error;
+ *   }
  *
  * Returns -1 in case of error, 0 in case of success.
  */
@@ -9381,24 +9381,21 @@ error:
  * on each array element, then calling free() on @domains.
  *
  * Example of usage:
- * virDomainPtr *domains;
- * size_t i;
- * int ret;
- * unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
- *                      VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
  *
- * ret = virConnectListAllDomains(conn, &domains, flags);
- * if (ret < 0)
- *     error();
- *
- * for (i = 0; i < ret; i++) {
- *      do_something_with_domain(domains[i]);
- *
- *      //here or in a separate loop if needed
- *      virDomainFree(domains[i]);
- * }
- *
- * free(domains);
+ *   virDomainPtr *domains;
+ *   size_t i;
+ *   int ret;
+ *   unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
+ *                        VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
+ *   ret = virConnectListAllDomains(conn, &domains, flags);
+ *   if (ret < 0)
+ *       error();
+ *   for (i = 0; i < ret; i++) {
+ *        do_something_with_domain(domains[i]);
+ *        //here or in a separate loop if needed
+ *        virDomainFree(domains[i]);
+ *   }
+ *   free(domains);
  */
 int
 virConnectListAllDomains(virConnectPtr conn,
@@ -17023,7 +17020,7 @@ virStreamRef(virStreamPtr stream)
  * API looks like
  *
  *     virStreamPtr st = virStreamNew(conn, 0);
- *     int fd = open("demo.iso", O_RDONLY)
+ *     int fd = open("demo.iso", O_RDONLY);
  *
  *     virConnectUploadFile(conn, "demo.iso", st);
  *
@@ -17040,7 +17037,7 @@ virStreamRef(virStreamPtr stream)
  *          }
  *          int offset = 0;
  *          while (offset < got) {
- *             int sent = virStreamSend(st, buf+offset, got-offset)
+ *             int sent = virStreamSend(st, buf+offset, got-offset);
  *             if (sent < 0) {
  *                virStreamAbort(st);
  *                goto done;
@@ -17117,7 +17114,7 @@ error:
  * API looks like
  *
  *     virStreamPtr st = virStreamNew(conn, 0);
- *     int fd = open("demo.iso", O_WRONLY, 0600)
+ *     int fd = open("demo.iso", O_WRONLY, 0600);
  *
  *     virConnectDownloadFile(conn, "demo.iso", st);
  *
@@ -17132,7 +17129,7 @@ error:
  *         }
  *         int offset = 0;
  *         while (offset < got) {
- *            int sent = write(fd, buf+offset, got-offset)
+ *            int sent = write(fd, buf + offset, got - offset);
  *            if (sent < 0) {
  *               virStreamAbort(st);
  *               goto done;
@@ -17216,7 +17213,7 @@ error:
  *   }
  *
  *   virStreamPtr st = virStreamNew(conn, 0);
- *   int fd = open("demo.iso", O_RDONLY)
+ *   int fd = open("demo.iso", O_RDONLY);
  *
  *   virConnectUploadFile(conn, st);
  *   if (virStreamSendAll(st, mysource, &fd) < 0) {
@@ -17313,7 +17310,7 @@ cleanup:
  *   }
  *
  *   virStreamPtr st = virStreamNew(conn, 0);
- *   int fd = open("demo.iso", O_WRONLY)
+ *   int fd = open("demo.iso", O_WRONLY);
  *
  *   virConnectUploadFile(conn, st);
  *   if (virStreamRecvAll(st, mysink, &fd) < 0) {
