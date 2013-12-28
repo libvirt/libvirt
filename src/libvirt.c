@@ -4561,7 +4561,6 @@ virDomainMigrateVersion2(virDomainPtr domain,
      */
     if (!domain->conn->driver->domainGetXMLDesc) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
-        virDispatchError(domain->conn);
         return NULL;
     }
 
@@ -4593,8 +4592,9 @@ virDomainMigrateVersion2(virDomainPtr domain,
     if (uri == NULL && uri_out == NULL) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                          _("domainMigratePrepare2 did not set uri"));
-        virDispatchError(domain->conn);
         cancelled = 1;
+        /* Make sure Finish doesn't overwrite the error */
+        orig_err = virSaveLastError();
         goto finish;
     }
     if (uri_out)
@@ -4625,6 +4625,8 @@ finish:
     VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, cookie, cookielen, uri, destflags, cancelled);
+    if (cancelled && ddomain)
+        VIR_ERROR(_("finish step ignored that migration was cancelled"));
 
 done:
     if (orig_err) {
@@ -4787,13 +4789,19 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
         if (useParams &&
             virTypedParamsReplaceString(&params, &nparams,
                                         VIR_MIGRATE_PARAM_URI,
-                                        uri_out) < 0)
+                                        uri_out) < 0) {
+            cancelled = 1;
+            orig_err = virSaveLastError();
             goto finish;
+        }
     } else if (!uri &&
                virTypedParamsGetString(params, nparams,
                                        VIR_MIGRATE_PARAM_URI, &uri) <= 0) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("domainMigratePrepare3 did not set uri"));
+        cancelled = 1;
+        orig_err = virSaveLastError();
+        goto finish;
     }
 
     if (flags & VIR_MIGRATE_OFFLINE) {
@@ -4872,6 +4880,8 @@ finish:
             (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
              NULL, uri, destflags, cancelled);
     }
+    if (cancelled && ddomain)
+        VIR_ERROR(_("finish step ignored that migration was cancelled"));
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
@@ -5097,7 +5107,6 @@ virDomainMigrateDirect(virDomainPtr domain,
 
     if (!domain->conn->driver->domainMigratePerform) {
         virReportUnsupportedError();
-        virDispatchError(domain->conn);
         return -1;
     }
 
@@ -6403,7 +6412,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
                                                   cookie, cookielen,
                                                   uri, flags,
                                                   retcode);
-        if (!ret)
+        if (!ret && !retcode)
             goto error;
         return ret;
     }
@@ -6695,7 +6704,7 @@ virDomainMigrateFinish3(virConnectPtr dconn,
                                                   cookieout, cookieoutlen,
                                                   dconnuri, uri, flags,
                                                   cancelled);
-        if (!ret)
+        if (!ret && !cancelled)
             goto error;
         return ret;
     }
@@ -6970,7 +6979,7 @@ virDomainMigrateFinish3Params(virConnectPtr dconn,
         ret = dconn->driver->domainMigrateFinish3Params(
                 dconn, params, nparams, cookiein, cookieinlen,
                 cookieout, cookieoutlen, flags, cancelled);
-        if (!ret)
+        if (!ret && !cancelled)
             goto error;
         return ret;
     }

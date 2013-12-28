@@ -3569,6 +3569,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare2 did not set uri"));
         cancelled = true;
+        orig_err = virSaveLastError();
         goto finish;
     }
 
@@ -3608,6 +3609,8 @@ finish:
         (dconn, dname, cookie, cookielen,
          uri_out ? uri_out : dconnuri, destflags, cancelled);
     qemuDomainObjExitRemote(vm);
+    if (cancelled && ddomain)
+        VIR_ERROR(_("finish step ignored that migration was cancelled"));
 
 cleanup:
     if (ddomain) {
@@ -3769,11 +3772,14 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         uri = uri_out;
         if (useParams &&
             virTypedParamsReplaceString(&params, &nparams,
-                                        VIR_MIGRATE_PARAM_URI, uri_out) < 0)
+                                        VIR_MIGRATE_PARAM_URI, uri_out) < 0) {
+            orig_err = virSaveLastError();
             goto finish;
+        }
     } else if (!uri && !(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
+        orig_err = virSaveLastError();
         goto finish;
     }
 
@@ -3850,6 +3856,8 @@ finish:
              dconnuri, uri, destflags, cancelled);
         qemuDomainObjExitRemote(vm);
     }
+    if (cancelled && ddomain)
+        VIR_ERROR(_("finish step ignored that migration was cancelled"));
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
