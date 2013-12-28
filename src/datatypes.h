@@ -124,10 +124,19 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_STORAGE_POOL(obj) \
-    (virObjectIsClass((obj), virStoragePoolClass))
-# define VIR_IS_CONNECTED_STORAGE_POOL(obj) \
-    (VIR_IS_STORAGE_POOL(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckStoragePoolReturn(obj, retval)                         \
+    do {                                                                \
+        virStoragePoolPtr _pool = (obj);                                \
+        if (!virObjectIsClass(_pool, virStoragePoolClass) ||            \
+            !virObjectIsClass(_pool->conn, virConnectClass)) {          \
+            virReportErrorHelper(VIR_FROM_STORAGE,                      \
+                                 VIR_ERR_INVALID_STORAGE_POOL,          \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_STORAGE_VOL(obj) \
     (virObjectIsClass((obj), virStorageVolClass))

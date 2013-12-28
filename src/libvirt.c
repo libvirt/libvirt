@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibStoragePoolError(code, ...)                         \
-    virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibStorageVolError(code, ...)                          \
     virReportErrorHelper(VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -12183,11 +12180,8 @@ virStoragePoolGetConnect(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckStoragePoolReturn(pool, NULL);
+
     return pool->conn;
 }
 
@@ -12732,12 +12726,9 @@ virStoragePoolBuild(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolBuild) {
@@ -12772,12 +12763,9 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolUndefine) {
@@ -12814,12 +12802,9 @@ virStoragePoolCreate(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolCreate) {
@@ -12858,13 +12843,9 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolDestroy) {
@@ -12903,13 +12884,9 @@ virStoragePoolDelete(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolDelete) {
@@ -12944,11 +12921,8 @@ virStoragePoolFree(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
+
     virObjectUnref(pool);
     return 0;
 
@@ -12979,11 +12953,8 @@ virStoragePoolRef(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_STORAGE_POOL(pool))) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
+
     virObjectRef(pool);
     return 0;
 }
@@ -13009,13 +12980,9 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolRefresh) {
@@ -13049,11 +13016,8 @@ virStoragePoolGetName(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckStoragePoolReturn(pool, NULL);
+
     return pool->name;
 }
 
@@ -13075,11 +13039,7 @@ virStoragePoolGetUUID(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(uuid, error);
 
     memcpy(uuid, &pool->uuid[0], VIR_UUID_BUFLEN);
@@ -13109,11 +13069,7 @@ virStoragePoolGetUUIDString(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(buf, error);
 
     virUUIDFormat(pool->uuid, buf);
@@ -13144,11 +13100,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(info, error);
 
     memset(info, 0, sizeof(virStoragePoolInfo));
@@ -13191,12 +13143,7 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckStoragePoolReturn(pool, NULL);
     conn = pool->conn;
 
     if (conn->storageDriver && conn->storageDriver->storagePoolGetXMLDesc) {
@@ -13234,11 +13181,7 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(autostart, error);
 
     conn = pool->conn;
@@ -13277,15 +13220,10 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibStoragePoolError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
-    virCheckReadOnlyGoto(pool->conn->flags, error);
-
+    virCheckStoragePoolReturn(pool, -1);
     conn = pool->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->storageDriver && conn->storageDriver->storagePoolSetAutostart) {
         int ret;
@@ -13330,11 +13268,7 @@ virStoragePoolListAllVolumes(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
 
     if (pool->conn->storageDriver &&
         pool->conn->storageDriver->storagePoolListAllVolumes) {
@@ -13368,11 +13302,7 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->storagePoolNumOfVolumes) {
         int ret;
@@ -13412,12 +13342,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckStoragePoolReturn(pool, -1);
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
@@ -13485,12 +13410,7 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckStoragePoolReturn(pool, NULL);
     virCheckNonNullArgGoto(name, error);
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->storageVolLookupByName) {
@@ -13660,14 +13580,8 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckStoragePoolReturn(pool, NULL);
     virCheckNonNullArgGoto(xmlDesc, error);
-
     virCheckReadOnlyGoto(pool->conn->flags, error);
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->storageVolCreateXML) {
@@ -13716,11 +13630,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     virResetLastError();
 
-    if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckStoragePoolReturn(pool, NULL);
 
     if (!VIR_IS_STORAGE_VOL(clonevol)) {
         virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
@@ -16748,11 +16658,8 @@ virStoragePoolIsActive(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
+
     if (pool->conn->storageDriver->storagePoolIsActive) {
         int ret;
         ret = pool->conn->storageDriver->storagePoolIsActive(pool);
@@ -16784,11 +16691,8 @@ virStoragePoolIsPersistent(virStoragePoolPtr pool)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckStoragePoolReturn(pool, -1);
+
     if (pool->conn->storageDriver->storagePoolIsPersistent) {
         int ret;
         ret = pool->conn->storageDriver->storagePoolIsPersistent(pool);
