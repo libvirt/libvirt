@@ -218,10 +218,19 @@ extern virClassPtr virStoragePoolClass;
         }                                                               \
     } while (0)
 
-# define VIR_IS_NWFILTER(obj) \
-    (virObjectIsClass((obj), virNWFilterClass))
-# define VIR_IS_CONNECTED_NWFILTER(obj) \
-    (VIR_IS_NWFILTER(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckNWFilterReturn(obj, retval)                            \
+    do {                                                                \
+        virNWFilterPtr _nw = (obj);                                     \
+        if (!virObjectIsClass(_nw, virNWFilterClass) ||                 \
+            !virObjectIsClass(_nw->conn, virConnectClass)) {            \
+            virReportErrorHelper(VIR_FROM_NWFILTER,                     \
+                                 VIR_ERR_INVALID_NWFILTER,              \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_SNAPSHOT(obj) \
     (virObjectIsClass((obj), virDomainSnapshotClass))

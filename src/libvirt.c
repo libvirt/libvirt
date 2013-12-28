@@ -528,9 +528,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #define virLibDomainError(code, ...)                              \
     virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibNWFilterError(code, ...)                            \
-    virReportErrorHelper(VIR_FROM_NWFILTER, code, __FILE__,       \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
 #define virLibDomainSnapshotError(code, ...)                       \
     virReportErrorHelper(VIR_FROM_DOMAIN_SNAPSHOT, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -16750,11 +16747,7 @@ virNWFilterFree(virNWFilterPtr nwfilter)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNWFilterReturn(nwfilter, -1);
 
     virObjectUnref(nwfilter);
     return 0;
@@ -16777,11 +16770,8 @@ virNWFilterGetName(virNWFilterPtr nwfilter)
 
     virResetLastError();
 
-    if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
+    virCheckNWFilterReturn(nwfilter, NULL);
+
     return nwfilter->name;
 }
 
@@ -16802,11 +16792,7 @@ virNWFilterGetUUID(virNWFilterPtr nwfilter, unsigned char *uuid)
 
     virResetLastError();
 
-    if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNWFilterReturn(nwfilter, -1);
     virCheckNonNullArgGoto(uuid, error);
 
     memcpy(uuid, &nwfilter->uuid[0], VIR_UUID_BUFLEN);
@@ -16836,11 +16822,7 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
 
     virResetLastError();
 
-    if (!VIR_IS_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNWFilterReturn(nwfilter, -1);
     virCheckNonNullArgGoto(buf, error);
 
     virUUIDFormat(nwfilter->uuid, buf);
@@ -16907,13 +16889,9 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckNWFilterReturn(nwfilter, -1);
     conn = nwfilter->conn;
+
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterUndefine) {
@@ -16951,12 +16929,7 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
-        virLibNWFilterError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckNWFilterReturn(nwfilter, NULL);
     conn = nwfilter->conn;
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterGetXMLDesc) {
@@ -17000,11 +16973,8 @@ virNWFilterRef(virNWFilterPtr nwfilter)
 
     virResetLastError();
 
-    if ((!VIR_IS_CONNECTED_NWFILTER(nwfilter))) {
-        virLibConnError(VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
+    virCheckNWFilterReturn(nwfilter, -1);
+
     virObjectRef(nwfilter);
     return 0;
 }
