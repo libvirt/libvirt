@@ -1,7 +1,7 @@
 /*
  * virtypedparam.c: utility functions for dealing with virTypedParameters
  *
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,6 +40,12 @@ VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
               "double",
               "boolean",
               "string")
+
+/* When editing this file, ensure that public exported functions
+ * (those in libvirt_public.syms) either trigger no errors, or else
+ * reset error on entrance and call virDispatchError() on exit; while
+ * internal utility functions (those in libvirt_private.syms) may
+ * report errors that the caller will dispatch.  */
 
 /* Validate that PARAMS contains only recognized parameter names with
  * correct types, and with no duplicates.  Pass in as many name/type
@@ -346,8 +352,6 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
     size_t n = *nparams;
     virTypedParameterPtr param;
 
-    virResetLastError();
-
     param = virTypedParamsGet(*params, n, name);
     if (param) {
         if (param->type != VIR_TYPED_PARAM_STRING) {
@@ -378,7 +382,6 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
     return 0;
 
 error:
-    virDispatchError(NULL);
     return -1;
 }
 
@@ -426,6 +429,7 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
  * Finds typed parameter called @name.
  *
  * Returns pointer to the parameter or NULL if it does not exist in @params.
+ * This function does not raise an error, even when returning NULL.
  */
 virTypedParameterPtr
 virTypedParamsGet(virTypedParameterPtr params,
@@ -434,7 +438,7 @@ virTypedParamsGet(virTypedParameterPtr params,
 {
     size_t i;
 
-    virResetLastError();
+    /* No need to reset errors, since this function doesn't report any.  */
 
     if (!params || !name)
         return NULL;
@@ -664,10 +668,10 @@ virTypedParamsGetBoolean(virTypedParameterPtr params,
 {
     virTypedParameterPtr param;
 
+    virResetLastError();
+
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
-
-    virResetLastError();
 
     VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_BOOLEAN);
     if (value)

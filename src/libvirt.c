@@ -3627,8 +3627,6 @@ error:
 int
 virDomainGetUUIDString(virDomainPtr domain, char *buf)
 {
-    unsigned char uuid[VIR_UUID_BUFLEN];
-
     VIR_DOMAIN_DEBUG(domain, "buf=%p", buf);
 
     virResetLastError();
@@ -3640,10 +3638,7 @@ virDomainGetUUIDString(virDomainPtr domain, char *buf)
     }
     virCheckNonNullArgGoto(buf, error);
 
-    if (virDomainGetUUID(domain, &uuid[0]))
-        goto error;
-
-    virUUIDFormat(uuid, buf);
+    virUUIDFormat(domain->uuid, buf);
     return 0;
 
 error:
@@ -12202,7 +12197,6 @@ error:
 int
 virNetworkGetUUIDString(virNetworkPtr network, char *buf)
 {
-    unsigned char uuid[VIR_UUID_BUFLEN];
     VIR_DEBUG("network=%p, buf=%p", network, buf);
 
     virResetLastError();
@@ -12214,10 +12208,7 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
     }
     virCheckNonNullArgGoto(buf, error);
 
-    if (virNetworkGetUUID(network, &uuid[0]))
-        goto error;
-
-    virUUIDFormat(uuid, buf);
+    virUUIDFormat(network->uuid, buf);
     return 0;
 
 error:
@@ -14294,7 +14285,6 @@ int
 virStoragePoolGetUUIDString(virStoragePoolPtr pool,
                             char *buf)
 {
-    unsigned char uuid[VIR_UUID_BUFLEN];
     VIR_DEBUG("pool=%p, buf=%p", pool, buf);
 
     virResetLastError();
@@ -14306,10 +14296,7 @@ virStoragePoolGetUUIDString(virStoragePoolPtr pool,
     }
     virCheckNonNullArgGoto(buf, error);
 
-    if (virStoragePoolGetUUID(pool, &uuid[0]))
-        goto error;
-
-    virUUIDFormat(uuid, buf);
+    virUUIDFormat(pool->uuid, buf);
     return 0;
 
 error:
@@ -16843,7 +16830,6 @@ error:
 int
 virSecretGetUUIDString(virSecretPtr secret, char *buf)
 {
-    unsigned char uuid[VIR_UUID_BUFLEN];
     VIR_DEBUG("secret=%p, buf=%p", secret, buf);
 
     virResetLastError();
@@ -16855,10 +16841,7 @@ virSecretGetUUIDString(virSecretPtr secret, char *buf)
     }
     virCheckNonNullArgGoto(buf, error);
 
-    if (virSecretGetUUID(secret, &uuid[0]))
-        goto error;
-
-    virUUIDFormat(uuid, buf);
+    virUUIDFormat(secret->uuid, buf);
     return 0;
 
 error:
@@ -18499,7 +18482,6 @@ error:
 int
 virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
 {
-    unsigned char uuid[VIR_UUID_BUFLEN];
     VIR_DEBUG("nwfilter=%p, buf=%p", nwfilter, buf);
 
     virResetLastError();
@@ -18511,10 +18493,7 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
     }
     virCheckNonNullArgGoto(buf, error);
 
-    if (virNWFilterGetUUID(nwfilter, &uuid[0]))
-        goto error;
-
-    virUUIDFormat(uuid, buf);
+    virUUIDFormat(nwfilter->uuid, buf);
     return 0;
 
 error:
