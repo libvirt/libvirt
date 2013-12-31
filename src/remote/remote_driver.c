@@ -2,7 +2,7 @@
  * remote_driver.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2932,10 +2932,8 @@ remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
                                                 net, eventID,
                                                 VIR_OBJECT_EVENT_CALLBACK(callback),
                                                 opaque, freecb,
-                                                &callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, "%s", _("adding cb to list"));
+                                                &callbackID)) < 0)
         goto done;
-    }
 
     /* If this is the first callback for this eventID, we need to enable
      * events on the server */
@@ -4424,10 +4422,8 @@ static int remoteConnectDomainEventRegister(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if ((count = virDomainEventStateRegister(conn, priv->domainEventState,
-                                             callback, opaque, freecb)) < 0) {
-         virReportError(VIR_ERR_RPC, "%s", _("adding cb to list"));
+                                             callback, opaque, freecb)) < 0)
          goto done;
-    }
 
     if (count == 1) {
         /* Tell the server when we are the first callback deregistering */
@@ -5234,10 +5230,8 @@ static int remoteConnectDomainEventRegisterAny(virConnectPtr conn,
                                                priv->domainEventState,
                                                dom, eventID,
                                                callback, opaque, freecb,
-                                               &callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, "%s", _("adding cb to list"));
+                                               &callbackID)) < 0)
         goto done;
-    }
 
     /* If this is the first callback for this eventID, we need to enable
      * events on the server */
