@@ -459,6 +459,8 @@ virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
+virDomainQemuMonitorEventNew;
+virDomainQemuMonitorEventStateRegisterID;
 
 
 # conf/domain_nwfilter.h

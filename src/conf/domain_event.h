@@ -219,4 +219,27 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+int
+virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
+                                         virObjectEventStatePtr state,
+                                         virDomainPtr dom,
+                                         const char *event,
+                                         virConnectDomainQemuMonitorEventCallback cb,
+                                         void *opaque,
+                                         virFreeCallback freecb,
+                                         unsigned int flags,
+                                         int *callbackID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
+    ATTRIBUTE_NONNULL(9);
+
+virObjectEventPtr
+virDomainQemuMonitorEventNew(int id,
+                             const char *name,
+                             const unsigned char *uuid,
+                             const char *event,
+                             long long seconds,
+                             unsigned int micros,
+                             const char *details)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
 #endif
