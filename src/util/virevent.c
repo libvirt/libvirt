@@ -1,7 +1,7 @@
 /*
  * virevent.c: event loop for monitoring file handles
  *
- * Copyright (C) 2007, 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2007, 2011-2014 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -37,6 +37,16 @@ static virEventAddTimeoutFunc addTimeoutImpl = NULL;
 static virEventUpdateTimeoutFunc updateTimeoutImpl = NULL;
 static virEventRemoveTimeoutFunc removeTimeoutImpl = NULL;
 
+
+/*****************************************************
+ *
+ * Below this point are  *PUBLIC*  APIs for event
+ * loop integration with applications using libvirt.
+ * These API contracts cannot be changed.
+ *
+ *****************************************************/
+
+
 /**
  * virEventAddHandle:
  *
@@ -46,10 +56,12 @@ static virEventRemoveTimeoutFunc removeTimeoutImpl = NULL;
  * @opaque: user data to pass to callback
  * @ff: callback to free opaque when handle is removed
  *
- * Register a callback for monitoring file handle events.
+ * Register a callback for monitoring file handle events.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
  * Returns -1 if the file handle cannot be registered, otherwise a handle
- * watch number to be used for updating and unregistering for events
+ * watch number to be used for updating and unregistering for events.
  */
 int
 virEventAddHandle(int fd,
@@ -70,14 +82,17 @@ virEventAddHandle(int fd,
  * @watch: watch whose file handle to update
  * @events: bitset of events to watch from virEventHandleType constants
  *
- * Change event set for a monitored file handle.
+ * Change event set for a monitored file handle.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
- * Will not fail if fd exists
+ * Will not fail if fd exists.
  */
 void
 virEventUpdateHandle(int watch, int events)
 {
-    updateHandleImpl(watch, events);
+    if (updateHandleImpl)
+        updateHandleImpl(watch, events);
 }
 
 /**
@@ -85,7 +100,9 @@ virEventUpdateHandle(int watch, int events)
  *
  * @watch: watch whose file handle to remove
  *
- * Unregister a callback from a file handle.
+ * Unregister a callback from a file handle.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
  * Returns -1 if the file handle was not registered, 0 upon success.
  */
@@ -106,9 +123,11 @@ virEventRemoveHandle(int watch)
  * @opaque: user data to pass to callback
  * @ff: callback to free opaque when timeout is removed
  *
- * Register a callback for a timer event.
+ * Register a callback for a timer event.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
- * Setting timeout to -1 will disable the timer. Setting the timeout
+ * Setting @timeout to -1 will disable the timer. Setting @timeout
  * to zero will cause it to fire on every event loop iteration.
  *
  * Returns -1 if the timer cannot be registered, a positive
@@ -132,17 +151,20 @@ virEventAddTimeout(int timeout,
  * @timer: timer id to change
  * @timeout: time between events in milliseconds
  *
- * Change frequency for a timer.
+ * Change frequency for a timer.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
  * Setting frequency to -1 will disable the timer. Setting the frequency
  * to zero will cause it to fire on every event loop iteration.
  *
- * Will not fail if timer exists
+ * Will not fail if timer exists.
  */
 void
 virEventUpdateTimeout(int timer, int timeout)
 {
-    updateTimeoutImpl(timer, timeout);
+    if (updateTimeoutImpl)
+        updateTimeoutImpl(timer, timeout);
 }
 
 /**
@@ -150,7 +172,9 @@ virEventUpdateTimeout(int timer, int timeout)
  *
  * @timer: the timer id to remove
  *
- * Unregister a callback for a timer.
+ * Unregister a callback for a timer.  This function
+ * requires that an event loop has previously been registered with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
  * Returns -1 if the timer was not registered, 0 upon success.
  */
@@ -163,14 +187,6 @@ virEventRemoveTimeout(int timer)
     return removeTimeoutImpl(timer);
 }
 
-
-/*****************************************************
- *
- * Below this point are 3  *PUBLIC*  APIs for event
- * loop integration with applications using libvirt.
- * These API contracts cannot be changed.
- *
- *****************************************************/
 
 /**
  * virEventRegisterImpl:
@@ -186,9 +202,18 @@ virEventRemoveTimeout(int timer)
  * to integrate with the libglib2 event loop, or libevent
  * or the QT event loop.
  *
+ * Use of the virEventAddHandle() and similar APIs require that the
+ * corresponding handler is registered.  Use of the
+ * virConnectDomainEventRegisterAny() and similar APIs requires that
+ * the three timeout handlers are registered.  Likewise, the three
+ * timeout handlers must be registered if the remote server has been
+ * configured to send keepalive messages, or if the client intends
+ * to call virConnectSetKeepAlive(), to avoid either side from
+ * unexpectedly closing the connection due to inactivity.
+ *
  * If an application does not need to integrate with an
  * existing event loop implementation, then the
- * virEventRegisterDefaultImpl method can be used to setup
+ * virEventRegisterDefaultImpl() method can be used to setup
  * the generic libvirt implementation.
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
@@ -220,9 +245,12 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
  * not have a need to integrate with an external event
  * loop impl.
  *
- * Once registered, the application has to invoke virEventRunDefaultImpl in
+ * Once registered, the application has to invoke virEventRunDefaultImpl() in
  * a loop to process events.  Failure to do so may result in connections being
- * closed unexpectedly as a result of keepalive timeout.
+ * closed unexpectedly as a result of keepalive timeout.  The default
+ * event loop fully supports handle and timeout events, but only
+ * wakes up on events registered by libvirt API calls such as
+ * virEventAddHandle() or virConnectDomainEventRegisterAny().
  *
  * Returns 0 on success, -1 on failure.
  */
@@ -255,14 +283,18 @@ int virEventRegisterDefaultImpl(void)
  *
  * Run one iteration of the event loop. Applications
  * will generally want to have a thread which invokes
- * this method in an infinite loop
+ * this method in an infinite loop.  Furthermore, it is wise
+ * to set up a pipe-to-self handler (via virEventAddHandle())
+ * or a timeout (via virEventAddTimeout()) before calling this
+ * function, as it will block forever if there are no
+ * registered events.
  *
- *  static bool quit = false;
+ *   static bool quit = false;
  *
- *  while (!quit) {
- *    if (virEventRunDefaultImpl() < 0)
+ *   while (!quit) {
+ *     if (virEventRunDefaultImpl() < 0)
  *       ...print error...
- *  }
+ *   }
  *
  * Returns 0 on success, -1 on failure.
  */

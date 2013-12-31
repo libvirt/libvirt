@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005-2006, 2008-2013 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2008-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16121,11 +16121,13 @@ error:
  * @freecb: optional function to deallocate opaque when not used anymore
  *
  * Adds a callback to receive notifications of domain lifecycle events
- * occurring on a connection
+ * occurring on a connection.  This function requires that an event loop
+ * has been previously registered with virEventRegisterImpl() or
+ * virEventRegisterDefaultImpl().
  *
  * Use of this method is no longer recommended. Instead applications
  * should try virConnectDomainEventRegisterAny() which has a more flexible
- * API contract
+ * API contract.
  *
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
@@ -16134,7 +16136,7 @@ error:
  * The reference can be released once the object is no longer required
  * by calling virDomainFree.
  *
- * Returns 0 on success, -1 on failure
+ * Returns 0 on success, -1 on failure.
  */
 int
 virConnectDomainEventRegister(virConnectPtr conn,
@@ -19064,10 +19066,12 @@ error:
  * @freecb: optional function to deallocate opaque when not used anymore
  *
  * Adds a callback to receive notifications of arbitrary domain events
- * occurring on a domain.
+ * occurring on a domain.  This function requires that an event loop
+ * has been previously registered with virEventRegisterImpl() or
+ * virEventRegisterDefaultImpl().
  *
  * If @dom is NULL, then events will be monitored for any domain. If @dom
- * is non-NULL, then only the specific domain will be monitored
+ * is non-NULL, then only the specific domain will be monitored.
  *
  * Most types of event have a callback providing a custom set of parameters
  * for the event. When registering an event, it is thus necessary to use
@@ -19085,7 +19089,7 @@ error:
  * for the callback. To unregister a callback, this callback ID should
  * be passed to the virConnectDomainEventDeregisterAny() method.
  *
- * Returns a callback identifier on success, -1 on failure
+ * Returns a callback identifier on success, -1 on failure.
  */
 int
 virConnectDomainEventRegisterAny(virConnectPtr conn,
@@ -19183,10 +19187,12 @@ error:
  * @freecb: optional function to deallocate opaque when not used anymore
  *
  * Adds a callback to receive notifications of arbitrary network events
- * occurring on a network.
+ * occurring on a network.  This function requires that an event loop
+ * has been previously registered with virEventRegisterImpl() or
+ * virEventRegisterDefaultImpl().
  *
  * If @net is NULL, then events will be monitored for any network. If @net
- * is non-NULL, then only the specific network will be monitored
+ * is non-NULL, then only the specific network will be monitored.
  *
  * Most types of event have a callback providing a custom set of parameters
  * for the event. When registering an event, it is thus necessary to use
@@ -19204,7 +19210,7 @@ error:
  * for the callback. To unregister a callback, this callback ID should
  * be passed to the virConnectNetworkEventDeregisterAny() method.
  *
- * Returns a callback identifier on success, -1 on failure
+ * Returns a callback identifier on success, -1 on failure.
  */
 int
 virConnectNetworkEventRegisterAny(virConnectPtr conn,
@@ -21448,17 +21454,18 @@ error:
  * @interval: number of seconds of inactivity before a keepalive message is sent
  * @count: number of messages that can be sent in a row
  *
- * Start sending keepalive messages after interval second of inactivity and
+ * Start sending keepalive messages after @interval seconds of inactivity and
  * consider the connection to be broken when no response is received after
- * count keepalive messages sent in a row.  In other words, sending count + 1
- * keepalive message results in closing the connection.  When interval is <= 0,
- * no keepalive messages will be sent.  When count is 0, the connection will be
- * automatically closed after interval seconds of inactivity without sending
- * any keepalive messages.
+ * @count keepalive messages sent in a row.  In other words, sending count + 1
+ * keepalive message results in closing the connection.  When @interval is
+ * <= 0, no keepalive messages will be sent.  When @count is 0, the connection
+ * will be automatically closed after @interval seconds of inactivity without
+ * sending any keepalive messages.
  *
- * Note: client has to implement and run event loop to be able to use keepalive
- * messages.  Failure to do so may result in connections being closed
- * unexpectedly.
+ * Note: The client has to implement and run an event loop with
+ * virEventRegisterImpl() or virEventRegisterDefaultImpl() to be able to
+ * use keepalive messages.  Failure to do so may result in connections
+ * being closed unexpectedly.
  *
  * Note: This API function controls only keepalive messages sent by the client.
  * If the server is configured to use keepalive you still need to run the event
