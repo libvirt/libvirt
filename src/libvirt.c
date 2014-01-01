@@ -1379,8 +1379,6 @@ failed:
  * This function should be called first to get a connection to the
  * Hypervisor and xen store
  *
- * Returns a pointer to the hypervisor connection or NULL in case of error
- *
  * If @name is NULL, if the LIBVIRT_DEFAULT_URI environment variable is set,
  * then it will be used. Otherwise if the client configuration file
  * has the "uri_default" parameter set, then it will be used. Finally
@@ -1393,6 +1391,8 @@ failed:
  * environment variable LIBVIRT_AUTOSTART=0
  *
  * URIs are documented at http://libvirt.org/uri.html
+ *
+ * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 virConnectPtr
 virConnectOpen(const char *name)
@@ -1425,9 +1425,9 @@ error:
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers
  *
- * Returns a pointer to the hypervisor connection or NULL in case of error
- *
  * URIs are documented at http://libvirt.org/uri.html
+ *
+ * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
@@ -1462,9 +1462,9 @@ error:
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers
  *
- * Returns a pointer to the hypervisor connection or NULL in case of error
- *
  * URIs are documented at http://libvirt.org/uri.html
+ *
+ * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 virConnectPtr
 virConnectOpenAuth(const char *name,
@@ -9374,12 +9374,6 @@ error:
  * VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT, for filtering based on whether
  * a domain has snapshots.
  *
- * Returns the number of domains found or -1 and sets domains to NULL in case of
- * error.  On success, the array stored into @domains is guaranteed to have an
- * extra allocated element set to NULL but not included in the return count, to
- * make iteration easier. The caller is responsible for calling virDomainFree()
- * on each array element, then calling free() on @domains.
- *
  * Example of usage:
  *
  *   virDomainPtr *domains;
@@ -9396,6 +9390,12 @@ error:
  *        virDomainFree(domains[i]);
  *   }
  *   free(domains);
+ *
+ * Returns the number of domains found or -1 and sets domains to NULL in case of
+ * error.  On success, the array stored into @domains is guaranteed to have an
+ * extra allocated element set to NULL but not included in the return count, to
+ * make iteration easier. The caller is responsible for calling virDomainFree()
+ * on each array element, then calling free() on @domains.
  */
 int
 virConnectListAllDomains(virConnectPtr conn,
