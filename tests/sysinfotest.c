@@ -83,7 +83,7 @@ testSysinfo(const void *data)
         goto cleanup;
 
     if (STRNEQ(sysfsActualData, sysfsExpectData)) {
-        virtTestDifference(stderr, sysfsActualData, sysfsExpectData);
+        virtTestDifference(stderr, sysfsExpectData, sysfsActualData);
         goto cleanup;
     }
 
