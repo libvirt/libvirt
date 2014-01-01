@@ -1,10 +1,6 @@
 <sysinfo type='smbios'>
   <processor>
     <entry name='socket_destination'>0</entry>
-    <entry name='type'>AArch64 Processor rev 0 (aarch64) </entry>
-  </processor>
-  <processor>
-    <entry name='socket_destination'>1</entry>
     <entry name='type'>AArch64 Processor rev 0 (aarch64)</entry>
   </processor>
 </sysinfo>

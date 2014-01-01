@@ -1,4 +1,5 @@
 Processor	: AArch64 Processor rev 0 (aarch64)
+processor	: 0
 BogoMIPS	: 100.00
 
 Features	: fp asimd
