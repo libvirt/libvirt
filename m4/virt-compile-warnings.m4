@@ -163,6 +163,9 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
     dnl on Mingw32, but fails when actually used
     case $host in
+       aarch64-*-*)
+       dnl "error: -fstack-protector not supported for this target [-Werror]"
+       ;;
        *-*-linux*)
        dnl Fedora only uses -fstack-protector, but doesn't seem to
        dnl be great overhead in adding -fstack-protector-all instead
