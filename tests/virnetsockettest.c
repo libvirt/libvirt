@@ -60,8 +60,10 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
     *hasIPv4 = *hasIPv6 = false;
     *freePort = 0;
 
-    if (getifaddrs(&ifaddr) < 0)
+    if (getifaddrs(&ifaddr) < 0) {
+        perror ("getifaddrs");
         goto cleanup;
+    }
 
     for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
         if (!ifa->ifa_addr)
