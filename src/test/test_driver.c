@@ -105,6 +105,10 @@ struct _testConn {
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
 
+static testConn defaultConn;
+static int defaultConnections;
+static virMutex defaultLock;
+
 #define TEST_MODEL "i686"
 #define TEST_MODEL_WORDSIZE 32
 #define TEST_EMULATOR "/usr/bin/test-hv"
@@ -124,6 +128,14 @@ static const virNodeInfo defaultNodeInfo = {
 static int testConnectClose(virConnectPtr conn);
 static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event);
+
+static int
+testOnceInit(void)
+{
+    return virMutexInit(&defaultLock);
+}
+
+VIR_ONCE_GLOBAL_INIT(test)
 
 
 static void testDriverLock(testConnPtr driver)
@@ -665,9 +677,15 @@ cleanup:
     return ret;
 }
 
-static int testOpenDefault(virConnectPtr conn) {
+
+/* Simultaneous test:///default connections should share the same
+ * common state (among other things, this allows testing event
+ * detection in one connection for an action caused in another).  */
+static int
+testOpenDefault(virConnectPtr conn)
+{
     int u;
-    testConnPtr privconn;
+    testConnPtr privconn = &defaultConn;
     virDomainDefPtr domdef = NULL;
     virDomainObjPtr domobj = NULL;
     virNetworkDefPtr netdef = NULL;
@@ -679,17 +697,25 @@ static int testOpenDefault(virConnectPtr conn) {
     virNodeDeviceDefPtr nodedef = NULL;
     virNodeDeviceObjPtr nodeobj = NULL;
 
-    if (VIR_ALLOC(privconn) < 0)
-        return VIR_DRV_OPEN_ERROR;
+    virMutexLock(&defaultLock);
+    if (defaultConnections++) {
+        conn->privateData = &defaultConn;
+        virMutexUnlock(&defaultLock);
+        return VIR_DRV_OPEN_SUCCESS;
+    }
+
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
-        VIR_FREE(privconn);
+        defaultConnections--;
+        virMutexUnlock(&defaultLock);
         return VIR_DRV_OPEN_ERROR;
     }
 
-    testDriverLock(privconn);
     conn->privateData = privconn;
+
+    if (!(privconn->domainEventState = virObjectEventStateNew()))
+        goto error;
 
     if (!(privconn->domains = virDomainObjListNew()))
         goto error;
@@ -791,7 +817,7 @@ static int testOpenDefault(virConnectPtr conn) {
     }
     virNodeDeviceObjUnlock(nodeobj);
 
-    testDriverUnlock(privconn);
+    virMutexUnlock(&defaultLock);
 
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -802,10 +828,12 @@ error:
     virStoragePoolObjListFree(&privconn->pools);
     virNodeDeviceObjListFree(&privconn->devs);
     virObjectUnref(privconn->caps);
-    testDriverUnlock(privconn);
+    virObjectEventStateFree(privconn->domainEventState);
+    virMutexDestroy(&privconn->lock);
     conn->privateData = NULL;
-    VIR_FREE(privconn);
     virDomainDefFree(domdef);
+    defaultConnections--;
+    virMutexUnlock(&defaultLock);
     return VIR_DRV_OPEN_ERROR;
 }
 
@@ -1327,6 +1355,9 @@ error:
     return ret;
 }
 
+
+/* No shared state between simultaneous test connections initialized
+ * from a file.  */
 static int
 testOpenFromFile(virConnectPtr conn, const char *file)
 {
@@ -1353,6 +1384,9 @@ testOpenFromFile(virConnectPtr conn, const char *file)
         goto error;
 
     if (!(privconn->xmlopt = testBuildXMLConfig()))
+        goto error;
+
+    if (!(privconn->domainEventState = virObjectEventStateNew()))
         goto error;
 
     if (!(doc = virXMLParseFileCtxt(file, &ctxt))) {
@@ -1398,6 +1432,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn->path);
+    virObjectEventStateFree(privconn->domainEventState);
     testDriverUnlock(privconn);
     VIR_FREE(privconn);
     conn->privateData = NULL;
@@ -1410,9 +1445,11 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
                                         unsigned int flags)
 {
     int ret;
-    testConnPtr privconn;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    if (testInitialize() < 0)
+        return VIR_DRV_OPEN_ERROR;
 
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
@@ -1442,24 +1479,24 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
     if (ret != VIR_DRV_OPEN_SUCCESS)
         return ret;
 
-    privconn = conn->privateData;
-    testDriverLock(privconn);
-
-    privconn->domainEventState = virObjectEventStateNew();
-    if (!privconn->domainEventState) {
-        testDriverUnlock(privconn);
-        testConnectClose(conn);
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-    testDriverUnlock(privconn);
-
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int testConnectClose(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
+
+    if (testInitialize() < 0)
+        return -1;
+
+    if (privconn == &defaultConn) {
+        virMutexLock(&defaultLock);
+        if (--defaultConnections) {
+            virMutexUnlock(&defaultLock);
+            return 0;
+        }
+    }
+
     testDriverLock(privconn);
     virObjectUnref(privconn->caps);
     virObjectUnref(privconn->xmlopt);
@@ -1474,7 +1511,10 @@ static int testConnectClose(virConnectPtr conn)
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
 
-    VIR_FREE(privconn);
+    if (privconn == &defaultConn)
+        virMutexUnlock(&defaultLock);
+    else
+        VIR_FREE(privconn);
     conn->privateData = NULL;
     return 0;
 }

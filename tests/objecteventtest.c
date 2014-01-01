@@ -265,8 +265,10 @@ testDomainStartStopEvent(const void *data)
     lifecycleEventCounter counter;
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
     int id;
-    int ret = 0;
+    int ret = -1;
     virDomainPtr dom;
+    virConnectPtr conn2 = NULL;
+    virDomainPtr dom2 = NULL;
 
     lifecycleEventCounter_reset(&counter);
 
@@ -282,20 +284,40 @@ testDomainStartStopEvent(const void *data)
     virDomainDestroy(dom);
     virDomainCreate(dom);
 
-    if (virEventRunDefaultImpl() < 0) {
-        ret = -1;
+    if (virEventRunDefaultImpl() < 0)
         goto cleanup;
-    }
 
     if (counter.startEvents != 1 || counter.stopEvents != 1 ||
-            counter.unexpectedEvents > 0) {
-        ret = -1;
+            counter.unexpectedEvents > 0)
         goto cleanup;
-    }
 
+    /* Repeat the test, but this time, trigger the events via an
+     * alternate connection.  */
+    if (!(conn2 = virConnectOpen("test:///default")))
+        goto cleanup;
+    if (!(dom2 = virDomainLookupByName(conn2, "test")))
+        goto cleanup;
+
+    if (virDomainDestroy(dom2) < 0)
+        goto cleanup;
+    if (virDomainCreate(dom2) < 0)
+        goto cleanup;
+
+    if (virEventRunDefaultImpl() < 0)
+        goto cleanup;
+
+    if (counter.startEvents != 2 || counter.stopEvents != 2 ||
+            counter.unexpectedEvents > 0)
+        goto cleanup;
+
+    ret = 0;
 cleanup:
     virConnectDomainEventDeregisterAny(test->conn, id);
     virDomainFree(dom);
+    if (dom2)
+        virDomainFree(dom2);
+    if (conn2)
+        virConnectClose(conn2);
 
     return ret;
 }
@@ -419,13 +441,25 @@ cleanup:
     return ret;
 }
 
+static void
+timeout(int id ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+{
+    fputs("test taking too long; giving up", stderr);
+    _exit(EXIT_FAILURE);
+}
+
 static int
 mymain(void)
 {
     objecteventTest test;
     int ret = EXIT_SUCCESS;
+    int timer;
 
     virEventRegisterDefaultImpl();
+
+    /* Set up a timer to abort this test if it takes 10 seconds.  */
+    if ((timer = virEventAddTimeout(10 * 1000, timeout, NULL, NULL)) < 0)
+        return EXIT_FAILURE;
 
     if (!(test.conn = virConnectOpen("test:///default")))
         return EXIT_FAILURE;
@@ -460,6 +494,7 @@ mymain(void)
     virNetworkUndefine(test.net);
     virNetworkFree(test.net);
     virConnectClose(test.conn);
+    virEventRemoveTimeout(timer);
 
     return ret;
 }
