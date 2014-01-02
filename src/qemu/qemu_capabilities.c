@@ -2917,7 +2917,7 @@ virQEMUCapsSupportsChardev(virDomainDefPtr def,
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
         return false;
 
-    if (def->os.arch != VIR_ARCH_ARMV7L)
+    if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
     /* This may not be true for all ARM machine types, but at least

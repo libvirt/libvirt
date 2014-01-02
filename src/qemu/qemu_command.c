@@ -427,7 +427,8 @@ qemuDomainSupportsNicdev(virDomainDefPtr def,
         return false;
 
     /* non-virtio ARM nics require legacy -net nic */
-    if (def->os.arch == VIR_ARCH_ARMV7L &&
+    if (((def->os.arch == VIR_ARCH_ARMV7L) ||
+        (def->os.arch == VIR_ARCH_AARCH64)) &&
         net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO)
         return false;
 
@@ -1340,7 +1341,8 @@ static int
 qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
                                        virQEMUCapsPtr qemuCaps)
 {
-    if (def->os.arch == VIR_ARCH_ARMV7L &&
+    if (((def->os.arch == VIR_ARCH_ARMV7L) ||
+        (def->os.arch == VIR_ARCH_AARCH64)) &&
         (STRPREFIX(def->os.machine, "vexpress-") ||
             STREQ(def->os.machine, "virt")) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
@@ -1872,7 +1874,7 @@ cleanup:
 
 static bool
 qemuDomainSupportsPCI(virDomainDefPtr def) {
-    if (def->os.arch != VIR_ARCH_ARMV7L)
+    if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
     if (STREQ(def->os.machine, "versatilepb"))

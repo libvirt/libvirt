@@ -305,6 +305,7 @@
           <ref name="hvmppc64"/>
           <ref name="hvms390"/>
           <ref name="hvmarm"/>
+          <ref name="hvmaarch64"/>
         </choice>
       </optional>
       <value>hvm</value>
@@ -420,6 +421,24 @@
         <attribute name="arch">
           <choice>
             <value>armv7l</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <data type="string">
+            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
+          </data>
+        </attribute>
+      </optional>
+    </group>
+  </define>
+  <define name="hvmaarch64">
+    <group>
+      <optional>
+        <attribute name="arch">
+          <choice>
+            <value>aarch64</value>
           </choice>
         </attribute>
       </optional>

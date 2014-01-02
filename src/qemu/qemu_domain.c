@@ -727,6 +727,10 @@ qemuDomainDefPostParse(virDomainDefPtr def,
        addDefaultUSB = false;
        addDefaultMemballoon = false;
        break;
+    case VIR_ARCH_AARCH64:
+       addDefaultUSB = false;
+       addDefaultMemballoon = false;
+       break;
 
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:

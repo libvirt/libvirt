@@ -175,6 +175,33 @@ error:
     return -1;
 }
 
+static int testQemuAddAARCH64Guest(virCapsPtr caps)
+{
+    static const char *machines[] = { "virt"};
+    virCapsGuestMachinePtr *capsmachines = NULL;
+    virCapsGuestPtr guest;
+
+    capsmachines = virCapabilitiesAllocMachines(machines,
+                                                ARRAY_CARDINALITY(machines));
+    if (!capsmachines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_AARCH64,
+                                    "/usr/bin/qemu-system-aarch64", NULL,
+                                    ARRAY_CARDINALITY(machines),
+                                    capsmachines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+error:
+    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    return -1;
+}
 
 virCapsPtr testQemuCapsInit(void) {
     virCapsPtr caps;
@@ -301,6 +328,9 @@ virCapsPtr testQemuCapsInit(void) {
         goto cleanup;
 
     if (testQemuAddArmGuest(caps))
+        goto cleanup;
+
+    if (testQemuAddAARCH64Guest(caps))
         goto cleanup;
 
     if (virTestGetDebug()) {
