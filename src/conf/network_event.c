@@ -1,6 +1,7 @@
 /*
  * network_event.c: network event queue processing helpers
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
@@ -31,7 +32,7 @@
 struct _virNetworkEvent {
     virObjectEvent parent;
 
-    /* Unused attribute to get virNetworkEvent class being created */
+    /* Unused attribute to allow for subclass creation */
     bool dummy;
 };
 typedef struct _virNetworkEvent virNetworkEvent;
@@ -71,7 +72,7 @@ virNetworkEventsOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetworkEvents)
 
-void
+static void
 virNetworkEventDispose(void *obj)
 {
     virNetworkEventPtr event = obj;
@@ -79,7 +80,7 @@ virNetworkEventDispose(void *obj)
 }
 
 
-void
+static void
 virNetworkEventLifecycleDispose(void *obj)
 {
     virNetworkEventLifecyclePtr event = obj;
@@ -126,13 +127,14 @@ cleanup:
  * @state: object event state
  * @net: network to filter on or NULL for all networks
  * @eventID: ID of the event type to register for
- * @cb: function to add to event
- * @opaque: data blob to pass to callback
+ * @cb: function to invoke when event occurs
+ * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
  *
- * Register the function @callbackID with connection @conn,
- * from @state, for events of type @eventID.
+ * Register the function @cb with connection @conn, from @state, for
+ * events of type @eventID, and return the registration handle in
+ * @callbackID.
  *
  * Returns: the number of callbacks now registered, or -1 on error
  */
@@ -161,6 +163,16 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                              cb, opaque, freecb, callbackID);
 }
 
+
+/**
+ * virNetworkEventLifecycleNew:
+ * @name: name of the network object the event describes
+ * @uuid: uuid of the network object the event describes
+ * @type: type of lifecycle event
+ * @detail: more details about @type
+ *
+ * Create a new network lifecycle event.
+ */
 virObjectEventPtr
 virNetworkEventLifecycleNew(const char *name,
                             const unsigned char *uuid,

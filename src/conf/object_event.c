@@ -1,7 +1,7 @@
 /*
  * object_event.c: object event queue processing helpers
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -43,7 +43,6 @@ struct _virObjectEventQueue {
 
 static virClassPtr virObjectEventClass;
 
-static virClassPtr virObjectEventClass;
 static void virObjectEventDispose(void *obj);
 
 static int
@@ -60,6 +59,12 @@ virObjectEventOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virObjectEvent)
 
+/**
+ * virClassForObjectEvent:
+ *
+ * Return the class object to be used as a parent when creating an
+ * event subclass.
+ */
 virClassPtr
 virClassForObjectEvent(void)
 {
@@ -233,7 +238,8 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
  * @klass: the base event class
  * @eventID: the event ID
  * @callback: the callback to add
- * @opaque: opaque data tio pass to callback
+ * @opaque: opaque data to pass to @callback
+ * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
  *
  * Internal function to add a callback from a virObjectEventCallbackListPtr
@@ -399,17 +405,32 @@ virObjectEventQueueNew(void)
     return ret;
 }
 
+
+/**
+ * virObjectEventStateLock:
+ * @state: the event state object
+ *
+ * Lock event state before calling functions from object_event_private.h.
+ */
 void
 virObjectEventStateLock(virObjectEventStatePtr state)
 {
     virMutexLock(&state->lock);
 }
 
+
+/**
+ * virObjectEventStateUnlock:
+ * @state: the event state object
+ *
+ * Unlock event state after calling functions from object_event_private.h.
+ */
 void
 virObjectEventStateUnlock(virObjectEventStatePtr state)
 {
     virMutexUnlock(&state->lock);
 }
+
 
 /**
  * virObjectEventStateFree:
@@ -436,6 +457,16 @@ virObjectEventStateFree(virObjectEventStatePtr state)
 
 static void virObjectEventStateFlush(virObjectEventStatePtr state);
 
+
+/**
+ * virObjectEventTimer:
+ * @timer: id of the event loop timer
+ * @opaque: the event state object
+ *
+ * Register this function with the event state as its opaque data as
+ * the callback of a periodic timer on the event loop, in order to
+ * flush the callback queue.
+ */
 void
 virObjectEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
@@ -444,8 +475,11 @@ virObjectEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     virObjectEventStateFlush(state);
 }
 
+
 /**
  * virObjectEventStateNew:
+ *
+ * Allocate a new event state object.
  */
 virObjectEventStatePtr
 virObjectEventStateNew(void)
@@ -477,6 +511,18 @@ error:
     return NULL;
 }
 
+
+/**
+ * virObjectEventNew:
+ * @klass: subclass of event to be created
+ * @dispatcher: callback for dispatching the particular subclass of event
+ * @eventID: id of the event
+ * @id: id of the object the event describes, or 0
+ * @name: name of the object the event describes
+ * @uuid: uuid of the object the event describes
+ *
+ * Create a new event, with the information common to all events.
+ */
 void *
 virObjectEventNew(virClassPtr klass,
                   virObjectEventDispatchFunc dispatcher,
@@ -513,6 +559,7 @@ virObjectEventNew(virClassPtr klass,
     VIR_DEBUG("obj=%p", event);
     return event;
 }
+
 
 /**
  * virObjectEventQueuePush:
@@ -560,7 +607,7 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
          * will cause problems when a domain switches between
          * running & shutoff states & ignoring 'name' since
          * Xen sometimes renames guests during migration, thus
-         * leaving 'uuid' as the only truly reliable ID we can use*/
+         * leaving 'uuid' as the only truly reliable ID we can use. */
 
         if (memcmp(event->meta.uuid, cb->meta->uuid, VIR_UUID_BUFLEN) == 0)
             return 1;
@@ -613,6 +660,16 @@ virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
     queue->count = 0;
 }
 
+
+/**
+ * virObjectEventStateQueue:
+ * @state: the event state object
+ * @event: event to add to the queue
+ *
+ * Adds @event to the queue of events to be dispatched at the next
+ * safe moment.  The caller should no longer use @event after this
+ * call.
+ */
 void
 virObjectEventStateQueue(virObjectEventStatePtr state,
                          virObjectEventPtr event)
@@ -667,15 +724,19 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
  * virObjectEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: domain event state
+ * @uuid: uuid of the object for event filtering
+ * @name: name of the object for event filtering
+ * @id: id of the object for event filtering, or 0
  * @klass: the base event class
  * @eventID: ID of the event type to register for
- * @cb: function to remove from event
- * @opaque: data blob to pass to callback
+ * @cb: function to invoke when event occurs
+ * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
  *
- * Register the function @callbackID with connection @conn,
- * from @state, for events of type @eventID.
+ * Register the function @cb with connection @conn, from @state, for
+ * events of type @eventID, and return the registration handle in
+ * @callbackID.
  *
  * Returns: the number of callbacks now registered, or -1 on error
  */
@@ -746,7 +807,8 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
     virObjectEventStateLock(state);
     if (state->isDispatching)
         ret = virObjectEventCallbackListMarkDeleteID(conn,
-                                                     state->callbacks, callbackID);
+                                                     state->callbacks,
+                                                     callbackID);
     else
         ret = virObjectEventCallbackListRemoveID(conn,
                                                  state->callbacks, callbackID);

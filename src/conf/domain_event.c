@@ -1,7 +1,7 @@
 /*
  * domain_event.c: domain event queue processing helpers
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -70,7 +70,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
 struct _virDomainEvent {
     virObjectEvent parent;
 
-    /* Unused attribute to get virDomainEvent class being created */
+    /* Unused attribute to allow for subclass creation */
     bool dummy;
 };
 typedef struct _virDomainEvent virDomainEvent;
@@ -172,7 +172,8 @@ typedef struct _virDomainEventDeviceRemoved virDomainEventDeviceRemoved;
 typedef virDomainEventDeviceRemoved *virDomainEventDeviceRemovedPtr;
 
 
-static int virDomainEventsOnceInit(void)
+static int
+virDomainEventsOnceInit(void)
 {
     if (!(virDomainEventClass =
           virClassNew(virClassForObjectEvent(),
@@ -246,32 +247,37 @@ static int virDomainEventsOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virDomainEvents)
 
 
-static void virDomainEventDispose(void *obj)
+static void
+virDomainEventDispose(void *obj)
 {
     virDomainEventPtr event = obj;
 
     VIR_DEBUG("obj=%p", event);
 }
 
-static void virDomainEventLifecycleDispose(void *obj)
+static void
+virDomainEventLifecycleDispose(void *obj)
 {
     virDomainEventLifecyclePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
-static void virDomainEventRTCChangeDispose(void *obj)
+static void
+virDomainEventRTCChangeDispose(void *obj)
 {
     virDomainEventRTCChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
-static void virDomainEventWatchdogDispose(void *obj)
+static void
+virDomainEventWatchdogDispose(void *obj)
 {
     virDomainEventWatchdogPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
-static void virDomainEventIOErrorDispose(void *obj)
+static void
+virDomainEventIOErrorDispose(void *obj)
 {
     virDomainEventIOErrorPtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -281,7 +287,8 @@ static void virDomainEventIOErrorDispose(void *obj)
     VIR_FREE(event->reason);
 }
 
-static void virDomainEventGraphicsDispose(void *obj)
+static void
+virDomainEventGraphicsDispose(void *obj)
 {
     virDomainEventGraphicsPtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -307,7 +314,8 @@ static void virDomainEventGraphicsDispose(void *obj)
     }
 }
 
-static void virDomainEventBlockJobDispose(void *obj)
+static void
+virDomainEventBlockJobDispose(void *obj)
 {
     virDomainEventBlockJobPtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -315,7 +323,8 @@ static void virDomainEventBlockJobDispose(void *obj)
     VIR_FREE(event->path);
 }
 
-static void virDomainEventDiskChangeDispose(void *obj)
+static void
+virDomainEventDiskChangeDispose(void *obj)
 {
     virDomainEventDiskChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -325,7 +334,8 @@ static void virDomainEventDiskChangeDispose(void *obj)
     VIR_FREE(event->devAlias);
 }
 
-static void virDomainEventTrayChangeDispose(void *obj)
+static void
+virDomainEventTrayChangeDispose(void *obj)
 {
     virDomainEventTrayChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -333,13 +343,15 @@ static void virDomainEventTrayChangeDispose(void *obj)
     VIR_FREE(event->devAlias);
 }
 
-static void virDomainEventBalloonChangeDispose(void *obj)
+static void
+virDomainEventBalloonChangeDispose(void *obj)
 {
     virDomainEventBalloonChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
-static void virDomainEventDeviceRemovedDispose(void *obj)
+static void
+virDomainEventDeviceRemovedDispose(void *obj)
 {
     virDomainEventDeviceRemovedPtr event = obj;
     VIR_DEBUG("obj=%p", event);
@@ -354,7 +366,9 @@ static void virDomainEventDeviceRemovedDispose(void *obj)
  * @cbList: the list
  * @callback: the callback to remove
  *
- * Internal function to remove a callback from a virObjectEventCallbackListPtr
+ * Internal function to remove a callback from a virObjectEventCallbackListPtr,
+ * when registered via the older virConnectDomainEventRegister with no
+ * callbackID
  */
 static int
 virDomainEventCallbackListRemove(virConnectPtr conn,
@@ -430,9 +444,11 @@ virDomainEventCallbackListMarkDelete(virConnectPtr conn,
  * @conn: pointer to the connection
  * @cbList: the list
  * @callback: the callback to add
- * @opaque: opaque data tio pass to callback
+ * @opaque: opaque data to pass to @callback
+ * @freecb: callback to free @opaque
  *
- * Internal function to add a callback from a virObjectEventCallbackListPtr
+ * Internal function to add a callback from a virObjectEventCallbackListPtr,
+ * when registered via the older virConnectDomainEventRegister.
  */
 static int
 virDomainEventCallbackListAdd(virConnectPtr conn,
@@ -1355,8 +1371,8 @@ cleanup:
  * virDomainEventStateRegister:
  * @conn: connection to associate with callback
  * @state: object event state
- * @callback: function to remove from event
- * @opaque: data blob to pass to callback
+ * @callback: the callback to add
+ * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
  *
  * Register the function @callback with connection @conn,
@@ -1409,14 +1425,16 @@ cleanup:
  * virDomainEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: object event state
+ * @dom: optional domain for filtering the event
  * @eventID: ID of the event type to register for
- * @cb: function to remove from event
- * @opaque: data blob to pass to callback
+ * @cb: function to invoke when event fires
+ * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
  *
- * Register the function @callbackID with connection @conn,
- * from @state, for events of type @eventID.
+ * Register the function @cb with connection @conn, from @state, for
+ * events of type @eventID, and return the registration handle in
+ * @callbackID.
  *
  * Returns: the number of callbacks now registered, or -1 on error
  */

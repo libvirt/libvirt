@@ -1,7 +1,7 @@
 /*
  * object_event.h: object event queue processing helpers
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -47,7 +47,7 @@ void virObjectEventStateFree(virObjectEventStatePtr state);
 virObjectEventStatePtr
 virObjectEventStateNew(void);
 
-/*
+/**
  * virConnectObjectEventGenericCallback:
  * @conn: the connection pointer
  * @obj: the object pointer
@@ -60,7 +60,8 @@ typedef void (*virConnectObjectEventGenericCallback)(virConnectPtr conn,
                                                      void *obj,
                                                      void *opaque);
 
-# define VIR_OBJECT_EVENT_CALLBACK(cb) ((virConnectObjectEventGenericCallback)(cb))
+# define VIR_OBJECT_EVENT_CALLBACK(cb) \
+    ((virConnectObjectEventGenericCallback)(cb))
 
 void
 virObjectEventStateQueue(virObjectEventStatePtr state,

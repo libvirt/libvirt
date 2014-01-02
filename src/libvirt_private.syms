@@ -534,6 +534,11 @@ virNetworkSetBridgeName;
 virPortGroupFindByName;
 
 
+# conf/network_event.h
+virNetworkEventLifecycleNew;
+virNetworkEventStateRegisterID;
+
+
 # conf/node_device_conf.h
 virNodeDevCapsDefFree;
 virNodeDevCapTypeFromString;
@@ -624,8 +629,6 @@ virNWFilterVarValueGetSimple;
 
 
 # conf/object_event.h
-virNetworkEventLifecycleNew;
-virNetworkEventStateRegisterID;
 virObjectEventStateDeregisterID;
 virObjectEventStateEventID;
 virObjectEventStateFree;
