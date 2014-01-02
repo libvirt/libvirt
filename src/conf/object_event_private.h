@@ -1,7 +1,7 @@
 /*
  * object_event_private.h: object event queue processing helpers
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -85,9 +85,6 @@ struct _virObjectEvent {
 
 virClassPtr
 virClassForObjectEvent(void);
-
-int
-virObjectEventGetEventID(void *anyobj);
 
 int
 virObjectEventCallbackListAddID(virConnectPtr conn,

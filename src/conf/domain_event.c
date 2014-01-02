@@ -1191,12 +1191,11 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   void *cbopaque)
 {
     virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
-    int eventID = virObjectEventGetEventID(event);
     if (!dom)
         return;
     dom->id = event->meta.id;
 
-    switch ((virDomainEventID) eventID) {
+    switch ((virDomainEventID) event->eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
         {
             virDomainEventLifecyclePtr lifecycleEvent;
@@ -1360,7 +1359,7 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         break;
     }
 
-    VIR_WARN("Unexpected event ID %d", eventID);
+    VIR_WARN("Unexpected event ID %d", event->eventID);
 
 cleanup:
     virDomainFree(dom);

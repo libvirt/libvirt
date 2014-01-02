@@ -73,18 +73,6 @@ virClassForObjectEvent(void)
     return virObjectEventClass;
 }
 
-int
-virObjectEventGetEventID(void *anyobj)
-{
-    virObjectEventPtr obj = anyobj;
-
-    if (!virObjectIsClass(obj, virClassForObjectEvent())) {
-        VIR_WARN("Object %p (%s) is not a virObjectEvent instance",
-                 obj, obj ? virClassName(obj->parent.klass) : "(unknown)");
-        return -1;
-    }
-    return obj->eventID;
-}
 
 static void
 virObjectEventDispose(void *obj)
@@ -599,7 +587,7 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
         return 0;
     if (!virObjectIsClass(event, cb->klass))
         return 0;
-    if (cb->eventID != virObjectEventGetEventID(event))
+    if (cb->eventID != event->eventID)
         return 0;
 
     if (cb->meta) {
