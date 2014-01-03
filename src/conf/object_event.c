@@ -36,9 +36,41 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+struct _virObjectEventCallbackList {
+    unsigned int nextID;
+    size_t count;
+    virObjectEventCallbackPtr *callbacks;
+};
+
 struct _virObjectEventQueue {
     size_t count;
     virObjectEventPtr *events;
+};
+typedef struct _virObjectEventQueue virObjectEventQueue;
+typedef virObjectEventQueue *virObjectEventQueuePtr;
+
+struct _virObjectEventState {
+    /* The list of domain event callbacks */
+    virObjectEventCallbackListPtr callbacks;
+    /* The queue of object events */
+    virObjectEventQueuePtr queue;
+    /* Timer for flushing events queue */
+    int timer;
+    /* Flag if we're in process of dispatching */
+    bool isDispatching;
+    virMutex lock;
+};
+
+struct _virObjectEventCallback {
+    int callbackID;
+    virClassPtr klass;
+    int eventID;
+    virConnectPtr conn;
+    virObjectMetaPtr meta;
+    virConnectObjectEventGenericCallback cb;
+    void *opaque;
+    virFreeCallback freecb;
+    bool deleted;
 };
 
 static virClassPtr virObjectEventClass;
@@ -267,7 +299,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
  *
  * Internal function to add a callback from a virObjectEventCallbackListPtr
  */
-int
+static int
 virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 unsigned char uuid[VIR_UUID_BUFLEN],
@@ -374,7 +406,7 @@ virObjectEventCallbackListEventID(virConnectPtr conn,
  *
  * Removes all elements from the queue
  */
-void
+static void
 virObjectEventQueueClear(virObjectEventQueuePtr queue)
 {
     size_t i;
@@ -420,7 +452,7 @@ virObjectEventQueueNew(void)
  *
  * Lock event state before calling functions from object_event_private.h.
  */
-void
+static void
 virObjectEventStateLock(virObjectEventStatePtr state)
 {
     virMutexLock(&state->lock);
@@ -433,7 +465,7 @@ virObjectEventStateLock(virObjectEventStatePtr state)
  *
  * Unlock event state after calling functions from object_event_private.h.
  */
-void
+static void
 virObjectEventStateUnlock(virObjectEventStatePtr state)
 {
     virMutexUnlock(&state->lock);
@@ -475,7 +507,7 @@ static void virObjectEventStateFlush(virObjectEventStatePtr state);
  * the callback of a periodic timer on the event loop, in order to
  * flush the callback queue.
  */
-void
+static void
 virObjectEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     virObjectEventStatePtr state = opaque;

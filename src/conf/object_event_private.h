@@ -35,40 +35,8 @@ struct _virObjectMeta {
 typedef struct _virObjectMeta virObjectMeta;
 typedef virObjectMeta *virObjectMetaPtr;
 
-struct _virObjectEventCallbackList {
-    unsigned int nextID;
-    size_t count;
-    virObjectEventCallbackPtr *callbacks;
-};
 typedef struct _virObjectEventCallbackList virObjectEventCallbackList;
 typedef virObjectEventCallbackList *virObjectEventCallbackListPtr;
-
-typedef struct _virObjectEventQueue virObjectEventQueue;
-typedef virObjectEventQueue *virObjectEventQueuePtr;
-
-struct _virObjectEventState {
-    /* The list of domain event callbacks */
-    virObjectEventCallbackListPtr callbacks;
-    /* The queue of object events */
-    virObjectEventQueuePtr queue;
-    /* Timer for flushing events queue */
-    int timer;
-    /* Flag if we're in process of dispatching */
-    bool isDispatching;
-    virMutex lock;
-};
-
-struct _virObjectEventCallback {
-    int callbackID;
-    virClassPtr klass;
-    int eventID;
-    virConnectPtr conn;
-    virObjectMetaPtr meta;
-    virConnectObjectEventGenericCallback cb;
-    void *opaque;
-    virFreeCallback freecb;
-    bool deleted;
-};
 
 typedef void
 (*virObjectEventDispatchFunc)(virConnectPtr conn,
@@ -94,32 +62,6 @@ virObjectEventStateCallbackID(virConnectPtr conn,
                               virConnectObjectEventGenericCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(5);
-
-int
-virObjectEventCallbackListAddID(virConnectPtr conn,
-                                virObjectEventCallbackListPtr cbList,
-                                unsigned char *uuid,
-                                const char *name,
-                                int id,
-                                virClassPtr klass,
-                                int eventID,
-                                virConnectObjectEventGenericCallback callback,
-                                void *opaque,
-                                virFreeCallback freecb,
-                                int *callbackID);
-
-void
-virObjectEventQueueClear(virObjectEventQueuePtr queue);
-
-void
-virObjectEventStateLock(virObjectEventStatePtr state);
-
-void
-virObjectEventStateUnlock(virObjectEventStatePtr state);
-
-void
-virObjectEventTimer(int timer,
-                    void *opaque);
 
 void *
 virObjectEventNew(virClassPtr klass,
