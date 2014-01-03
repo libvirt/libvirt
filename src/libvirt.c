@@ -2831,7 +2831,8 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
         virReportInvalidArg(flags, "%s",
-                            _("running and paused flags are mutually exclusive"));
+                            _("running and paused flags are mutually "
+                              "exclusive"));
         goto error;
     }
 
@@ -2971,7 +2972,8 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
         virReportInvalidArg(flags, "%s",
-                            _("running and paused flags are mutually exclusive"));
+                            _("running and paused flags are mutually "
+                              "exclusive"));
         goto error;
     }
 
@@ -3122,7 +3124,8 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
         virReportInvalidArg(flags, "%s",
-                            _("running and paused flags are mutually exclusive"));
+                            _("running and paused flags are mutually "
+                              "exclusive"));
         goto error;
     }
 
@@ -4159,7 +4162,8 @@ virDomainGetMemoryParameters(virDomainPtr domain,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -4424,7 +4428,8 @@ virDomainGetBlkioParameters(virDomainPtr domain,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -7734,7 +7739,8 @@ virNodeGetCPUStats(virConnectPtr conn,
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cpuNum < 0 && cpuNum != VIR_NODE_CPU_STATS_ALL_CPUS) {
         virReportInvalidArg(cpuNum,
-                            _("cpuNum in %s only accepts %d as a negative value"),
+                            _("cpuNum in %s only accepts %d as a negative "
+                              "value"),
                             __FUNCTION__, VIR_NODE_CPU_STATS_ALL_CPUS);
         goto error;
     }
@@ -7825,7 +7831,8 @@ virNodeGetMemoryStats(virConnectPtr conn,
     virCheckNonNegativeArgGoto(*nparams, error);
     if (cellNum < 0 && cellNum != VIR_NODE_MEMORY_STATS_ALL_CELLS) {
         virReportInvalidArg(cpuNum,
-                            _("cellNum in %s only accepts %d as a negative value"),
+                            _("cellNum in %s only accepts %d as a negative "
+                              "value"),
                             __FUNCTION__, VIR_NODE_MEMORY_STATS_ALL_CELLS);
         goto error;
     }
@@ -8237,7 +8244,8 @@ virDomainGetSchedulerParametersFlags(virDomainPtr domain,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -9066,7 +9074,8 @@ virDomainMemoryPeek(virDomainPtr dom,
     /* Exactly one of these two flags must be set.  */
     if (!(flags & VIR_MEMORY_VIRTUAL) == !(flags & VIR_MEMORY_PHYSICAL)) {
         virReportInvalidArg(flags,
-                            _("flags in %s must include VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"),
+                            _("flags in %s must include VIR_MEMORY_VIRTUAL or "
+                              "VIR_MEMORY_PHYSICAL"),
                             __FUNCTION__);
         goto error;
     }
@@ -10407,7 +10416,8 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -10848,7 +10858,8 @@ virDomainSetMetadata(virDomainPtr domain,
     case VIR_DOMAIN_METADATA_TITLE:
         if (metadata && strchr(metadata, '\n')) {
             virReportInvalidArg(metadata,
-                                _("metadata title in %s can't contain newlines"),
+                                _("metadata title in %s can't contain "
+                                  "newlines"),
                                 __FUNCTION__);
             goto error;
         }
@@ -10926,7 +10937,8 @@ virDomainGetMetadata(virDomainPtr domain,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -15462,7 +15474,8 @@ virStorageVolResize(virStorageVolPtr vol,
     if (capacity == 0 && !((flags & VIR_STORAGE_VOL_RESIZE_DELTA) ||
                            (flags & VIR_STORAGE_VOL_RESIZE_SHRINK))) {
         virReportInvalidArg(capacity,
-                            _("capacity in %s cannot be zero without 'delta' or 'shrink' flags set"),
+                            _("capacity in %s cannot be zero without 'delta' "
+                              "or 'shrink' flags set"),
                             __FUNCTION__);
         goto error;
     }
@@ -19608,7 +19621,8 @@ virDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
         virReportInvalidArg(flags,
-                            _("running and paused flags in %s are mutually exclusive"),
+                            _("running and paused flags in %s are mutually "
+                              "exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -19935,21 +19949,24 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
         virReportInvalidArg(flags,
-                            _("use of 'current' flag in %s requires 'redefine' flag"),
+                            _("use of 'current' flag in %s requires "
+                              "'redefine' flag"),
                             __FUNCTION__);
         goto error;
     }
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
         virReportInvalidArg(flags,
-                            _("'redefine' and 'no metadata' flags in %s are mutually exclusive"),
+                            _("'redefine' and 'no metadata' flags in %s are "
+                              "mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportInvalidArg(flags,
-                            _("'redefine' and 'halt' flags in %s are mutually exclusive"),
+                            _("'redefine' and 'halt' flags in %s are mutually "
+                              "exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -20866,7 +20883,8 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
         (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
         virReportInvalidArg(flags,
-                            _("running and paused flags in %s are mutually exclusive"),
+                            _("running and paused flags in %s are mutually "
+                              "exclusive"),
                             __FUNCTION__);
         goto error;
     }
@@ -22108,7 +22126,8 @@ virDomainGetBlockIoTune(virDomainPtr dom,
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
