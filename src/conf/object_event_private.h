@@ -67,7 +67,7 @@ struct _virObjectEventCallback {
     virConnectObjectEventGenericCallback cb;
     void *opaque;
     virFreeCallback freecb;
-    int deleted;
+    bool deleted;
 };
 
 typedef void

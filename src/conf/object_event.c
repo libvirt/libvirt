@@ -171,7 +171,7 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
             cbList->callbacks[i]->conn == conn) {
-            cbList->callbacks[i]->deleted = 1;
+            cbList->callbacks[i]->deleted = true;
             for (i = 0; i < cbList->count; i++) {
                 if (!cbList->callbacks[i]->deleted)
                     ret++;
@@ -577,18 +577,18 @@ virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
 }
 
 
-static int
+static bool
 virObjectEventDispatchMatchCallback(virObjectEventPtr event,
                                     virObjectEventCallbackPtr cb)
 {
     if (!cb)
-        return 0;
+        return false;
     if (cb->deleted)
-        return 0;
+        return false;
     if (!virObjectIsClass(event, cb->klass))
-        return 0;
+        return false;
     if (cb->eventID != event->eventID)
-        return 0;
+        return false;
 
     if (cb->meta) {
         /* Deliberately ignoring 'id' for matching, since that
@@ -597,13 +597,9 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
          * Xen sometimes renames guests during migration, thus
          * leaving 'uuid' as the only truly reliable ID we can use. */
 
-        if (memcmp(event->meta.uuid, cb->meta->uuid, VIR_UUID_BUFLEN) == 0)
-            return 1;
-
-        return 0;
-    } else {
-        return 1;
+        return memcmp(event->meta.uuid, cb->meta->uuid, VIR_UUID_BUFLEN) == 0;
     }
+    return true;
 }
 
 

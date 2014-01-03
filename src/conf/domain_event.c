@@ -424,7 +424,7 @@ virDomainEventCallbackListMarkDelete(virConnectPtr conn,
         if (cbList->callbacks[i]->cb == VIR_OBJECT_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
             cbList->callbacks[i]->conn == conn) {
-            cbList->callbacks[i]->deleted = 1;
+            cbList->callbacks[i]->deleted = true;
             for (i = 0; i < cbList->count; i++) {
                 if (!cbList->callbacks[i]->deleted)
                     ret++;
