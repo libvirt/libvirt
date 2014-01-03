@@ -1,7 +1,7 @@
 /*
  * qemu_process.c: QEMU process management
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3270,7 +3270,7 @@ endjob:
     if (obj && virObjectUnref(obj))
         virObjectUnlock(obj);
 
-    virConnectClose(conn);
+    virObjectUnref(conn);
     virObjectUnref(cfg);
 
     return;
@@ -3305,7 +3305,7 @@ error:
                 virObjectUnlock(obj);
         }
     }
-    virConnectClose(conn);
+    virObjectUnref(conn);
     virObjectUnref(cfg);
 }
 
@@ -3352,11 +3352,11 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
      * that the threads we start see a valid connection throughout their
      * lifetime. We simply increase the reference counter here.
      */
-    virConnectRef(data->conn);
+    virObjectRef(data->conn);
 
     if (virThreadCreate(&thread, false, qemuProcessReconnect, data) < 0) {
 
-        virConnectClose(data->conn);
+        virObjectUnref(data->conn);
 
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create thread. QEMU initialization "

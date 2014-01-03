@@ -320,8 +320,7 @@ qemuAutostartDomains(virQEMUDriverPtr driver)
 
     virDomainObjListForEach(driver->domains, qemuAutostartDomain, &data);
 
-    if (conn)
-        virConnectClose(conn);
+    virObjectUnref(conn);
     virObjectUnref(cfg);
 }
 
@@ -843,15 +842,13 @@ qemuStateInitialize(bool privileged,
     if (!qemu_driver->workerPool)
         goto error;
 
-    if (conn)
-        virConnectClose(conn);
+    virObjectUnref(conn);
 
     virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 
 error:
-    if (conn)
-        virConnectClose(conn);
+    virObjectUnref(conn);
     VIR_FREE(driverConf);
     VIR_FREE(membase);
     VIR_FREE(mempath);
@@ -970,8 +967,7 @@ qemuStateStop(void) {
         virDomainFree(domains[i]);
     VIR_FREE(domains);
     VIR_FREE(flags);
-    if (conn)
-        virConnectClose(conn);
+    virObjectUnref(conn);
     virObjectUnref(cfg);
 
     return ret;

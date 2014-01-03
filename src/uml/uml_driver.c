@@ -224,8 +224,7 @@ umlAutostartConfigs(struct uml_driver *driver) {
     virDomainObjListForEach(driver->domains, umlAutostartDomain, &data);
     umlDriverUnlock(driver);
 
-    if (conn)
-        virConnectClose(conn);
+    virObjectUnref(conn);
 }
 
 

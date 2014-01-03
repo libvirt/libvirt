@@ -2,7 +2,7 @@
 /*
  * qemu_migration.c: QEMU migration handling
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4021,7 +4021,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
 cleanup:
     orig_err = virSaveLastError();
     qemuDomainObjEnterRemote(vm);
-    virConnectClose(dconn);
+    virObjectUnref(dconn);
     qemuDomainObjExitRemote(vm);
     if (orig_err) {
         virSetError(orig_err);
