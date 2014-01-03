@@ -141,6 +141,39 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
 
 
 /**
+ * virObjectEventCallbackListCount:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @klass: the base event class
+ * @eventID: the event ID
+ *
+ * Internal function to count how many callbacks remain registered for
+ * the given @eventID; knowing this allows the client side of the
+ * remote driver know when it must send an RPC to adjust the callbacks
+ * on the server.
+ */
+static int
+virObjectEventCallbackListCount(virConnectPtr conn,
+                                virObjectEventCallbackListPtr cbList,
+                                virClassPtr klass,
+                                int eventID)
+{
+    size_t i;
+    int ret = 0;
+
+    for (i = 0; i < cbList->count; i++) {
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+
+        if (cb->klass == klass &&
+            cb->eventID == eventID &&
+            cb->conn == conn &&
+            !cb->deleted)
+            ret++;
+    }
+    return ret;
+}
+
+/**
  * virObjectEventCallbackListRemoveID:
  * @conn: pointer to the connection
  * @cbList: the list
@@ -153,13 +186,15 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
                                    virObjectEventCallbackListPtr cbList,
                                    int callbackID)
 {
-    int ret = 0;
     size_t i;
 
     for (i = 0; i < cbList->count; i++) {
         virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
+            virClassPtr klass = cb->klass;
+            int eventID = cb->eventID;
+
             if (cb->freecb)
                 (*cb->freecb)(cb->opaque);
             virObjectUnref(cb->conn);
@@ -169,11 +204,8 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
             VIR_FREE(cb);
             VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
 
-            for (i = 0; i < cbList->count; i++) {
-                if (!cbList->callbacks[i]->deleted)
-                    ret++;
-            }
-            return ret;
+            return virObjectEventCallbackListCount(conn, cbList, klass,
+                                                   eventID);
         }
     }
 
@@ -188,18 +220,15 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
                                        virObjectEventCallbackListPtr cbList,
                                        int callbackID)
 {
-    int ret = 0;
     size_t i;
 
     for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->callbackID == callbackID &&
-            cbList->callbacks[i]->conn == conn) {
-            cbList->callbacks[i]->deleted = true;
-            for (i = 0; i < cbList->count; i++) {
-                if (!cbList->callbacks[i]->deleted)
-                    ret++;
-            }
-            return ret;
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+
+        if (cb->callbackID == callbackID && cb->conn == conn) {
+            cb->deleted = true;
+            return virObjectEventCallbackListCount(conn, cbList, cb->klass,
+                                                   cb->eventID);
         }
     }
 
@@ -313,7 +342,6 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 int *callbackID)
 {
     virObjectEventCallbackPtr event;
-    size_t i;
     int ret = -1;
 
     VIR_DEBUG("conn=%p cblist=%p uuid=%p name=%s id=%d "
@@ -359,13 +387,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
         goto cleanup;
 
-    for (ret = 0, i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->klass == klass &&
-            cbList->callbacks[i]->eventID == eventID &&
-            cbList->callbacks[i]->conn == conn &&
-            !cbList->callbacks[i]->deleted)
-            ret++;
-    }
+    ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID);
 
 cleanup:
     if (event) {
