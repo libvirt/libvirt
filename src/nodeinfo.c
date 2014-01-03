@@ -96,7 +96,85 @@ appleFreebsdNodeGetMemorySize(unsigned long *memory)
 
     return 0;
 }
-#endif
+#endif /* defined(__FreeBSD__) || defined(__APPLE__) */
+
+#ifdef __FreeBSD__
+# define BSD_MEMORY_STATS_ALL 4
+
+static int
+freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
+                               int *nparams)
+{
+    size_t i, j = 0;
+    unsigned long pagesize = getpagesize() >> 10;
+    long bufpages;
+    size_t bufpages_size = sizeof(bufpages);
+    struct field_sysctl_map {
+        const char *field;
+        const char *sysctl_name;
+    } sysctl_map[] = {
+        {VIR_NODE_MEMORY_STATS_TOTAL, "vm.stats.vm.v_page_count"},
+        {VIR_NODE_MEMORY_STATS_FREE, "vm.stats.vm.v_free_count"},
+        {VIR_NODE_MEMORY_STATS_CACHED, "vm.stats.vm.v_cache_count"},
+        {NULL, NULL}
+    };
+
+    if ((*nparams) == 0) {
+        *nparams = BSD_MEMORY_STATS_ALL;
+        return 0;
+    }
+
+    if ((*nparams) != BSD_MEMORY_STATS_ALL) {
+        virReportInvalidArg(nparams,
+                            _("nparams in %s must be %d"),
+                            __FUNCTION__, BSD_MEMORY_STATS_ALL);
+        return -1;
+    }
+
+    for (i = 0; sysctl_map[i].field != NULL; i++) {
+        u_int value;
+        size_t value_size = sizeof(value);
+        virNodeMemoryStatsPtr param;
+
+        if (sysctlbyname(sysctl_map[i].sysctl_name, &value,
+                         &value_size, NULL, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("sysctl failed for '%s'"),
+                                 sysctl_map[i].sysctl_name);
+            return -1;
+        }
+
+        param = &params[j++];
+        if (virStrcpyStatic(param->field, sysctl_map[i].field) == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Field '%s' too long for destination"),
+                           sysctl_map[i].field);
+            return -1;
+        }
+        param->value = (unsigned long long)value * pagesize;
+    }
+
+    {
+        virNodeMemoryStatsPtr param = &params[j++];
+
+        if (sysctlbyname("vfs.bufspace", &bufpages, &bufpages_size, NULL, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("sysctl failed for '%s'"),
+                                 "vfs.bufspace");
+            return -1;
+        }
+        if (virStrcpyStatic(param->field, VIR_NODE_MEMORY_STATS_BUFFERS) == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Field '%s' too long for destination"),
+                           VIR_NODE_MEMORY_STATS_BUFFERS);
+            return -1;
+        }
+        param->value = (unsigned long long)bufpages >> 10;
+    }
+
+    return 0;
+}
+#endif /* __FreeBSD__ */
 
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
@@ -1041,6 +1119,8 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
 
         return ret;
     }
+#elif defined(__FreeBSD__)
+    return freebsdNodeGetMemoryStats(params, nparams);
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node memory stats not implemented on this platform"));
