@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
  *
  * This library is free software; you can redistribute it and/or
@@ -271,28 +271,29 @@ vmwareExtractVersion(struct vmware_driver *driver)
 
     switch (driver->type) {
         case VMWARE_DRIVER_PLAYER:
-            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmplayer"))
+            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmplayer") < 0)
                 goto cleanup;
             break;
 
         case VMWARE_DRIVER_WORKSTATION:
-            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware"))
+            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware") < 0)
                 goto cleanup;
             break;
 
         case VMWARE_DRIVER_FUSION:
-            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware-vmx"))
+            if (virAsprintf(&bin, "%s/%s", vmwarePath, "vmware-vmx") < 0)
                 goto cleanup;
             break;
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid driver type for version detection"));
+                           _("invalid driver type for version detection"));
             goto cleanup;
     }
 
     cmd = virCommandNewArgList(bin, "-v", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
+    virCommandSetErrorBuffer(cmd, &outbuf);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
