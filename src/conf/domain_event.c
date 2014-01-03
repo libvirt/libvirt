@@ -360,111 +360,6 @@ virDomainEventDeviceRemovedDispose(void *obj)
 }
 
 
-/**
- * virDomainEventCallbackListRemove:
- * @conn: pointer to the connection
- * @cbList: the list
- * @callback: the callback to remove
- *
- * Internal function to remove a callback from a virObjectEventCallbackListPtr,
- * when registered via the older virConnectDomainEventRegister with no
- * callbackID
- */
-static int
-virDomainEventCallbackListRemove(virConnectPtr conn,
-                                 virObjectEventCallbackListPtr cbList,
-                                 virConnectDomainEventCallback callback)
-{
-    int ret = 0;
-    size_t i;
-    for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->cb == VIR_OBJECT_EVENT_CALLBACK(callback) &&
-            cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
-            cbList->callbacks[i]->conn == conn) {
-            virFreeCallback freecb = cbList->callbacks[i]->freecb;
-            if (freecb)
-                (*freecb)(cbList->callbacks[i]->opaque);
-            virObjectUnref(cbList->callbacks[i]->conn);
-            VIR_FREE(cbList->callbacks[i]);
-
-            if (i < (cbList->count - 1))
-                memmove(cbList->callbacks + i,
-                        cbList->callbacks + i + 1,
-                        sizeof(*(cbList->callbacks)) *
-                                (cbList->count - (i + 1)));
-
-            if (VIR_REALLOC_N(cbList->callbacks,
-                              cbList->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            cbList->count--;
-
-            for (i = 0; i < cbList->count; i++) {
-                if (!cbList->callbacks[i]->deleted)
-                    ret++;
-            }
-            return ret;
-        }
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("could not find event callback for removal"));
-    return -1;
-}
-
-
-static int
-virDomainEventCallbackListMarkDelete(virConnectPtr conn,
-                                     virObjectEventCallbackListPtr cbList,
-                                     virConnectDomainEventCallback callback)
-{
-    int ret = 0;
-    size_t i;
-    for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->cb == VIR_OBJECT_EVENT_CALLBACK(callback) &&
-            cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
-            cbList->callbacks[i]->conn == conn) {
-            cbList->callbacks[i]->deleted = true;
-            for (i = 0; i < cbList->count; i++) {
-                if (!cbList->callbacks[i]->deleted)
-                    ret++;
-            }
-            return ret;
-        }
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("could not find event callback for deletion"));
-    return -1;
-}
-
-
-/**
- * virDomainEventCallbackListAdd:
- * @conn: pointer to the connection
- * @cbList: the list
- * @callback: the callback to add
- * @opaque: opaque data to pass to @callback
- * @freecb: callback to free @opaque
- *
- * Internal function to add a callback from a virObjectEventCallbackListPtr,
- * when registered via the older virConnectDomainEventRegister.
- */
-static int
-virDomainEventCallbackListAdd(virConnectPtr conn,
-                              virObjectEventCallbackListPtr cbList,
-                              virConnectDomainEventCallback callback,
-                              void *opaque,
-                              virFreeCallback freecb)
-{
-    return virObjectEventCallbackListAddID(conn, cbList, NULL, NULL, 0,
-                                           virDomainEventClass,
-                                           VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                           VIR_OBJECT_EVENT_CALLBACK(callback),
-                                           opaque, freecb, NULL);
-}
-
-
 static void *
 virDomainEventNew(virClassPtr klass,
                   int eventID,
@@ -1386,37 +1281,14 @@ virDomainEventStateRegister(virConnectPtr conn,
                             void *opaque,
                             virFreeCallback freecb)
 {
-    int ret = -1;
-
     if (virDomainEventsInitialize() < 0)
         return -1;
 
-    virObjectEventStateLock(state);
-
-    if ((state->callbacks->count == 0) &&
-        (state->timer == -1) &&
-        (state->timer = virEventAddTimeout(-1,
-                                           virObjectEventTimer,
-                                           state,
-                                           NULL)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not initialize domain event timer"));
-        goto cleanup;
-    }
-
-    ret = virDomainEventCallbackListAdd(conn, state->callbacks,
-                                        callback, opaque, freecb);
-
-    if (ret == -1 &&
-        state->callbacks->count == 0 &&
-        state->timer != -1) {
-        virEventRemoveTimeout(state->timer);
-        state->timer = -1;
-    }
-
-cleanup:
-    virObjectEventStateUnlock(state);
-    return ret;
+    return virObjectEventStateRegisterID(conn, state, NULL, NULL, 0,
+                                         virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                         VIR_OBJECT_EVENT_CALLBACK(callback),
+                                         opaque, freecb, NULL);
 }
 
 
@@ -1467,34 +1339,25 @@ virDomainEventStateRegisterID(virConnectPtr conn,
  * virDomainEventStateDeregister:
  * @conn: connection to associate with callback
  * @state: object event state
- * @callback: function to remove from event
+ * @cb: function to remove from event
  *
- * Unregister the function @callback with connection @conn,
- * from @state, for lifecycle events.
+ * Unregister the function @cb with connection @conn, from @state, for
+ * lifecycle events.
  *
  * Returns: the number of lifecycle callbacks still registered, or -1 on error
  */
 int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virObjectEventStatePtr state,
-                              virConnectDomainEventCallback callback)
+                              virConnectDomainEventCallback cb)
 {
-    int ret;
+    int callbackID;
 
-    virObjectEventStateLock(state);
-    if (state->isDispatching)
-        ret = virDomainEventCallbackListMarkDelete(conn,
-                                                   state->callbacks, callback);
-    else
-        ret = virDomainEventCallbackListRemove(conn, state->callbacks, callback);
-
-    if (state->callbacks->count == 0 &&
-        state->timer != -1) {
-        virEventRemoveTimeout(state->timer);
-        state->timer = -1;
-        virObjectEventQueueClear(state->queue);
-    }
-
-    virObjectEventStateUnlock(state);
-    return ret;
+    callbackID = virObjectEventStateCallbackID(conn, state,
+                                               virDomainEventClass,
+                                               VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                               VIR_OBJECT_EVENT_CALLBACK(cb));
+    if (callbackID < 0)
+        return -1;
+    return virObjectEventStateDeregisterID(conn, state, callbackID);
 }

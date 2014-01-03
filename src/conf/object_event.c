@@ -208,6 +208,50 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
 
 
 /**
+ * virObjectEventCallbackLookup:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @uuid: the uuid of the object to filter on
+ * @klass: the base event class
+ * @eventID: the event ID
+ * @callback: the callback to locate
+ *
+ * Internal function to determine if @callback already has a
+ * callbackID in @cbList for the given @conn and other filters.
+ * Return the id if found, or -1 with no error issued if not present.
+ */
+static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+virObjectEventCallbackLookup(virConnectPtr conn,
+                             virObjectEventCallbackListPtr cbList,
+                             unsigned char uuid[VIR_UUID_BUFLEN],
+                             virClassPtr klass,
+                             int eventID,
+                             virConnectObjectEventGenericCallback callback)
+{
+    int ret = -1;
+    size_t i;
+
+    for (i = 0; i < cbList->count; i++) {
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+
+        if (cb->deleted)
+            continue;
+        if (cb->cb == callback &&
+            cb->klass == klass &&
+            cb->eventID == eventID &&
+            cb->conn == conn &&
+            ((uuid && cb->meta &&
+              memcmp(cb->meta->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
+             (!uuid && !cb->meta))) {
+            ret = cb->callbackID;
+            break;
+        }
+    }
+    return ret;
+}
+
+
+/**
  * virObjectEventCallbackListAddID:
  * @conn: pointer to the connection
  * @cbList: the list
@@ -251,19 +295,11 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     }
 
     /* check if we already have this callback on our list */
-    for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->cb == VIR_OBJECT_EVENT_CALLBACK(callback) &&
-            cbList->callbacks[i]->klass == klass &&
-            cbList->callbacks[i]->eventID == eventID &&
-            cbList->callbacks[i]->conn == conn &&
-            ((uuid && cbList->callbacks[i]->meta &&
-              memcmp(cbList->callbacks[i]->meta->uuid,
-                     uuid, VIR_UUID_BUFLEN) == 0) ||
-             (!uuid && !cbList->callbacks[i]->meta))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("event callback already tracked"));
-            return -1;
-        }
+    if (virObjectEventCallbackLookup(conn, cbList, uuid,
+                                     klass, eventID, callback) != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("event callback already tracked"));
+        return -1;
     }
     /* Allocate new event */
     if (VIR_ALLOC(event) < 0)
@@ -783,6 +819,38 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
     }
 
     virObjectEventStateUnlock(state);
+    return ret;
+}
+
+/**
+ * virObjectEventStateCallbackID:
+ * @conn: connection associated with callback
+ * @state: object event state
+ * @klass: the base event class
+ * @eventID: the event ID
+ * @callback: function registered as a callback
+ *
+ * Returns the callbackID of @callback, or -1 with an error issued if the
+ * function is not currently registered.
+ */
+int
+virObjectEventStateCallbackID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              virClassPtr klass,
+                              int eventID,
+                              virConnectObjectEventGenericCallback callback)
+{
+    int ret = -1;
+
+    virObjectEventStateLock(state);
+    ret = virObjectEventCallbackLookup(conn, state->callbacks, NULL,
+                                       klass, eventID, callback);
+    virObjectEventStateUnlock(state);
+
+    if (ret < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("event callback function %p not registered"),
+                       callback);
     return ret;
 }
 

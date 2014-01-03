@@ -167,7 +167,7 @@ cleanup:
 }
 
 static int
-testDomainCreateXML(const void *data)
+testDomainCreateXMLNew(const void *data)
 {
     const objecteventTest *test = data;
     lifecycleEventCounter counter;
@@ -206,6 +206,67 @@ cleanup:
 
     return ret;
 }
+
+static int
+testDomainCreateXMLMixed(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    virDomainPtr dom;
+    int ret = -1;
+    int id = -1;
+    bool registered = false;
+
+    lifecycleEventCounter_reset(&counter);
+
+    /* Fun with mixing old and new API.  Handler should be fired twice,
+     * once for each registration.  */
+    if (!(dom = virDomainCreateXML(test->conn, domainDef, 0))
+        goto cleanup;
+
+    id = virConnectDomainEventRegisterAny(test->conn, dom,
+                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                           VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
+                                          &counter, NULL);
+    if (id < 0)
+        goto cleanup;
+    if (virDomainDestroy(dom) < 0)
+        goto cleanup;
+    if (virConnectDomainEventRegister(test->conn,
+                                      domainLifecycleCb,
+                                      &counter, NULL) != 0)
+        goto cleanup;
+    registered = true;
+
+    dom = virDomainCreateXML(test->conn, domainDef, 0);
+    if (dom == NULL || virEventRunDefaultImpl() < 0)
+        goto cleanup;
+
+    if (counter.startEvents != 2 || counter.unexpectedEvents > 0)
+        goto cleanup;
+
+    if (virConnectDomainEventDeregister(test->conn, domainLifecycleCb) != 0)
+        goto cleanup;
+    registered = false;
+    if (virConnectDomainEventDeregisterAny(test->conn, id) != 0)
+        goto cleanup;
+    id = -1;
+    ret = 0;
+
+cleanup:
+    if (id >= 0)
+        virConnectDomainEventDeregisterAny(test->conn, id);
+    if (registered)
+        virConnectDomainEventDeregister(test->conn, domainLifecycleCb);
+    if (dom != NULL) {
+        virDomainUndefine(dom);
+        virDomainDestroy(dom);
+        virDomainFree(dom);
+    }
+
+    return ret;
+}
+
 
 static int
 testDomainDefine(const void *data)
@@ -471,7 +532,10 @@ mymain(void)
                     testDomainCreateXMLOld, &test) < 0)
         ret = EXIT_FAILURE;
     if (virtTestRun("Domain createXML start event (new API)",
-                    testDomainCreateXML, &test) < 0)
+                    testDomainCreateXMLNew, &test) < 0)
+        ret = EXIT_FAILURE;
+    if (virtTestRun("Domain createXML start event (both API)",
+                    testDomainCreateXMLMixed, &test) < 0)
         ret = EXIT_FAILURE;
     if (virtTestRun("Domain (un)define events", testDomainDefine, &test) < 0)
         ret = EXIT_FAILURE;

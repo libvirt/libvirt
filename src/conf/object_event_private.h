@@ -87,6 +87,15 @@ virClassPtr
 virClassForObjectEvent(void);
 
 int
+virObjectEventStateCallbackID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              virClassPtr klass,
+                              int eventID,
+                              virConnectObjectEventGenericCallback callback)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(5);
+
+int
 virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 unsigned char *uuid,
