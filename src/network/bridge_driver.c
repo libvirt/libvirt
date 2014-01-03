@@ -1,7 +1,7 @@
 /*
  * bridge_driver.c: core driver methods for managing network
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2329,9 +2329,12 @@ networkConnectNetworkEventDeregisterAny(virConnectPtr conn,
     if (virConnectNetworkEventDeregisterAnyEnsureACL(conn) < 0)
         goto cleanup;
 
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->networkEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->networkEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
 
 cleanup:
     return ret;

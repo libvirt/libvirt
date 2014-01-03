@@ -8,7 +8,7 @@
  */
 
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -7284,10 +7284,12 @@ static void vboxReadCallback(int watch ATTRIBUTE_UNUSED,
     }
 }
 
-static int vboxConnectDomainEventRegister(virConnectPtr conn,
-                                          virConnectDomainEventCallback callback,
-                                          void *opaque,
-                                          virFreeCallback freecb) {
+static int
+vboxConnectDomainEventRegister(virConnectPtr conn,
+                               virConnectDomainEventCallback callback,
+                               void *opaque,
+                               virFreeCallback freecb)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     int vboxRet          = -1;
     nsresult rc;
@@ -7338,7 +7340,7 @@ static int vboxConnectDomainEventRegister(virConnectPtr conn,
     vboxDriverUnlock(data);
 
     if (ret >= 0) {
-        return ret;
+        return 0;
     } else {
         if (data->vboxObj && data->vboxCallback) {
             data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
@@ -7347,8 +7349,10 @@ static int vboxConnectDomainEventRegister(virConnectPtr conn,
     }
 }
 
-static int vboxConnectDomainEventDeregister(virConnectPtr conn,
-                                            virConnectDomainEventCallback callback) {
+static int
+vboxConnectDomainEventDeregister(virConnectPtr conn,
+                                 virConnectDomainEventCallback callback)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     int cnt;
 
@@ -7370,6 +7374,9 @@ static int vboxConnectDomainEventDeregister(virConnectPtr conn,
     }
 
     vboxDriverUnlock(data);
+
+    if (cnt >= 0)
+        ret = 0;
 
     return ret;
 }
@@ -7441,8 +7448,10 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
     }
 }
 
-static int vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
-                                               int callbackID) {
+static int
+vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                    int callbackID)
+{
     VBOX_OBJECT_CHECK(conn, int, -1);
     int cnt;
 
@@ -7464,6 +7473,9 @@ static int vboxConnectDomainEventDeregisterAny(virConnectPtr conn,
     }
 
     vboxDriverUnlock(data);
+
+    if (cnt >= 0)
+        ret = 0;
 
     return ret;
 }

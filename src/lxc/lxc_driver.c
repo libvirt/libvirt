@@ -1287,16 +1287,16 @@ lxcConnectDomainEventRegister(virConnectPtr conn,
                               virFreeCallback freecb)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateRegister(conn,
-                                      driver->domainEventState,
-                                      callback, opaque, freecb);
+    if (virDomainEventStateRegister(conn,
+                                    driver->domainEventState,
+                                    callback, opaque, freecb) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 
@@ -1305,16 +1305,16 @@ lxcConnectDomainEventDeregister(virConnectPtr conn,
                                 virConnectDomainEventCallback callback)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventDeregisterEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateDeregister(conn,
-                                        driver->domainEventState,
-                                        callback);
+    if (virDomainEventStateDeregister(conn,
+                                      driver->domainEventState,
+                                      callback) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 
@@ -1347,16 +1347,16 @@ lxcConnectDomainEventDeregisterAny(virConnectPtr conn,
                                    int callbackID)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->domainEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->domainEventState,
+                                        callbackID) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * test.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -5993,12 +5993,13 @@ testConnectDomainEventRegister(virConnectPtr conn,
                                virFreeCallback freecb)
 {
     testConnPtr driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     testDriverLock(driver);
-    ret = virDomainEventStateRegister(conn,
-                                      driver->domainEventState,
-                                      callback, opaque, freecb);
+    if (virDomainEventStateRegister(conn,
+                                    driver->domainEventState,
+                                    callback, opaque, freecb) < 0)
+        ret = -1;
     testDriverUnlock(driver);
 
     return ret;
@@ -6010,12 +6011,13 @@ testConnectDomainEventDeregister(virConnectPtr conn,
                                  virConnectDomainEventCallback callback)
 {
     testConnPtr driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     testDriverLock(driver);
-    ret = virDomainEventStateDeregister(conn,
-                                        driver->domainEventState,
-                                        callback);
+    if (virDomainEventStateDeregister(conn,
+                                      driver->domainEventState,
+                                      callback) < 0)
+        ret = -1;
     testDriverUnlock(driver);
 
     return ret;
@@ -6049,12 +6051,13 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
                                     int callbackID)
 {
     testConnPtr driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     testDriverLock(driver);
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->domainEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->domainEventState,
+                                        callbackID) < 0)
+        ret = -1;
     testDriverUnlock(driver);
 
     return ret;
@@ -6089,12 +6092,13 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
                                      int callbackID)
 {
     testConnPtr driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     testDriverLock(driver);
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->domainEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->domainEventState,
+                                        callbackID) < 0)
+        ret = -1;
     testDriverUnlock(driver);
 
     return ret;

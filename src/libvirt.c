@@ -15564,7 +15564,9 @@ error:
  * The reference can be released once the object is no longer required
  * by calling virDomainFree.
  *
- * Returns 0 on success, -1 on failure.
+ * Returns 0 on success, -1 on failure.  Older versions of some hypervisors
+ * sometimes returned a positive number on success, but without any reliable
+ * semantics on what that number represents.
  */
 int
 virConnectDomainEventRegister(virConnectPtr conn,
@@ -15598,14 +15600,16 @@ error:
  * @conn: pointer to the connection
  * @cb: callback to the function handling domain events
  *
- * Removes a callback previously registered with the virConnectDomainEventRegister
- * function.
+ * Removes a callback previously registered with the
+ * virConnectDomainEventRegister() function.
  *
  * Use of this method is no longer recommended. Instead applications
  * should try virConnectDomainEventDeregisterAny() which has a more flexible
  * API contract
  *
- * Returns 0 on success, -1 on failure
+ * Returns 0 on success, -1 on failure.  Older versions of some hypervisors
+ * sometimes returned a positive number on success, but without any reliable
+ * semantics on what that number represents.
  */
 int
 virConnectDomainEventDeregister(virConnectPtr conn,
@@ -18509,8 +18513,9 @@ error:
  * Removes an event callback. The callbackID parameter should be the
  * value obtained from a previous virConnectDomainEventRegisterAny() method.
  *
- * Returns 0 on success, -1 on failure
- */
+ * Returns 0 on success, -1 on failure.  Older versions of some hypervisors
+ * sometimes returned a positive number on success, but without any reliable
+ * semantics on what that number represents. */
 int
 virConnectDomainEventDeregisterAny(virConnectPtr conn,
                                    int callbackID)

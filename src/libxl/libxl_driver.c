@@ -1,7 +1,7 @@
 /*
  * libxl_driver.c: core driver methods for managing libxenlight domains
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
@@ -3643,20 +3643,21 @@ cleanup:
 
 static int
 libxlConnectDomainEventRegister(virConnectPtr conn,
-                                virConnectDomainEventCallback callback, void *opaque,
+                                virConnectDomainEventCallback callback,
+                                void *opaque,
                                 virFreeCallback freecb)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateRegister(conn,
-                                      driver->domainEventState,
-                                      callback, opaque, freecb);
+    if (virDomainEventStateRegister(conn,
+                                    driver->domainEventState,
+                                    callback, opaque, freecb) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 
@@ -3665,16 +3666,16 @@ libxlConnectDomainEventDeregister(virConnectPtr conn,
                                   virConnectDomainEventCallback callback)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventDeregisterEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainEventStateDeregister(conn,
-                                        driver->domainEventState,
-                                        callback);
+    if (virDomainEventStateDeregister(conn,
+                                      driver->domainEventState,
+                                      callback) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 static int
@@ -4270,16 +4271,16 @@ static int
 libxlConnectDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int ret;
 
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->domainEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->domainEventState,
+                                        callbackID) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 

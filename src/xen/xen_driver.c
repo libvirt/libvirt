@@ -2312,7 +2312,7 @@ xenUnifiedConnectDomainEventRegister(virConnectPtr conn,
                                      virFreeCallback freefunc)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
-    int ret;
+    int ret = 0;
 
     if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
         return -1;
@@ -2325,8 +2325,9 @@ xenUnifiedConnectDomainEventRegister(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventStateRegister(conn, priv->domainEvents,
-                                      callback, opaque, freefunc);
+    if (virDomainEventStateRegister(conn, priv->domainEvents,
+                                    callback, opaque, freefunc) < 0)
+        ret = -1;
 
     xenUnifiedUnlock(priv);
     return ret;
@@ -2337,7 +2338,7 @@ static int
 xenUnifiedConnectDomainEventDeregister(virConnectPtr conn,
                                        virConnectDomainEventCallback callback)
 {
-    int ret;
+    int ret = 0;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     if (virConnectDomainEventDeregisterEnsureACL(conn) < 0)
@@ -2351,9 +2352,10 @@ xenUnifiedConnectDomainEventDeregister(virConnectPtr conn,
         return -1;
     }
 
-    ret = virDomainEventStateDeregister(conn,
-                                        priv->domainEvents,
-                                        callback);
+    if (virDomainEventStateDeregister(conn,
+                                      priv->domainEvents,
+                                      callback) < 0)
+        ret = -1;
 
     xenUnifiedUnlock(priv);
     return ret;
@@ -2395,7 +2397,7 @@ static int
 xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
                                           int callbackID)
 {
-    int ret;
+    int ret = 0;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
@@ -2409,9 +2411,10 @@ xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
         return -1;
     }
 
-    ret = virObjectEventStateDeregisterID(conn,
-                                          priv->domainEvents,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        priv->domainEvents,
+                                        callbackID) < 0)
+        ret = -1;
 
     xenUnifiedUnlock(priv);
     return ret;

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
@@ -126,35 +127,79 @@ networkLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
+testDomainCreateXMLOld(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    virDomainPtr dom = NULL;
+    int ret = -1;
+    bool registered = false;
+
+    lifecycleEventCounter_reset(&counter);
+
+    if (virConnectDomainEventRegister(test->conn,
+                                      domainLifecycleCb,
+                                      &counter, NULL) != 0)
+        goto cleanup;
+    registered = true;
+    dom = virDomainCreateXML(test->conn, domainDef, 0);
+
+    if (dom == NULL || virEventRunDefaultImpl() < 0)
+        goto cleanup;
+
+    if (counter.startEvents != 1 || counter.unexpectedEvents > 0)
+        goto cleanup;
+
+    if (virConnectDomainEventDeregister(test->conn, domainLifecycleCb) != 0)
+        goto cleanup;
+    registered = false;
+    ret = 0;
+
+cleanup:
+    if (registered)
+        virConnectDomainEventDeregister(test->conn, domainLifecycleCb);
+    if (dom) {
+        virDomainDestroy(dom);
+        virDomainFree(dom);
+    }
+
+    return ret;
+}
+
+static int
 testDomainCreateXML(const void *data)
 {
     const objecteventTest *test = data;
     lifecycleEventCounter counter;
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
-    virDomainPtr dom;
+    virDomainPtr dom = NULL;
     int id;
-    int ret = 0;
+    int ret = -1;
 
     lifecycleEventCounter_reset(&counter);
 
     id = virConnectDomainEventRegisterAny(test->conn, NULL, eventId,
                            VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
                            &counter, NULL);
+    if (id < 0)
+        goto cleanup;
     dom = virDomainCreateXML(test->conn, domainDef, 0);
 
-    if (dom == NULL || virEventRunDefaultImpl() < 0) {
-        ret = -1;
+    if (dom == NULL || virEventRunDefaultImpl() < 0)
         goto cleanup;
-    }
 
-    if (counter.startEvents != 1 || counter.unexpectedEvents > 0) {
-        ret = -1;
+    if (counter.startEvents != 1 || counter.unexpectedEvents > 0)
         goto cleanup;
-    }
+
+    if (virConnectDomainEventDeregisterAny(test->conn, id) != 0)
+        goto cleanup;
+    id = -1;
+    ret = 0;
 
 cleanup:
-    virConnectDomainEventDeregisterAny(test->conn, id);
-    if (dom != NULL) {
+    if (id >= 0)
+        virConnectDomainEventDeregisterAny(test->conn, id);
+    if (dom) {
         virDomainDestroy(dom);
         virDomainFree(dom);
     }
@@ -168,7 +213,7 @@ testDomainDefine(const void *data)
     const objecteventTest *test = data;
     lifecycleEventCounter counter;
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
-    virDomainPtr dom;
+    virDomainPtr dom = NULL;
     int id;
     int ret = 0;
 
@@ -388,7 +433,11 @@ mymain(void)
     virtTestQuiesceLibvirtErrors(false);
 
     /* Domain event tests */
-    if (virtTestRun("Domain createXML start event ", testDomainCreateXML, &test) < 0)
+    if (virtTestRun("Domain createXML start event (old API)",
+                    testDomainCreateXMLOld, &test) < 0)
+        ret = EXIT_FAILURE;
+    if (virtTestRun("Domain createXML start event (new API)",
+                    testDomainCreateXML, &test) < 0)
         ret = EXIT_FAILURE;
     if (virtTestRun("Domain (un)define events", testDomainDefine, &test) < 0)
         ret = EXIT_FAILURE;

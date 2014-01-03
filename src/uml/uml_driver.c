@@ -1,7 +1,7 @@
 /*
  * uml_driver.c: core driver methods for managing UML guests
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2610,15 +2610,16 @@ umlConnectDomainEventRegister(virConnectPtr conn,
                               virFreeCallback freecb)
 {
     struct uml_driver *driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
         return -1;
 
     umlDriverLock(driver);
-    ret = virDomainEventStateRegister(conn,
-                                      driver->domainEventState,
-                                      callback, opaque, freecb);
+    if (virDomainEventStateRegister(conn,
+                                    driver->domainEventState,
+                                    callback, opaque, freecb) < 0)
+        ret = -1;
     umlDriverUnlock(driver);
 
     return ret;
@@ -2629,15 +2630,16 @@ umlConnectDomainEventDeregister(virConnectPtr conn,
                                 virConnectDomainEventCallback callback)
 {
     struct uml_driver *driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     if (virConnectDomainEventDeregisterEnsureACL(conn) < 0)
         return -1;
 
     umlDriverLock(driver);
-    ret = virDomainEventStateDeregister(conn,
-                                        driver->domainEventState,
-                                        callback);
+    if (virDomainEventStateDeregister(conn,
+                                      driver->domainEventState,
+                                      callback) < 0)
+        ret = -1;
     umlDriverUnlock(driver);
 
     return ret;
@@ -2674,15 +2676,16 @@ umlConnectDomainEventDeregisterAny(virConnectPtr conn,
                                    int callbackID)
 {
     struct uml_driver *driver = conn->privateData;
-    int ret;
+    int ret = 0;
 
     if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
     umlDriverLock(driver);
-    ret = virObjectEventStateDeregisterID(conn,
-                                          driver->domainEventState,
-                                          callbackID);
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->domainEventState,
+                                        callbackID) < 0)
+        ret = -1;
     umlDriverUnlock(driver);
 
     return ret;
