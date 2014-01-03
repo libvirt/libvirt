@@ -37,7 +37,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 struct _virObjectEventQueue {
-    unsigned int count;
+    size_t count;
     virObjectEventPtr *events;
 };
 
@@ -97,7 +97,7 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
     if (!list)
         return;
 
-    for (i=0; i<list->count; i++) {
+    for (i = 0; i < list->count; i++) {
         virFreeCallback freecb = list->callbacks[i]->freecb;
         if (freecb)
             (*freecb)(list->callbacks[i]->opaque);
@@ -123,29 +123,19 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
 {
     int ret = 0;
     size_t i;
+
     for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->callbackID == callbackID &&
-            cbList->callbacks[i]->conn == conn) {
-            virFreeCallback freecb = cbList->callbacks[i]->freecb;
-            if (freecb)
-                (*freecb)(cbList->callbacks[i]->opaque);
-            virObjectUnref(cbList->callbacks[i]->conn);
-            if (cbList->callbacks[i]->meta)
-                VIR_FREE(cbList->callbacks[i]->meta->name);
-            VIR_FREE(cbList->callbacks[i]->meta);
-            VIR_FREE(cbList->callbacks[i]);
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
-            if (i < (cbList->count - 1))
-                memmove(cbList->callbacks + i,
-                        cbList->callbacks + i + 1,
-                        sizeof(*(cbList->callbacks)) *
-                                (cbList->count - (i + 1)));
-
-            if (VIR_REALLOC_N(cbList->callbacks,
-                              cbList->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            cbList->count--;
+        if (cb->callbackID == callbackID && cb->conn == conn) {
+            if (cb->freecb)
+                (*cb->freecb)(cb->opaque);
+            virObjectUnref(cb->conn);
+            if (cb->meta)
+                VIR_FREE(cb->meta->name);
+            VIR_FREE(cb->meta);
+            VIR_FREE(cb);
+            VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
 
             for (i = 0; i < cbList->count; i++) {
                 if (!cbList->callbacks[i]->deleted)
@@ -168,6 +158,7 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
 {
     int ret = 0;
     size_t i;
+
     for (i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->callbackID == callbackID &&
             cbList->callbacks[i]->conn == conn) {
@@ -247,7 +238,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
 {
     virObjectEventCallbackPtr event;
     size_t i;
-    int ret = 0;
+    int ret = -1;
 
     VIR_DEBUG("conn=%p cblist=%p uuid=%p name=%s id=%d "
               "klass=%p eventID=%d callback=%p opaque=%p",
@@ -276,8 +267,9 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     }
     /* Allocate new event */
     if (VIR_ALLOC(event) < 0)
-        goto error;
-    event->conn = conn;
+        goto cleanup;
+    event->conn = virObjectRef(conn);
+    event->callbackID = cbList->nextID++;
     event->cb = callback;
     event->klass = klass;
     event->eventID = eventID;
@@ -286,25 +278,20 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
 
     if (name && uuid && id > 0) {
         if (VIR_ALLOC(event->meta) < 0)
-            goto error;
+            goto cleanup;
         if (VIR_STRDUP(event->meta->name, name) < 0)
-            goto error;
+            goto cleanup;
         memcpy(event->meta->uuid, uuid, VIR_UUID_BUFLEN);
         event->meta->id = id;
     }
 
-    /* Make space on list */
-    if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0)
-        goto error;
+    if (callbackID)
+        *callbackID = event->callbackID;
 
-    virObjectRef(event->conn);
+    if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
+        goto cleanup;
 
-    cbList->callbacks[cbList->count] = event;
-    cbList->count++;
-
-    event->callbackID = cbList->nextID++;
-
-    for (i = 0; i < cbList->count; i++) {
+    for (ret = 0, i = 0; i < cbList->count; i++) {
         if (cbList->callbacks[i]->klass == klass &&
             cbList->callbacks[i]->eventID == eventID &&
             cbList->callbacks[i]->conn == conn &&
@@ -312,19 +299,15 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
             ret++;
     }
 
-    if (callbackID)
-        *callbackID = event->callbackID;
-
-    return ret;
-
-error:
+cleanup:
     if (event) {
+        virObjectUnref(event->conn);
         if (event->meta)
             VIR_FREE(event->meta->name);
         VIR_FREE(event->meta);
     }
     VIR_FREE(event);
-    return -1;
+    return ret;
 }
 
 
@@ -336,12 +319,13 @@ virObjectEventCallbackListEventID(virConnectPtr conn,
     size_t i;
 
     for (i = 0; i < cbList->count; i++) {
-        if (cbList->callbacks[i]->deleted)
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+
+        if (cb->deleted)
             continue;
 
-        if (cbList->callbacks[i]->callbackID == callbackID &&
-            cbList->callbacks[i]->conn == conn)
-            return cbList->callbacks[i]->eventID;
+        if (cb->callbackID == callbackID && cb->conn == conn)
+            return cb->eventID;
     }
 
     return -1;
@@ -562,17 +546,11 @@ static int
 virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
                         virObjectEventPtr event)
 {
-    if (!evtQueue) {
-        return -1;
-    }
-
-    /* Make space on queue */
-    if (VIR_REALLOC_N(evtQueue->events,
-                      evtQueue->count + 1) < 0)
+    if (!evtQueue)
         return -1;
 
-    evtQueue->events[evtQueue->count] = event;
-    evtQueue->count++;
+    if (VIR_APPEND_ELEMENT(evtQueue->events, evtQueue->count, event) < 0)
+        return -1;
     return 0;
 }
 
@@ -612,18 +590,17 @@ virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
     /* Cache this now, since we may be dropping the lock,
        and have more callbacks added. We're guaranteed not
        to have any removed */
-    int cbCount = callbacks->count;
+    size_t cbCount = callbacks->count;
 
     for (i = 0; i < cbCount; i++) {
-        if (!virObjectEventDispatchMatchCallback(event, callbacks->callbacks[i]))
+        virObjectEventCallbackPtr cb = callbacks->callbacks[i];
+
+        if (!virObjectEventDispatchMatchCallback(event, cb))
             continue;
 
         /* Drop the lock whle dispatching, for sake of re-entrancy */
         virObjectEventStateUnlock(state);
-        event->dispatch(callbacks->callbacks[i]->conn,
-                        event,
-                        callbacks->callbacks[i]->cb,
-                        callbacks->callbacks[i]->opaque);
+        event->dispatch(cb->conn, event, cb->cb, cb->opaque);
         virObjectEventStateLock(state);
     }
 }
@@ -637,7 +614,8 @@ virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
     size_t i;
 
     for (i = 0; i < queue->count; i++) {
-        virObjectEventStateDispatchCallbacks(state, queue->events[i], callbacks);
+        virObjectEventStateDispatchCallbacks(state, queue->events[i],
+                                             callbacks);
         virObjectUnref(queue->events[i]);
     }
     VIR_FREE(queue->events);

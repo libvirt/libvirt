@@ -37,7 +37,7 @@ typedef virObjectMeta *virObjectMetaPtr;
 
 struct _virObjectEventCallbackList {
     unsigned int nextID;
-    unsigned int count;
+    size_t count;
     virObjectEventCallbackPtr *callbacks;
 };
 typedef struct _virObjectEventCallbackList virObjectEventCallbackList;
