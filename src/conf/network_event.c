@@ -143,7 +143,7 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                virObjectEventStatePtr state,
                                virNetworkPtr net,
                                int eventID,
-                               virConnectObjectEventGenericCallback cb,
+                               virConnectNetworkEventGenericCallback cb,
                                void *opaque,
                                virFreeCallback freecb,
                                int *callbackID)
@@ -153,7 +153,8 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
 
     return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
                                          virNetworkEventClass, eventID,
-                                         cb, opaque, freecb, callbackID);
+                                         VIR_OBJECT_EVENT_CALLBACK(cb),
+                                         opaque, freecb, callbackID);
 }
 
 

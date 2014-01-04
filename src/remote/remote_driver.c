@@ -2928,8 +2928,7 @@ remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if ((count = virNetworkEventStateRegisterID(conn, priv->eventState,
-                                                net, eventID,
-                                                VIR_OBJECT_EVENT_CALLBACK(callback),
+                                                net, eventID, callback,
                                                 opaque, freecb,
                                                 &callbackID)) < 0)
         goto done;

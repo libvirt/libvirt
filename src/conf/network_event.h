@@ -1,6 +1,7 @@
 /*
  * network_event.h: network event queue processing helpers
  *
+ * Copyright (C) 2014 Red Hat, Inc.
  * Copyright (C) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
@@ -32,7 +33,7 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                virObjectEventStatePtr state,
                                virNetworkPtr net,
                                int eventID,
-                               virConnectObjectEventGenericCallback cb,
+                               virConnectNetworkEventGenericCallback cb,
                                void *opaque,
                                virFreeCallback freecb,
                                int *callbackID);

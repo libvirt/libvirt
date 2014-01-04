@@ -6113,8 +6113,7 @@ testConnectNetworkEventRegisterAny(virConnectPtr conn,
 
     testDriverLock(driver);
     if (virNetworkEventStateRegisterID(conn, driver->eventState,
-                                       net, eventID,
-                                       VIR_OBJECT_EVENT_CALLBACK(callback),
+                                       net, eventID, callback,
                                        opaque, freecb, &ret) < 0)
         ret = -1;
     testDriverUnlock(driver);
