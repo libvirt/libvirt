@@ -71,6 +71,7 @@ struct _virObjectEventCallback {
     void *opaque;
     virFreeCallback freecb;
     bool deleted;
+    bool legacy; /* true if end user does not know callbackID */
 };
 
 static virClassPtr virObjectEventClass;
@@ -150,7 +151,9 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
  * Internal function to count how many callbacks remain registered for
  * the given @eventID; knowing this allows the client side of the
  * remote driver know when it must send an RPC to adjust the callbacks
- * on the server.
+ * on the server.  Note that this function intentionally ignores
+ * the legacy field, since RPC calls use only a single callback on
+ * the server to manage both legacy and modern domain lifecycle events.
  */
 static int
 virObjectEventCallbackListCount(virConnectPtr conn,
@@ -276,6 +279,7 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
  * @klass: the base event class
  * @eventID: the event ID
  * @callback: the callback to locate
+ * @legacy: true if callback is tracked by function instead of callbackID
  *
  * Internal function to determine if @callback already has a
  * callbackID in @cbList for the given @conn and other filters.
@@ -287,7 +291,8 @@ virObjectEventCallbackLookup(virConnectPtr conn,
                              unsigned char uuid[VIR_UUID_BUFLEN],
                              virClassPtr klass,
                              int eventID,
-                             virConnectObjectEventGenericCallback callback)
+                             virConnectObjectEventGenericCallback callback,
+                             bool legacy)
 {
     int ret = -1;
     size_t i;
@@ -301,6 +306,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
             cb->klass == klass &&
             cb->eventID == eventID &&
             cb->conn == conn &&
+            cb->legacy == legacy &&
             ((uuid && cb->meta &&
               memcmp(cb->meta->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
              (!uuid && !cb->meta))) {
@@ -356,7 +362,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
 
     /* check if we already have this callback on our list */
     if (virObjectEventCallbackLookup(conn, cbList, uuid,
-                                     klass, eventID, callback) != -1) {
+                                     klass, eventID, callback,
+                                     !callbackID) != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("event callback already tracked"));
         return -1;
@@ -383,6 +390,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
 
     if (callbackID)
         *callbackID = event->callbackID;
+    else
+        event->legacy = true;
 
     if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
         goto cleanup;
@@ -885,7 +894,9 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
  * @callback: function registered as a callback
  *
  * Returns the callbackID of @callback, or -1 with an error issued if the
- * function is not currently registered.
+ * function is not currently registered.  This only finds functions
+ * registered via virConnectDomainEventRegister, even if modern style
+ * virConnectDomainEventRegisterAny also registers the same callback.
  */
 int
 virObjectEventStateCallbackID(virConnectPtr conn,
@@ -898,7 +909,7 @@ virObjectEventStateCallbackID(virConnectPtr conn,
 
     virObjectEventStateLock(state);
     ret = virObjectEventCallbackLookup(conn, state->callbacks, NULL,
-                                       klass, eventID, callback);
+                                       klass, eventID, callback, true);
     virObjectEventStateUnlock(state);
 
     if (ret < 0)

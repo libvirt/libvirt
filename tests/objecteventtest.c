@@ -214,21 +214,24 @@ testDomainCreateXMLMixed(const void *data)
     lifecycleEventCounter counter;
     virDomainPtr dom;
     int ret = -1;
-    int id = -1;
+    int id1 = -1;
+    int id2 = -1;
     bool registered = false;
 
     lifecycleEventCounter_reset(&counter);
 
-    /* Fun with mixing old and new API.  Handler should be fired twice,
-     * once for each registration.  */
-    if (!(dom = virDomainCreateXML(test->conn, domainDef, 0)))
+    /* Fun with mixing old and new API, also with global and
+     * per-domain.  Handler should be fired three times, once for each
+     * registration.  */
+    dom = virDomainCreateXML(test->conn, domainDef, 0);
+    if (dom == NULL)
         goto cleanup;
 
-    id = virConnectDomainEventRegisterAny(test->conn, dom,
-                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+    id1 = virConnectDomainEventRegisterAny(test->conn, dom,
+                                           VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                            VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
-                                          &counter, NULL);
-    if (id < 0)
+                                           &counter, NULL);
+    if (id1 < 0)
         goto cleanup;
     if (virDomainDestroy(dom) < 0)
         goto cleanup;
@@ -237,25 +240,36 @@ testDomainCreateXMLMixed(const void *data)
                                       &counter, NULL) != 0)
         goto cleanup;
     registered = true;
+    id2 = virConnectDomainEventRegisterAny(test->conn, NULL,
+                                           VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                           VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
+                                           &counter, NULL);
+    if (id2 < 0)
+        goto cleanup;
 
     dom = virDomainCreateXML(test->conn, domainDef, 0);
     if (dom == NULL || virEventRunDefaultImpl() < 0)
         goto cleanup;
 
-    if (counter.startEvents != 2 || counter.unexpectedEvents > 0)
+    if (counter.startEvents != 3 || counter.unexpectedEvents > 0)
         goto cleanup;
 
     if (virConnectDomainEventDeregister(test->conn, domainLifecycleCb) != 0)
         goto cleanup;
     registered = false;
-    if (virConnectDomainEventDeregisterAny(test->conn, id) != 0)
+    if (virConnectDomainEventDeregisterAny(test->conn, id1) != 0)
         goto cleanup;
-    id = -1;
+    id1 = -1;
+    if (virConnectDomainEventDeregisterAny(test->conn, id2) != 0)
+        goto cleanup;
+    id2 = -1;
     ret = 0;
 
 cleanup:
-    if (id >= 0)
-        virConnectDomainEventDeregisterAny(test->conn, id);
+    if (id1 >= 0)
+        virConnectDomainEventDeregisterAny(test->conn, id1);
+    if (id2 >= 0)
+        virConnectDomainEventDeregisterAny(test->conn, id2);
     if (registered)
         virConnectDomainEventDeregister(test->conn, domainLifecycleCb);
     if (dom != NULL) {
