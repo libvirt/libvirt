@@ -100,7 +100,7 @@ struct _testConn {
     int numCells;
     testCell cells[MAX_CELLS];
 
-    virObjectEventStatePtr domainEventState;
+    virObjectEventStatePtr eventState;
 };
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
@@ -714,7 +714,7 @@ testOpenDefault(virConnectPtr conn)
 
     conn->privateData = privconn;
 
-    if (!(privconn->domainEventState = virObjectEventStateNew()))
+    if (!(privconn->eventState = virObjectEventStateNew()))
         goto error;
 
     if (!(privconn->domains = virDomainObjListNew()))
@@ -828,7 +828,7 @@ error:
     virStoragePoolObjListFree(&privconn->pools);
     virNodeDeviceObjListFree(&privconn->devs);
     virObjectUnref(privconn->caps);
-    virObjectEventStateFree(privconn->domainEventState);
+    virObjectEventStateFree(privconn->eventState);
     virMutexDestroy(&privconn->lock);
     conn->privateData = NULL;
     virDomainDefFree(domdef);
@@ -1386,7 +1386,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     if (!(privconn->xmlopt = testBuildXMLConfig()))
         goto error;
 
-    if (!(privconn->domainEventState = virObjectEventStateNew()))
+    if (!(privconn->eventState = virObjectEventStateNew()))
         goto error;
 
     if (!(doc = virXMLParseFileCtxt(file, &ctxt))) {
@@ -1432,7 +1432,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn->path);
-    virObjectEventStateFree(privconn->domainEventState);
+    virObjectEventStateFree(privconn->eventState);
     testDriverUnlock(privconn);
     VIR_FREE(privconn);
     conn->privateData = NULL;
@@ -1505,7 +1505,7 @@ static int testConnectClose(virConnectPtr conn)
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
-    virObjectEventStateFree(privconn->domainEventState);
+    virObjectEventStateFree(privconn->eventState);
     VIR_FREE(privconn->path);
 
     testDriverUnlock(privconn);
@@ -6036,8 +6036,7 @@ testConnectDomainEventRegister(virConnectPtr conn,
     int ret = 0;
 
     testDriverLock(driver);
-    if (virDomainEventStateRegister(conn,
-                                    driver->domainEventState,
+    if (virDomainEventStateRegister(conn, driver->eventState,
                                     callback, opaque, freecb) < 0)
         ret = -1;
     testDriverUnlock(driver);
@@ -6054,8 +6053,7 @@ testConnectDomainEventDeregister(virConnectPtr conn,
     int ret = 0;
 
     testDriverLock(driver);
-    if (virDomainEventStateDeregister(conn,
-                                      driver->domainEventState,
+    if (virDomainEventStateDeregister(conn, driver->eventState,
                                       callback) < 0)
         ret = -1;
     testDriverUnlock(driver);
@@ -6076,8 +6074,7 @@ testConnectDomainEventRegisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    if (virDomainEventStateRegisterID(conn,
-                                      driver->domainEventState,
+    if (virDomainEventStateRegisterID(conn, driver->eventState,
                                       dom, eventID,
                                       callback, opaque, freecb, &ret) < 0)
         ret = -1;
@@ -6094,8 +6091,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     testDriverLock(driver);
-    if (virObjectEventStateDeregisterID(conn,
-                                        driver->domainEventState,
+    if (virObjectEventStateDeregisterID(conn, driver->eventState,
                                         callbackID) < 0)
         ret = -1;
     testDriverUnlock(driver);
@@ -6116,8 +6112,7 @@ testConnectNetworkEventRegisterAny(virConnectPtr conn,
     int ret;
 
     testDriverLock(driver);
-    if (virNetworkEventStateRegisterID(conn,
-                                       driver->domainEventState,
+    if (virNetworkEventStateRegisterID(conn, driver->eventState,
                                        net, eventID,
                                        VIR_OBJECT_EVENT_CALLBACK(callback),
                                        opaque, freecb, &ret) < 0)
@@ -6135,8 +6130,7 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     testDriverLock(driver);
-    if (virObjectEventStateDeregisterID(conn,
-                                        driver->domainEventState,
+    if (virObjectEventStateDeregisterID(conn, driver->eventState,
                                         callbackID) < 0)
         ret = -1;
     testDriverUnlock(driver);
@@ -6149,7 +6143,7 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
 static void testObjectEventQueue(testConnPtr driver,
                                  virObjectEventPtr event)
 {
-    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->eventState, event);
 }
 
 static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
