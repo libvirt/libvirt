@@ -71,15 +71,14 @@ int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               unsigned char *uuid,
-                              const char *name,
-                              int id,
                               virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
                               virFreeCallback freecb,
                               int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(8);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(6);
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
                                 virObjectEventStatePtr state,

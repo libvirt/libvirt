@@ -66,7 +66,8 @@ struct _virObjectEventCallback {
     virClassPtr klass;
     int eventID;
     virConnectPtr conn;
-    virObjectMetaPtr meta;
+    bool uuid_filter;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virConnectObjectEventGenericCallback cb;
     void *opaque;
     virFreeCallback freecb;
@@ -201,9 +202,6 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
             if (cb->freecb)
                 (*cb->freecb)(cb->opaque);
             virObjectUnref(cb->conn);
-            if (cb->meta)
-                VIR_FREE(cb->meta->name);
-            VIR_FREE(cb->meta);
             VIR_FREE(cb);
             VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
 
@@ -307,9 +305,9 @@ virObjectEventCallbackLookup(virConnectPtr conn,
             cb->eventID == eventID &&
             cb->conn == conn &&
             cb->legacy == legacy &&
-            ((uuid && cb->meta &&
-              memcmp(cb->meta->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
-             (!uuid && !cb->meta))) {
+            ((uuid && cb->uuid_filter &&
+              memcmp(cb->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
+             (!uuid && !cb->uuid_filter))) {
             ret = cb->callbackID;
             break;
         }
@@ -323,8 +321,6 @@ virObjectEventCallbackLookup(virConnectPtr conn,
  * @conn: pointer to the connection
  * @cbList: the list
  * @uuid: the uuid of the object to filter on
- * @name: the name of the object to filter on
- * @id: the ID of the object to filter on
  * @klass: the base event class
  * @eventID: the event ID
  * @callback: the callback to add
@@ -338,8 +334,6 @@ static int
 virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 unsigned char uuid[VIR_UUID_BUFLEN],
-                                const char *name,
-                                int id,
                                 virClassPtr klass,
                                 int eventID,
                                 virConnectObjectEventGenericCallback callback,
@@ -350,10 +344,9 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     virObjectEventCallbackPtr event;
     int ret = -1;
 
-    VIR_DEBUG("conn=%p cblist=%p uuid=%p name=%s id=%d "
+    VIR_DEBUG("conn=%p cblist=%p uuid=%p "
               "klass=%p eventID=%d callback=%p opaque=%p",
-              conn, cbList, uuid, name, id, klass, eventID,
-              callback, opaque);
+              conn, cbList, uuid, klass, eventID, callback, opaque);
 
     /* Check incoming */
     if (!cbList) {
@@ -379,13 +372,12 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     event->opaque = opaque;
     event->freecb = freecb;
 
-    if (name && uuid && id > 0) {
-        if (VIR_ALLOC(event->meta) < 0)
-            goto cleanup;
-        if (VIR_STRDUP(event->meta->name, name) < 0)
-            goto cleanup;
-        memcpy(event->meta->uuid, uuid, VIR_UUID_BUFLEN);
-        event->meta->id = id;
+    /* Only need 'uuid' for matching; 'id' can change as domain
+     * switches between running and shutoff, and 'name' can change in
+     * Xen migration.  */
+    if (uuid) {
+        event->uuid_filter = true;
+        memcpy(event->uuid, uuid, VIR_UUID_BUFLEN);
     }
 
     if (callbackID)
@@ -399,12 +391,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID);
 
 cleanup:
-    if (event) {
+    if (event)
         virObjectUnref(event->conn);
-        if (event->meta)
-            VIR_FREE(event->meta->name);
-        VIR_FREE(event->meta);
-    }
     VIR_FREE(event);
     return ret;
 }
@@ -667,14 +655,14 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
     if (cb->eventID != event->eventID)
         return false;
 
-    if (cb->meta) {
+    if (cb->uuid_filter) {
         /* Deliberately ignoring 'id' for matching, since that
          * will cause problems when a domain switches between
          * running & shutoff states & ignoring 'name' since
          * Xen sometimes renames guests during migration, thus
          * leaving 'uuid' as the only truly reliable ID we can use. */
 
-        return memcmp(event->meta.uuid, cb->meta->uuid, VIR_UUID_BUFLEN) == 0;
+        return memcmp(event->meta.uuid, cb->uuid, VIR_UUID_BUFLEN) == 0;
     }
     return true;
 }
@@ -786,8 +774,6 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
  * @conn: connection to associate with callback
  * @state: domain event state
  * @uuid: uuid of the object for event filtering
- * @name: name of the object for event filtering
- * @id: id of the object for event filtering, or 0
  * @klass: the base event class
  * @eventID: ID of the event type to register for
  * @cb: function to invoke when event occurs
@@ -805,8 +791,6 @@ int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               unsigned char *uuid,
-                              const char *name,
-                              int id,
                               virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
@@ -830,7 +814,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     }
 
     ret = virObjectEventCallbackListAddID(conn, state->callbacks,
-                                          uuid, name, id, klass, eventID,
+                                          uuid, klass, eventID,
                                           cb, opaque, freecb,
                                           callbackID);
 

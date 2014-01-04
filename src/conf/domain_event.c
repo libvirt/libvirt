@@ -1284,7 +1284,7 @@ virDomainEventStateRegister(virConnectPtr conn,
     if (virDomainEventsInitialize() < 0)
         return -1;
 
-    return virObjectEventStateRegisterID(conn, state, NULL, NULL, 0,
+    return virObjectEventStateRegisterID(conn, state, NULL,
                                          virDomainEventClass,
                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                          VIR_OBJECT_EVENT_CALLBACK(callback),
@@ -1322,16 +1322,10 @@ virDomainEventStateRegisterID(virConnectPtr conn,
     if (virDomainEventsInitialize() < 0)
         return -1;
 
-    if (dom)
-        return virObjectEventStateRegisterID(conn, state, dom->uuid, dom->name,
-                                             dom->id, virDomainEventClass, eventID,
-                                             VIR_OBJECT_EVENT_CALLBACK(cb),
-                                             opaque, freecb, callbackID);
-     else
-        return virObjectEventStateRegisterID(conn, state, NULL, NULL, 0,
-                                             virDomainEventClass, eventID,
-                                             VIR_OBJECT_EVENT_CALLBACK(cb),
-                                             opaque, freecb, callbackID);
+    return virObjectEventStateRegisterID(conn, state, dom ? dom->uuid : NULL,
+                                         virDomainEventClass, eventID,
+                                         VIR_OBJECT_EVENT_CALLBACK(cb),
+                                         opaque, freecb, callbackID);
 }
 
 

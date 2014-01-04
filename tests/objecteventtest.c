@@ -223,7 +223,7 @@ testDomainCreateXMLMixed(const void *data)
     /* Fun with mixing old and new API, also with global and
      * per-domain.  Handler should be fired three times, once for each
      * registration.  */
-    dom = virDomainCreateXML(test->conn, domainDef, 0);
+    dom = virDomainDefineXML(test->conn, domainDef);
     if (dom == NULL)
         goto cleanup;
 
@@ -232,8 +232,6 @@ testDomainCreateXMLMixed(const void *data)
                            VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
                                            &counter, NULL);
     if (id1 < 0)
-        goto cleanup;
-    if (virDomainDestroy(dom) < 0)
         goto cleanup;
     if (virConnectDomainEventRegister(test->conn,
                                       domainLifecycleCb,

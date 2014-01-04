@@ -69,6 +69,8 @@ virObjectEventNew(virClassPtr klass,
                   int eventID,
                   int id,
                   const char *name,
-                  const unsigned char *uuid);
+                  const unsigned char *uuid)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
+    ATTRIBUTE_NONNULL(6);
 
 #endif

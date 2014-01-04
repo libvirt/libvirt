@@ -151,16 +151,9 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
     if (virNetworkEventsInitialize() < 0)
         return -1;
 
-    if (net)
-        return virObjectEventStateRegisterID(conn, state,
-                                             net->uuid, net->name, 0,
-                                             virNetworkEventClass, eventID,
-                                             cb, opaque, freecb, callbackID);
-    else
-        return virObjectEventStateRegisterID(conn, state,
-                                             NULL, NULL, 0,
-                                             virNetworkEventClass, eventID,
-                                             cb, opaque, freecb, callbackID);
+    return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
+                                         virNetworkEventClass, eventID,
+                                         cb, opaque, freecb, callbackID);
 }
 
 
