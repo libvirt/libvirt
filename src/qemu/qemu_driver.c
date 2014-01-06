@@ -8276,6 +8276,14 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
         if (STREQ(param->field, VIR_DOMAIN_NUMA_MODE)) {
             int mode = param->value.i;
 
+            if (mode >= VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST ||
+                mode < VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_DEFAULT)
+            {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("unsupported numa_mode: '%d'"), mode);
+                goto cleanup;
+            }
+
             if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
                 vm->def->numatune.memory.mode != mode) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
