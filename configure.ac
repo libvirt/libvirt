@@ -1418,6 +1418,16 @@ elif test "with_secdriver_apparmor" != "no" ; then
 fi
 AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
 
+if test "$with_apparmor" != "no"; then
+AC_ARG_WITH([apparmor-profiles],
+  [AS_HELP_STRING([--with-apparmor-profiles],
+    [install apparmor profiles @<:@default=no@:>@])],
+  [with_apparmor_profiles=yes],
+  [with_apparmor_profiles=no])
+else
+  with_apparmor_profiles="no"
+fi
+AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
 
 dnl DTrace static probes
 AC_ARG_WITH([dtrace],
@@ -2607,7 +2617,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux ($SELINUX_MOUNT)])
-AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor])
+AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor (install profiles: $with_apparmor_profiles)])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])

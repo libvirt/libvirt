@@ -19,3 +19,21 @@ EXTRA_DIST=				\
 	libvirt-qemu			\
 	usr.lib.libvirt.virt-aa-helper	\
 	usr.sbin.libvirtd
+
+if WITH_APPARMOR_PROFILES
+apparmordir = $(sysconfdir)/apparmor.d/
+apparmor_DATA = \
+	usr.lib.libvirt.virt-aa-helper \
+	usr.sbin.libvirtd \
+	$(NULL)
+
+abstractionsdir = $(apparmordir)/abstractions
+abstractions_DATA = \
+	libvirt-qemu \
+	$(NULL)
+
+templatesdir = $(apparmordir)/libvirtd
+templates_DATA = \
+	TEMPLATE \
+	$(NULL)
+endif WITH_APPARMOR_PROFILES
