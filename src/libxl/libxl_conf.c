@@ -855,8 +855,12 @@ error:
 }
 
 int
-libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
+libxlMakeNic(virDomainDefPtr def,
+             virDomainNetDefPtr l_nic,
+             libxl_device_nic *x_nic)
 {
+    bool ioemu_nic = STREQ(def->os.type, "hvm");
+
     /* TODO: Where is mtu stored?
      *
      * x_nics[i].mtu = 1492;
@@ -866,12 +870,16 @@ libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
 
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
-    if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
+    if (ioemu_nic)
+        x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
+    else
+        x_nic->nictype = LIBXL_NIC_TYPE_VIF;
+
+    if (l_nic->model) {
         if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)
             return -1;
-        x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
-    } else {
-        x_nic->nictype = LIBXL_NIC_TYPE_VIF;
+        if (STREQ(l_nic->model, "netfront"))
+            x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
     if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
@@ -908,7 +916,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
         return -1;
 
     for (i = 0; i < nnics; i++) {
-        if (libxlMakeNic(l_nics[i], &x_nics[i]))
+        if (libxlMakeNic(def, l_nics[i], &x_nics[i]))
             goto error;
     }
 
