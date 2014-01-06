@@ -8237,6 +8237,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
+
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_NUMA_MODE,
                                VIR_TYPED_PARAM_INT,
@@ -8263,43 +8264,40 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cgroup cpuset controller is not mounted"));
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cgroup cpuset controller is not mounted"));
             goto cleanup;
         }
     }
 
-    ret = 0;
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_NUMA_MODE)) {
+            int mode = param->value.i;
+
             if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
-                vm->def->numatune.memory.mode != params[i].value.i) {
+                vm->def->numatune.memory.mode != mode) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("can't change numa mode for running domain"));
-                ret = -1;
                 goto cleanup;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                persistentDef->numatune.memory.mode = params[i].value.i;
-            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                persistentDef->numatune.memory.mode = mode;
+
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             virBitmapPtr nodeset = NULL;
 
-            if (virBitmapParse(params[i].value.s,
-                               0, &nodeset,
+            if (virBitmapParse(param->value.s, 0, &nodeset,
                                VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                ret = -1;
-                continue;
+                goto cleanup;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 if (qemuDomainSetNumaParamsLive(vm, caps, nodeset) < 0) {
                     virBitmapFree(nodeset);
-                    ret = -1;
-                    continue;
+                    goto cleanup;
                 }
 
                 /* update vm->def here so that dumpxml can read the new
@@ -8328,8 +8326,10 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             persistentDef->numatune.memory.placement_mode =
                 VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO;
         if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-            ret = -1;
+            goto cleanup;
     }
+
+    ret = 0;
 
 cleanup:
     if (vm)
