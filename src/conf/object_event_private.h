@@ -48,11 +48,26 @@ struct _virObjectEvent {
     virObject parent;
     int eventID;
     virObjectMeta meta;
+    int remoteID;
     virObjectEventDispatchFunc dispatch;
 };
 
 virClassPtr
 virClassForObjectEvent(void);
+
+int
+virObjectEventStateRegisterID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              unsigned char *uuid,
+                              virClassPtr klass,
+                              int eventID,
+                              virConnectObjectEventGenericCallback cb,
+                              void *opaque,
+                              virFreeCallback freecb,
+                              int *callbackID,
+                              bool remoteFilter)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(6);
 
 int
 virObjectEventStateCallbackID(virConnectPtr conn,

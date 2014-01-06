@@ -67,27 +67,31 @@ void
 virObjectEventStateQueue(virObjectEventStatePtr state,
                          virObjectEventPtr event)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int
-virObjectEventStateRegisterID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
-                              unsigned char *uuid,
-                              virClassPtr klass,
-                              int eventID,
-                              virConnectObjectEventGenericCallback cb,
-                              void *opaque,
-                              virFreeCallback freecb,
-                              int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(6);
+
+void
+virObjectEventStateQueueRemote(virObjectEventStatePtr state,
+                               virObjectEventPtr event,
+                               int remoteID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
                                 virObjectEventStatePtr state,
                                 int callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int
 virObjectEventStateEventID(virConnectPtr conn,
                            virObjectEventStatePtr state,
-                           int callbackID)
+                           int callbackID,
+                           int *remoteID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+void
+virObjectEventStateSetRemote(virConnectPtr conn,
+                             virObjectEventStatePtr state,
+                             int callbackID,
+                             int remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif

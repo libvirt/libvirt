@@ -66,6 +66,7 @@ struct _virObjectEventCallback {
     virClassPtr klass;
     int eventID;
     virConnectPtr conn;
+    int remoteID;
     bool uuid_filter;
     unsigned char uuid[VIR_UUID_BUFLEN];
     virConnectObjectEventGenericCallback cb;
@@ -148,19 +149,29 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
  * @cbList: the list
  * @klass: the base event class
  * @eventID: the event ID
+ * @uuid: optional uuid of per-object filtering
+ * @serverFilter: true if server supports object filtering
  *
  * Internal function to count how many callbacks remain registered for
- * the given @eventID; knowing this allows the client side of the
- * remote driver know when it must send an RPC to adjust the callbacks
- * on the server.  Note that this function intentionally ignores
- * the legacy field, since RPC calls use only a single callback on
- * the server to manage both legacy and modern domain lifecycle events.
+ * the given @eventID and @uuid; knowing this allows the client side
+ * of the remote driver know when it must send an RPC to adjust the
+ * callbacks on the server.  When @serverFilter is false, this function
+ * returns a count that includes both global and per-object callbacks,
+ * since the remote side will use a single global event to feed both.
+ * When true, the count is limited to the callbacks with the same
+ * @uuid, and where a remoteID has already been set on the callback
+ * with virObjectEventStateSetRemote().  Note that this function
+ * intentionally ignores the legacy field, since RPC calls use only a
+ * single callback on the server to manage both legacy and modern
+ * global domain lifecycle events.
  */
 static int
 virObjectEventCallbackListCount(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 virClassPtr klass,
-                                int eventID)
+                                int eventID,
+                                unsigned char uuid[VIR_UUID_BUFLEN],
+                                bool serverFilter)
 {
     size_t i;
     int ret = 0;
@@ -171,7 +182,12 @@ virObjectEventCallbackListCount(virConnectPtr conn,
         if (cb->klass == klass &&
             cb->eventID == eventID &&
             cb->conn == conn &&
-            !cb->deleted)
+            !cb->deleted &&
+            (!serverFilter ||
+             (cb->remoteID >= 0 &&
+              ((uuid && cb->uuid_filter &&
+                memcmp(cb->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
+               (!uuid && !cb->uuid_filter)))))
             ret++;
     }
     return ret;
@@ -196,17 +212,19 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
         virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
-            virClassPtr klass = cb->klass;
-            int eventID = cb->eventID;
+            int ret;
+
+            ret = virObjectEventCallbackListCount(conn, cbList, cb->klass,
+                                                  cb->eventID,
+                                                  cb->uuid_filter ? cb->uuid : NULL,
+                                                  cb->remoteID >= 0) - 1;
 
             if (cb->freecb)
                 (*cb->freecb)(cb->opaque);
             virObjectUnref(cb->conn);
             VIR_FREE(cb);
             VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
-
-            return virObjectEventCallbackListCount(conn, cbList, klass,
-                                                   eventID);
+            return ret;
         }
     }
 
@@ -230,7 +248,9 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
         if (cb->callbackID == callbackID && cb->conn == conn) {
             cb->deleted = true;
             return virObjectEventCallbackListCount(conn, cbList, cb->klass,
-                                                   cb->eventID);
+                                                   cb->eventID,
+                                                   cb->uuid_filter ? cb->uuid : NULL,
+                                                   cb->remoteID >= 0);
         }
     }
 
@@ -280,9 +300,13 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
  * @eventID: the event ID
  * @callback: the callback to locate
  * @legacy: true if callback is tracked by function instead of callbackID
+ * @remoteID: optionally return a known remoteID
  *
  * Internal function to determine if @callback already has a
- * callbackID in @cbList for the given @conn and other filters.
+ * callbackID in @cbList for the given @conn and other filters.  If
+ * @remoteID is non-NULL, and another callback exists that can be
+ * serviced by the same remote event, then set it to that remote ID.
+ *
  * Return the id if found, or -1 with no error issued if not present.
  */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
@@ -292,29 +316,33 @@ virObjectEventCallbackLookup(virConnectPtr conn,
                              virClassPtr klass,
                              int eventID,
                              virConnectObjectEventGenericCallback callback,
-                             bool legacy)
+                             bool legacy,
+                             int *remoteID)
 {
-    int ret = -1;
     size_t i;
+
+    if (remoteID)
+        *remoteID = -1;
 
     for (i = 0; i < cbList->count; i++) {
         virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
         if (cb->deleted)
             continue;
-        if (cb->cb == callback &&
-            cb->klass == klass &&
+        if (cb->klass == klass &&
             cb->eventID == eventID &&
             cb->conn == conn &&
             cb->legacy == legacy &&
             ((uuid && cb->uuid_filter &&
               memcmp(cb->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
              (!uuid && !cb->uuid_filter))) {
-            ret = cb->callbackID;
-            break;
+            if (remoteID)
+                *remoteID = cb->remoteID;
+            if (cb->cb == callback)
+                return cb->callbackID;
         }
     }
-    return ret;
+    return -1;
 }
 
 
@@ -329,6 +357,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
  * @opaque: opaque data to pass to @callback
  * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
+ * @serverFilter: true if server supports object filtering
  *
  * Internal function to add a callback from a virObjectEventCallbackListPtr
  */
@@ -341,10 +370,12 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virConnectObjectEventGenericCallback callback,
                                 void *opaque,
                                 virFreeCallback freecb,
-                                int *callbackID)
+                                int *callbackID,
+                                bool serverFilter)
 {
     virObjectEventCallbackPtr event;
     int ret = -1;
+    int remoteID = -1;
 
     VIR_DEBUG("conn=%p cblist=%p uuid=%p "
               "klass=%p eventID=%d callback=%p opaque=%p",
@@ -358,7 +389,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     /* check if we already have this callback on our list */
     if (virObjectEventCallbackLookup(conn, cbList, uuid,
                                      klass, eventID, callback,
-                                     !callbackID) != -1) {
+                                     !callbackID,
+                                     serverFilter ? &remoteID : NULL) != -1) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("event callback already tracked"));
         return -1;
@@ -373,6 +405,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     event->eventID = eventID;
     event->opaque = opaque;
     event->freecb = freecb;
+    event->remoteID = remoteID;
 
     /* Only need 'uuid' for matching; 'id' can change as domain
      * switches between running and shutoff, and 'name' can change in
@@ -390,7 +423,10 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
         goto cleanup;
 
-    ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID);
+    ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID,
+                                          uuid, serverFilter);
+    if (serverFilter && remoteID < 0)
+        ret++;
 
 cleanup:
     if (event)
@@ -588,6 +624,7 @@ virObjectEventNew(virClassPtr klass,
 
     event->dispatch = dispatcher;
     event->eventID = eventID;
+    event->remoteID = -1;
 
     if (VIR_STRDUP(event->meta.name, name) < 0) {
         VIR_FREE(event);
@@ -634,6 +671,8 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
     if (!virObjectIsClass(event, cb->klass))
         return false;
     if (cb->eventID != event->eventID)
+        return false;
+    if (cb->remoteID != event->remoteID)
         return false;
 
     if (cb->uuid_filter) {
@@ -692,6 +731,42 @@ virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
 
 
 /**
+ * virObjectEventStateQueueRemote:
+ * @state: the event state object
+ * @event: event to add to the queue
+ * @remoteID: limit dispatch to callbacks with the same remote id
+ *
+ * Adds @event to the queue of events to be dispatched at the next
+ * safe moment.  The caller should no longer use @event after this
+ * call.  If @remoteID is non-negative, the event will only be sent to
+ * callbacks where virObjectEventStateSetRemote() registered a remote
+ * id.
+ */
+void
+virObjectEventStateQueueRemote(virObjectEventStatePtr state,
+                               virObjectEventPtr event,
+                               int remoteID)
+{
+    if (state->timer < 0) {
+        virObjectUnref(event);
+        return;
+    }
+
+    virObjectEventStateLock(state);
+
+    event->remoteID = remoteID;
+    if (virObjectEventQueuePush(state->queue, event) < 0) {
+        VIR_DEBUG("Error adding event to queue");
+        virObjectUnref(event);
+    }
+
+    if (state->queue->count == 1)
+        virEventUpdateTimeout(state->timer, 0);
+    virObjectEventStateUnlock(state);
+}
+
+
+/**
  * virObjectEventStateQueue:
  * @state: the event state object
  * @event: event to add to the queue
@@ -704,21 +779,7 @@ void
 virObjectEventStateQueue(virObjectEventStatePtr state,
                          virObjectEventPtr event)
 {
-    if (state->timer < 0) {
-        virObjectUnref(event);
-        return;
-    }
-
-    virObjectEventStateLock(state);
-
-    if (virObjectEventQueuePush(state->queue, event) < 0) {
-        VIR_DEBUG("Error adding event to queue");
-        virObjectUnref(event);
-    }
-
-    if (state->queue->count == 1)
-        virEventUpdateTimeout(state->timer, 0);
-    virObjectEventStateUnlock(state);
+    virObjectEventStateQueueRemote(state, event, -1);
 }
 
 
@@ -761,12 +822,27 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
  * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
  * @callbackID: filled with callback ID
+ * @serverFilter: true if server supports object filtering
  *
  * Register the function @cb with connection @conn, from @state, for
  * events of type @eventID, and return the registration handle in
  * @callbackID.
  *
- * Returns: the number of callbacks now registered, or -1 on error
+ * The return value is only important when registering client-side
+ * mirroring of remote events (since the public API is documented to
+ * return the callbackID rather than a count).  A return of 1 means
+ * that this is the first use of this type of event, so a remote event
+ * must be enabled; a return larger than 1 means that an existing
+ * remote event can already feed this callback.  If @serverFilter is
+ * false, the return count assumes that a single global remote feeds
+ * both generic and per-object callbacks, and that the event queue
+ * will be fed with virObjectEventStateQueue().  If it is true, then
+ * the return count assumes that the remote side is capable of per-
+ * object filtering; the user must call virObjectEventStateSetRemote()
+ * to record the remote id, and queue events with
+ * virObjectEventStateQueueRemote().
+ *
+ * Returns: the number of callbacks now registered, or -1 on error.
  */
 int
 virObjectEventStateRegisterID(virConnectPtr conn,
@@ -777,7 +853,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
                               virFreeCallback freecb,
-                              int *callbackID)
+                              int *callbackID,
+                              bool serverFilter)
 {
     int ret = -1;
 
@@ -797,7 +874,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     ret = virObjectEventCallbackListAddID(conn, state->callbacks,
                                           uuid, klass, eventID,
                                           cb, opaque, freecb,
-                                          callbackID);
+                                          callbackID, serverFilter);
 
     if (ret == -1 &&
         state->callbacks->count == 0 &&
@@ -874,7 +951,7 @@ virObjectEventStateCallbackID(virConnectPtr conn,
 
     virObjectEventStateLock(state);
     ret = virObjectEventCallbackLookup(conn, state->callbacks, NULL,
-                                       klass, eventID, callback, true);
+                                       klass, eventID, callback, true, NULL);
     virObjectEventStateUnlock(state);
 
     if (ret < 0)
@@ -890,16 +967,20 @@ virObjectEventStateCallbackID(virConnectPtr conn,
  * @conn: connection associated with the callback
  * @state: object event state
  * @callbackID: the callback to query
+ * @remoteID: optionally output remote ID of the callback
  *
- * Query what event ID type is associated with the
- * callback @callbackID for connection @conn
+ * Query what event ID type is associated with the callback
+ * @callbackID for connection @conn.  If @remoteID is non-null, it
+ * will be set to the remote id previously registered with
+ * virObjectEventStateSetRemote().
  *
  * Returns 0 on success, -1 on error
  */
 int
 virObjectEventStateEventID(virConnectPtr conn,
                            virObjectEventStatePtr state,
-                           int callbackID)
+                           int callbackID,
+                           int *remoteID)
 {
     int ret = -1;
     size_t i;
@@ -913,6 +994,8 @@ virObjectEventStateEventID(virConnectPtr conn,
             continue;
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
+            if (remoteID)
+                *remoteID = cb->remoteID;
             ret = cb->eventID;
             break;
         }
@@ -924,4 +1007,40 @@ virObjectEventStateEventID(virConnectPtr conn,
                        _("event callback id %d not registered"),
                        callbackID);
     return ret;
+}
+
+
+/**
+ * virObjectEventStateSetRemote:
+ * @conn: connection associated with the callback
+ * @state: object event state
+ * @callbackID: the callback to adjust
+ * @remoteID: the remote ID to associate with the callback
+ *
+ * Update @callbackID for connection @conn to record that it is now
+ * tied to @remoteID, and will therefore only match events that are
+ * sent with virObjectEventStateQueueRemote() with the same remote ID.
+ * Silently does nothing if @callbackID is invalid.
+ */
+void
+virObjectEventStateSetRemote(virConnectPtr conn,
+                             virObjectEventStatePtr state,
+                             int callbackID,
+                             int remoteID)
+{
+    size_t i;
+
+    virObjectEventStateLock(state);
+    for (i = 0; i < state->callbacks->count; i++) {
+        virObjectEventCallbackPtr cb = state->callbacks->callbacks[i];
+
+        if (cb->deleted)
+            continue;
+
+        if (cb->callbackID == callbackID && cb->conn == conn) {
+            cb->remoteID = remoteID;
+            break;
+        }
+    }
+    virObjectEventStateUnlock(state);
 }

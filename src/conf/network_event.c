@@ -154,7 +154,47 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
     return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID);
+                                         opaque, freecb, callbackID, false);
+}
+
+
+/**
+ * virNetworkEventStateRegisterClient:
+ * @conn: connection to associate with callback
+ * @state: object event state
+ * @net: network to filter on or NULL for all networks
+ * @eventID: ID of the event type to register for
+ * @cb: function to invoke when event occurs
+ * @opaque: data blob to pass to @callback
+ * @freecb: callback to free @opaque
+ * @callbackID: filled with callback ID
+ *
+ * Register the function @cb with connection @conn, from @state, for
+ * events of type @eventID, and return the registration handle in
+ * @callbackID.  This version is intended for use on the client side
+ * of RPC.
+ *
+ * Returns: the number of callbacks now registered, or -1 on error
+ */
+int
+virNetworkEventStateRegisterClient(virConnectPtr conn,
+                                   virObjectEventStatePtr state,
+                                   virNetworkPtr net,
+                                   int eventID,
+                                   virConnectNetworkEventGenericCallback cb,
+                                   void *opaque,
+                                   virFreeCallback freecb,
+                                   int *callbackID)
+{
+    if (virNetworkEventsInitialize() < 0)
+        return -1;
+
+    /* FIXME: All servers that support network events should also support
+     * per-object filtering.  */
+    return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
+                                         virNetworkEventClass, eventID,
+                                         VIR_OBJECT_EVENT_CALLBACK(cb),
+                                         opaque, freecb, callbackID, false);
 }
 
 

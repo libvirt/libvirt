@@ -1288,7 +1288,7 @@ virDomainEventStateRegister(virConnectPtr conn,
                                          virDomainEventClass,
                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                          VIR_OBJECT_EVENT_CALLBACK(callback),
-                                         opaque, freecb, NULL);
+                                         opaque, freecb, NULL, false);
 }
 
 
@@ -1325,7 +1325,7 @@ virDomainEventStateRegisterID(virConnectPtr conn,
     return virObjectEventStateRegisterID(conn, state, dom ? dom->uuid : NULL,
                                          virDomainEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID);
+                                         opaque, freecb, callbackID, false);
 }
 
 

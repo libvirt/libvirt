@@ -634,7 +634,6 @@ virObjectEventStateEventID;
 virObjectEventStateFree;
 virObjectEventStateNew;
 virObjectEventStateQueue;
-virObjectEventStateRegisterID;
 
 
 # conf/secret_conf.h
