@@ -1,0 +1,61 @@
+diff --git c/top/maint.mk w/top/maint.mk
+index c1b786f..d5bb427 100644
+--- c/top/maint.mk
++++ w/top/maint.mk
+@@ -2,7 +2,7 @@
+ # This Makefile fragment tries to be general-purpose enough to be
+ # used by many projects via the gnulib maintainer-makefile module.
+
+-## Copyright (C) 2001-2013 Free Software Foundation, Inc.
++## Copyright (C) 2001-2014 Free Software Foundation, Inc.
+ ##
+ ## This program is free software: you can redistribute it and/or modify
+ ## it under the terms of the GNU General Public License as published by
+@@ -591,7 +591,7 @@ sc_prohibit_root_dev_ino_without_use:
+
+ sc_prohibit_openat_without_use:
+ 	@h='openat.h' \
+-	re='\<(openat_(permissive|needs_fchdir|(save|restore)_fail)|l?(stat|ch(own|mod))at|(euid)?accessat)\>' \
++	re='\<(openat_(permissive|needs_fchdir|(save|restore)_fail)|l?(stat|ch(own|mod))at|(euid)?accessat|(FCHMOD|FCHOWN|STAT)AT_INLINE)\>' \
+ 	  $(_sc_header_without_use)
+
+ # Prohibit the inclusion of c-ctype.h without an actual use.
+@@ -1283,15 +1283,17 @@ vc-diff-check:
+ rel-files = $(DIST_ARCHIVES)
+
+ gnulib_dir ?= $(srcdir)/gnulib
+-gnulib-version = $$(cd $(gnulib_dir) && git describe)
++gnulib-version = $$(cd $(gnulib_dir)				\
++                    && { git describe || git rev-parse --short=10 HEAD; } )
+ bootstrap-tools ?= autoconf,automake,gnulib
+
++gpgv = $$(gpgv2 --version >/dev/null && echo gpgv2 || echo gpgv)
+ # If it's not already specified, derive the GPG key ID from
+ # the signed tag we've just applied to mark this release.
+ gpg_key_ID ?=								\
+   $$(cd $(srcdir)							\
+      && git cat-file tag v$(VERSION)					\
+-        | gpgv --status-fd 1 --keyring /dev/null - - 2>/dev/null	\
++        | $(gpgv) --status-fd 1 --keyring /dev/null - - 2>/dev/null	\
+         | awk '/^\[GNUPG:\] ERRSIG / {print $$3; exit}')
+
+ translation_project_ ?= coordinator@translationproject.org
+@@ -1393,8 +1395,8 @@ public-submodule-commit:
+ 		&& git --version >/dev/null 2>&1; then			\
+ 	  cd $(srcdir) &&						\
+ 	  git submodule --quiet foreach					\
+-	      test '"$$(git rev-parse "$$sha1")"'			\
+-	      = '"$$(git merge-base origin "$$sha1")"'			\
++	      'test "$$(git rev-parse "$$sha1")"			\
++		  = "$$(git merge-base origin "$$sha1")"'		\
+ 	    || { echo '$(ME): found non-public submodule commit' >&2;	\
+ 		 exit 1; };						\
+ 	else								\
+@@ -1424,6 +1426,7 @@ alpha beta stable: $(local-check) writable-files $(submodule-checks)
+ 	$(AM_V_at)$(MAKE) -s emit_upload_commands RELEASE_TYPE=$@
+
+ release:
++	$(AM_V_GEN)$(MAKE) _version
+ 	$(AM_V_GEN)$(MAKE) $(release-type)
+
+ # Override this in cfg.mk if you follow different procedures.
