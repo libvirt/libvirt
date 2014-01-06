@@ -51,7 +51,8 @@ struct daemonClientPrivate {
     /* Hold while accessing any data except conn */
     virMutex lock;
 
-    int domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LAST];
+    daemonClientEventCallbackPtr *domainEventCallbacks;
+    size_t ndomainEventCallbacks;
     daemonClientEventCallbackPtr *networkEventCallbacks;
     size_t nnetworkEventCallbacks;
 
