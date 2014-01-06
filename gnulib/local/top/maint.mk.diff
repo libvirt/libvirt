@@ -1,0 +1,125 @@
+diff --git c/top/maint.mk w/top/maint.mk
+index e52deb4..d5bb427 100644
+--- c/top/maint.mk
++++ w/top/maint.mk
+@@ -2,7 +2,7 @@
+ # This Makefile fragment tries to be general-purpose enough to be
+ # used by many projects via the gnulib maintainer-makefile module.
+
+-## Copyright (C) 2001-2012 Free Software Foundation, Inc.
++## Copyright (C) 2001-2014 Free Software Foundation, Inc.
+ ##
+ ## This program is free software: you can redistribute it and/or modify
+ ## it under the terms of the GNU General Public License as published by
+@@ -155,7 +155,7 @@ export LC_ALL = C
+ ## Sanity checks.  ##
+ ## --------------- ##
+
+-_cfg_mk := $(shell test -f $(srcdir)/cfg.mk && echo '$(srcdir)/cfg.mk')
++_cfg_mk := $(wildcard $(srcdir)/cfg.mk)
+
+ # Collect the names of rules starting with 'sc_'.
+ syntax-check-rules := $(sort $(shell sed -n 's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' \
+@@ -591,7 +591,7 @@ sc_prohibit_root_dev_ino_without_use:
+
+ sc_prohibit_openat_without_use:
+ 	@h='openat.h' \
+-	re='\<(openat_(permissive|needs_fchdir|(save|restore)_fail)|l?(stat|ch(own|mod))at|(euid)?accessat)\>' \
++	re='\<(openat_(permissive|needs_fchdir|(save|restore)_fail)|l?(stat|ch(own|mod))at|(euid)?accessat|(FCHMOD|FCHOWN|STAT)AT_INLINE)\>' \
+ 	  $(_sc_header_without_use)
+
+ # Prohibit the inclusion of c-ctype.h without an actual use.
+@@ -809,7 +809,7 @@ sc_prohibit_always_true_header_tests:
+ 	  $(_sc_search_regexp)
+
+ sc_prohibit_defined_have_decl_tests:
+-	@prohibit='#[	 ]*if(n?def|.*\<defined)\>[	 (]+HAVE_DECL_'	\
++	@prohibit='(#[	 ]*ifn?def|\<defined)\>[	 (]+HAVE_DECL_'	\
+ 	halt='HAVE_DECL macros are always defined'			\
+ 	  $(_sc_search_regexp)
+
+@@ -1121,9 +1121,11 @@ fix_po_file_diag = \
+ 'you have changed the set of files with translatable diagnostics;\n\
+ apply the above patch\n'
+
+-# Verify that all source files using _() are listed in po/POTFILES.in.
++# Verify that all source files using _() (more specifically, files that
++# match $(_gl_translatable_string_re)) are listed in po/POTFILES.in.
+ po_file ?= $(srcdir)/po/POTFILES.in
+ generated_files ?= $(srcdir)/lib/*.[ch]
++_gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
+ sc_po_check:
+ 	@if test -f $(po_file); then					\
+ 	  grep -E -v '^(#|$$)' $(po_file)				\
+@@ -1143,7 +1145,7 @@ sc_po_check:
+ 	    esac;							\
+ 	    files="$$files $$file";					\
+ 	  done;								\
+-	  grep -E -l '\b(N?_|gettext *)\([^)"]*("|$$)' $$files		\
++	  grep -E -l '$(_gl_translatable_string_re)' $$files		\
+ 	    | sed 's|^$(_dot_escaped_srcdir)/||' | sort -u > $@-2;	\
+ 	  diff -u -L $(po_file) -L $(po_file) $@-1 $@-2			\
+ 	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\
+@@ -1281,15 +1283,17 @@ vc-diff-check:
+ rel-files = $(DIST_ARCHIVES)
+
+ gnulib_dir ?= $(srcdir)/gnulib
+-gnulib-version = $$(cd $(gnulib_dir) && git describe)
++gnulib-version = $$(cd $(gnulib_dir)				\
++                    && { git describe || git rev-parse --short=10 HEAD; } )
+ bootstrap-tools ?= autoconf,automake,gnulib
+
++gpgv = $$(gpgv2 --version >/dev/null && echo gpgv2 || echo gpgv)
+ # If it's not already specified, derive the GPG key ID from
+ # the signed tag we've just applied to mark this release.
+ gpg_key_ID ?=								\
+   $$(cd $(srcdir)							\
+      && git cat-file tag v$(VERSION)					\
+-        | gpgv --status-fd 1 --keyring /dev/null - - 2>/dev/null	\
++        | $(gpgv) --status-fd 1 --keyring /dev/null - - 2>/dev/null	\
+         | awk '/^\[GNUPG:\] ERRSIG / {print $$3; exit}')
+
+ translation_project_ ?= coordinator@translationproject.org
+@@ -1313,7 +1317,7 @@ announcement_mail_Cc_ ?= $(announcement_mail_Cc_$(release-type))
+ announcement_mail_headers_ ?= $(announcement_mail_headers_$(release-type))
+ announcement: NEWS ChangeLog $(rel-files)
+ # Not $(AM_V_GEN) since the output of this command serves as
+-# annoucement message: it would start with " GEN announcement".
++# announcement message: it would start with " GEN announcement".
+ 	$(AM_V_at)$(srcdir)/$(_build-aux)/announce-gen			\
+ 	    --mail-headers='$(announcement_mail_headers_)'		\
+ 	    --release-type=$(release-type)				\
+@@ -1368,7 +1372,8 @@ endef
+
+ .PHONY: no-submodule-changes
+ no-submodule-changes:
+-	$(AM_V_GEN)if test -d $(srcdir)/.git; then			\
++	$(AM_V_GEN)if test -d $(srcdir)/.git				\
++		&& git --version >/dev/null 2>&1; then			\
+ 	  diff=$$(cd $(srcdir) && git submodule -q foreach		\
+ 		  git diff-index --name-only HEAD)			\
+ 	    || exit 1;							\
+@@ -1386,10 +1391,12 @@ submodule-checks ?= no-submodule-changes public-submodule-commit
+ # cannot be built from a fresh clone.
+ .PHONY: public-submodule-commit
+ public-submodule-commit:
+-	$(AM_V_GEN)if test -d $(srcdir)/.git; then			\
++	$(AM_V_GEN)if test -d $(srcdir)/.git				\
++		&& git --version >/dev/null 2>&1; then			\
+ 	  cd $(srcdir) &&						\
+-	  git submodule --quiet foreach test '$$(git rev-parse $$sha1)'	\
+-	      = '$$(git merge-base origin $$sha1)'			\
++	  git submodule --quiet foreach					\
++	      'test "$$(git rev-parse "$$sha1")"			\
++		  = "$$(git merge-base origin "$$sha1")"'		\
+ 	    || { echo '$(ME): found non-public submodule commit' >&2;	\
+ 		 exit 1; };						\
+ 	else								\
+@@ -1419,6 +1426,7 @@ alpha beta stable: $(local-check) writable-files $(submodule-checks)
+ 	$(AM_V_at)$(MAKE) -s emit_upload_commands RELEASE_TYPE=$@
+
+ release:
++	$(AM_V_GEN)$(MAKE) _version
+ 	$(AM_V_GEN)$(MAKE) $(release-type)
+
+ # Override this in cfg.mk if you follow different procedures.
