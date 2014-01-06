@@ -2701,8 +2701,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     char *vroot = NULL;
     int ret = -1;
-    int rc = 0;
-    bool useInitctl = false, initctlRequested, signalRequested;
+    int rc;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_INITCTL |
                   VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
@@ -2731,24 +2730,25 @@ lxcDomainShutdownFlags(virDomainPtr dom,
                     (unsigned long long)priv->initpid) < 0)
         goto cleanup;
 
-    initctlRequested = flags & VIR_DOMAIN_SHUTDOWN_INITCTL;
-    signalRequested = flags & VIR_DOMAIN_SHUTDOWN_SIGNAL;
-
-    if (initctlRequested || !flags)
-        useInitctl = true;
-
-    if (useInitctl) {
-        rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF, vroot);
-        if (rc < 0 && !signalRequested)
+    if (flags == 0 ||
+        (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
+        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF,
+                                        vroot)) < 0) {
             goto cleanup;
-        if (rc == 0 && !signalRequested) {
+        }
+        if (rc == 0 && flags != 0 &&
+            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("Container does not provide an initctl pipe"));
             goto cleanup;
         }
+    } else {
+        rc = 0;
     }
 
-    if (rc == 0 && !useInitctl) {
+    if (rc == 0 &&
+        (flags == 0 ||
+         (flags & VIR_DOMAIN_SHUTDOWN_SIGNAL))) {
         if (kill(priv->initpid, SIGTERM) < 0 &&
             errno != ESRCH) {
             virReportSystemError(errno,
