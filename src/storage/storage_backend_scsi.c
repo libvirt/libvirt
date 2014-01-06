@@ -707,8 +707,19 @@ virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     *isActive = false;
 
-    if (!(name = getAdapterName(pool->def->source.adapter)))
-        return -1;
+    if (!(name = getAdapterName(pool->def->source.adapter))) {
+        /* It's normal for the pool with "fc_host" type source
+         * adapter fails to get the adapter name, since the vHBA
+         * the adapter based on might be not created yet.
+         */
+        if (pool->def->source.adapter.type ==
+            VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+            virResetLastError();
+            return 0;
+        } else {
+            return -1;
+        }
+    }
 
     if (getHostNumber(name, &host) < 0)
         goto cleanup;
