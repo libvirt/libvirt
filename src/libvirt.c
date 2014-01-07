@@ -20446,9 +20446,9 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     return 0;
 
 error:
-    virDispatchError(conn);
     virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
+    virDispatchError(conn);
     virObjectUnref(conn);
     return -1;
 }
@@ -20500,9 +20500,9 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     return 0;
 
 error:
-    virDispatchError(conn);
     virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
+    virDispatchError(conn);
     return -1;
 }
 
