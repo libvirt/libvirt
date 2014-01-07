@@ -230,7 +230,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (flags)
+    if (flags || current)
         rv = virDomainAttachDeviceFlags(dom, buffer, flags);
     else
         rv = virDomainAttachDevice(dom, buffer);
@@ -669,7 +669,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virDomainIsActive(dom) == 1)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
-    if (flags)
+    if (flags || current)
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     else
         ret = virDomainAttachDevice(dom, xml);
@@ -923,7 +923,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
-    if (flags)
+    if (flags || current)
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     else
         ret = virDomainAttachDevice(dom, xml);
@@ -9609,7 +9609,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (flags != 0)
+    if (flags != 0 || current)
         ret = virDomainDetachDeviceFlags(dom, buffer, flags);
     else
         ret = virDomainDetachDevice(dom, buffer);
@@ -9884,7 +9884,7 @@ hit:
         goto cleanup;
     }
 
-    if (flags != 0)
+    if (flags != 0 || current)
         ret = virDomainDetachDeviceFlags(dom, detach_xml, flags);
     else
         ret = virDomainDetachDevice(dom, detach_xml);
@@ -10189,7 +10189,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
                                        VSH_PREPARE_DISK_XML_NONE)))
         goto cleanup;
 
-    if (flags != 0)
+    if (flags != 0 || current)
         ret = virDomainDetachDeviceFlags(dom, disk_xml, flags);
     else
         ret = virDomainDetachDevice(dom, disk_xml);
