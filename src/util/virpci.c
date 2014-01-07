@@ -1752,7 +1752,7 @@ virPCIDeviceListGet(virPCIDeviceListPtr list,
     return list->devs[idx];
 }
 
-int
+size_t
 virPCIDeviceListCount(virPCIDeviceListPtr list)
 {
     return list->count;

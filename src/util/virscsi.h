@@ -77,7 +77,7 @@ int virSCSIDeviceListAdd(virSCSIDeviceListPtr list,
                          virSCSIDevicePtr dev);
 virSCSIDevicePtr virSCSIDeviceListGet(virSCSIDeviceListPtr list,
                                       int idx);
-int virSCSIDeviceListCount(virSCSIDeviceListPtr list);
+size_t virSCSIDeviceListCount(virSCSIDeviceListPtr list);
 virSCSIDevicePtr virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
                                         virSCSIDevicePtr dev);
 void virSCSIDeviceListDel(virSCSIDeviceListPtr list,

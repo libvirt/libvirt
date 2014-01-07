@@ -464,7 +464,7 @@ virUSBDeviceListGet(virUSBDeviceListPtr list,
     return list->devs[idx];
 }
 
-int
+size_t
 virUSBDeviceListCount(virUSBDeviceListPtr list)
 {
     return list->count;

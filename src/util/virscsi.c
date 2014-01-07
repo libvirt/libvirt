@@ -62,7 +62,7 @@ struct _virSCSIDevice {
 
 struct _virSCSIDeviceList {
     virObjectLockable parent;
-    unsigned int count;
+    size_t count;
     virSCSIDevicePtr *devs;
 };
 
@@ -356,12 +356,7 @@ virSCSIDeviceListAdd(virSCSIDeviceListPtr list,
         return -1;
     }
 
-    if (VIR_REALLOC_N(list->devs, list->count + 1) < 0)
-        return -1;
-
-    list->devs[list->count++] = dev;
-
-    return 0;
+    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
 }
 
 virSCSIDevicePtr
@@ -373,7 +368,7 @@ virSCSIDeviceListGet(virSCSIDeviceListPtr list, int idx)
     return list->devs[idx];
 }
 
-int
+size_t
 virSCSIDeviceListCount(virSCSIDeviceListPtr list)
 {
     return list->count;
@@ -387,24 +382,14 @@ virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
     size_t i;
 
     for (i = 0; i < list->count; i++) {
-        if (list->devs[i]->adapter != dev->adapter ||
-            list->devs[i]->bus != dev->bus ||
-            list->devs[i]->target != dev->target ||
-            list->devs[i]->unit != dev->unit)
-            continue;
-
-        ret = list->devs[i];
-
-        if (i != list->count--)
-            memmove(&list->devs[i],
-                    &list->devs[i+1],
-                    sizeof(*list->devs) * (list->count - i));
-
-        if (VIR_REALLOC_N(list->devs, list->count) < 0) {
-            ; /* not fatal */
+        if (list->devs[i]->adapter == dev->adapter &&
+            list->devs[i]->bus == dev->bus &&
+            list->devs[i]->target == dev->target &&
+            list->devs[i]->unit == dev->unit) {
+            ret = list->devs[i];
+            VIR_DELETE_ELEMENT(list->devs, i, list->count);
+            break;
         }
-
-        break;
     }
 
     return ret;

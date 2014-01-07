@@ -86,7 +86,7 @@ int  virPCIDeviceListAdd(virPCIDeviceListPtr list,
 int virPCIDeviceListAddCopy(virPCIDeviceListPtr list, virPCIDevicePtr dev);
 virPCIDevicePtr virPCIDeviceListGet(virPCIDeviceListPtr list,
                                     int idx);
-int virPCIDeviceListCount(virPCIDeviceListPtr list);
+size_t virPCIDeviceListCount(virPCIDeviceListPtr list);
 virPCIDevicePtr virPCIDeviceListSteal(virPCIDeviceListPtr list,
                                       virPCIDevicePtr dev);
 virPCIDevicePtr virPCIDeviceListStealIndex(virPCIDeviceListPtr list,
