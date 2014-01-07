@@ -4224,6 +4224,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         return;
     }
 
+    /* This method is routinely used in clean up paths. Disable error
+     * reporting so we don't squash a legit error. */
+    orig_err = virSaveLastError();
+
     /*
      * We may unlock the vm in qemuProcessKill(), and another thread
      * can lock the vm, and then call qemuProcessStop(). So we should
@@ -4255,10 +4259,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
              VIR_WARN("Unable to close logfile: %s",
                       virStrerror(errno, ebuf, sizeof(ebuf)));
     }
-
-    /* This method is routinely used in clean up paths. Disable error
-     * reporting so we don't squash a legit error. */
-    orig_err = virSaveLastError();
 
     virDomainConfVMNWFilterTeardown(vm);
 
