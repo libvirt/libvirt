@@ -2365,7 +2365,7 @@ int main(int argc, char *argv[])
     }
 
     if (handshakeFd < 0) {
-        fprintf(stderr, "%s: missing --handshake argument for container PTY\n",
+        fprintf(stderr, "%s: missing --handshakefd argument for container PTY\n",
                 argv[0]);
         goto cleanup;
     }
