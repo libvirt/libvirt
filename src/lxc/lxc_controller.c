@@ -2249,7 +2249,7 @@ int main(int argc, char *argv[])
 {
     pid_t pid;
     int rc = -1;
-    char *name = NULL;
+    const char *name = NULL;
     size_t nveths = 0;
     char **veths = NULL;
     int handshakeFd = -1;
@@ -2300,8 +2300,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'n':
-            if (VIR_STRDUP(name, optarg) < 0)
-                goto cleanup;
+            name = optarg;
             break;
 
         case 'v':
