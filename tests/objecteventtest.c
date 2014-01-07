@@ -221,7 +221,7 @@ testDomainCreateXMLMixed(const void *data)
 
     /* Fun with mixing old and new API.  Handler should be fired twice,
      * once for each registration.  */
-    if (!(dom = virDomainCreateXML(test->conn, domainDef, 0))
+    if (!(dom = virDomainCreateXML(test->conn, domainDef, 0)))
         goto cleanup;
 
     id = virConnectDomainEventRegisterAny(test->conn, dom,
