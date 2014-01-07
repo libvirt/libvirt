@@ -30,10 +30,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virLibDomainError(domain, error, info)                          \
-    virReportErrorHelper(VIR_FROM_DOM, error, __FILE__, __FUNCTION__,   \
-                         __LINE__, info)
-
 /**
  * virDomainQemuMonitorCommand:
  * @domain: a domain object
@@ -77,12 +73,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-        virDispatchError(NULL);
-        return -1;
-    }
-
+    virCheckDomainReturn(domain, -1);
     conn = domain->conn;
 
     virCheckNonNullArgGoto(result, error);
@@ -205,12 +196,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
 
     virResetLastError();
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-        virDispatchError(NULL);
-        return NULL;
-    }
-
+    virCheckDomainReturn(domain, NULL);
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);

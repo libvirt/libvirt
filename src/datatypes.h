@@ -64,6 +64,29 @@ extern virClassPtr virStoragePoolClass;
     (virObjectIsClass((obj), virDomainClass))
 # define VIR_IS_CONNECTED_DOMAIN(obj) \
     (VIR_IS_DOMAIN(obj) && virObjectIsClass((obj)->conn, virConnectClass))
+# define virCheckDomainReturn(obj, retval)                              \
+    do {                                                                \
+        virDomainPtr _dom = (obj);                                      \
+        if (!virObjectIsClass(_dom, virDomainClass) ||                  \
+            !virObjectIsClass(_dom->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_DOM, VIR_ERR_INVALID_DOMAIN,  \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckDomainGoto(obj, label)                                 \
+    do {                                                                \
+        virDomainPtr _dom = (obj);                                      \
+        if (!virObjectIsClass(_dom, virDomainClass) ||                  \
+            !virObjectIsClass(_dom->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_DOM, VIR_ERR_INVALID_DOMAIN,  \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
 
 # define VIR_IS_NETWORK(obj) \
     (virObjectIsClass((obj), virNetworkClass))

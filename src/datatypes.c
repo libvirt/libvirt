@@ -31,11 +31,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virLibConnError(code, ...)                                \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 virClassPtr virConnectClass;
 virClassPtr virConnectCloseCallbackDataClass;
 virClassPtr virDomainClass;
@@ -796,22 +791,19 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    if (!VIR_IS_DOMAIN(domain)) {
-        virLibConnError(VIR_ERR_INVALID_DOMAIN, "%s", _("bad domain"));
-        return NULL;
-    }
-    virCheckNonNullArgReturn(name, NULL);
+    virCheckDomainGoto(domain, error);
+    virCheckNonNullArgGoto(name, error);
 
     if (!(ret = virObjectNew(virDomainSnapshotClass)))
-        return NULL;
+        goto error;
     if (VIR_STRDUP(ret->name, name) < 0)
-        goto cleanup;
+        goto error;
 
     ret->domain = virObjectRef(domain);
 
     return ret;
 
-cleanup:
+error:
     virObjectUnref(ret);
     return NULL;
 }
