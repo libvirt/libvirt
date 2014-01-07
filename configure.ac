@@ -1418,13 +1418,12 @@ elif test "with_secdriver_apparmor" != "no" ; then
 fi
 AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
 
-if test "$with_apparmor" != "no"; then
 AC_ARG_WITH([apparmor-profiles],
   [AS_HELP_STRING([--with-apparmor-profiles],
     [install apparmor profiles @<:@default=no@:>@])],
   [with_apparmor_profiles=yes],
   [with_apparmor_profiles=no])
-else
+if test "$with_apparmor" = "no"; then
   with_apparmor_profiles="no"
 fi
 AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
