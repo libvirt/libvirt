@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -8161,7 +8161,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    /*Get Exisitng nodeset values */
+    /* Get existing nodeset values */
     if (virCgroupGetCpusetMems(priv->cgroup, &nodeset_str) < 0 ||
         virBitmapParse(nodeset_str, 0, &temp_nodeset,
                        VIR_DOMAIN_CPUMASK_LEN) < 0)
@@ -8192,7 +8192,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         goto cleanup;
     VIR_FREE(nodeset_str);
 
-    /* Ensure the cpuset string is formated before passing to cgroup */
+    /* Ensure the cpuset string is formatted before passing to cgroup */
     if (!(nodeset_str = virBitmapFormat(nodeset))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to format nodeset"));
