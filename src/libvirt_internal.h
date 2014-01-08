@@ -1,7 +1,7 @@
 /*
  * libvirt_internal.h: internally exported APIs, not for public use
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -115,6 +115,11 @@ enum {
      * Support for migration parameters.
      */
     VIR_DRV_FEATURE_MIGRATION_PARAMS = 13,
+
+    /*
+     * Support for server-side event filtering via callback ids in events.
+     */
+    VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK = 14,
 };
 
 

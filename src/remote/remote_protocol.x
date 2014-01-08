@@ -1972,6 +1972,10 @@ struct remote_domain_event_lifecycle_msg {
     int event;
     int detail;
 };
+struct remote_domain_event_callback_lifecycle_msg {
+    int callbackID;
+    remote_domain_event_lifecycle_msg msg;
+};
 
 
 struct remote_connect_domain_xml_from_native_args {
@@ -2246,6 +2250,19 @@ struct remote_connect_domain_event_register_any_args {
 
 struct remote_connect_domain_event_deregister_any_args {
     int eventID;
+};
+
+struct remote_connect_domain_event_callback_register_any_args {
+    int eventID;
+    remote_domain dom;
+};
+
+struct remote_connect_domain_event_callback_register_any_ret {
+    int callbackID;
+};
+
+struct remote_connect_domain_event_callback_deregister_any_args {
+    int callbackID;
 };
 
 struct remote_domain_event_reboot_msg {
@@ -5068,5 +5085,26 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_NETWORK_EVENT_LIFECYCLE = 315
+    REMOTE_PROC_NETWORK_EVENT_LIFECYCLE = 315,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_domains
+     * @aclfilter: domain:getattr
+     */
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_REGISTER_ANY = 316,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_DEREGISTER_ANY = 317,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_LIFECYCLE = 318
 };
