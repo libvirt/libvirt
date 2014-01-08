@@ -659,14 +659,23 @@ running, this will turn it into a "transient" guest.
 
 <p>
 The <code>virsh console</code> command can be used to connect
-to the text console associated with a container. If the container
-has been configured with multiple console devices, then the
-<code>--devname</code> argument can be used to choose the
-console to connect to
+to the text console associated with a container.
 </p>
 
 <pre>
 # virsh -c lxc:/// console myguest
+</pre>
+
+<p>
+If the container has been configured with multiple console devices,
+then the <code>--devname</code> argument can be used to choose the
+console to connect to.
+In LXC, multiple consoles will be named
+as 'console0', 'console1', 'console2', etc.
+</p>
+
+<pre>
+# virsh -c lxc:/// console myguest --devname console1
 </pre>
 
 <h3><a name="usageEnter">Running commands in a container</a></h3>
