@@ -267,7 +267,8 @@ qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly)))
+                                      hostdev->readonly,
+                                      hostdev->shareable)))
             goto cleanup;
 
         virSCSIDeviceSetUsedBy(scsi, def->name);
@@ -1097,7 +1098,8 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly)))
+                                      hostdev->readonly,
+                                      hostdev->shareable)))
             goto cleanup;
 
         if (scsi && virSCSIDeviceListAdd(list, scsi) < 0) {
@@ -1395,7 +1397,8 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,
-                                      hostdev->readonly))) {
+                                      hostdev->readonly,
+                                      hostdev->shareable))) {
             VIR_WARN("Unable to reattach SCSI device %s:%d:%d:%d on domain %s",
                      hostdev->source.subsys.u.scsi.adapter,
                      hostdev->source.subsys.u.scsi.bus,

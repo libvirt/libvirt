@@ -295,7 +295,8 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                                          dev->source.subsys.u.scsi.bus,
                                          dev->source.subsys.u.scsi.target,
                                          dev->source.subsys.u.scsi.unit,
-                                         dev->readonly)) == NULL)
+                                         dev->readonly,
+                                         dev->shareable)) == NULL)
                 goto cleanup;
 
             if (virSCSIDeviceFileIterate(scsi,

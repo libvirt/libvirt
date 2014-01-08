@@ -46,7 +46,8 @@ virSCSIDevicePtr virSCSIDeviceNew(const char *adapter,
                                   unsigned int bus,
                                   unsigned int target,
                                   unsigned int unit,
-                                  bool readonly);
+                                  bool readonly,
+                                  bool shareable);
 
 void virSCSIDeviceFree(virSCSIDevicePtr dev);
 void virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev, const char *name);
@@ -57,6 +58,7 @@ unsigned int virSCSIDeviceGetBus(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetTarget(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetUnit(virSCSIDevicePtr dev);
 bool virSCSIDeviceGetReadonly(virSCSIDevicePtr dev);
+bool virSCSIDeviceGetShareable(virSCSIDevicePtr dev);
 
 /*
  * Callback that will be invoked once for each file

@@ -1354,7 +1354,8 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
                              dev->source.subsys.u.scsi.bus,
                              dev->source.subsys.u.scsi.target,
                              dev->source.subsys.u.scsi.unit,
-                             dev->readonly);
+                             dev->readonly,
+                             dev->shareable);
 
         if (!scsi)
             goto done;
@@ -1545,7 +1546,8 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
                              dev->source.subsys.u.scsi.bus,
                              dev->source.subsys.u.scsi.target,
                              dev->source.subsys.u.scsi.unit,
-                             dev->readonly);
+                             dev->readonly,
+                             dev->shareable);
 
             if (!scsi)
                 goto done;

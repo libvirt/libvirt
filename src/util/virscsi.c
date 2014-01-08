@@ -58,6 +58,7 @@ struct _virSCSIDevice {
     const char *used_by; /* name of the domain using this dev */
 
     bool readonly;
+    bool shareable;
 };
 
 struct _virSCSIDeviceList {
@@ -185,7 +186,8 @@ virSCSIDeviceNew(const char *adapter,
                  unsigned int bus,
                  unsigned int target,
                  unsigned int unit,
-                 bool readonly)
+                 bool readonly,
+                 bool shareable)
 {
     virSCSIDevicePtr dev, ret = NULL;
     char *sg = NULL;
@@ -201,6 +203,7 @@ virSCSIDeviceNew(const char *adapter,
     dev->target = target;
     dev->unit = unit;
     dev->readonly = readonly;
+    dev->shareable= shareable;
 
     if (!(sg = virSCSIDeviceGetSgName(adapter, bus, target, unit)))
         goto cleanup;
@@ -309,6 +312,12 @@ bool
 virSCSIDeviceGetReadonly(virSCSIDevicePtr dev)
 {
     return dev->readonly;
+}
+
+bool
+virSCSIDeviceGetShareable(virSCSIDevicePtr dev)
+{
+    return dev->shareable;
 }
 
 int
