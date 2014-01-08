@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2692,7 +2692,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
 
     /* This switch statement is here to trigger compiler warning when adding
      * a new device type. When you are adding a new field to the switch you
-     * also have to add a iteration statement above. Otherwise the switch
+     * also have to add an iteration statement above. Otherwise the switch
      * statement has no real function here and should be optimized out by the
      * compiler. */
     i = VIR_DOMAIN_DEVICE_LAST;
