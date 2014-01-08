@@ -192,6 +192,28 @@ virDomainEventStateRegisterID(virConnectPtr conn,
                               int *callbackID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 int
+virDomainEventStateRegisterClient(virConnectPtr conn,
+                                  virObjectEventStatePtr state,
+                                  virDomainPtr dom,
+                                  int eventID,
+                                  virConnectDomainEventGenericCallback cb,
+                                  void *opaque,
+                                  virFreeCallback freecb,
+                                  bool legacy,
+                                  int *callbackID,
+                                  bool remoteID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
+    ATTRIBUTE_NONNULL(9);
+
+int
+virDomainEventStateCallbackID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              virConnectDomainEventCallback callback,
+                              int *remoteID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
+
+int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               virConnectDomainEventCallback callback)

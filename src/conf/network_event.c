@@ -155,7 +155,8 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                          NULL, NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID, false);
+                                         opaque, freecb,
+                                         false, callbackID, false);
 }
 
 
@@ -194,7 +195,8 @@ virNetworkEventStateRegisterClient(virConnectPtr conn,
                                          NULL, NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID, true);
+                                         opaque, freecb,
+                                         false, callbackID, true);
 }
 
 

@@ -92,6 +92,7 @@ struct private_data {
     int localUses;              /* Ref count for private data */
     char *hostname;             /* Original hostname */
     bool serverKeepAlive;       /* Does server support keepalive protocol? */
+    bool serverEventFilter;     /* Does server support modern event filtering */
 
     virObjectEventStatePtr eventState;
 };
@@ -890,8 +891,26 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
     }
 
+    /* Set up events */
     if (!(priv->eventState = virObjectEventStateNew()))
         goto failed;
+    {
+        remote_connect_supports_feature_args args =
+            { VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK };
+        remote_connect_supports_feature_ret ret = { 0 };
+        int rc;
+
+        rc = call(conn, priv, 0, REMOTE_PROC_CONNECT_SUPPORTS_FEATURE,
+                  (xdrproc_t)xdr_remote_connect_supports_feature_args, (char *) &args,
+                  (xdrproc_t)xdr_remote_connect_supports_feature_ret, (char *) &ret);
+
+        if (rc != -1 && ret.supported) {
+            priv->serverEventFilter = true;
+        } else {
+            VIR_INFO("Avoiding server event filtering since it is not "
+                     "supported by the server");
+        }
+    }
 
     /* Successful. */
     retcode = VIR_DRV_OPEN_SUCCESS;
@@ -4421,14 +4440,19 @@ remoteConnectDomainEventRegister(virConnectPtr conn,
                                  void *opaque,
                                  virFreeCallback freecb)
 {
+    int callbackID;
     int rv = -1;
     struct private_data *priv = conn->privateData;
     int count;
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateRegister(conn, priv->eventState,
-                                             callback, opaque, freecb)) < 0)
+    if ((count = virDomainEventStateRegisterClient(conn, priv->eventState,
+                                                   NULL,
+                                                   VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                                   VIR_DOMAIN_EVENT_CALLBACK(callback),
+                                                   opaque, freecb, true,
+                                                   &callbackID, false)) < 0)
          goto done;
 
     if (count == 1) {
@@ -5245,10 +5269,10 @@ remoteConnectDomainEventRegisterAny(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateRegisterID(conn, priv->eventState,
-                                               dom, eventID,
-                                               callback, opaque, freecb,
-                                               &callbackID)) < 0)
+    if ((count = virDomainEventStateRegisterClient(conn, priv->eventState,
+                                                   dom, eventID, callback,
+                                                   opaque, freecb, false,
+                                                   &callbackID, false)) < 0)
         goto done;
 
     /* If this is the first callback for this eventID, we need to enable

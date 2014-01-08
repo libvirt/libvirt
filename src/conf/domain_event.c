@@ -1281,6 +1281,8 @@ virDomainEventStateRegister(virConnectPtr conn,
                             void *opaque,
                             virFreeCallback freecb)
 {
+    int callbackID;
+
     if (virDomainEventsInitialize() < 0)
         return -1;
 
@@ -1288,7 +1290,8 @@ virDomainEventStateRegister(virConnectPtr conn,
                                          NULL, NULL, virDomainEventClass,
                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                          VIR_OBJECT_EVENT_CALLBACK(callback),
-                                         opaque, freecb, NULL, false);
+                                         opaque, freecb,
+                                         true, &callbackID, false);
 }
 
 
@@ -1326,7 +1329,75 @@ virDomainEventStateRegisterID(virConnectPtr conn,
                                          NULL, NULL,
                                          virDomainEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID, false);
+                                         opaque, freecb,
+                                         false, callbackID, false);
+}
+
+
+/**
+ * virDomainEventStateRegisterClient:
+ * @conn: connection to associate with callback
+ * @state: object event state
+ * @dom: optional domain for filtering the event
+ * @eventID: ID of the event type to register for
+ * @cb: function to invoke when event fires
+ * @opaque: data blob to pass to @callback
+ * @freecb: callback to free @opaque
+ * @legacy: true if callback is tracked by function instead of callbackID
+ * @callbackID: filled with callback ID
+ * @remoteID: true if server supports filtering
+ *
+ * Register the function @cb with connection @conn, from @state, for
+ * events of type @eventID, and return the registration handle in
+ * @callbackID.  This version is intended for use on the client side
+ * of RPC.
+ *
+ * Returns: the number of callbacks now registered, or -1 on error
+ */
+int
+virDomainEventStateRegisterClient(virConnectPtr conn,
+                                  virObjectEventStatePtr state,
+                                  virDomainPtr dom,
+                                  int eventID,
+                                  virConnectDomainEventGenericCallback cb,
+                                  void *opaque,
+                                  virFreeCallback freecb,
+                                  bool legacy,
+                                  int *callbackID,
+                                  bool remoteID)
+{
+    if (virDomainEventsInitialize() < 0)
+        return -1;
+
+    return virObjectEventStateRegisterID(conn, state, dom ? dom->uuid : NULL,
+                                         NULL, NULL,
+                                         virDomainEventClass, eventID,
+                                         VIR_OBJECT_EVENT_CALLBACK(cb),
+                                         opaque, freecb,
+                                         legacy, callbackID, remoteID);
+}
+
+
+/**
+ * virDomainEventStateCallbackID:
+ * @conn: connection associated with callback
+ * @state: object event state
+ * @cb: function registered as a callback with virDomainEventStateRegister()
+ * @remoteID: associated remote id of the callback
+ *
+ * Returns the callbackID of @cb, or -1 with an error issued if the
+ * function is not currently registered.
+ */
+int
+virDomainEventStateCallbackID(virConnectPtr conn,
+                              virObjectEventStatePtr state,
+                              virConnectDomainEventCallback cb,
+                              int *remoteID)
+{
+    return virObjectEventStateCallbackID(conn, state, virDomainEventClass,
+                                         VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                         VIR_OBJECT_EVENT_CALLBACK(cb),
+                                         remoteID);
 }
 
 
@@ -1351,7 +1422,8 @@ virDomainEventStateDeregister(virConnectPtr conn,
     callbackID = virObjectEventStateCallbackID(conn, state,
                                                virDomainEventClass,
                                                VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                               VIR_OBJECT_EVENT_CALLBACK(cb));
+                                               VIR_OBJECT_EVENT_CALLBACK(cb),
+                                               NULL);
     if (callbackID < 0)
         return -1;
     return virObjectEventStateDeregisterID(conn, state, callbackID);
