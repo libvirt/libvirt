@@ -9,6 +9,8 @@ Before=libvirt-guests.service
 After=network.target
 After=dbus.service
 After=iscsid.service
+Documentation=man:libvirtd(8)
+Documentation=http://libvirt.org
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/libvirtd

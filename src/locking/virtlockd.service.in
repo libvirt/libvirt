@@ -1,6 +1,8 @@
 [Unit]
 Description=Virtual machine lock manager
 Requires=virtlockd.socket
+Documentation=man:virtlockd(8)
+Documentation=http://libvirt.org
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/virtlockd
