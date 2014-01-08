@@ -209,6 +209,11 @@ remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                 virNetClientPtr client ATTRIBUTE_UNUSED,
                                 void *evdata, void *opaque);
 static void
+remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+                                        void *evdata, void *opaque);
+
+static void
 remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                              virNetClientPtr client ATTRIBUTE_UNUSED,
                              void *evdata, void *opaque);
@@ -345,10 +350,23 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventDeviceRemoved,
       sizeof(remote_domain_event_device_removed_msg),
       (xdrproc_t)xdr_remote_domain_event_device_removed_msg },
+    /* All events above here are legacy events, missing the callback
+     * ID, which means the server has a single global registration and
+     * we do full filtering in the client.  If the server lacks
+     * VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK, those are the only
+     * events we should ever receive.  Conversely, all events below
+     * here should only be triggered by modern servers, and all
+     * contain a callbackID.  Although we have to duplicate the first
+     * 16 domain events in both styles for back-compat, any future
+     * domain event additions should only use the modern style.  */
     { REMOTE_PROC_NETWORK_EVENT_LIFECYCLE,
       remoteNetworkBuildEventLifecycle,
       sizeof(remote_network_event_lifecycle_msg),
       (xdrproc_t)xdr_remote_network_event_lifecycle_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_LIFECYCLE,
+      remoteDomainBuildEventCallbackLifecycle,
+      sizeof(remote_domain_event_callback_lifecycle_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_lifecycle_msg },
 };
 
 enum virDrvOpenRemoteFlags {
@@ -4452,16 +4470,38 @@ remoteConnectDomainEventRegister(virConnectPtr conn,
                                                    VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                                    VIR_DOMAIN_EVENT_CALLBACK(callback),
                                                    opaque, freecb, true,
-                                                   &callbackID, false)) < 0)
+                                                   &callbackID,
+                                                   priv->serverEventFilter)) < 0)
          goto done;
 
     if (count == 1) {
         /* Tell the server when we are the first callback registering */
-        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER,
-                 (xdrproc_t) xdr_void, (char *) NULL,
-                 (xdrproc_t) xdr_void, (char *) NULL) == -1) {
-            virDomainEventStateDeregister(conn, priv->eventState, callback);
-            goto done;
+        if (priv->serverEventFilter) {
+            remote_connect_domain_event_callback_register_any_args args;
+            remote_connect_domain_event_callback_register_any_ret ret;
+
+            args.eventID = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
+            args.dom = NULL;
+
+            memset(&ret, 0, sizeof(ret));
+            if (call(conn, priv, 0,
+                     REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_REGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_args, (char *) &args,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_ret, (char *) &ret) == -1) {
+                virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                callbackID);
+                goto done;
+            }
+            virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                         ret.callbackID);
+        } else {
+            if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER,
+                     (xdrproc_t) xdr_void, (char *) NULL,
+                     (xdrproc_t) xdr_void, (char *) NULL) == -1) {
+                virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                callbackID);
+                goto done;
+            }
         }
     }
 
@@ -4472,26 +4512,45 @@ done:
     return rv;
 }
 
+
 static int
 remoteConnectDomainEventDeregister(virConnectPtr conn,
                                    virConnectDomainEventCallback callback)
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
+    remote_connect_domain_event_callback_deregister_any_args args;
+    int callbackID;
+    int remoteID;
     int count;
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateDeregister(conn, priv->eventState,
-                                               callback)) < 0)
+    if ((callbackID = virDomainEventStateCallbackID(conn, priv->eventState,
+                                                    callback,
+                                                    &remoteID)) < 0)
+        goto done;
+
+    if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                 callbackID)) < 0)
         goto done;
 
     if (count == 0) {
         /* Tell the server when we are the last callback deregistering */
-        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER,
-                 (xdrproc_t) xdr_void, (char *) NULL,
-                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
-            goto done;
+        if (priv->serverEventFilter) {
+            args.callbackID = remoteID;
+
+            if (call(conn, priv, 0,
+                     REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_DEREGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_deregister_any_args, (char *) &args,
+                     (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                goto done;
+        } else {
+            if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER,
+                     (xdrproc_t) xdr_void, (char *) NULL,
+                     (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                goto done;
+        }
     }
 
     rv = 0;
@@ -4512,13 +4571,11 @@ remoteEventQueue(struct private_data *priv, virObjectEventPtr event,
 
 
 static void
-remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
-                                void *evdata, void *opaque)
+remoteDomainBuildEventLifecycleHelper(virConnectPtr conn,
+                                      remote_domain_event_lifecycle_msg *msg,
+                                      int callbackID)
 {
-    virConnectPtr conn = opaque;
     struct private_data *priv = conn->privateData;
-    remote_domain_event_lifecycle_msg *msg = evdata;
     virDomainPtr dom;
     virObjectEventPtr event = NULL;
 
@@ -4529,7 +4586,25 @@ remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virDomainEventLifecycleNewFromDom(dom, msg->event, msg->detail);
     virDomainFree(dom);
 
-    remoteEventQueue(priv, event, -1);
+    remoteEventQueue(priv, event, callbackID);
+}
+static void
+remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                virNetClientPtr client ATTRIBUTE_UNUSED,
+                                void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_lifecycle_msg *msg = evdata;
+    remoteDomainBuildEventLifecycleHelper(conn, msg, -1);
+}
+static void
+remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+                                        void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_lifecycle_msg *msg = evdata;
+    remoteDomainBuildEventLifecycleHelper(conn, &msg->msg, msg->callbackID);
 }
 
 
@@ -5263,29 +5338,61 @@ remoteConnectDomainEventRegisterAny(virConnectPtr conn,
 {
     int rv = -1;
     struct private_data *priv = conn->privateData;
-    remote_connect_domain_event_register_any_args args;
     int callbackID;
     int count;
+    remote_nonnull_domain domain;
+    bool serverFilter;
 
     remoteDriverLock(priv);
+
+    serverFilter = priv->serverEventFilter;
+    /* FIXME support more than just lifecycle events */
+    serverFilter &= eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE;
 
     if ((count = virDomainEventStateRegisterClient(conn, priv->eventState,
                                                    dom, eventID, callback,
                                                    opaque, freecb, false,
-                                                   &callbackID, false)) < 0)
+                                                   &callbackID,
+                                                   serverFilter)) < 0)
         goto done;
 
     /* If this is the first callback for this eventID, we need to enable
      * events on the server */
     if (count == 1) {
-        args.eventID = eventID;
+        if (serverFilter) {
+            remote_connect_domain_event_callback_register_any_args args;
+            remote_connect_domain_event_callback_register_any_ret ret;
 
-        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER_ANY,
-                 (xdrproc_t) xdr_remote_connect_domain_event_register_any_args, (char *) &args,
-                 (xdrproc_t) xdr_void, (char *)NULL) == -1) {
-            virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
-            goto done;
+            args.eventID = eventID;
+            if (dom) {
+                make_nonnull_domain(&domain, dom);
+                args.dom = &domain;
+            } else {
+                args.dom = NULL;
+            }
+
+            memset(&ret, 0, sizeof(ret));
+            if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_REGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_args, (char *) &args,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_ret, (char *) &ret) == -1) {
+                virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                callbackID);
+                goto done;
+            }
+            virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                         ret.callbackID);
+        } else {
+            remote_connect_domain_event_register_any_args args;
+
+            args.eventID = eventID;
+
+            if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_register_any_args, (char *) &args,
+                     (xdrproc_t) xdr_void, (char *)NULL) == -1) {
+                virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                callbackID);
+                goto done;
+            }
         }
     }
 
@@ -5303,14 +5410,14 @@ remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
-    remote_connect_domain_event_deregister_any_args args;
     int eventID;
+    int remoteID;
     int count;
 
     remoteDriverLock(priv);
 
     if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
-                                              callbackID, NULL)) < 0)
+                                              callbackID, &remoteID)) < 0)
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
@@ -5319,13 +5426,29 @@ remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
 
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
+    /* FIXME support more than just lifecycle events */
     if (count == 0) {
-        args.eventID = eventID;
+        if (priv->serverEventFilter &&
+            eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE) {
+            remote_connect_domain_event_callback_deregister_any_args args;
 
-        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER_ANY,
-                 (xdrproc_t) xdr_remote_connect_domain_event_deregister_any_args, (char *) &args,
-                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
-            goto done;
+            args.callbackID = remoteID;
+
+            if (call(conn, priv, 0,
+                     REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_DEREGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_callback_deregister_any_args, (char *) &args,
+                     (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                goto done;
+        } else {
+            remote_connect_domain_event_deregister_any_args args;
+
+            args.eventID = eventID;
+
+            if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER_ANY,
+                     (xdrproc_t) xdr_remote_connect_domain_event_deregister_any_args, (char *) &args,
+                     (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                goto done;
+        }
     }
 
     rv = 0;
