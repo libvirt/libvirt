@@ -69,6 +69,8 @@ struct _virObjectEventCallback {
     int remoteID;
     bool uuid_filter;
     unsigned char uuid[VIR_UUID_BUFLEN];
+    virObjectEventCallbackFilter filter;
+    void *filter_opaque;
     virConnectObjectEventGenericCallback cb;
     void *opaque;
     virFreeCallback freecb;
@@ -350,7 +352,9 @@ virObjectEventCallbackLookup(virConnectPtr conn,
  * virObjectEventCallbackListAddID:
  * @conn: pointer to the connection
  * @cbList: the list
- * @uuid: the uuid of the object to filter on
+ * @uuid: the optional uuid of the object to filter on
+ * @filter: optional last-ditch filter callback
+ * @filter_opaque: opaque data to pass to @filter
  * @klass: the base event class
  * @eventID: the event ID
  * @callback: the callback to add
@@ -365,6 +369,8 @@ static int
 virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 unsigned char uuid[VIR_UUID_BUFLEN],
+                                virObjectEventCallbackFilter filter,
+                                void *filter_opaque,
                                 virClassPtr klass,
                                 int eventID,
                                 virConnectObjectEventGenericCallback callback,
@@ -377,9 +383,10 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     int ret = -1;
     int remoteID = -1;
 
-    VIR_DEBUG("conn=%p cblist=%p uuid=%p "
+    VIR_DEBUG("conn=%p cblist=%p uuid=%p filter=%p filter_opaque=%p "
               "klass=%p eventID=%d callback=%p opaque=%p",
-              conn, cbList, uuid, klass, eventID, callback, opaque);
+              conn, cbList, uuid, filter, filter_opaque,
+              klass, eventID, callback, opaque);
 
     /* Check incoming */
     if (!cbList) {
@@ -414,6 +421,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
         event->uuid_filter = true;
         memcpy(event->uuid, uuid, VIR_UUID_BUFLEN);
     }
+    event->filter = filter;
+    event->filter_opaque = filter_opaque;
 
     if (callbackID)
         *callbackID = event->callbackID;
@@ -675,6 +684,9 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
     if (cb->remoteID != event->remoteID)
         return false;
 
+    if (cb->filter && !(cb->filter)(cb->conn, event, cb->filter_opaque))
+        return false;
+
     if (cb->uuid_filter) {
         /* Deliberately ignoring 'id' for matching, since that
          * will cause problems when a domain switches between
@@ -848,6 +860,8 @@ int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               unsigned char *uuid,
+                              virObjectEventCallbackFilter filter,
+                              void *filter_opaque,
                               virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
@@ -872,7 +886,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     }
 
     ret = virObjectEventCallbackListAddID(conn, state->callbacks,
-                                          uuid, klass, eventID,
+                                          uuid, filter, filter_opaque,
+                                          klass, eventID,
                                           cb, opaque, freecb,
                                           callbackID, serverFilter);
 

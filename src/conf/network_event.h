@@ -24,6 +24,7 @@
 #include "internal.h"
 #include "object_event.h"
 #include "object_event_private.h"
+#include "network_conf.h"
 
 #ifndef __NETWORK_EVENT_H__
 # define __NETWORK_EVENT_H__
@@ -31,14 +32,15 @@
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
                                virObjectEventStatePtr state,
+                               virNetworkObjListFilter filter,
                                virNetworkPtr net,
                                int eventID,
                                virConnectNetworkEventGenericCallback cb,
                                void *opaque,
                                virFreeCallback freecb,
                                int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_NONNULL(8);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(9);
 
 int
 virNetworkEventStateRegisterClient(virConnectPtr conn,

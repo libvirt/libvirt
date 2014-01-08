@@ -52,6 +52,20 @@ struct _virObjectEvent {
     virObjectEventDispatchFunc dispatch;
 };
 
+/**
+ * virObjectEventCallbackFilter:
+ * @conn: the connection pointer
+ * @event: the event about to be dispatched
+ * @opaque: opaque data registered with the filter
+ *
+ * Callback to do final filtering for a reason not tracked directly by
+ * virObjectEventStateRegisterID().  Return false if @event must not
+ * be sent to @conn.
+ */
+typedef bool (*virObjectEventCallbackFilter)(virConnectPtr conn,
+                                             virObjectEventPtr event,
+                                             void *opaque);
+
 virClassPtr
 virClassForObjectEvent(void);
 
@@ -59,6 +73,8 @@ int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
                               unsigned char *uuid,
+                              virObjectEventCallbackFilter filter,
+                              void *filter_opaque,
                               virClassPtr klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
@@ -66,8 +82,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
                               virFreeCallback freecb,
                               int *callbackID,
                               bool remoteFilter)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(6);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(8);
 
 int
 virObjectEventStateCallbackID(virConnectPtr conn,

@@ -1,7 +1,7 @@
 /*
  * viraccessperm.h: access control permissions
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,14 +47,14 @@ typedef enum {
 
     /**
      * @desc: List domains
-     * @message: Listing domains requires authorization
+     * @message: Listing domains or using domain events requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_CONNECT_SEARCH_DOMAINS,
 
     /**
      * @desc: List networks
-     * @message: Listing networks requires authorization
+     * @message: Listing networks or using network events requires authorization
      * @anonymous: 1
      */
     VIR_ACCESS_PERM_CONNECT_SEARCH_NETWORKS,

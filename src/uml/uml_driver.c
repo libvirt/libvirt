@@ -2618,6 +2618,7 @@ umlConnectDomainEventRegister(virConnectPtr conn,
     umlDriverLock(driver);
     if (virDomainEventStateRegister(conn,
                                     driver->domainEventState,
+                                    virConnectDomainEventRegisterCheckACL,
                                     callback, opaque, freecb) < 0)
         ret = -1;
     umlDriverUnlock(driver);
@@ -2662,6 +2663,7 @@ umlConnectDomainEventRegisterAny(virConnectPtr conn,
     umlDriverLock(driver);
     if (virDomainEventStateRegisterID(conn,
                                       driver->domainEventState,
+                                      virConnectDomainEventRegisterAnyCheckACL,
                                       dom, eventID,
                                       callback, opaque, freecb, &ret) < 0)
         ret = -1;

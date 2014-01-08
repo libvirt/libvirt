@@ -122,9 +122,35 @@ cleanup:
 
 
 /**
+ * virNetworkEventFilter:
+ * @conn: pointer to the connection
+ * @event: the event to check
+ * @opaque: opaque data holding ACL filter to use
+ *
+ * Internal function to run ACL filtering before dispatching an event
+ */
+static bool
+virNetworkEventFilter(virConnectPtr conn, virObjectEventPtr event,
+                      void *opaque)
+{
+    virNetworkDef net;
+    virNetworkObjListFilter filter = opaque;
+
+    /* For now, we just create a virNetworkDef with enough contents to
+     * satisfy what viraccessdriverpolkit.c references.  This is a bit
+     * fragile, but I don't know of anything better.  */
+    net.name = event->meta.name;
+    memcpy(net.uuid, event->meta.uuid, VIR_UUID_BUFLEN);
+
+    return (filter)(conn, &net);
+}
+
+
+/**
  * virNetworkEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: object event state
+ * @filter: optional ACL filter to limit which events can be sent
  * @net: network to filter on or NULL for all networks
  * @eventID: ID of the event type to register for
  * @cb: function to invoke when event occurs
@@ -141,6 +167,7 @@ cleanup:
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
                                virObjectEventStatePtr state,
+                               virNetworkObjListFilter filter,
                                virNetworkPtr net,
                                int eventID,
                                virConnectNetworkEventGenericCallback cb,
@@ -152,7 +179,8 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
         return -1;
 
     return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
-                                         virNetworkEventClass, eventID,
+                                         filter ? virNetworkEventFilter : NULL,
+                                         filter, virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
                                          opaque, freecb, callbackID, false);
 }
@@ -190,6 +218,7 @@ virNetworkEventStateRegisterClient(virConnectPtr conn,
         return -1;
 
     return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
+                                         NULL, NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
                                          opaque, freecb, callbackID, true);
