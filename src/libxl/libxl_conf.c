@@ -918,6 +918,13 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     for (i = 0; i < nnics; i++) {
         if (libxlMakeNic(def, l_nics[i], &x_nics[i]))
             goto error;
+        /*
+         * The devid (at least right now) will not get initialized by
+         * libxl in the setup case but is required for starting the
+         * device-model.
+         */
+        if (x_nics[i].devid < 0)
+            x_nics[i].devid = i;
     }
 
     d_config->nics = x_nics;
