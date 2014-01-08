@@ -210,8 +210,9 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
         }
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("could not find event callback for removal"));
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("could not find event callback %d for deletion"),
+                   callbackID);
     return -1;
 }
 
@@ -233,8 +234,9 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
         }
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("could not find event callback for deletion"));
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("could not find event callback %d for deletion"),
+                   callbackID);
     return -1;
 }
 
@@ -357,7 +359,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     if (virObjectEventCallbackLookup(conn, cbList, uuid,
                                      klass, eventID, callback,
                                      !callbackID) != -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("event callback already tracked"));
         return -1;
     }
@@ -395,27 +397,6 @@ cleanup:
         virObjectUnref(event->conn);
     VIR_FREE(event);
     return ret;
-}
-
-
-static int
-virObjectEventCallbackListEventID(virConnectPtr conn,
-                                  virObjectEventCallbackListPtr cbList,
-                                  int callbackID)
-{
-    size_t i;
-
-    for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
-
-        if (cb->deleted)
-            continue;
-
-        if (cb->callbackID == callbackID && cb->conn == conn)
-            return cb->eventID;
-    }
-
-    return -1;
 }
 
 
@@ -897,7 +878,7 @@ virObjectEventStateCallbackID(virConnectPtr conn,
     virObjectEventStateUnlock(state);
 
     if (ret < 0)
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INVALID_ARG,
                        _("event callback function %p not registered"),
                        callback);
     return ret;
@@ -920,11 +901,27 @@ virObjectEventStateEventID(virConnectPtr conn,
                            virObjectEventStatePtr state,
                            int callbackID)
 {
-    int ret;
+    int ret = -1;
+    size_t i;
+    virObjectEventCallbackListPtr cbList = state->callbacks;
 
     virObjectEventStateLock(state);
-    ret = virObjectEventCallbackListEventID(conn,
-                                            state->callbacks, callbackID);
+    for (i = 0; i < cbList->count; i++) {
+        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+
+        if (cb->deleted)
+            continue;
+
+        if (cb->callbackID == callbackID && cb->conn == conn) {
+            ret = cb->eventID;
+            break;
+        }
+    }
     virObjectEventStateUnlock(state);
+
+    if (ret < 0)
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("event callback id %d not registered"),
+                       callbackID);
     return ret;
 }

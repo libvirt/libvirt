@@ -2911,6 +2911,7 @@ done:
     return rv;
 }
 
+
 static int
 remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
                                      virNetworkPtr net,
@@ -2968,16 +2969,12 @@ remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
-                                              callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+                                              callbackID)) < 0)
         goto done;
-    }
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+                                                 callbackID)) < 0)
         goto done;
-    }
 
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
@@ -2996,6 +2993,7 @@ done:
     remoteDriverUnlock(priv);
     return rv;
 }
+
 
 static int
 remoteConnectListAllInterfaces(virConnectPtr conn,
@@ -4405,10 +4403,11 @@ out:
 #endif /* WITH_POLKIT */
 /*----------------------------------------------------------------------*/
 
-static int remoteConnectDomainEventRegister(virConnectPtr conn,
-                                            virConnectDomainEventCallback callback,
-                                            void *opaque,
-                                            virFreeCallback freecb)
+static int
+remoteConnectDomainEventRegister(virConnectPtr conn,
+                                 virConnectDomainEventCallback callback,
+                                 void *opaque,
+                                 virFreeCallback freecb)
 {
     int rv = -1;
     struct private_data *priv = conn->privateData;
@@ -4421,11 +4420,13 @@ static int remoteConnectDomainEventRegister(virConnectPtr conn,
          goto done;
 
     if (count == 1) {
-        /* Tell the server when we are the first callback deregistering */
+        /* Tell the server when we are the first callback registering */
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER,
                  (xdrproc_t) xdr_void, (char *) NULL,
-                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1) {
+            virDomainEventStateDeregister(conn, priv->eventState, callback);
             goto done;
+        }
     }
 
     rv = 0;
@@ -4435,8 +4436,9 @@ done:
     return rv;
 }
 
-static int remoteConnectDomainEventDeregister(virConnectPtr conn,
-                                              virConnectDomainEventCallback callback)
+static int
+remoteConnectDomainEventDeregister(virConnectPtr conn,
+                                   virConnectDomainEventCallback callback)
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
@@ -5205,12 +5207,13 @@ static virStreamDriver remoteStreamDrv = {
 };
 
 
-static int remoteConnectDomainEventRegisterAny(virConnectPtr conn,
-                                               virDomainPtr dom,
-                                               int eventID,
-                                               virConnectDomainEventGenericCallback callback,
-                                               void *opaque,
-                                               virFreeCallback freecb)
+static int
+remoteConnectDomainEventRegisterAny(virConnectPtr conn,
+                                    virDomainPtr dom,
+                                    int eventID,
+                                    virConnectDomainEventGenericCallback callback,
+                                    void *opaque,
+                                    virFreeCallback freecb)
 {
     int rv = -1;
     struct private_data *priv = conn->privateData;
@@ -5248,8 +5251,9 @@ done:
 }
 
 
-static int remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
-                                                 int callbackID)
+static int
+remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                      int callbackID)
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
@@ -5260,16 +5264,12 @@ static int remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
-                                              callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+                                              callbackID)) < 0)
         goto done;
-    }
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0) {
-        virReportError(VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+                                                 callbackID)) < 0)
         goto done;
-    }
 
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
