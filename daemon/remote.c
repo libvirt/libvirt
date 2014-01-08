@@ -685,6 +685,7 @@ remoteRelayNetworkEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* build return data */
     memset(&data, 0, sizeof(data));
     make_nonnull_network(&data.net, net);
+    data.callbackID = callback->callbackID;
     data.event = event;
     data.detail = detail;
 
@@ -5285,7 +5286,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
                                              virNetMessagePtr msg ATTRIBUTE_UNUSED,
                                              virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
                                              remote_connect_network_event_register_any_args *args,
-                                             remote_connect_network_event_register_any_ret *ret ATTRIBUTE_UNUSED)
+                                             remote_connect_network_event_register_any_ret *ret)
 {
     int callbackID;
     int rv = -1;
@@ -5293,6 +5294,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
     daemonClientEventCallbackPtr ref;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virNetworkPtr net = NULL;
 
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
@@ -5300,6 +5302,10 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
     }
 
     virMutexLock(&priv->lock);
+
+    if (args->net &&
+        !(net = get_nonnull_network(priv->conn, *args->net)))
+        goto cleanup;
 
     if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST || args->eventID < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5325,7 +5331,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
         goto cleanup;
 
     if ((callbackID = virConnectNetworkEventRegisterAny(priv->conn,
-                                                        NULL,
+                                                        net,
                                                         args->eventID,
                                                         networkEventCallbacks[args->eventID],
                                                         ref,
@@ -5337,6 +5343,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
     }
 
     ref->callbackID = callbackID;
+    ret->callbackID = callbackID;
 
     rv = 0;
 
@@ -5344,6 +5351,8 @@ cleanup:
     VIR_FREE(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
+    if (net)
+        virNetworkFree(net);
     virMutexUnlock(&priv->lock);
     return rv;
 }
@@ -5354,10 +5363,8 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
                                                virNetServerClientPtr client,
                                                virNetMessagePtr msg ATTRIBUTE_UNUSED,
                                                virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
-                                               remote_connect_network_event_deregister_any_args *args,
-                                               remote_connect_network_event_deregister_any_ret *ret ATTRIBUTE_UNUSED)
+                                               remote_connect_network_event_deregister_any_args *args)
 {
-    int callbackID = -1;
     int rv = -1;
     size_t i;
     struct daemonClientPrivate *priv =
@@ -5370,25 +5377,18 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
 
     virMutexLock(&priv->lock);
 
-    if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST || args->eventID < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported event ID %d"), args->eventID);
-        goto cleanup;
-    }
-
     for (i = 0; i < priv->nnetworkEventCallbacks; i++) {
-        if (priv->networkEventCallbacks[i]->eventID == args->eventID) {
-            callbackID = priv->networkEventCallbacks[i]->callbackID;
+        if (priv->networkEventCallbacks[i]->callbackID == args->callbackID)
             break;
-        }
     }
-    if (callbackID < 0) {
+    if (i == priv->nnetworkEventCallbacks) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("network event %d not registered"), args->eventID);
+                       _("network event callback %d not registered"),
+                       args->callbackID);
         goto cleanup;
     }
 
-    if (virConnectNetworkEventDeregisterAny(priv->conn, callbackID) < 0)
+    if (virConnectNetworkEventDeregisterAny(priv->conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->networkEventCallbacks, i,

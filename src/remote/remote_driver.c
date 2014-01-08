@@ -2923,8 +2923,10 @@ remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
     int rv = -1;
     struct private_data *priv = conn->privateData;
     remote_connect_network_event_register_any_args args;
+    remote_connect_network_event_register_any_ret ret;
     int callbackID;
     int count;
+    remote_nonnull_network network;
 
     remoteDriverLock(priv);
 
@@ -2938,14 +2940,23 @@ remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
      * events on the server */
     if (count == 1) {
         args.eventID = eventID;
+        if (net) {
+            make_nonnull_network(&network, net);
+            args.net = &network;
+        } else {
+            args.net = NULL;
+        }
 
+        memset(&ret, 0, sizeof(ret));
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NETWORK_EVENT_REGISTER_ANY,
                  (xdrproc_t) xdr_remote_connect_network_event_register_any_args, (char *) &args,
-                 (xdrproc_t) xdr_void, (char *)NULL) == -1) {
+                 (xdrproc_t) xdr_remote_connect_network_event_register_any_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
                                             callbackID);
             goto done;
         }
+        virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                     ret.callbackID);
     }
 
     rv = callbackID;
@@ -2980,7 +2991,7 @@ remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
     /* If that was the last callback for this eventID, we need to disable
      * events on the server */
     if (count == 0) {
-        args.eventID = eventID;
+        args.callbackID = remoteID;
 
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NETWORK_EVENT_DEREGISTER_ANY,
                  (xdrproc_t) xdr_remote_connect_network_event_deregister_any_args, (char *) &args,
@@ -4924,7 +4935,7 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                         msg->detail);
     virNetworkFree(net);
 
-    remoteEventQueue(priv, event, -1);
+    remoteEventQueue(priv, event, msg->callbackID);
 }
 
 

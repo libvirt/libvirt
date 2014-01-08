@@ -189,12 +189,10 @@ virNetworkEventStateRegisterClient(virConnectPtr conn,
     if (virNetworkEventsInitialize() < 0)
         return -1;
 
-    /* FIXME: All servers that support network events should also support
-     * per-object filtering.  */
     return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb, callbackID, false);
+                                         opaque, freecb, callbackID, true);
 }
 
 

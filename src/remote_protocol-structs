@@ -2330,17 +2330,16 @@ struct remote_connect_get_cpu_model_names_ret {
 };
 struct remote_connect_network_event_register_any_args {
         int                        eventID;
+        remote_network             net;
 };
 struct remote_connect_network_event_register_any_ret {
-        int                        cb_registered;
+        int                        callbackID;
 };
 struct remote_connect_network_event_deregister_any_args {
-        int                        eventID;
-};
-struct remote_connect_network_event_deregister_any_ret {
-        int                        cb_registered;
+        int                        callbackID;
 };
 struct remote_network_event_lifecycle_msg {
+        int                        callbackID;
         remote_nonnull_network     net;
         int                        event;
         int                        detail;
