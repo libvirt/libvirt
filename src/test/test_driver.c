@@ -58,6 +58,7 @@
 #include "virrandom.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
+#include "virauth.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -82,6 +83,13 @@ typedef struct _testCell *testCellPtr;
 
 #define MAX_CELLS 128
 
+struct _testAuth {
+    char *username;
+    char *password;
+};
+typedef struct _testAuth testAuth;
+typedef struct _testAuth *testAuthPtr;
+
 struct _testConn {
     virMutex lock;
 
@@ -99,6 +107,8 @@ struct _testConn {
     virNodeDeviceObjList devs;
     int numCells;
     testCell cells[MAX_CELLS];
+    size_t numAuths;
+    testAuthPtr auths;
 
     virObjectEventStatePtr eventState;
 };
@@ -1355,6 +1365,45 @@ error:
     return ret;
 }
 
+static int
+testParseAuthUsers(testConnPtr privconn,
+                   xmlXPathContextPtr ctxt)
+{
+    int num, ret = -1;
+    size_t i;
+    xmlNodePtr *nodes = NULL;
+
+    num = virXPathNodeSet("/node/auth/user", ctxt, &nodes);
+    if (num < 0)
+        goto error;
+
+    privconn->numAuths = num;
+    if (num && VIR_ALLOC_N(privconn->auths, num) < 0)
+        goto error;
+
+    for (i = 0; i < num; i++) {
+        char *username, *password;
+
+        ctxt->node = nodes[i];
+        username = virXPathString("string(.)", ctxt);
+        if (!username || STREQ(username, "")) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing username in /node/auth/user field"));
+            VIR_FREE(username);
+            goto error;
+        }
+        /* This field is optional. */
+        password = virXMLPropString(nodes[i], "password");
+
+        privconn->auths[i].username = username;
+        privconn->auths[i].password = password;
+    }
+
+    ret = 0;
+error:
+    VIR_FREE(nodes);
+    return ret;
+}
 
 /* No shared state between simultaneous test connections initialized
  * from a file.  */
@@ -1417,6 +1466,8 @@ testOpenFromFile(virConnectPtr conn, const char *file)
         goto error;
     if (testParseNodedevs(privconn, file, ctxt) < 0)
         goto error;
+    if (testParseAuthUsers(privconn, ctxt) < 0)
+        goto error;
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -1439,9 +1490,63 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     return VIR_DRV_OPEN_ERROR;
 }
 
+static int
+testConnectAuthenticate(virConnectPtr conn,
+                        virConnectAuthPtr auth)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+    ssize_t i;
+    char *username = NULL, *password = NULL;
+
+    if (privconn->numAuths == 0)
+        return 0;
+
+    /* Authentication is required because the test XML contains a
+     * non-empty <auth/> section.  First we must ask for a username.
+     */
+    username = virAuthGetUsername(conn, auth, "test", NULL, "localhost"/*?*/);
+    if (!username) {
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                       _("authentication failed when asking for username"));
+        goto cleanup;
+    }
+
+    /* Does the username exist? */
+    for (i = 0; i < privconn->numAuths; ++i) {
+        if (STREQ(privconn->auths[i].username, username))
+            goto found_user;
+    }
+    i = -1;
+
+found_user:
+    /* Even if we didn't find the user, we still ask for a password. */
+    if (i == -1 || privconn->auths[i].password != NULL) {
+        password = virAuthGetPassword(conn, auth, "test",
+                                      username, "localhost");
+        if (password == NULL) {
+            virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                           _("authentication failed when asking for password"));
+            goto cleanup;
+        }
+    }
+
+    if (i == -1 ||
+        (password && STRNEQ(privconn->auths[i].password, password))) {
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                       _("authentication failed, see test XML for the correct username/password"));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(username);
+    VIR_FREE(password);
+    return ret;
+}
 
 static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                        virConnectAuthPtr auth,
                                         unsigned int flags)
 {
     int ret;
@@ -1478,6 +1583,10 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
 
     if (ret != VIR_DRV_OPEN_SUCCESS)
         return ret;
+
+    /* Fake authentication. */
+    if (testConnectAuthenticate(conn, auth) < 0)
+        return VIR_DRV_OPEN_ERROR;
 
     return VIR_DRV_OPEN_SUCCESS;
 }
