@@ -1533,9 +1533,22 @@ cleanup:
 int
 virNetServerClientStartKeepAlive(virNetServerClientPtr client)
 {
-    int ret;
+    int ret = -1;
+
     virObjectLock(client);
+
+    /* The connection might have been closed before we got here and thus the
+     * keepalive object could have been removed too.
+     */
+    if (!client->sock) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("connection not open"));
+        goto cleanup;
+    }
+
     ret = virKeepAliveStart(client->keepalive, 0, 0);
+
+cleanup:
     virObjectUnlock(client);
     return ret;
 }
