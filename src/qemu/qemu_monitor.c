@@ -268,7 +268,7 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
 {
     struct sockaddr_un addr;
     int monfd;
-    int timeout = 3; /* In seconds */
+    int timeout = 30; /* In seconds */
     int ret;
     size_t i = 0;
 
