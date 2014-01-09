@@ -14423,8 +14423,8 @@ virNodeDeviceGetName(virNodeDevicePtr dev)
  *
  * Accessor for the parent of the device
  *
- * Returns the name of the device's parent, or NULL if the
- * device has no parent.
+ * Returns the name of the device's parent, or NULL if an
+ * error occurred or when the device has no parent.
  */
 const char *
 virNodeDeviceGetParent(virNodeDevicePtr dev)
@@ -14454,7 +14454,8 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
  *
  * Accessor for the number of capabilities supported by the device.
  *
- * Returns the number of capabilities supported by the device.
+ * Returns the number of capabilities supported by the device or -1
+ * in case of error.
  */
 int
 virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
@@ -14489,7 +14490,8 @@ error:
  *
  * Lists the names of the capabilities supported by the device.
  *
- * Returns the number of capability names listed in @names.
+ * Returns the number of capability names listed in @names or -1
+ * in case of error.
  */
 int
 virNodeDeviceListCaps(virNodeDevicePtr dev,
