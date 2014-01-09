@@ -1566,7 +1566,7 @@ storageVolDelete(virStorageVolPtr obj,
                      vol->name, pool->def->name);
             virStorageVolDefFree(vol);
 
-            VIR_DELETE_ELEMENT(pool->volumes.objs, pool->volumes.count, i);
+            VIR_DELETE_ELEMENT(pool->volumes.objs, i, pool->volumes.count);
             break;
         }
     }
