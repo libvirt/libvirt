@@ -1724,13 +1724,25 @@ struct remote_connect_domain_event_callback_deregister_any_args {
 struct remote_domain_event_reboot_msg {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_event_callback_reboot_msg {
+        int                        callbackID;
+        remote_domain_event_reboot_msg msg;
+};
 struct remote_domain_event_rtc_change_msg {
         remote_nonnull_domain      dom;
         int64_t                    offset;
 };
+struct remote_domain_event_callback_rtc_change_msg {
+        int                        callbackID;
+        remote_domain_event_rtc_change_msg msg;
+};
 struct remote_domain_event_watchdog_msg {
         remote_nonnull_domain      dom;
         int                        action;
+};
+struct remote_domain_event_callback_watchdog_msg {
+        int                        callbackID;
+        remote_domain_event_watchdog_msg msg;
 };
 struct remote_domain_event_io_error_msg {
         remote_nonnull_domain      dom;
@@ -1738,12 +1750,20 @@ struct remote_domain_event_io_error_msg {
         remote_nonnull_string      devAlias;
         int                        action;
 };
+struct remote_domain_event_callback_io_error_msg {
+        int                        callbackID;
+        remote_domain_event_io_error_msg msg;
+};
 struct remote_domain_event_io_error_reason_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      srcPath;
         remote_nonnull_string      devAlias;
         int                        action;
         remote_nonnull_string      reason;
+};
+struct remote_domain_event_callback_io_error_reason_msg {
+        int                        callbackID;
+        remote_domain_event_io_error_reason_msg msg;
 };
 struct remote_domain_event_graphics_address {
         int                        family;
@@ -1765,11 +1785,19 @@ struct remote_domain_event_graphics_msg {
                 remote_domain_event_graphics_identity * subject_val;
         } subject;
 };
+struct remote_domain_event_callback_graphics_msg {
+        int                        callbackID;
+        remote_domain_event_graphics_msg msg;
+};
 struct remote_domain_event_block_job_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
         int                        type;
         int                        status;
+};
+struct remote_domain_event_callback_block_job_msg {
+        int                        callbackID;
+        remote_domain_event_block_job_msg msg;
 };
 struct remote_domain_event_disk_change_msg {
         remote_nonnull_domain      dom;
@@ -1778,23 +1806,47 @@ struct remote_domain_event_disk_change_msg {
         remote_nonnull_string      devAlias;
         int                        reason;
 };
+struct remote_domain_event_callback_disk_change_msg {
+        int                        callbackID;
+        remote_domain_event_disk_change_msg msg;
+};
 struct remote_domain_event_tray_change_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      devAlias;
         int                        reason;
 };
+struct remote_domain_event_callback_tray_change_msg {
+        int                        callbackID;
+        remote_domain_event_tray_change_msg msg;
+};
 struct remote_domain_event_pmwakeup_msg {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_event_callback_pmwakeup_msg {
+        int                        callbackID;
+        remote_domain_event_pmwakeup_msg msg;
+};
 struct remote_domain_event_pmsuspend_msg {
         remote_nonnull_domain      dom;
+};
+struct remote_domain_event_callback_pmsuspend_msg {
+        int                        callbackID;
+        remote_domain_event_pmsuspend_msg msg;
 };
 struct remote_domain_event_balloon_change_msg {
         remote_nonnull_domain      dom;
         uint64_t                   actual;
 };
+struct remote_domain_event_callback_balloon_change_msg {
+        int                        callbackID;
+        remote_domain_event_balloon_change_msg msg;
+};
 struct remote_domain_event_pmsuspend_disk_msg {
         remote_nonnull_domain      dom;
+};
+struct remote_domain_event_callback_pmsuspend_disk_msg {
+        int                        callbackID;
+        remote_domain_event_pmsuspend_disk_msg msg;
 };
 struct remote_domain_managed_save_args {
         remote_nonnull_domain      dom;
@@ -2064,6 +2116,10 @@ struct remote_domain_migrate_confirm3_args {
 struct remote_domain_event_control_error_msg {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_event_callback_control_error_msg {
+        int                        callbackID;
+        remote_domain_event_control_error_msg msg;
+};
 struct remote_domain_get_control_info_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -2329,6 +2385,10 @@ struct remote_domain_migrate_confirm3_params_args {
 struct remote_domain_event_device_removed_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      devAlias;
+};
+struct remote_domain_event_callback_device_removed_msg {
+        int                        callbackID;
+        remote_domain_event_device_removed_msg msg;
 };
 struct remote_connect_get_cpu_model_names_args {
         remote_nonnull_string      arch;
@@ -2677,4 +2737,19 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_REGISTER_ANY = 316,
         REMOTE_PROC_CONNECT_DOMAIN_EVENT_CALLBACK_DEREGISTER_ANY = 317,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_LIFECYCLE = 318,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_REBOOT = 319,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_RTC_CHANGE = 320,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_WATCHDOG = 321,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_IO_ERROR = 322,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_GRAPHICS = 323,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_IO_ERROR_REASON = 324,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CONTROL_ERROR = 325,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_BLOCK_JOB = 326,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DISK_CHANGE = 327,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TRAY_CHANGE = 328,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMWAKEUP = 329,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND = 330,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_BALLOON_CHANGE = 331,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND_DISK = 332,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED = 333,
 };
