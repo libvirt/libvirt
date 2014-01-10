@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2005-2013 Red Hat, Inc.
+dnl Copyright (C) 2005-2014 Red Hat, Inc.
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Lesser General Public
@@ -276,6 +276,22 @@ dnl LIB_PTHREAD and LIBMULTITHREAD were set during gl_INIT by gnulib.
 old_LIBS=$LIBS
 LIBS="$LIBS $LIB_PTHREAD $LIBMULTITHREAD"
 AC_CHECK_FUNCS([pthread_mutexattr_init])
+dnl At least mingw64-winpthreads #defines pthread_sigmask to 0,
+dnl which in turn causes compilation to complain about unused variables.
+dnl Expose this broken implementation, so we can work around it.
+AC_CACHE_CHECK([whether pthread_sigmask does anything],
+  [lv_cv_pthread_sigmask_works],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    #include <sys/types.h>
+    #include <signal.h>
+  ]], [[
+   int (*foo)(int, const sigset_t *, sigset_t *) = &pthread_sigmask;
+   return !foo;
+  ]])], [lv_cv_pthread_sigmask_works=yes], [lv_cv_pthread_sigmask_works=no])])
+if test "x$lv_cv_pthread_sigmask_works" != xyes; then
+  AC_DEFINE([FUNC_PTHREAD_SIGMASK_BROKEN], [1],
+    [Define to 1 if pthread_sigmask is not a real function])
+fi
 LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).

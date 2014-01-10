@@ -1,7 +1,7 @@
 /*
  * virutil.h: common, generic utility functions
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -96,20 +96,34 @@ const char *virEnumToString(const char *const*types,
     const char *name ## TypeToString(int type);         \
     int name ## TypeFromString(const char*type);
 
+/* No-op workarounds for functionality missing in mingw.  */
 # ifndef HAVE_GETUID
-static inline int getuid (void) { return 0; }
+static inline int getuid(void) { return 0; }
 # endif
 
 # ifndef HAVE_GETEUID
-static inline int geteuid (void) { return 0; }
+static inline int geteuid(void) { return 0; }
 # endif
 
 # ifndef HAVE_GETGID
-static inline int getgid (void) { return 0; }
+static inline int getgid(void) { return 0; }
 # endif
 
 # ifndef HAVE_GETEGID
-static inline int getegid (void) { return 0; }
+static inline int getegid(void) { return 0; }
+# endif
+
+# ifdef FUNC_PTHREAD_SIGMASK_BROKEN
+#  undef pthread_sigmask
+static inline int pthread_sigmask(int how,
+                                  const void *set,
+                                  void *old)
+{
+    (void) how;
+    (void) set;
+    (void) old;
+    return 0;
+}
 # endif
 
 char *virGetHostname(void);
