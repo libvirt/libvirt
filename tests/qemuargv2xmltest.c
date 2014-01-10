@@ -61,6 +61,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
     VIR_FREE(log);
 
+    if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto fail;
+    }
+
     if (!(actualxml = virDomainDefFormat(vmdef, 0)))
         goto fail;
 

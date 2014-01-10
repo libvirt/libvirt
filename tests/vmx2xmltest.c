@@ -88,6 +88,11 @@ testCompareFiles(const char *vmx, const char *xml)
     if (!(def = virVMXParseConfig(&ctx, xmlopt, vmxData)))
         goto cleanup;
 
+    if (!virDomainDefCheckABIStability(def, def)) {
+        fprintf(stderr, "ABI stability check failed on %s", vmx);
+        goto cleanup;
+    }
+
     if (!(formatted = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
         goto cleanup;
 

@@ -41,6 +41,11 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
                                       VIR_DOMAIN_XML_INACTIVE)))
       goto fail;
 
+  if (!virDomainDefCheckABIStability(def, def)) {
+      fprintf(stderr, "ABI stability check failed on %s", xml);
+      goto fail;
+  }
+
   if (!(gotsexpr = xenFormatSxpr(NULL, def, xendConfigVersion)))
       goto fail;
 

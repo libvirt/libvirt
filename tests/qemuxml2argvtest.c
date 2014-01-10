@@ -289,6 +289,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
+    if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto out;
+    }
+
     if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DOMID))
         vmdef->id = 6;
     else

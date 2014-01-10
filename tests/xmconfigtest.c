@@ -77,6 +77,11 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
+    if (!virDomainDefCheckABIStability(def, def)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto fail;
+    }
+
     if (!(conf = xenFormatXM(conn, def, xendConfigVersion)))
         goto fail;
 

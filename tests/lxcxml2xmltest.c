@@ -41,6 +41,11 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
                                         live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
+    if (!virDomainDefCheckABIStability(def, def)) {
+        fprintf(stderr, "ABI stability check failed on %s", inxml);
+        goto fail;
+    }
+
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
         goto fail;
 

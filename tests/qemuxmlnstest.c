@@ -59,6 +59,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
+    if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
+        fprintf(stderr, "ABI stability check failed on %s", xml);
+        goto fail;
+    }
+
     /*
      * For test purposes, we may want to fake emulator's output by providing
      * our own script instead of a real emulator. For this to work we need to

@@ -41,6 +41,11 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
                                         QEMU_EXPECTED_VIRT_TYPES, flags)))
         goto fail;
 
+    if (!virDomainDefCheckABIStability(def, def)) {
+        fprintf(stderr, "ABI stability check failed on %s", inxml);
+        goto fail;
+    }
+
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE | flags)))
         goto fail;
 
