@@ -82,7 +82,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     }
     type = virSecretUsageTypeTypeFromString(type_str);
     if (type < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown secret usage type %s"), type_str);
         VIR_FREE(type_str);
         return -1;

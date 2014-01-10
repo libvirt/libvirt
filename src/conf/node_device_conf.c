@@ -854,7 +854,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
         int val = virNodeDevNetCapTypeFromString(tmp);
         VIR_FREE(tmp);
         if (val < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid network type supplied for '%s'"),
                            def->name);
             goto out;
@@ -1166,7 +1166,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if ((val = virNodeDevCapTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown capability type '%s'"), tmp);
         VIR_FREE(tmp);
         goto error;

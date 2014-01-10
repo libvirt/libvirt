@@ -82,7 +82,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
             }
             if ((def->nativeMode
                  = virNativeVlanModeTypeFromString(nativeMode)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid \"nativeMode='%s'\" "
                                  "in vlan <tag> element"),
                                nativeMode);

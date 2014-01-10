@@ -662,7 +662,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType) {
     }
     type = virInterfaceTypeFromString(tmp);
     if (type == -1) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown interface type %s"), tmp);
         VIR_FREE(tmp);
         return NULL;

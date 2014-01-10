@@ -1728,7 +1728,7 @@ virNetworkForwardDefParseXML(const char *networkName,
         def->type = VIR_NETWORK_FORWARD_NAT;
     } else {
         if ((def->type = virNetworkForwardTypeFromString(type)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown forwarding type '%s'"), type);
             goto cleanup;
         }
@@ -1747,7 +1747,7 @@ virNetworkForwardDefParseXML(const char *networkName,
             = virNetworkForwardDriverNameTypeFromString(forwardDriverName);
 
         if (driverName <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown forward <driver name='%s'/> "
                              "in network %s"),
                            forwardDriverName, networkName);
@@ -1873,7 +1873,7 @@ virNetworkForwardDefParseXML(const char *networkName,
             }
 
             if ((def->ifs[i].type = virNetworkForwardHostdevDeviceTypeFromString(type)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown address type '%s' in network %s"),
                                type, networkName);
                 goto cleanup;

@@ -527,7 +527,7 @@ virStoragePoolDefParseAuth(xmlXPathContextPtr ctxt,
 
     if ((source->authType =
          virStoragePoolAuthTypeTypeFromString(authType)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown auth type '%s'"),
                        authType);
         goto cleanup;
@@ -601,7 +601,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             source->format = options->formatFromString(format);
 
         if (source->format < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown pool format type %s"), format);
             VIR_FREE(format);
             goto cleanup;
@@ -673,7 +673,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     if ((adapter_type = virXPathString("string(./adapter/@type)", ctxt))) {
         if ((source->adapter.type =
              virStoragePoolSourceAdapterTypeTypeFromString(adapter_type)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown pool adapter type '%s'"),
                            adapter_type);
             goto cleanup;
@@ -871,7 +871,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     if ((ret->type = virStoragePoolTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown storage pool type %s"), type);
         goto error;
     }
@@ -1305,7 +1305,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     type = virXPathString("string(./@type)", ctxt);
     if (type) {
         if ((ret->type = virStorageVolTypeFromString(type)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown volume type '%s'"), type);
             goto error;
         }
@@ -1340,7 +1340,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             ret->target.format = (options->formatFromString)(format);
 
         if (ret->target.format < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown volume format type %s"), format);
             VIR_FREE(format);
             goto error;
@@ -1370,7 +1370,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             ret->backingStore.format = (options->formatFromString)(format);
 
         if (ret->backingStore.format < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown volume format type %s"), format);
             VIR_FREE(format);
             goto error;
@@ -1408,7 +1408,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             int f = options->featureFromString((const char*)nodes[i]->name);
 
             if (f < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unsupported feature %s"),
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("unsupported feature %s"),
                                (const char*)nodes[i]->name);
                 goto error;
             }

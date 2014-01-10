@@ -2319,7 +2319,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     }
 
     if ((ret->action = virNWFilterRuleActionTypeFromString(action)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s",
                        _("unknown rule action attribute value"));
         goto err_exit;
@@ -2333,7 +2333,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     }
 
     if ((ret->tt = virNWFilterRuleDirectionTypeFromString(direction)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s",
                        _("unknown rule direction attribute value"));
         goto err_exit;

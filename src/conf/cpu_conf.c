@@ -221,7 +221,7 @@ virCPUDefParseXML(xmlNodePtr node,
             def->mode = virCPUModeTypeFromString(cpuMode);
 
             if (def->mode < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid mode attribute '%s'"),
                                cpuMode);
                 VIR_FREE(cpuMode);
@@ -249,7 +249,7 @@ virCPUDefParseXML(xmlNodePtr node,
             VIR_FREE(match);
 
             if (def->match < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid match attribute for CPU "
                                  "specification"));
                 goto error;
@@ -265,7 +265,7 @@ virCPUDefParseXML(xmlNodePtr node,
             goto error;
         }
         if ((def->arch = virArchFromString(arch)) == VIR_ARCH_NONE) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown architecture %s"), arch);
             VIR_FREE(arch);
             goto error;
@@ -285,7 +285,7 @@ virCPUDefParseXML(xmlNodePtr node,
 
         if ((fallback = virXPathString("string(./model[1]/@fallback)", ctxt))) {
             if ((def->fallback = virCPUFallbackTypeFromString(fallback)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid fallback attribute"));
                 goto error;
             }
@@ -391,7 +391,7 @@ virCPUDefParseXML(xmlNodePtr node,
             VIR_FREE(strpolicy);
 
             if (policy < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid CPU feature policy"));
                 goto error;
             }

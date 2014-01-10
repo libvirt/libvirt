@@ -121,7 +121,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     if (snapshot) {
         def->snapshot = virDomainSnapshotLocationTypeFromString(snapshot);
         if (def->snapshot <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk snapshot setting '%s'"),
                            snapshot);
             goto cleanup;
@@ -157,7 +157,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
             if (driver) {
                 def->format = virStorageFileFormatTypeFromString(driver);
                 if (def->format <= 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown disk snapshot driver '%s'"),
                                    driver);
                     VIR_FREE(driver);
@@ -242,7 +242,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         }
         def->state = virDomainSnapshotStateTypeFromString(state);
         if (def->state < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid state '%s' in domain snapshot XML"),
                            state);
             goto cleanup;
@@ -282,7 +282,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if (memorySnapshot) {
         def->memory = virDomainSnapshotLocationTypeFromString(memorySnapshot);
         if (def->memory <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memory snapshot setting '%s'"),
                            memorySnapshot);
             goto cleanup;
