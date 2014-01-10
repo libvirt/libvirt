@@ -6801,7 +6801,8 @@ done:
 static void
 remoteEventQueue(struct private_data *priv, virObjectEventPtr event)
 {
-    virObjectEventStateQueue(priv->eventState, event);
+    if (event)
+        virObjectEventStateQueue(priv->eventState, event);
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
