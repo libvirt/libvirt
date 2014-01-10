@@ -138,6 +138,7 @@ mymain(void)
     DO_TEST("disk-formats");
     DO_TEST_DIFFERENT("filesystem-ram");
     DO_TEST("filesystem-root");
+    DO_TEST("idmap");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

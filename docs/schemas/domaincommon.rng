@@ -506,32 +506,38 @@
     </interleave>
   </define>
   <define name="idmap">
-    <zeroOrMore>
-      <element name="uid">
-        <attribute name="start">
-          <ref name="unsignedInt"/>
-        </attribute>
-        <attribute name="target">
-          <ref name="unsignedInt"/>
-        </attribute>
-        <attribute name="count">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </element>
-    </zeroOrMore>
-    <zeroOrMore>
-      <element name="gid">
-        <attribute name="start">
-          <ref name="unsignedInt"/>
-        </attribute>
-        <attribute name="target">
-          <ref name="unsignedInt"/>
-        </attribute>
-        <attribute name="count">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </element>
-    </zeroOrMore>
+    <element name="idmap">
+      <interleave>
+        <zeroOrMore>
+          <element name="uid">
+            <attribute name="start">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="target">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="count">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <empty/>
+          </element>
+        </zeroOrMore>
+        <zeroOrMore>
+          <element name="gid">
+            <attribute name="start">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="target">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="count">
+              <ref name="unsignedInt"/>
+            </attribute>
+          <empty/>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
   </define>
   <!--
       Resources usage defines the amount of memory (maximum and possibly

@@ -1,0 +1,38 @@
+<domain type='lxc'>
+  <name>jessie</name>
+  <uuid>e21987a5-e98e-9c99-0e35-803e4d9ad1fe</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <resource>
+    <partition>/machine</partition>
+  </resource>
+  <os>
+    <type arch='x86_64'>exe</type>
+    <init>/sbin/init</init>
+  </os>
+  <idmap>
+    <uid start='0' target='100000' count='100000'/>
+    <gid start='0' target='100000' count='100000'/>
+  </idmap>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/libexec/libvirt_lxc</emulator>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/mach/jessie'/>
+      <target dir='/'/>
+    </filesystem>
+    <interface type='bridge'>
+      <mac address='00:16:3e:0f:ef:8a'/>
+      <source bridge='bri0'/>
+      <target dev='veth0'/>
+    </interface>
+    <console type='pty'>
+      <target type='lxc' port='0'/>
+    </console>
+  </devices>
+  <seclabel type='none'/>
+</domain>
