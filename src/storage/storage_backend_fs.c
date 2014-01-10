@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -460,7 +460,7 @@ cleanup:
  * @pool storage pool to unmount
  *
  * Ensure that a FS storage pool is not mounted on its target location.
- * If already unmounted, this is a no-op
+ * If already unmounted, this is a no-op.
  *
  * Returns 0 if successfully unmounted, -1 on error
  */
@@ -540,9 +540,8 @@ virStorageBackendFileSystemCheck(virConnectPtr conn ATTRIBUTE_UNUSED,
  * @conn connection to report errors against
  * @pool storage pool to start
  *
- * Starts a directory or FS based storage pool.
- *
- *  - If it is a FS based pool, mounts the unlying source device on the pool
+ * Starts a directory or FS based storage pool.  The underlying source
+ * device will be mounted for FS based pools.
  *
  * Returns 0 on success, -1 on error
  */
@@ -739,7 +738,7 @@ error:
  * VIR_STORAGE_POOL_BUILD_OVERWRITE is set, mkfs is always executed,
  * any existed data on the target device is overwritten unconditionally.
  *
- *  - If it is a FS based pool, mounts the unlying source device on the pool
+ * The underlying source device is mounted for FS based pools.
  *
  * Returns 0 on success, -1 on error
  */
@@ -940,12 +939,12 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 /**
  * @conn connection to report errors against
- * @pool storage pool to start
+ * @pool storage pool to stop
  *
- * Stops a FS based storage pool.
+ * Stops a file storage pool.  The underlying source device is unmounted
+ * for FS based pools.  Any cached data about volumes is released.
  *
- *  - If it is a FS based pool, unmounts the unlying source device on the pool
- *  - Releases all cached data about volumes
+ * Returns 0 on success, -1 on error.
  */
 #if WITH_STORAGE_FS
 static int
