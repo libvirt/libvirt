@@ -304,6 +304,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 status->downtime) < 0)
         goto error;
 
+    if (status->setup_time_set &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_SETUP_TIME,
+                                status->setup_time) < 0)
+        goto error;
+
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_TOTAL,
                                 status->ram_total +
@@ -329,6 +335,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 status->ram_remaining) < 0)
         goto error;
 
+    if (status->ram_bps &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_BPS,
+                                status->ram_bps) < 0)
+        goto error;
+
     if (status->ram_duplicate_set) {
         if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_MEMORY_CONSTANT,
@@ -351,6 +363,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_REMAINING,
                                 status->disk_remaining) < 0)
+        goto error;
+
+    if (status->disk_bps &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DISK_BPS,
+                                status->disk_bps) < 0)
         goto error;
 
     if (status->xbzrle_set) {

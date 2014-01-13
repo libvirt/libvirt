@@ -636,6 +636,10 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_DOWNTIME,
                           status->downtime);
+    if (status->setup_time_set)
+        virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                          VIR_DOMAIN_JOB_SETUP_TIME,
+                          status->setup_time);
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_TOTAL,
@@ -646,6 +650,9 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_REMAINING,
                       status->ram_remaining);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_BPS,
+                      status->ram_bps);
 
     if (status->ram_duplicate_set) {
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
@@ -668,6 +675,9 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_REMAINING,
                       status->disk_remaining);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_DISK_BPS,
+                      status->disk_bps);
 
     if (status->xbzrle_set) {
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
@@ -904,6 +914,9 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_DOWNTIME "[1])",
                           ctxt, &status->downtime) == 0)
         status->downtime_set = true;
+    if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_SETUP_TIME "[1])",
+                          ctxt, &status->setup_time) == 0)
+        status->setup_time_set = true;
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_TOTAL "[1])",
                       ctxt, &status->ram_total);
@@ -911,6 +924,8 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
                       ctxt, &status->ram_transferred);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_REMAINING "[1])",
                       ctxt, &status->ram_remaining);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_BPS "[1])",
+                      ctxt, &status->ram_bps);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_CONSTANT "[1])",
                           ctxt, &status->ram_duplicate) == 0)
@@ -926,6 +941,8 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
                       ctxt, &status->disk_transferred);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_REMAINING "[1])",
                       ctxt, &status->disk_remaining);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_BPS "[1])",
+                      ctxt, &status->disk_bps);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_CACHE "[1])",
                           ctxt, &status->xbzrle_cache_size) == 0)

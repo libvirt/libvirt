@@ -2519,6 +2519,7 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
     virJSONValuePtr ret;
     const char *statusstr;
     int rc;
+    double mbps;
 
     if (!(ret = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2551,6 +2552,10 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
     if (rc == 0)
         status->downtime_set = true;
 
+    if (virJSONValueObjectGetNumberUlong(ret, "setup-time",
+                                         &status->setup_time) == 0)
+        status->setup_time_set = true;
+
     if (status->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE ||
         status->status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         virJSONValuePtr ram = virJSONValueObjectGet(ret, "ram");
@@ -2580,6 +2585,12 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
                            _("migration was active, but RAM 'total' "
                              "data was missing"));
             return -1;
+        }
+
+        if (virJSONValueObjectGetNumberDouble(ram, "mbps", &mbps) == 0 &&
+            mbps > 0) {
+            /* mpbs from QEMU reports Mbits/s (M as in 10^6 not Mi as 2^20) */
+            status->ram_bps = mbps * (1000 * 1000 / 8);
         }
 
         if (virJSONValueObjectGetNumberUlong(ram, "duplicate",
@@ -2617,6 +2628,12 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
                                _("disk migration was active, but 'total' "
                                  "data was missing"));
                 return -1;
+            }
+
+            if (virJSONValueObjectGetNumberDouble(disk, "mbps", &mbps) == 0 &&
+                mbps > 0) {
+                /* mpbs from QEMU reports Mbits/s (M as in 10^6 not Mi as 2^20) */
+                status->disk_bps = mbps * (1000 * 1000 / 8);
             }
         }
 

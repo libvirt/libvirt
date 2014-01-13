@@ -4393,6 +4393,15 @@ int virDomainAbortJob(virDomainPtr dom);
 #define VIR_DOMAIN_JOB_DOWNTIME                 "downtime"
 
 /**
+ * VIR_DOMAIN_JOB_SETUP_TIME:
+ *
+ * virDomainGetJobStats field: total time in milliseconds spent preparing
+ * the migration in the 'setup' phase before the iterations begin, as
+ * VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_JOB_SETUP_TIME               "setup_time"
+
+/**
  * VIR_DOMAIN_JOB_DATA_TOTAL:
  *
  * virDomainGetJobStats field: total number of bytes supposed to be
@@ -4490,6 +4499,14 @@ int virDomainAbortJob(virDomainPtr dom);
 #define VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES      "memory_normal_bytes"
 
 /**
+ * VIR_DOMAIN_JOB_MEMORY_BPS:
+ *
+ * virDomainGetJobStats field: network throughput used while migrating
+ * memory in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_JOB_MEMORY_BPS               "memory_bps"
+
+/**
  * VIR_DOMAIN_JOB_DISK_TOTAL:
  *
  * virDomainGetJobStats field: as VIR_DOMAIN_JOB_DATA_TOTAL but only
@@ -4518,6 +4535,14 @@ int virDomainAbortJob(virDomainPtr dom);
  * This field corresponds to fileRemaining field in virDomainJobInfo.
  */
 #define VIR_DOMAIN_JOB_DISK_REMAINING           "disk_remaining"
+
+/**
+ * VIR_DOMAIN_JOB_DISK_BPS:
+ *
+ * virDomainGetJobStats field: network throughput used while migrating
+ * disks in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ */
+#define VIR_DOMAIN_JOB_DISK_BPS                 "disk_bps"
 
 /**
  * VIR_DOMAIN_JOB_COMPRESSION_CACHE:

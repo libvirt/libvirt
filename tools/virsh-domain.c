@@ -5518,6 +5518,16 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory remaining:"), val, unit);
         val = vshPrettyCapacity(info.memTotal, &unit);
         vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory total:"), val, unit);
+
+        if ((rc = virTypedParamsGetULLong(params, nparams,
+                                          VIR_DOMAIN_JOB_MEMORY_BPS,
+                                          &value)) < 0) {
+            goto save_error;
+        } else if (rc && value) {
+            val = vshPrettyCapacity(value, &unit);
+            vshPrint(ctl, "%-17s %-.3lf %s/s\n",
+                     _("Memory bandwidth:"), val, unit);
+        }
     }
 
     if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
@@ -5527,6 +5537,16 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-17s %-.3lf %s\n", _("File remaining:"), val, unit);
         val = vshPrettyCapacity(info.fileTotal, &unit);
         vshPrint(ctl, "%-17s %-.3lf %s\n", _("File total:"), val, unit);
+
+        if ((rc = virTypedParamsGetULLong(params, nparams,
+                                          VIR_DOMAIN_JOB_DISK_BPS,
+                                          &value)) < 0) {
+            goto save_error;
+        } else if (rc && value) {
+            val = vshPrettyCapacity(value, &unit);
+            vshPrint(ctl, "%-17s %-.3lf %s/s\n",
+                     _("File bandwidth:"), val, unit);
+        }
     }
 
     if ((rc = virTypedParamsGetULLong(params, nparams,
@@ -5565,6 +5585,13 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
                      _("Expected downtime:"), value);
         }
     }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_SETUP_TIME,
+                                      &value)) < 0)
+        goto save_error;
+    else if (rc)
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Setup time:"), value);
 
     if ((rc = virTypedParamsGetULLong(params, nparams,
                                       VIR_DOMAIN_JOB_COMPRESSION_CACHE,

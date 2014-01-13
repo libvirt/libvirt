@@ -443,10 +443,18 @@ struct _qemuMonitorMigrationStatus {
     /* total or expected depending on status */
     bool downtime_set;
     unsigned long long downtime;
+    /*
+     * Duration of the QEMU 'setup' state.
+     * for RDMA, this may be on the order of several seconds
+     * if pinning support is requested before the migration begins.
+     */
+    bool setup_time_set;
+    unsigned long long setup_time;
 
     unsigned long long ram_transferred;
     unsigned long long ram_remaining;
     unsigned long long ram_total;
+    unsigned long long ram_bps;
     bool ram_duplicate_set;
     unsigned long long ram_duplicate;
     unsigned long long ram_normal;
@@ -455,6 +463,7 @@ struct _qemuMonitorMigrationStatus {
     unsigned long long disk_transferred;
     unsigned long long disk_remaining;
     unsigned long long disk_total;
+    unsigned long long disk_bps;
 
     bool xbzrle_set;
     unsigned long long xbzrle_cache_size;
