@@ -1540,7 +1540,7 @@ virNetServerClientStartKeepAlive(virNetServerClientPtr client)
     /* The connection might have been closed before we got here and thus the
      * keepalive object could have been removed too.
      */
-    if (!client->sock) {
+    if (!client->keepalive) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("connection not open"));
         goto cleanup;
