@@ -1047,6 +1047,8 @@ virXMLExtractNamespaceXML(xmlNodePtr root,
 cleanup:
     if (doc)
         *doc = xmlstr;
+    else
+        VIR_FREE(xmlstr);
     xmlFreeNode(nodeCopy);
     return ret;
 }
