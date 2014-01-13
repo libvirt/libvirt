@@ -545,8 +545,8 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, "------------------------------------------------\n");
 
     for (i = 0; i < ndisks; i++) {
-        char *type;
-        char *device;
+        char *type = NULL;
+        char *device = NULL;
         char *target;
         char *source;
 
@@ -555,11 +555,19 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         if (details) {
             type = virXPathString("string(./@type)", ctxt);
             device = virXPathString("string(./@device)", ctxt);
+            if (!type || !device) {
+                vshPrint(ctl, "unable to query block list details");
+                VIR_FREE(type);
+                VIR_FREE(device);
+                goto cleanup;
+            }
         }
 
         target = virXPathString("string(./target/@dev)", ctxt);
         if (!target) {
             vshError(ctl, "unable to query block list");
+            VIR_FREE(type);
+            VIR_FREE(device);
             goto cleanup;
         }
         source = virXPathString("string(./source/@file"
