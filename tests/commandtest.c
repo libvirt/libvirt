@@ -215,6 +215,7 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
 
 cleanup:
     virCommandFree(cmd);
+    /* coverity[double_close] */
     VIR_FORCE_CLOSE(newfd1);
     VIR_FORCE_CLOSE(newfd2);
     return ret;
