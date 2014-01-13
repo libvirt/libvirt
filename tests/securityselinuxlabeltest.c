@@ -94,7 +94,7 @@ testSELinuxLoadFileList(const char *testname,
         goto cleanup;
 
     while (!feof(fp)) {
-        char *file, *context, *tmp;
+        char *file = NULL, *context = NULL, *tmp;
         if (!fgets(line, 1024, fp)) {
             if (!feof(fp))
                 goto cleanup;
@@ -123,12 +123,13 @@ testSELinuxLoadFileList(const char *testname,
             tmp = strchr(context, '\n');
             if (tmp)
                 *tmp = '\0';
-        } else {
-            context = NULL;
         }
 
-        if (VIR_EXPAND_N(*files, *nfiles, 1) < 0)
+        if (VIR_EXPAND_N(*files, *nfiles, 1) < 0) {
+            VIR_FREE(file);
+            VIR_FREE(context);
             goto cleanup;
+        }
 
         (*files)[(*nfiles)-1].file = file;
         (*files)[(*nfiles)-1].context = context;
