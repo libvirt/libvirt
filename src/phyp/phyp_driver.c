@@ -1153,9 +1153,11 @@ phypConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 
 failure:
+    VIR_FREE(managed_system);
+
     if (phyp_driver != NULL) {
         virObjectUnref(phyp_driver->caps);
-        VIR_FREE(phyp_driver->managed_system);
+        virObjectUnref(phyp_driver->xmlopt);
         VIR_FREE(phyp_driver);
     }
 
