@@ -9212,6 +9212,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("force convergence during live migration")
     },
+    {.name = "rdma-pin-all",
+     .type = VSH_OT_BOOL,
+     .help = N_("support memory pinning during RDMA live migration")
+    },
     {.name = "abort-on-error",
      .type = VSH_OT_BOOL,
      .help = N_("abort on soft errors during migration")
@@ -9359,6 +9363,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "auto-converge"))
         flags |= VIR_MIGRATE_AUTO_CONVERGE;
+
+    if (vshCommandOptBool(cmd, "rdma-pin-all"))
+        flags |= VIR_MIGRATE_RDMA_PIN_ALL;
 
     if (vshCommandOptBool(cmd, "offline")) {
         flags |= VIR_MIGRATE_OFFLINE;
