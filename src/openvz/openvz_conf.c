@@ -136,6 +136,7 @@ openvzParseBarrierLimit(const char* value,
     char *token;
     char *saveptr = NULL;
     char *str;
+    int ret = -1;
 
     if (VIR_STRDUP(str, value) < 0)
         goto error;
@@ -158,10 +159,10 @@ openvzParseBarrierLimit(const char* value,
                 goto error;
         }
     }
-    return 0;
+    ret = 0;
 error:
     VIR_FREE(str);
-    return -1;
+    return ret;
 }
 
 
