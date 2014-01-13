@@ -56,6 +56,7 @@
 #include "virhook.h"
 #include "virstring.h"
 #include "virtypedparam.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -2653,6 +2654,13 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                        QEMU_MIGRATION_COOKIE_NBD)))
         goto cleanup;
 
+    if (STREQ(protocol, "rdma") && !vm->def->mem.hard_limit) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot start RDMA migration with no memory hard "
+                         "limit set"));
+        goto cleanup;
+    }
+
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto cleanup;
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PREPARE);
@@ -2695,6 +2703,11 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         qemuMigrationSetCompression(driver, vm,
                                     QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stop;
+
+    if (STREQ(protocol, "rdma") &&
+        virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+        goto stop;
+    }
 
     if (mig->lockState) {
         VIR_DEBUG("Received lockstate %s", mig->lockState);
@@ -2926,7 +2939,8 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
         if (!(uri = qemuMigrationParseURI(uri_in, &well_formed_uri)))
             goto cleanup;
 
-        if (STRNEQ(uri->scheme, "tcp")) {
+        if (STRNEQ(uri->scheme, "tcp") &&
+            STRNEQ(uri->scheme, "rdma")) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("unsupported scheme %s in migration URI %s"),
                            uri->scheme, uri_in);
@@ -3547,6 +3561,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
+        if (STREQ(spec->dest.host.protocol, "rdma") &&
+            virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+            qemuDomainObjExitMonitor(driver, vm);
+            goto cleanup;
+        }
         ret = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
                                        spec->dest.host.protocol,
                                        spec->dest.host.name,
@@ -3719,7 +3738,23 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
     if (!(uribits = qemuMigrationParseURI(uri, NULL)))
         return -1;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD))
+    if (STREQ(uribits->scheme, "rdma")) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("outgoing RDMA migration is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        if (!vm->def->mem.hard_limit) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot start RDMA migration with no memory hard "
+                             "limit set"));
+            return -1;
+        }
+    }
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
+        STRNEQ(uribits->scheme, "rdma"))
         spec.destType = MIGRATION_DEST_CONNECT_HOST;
     else
         spec.destType = MIGRATION_DEST_HOST;
