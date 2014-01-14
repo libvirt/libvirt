@@ -1,7 +1,7 @@
 /*
  * domain_event.h: domain event queue processing helpers
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -149,19 +149,21 @@ virDomainEventStateQueue(virDomainEventStatePtr state,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int virDomainEventStateRegister(virConnectPtr conn,
                                 virDomainEventStatePtr state,
+                                virDomainObjListFilter filter,
                                 virConnectDomainEventCallback callback,
                                 void *opaque,
                                 virFreeCallback freecb)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 int virDomainEventStateRegisterID(virConnectPtr conn,
                                   virDomainEventStatePtr state,
+                                  virDomainObjListFilter filter,
                                   virDomainPtr dom,
                                   int eventID,
                                   virConnectDomainEventGenericCallback cb,
                                   void *opaque,
                                   virFreeCallback freecb,
                                   int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6);
 int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virDomainEventStatePtr state,
