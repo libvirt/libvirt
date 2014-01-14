@@ -13,6 +13,7 @@
 *.loT
 *.o
 *.orig
+*.pem
 *.pyc
 *.rej
 *.s
