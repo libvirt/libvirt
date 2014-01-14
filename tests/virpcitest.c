@@ -237,8 +237,15 @@ mymain(void)
 # define DO_TEST_PCI(fnc, domain, bus, slot, function)                  \
     do {                                                                \
         struct testPCIDevData data = { domain, bus, slot, function };   \
-        if (virtTestRun(#fnc, fnc, &data) < 0)                          \
+        char *label = NULL;                                             \
+        if (virAsprintf(&label, "%s(%04x:%02x:%02x.%x)",                \
+                        #fnc, domain, bus, slot, function) < 0) {       \
             ret = -1;                                                   \
+            break;                                                      \
+        }                                                               \
+        if (virtTestRun(label, fnc, &data) < 0)                         \
+            ret = -1;                                                   \
+        VIR_FREE(label);                                                \
     } while (0)
 
     DO_TEST(testVirPCIDeviceNew);
