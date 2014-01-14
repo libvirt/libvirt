@@ -4203,6 +4203,7 @@ libxlConnectDomainEventRegister(virConnectPtr conn,
     libxlDriverLock(driver);
     ret = virDomainEventStateRegister(conn,
                                       driver->domainEventState,
+                                      virConnectDomainEventRegisterCheckACL,
                                       callback, opaque, freecb);
     libxlDriverUnlock(driver);
 
@@ -4880,6 +4881,7 @@ libxlConnectDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eve
     libxlDriverLock(driver);
     if (virDomainEventStateRegisterID(conn,
                                       driver->domainEventState,
+                                      virConnectDomainEventRegisterAnyCheckACL,
                                       dom, eventID, callback, opaque,
                                       freecb, &ret) < 0)
         ret = -1;

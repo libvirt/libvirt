@@ -1295,6 +1295,7 @@ lxcConnectDomainEventRegister(virConnectPtr conn,
 
     ret = virDomainEventStateRegister(conn,
                                       driver->domainEventState,
+                                      virConnectDomainEventRegisterCheckACL,
                                       callback, opaque, freecb);
 
     return ret;
@@ -1335,6 +1336,7 @@ lxcConnectDomainEventRegisterAny(virConnectPtr conn,
 
     if (virDomainEventStateRegisterID(conn,
                                       driver->domainEventState,
+                                      virConnectDomainEventRegisterAnyCheckACL,
                                       dom, eventID,
                                       callback, opaque, freecb, &ret) < 0)
         ret = -1;

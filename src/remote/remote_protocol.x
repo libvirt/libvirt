@@ -1952,7 +1952,7 @@ struct remote_node_device_destroy_args {
 
 /*
  * Events Register/Deregister:
- * It would seem rpcgen does not like both args, and ret
+ * It would seem rpcgen does not like both args and ret
  * to be null. It will not generate the prototype otherwise.
  * Pass back a redundant boolean to force prototype generation.
  */
@@ -3606,7 +3606,8 @@ enum remote_procedure {
     /**
      * @generate: none
      * @priority: high
-     * @acl: connect:read
+     * @acl: connect:search_domains
+     * @aclfilter: domain:getattr
      */
     REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER = 105,
 
@@ -4038,7 +4039,8 @@ enum remote_procedure {
     /**
      * @generate: none
      * @priority: high
-     * @acl: connect:read
+     * @acl: connect:search_domains
+     * @aclfilter: domain:getattr
      */
     REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER_ANY = 167,
 
