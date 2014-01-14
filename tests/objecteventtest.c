@@ -245,6 +245,10 @@ testDomainCreateXMLMixed(const void *data)
     if (id2 < 0)
         goto cleanup;
 
+    virDomainUndefine(dom);
+    virDomainDestroy(dom);
+    virDomainFree(dom);
+
     dom = virDomainCreateXML(test->conn, domainDef, 0);
     if (dom == NULL || virEventRunDefaultImpl() < 0)
         goto cleanup;
