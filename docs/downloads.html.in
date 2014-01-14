@@ -22,13 +22,37 @@
     <p>
       Once an hour, an automated snapshot is made from the git server
       source tree. These snapshots should be usable, but we make no guarantees
-      about their stability:
+      about their stability; furthermore, they should NOT be
+      considered formal releases, and they may have transient security
+      problems that will not be assigned a CVE.
     </p>
 
     <ul>
       <li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.gz">libvirt.org FTP server</a></li>
       <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li>
     </ul>
+
+    <h2><a name="maintenance">Maintenance releases</a></h2>
+    <p>
+      In the git repository are several stable maintenance branches,
+      matching the
+      pattern <code>v<i>major</i>.<i>minor</i>.<i>micro</i>-maint</code>;
+      these branches are forked off the corresponding
+      <code>v<i>major</i>.<i>minor</i>.<i>micro</i></code> formal
+      release, and may have further releases of the
+      form <code>v<i>major</i>.<i>minor</i>.<i>micro</i>.<i>rel</i></code>.
+      These maintenance branches should only contain bug fixes, and no
+      new features, backported from the master branch, and are
+      supported as long as at least one downstream distribution
+      expresses interest in a given branch.  These maintenance
+      branches are considered during CVE analysis.
+    </p>
+
+    <p>
+      For more details about contents of maintenance releases, see
+      <a href="http://wiki.libvirt.org/page/Maintenance_Releases">the
+      wiki page</a>.
+    </p>
 
     <h2><a name="git">GIT source repository</a></h2>
 
