@@ -172,6 +172,9 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
             virObjectUnref(cbList->callbacks[i]->conn);
+            if (cbList->callbacks[i]->dom)
+                VIR_FREE(cbList->callbacks[i]->dom->name);
+            VIR_FREE(cbList->callbacks[i]->dom);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
@@ -222,6 +225,9 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
             if (freecb)
                 (*freecb)(cbList->callbacks[i]->opaque);
             virObjectUnref(cbList->callbacks[i]->conn);
+            if (cbList->callbacks[i]->dom)
+                VIR_FREE(cbList->callbacks[i]->dom->name);
+            VIR_FREE(cbList->callbacks[i]->dom);
             VIR_FREE(cbList->callbacks[i]);
 
             if (i < (cbList->count - 1))
