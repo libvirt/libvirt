@@ -107,6 +107,16 @@
 
 #define MAX_DRIVERS 20
 
+#define virDriverCheckTabMaxReturn(count, ret)                          \
+    do {                                                                \
+        if ((count) >= MAX_DRIVERS) {                                   \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           _("Too many drivers, cannot register %s"),   \
+                           driver->name);                               \
+            return ret;                                                 \
+        }                                                               \
+    } while (0)
+
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int virDriverTabCount = 0;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
@@ -542,13 +552,7 @@ int
 virRegisterNetworkDriver(virNetworkDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virNetworkDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virNetworkDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as network driver %d",
            driver->name, virNetworkDriverTabCount);
@@ -570,13 +574,7 @@ int
 virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virInterfaceDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virInterfaceDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as interface driver %d",
            driver->name, virInterfaceDriverTabCount);
@@ -598,13 +596,7 @@ int
 virRegisterStorageDriver(virStorageDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virStorageDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virStorageDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as storage driver %d",
            driver->name, virStorageDriverTabCount);
@@ -626,13 +618,7 @@ int
 virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virNodeDeviceDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virNodeDeviceDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as device driver %d",
            driver->name, virNodeDeviceDriverTabCount);
@@ -654,13 +640,7 @@ int
 virRegisterSecretDriver(virSecretDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virSecretDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virSecretDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as secret driver %d",
            driver->name, virSecretDriverTabCount);
@@ -682,13 +662,7 @@ int
 virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virNWFilterDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virNWFilterDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as network filter driver %d",
            driver->name, virNWFilterDriverTabCount);
@@ -709,16 +683,11 @@ virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
 int
 virRegisterDriver(virDriverPtr driver)
 {
-    VIR_DEBUG("driver=%p name=%s", driver, driver ? NULLSTR(driver->name) : "(null)");
+    VIR_DEBUG("driver=%p name=%s", driver,
+              driver ? NULLSTR(driver->name) : "(null)");
 
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virDriverTabCount, -1);
 
     VIR_DEBUG("registering %s as driver %d",
            driver->name, virDriverTabCount);
@@ -741,13 +710,7 @@ int
 virRegisterStateDriver(virStateDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
-
-    if (virStateDriverTabCount >= MAX_DRIVERS) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR,
-                        _("Too many drivers, cannot register %s"),
-                        driver->name);
-        return -1;
-    }
+    virDriverCheckTabMaxReturn(virStateDriverTabCount, -1);
 
     virStateDriverTab[virStateDriverTabCount] = driver;
     return virStateDriverTabCount++;
