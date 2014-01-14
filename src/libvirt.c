@@ -532,14 +532,6 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
 #endif
 
 
-#define virLibConnError(code, ...)                                \
-    virReportErrorHelper(VIR_FROM_NONE, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-#define virLibDomainError(code, ...)                              \
-    virReportErrorHelper(VIR_FROM_DOM, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, __VA_ARGS__)
-
-
 /**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
@@ -944,8 +936,8 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias,
     size_t alias_len;
 
     if (value->type != VIR_CONF_LIST) {
-        virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Expected a list for 'uri_aliases' config parameter"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expected a list for 'uri_aliases' config parameter"));
         return -1;
     }
 
@@ -956,22 +948,22 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias,
         size_t safe;
 
         if (entry->type != VIR_CONF_STRING) {
-            virLibConnError(VIR_ERR_CONF_SYNTAX, "%s",
-                            _("Expected a string for 'uri_aliases' config parameter list entry"));
+            virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                           _("Expected a string for 'uri_aliases' config parameter list entry"));
             return -1;
         }
 
         if (!(offset = strchr(entry->str, '='))) {
-            virLibConnError(VIR_ERR_CONF_SYNTAX,
-                            _("Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"),
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"),
                             entry->str);
             return -1;
         }
 
         safe  = strspn(entry->str, URI_ALIAS_CHARS);
         if (safe < (offset - entry->str)) {
-            virLibConnError(VIR_ERR_CONF_SYNTAX,
-                            _("Malformed 'uri_aliases' config entry '%s', aliases may only contain 'a-Z, 0-9, _, -'"),
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Malformed 'uri_aliases' config entry '%s', aliases may only contain 'a-Z, 0-9, _, -'"),
                             entry->str);
             return -1;
         }
@@ -1022,8 +1014,8 @@ virConnectGetDefaultURI(virConfPtr conf,
         *name = defname;
     } else if ((value = virConfGetValue(conf, "uri_default"))) {
         if (value->type != VIR_CONF_STRING) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Expected a string for 'uri_default' config parameter"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Expected a string for 'uri_default' config parameter"));
             goto cleanup;
         }
         VIR_DEBUG("Using config file uri '%s'", value->str);
@@ -1168,9 +1160,7 @@ do_open(const char *name,
 
     if (!ret->driver) {
         /* If we reach here, then all drivers declined the connection. */
-        virLibConnError(VIR_ERR_NO_CONNECT,
-                        "%s",
-                        NULLSTR(name));
+        virReportError(VIR_ERR_NO_CONNECT, "%s", NULLSTR(name));
         goto failed;
     }
 
@@ -2539,8 +2529,8 @@ virDomainSave(virDomainPtr domain, const char *to)
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute output file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute output file path"));
             goto error;
         }
 
@@ -2630,8 +2620,8 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute output file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute output file path"));
             goto error;
         }
 
@@ -2680,8 +2670,8 @@ virDomainRestore(virConnectPtr conn, const char *from)
 
         /* We must absolutize the file path as the restore is done out of process */
         if (virFileAbsPath(from, &absolute_from) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute input file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute input file path"));
             goto error;
         }
 
@@ -2757,8 +2747,8 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
 
         /* We must absolutize the file path as the restore is done out of process */
         if (virFileAbsPath(from, &absolute_from) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute input file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute input file path"));
             goto error;
         }
 
@@ -2811,8 +2801,8 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
     virCheckNonNullArgGoto(file, error);
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
-                        _("virDomainSaveImageGetXMLDesc with secure flag"));
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("virDomainSaveImageGetXMLDesc with secure flag"));
         goto error;
     }
 
@@ -2822,8 +2812,8 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
 
         /* We must absolutize the file path as the read is done out of process */
         if (virFileAbsPath(file, &absolute_file) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute input file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute input file path"));
             goto error;
         }
 
@@ -2898,8 +2888,8 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
 
         /* We must absolutize the file path as the read is done out of process */
         if (virFileAbsPath(file, &absolute_file) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute input file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute input file path"));
             goto error;
         }
 
@@ -2985,8 +2975,8 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
 
         /* We must absolutize the file path as the save is done out of process */
         if (virFileAbsPath(to, &absolute_to) < 0) {
-            virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("could not build absolute core file path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not build absolute core file path"));
             goto error;
         }
 
@@ -3445,8 +3435,8 @@ virDomainGetMaxMemory(virDomainPtr domain)
         if (ret == 0)
             goto error;
         if ((unsigned long) ret != ret) {
-            virLibDomainError(VIR_ERR_OVERFLOW, _("result too large: %llu"),
-                              ret);
+            virReportError(VIR_ERR_OVERFLOW, _("result too large: %llu"),
+                           ret);
             goto error;
         }
         return ret;
@@ -4252,8 +4242,8 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     conn = domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
-                        _("virDomainGetXMLDesc with secure flag"));
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("virDomainGetXMLDesc with secure flag"));
         goto error;
     }
 
@@ -9313,7 +9303,7 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     virCheckNonZeroArgGoto(nvcpus, error);
 
     if ((unsigned short) nvcpus != nvcpus) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u"), nvcpus);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u"), nvcpus);
         goto error;
     }
     conn = domain->conn;
@@ -9440,7 +9430,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     virCheckPositiveArgGoto(maplen, error);
 
     if ((unsigned short) vcpu != vcpu) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u"), vcpu);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u"), vcpu);
         goto error;
     }
 
@@ -9512,7 +9502,7 @@ virDomainPinVcpuFlags(virDomainPtr domain, unsigned int vcpu,
     virCheckPositiveArgGoto(maplen, error);
 
     if ((unsigned short) vcpu != vcpu) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u"), vcpu);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u"), vcpu);
         goto error;
     }
 
@@ -9575,8 +9565,8 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     virCheckPositiveArgGoto(maplen, error);
 
     if (INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
-                          ncpumaps, maplen);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+                       ncpumaps, maplen);
         goto error;
     }
 
@@ -9787,8 +9777,8 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         virCheckZeroArgGoto(maplen, error);
 
     if (cpumaps && INT_MULTIPLY_OVERFLOW(maxinfo, maplen)) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
-                          maxinfo, maplen);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
+                       maxinfo, maplen);
         goto error;
     }
 
@@ -15889,8 +15879,8 @@ virStreamSendAll(virStreamPtr stream,
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("data sources cannot be used for non-blocking streams"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("data sources cannot be used for non-blocking streams"));
         goto cleanup;
     }
 
@@ -15982,8 +15972,8 @@ virStreamRecvAll(virStreamPtr stream,
     virCheckNonNullArgGoto(handler, cleanup);
 
     if (stream->flags & VIR_STREAM_NONBLOCK) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("data sinks cannot be used for non-blocking streams"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("data sinks cannot be used for non-blocking streams"));
         goto cleanup;
     }
 
@@ -18191,8 +18181,8 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     conn = snapshot->domain->conn;
 
     if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
-        virLibConnError(VIR_ERR_OPERATION_DENIED, "%s",
-                        _("virDomainSnapshotGetXMLDesc with secure flag"));
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("virDomainSnapshotGetXMLDesc with secure flag"));
         goto error;
     }
 
@@ -19931,8 +19921,8 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     virCheckNonNullArgGoto(cb, error);
 
     if (conn->closeCallback->callback) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("A close callback is already registered"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A close callback is already registered"));
         goto error;
     }
 
@@ -19984,8 +19974,8 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     virCheckNonNullArgGoto(cb, error);
 
     if (conn->closeCallback->callback != cb) {
-        virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("A different callback was requested"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A different callback was requested"));
         goto error;
     }
 
@@ -20274,8 +20264,8 @@ virDomainGetCPUStats(virDomainPtr domain,
         virCheckNullArgGoto(params, error);
 
     if (nparams && ncpus > UINT_MAX / nparams) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: %u * %u"),
-                          nparams, ncpus);
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u * %u"),
+                       nparams, ncpus);
         goto error;
     }
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
