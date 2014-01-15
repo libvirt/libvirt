@@ -236,6 +236,11 @@ virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
     if (virPCIFile(&drvlink, dev->name, "driver") < 0)
         goto cleanup;
 
+    if (!virFileExists(drvlink)) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (virFileIsLink(drvlink) != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid device %s driver file %s is not a symlink"),
@@ -1023,6 +1028,11 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     if (virPCIDeviceGetDriverPathAndName(dev, &drvdir, &driver) < 0)
         goto cleanup;
 
+    if (!driver) {
+        /* The device is not bound to any driver and we are almost done. */
+        goto reprobe;
+    }
+
     if (!dev->unbind_from_stub)
         goto remove_slot;
 
@@ -1079,11 +1089,10 @@ reprobe:
      * available, then re-probing would just cause the device to be
      * re-bound to the stub.
      */
-    if (virPCIDriverFile(&path, driver, "remove_id") < 0) {
+    if (driver && virPCIDriverFile(&path, driver, "remove_id") < 0)
         goto cleanup;
-    }
 
-    if (!virFileExists(drvdir) || virFileExists(path)) {
+    if (!driver || !virFileExists(drvdir) || virFileExists(path)) {
         if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
             virReportSystemError(errno,
                                  _("Failed to trigger a re-probe for PCI device '%s'"),
