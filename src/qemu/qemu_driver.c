@@ -15881,7 +15881,6 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
     if (virCgroupGetCpuacctPercpuUsage(priv->cgroup, &buf))
         goto cleanup;
     pos = buf;
-    memset(params, 0, nparams * ncpus);
 
     /* return percpu cputime in index 0 */
     param_idx = 0;
