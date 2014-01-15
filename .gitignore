@@ -226,6 +226,8 @@
 /tools/virsh-*-edit.c
 /tools/virt-*-validate
 /tools/virt-sanlock-cleanup
+/tools/wireshark/src/plugin.c
+/tools/wireshark/src/libvirt
 /update.log
 GPATH
 GRTAGS
