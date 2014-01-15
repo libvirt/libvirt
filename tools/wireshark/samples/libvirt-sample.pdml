@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="pdml2html.xsl"?>
+<!-- ***
+  This file has been reduced for ineffective packets.
+  Real output contains more and more elements, but structure
+  and hierarchy of XML is same as this exmaple.
+*** -->
+<!-- You can find pdml2html.xsl in /usr/share/wireshark or at http://anonsvn.wireshark.org/trunk/wireshark/pdml2html.xsl. -->
+<pdml version="0" creator="wireshark/1.10.2" time="Thu Sep 19 18:09:24 2013" capture_file="">
+<!-- Program = REMOTE, Procedure = AUTH_LIST -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="28" pos="66">
+    <field name="libvirt.length" showname="length: 28" size="4" pos="66" show="28" value="0000001c"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: AUTH_LIST (66)" size="4" pos="78" show="66" value="00000042"/>
+    <field name="libvirt.type" showname="type: CALL (0)" size="4" pos="82" show="0" value="00000000"/>
+    <field name="libvirt.serial" showname="serial: 0" size="4" pos="86" show="0" value="00000000"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+  </proto>
+</packet>
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="36" pos="66">
+    <field name="libvirt.length" showname="length: 36" size="4" pos="66" show="36" value="00000024"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: AUTH_LIST (66)" size="4" pos="78" show="66" value="00000042"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 0" size="4" pos="86" show="0" value="00000000"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_auth_list_ret" showname="remote_auth_list_ret" size="8" pos="94" show="" value="">
+      <field name="libvirt.remote_auth_list_ret.types" showname="types :: remote_auth_type&lt;1&gt;" size="8" pos="94" show="" value="">
+        <field name="libvirt.remote_auth_list_ret.types.types" showname="types: REMOTE_AUTH_NONE(0)" size="4" pos="98" show="0" value="00000000"/>
+      </field>
+    </field>
+  </proto>
+</packet>
+
+<!-- Program = REMOTE, Procedure = CONNECT_OPEN -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="56" pos="66">
+    <field name="libvirt.length" showname="length: 56" size="4" pos="66" show="56" value="00000038"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: CONNECT_OPEN (1)" size="4" pos="78" show="1" value="00000001"/>
+    <field name="libvirt.type" showname="type: CALL (0)" size="4" pos="82" show="0" value="00000000"/>
+    <field name="libvirt.serial" showname="serial: 2" size="4" pos="86" show="2" value="00000002"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_connect_open_args" showname="remote_connect_open_args" size="8" pos="94" show="" value="">
+      <field name="libvirt.remote_connect_open_args.name" showname="name: (null)" size="4" pos="94" show="" value=""/>
+      <field name="libvirt.remote_connect_open_args.flags" showname="flags: 15" size="4" pos="98" show="15" value="0000000f"/>
+    </field>
+  </proto>
+</packet>
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="28" pos="66">
+    <field name="libvirt.length" showname="length: 28" size="4" pos="66" show="28" value="0000001c"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: CONNECT_OPEN (1)" size="4" pos="78" show="1" value="00000001"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 2" size="4" pos="86" show="2" value="00000002"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+  </proto>
+</packet>
+
+<!-- Program = REMOTE, Procedure = DOMAIN_LOOKUP_BY_NAME -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="40" pos="66">
+    <field name="libvirt.length" showname="length: 40" size="4" pos="66" show="40" value="00000028"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: DOMAIN_LOOKUP_BY_NAME (23)" size="4" pos="78" show="23" value="00000017"/>
+    <field name="libvirt.type" showname="type: CALL (0)" size="4" pos="82" show="0" value="00000000"/>
+    <field name="libvirt.serial" showname="serial: 4" size="4" pos="86" show="4" value="00000004"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_domain_lookup_by_name_args" showname="remote_domain_lookup_by_name_args" size="12" pos="94" show="" value="">
+      <field name="libvirt.remote_domain_lookup_by_name_args.name" showname="name: domain1" size="12" pos="94" show="domain1" value="00000007646f6d61696e3100"/>
+    </field>
+  </proto>
+</packet>
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="60" pos="66">
+    <field name="libvirt.length" showname="length: 60" size="4" pos="66" show="60" value="0000003c"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: DOMAIN_LOOKUP_BY_NAME (23)" size="4" pos="78" show="23" value="00000017"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 4" size="4" pos="86" show="4" value="00000004"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_domain_lookup_by_name_ret" showname="remote_domain_lookup_by_name_ret" size="32" pos="94" show="" value="">
+      <field name="libvirt.remote_domain_lookup_by_name_ret.dom" showname="dom :: remote_nonnull_domain" size="32" pos="94" show="" value="">
+        <field name="libvirt.remote_nonnull_domain.name" showname="name: domain1" size="12" pos="94" show="domain1" value="00000007646f6d61696e3100"/>
+        <field name="libvirt.remote_nonnull_domain.uuid" showname="uuid: 4c8b6b6d0a2907334b8398a02c3a4710" size="16" pos="106" show="4c:8b:6b:6d:0a:29:07:33:4b:83:98:a0:2c:3a:47:10" value="4c8b6b6d0a2907334b8398a02c3a4710"/>
+        <field name="libvirt.remote_nonnull_domain.id" showname="id: -1" size="4" pos="122" show="-1" value="ffffffff"/>
+      </field>
+    </field>
+  </proto>
+</packet>
+
+<!-- Program = REMOTE, Procedure = NODE_GET_CPU_MAP -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="40" pos="66">
+    <field name="libvirt.length" showname="length: 40" size="4" pos="66" show="40" value="00000028"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: NODE_GET_CPU_MAP (293)" size="4" pos="78" show="293" value="00000125"/>
+    <field name="libvirt.type" showname="type: CALL (0)" size="4" pos="82" show="0" value="00000000"/>
+    <field name="libvirt.serial" showname="serial: 5" size="4" pos="86" show="5" value="00000005"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_node_get_cpu_map_args" showname="remote_node_get_cpu_map_args" size="12" pos="94" show="" value="">
+      <field name="libvirt.remote_node_get_cpu_map_args.need_map" showname="need_map: 0" size="4" pos="94" show="0" value="00000000"/>
+      <field name="libvirt.remote_node_get_cpu_map_args.need_online" showname="need_online: 0" size="4" pos="98" show="0" value="00000000"/>
+      <field name="libvirt.remote_node_get_cpu_map_args.flags" showname="flags: 0" size="4" pos="102" show="0" value="00000000"/>
+    </field>
+  </proto>
+</packet>
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="40" pos="66">
+    <field name="libvirt.length" showname="length: 40" size="4" pos="66" show="40" value="00000028"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: NODE_GET_CPU_MAP (293)" size="4" pos="78" show="293" value="00000125"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 5" size="4" pos="86" show="5" value="00000005"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_node_get_cpu_map_ret" showname="remote_node_get_cpu_map_ret" size="12" pos="94" show="" value="">
+      <field name="libvirt.remote_node_get_cpu_map_ret.cpumap" showname="cpumap: " size="4" pos="94" show="00:00:00:00" value="00000000"/>
+      <field name="libvirt.remote_node_get_cpu_map_ret.online" showname="online: 0" size="4" pos="98" show="0" value="00000000"/>
+      <field name="libvirt.remote_node_get_cpu_map_ret.ret" showname="ret: 8" size="4" pos="102" show="8" value="00000008"/>
+    </field>
+  </proto>
+</packet>
+
+<!-- Program = REMOTE, Procedure = DOMAIN_GET_BLKIO_PARAMETERS -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="68" pos="66">
+    <field name="libvirt.length" showname="length: 68" size="4" pos="66" show="68" value="00000044"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: DOMAIN_GET_BLKIO_PARAMETERS (206)" size="4" pos="78" show="206" value="000000ce"/>
+    <field name="libvirt.type" showname="type: CALL (0)" size="4" pos="82" show="0" value="00000000"/>
+    <field name="libvirt.serial" showname="serial: 7" size="4" pos="86" show="7" value="00000007"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_domain_get_blkio_parameters_args" showname="remote_domain_get_blkio_parameters_args" size="40" pos="94" show="" value="">
+      <field name="libvirt.remote_domain_get_blkio_parameters_args.dom" showname="dom :: remote_nonnull_domain" size="32" pos="94" show="" value="">
+        <field name="libvirt.remote_nonnull_domain.name" showname="name: domain1" size="12" pos="94" show="domain1" value="00000007646f6d61696e3100"/>
+        <field name="libvirt.remote_nonnull_domain.uuid" showname="uuid: 4c8b6b6d0a2907334b8398a02c3a4710" size="16" pos="106" show="4c:8b:6b:6d:0a:29:07:33:4b:83:98:a0:2c:3a:47:10" value="4c8b6b6d0a2907334b8398a02c3a4710"/>
+        <field name="libvirt.remote_nonnull_domain.id" showname="id: -1" size="4" pos="122" show="-1" value="ffffffff"/>
+      </field>
+      <field name="libvirt.remote_domain_get_blkio_parameters_args.nparams" showname="nparams: 2" size="4" pos="126" show="2" value="00000002"/>
+      <field name="libvirt.remote_domain_get_blkio_parameters_args.flags" showname="flags: 4" size="4" pos="130" show="4" value="00000004"/>
+    </field>
+  </proto>
+</packet>
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="84" pos="66">
+    <field name="libvirt.length" showname="length: 84" size="4" pos="66" show="84" value="00000054"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: DOMAIN_GET_BLKIO_PARAMETERS (206)" size="4" pos="78" show="206" value="000000ce"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 7" size="4" pos="86" show="7" value="00000007"/>
+    <field name="libvirt.status" showname="status: OK (0)" size="4" pos="90" show="0" value="00000000"/>
+    <field name="libvirt.remote_domain_get_blkio_parameters_ret" showname="remote_domain_get_blkio_parameters_ret" size="56" pos="94" show="" value="">
+      <field name="libvirt.remote_domain_get_blkio_parameters_ret.params" showname="params :: remote_typed_param&lt;2&gt;" size="52" pos="94" show="" value="">
+        <field name="libvirt.remote_domain_get_blkio_parameters_ret.params.params" showname="params :: remote_typed_param" size="20" pos="98" show="" value="">
+          <field name="libvirt.remote_typed_param.field" showname="field: weight" size="12" pos="98" show="weight" value="000000067765696768740000"/>
+          <field name="libvirt.remote_typed_param_value.ui" showname="ui: 0" size="4" pos="114" show="0" value="00000000"/>
+        </field>
+        <field name="libvirt.remote_domain_get_blkio_parameters_ret.params.params" showname="params :: remote_typed_param" size="28" pos="118" show="" value="">
+          <field name="libvirt.remote_typed_param.field" showname="field: device_weight" size="20" pos="118" show="device_weight" value="0000000d6465766963655f776569676874000000"/>
+          <field name="libvirt.remote_typed_param_value.s" showname="s: " size="4" pos="142" show="" value="00000000"/>
+        </field>
+      </field>
+      <field name="libvirt.remote_domain_get_blkio_parameters_ret.nparams" showname="nparams: 0" size="4" pos="146" show="0" value="00000000"/>
+    </field>
+  </proto>
+</packet>
+
+<!-- Error reply (struct remote_error) -->
+<packet>
+  <proto name="libvirt" showname="Libvirt" size="360" pos="66">
+    <field name="libvirt.length" showname="length: 360" size="4" pos="66" show="360" value="00000168"/>
+    <field name="libvirt.program" showname="program: REMOTE (0x20008086)" size="4" pos="70" show="0x20008086" value="20008086"/>
+    <field name="libvirt.version" showname="version: 1" size="4" pos="74" show="1" value="00000001"/>
+    <field name="libvirt.procedure" showname="procedure: DOMAIN_GET_VCPUS (20)" size="4" pos="78" show="20" value="00000014"/>
+    <field name="libvirt.type" showname="type: REPLY (1)" size="4" pos="82" show="1" value="00000001"/>
+    <field name="libvirt.serial" showname="serial: 7" size="4" pos="86" show="7" value="00000007"/>
+    <field name="libvirt.status" showname="status: ERROR (1)" size="4" pos="90" show="1" value="00000001"/>
+    <field name="libvirt.remote_error" showname="remote_error" size="44" pos="94" show="" value="">
+      <field name="libvirt.remote_error.code" showname="code: 55" size="4" pos="94" show="55" value="00000037"/>
+      <field name="libvirt.remote_error.domain" showname="domain: 10" size="4" pos="98" show="10" value="0000000a"/>
+      <field name="libvirt.remote_error.message" showname="message: (null)" size="4" pos="102" show="" value=""/>
+      <field name="libvirt.remote_error.level" showname="level: 136" size="4" pos="106" show="136" value="00000088"/>
+      <field name="libvirt.remote_error.dom" showname="dom: (null)" size="4" pos="110" show="" value=""/>
+      <field name="libvirt.remote_error.str1" showname="str1: (null)" size="4" pos="114" show="" value=""/>
+      <field name="libvirt.remote_error.str2" showname="str2: (null)" size="4" pos="118" show="" value=""/>
+      <field name="libvirt.remote_error.str3" showname="str3: (null)" size="4" pos="122" show="" value=""/>
+      <field name="libvirt.remote_error.int1" showname="int1: -1819417411" size="4" pos="126" show="-1819417411" value="938de4bd"/>
+      <field name="libvirt.remote_error.int2" showname="int2: -1662811729" size="4" pos="130" show="-1662811729" value="9ce381af"/>
+      <field name="libvirt.remote_error.net" showname="net: (null)" size="4" pos="134" show="" value=""/>
+    </field>
+  </proto>
+</packet>
+</pdml>
