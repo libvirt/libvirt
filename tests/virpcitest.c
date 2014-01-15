@@ -34,6 +34,31 @@
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
+testVirPCIDeviceCheckDriver(virPCIDevicePtr dev, const char *expected)
+{
+    char *path = NULL;
+    char *driver = NULL;
+    int ret = -1;
+
+    if (virPCIDeviceGetDriverPathAndName(dev, &path, &driver) < 0)
+        goto cleanup;
+
+    if (STRNEQ_NULLABLE(driver, expected)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "PCI device %s driver mismatch: %s, expecting %s",
+                       virPCIDeviceGetName(dev), NULLSTR(driver),
+                       NULLSTR(expected));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    VIR_FREE(driver);
+    return ret;
+}
+
+static int
 testVirPCIDeviceNew(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
@@ -87,6 +112,9 @@ testVirPCIDeviceDetach(const void *oaque ATTRIBUTE_UNUSED)
             goto cleanup;
 
         if (virPCIDeviceDetach(dev[i], activeDevs, inactiveDevs) < 0)
+            goto cleanup;
+
+        if (testVirPCIDeviceCheckDriver(dev[i], "pci-stub") < 0)
             goto cleanup;
 
         CHECK_LIST_COUNT(activeDevs, 0);
@@ -188,6 +216,7 @@ struct testPCIDevData {
     unsigned int bus;
     unsigned int slot;
     unsigned int function;
+    const char *driver;
 };
 
 static int
@@ -205,6 +234,88 @@ testVirPCIDeviceIsAssignable(const void *opaque)
 
     virPCIDeviceFree(dev);
 cleanup:
+    return ret;
+}
+
+static int
+testVirPCIDeviceDetachSingle(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    int ret = -1;
+    virPCIDevicePtr dev;
+
+    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    if (!dev)
+        goto cleanup;
+
+    if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0 ||
+        virPCIDeviceDetach(dev, NULL, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(dev);
+    return ret;
+}
+
+static int
+testVirPCIDeviceReattachSingle(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    int ret = -1;
+    virPCIDevicePtr dev;
+
+    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    if (!dev)
+        goto cleanup;
+
+    virPCIDeviceReattachInit(dev);
+    if (virPCIDeviceReattach(dev, NULL, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(dev);
+    return ret;
+}
+
+static int
+testVirPCIDeviceCheckDriverTest(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    int ret = -1;
+    virPCIDevicePtr dev;
+
+    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    if (!dev)
+        goto cleanup;
+
+    if (testVirPCIDeviceCheckDriver(dev, data->driver) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(dev);
+    return ret;
+}
+
+static int
+testVirPCIDeviceUnbind(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    int ret = -1;
+    virPCIDevicePtr dev;
+
+    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    if (!dev)
+        goto cleanup;
+
+    if (virPCIDeviceUnbind(dev, false) < 0)
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virPCIDeviceFree(dev);
     return ret;
 }
 
@@ -236,7 +347,9 @@ mymain(void)
 
 # define DO_TEST_PCI(fnc, domain, bus, slot, function)                  \
     do {                                                                \
-        struct testPCIDevData data = { domain, bus, slot, function };   \
+        struct testPCIDevData data = {                                  \
+            domain, bus, slot, function, NULL                           \
+        };                                                              \
         char *label = NULL;                                             \
         if (virAsprintf(&label, "%s(%04x:%02x:%02x.%x)",                \
                         #fnc, domain, bus, slot, function) < 0) {       \
@@ -248,12 +361,55 @@ mymain(void)
         VIR_FREE(label);                                                \
     } while (0)
 
+# define DO_TEST_PCI_DRIVER(domain, bus, slot, function, driver)        \
+    do {                                                                \
+        struct testPCIDevData data = {                                  \
+            domain, bus, slot, function, driver                         \
+        };                                                              \
+        char *label = NULL;                                             \
+        if (virAsprintf(&label, "PCI driver %04x:%02x:%02x.%x is %s",   \
+                        domain, bus, slot, function,                    \
+                        NULLSTR(driver)) < 0) {                         \
+            ret = -1;                                                   \
+            break;                                                      \
+        }                                                               \
+        if (virtTestRun(label, testVirPCIDeviceCheckDriverTest,         \
+                        &data) < 0)                                     \
+            ret = -1;                                                   \
+        VIR_FREE(label);                                                \
+    } while (0)
+
+    /* Changes made to individual devices are persistent and the
+     * tests often rely on the state set by previous tests.
+     */
+
     DO_TEST(testVirPCIDeviceNew);
     DO_TEST(testVirPCIDeviceDetach);
     DO_TEST(testVirPCIDeviceReset);
     DO_TEST(testVirPCIDeviceReattach);
     DO_TEST_PCI(testVirPCIDeviceIsAssignable, 5, 0x90, 1, 0);
     DO_TEST_PCI(testVirPCIDeviceIsAssignable, 1, 1, 0, 0);
+
+    /* Reattach a device already bound to non-stub a driver */
+    DO_TEST_PCI_DRIVER(0, 0x0a, 1, 0, "i915");
+    DO_TEST_PCI(testVirPCIDeviceReattachSingle, 0, 0x0a, 1, 0);
+    DO_TEST_PCI_DRIVER(0, 0x0a, 1, 0, "i915");
+
+    /* Reattach an unbound device */
+    DO_TEST_PCI(testVirPCIDeviceUnbind, 0, 0x0a, 1, 0);
+    DO_TEST_PCI_DRIVER(0, 0x0a, 1, 0, NULL);
+    DO_TEST_PCI(testVirPCIDeviceReattachSingle, 0, 0x0a, 1, 0);
+    DO_TEST_PCI_DRIVER(0, 0x0a, 1, 0, "i915");
+
+    /* Detach an unbound device */
+    DO_TEST_PCI_DRIVER(0, 0x0a, 2, 0, NULL);
+    DO_TEST_PCI(testVirPCIDeviceDetachSingle, 0, 0x0a, 2, 0);
+    DO_TEST_PCI_DRIVER(0, 0x0a, 2, 0, "pci-stub");
+
+    /* Reattach an unknown unbound device */
+    DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
+    DO_TEST_PCI(testVirPCIDeviceReattachSingle, 0, 0x0a, 3, 0);
+    DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakesysfsdir);
