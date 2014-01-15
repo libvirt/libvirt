@@ -4849,7 +4849,7 @@ typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
  *          always passes 0
  * @opaque: application specified data
  *
- * This callback occurs when the guest is waken up.
+ * This callback occurs when the guest is woken up.
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMWAKEUP with virConnectDomainEventRegisterAny()
@@ -4867,7 +4867,7 @@ typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
  *          always passes 0
  * @opaque: application specified data
  *
- * This callback occurs when the guest is waken up.
+ * This callback occurs when the guest is suspended.
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMSUSPEND with virConnectDomainEventRegisterAny()
