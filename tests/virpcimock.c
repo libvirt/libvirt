@@ -107,11 +107,19 @@ char *fakesysfsdir;
  *
  */
 
+enum driverActions {
+    PCI_ACTION_BIND         = 1 << 0,
+    PCI_ACTION_UNBIND       = 1 << 1,
+    PCI_ACTION_NEW_ID       = 1 << 2,
+    PCI_ACTION_REMOVE_ID    = 1 << 3,
+};
+
 struct pciDriver {
     char *name;
     int *vendor;        /* List of vendor:device IDs the driver can handle */
     int *device;
     size_t len;            /* @len is used for both @vendor and @device */
+    unsigned int fail;  /* Bitwise-OR of driverActions that should fail */
 };
 
 struct pciDevice {
@@ -143,7 +151,7 @@ static void pci_device_new_from_stub(const struct pciDevice *data);
 static struct pciDevice *pci_device_find_by_id(const char *id);
 static struct pciDevice *pci_device_find_by_content(const char *path);
 
-static void pci_driver_new(const char *name, ...);
+static void pci_driver_new(const char *name, int fail, ...);
 static struct pciDriver *pci_driver_find_by_dev(struct pciDevice *dev);
 static struct pciDriver *pci_driver_find_by_path(const char *path);
 static int pci_driver_bind(struct pciDriver *driver, struct pciDevice *dev);
@@ -415,7 +423,7 @@ pci_device_autobind(struct pciDevice *dev)
  * PCI Driver functions
  */
 static void
-pci_driver_new(const char *name, ...)
+pci_driver_new(const char *name, int fail, ...)
 {
     struct pciDriver *driver;
     va_list args;
@@ -427,10 +435,12 @@ pci_driver_new(const char *name, ...)
         virAsprintfQuiet(&driverpath, "%s/drivers/%s", fakesysfsdir, name) < 0)
         ABORT_OOM();
 
+    driver->fail = fail;
+
     if (virFileMakePath(driverpath) < 0)
         ABORT("Unable to create: %s", driverpath);
 
-    va_start(args, name);
+    va_start(args, fail);
 
     while ((vendor = va_arg(args, int)) != -1) {
         if ((device = va_arg(args, int)) == -1)
@@ -497,8 +507,8 @@ pci_driver_bind(struct pciDriver *driver,
     int ret = -1;
     char *devpath = NULL, *driverpath = NULL;
 
-    if (dev->driver) {
-        /* Device already bound */
+    if (dev->driver || PCI_ACTION_BIND & driver->fail) {
+        /* Device already bound or failing driver requested */
         errno = ENODEV;
         return ret;
     }
@@ -544,8 +554,8 @@ pci_driver_unbind(struct pciDriver *driver,
     int ret = -1;
     char *devpath = NULL, *driverpath = NULL;
 
-    if (dev->driver != driver) {
-        /* Device not bound to the @driver */
+    if (dev->driver != driver || PCI_ACTION_UNBIND & driver->fail) {
+        /* Device not bound to the @driver or failing driver used */
         errno = ENODEV;
         return ret;
     }
@@ -651,8 +661,7 @@ pci_driver_handle_new_id(const char *path)
     int vendor, device;
     char buf[32];
 
-    if (!driver) {
-        /* This should never happen (TM) */
+    if (!driver || PCI_ACTION_NEW_ID & driver->fail) {
         errno = ENODEV;
         goto cleanup;
     }
@@ -707,8 +716,7 @@ pci_driver_handle_remove_id(const char *path)
     int vendor, device;
     char buf[32];
 
-    if (!driver) {
-        /* This should never happen (TM) */
+    if (!driver || PCI_ACTION_REMOVE_ID & driver->fail) {
         errno = ENODEV;
         goto cleanup;
     }
@@ -785,11 +793,12 @@ init_env(void)
     make_file(fakesysfsdir, "drivers_probe", NULL, -1);
 
 # define MAKE_PCI_DRIVER(name, ...)                                     \
-    pci_driver_new(name, __VA_ARGS__, -1, -1)
+    pci_driver_new(name, 0, __VA_ARGS__, -1, -1)
 
     MAKE_PCI_DRIVER("iwlwifi", 0x8086, 0x0044);
     MAKE_PCI_DRIVER("i915", 0x8086, 0x0046, 0x8086, 0x0047);
     MAKE_PCI_DRIVER("pci-stub", -1, -1);
+    pci_driver_new("vfio-pci", PCI_ACTION_BIND, -1, -1);
 
 # define MAKE_PCI_DEVICE(Id, Vendor, Device, ...)                       \
     do {                                                                \
