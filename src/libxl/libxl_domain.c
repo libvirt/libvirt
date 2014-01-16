@@ -358,6 +358,14 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
 };
 
+static const libxl_childproc_hooks libxl_child_hooks = {
+#ifdef LIBXL_HAVE_SIGCHLD_OWNER_SELECTIVE_REAP
+    .chldowner = libxl_sigchld_owner_libxl_always_selective_reap,
+#else
+    .chldowner = libxl_sigchld_owner_libxl,
+#endif
+};
+
 int
 libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
 {
@@ -395,6 +403,7 @@ libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
     }
 
     libxl_osevent_register_hooks(priv->ctx, &libxl_event_callbacks, priv);
+    libxl_childproc_setmode(priv->ctx, &libxl_child_hooks, priv);
 
     ret = 0;
 
