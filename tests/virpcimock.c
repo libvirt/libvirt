@@ -91,6 +91,10 @@ char *fakesysfsdir;
  *   Unbind driver from the device.
  *   Data in format "DDDD:BB:DD.F" (Domain:Bus:Device.Function).
  *
+ * /sys/bus/pci/drivers_probe
+ *   Probe for a driver that handles the specified device.
+ *   Data in format "DDDD:BB:DD.F" (Domain:Bus:Device.Function).
+ *
  * As a little hack, we are not mocking write to these files, but close()
  * instead. The advantage is we don't need any self growing array to hold the
  * partial writes and construct them back. We can let all the writes finish,
@@ -568,27 +572,39 @@ cleanup:
 }
 
 static int
+pci_driver_handle_drivers_probe(const char *path)
+{
+    struct pciDevice *dev;
+
+    if (!(dev = pci_device_find_by_content(path))) {
+        errno = ENODEV;
+        return -1;
+    }
+
+    if (dev->driver)
+        return 0;
+
+    return pci_device_autobind(dev);
+}
+
+static int
 pci_driver_handle_change(int fd ATTRIBUTE_UNUSED, const char *path)
 {
     int ret;
     const char *file = last_component(path);
 
-    if (STREQ(file, "bind")) {
-        /* handle write to bind */
+    if (STREQ(file, "bind"))
         ret = pci_driver_handle_bind(path);
-    } else if (STREQ(file, "unbind")) {
-        /* handle write to unbind */
+    else if (STREQ(file, "unbind"))
         ret = pci_driver_handle_unbind(path);
-    } else if (STREQ(file, "new_id")) {
-        /* handle write to new_id */
+    else if (STREQ(file, "new_id"))
         ret = pci_driver_handle_new_id(path);
-    } else if (STREQ(file, "remove_id")) {
-        /* handle write to remove_id */
+    else if (STREQ(file, "remove_id"))
         ret = pci_driver_handle_remove_id(path);
-    } else {
-        /* yet not handled write */
+    else if (STREQ(file, "drivers_probe"))
+        ret = pci_driver_handle_drivers_probe(path);
+    else
         ABORT("Not handled write to: %s", path);
-    }
     return ret;
 }
 
@@ -765,6 +781,8 @@ init_env(void)
 
     if (!(fakesysfsdir = getenv("LIBVIRT_FAKE_SYSFS_DIR")))
         ABORT("Missing LIBVIRT_FAKE_SYSFS_DIR env variable\n");
+
+    make_file(fakesysfsdir, "drivers_probe", NULL, -1);
 
 # define MAKE_PCI_DRIVER(name, ...)                                     \
     pci_driver_new(name, __VA_ARGS__, -1, -1)
