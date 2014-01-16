@@ -225,7 +225,7 @@ virPCIFile(char **buffer, const char *device, const char *file)
  *
  * Return 0 for success, -1 for error.
  */
-static int
+int
 virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
 {
     int ret = -1;
@@ -1005,6 +1005,44 @@ recheck:
     return -1;
 }
 
+int
+virPCIDeviceUnbind(virPCIDevicePtr dev, bool reprobe)
+{
+    char *path = NULL;
+    char *drvpath = NULL;
+    char *driver = NULL;
+    int ret = -1;
+
+    if (virPCIDeviceGetDriverPathAndName(dev, &drvpath, &driver) < 0)
+        goto cleanup;
+
+    if (!driver) {
+        /* The device is not bound to any driver */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virPCIFile(&path, dev->name, "driver/unbind") < 0)
+        goto cleanup;
+
+    if (virFileExists(path)) {
+        if (virFileWriteStr(path, dev->name, 0) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to unbind PCI device '%s' from %s"),
+                                 dev->name, driver);
+            goto cleanup;
+        }
+        dev->reprobe = reprobe;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    VIR_FREE(drvpath);
+    VIR_FREE(driver);
+    return ret;
+}
+
 static const char *virPCIKnownStubs[] = {
     "pciback",  /* used by xen */
     "pci-stub", /* used by kvm legacy passthrough */
@@ -1047,18 +1085,8 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     if (!isStub)
         goto remove_slot;
 
-    if (virFileExists(drvdir)) {
-        if (virPCIDriverFile(&path, driver, "unbind") < 0) {
-            goto cleanup;
-        }
-
-        if (virFileWriteStr(path, dev->name, 0) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to unbind PCI device '%s' from %s"),
-                                 dev->name, driver);
-            goto cleanup;
-        }
-    }
+    if (virPCIDeviceUnbind(dev, dev->reprobe) < 0)
+        goto cleanup;
     dev->unbind_from_stub = false;
 
 remove_slot:
@@ -1174,23 +1202,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
         goto remove_id;
     }
 
-    /* If the device is already bound to a driver, unbind it.
-     * Note, this will have rather unpleasant side effects if this
-     * PCI device happens to be IDE controller for the disk hosting
-     * your root filesystem.
-     */
-    if (virPCIFile(&path, dev->name, "driver/unbind") < 0)
+    if (virPCIDeviceUnbind(dev, reprobe) < 0)
         goto remove_id;
-
-    if (virFileExists(path)) {
-        if (virFileWriteStr(path, dev->name, 0) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to unbind PCI device '%s'"),
-                                 dev->name);
-            goto remove_id;
-        }
-        dev->reprobe = reprobe;
-    }
 
     /* If the device isn't already bound to pci-stub, try binding it now.
      */
