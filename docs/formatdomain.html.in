@@ -4042,6 +4042,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;streaming mode='filter'/&gt;
     &lt;clipboard copypaste='no'/&gt;
     &lt;mouse mode='client'/&gt;
+    &lt;filetransfer enable='no'/&gt;
   &lt;/graphics&gt;</pre>
             <p>
               Spice supports variable compression settings for audio,
@@ -4080,6 +4081,13 @@ qemu-kvm -net nic,model=? /dev/null
               <code>server</code> or <code>client</code> ,
               <span class="since">since 0.9.11</span>. If no mode is
               specified, the qemu default will be used (client mode).
+            </p>
+            <p>
+              File transfer functionality (via Spice agent) is set using the
+              <code>filetransfer</code> element.
+              It is enabled by default, and can be disabled by setting the
+              <code>enable</code> property to <code>no</code> ,
+              since <span class="since">since 1.2.2</span>.
             </p>
           </dd>
           <dt><code>"rdp"</code></dt>

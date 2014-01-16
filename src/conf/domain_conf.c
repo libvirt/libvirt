@@ -604,6 +604,12 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceClipboardCopypaste,
               "yes",
               "no");
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceAgentFileTransfer,
+              VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_LAST,
+              "default",
+              "yes",
+              "no");
+
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
               "capabilities")
@@ -8562,6 +8568,26 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     VIR_FREE(copypaste);
 
                     def->data.spice.copypaste = copypasteVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "filetransfer")) {
+                    char *enable = virXMLPropString(cur, "enable");
+                    int enableVal;
+
+                    if (!enable) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("spice filetransfer missing enable"));
+                        goto error;
+                    }
+
+                    if ((enableVal =
+                         virDomainGraphicsSpiceAgentFileTransferTypeFromString(enable)) <= 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unknown enable value '%s'"), enable);
+                        VIR_FREE(enable);
+                        goto error;
+                    }
+                    VIR_FREE(enable);
+
+                    def->data.spice.filetransfer = enableVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
                     char *mode = virXMLPropString(cur, "mode");
                     int modeVal;
@@ -16466,7 +16492,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (!children && (def->data.spice.image || def->data.spice.jpeg ||
                           def->data.spice.zlib || def->data.spice.playback ||
                           def->data.spice.streaming || def->data.spice.copypaste ||
-                          def->data.spice.mousemode)) {
+                          def->data.spice.mousemode || def->data.spice.filetransfer)) {
             virBufferAddLit(buf, ">\n");
             children = true;
         }
@@ -16491,6 +16517,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.copypaste)
             virBufferAsprintf(buf, "      <clipboard copypaste='%s'/>\n",
                               virDomainGraphicsSpiceClipboardCopypasteTypeToString(def->data.spice.copypaste));
+        if (def->data.spice.filetransfer)
+            virBufferAsprintf(buf, "      <filetransfer enable='%s'/>\n",
+                              virDomainGraphicsSpiceAgentFileTransferTypeToString(def->data.spice.filetransfer));
     }
 
     if (children) {

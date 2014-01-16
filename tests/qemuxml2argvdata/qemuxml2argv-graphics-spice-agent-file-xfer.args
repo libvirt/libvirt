@@ -1,0 +1,9 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=spice \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nodefaults -monitor \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -hda \
+/dev/HostVG/QEMUGuest1 -spice port=5903,tls-port=5904,addr=127.0.0.1,\
+x509-dir=/etc/pki/libvirt-spice,tls-channel=main,plaintext-channel=inputs,\
+disable-agent-file-xfer -vga qxl -global qxl-vga.ram_size=67108864 \
+-global qxl-vga.vram_size=33554432 \
+-device qxl,id=video1,ram_size=67108864,vram_size=67108864,bus=pci.0,addr=0x4 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

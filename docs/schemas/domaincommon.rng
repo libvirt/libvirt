@@ -2496,6 +2496,17 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="filetransfer">
+                <attribute name="enable">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </group>
         <group>

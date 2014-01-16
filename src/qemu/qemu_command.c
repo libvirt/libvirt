@@ -7393,6 +7393,15 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                           virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
     if (graphics->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
         virBufferAddLit(&opt, ",disable-copy-paste");
+    if (graphics->data.spice.filetransfer == VIR_DOMAIN_GRAPHICS_SPICE_AGENT_FILE_TRANSFER_NO) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
+           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                          _("This QEMU can't disable file transfers through spice"));
+            goto error;
+        } else {
+            virBufferAddLit(&opt, ",disable-agent-file-xfer");
+        }
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
         /* If qemu supports seamless migration turn it

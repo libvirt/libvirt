@@ -6,7 +6,8 @@ x509-dir=/etc/pki/libvirt-spice,tls-channel=default,tls-channel=main,\
 plaintext-channel=inputs,\
 image-compression=auto_glz,jpeg-wan-compression=auto,\
 zlib-glz-wan-compression=auto,\
-playback-compression=on,streaming-video=filter,disable-copy-paste -vga \
-qxl -global qxl.ram_size=67108864 -global qxl.vram_size=18874368 \
+playback-compression=on,streaming-video=filter,disable-copy-paste,\
+disable-agent-file-xfer -vga qxl -global qxl.ram_size=67108864 \
+-global qxl.vram_size=18874368 \
 -device qxl,id=video1,ram_size=67108864,vram_size=33554432,bus=pci.0,addr=0x4 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
