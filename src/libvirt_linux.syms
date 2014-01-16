@@ -3,6 +3,7 @@
 #
 
 # nodeinfo.h
+linuxNodeGetCPUStats;
 linuxNodeInfoCPUPopulate;
 
 # util/virstatslinux.h

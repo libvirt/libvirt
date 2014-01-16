@@ -1,0 +1,150 @@
+cpu:
+kernel: 8751170
+user: 14128079
+idle: 1816344522
+iowait: 81323
+
+cpu0:
+kernel: 447603
+user: 749021
+idle: 75399242
+iowait: 5295
+
+cpu1:
+kernel: 167215
+user: 337326
+idle: 76178612
+iowait: 1121
+
+cpu2:
+kernel: 308930
+user: 666889
+idle: 75649696
+iowait: 4298
+
+cpu3:
+kernel: 227674
+user: 328464
+idle: 76131634
+iowait: 1219
+
+cpu4:
+kernel: 299514
+user: 583915
+idle: 75746383
+iowait: 3997
+
+cpu5:
+kernel: 112287
+user: 231867
+idle: 76336319
+iowait: 798
+
+cpu6:
+kernel: 546590
+user: 896252
+idle: 75132665
+iowait: 7210
+
+cpu7:
+kernel: 177715
+user: 342337
+idle: 76154889
+iowait: 1933
+
+cpu8:
+kernel: 452773
+user: 772479
+idle: 75359327
+iowait: 5845
+
+cpu9:
+kernel: 1050230
+user: 1079258
+idle: 74532776
+iowait: 3340
+
+cpu10:
+kernel: 535495
+user: 847295
+idle: 75202362
+iowait: 4038
+
+cpu11:
+kernel: 171635
+user: 323891
+idle: 76181622
+iowait: 993
+
+cpu12:
+kernel: 331031
+user: 683257
+idle: 75587176
+iowait: 5174
+
+cpu13:
+kernel: 112686
+user: 230633
+idle: 76345295
+iowait: 1367
+
+cpu14:
+kernel: 251393
+user: 547599
+idle: 75824554
+iowait: 5195
+
+cpu15:
+kernel: 199044
+user: 260673
+idle: 76230586
+iowait: 1379
+
+cpu16:
+kernel: 244158
+user: 463357
+idle: 75923993
+iowait: 6211
+
+cpu17:
+kernel: 88571
+user: 189253
+idle: 76411610
+iowait: 1388
+
+cpu18:
+kernel: 546539
+user: 875655
+idle: 75096896
+iowait: 5756
+
+cpu19:
+kernel: 186366
+user: 348768
+idle: 76137323
+iowait: 1299
+
+cpu20:
+kernel: 449460
+user: 765202
+idle: 75348938
+iowait: 4389
+
+cpu21:
+kernel: 1045076
+user: 1116075
+idle: 74500557
+iowait: 2411
+
+cpu22:
+kernel: 534125
+user: 847779
+idle: 75178185
+iowait: 5632
+
+cpu23:
+kernel: 265029
+user: 640815
+idle: 75753872
+iowait: 1026
+

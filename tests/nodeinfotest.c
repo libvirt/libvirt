@@ -79,6 +79,93 @@ fail:
     return ret;
 }
 
+# define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
+
+static int
+linuxCPUStatsToBuf(virBufferPtr buf,
+                   int cpu,
+                   virNodeCPUStatsPtr param,
+                   size_t nparams)
+{
+    size_t i = 0;
+
+    if (cpu < 0)
+        virBufferAddLit(buf, "cpu:\n");
+    else
+        virBufferAsprintf(buf, "cpu%d:\n", cpu);
+
+    for (i = 0; i < nparams; i++)
+        virBufferAsprintf(buf, "%s: %llu\n", param[i].field,
+                          param[i].value / TICK_TO_NSEC);
+
+    virBufferAddChar(buf, '\n');
+    return 0;
+}
+
+static int
+linuxCPUStatsCompareFiles(const char *cpustatfile,
+                          size_t ncpus,
+                          const char *outfile)
+{
+    int ret = -1;
+    char *actualData = NULL;
+    char *expectData = NULL;
+    FILE *cpustat = NULL;
+    virNodeCPUStatsPtr params = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+    int nparams = 0;
+
+    if (virtTestLoadFile(outfile, &expectData) < 0)
+        goto fail;
+
+    if (!(cpustat = fopen(cpustatfile, "r"))) {
+        virReportSystemError(errno, "failed to open '%s': ", cpustatfile);
+        goto fail;
+    }
+
+    if (linuxNodeGetCPUStats(NULL, 0, NULL, &nparams) < 0)
+        goto fail;
+
+    if (VIR_ALLOC_N(params, nparams) < 0)
+        goto fail;
+
+    if (linuxNodeGetCPUStats(cpustat, VIR_NODE_CPU_STATS_ALL_CPUS, params,
+                             &nparams) < 0)
+        goto fail;
+
+    if (linuxCPUStatsToBuf(&buf, VIR_NODE_CPU_STATS_ALL_CPUS,
+                           params, nparams) < 0)
+        goto fail;
+
+    for (i = 0; i < ncpus; i++) {
+        if (linuxNodeGetCPUStats(cpustat, i, params, &nparams) < 0)
+            goto fail;
+        if (linuxCPUStatsToBuf(&buf, i, params, nparams) < 0)
+            goto fail;
+    }
+
+    if (!(actualData = virBufferContentAndReset(&buf))) {
+        virReportOOMError();
+        goto fail;
+    }
+
+    if (STRNEQ(actualData, expectData)) {
+        virtTestDifference(stderr, expectData, actualData);
+        goto fail;
+    }
+
+    ret = 0;
+
+fail:
+    virBufferFreeAndReset(&buf);
+    VIR_FORCE_FCLOSE(cpustat);
+    VIR_FREE(expectData);
+    VIR_FREE(actualData);
+    VIR_FREE(params);
+    return ret;
+}
+
 
 static int
 linuxTestNodeInfo(const void *data)
@@ -114,6 +201,34 @@ cleanup:
     return result;
 }
 
+struct nodeCPUStatsData {
+    const char *name;
+    int ncpus;
+};
+
+static int
+linuxTestNodeCPUStats(const void *data)
+{
+    const struct nodeCPUStatsData *testData = data;
+    int result = -1;
+    char *cpustatfile = NULL;
+    char *outfile = NULL;
+
+    if (virAsprintf(&cpustatfile, "%s/nodeinfodata/linux-cpustat-%s.stat",
+                    abs_srcdir, testData->name) < 0 ||
+        virAsprintf(&outfile, "%s/nodeinfodata/linux-cpustat-%s.out",
+                    abs_srcdir, testData->name) < 0)
+        goto fail;
+
+    result = linuxCPUStatsCompareFiles(cpustatfile,
+                                       testData->ncpus,
+                                       outfile);
+fail:
+    VIR_FREE(cpustatfile);
+    VIR_FREE(outfile);
+    return result;
+}
+
 
 static int
 mymain(void)
@@ -140,6 +255,15 @@ mymain(void)
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
       if (virtTestRun(nodeData[i], linuxTestNodeInfo, nodeData[i]) != 0)
         ret = -1;
+
+# define DO_TEST_CPU_STATS(name, ncpus) \
+    do { \
+        static struct nodeCPUStatsData data = { name, ncpus }; \
+        if (virtTestRun("CPU stats " name, linuxTestNodeCPUStats, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    DO_TEST_CPU_STATS("24cpu", 24);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

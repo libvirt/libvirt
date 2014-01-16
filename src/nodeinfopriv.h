@@ -28,6 +28,11 @@
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              const char *sysfs_dir,
                              virNodeInfoPtr nodeinfo);
+
+int linuxNodeGetCPUStats(FILE *procstat,
+                         int cpuNum,
+                         virNodeCPUStatsPtr params,
+                         int *nparams);
 # endif
 
 #endif /* __NODEINFO_PRIV_H__ */

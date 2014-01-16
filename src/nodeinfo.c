@@ -676,7 +676,7 @@ cleanup:
 
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
-static int
+int
 linuxNodeGetCPUStats(FILE *procstat,
                      int cpuNum,
                      virNodeCPUStatsPtr params,
