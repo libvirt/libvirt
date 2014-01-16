@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.c: QEMU cgroup management
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -550,6 +550,18 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuSetupHostdevCGroup(vm, vm->def->hostdevs[i]) < 0)
+            goto cleanup;
+    }
+
+    if (vm->def->rng &&
+        (vm->def->rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM)) {
+        VIR_DEBUG("Setting Cgroup ACL for RNG device");
+        rv = virCgroupAllowDevicePath(priv->cgroup, vm->def->rng->source.file,
+                                      VIR_CGROUP_DEVICE_RW);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
+                                 vm->def->rng->source.file, "rw", rv == 0);
+        if (rv < 0 &&
+            !virLastErrorIsSystemErrno(ENOENT))
             goto cleanup;
     }
 
