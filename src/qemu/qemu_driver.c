@@ -11155,6 +11155,8 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     char *xml = NULL;
+    bool legacy = qemuHostdevHostSupportsPassthroughLegacy();
+    bool vfio = qemuHostdevHostSupportsPassthroughVFIO();
 
     virCheckFlags(0, -1);
 
@@ -11177,22 +11179,34 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
 
     if (!driverName) {
-        /* prefer vfio */
-        if (qemuHostdevHostSupportsPassthroughVFIO())
+        if (vfio) {
             driverName = "vfio";
-        else if (qemuHostdevHostSupportsPassthroughLegacy())
+        } else if (legacy) {
             driverName = "kvm";
+        } else {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("neither VFIO nor KVM device assignment is "
+                             "currently supported on this system"));
+            goto cleanup;
+        }
     }
 
-    if (!driverName) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("neither VFIO nor kvm device assignment is "
-                         "currently supported on this system"));
-        goto cleanup;
-    } else if (STREQ(driverName, "vfio")) {
+    if (STREQ(driverName, "vfio")) {
+        if (!vfio) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("VFIO device assignment is currently not "
+                             "supported on this system"));
+            goto cleanup;
+        }
         if (virPCIDeviceSetStubDriver(pci, "vfio-pci") < 0)
             goto cleanup;
     } else if (STREQ(driverName, "kvm")) {
+        if (!legacy) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("KVM device assignment is currently not "
+                             "supported on this system"));
+            goto cleanup;
+        }
         if (virPCIDeviceSetStubDriver(pci, "pci-stub") < 0)
             goto cleanup;
     } else {
