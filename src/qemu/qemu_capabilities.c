@@ -247,6 +247,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "boot-strict", /* 160 */
               "pvpanic",
               "enable-fips",
+              "spice-file-xfer-disable"
     );
 
 struct _virQEMUCaps {
@@ -2286,6 +2287,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
+    { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
 };
 
 static int
