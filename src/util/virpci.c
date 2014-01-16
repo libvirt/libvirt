@@ -1123,14 +1123,15 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
 {
     int result = -1;
     int reprobe = false;
-
     char *stubDriverPath = NULL;
     char *driverLink = NULL;
     char *path = NULL; /* reused for different purposes */
-    const char *newDriverName = NULL;
+    char *newDriverName = NULL;
+    virErrorPtr err = NULL;
 
     if (virPCIDriverDir(&stubDriverPath, stubDriverName) < 0 ||
-        virPCIFile(&driverLink, dev->name, "driver") < 0)
+        virPCIFile(&driverLink, dev->name, "driver") < 0 ||
+        VIR_STRDUP(newDriverName, stubDriverName) < 0)
         goto cleanup;
 
     if (virFileExists(driverLink)) {
@@ -1138,7 +1139,6 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
             /* The device is already bound to the correct driver */
             VIR_DEBUG("Device %s is already bound to %s",
                       dev->name, stubDriverName);
-            newDriverName = stubDriverName;
             result = 0;
             goto cleanup;
         }
@@ -1170,6 +1170,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
     if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
         dev->unbind_from_stub = true;
         dev->remove_slot = true;
+        result = 0;
         goto remove_id;
     }
 
@@ -1178,16 +1179,15 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
      * PCI device happens to be IDE controller for the disk hosting
      * your root filesystem.
      */
-    if (virPCIFile(&path, dev->name, "driver/unbind") < 0) {
-        goto cleanup;
-    }
+    if (virPCIFile(&path, dev->name, "driver/unbind") < 0)
+        goto remove_id;
 
     if (virFileExists(path)) {
         if (virFileWriteStr(path, dev->name, 0) < 0) {
             virReportSystemError(errno,
                                  _("Failed to unbind PCI device '%s'"),
                                  dev->name);
-            goto cleanup;
+            goto remove_id;
         }
         dev->reprobe = reprobe;
     }
@@ -1222,7 +1222,11 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
         dev->unbind_from_stub = true;
     }
 
+    result = 0;
+
 remove_id:
+    err = virSaveLastError();
+
     /* If 'remove_id' exists, remove the device id from pci-stub's dynamic
      * ID table so that 'drivers_probe' works below.
      */
@@ -1233,6 +1237,7 @@ remove_id:
                      "cannot be probed again.", dev->id, stubDriverName);
         }
         dev->reprobe = false;
+        result = -1;
         goto cleanup;
     }
 
@@ -1247,24 +1252,26 @@ remove_id:
                      "cannot be probed again.", dev->id, stubDriverName);
         }
         dev->reprobe = false;
+        result = -1;
         goto cleanup;
     }
-
-    newDriverName = stubDriverName;
-    result = 0;
 
 cleanup:
     VIR_FREE(stubDriverPath);
     VIR_FREE(driverLink);
     VIR_FREE(path);
 
-    if (newDriverName &&
-        STRNEQ_NULLABLE(dev->stubDriver, newDriverName)) {
-        VIR_FREE(dev->stubDriver);
-        result = VIR_STRDUP(dev->stubDriver, newDriverName);
-    }
-    if (result < 0)
+    if (result < 0) {
+        VIR_FREE(newDriverName);
         virPCIDeviceUnbindFromStub(dev);
+    } else {
+        VIR_FREE(dev->stubDriver);
+        dev->stubDriver = newDriverName;
+    }
+
+    if (err)
+        virSetError(err);
+    virFreeError(err);
 
     return result;
 }
