@@ -1348,7 +1348,7 @@
         </dl>
         <p>
           A <code>clock</code> may have zero or more
-          <code>timer</code>sub-elements. <span class="since">Since
+          <code>timer</code> sub-elements. <span class="since">Since
           0.8.0</span>
         </p>
       </dd>
