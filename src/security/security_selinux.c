@@ -898,13 +898,14 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon, bool optional)
             freecon(econ);
         }
 
-        /* if the error complaint is related to an image hosted on
-         * an nfs mount, or a usbfs/sysfs filesystem not supporting
-         * labelling, then just ignore it & hope for the best.
-         * The user hopefully set one of the necessary SELinux
-         * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
+        /* If the error complaint is related to an image hosted on a (possibly
+         * read-only) NFS mount, or a usbfs/sysfs filesystem not supporting
+         * labelling, then just ignore it & hope for the best.  The user
+         * hopefully sets one of the necessary SELinux virt_use_{nfs,usb,pci}
+         * boolean tunables to allow it ...
          */
-        if (setfilecon_errno != EOPNOTSUPP && setfilecon_errno != ENOTSUP) {
+        if (setfilecon_errno != EOPNOTSUPP && setfilecon_errno != ENOTSUP &&
+            setfilecon_errno != EROFS) {
             virReportSystemError(setfilecon_errno,
                                  _("unable to set security context '%s' on '%s'"),
                                  tcon, path);
