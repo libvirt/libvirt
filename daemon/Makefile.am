@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -387,7 +387,7 @@ endif ! LIBVIRT_INIT_SCRIPT_UPSTART
 
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 
-SYSTEMD_UNIT_DIR = /lib/systemd/system
+SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 BUILT_SOURCES += libvirtd.service
 
 install-init-systemd: install-sysconfig libvirtd.service

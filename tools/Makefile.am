@@ -1,4 +1,4 @@
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -306,7 +306,7 @@ libvirt-guests.init: libvirt-guests.init.in libvirt-guests.sh
 
 
 EXTRA_DIST += libvirt-guests.service.in
-SYSTEMD_UNIT_DIR = /lib/systemd/system
+SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-systemd: libvirt-guests.service install-sysconfig libvirt-guests.sh

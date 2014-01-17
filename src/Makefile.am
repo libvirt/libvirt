@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -2220,7 +2220,7 @@ EXTRA_DIST += \
 if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 
-SYSTEMD_UNIT_DIR = /lib/systemd/system
+SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 
 BUILT_SOURCES += virtlockd.service virtlockd.socket
 DISTCLEANFILES += virtlockd.service virtlockd.socket
