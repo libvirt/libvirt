@@ -44,7 +44,7 @@
 VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
               "smbios");
 
-static const char *sysinfoDmidecode = "dmidecode";
+static const char *sysinfoDmidecode = DMIDECODE;
 static const char *sysinfoSysinfo = "/proc/sysinfo";
 static const char *sysinfoCpuinfo = "/proc/cpuinfo";
 

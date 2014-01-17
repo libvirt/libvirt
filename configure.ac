@@ -391,6 +391,8 @@ dnl External programs that we can use if they are available.
 dnl We will hard-code paths to these programs unless we cannot
 dnl detect them, in which case we'll search for the program
 dnl along the $PATH at runtime and fail if it's not there.
+AC_PATH_PROG([DMIDECODE], [dmidecode], [dmidecode],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([RADVD], [radvd], [radvd],
@@ -408,6 +410,8 @@ AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 AC_PATH_PROG([SCRUB], [scrub], [scrub],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 
+AC_DEFINE_UNQUOTED([DMIDECODE],["$DMIDECODE"],
+        [Location or name of the dmidecode program])
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
 AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
