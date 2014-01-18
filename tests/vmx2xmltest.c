@@ -226,6 +226,7 @@ mymain(void)
 
     DO_TEST("harddisk-scsi-file", "harddisk-scsi-file");
     DO_TEST("harddisk-ide-file", "harddisk-ide-file");
+    DO_TEST("harddisk-transient", "harddisk-transient");
 
     DO_TEST("cdrom-scsi-file", "cdrom-scsi-file");
     DO_TEST("cdrom-scsi-device", "cdrom-scsi-device");

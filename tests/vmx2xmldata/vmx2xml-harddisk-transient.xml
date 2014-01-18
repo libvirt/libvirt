@@ -1,0 +1,25 @@
+<domain type='vmware'>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk.vmdk'/>
+      <target dev='hda' bus='ide'/>
+      <transient/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='ide' index='0'/>
+    <video>
+      <model type='vmvga' vram='4096'/>
+    </video>
+  </devices>
+</domain>
