@@ -144,6 +144,14 @@ foreach my $file (@ARGV) {
             $ret = 1;
             last;
         }
+
+        # Require spaces around assignment '=' and compounds
+        while ($data =~ /[^!<>&|\-+*\/%\^'= ]=[^=]/ ||
+               $data =~ /[^!<>&|\-+*\/%\^'=]=[^= \\\n]/) {
+            print "$file:$.: $line";
+            $ret = 1;
+            last;
+        }
     }
     close FILE;
 }
