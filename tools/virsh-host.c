@@ -149,7 +149,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
                 goto cleanup;
             }
             VIR_FREE(val);
-            nodes_id[i]=id;
+            nodes_id[i] = id;
             if (virNodeGetCellsFreeMemory(ctl->conn, &(nodes_free[i]),
                                           id, 1) != 1) {
                 vshError(ctl, _("failed to get free memory for NUMA node "

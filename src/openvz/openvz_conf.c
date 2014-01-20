@@ -1,7 +1,7 @@
 /*
  * openvz_conf.c: config functions for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2012, 2014 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -937,7 +937,7 @@ static char *
 openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
-    int i=0;
+    size_t i = 0;
     char *ret = NULL;
 
     while (conf_dir_list[i]) {

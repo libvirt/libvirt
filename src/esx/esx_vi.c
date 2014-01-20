@@ -4695,7 +4695,7 @@ esxVI_LookupHostInternetScsiHba(esxVI_Context *ctx,
     for (hostHostBusAdapter = hostHostBusAdapterList;
          hostHostBusAdapter;
          hostHostBusAdapter = hostHostBusAdapter->_next) {
-        esxVI_HostInternetScsiHba *candidate=
+        esxVI_HostInternetScsiHba *candidate =
             esxVI_HostInternetScsiHba_DynamicCast(hostHostBusAdapter);
 
         if (candidate) {

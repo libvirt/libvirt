@@ -857,10 +857,10 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
     int ret = -1;
     const char *wrbuf = "Hello world\n";
     char *outbuf = NULL, *errbuf = NULL;
-    const char *outbufExpected="BEGIN STDOUT\n"
+    const char *outbufExpected = "BEGIN STDOUT\n"
         "Hello world\n"
         "END STDOUT\n";
-    const char *errbufExpected="BEGIN STDERR\n"
+    const char *errbufExpected = "BEGIN STDERR\n"
         "Hello world\n"
         "END STDERR\n";
 

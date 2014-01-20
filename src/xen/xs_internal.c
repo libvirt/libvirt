@@ -616,7 +616,7 @@ static void
 xenStoreWatchListFree(xenStoreWatchListPtr list)
 {
     size_t i;
-    for (i=0; i<list->count; i++) {
+    for (i = 0; i < list->count; i++) {
         VIR_FREE(list->watches[i]->path);
         VIR_FREE(list->watches[i]->token);
         VIR_FREE(list->watches[i]);
@@ -648,7 +648,7 @@ xenStoreAddWatch(virConnectPtr conn,
         return -1;
 
     /* check if we already have this callback on our list */
-    for (n=0; n < list->count; n++) {
+    for (n = 0; n < list->count; n++) {
         if (STREQ(list->watches[n]->path, path) &&
             STREQ(list->watches[n]->token, token)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -825,7 +825,7 @@ retry:
     }
 
     missing = 0;
-    for (i=0; i < new_domain_cnt; i++) {
+    for (i = 0; i < new_domain_cnt; i++) {
         found = 0;
         for (j = 0; j < priv->activeDomainList->count; j++) {
             if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
@@ -908,9 +908,9 @@ retry:
     }
 
     removed = 0;
-    for (j=0; j < priv->activeDomainList->count; j++) {
+    for (j = 0; j < priv->activeDomainList->count; j++) {
         found = 0;
-        for (i=0; i < new_domain_cnt; i++) {
+        for (i = 0; i < new_domain_cnt; i++) {
             if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
                 found = 1;
                 break;

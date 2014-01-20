@@ -1347,7 +1347,7 @@ virLogParseOutputs(const char *outputs)
 
     virSkipSpaces(&cur);
     while (*cur != 0) {
-        prio= virParseNumber(&cur);
+        prio = virParseNumber(&cur);
         if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
             goto cleanup;
         if (*cur != ':')
@@ -1452,7 +1452,7 @@ virLogParseFilters(const char *filters)
     virSkipSpaces(&cur);
     while (*cur != 0) {
         unsigned int flags = 0;
-        prio= virParseNumber(&cur);
+        prio = virParseNumber(&cur);
         if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
             goto cleanup;
         if (*cur != ':')

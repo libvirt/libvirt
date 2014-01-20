@@ -2841,7 +2841,7 @@ xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr list)
     if (list == NULL)
         return;
 
-    for (i=0; i<list->count; i++) {
+    for (i = 0; i < list->count; i++) {
         VIR_FREE(list->doms[i]->name);
         VIR_FREE(list->doms[i]);
     }
@@ -2865,7 +2865,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     int n;
 
     /* check if we already have this callback on our list */
-    for (n=0; n < list->count; n++) {
+    for (n = 0; n < list->count; n++) {
         if (STREQ(list->doms[n]->name, name) &&
             !memcmp(list->doms[n]->uuid, uuid, VIR_UUID_BUFLEN)) {
             VIR_DEBUG("WARNING: dom already tracked");

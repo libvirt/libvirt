@@ -70,22 +70,22 @@ const char *eventToString(int event) {
     const char *ret = "";
     switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
-            ret ="Defined";
+            ret = "Defined";
             break;
         case VIR_DOMAIN_EVENT_UNDEFINED:
-            ret ="Undefined";
+            ret = "Undefined";
             break;
         case VIR_DOMAIN_EVENT_STARTED:
-            ret ="Started";
+            ret = "Started";
             break;
         case VIR_DOMAIN_EVENT_SUSPENDED:
-            ret ="Suspended";
+            ret = "Suspended";
             break;
         case VIR_DOMAIN_EVENT_RESUMED:
-            ret ="Resumed";
+            ret = "Resumed";
             break;
         case VIR_DOMAIN_EVENT_STOPPED:
-            ret ="Stopped";
+            ret = "Stopped";
             break;
         case VIR_DOMAIN_EVENT_SHUTDOWN:
             ret = "Shutdown";
@@ -229,16 +229,16 @@ networkEventToString(int event)
     const char *ret = "";
     switch ((virNetworkEventLifecycleType) event) {
         case VIR_NETWORK_EVENT_DEFINED:
-            ret ="Defined";
+            ret = "Defined";
             break;
         case VIR_NETWORK_EVENT_UNDEFINED:
-            ret ="Undefined";
+            ret = "Undefined";
             break;
         case VIR_NETWORK_EVENT_STARTED:
-            ret ="Started";
+            ret = "Started";
             break;
         case VIR_NETWORK_EVENT_STOPPED:
-            ret ="Stopped";
+            ret = "Stopped";
             break;
     }
     return ret;

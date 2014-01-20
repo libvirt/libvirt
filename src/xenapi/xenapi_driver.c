@@ -582,7 +582,7 @@ xenapiDomainLookupByID(virConnectPtr conn, int id)
     xen_vm_set *result;
     xen_vm_record *record;
     unsigned char raw_uuid[VIR_UUID_BUFLEN];
-    virDomainPtr domP=NULL;
+    virDomainPtr domP = NULL;
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
 
     xen_session_get_this_host(session, &host, session);
@@ -722,7 +722,7 @@ xenapiDomainSuspend(virDomainPtr dom)
 {
     /* vm.pause() */
     xen_vm vm;
-    xen_vm_set *vms=NULL;
+    xen_vm_set *vms = NULL;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) &&  vms->size > 0) {
         if (vms->size != 1) {
@@ -931,10 +931,10 @@ xenapiDomainDestroy(virDomainPtr dom)
 static char *
 xenapiDomainGetOSType(virDomainPtr dom)
 {
-    xen_vm vm=NULL;
+    xen_vm vm = NULL;
     xen_vm_set *vms;
     char *ostype = NULL;
-    char *boot_policy=NULL;
+    char *boot_policy = NULL;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
 
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
@@ -1360,14 +1360,14 @@ xenapiDomainGetMaxVcpus(virDomainPtr dom)
 static char *
 xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
-    xen_vm vm=NULL;
+    xen_vm vm = NULL;
     xen_vm_set *vms;
-    xen_string_string_map *result=NULL;
+    xen_string_string_map *result = NULL;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     virDomainDefPtr defPtr = NULL;
     char *boot_policy = NULL;
-    unsigned long memory=0;
-    int64_t dynamic_mem=0;
+    unsigned long memory = 0;
+    int64_t dynamic_mem = 0;
     char *val = NULL;
     struct xen_vif_set *vif_set = NULL;
     char *xml;
@@ -1700,9 +1700,9 @@ static virDomainPtr
 xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     struct _xenapiPrivate *priv = conn->privateData;
-    xen_vm_record *record=NULL;
-    xen_vm vm=NULL;
-    virDomainPtr domP=NULL;
+    xen_vm_record *record = NULL;
+    xen_vm vm = NULL;
+    virDomainPtr domP = NULL;
     if (!priv->caps)
         return NULL;
     virDomainDefPtr defPtr = virDomainDefParseString(xml,

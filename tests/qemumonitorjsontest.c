@@ -705,7 +705,7 @@ testQemuMonitorJSONAttachChardev(const void *data)
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
     CHECK("chr_null", "{\"return\": {}}");
 
-    chr = (virDomainChrSourceDef) { .type =VIR_DOMAIN_CHR_TYPE_VC };
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_VC };
     CHECK("chr_vc", "{\"return\": {}}");
 
 #define PTY_PATH "/dev/ttyS0"

@@ -557,7 +557,7 @@ learnIPAddressThread(void *arg)
                                        iphdr->ihl * 4 +
                                        sizeof(struct udphdr))) {
                         VIR_WARNINGS_NO_CAST_ALIGN
-                        struct udphdr *udphdr= (struct udphdr *)
+                        struct udphdr *udphdr = (struct udphdr *)
                                           ((char *)iphdr + iphdr->ihl * 4);
                         VIR_WARNINGS_RESET
                         if (ntohs(udphdr->source) == 67 &&

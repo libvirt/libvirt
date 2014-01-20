@@ -161,30 +161,30 @@ virNWFilterUnlockFilterUpdates(void) {
 /*
  * attribute names for the rules XML
  */
-static const char srcmacaddr_str[]   = "srcmacaddr";
-static const char srcmacmask_str[]   = "srcmacmask";
-static const char dstmacaddr_str[]   = "dstmacaddr";
-static const char dstmacmask_str[]   = "dstmacmask";
-static const char arpsrcmacaddr_str[]= "arpsrcmacaddr";
-static const char arpdstmacaddr_str[]= "arpdstmacaddr";
-static const char arpsrcipaddr_str[] = "arpsrcipaddr";
-static const char arpdstipaddr_str[] = "arpdstipaddr";
-static const char srcipaddr_str[]    = "srcipaddr";
-static const char srcipmask_str[]    = "srcipmask";
-static const char dstipaddr_str[]    = "dstipaddr";
-static const char dstipmask_str[]    = "dstipmask";
-static const char srcipfrom_str[]    = "srcipfrom";
-static const char srcipto_str[]      = "srcipto";
-static const char dstipfrom_str[]    = "dstipfrom";
-static const char dstipto_str[]      = "dstipto";
-static const char srcportstart_str[] = "srcportstart";
-static const char srcportend_str[]   = "srcportend";
-static const char dstportstart_str[] = "dstportstart";
-static const char dstportend_str[]   = "dstportend";
-static const char dscp_str[]         = "dscp";
-static const char state_str[]        = "state";
-static const char ipset_str[]        = "ipset";
-static const char ipsetflags_str[]   = "ipsetflags";
+static const char srcmacaddr_str[]    = "srcmacaddr";
+static const char srcmacmask_str[]    = "srcmacmask";
+static const char dstmacaddr_str[]    = "dstmacaddr";
+static const char dstmacmask_str[]    = "dstmacmask";
+static const char arpsrcmacaddr_str[] = "arpsrcmacaddr";
+static const char arpdstmacaddr_str[] = "arpdstmacaddr";
+static const char arpsrcipaddr_str[]  = "arpsrcipaddr";
+static const char arpdstipaddr_str[]  = "arpdstipaddr";
+static const char srcipaddr_str[]     = "srcipaddr";
+static const char srcipmask_str[]     = "srcipmask";
+static const char dstipaddr_str[]     = "dstipaddr";
+static const char dstipmask_str[]     = "dstipmask";
+static const char srcipfrom_str[]     = "srcipfrom";
+static const char srcipto_str[]       = "srcipto";
+static const char dstipfrom_str[]     = "dstipfrom";
+static const char dstipto_str[]       = "dstipto";
+static const char srcportstart_str[]  = "srcportstart";
+static const char srcportend_str[]    = "srcportend";
+static const char dstportstart_str[]  = "dstportstart";
+static const char dstportend_str[]    = "dstportend";
+static const char dscp_str[]          = "dscp";
+static const char state_str[]         = "state";
+static const char ipset_str[]         = "ipset";
+static const char ipsetflags_str[]    = "ipsetflags";
 
 #define SRCMACADDR    srcmacaddr_str
 #define SRCMACMASK    srcmacmask_str
@@ -1116,8 +1116,8 @@ static const virXMLAttr2Struct macAttributes[] = {
         .name = "protocolid",
         .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX | DATATYPE_STRING,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ethHdrFilter.dataProtocolID),
-        .validator= checkMacProtocolID,
-        .formatter= macProtocolIDFormatter,
+        .validator = checkMacProtocolID,
+        .formatter = macProtocolIDFormatter,
     },
     COMMENT_PROP(ethHdrFilter),
     {
@@ -1292,8 +1292,8 @@ static const virXMLAttr2Struct arpAttributes[] = {
         .name = "opcode",
         .datatype = DATATYPE_UINT16 | DATATYPE_UINT16_HEX | DATATYPE_STRING,
         .dataIdx = offsetof(virNWFilterRuleDef, p.arpHdrFilter.dataOpcode),
-        .validator= arpOpcodeValidator,
-        .formatter= arpOpcodeFormatter,
+        .validator = arpOpcodeValidator,
+        .formatter = arpOpcodeFormatter,
     }, {
         .name = ARPSRCMACADDR,
         .datatype = DATATYPE_MACADDR,
@@ -1347,8 +1347,8 @@ static const virXMLAttr2Struct ipAttributes[] = {
         .name = "protocol",
         .datatype = DATATYPE_STRING | DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataProtocolID),
-        .validator= checkIPProtocolID,
-        .formatter= formatIPProtocolID,
+        .validator = checkIPProtocolID,
+        .formatter = formatIPProtocolID,
     },
     {
         .name = SRCPORTSTART,
@@ -1409,8 +1409,8 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .name = "protocol",
         .datatype = DATATYPE_STRING | DATATYPE_UINT8 | DATATYPE_UINT8_HEX,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataProtocolID),
-        .validator= checkIPProtocolID,
-        .formatter= formatIPProtocolID,
+        .validator = checkIPProtocolID,
+        .formatter = formatIPProtocolID,
     },
     {
         .name = SRCPORTSTART,
@@ -2306,10 +2306,10 @@ virNWFilterRuleParse(xmlNodePtr node)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    action    = virXMLPropString(node, "action");
-    direction = virXMLPropString(node, "direction");
-    prio      = virXMLPropString(node, "priority");
-    statematch= virXMLPropString(node, "statematch");
+    action     = virXMLPropString(node, "action");
+    direction  = virXMLPropString(node, "direction");
+    prio       = virXMLPropString(node, "priority");
+    statematch = virXMLPropString(node, "statematch");
 
     if (!action) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

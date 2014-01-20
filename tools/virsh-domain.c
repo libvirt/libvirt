@@ -9846,11 +9846,11 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj=NULL;
+    xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
     char *detach_xml = NULL;
-    const char *mac =NULL, *type = NULL;
+    const char *mac = NULL, *type = NULL;
     char *doc = NULL;
     char buf[64];
     int diff_mac;
@@ -9986,7 +9986,7 @@ vshFindDisk(const char *doc,
             int type)
 {
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj= NULL;
+    xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL;
     xmlNodePtr ret = NULL;

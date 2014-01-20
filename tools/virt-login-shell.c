@@ -117,7 +117,7 @@ cleanup:
 static char **virLoginShellGetShellArgv(virConfPtr conf)
 {
     size_t i;
-    char **shargv=NULL;
+    char **shargv = NULL;
     virConfValuePtr p;
 
     p = virConfGetValue(conf, "shell");

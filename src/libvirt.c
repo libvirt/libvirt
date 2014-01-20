@@ -8264,7 +8264,7 @@ virDomainBlockResize(virDomainPtr dom,
 
     if (conn->driver->domainBlockResize) {
         int ret;
-        ret =conn->driver->domainBlockResize(dom, disk, size, flags);
+        ret = conn->driver->domainBlockResize(dom, disk, size, flags);
         if (ret < 0)
             goto error;
         return ret;
