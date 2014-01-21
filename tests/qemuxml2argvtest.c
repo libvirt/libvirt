@@ -637,6 +637,7 @@ mymain(void)
     DO_TEST("cpu-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM, QEMU_CAPS_CPU_HOST);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
+    DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
 
     DO_TEST("cpu-eoi-disabled", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("cpu-eoi-enabled", QEMU_CAPS_ENABLE_KVM);

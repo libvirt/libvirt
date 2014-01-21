@@ -726,7 +726,8 @@ VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "rtc",
               "hpet",
               "tsc",
-              "kvmclock");
+              "kvmclock",
+              "hypervclock");
 
 VIR_ENUM_IMPL(virDomainTimerTrack, VIR_DOMAIN_TIMER_TRACK_LAST,
               "boot",
@@ -2929,7 +2930,8 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     for (i = 0; i < def->clock.ntimers; i++) {
         virDomainTimerDefPtr timer = def->clock.timers[i];
 
-        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK) {
+        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK ||
+            timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK) {
             if (timer->tickpolicy != -1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("timer %s doesn't support setting of "

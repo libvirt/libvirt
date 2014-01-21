@@ -915,7 +915,10 @@
         </group>
         <group>
           <attribute name="name">
-            <value>kvmclock</value>
+            <choice>
+              <value>kvmclock</value>
+              <value>hypervclock</value>
+            </choice>
           </attribute>
         </group>
       </choice>

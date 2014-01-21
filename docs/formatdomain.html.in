@@ -1367,7 +1367,13 @@
             being modified, and can be one of
             "platform" (currently unsupported),
             "hpet" (libxl, xen, qemu), "kvmclock" (qemu),
-            "pit" (qemu), "rtc" (qemu), or "tsc" (libxl).
+            "pit" (qemu), "rtc" (qemu), "tsc" (libxl) or "hypervclock"
+            (qemu - <span class="since">since 1.2.2</span>).
+
+            The <code>hypervclock</code> timer adds support for the
+            reference time counter and the reference page for iTSC
+            feature for guests running the Microsoft Windows
+            operating system.
           </dd>
           <dt><code>track</code></dt>
           <dd>

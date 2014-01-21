@@ -160,6 +160,7 @@ mymain(void)
     DO_TEST("cpu-host-kvmclock");
     DO_TEST("clock-catchup");
     DO_TEST("kvmclock");
+    DO_TEST("clock-timer-hyperv-rtc");
 
     DO_TEST("cpu-eoi-disabled");
     DO_TEST("cpu-eoi-enabled");

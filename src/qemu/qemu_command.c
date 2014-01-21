@@ -6732,20 +6732,23 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         }
     }
 
-    /* Now force kvmclock on/off based on the corresponding <timer> element.  */
+    /* Handle paravirtual timers  */
     for (i = 0; i < def->clock.ntimers; i++) {
-        if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
-            def->clock.timers[i]->present != -1) {
-            char sign;
-            if (def->clock.timers[i]->present)
-                sign = '+';
-            else
-                sign = '-';
+        virDomainTimerDefPtr timer = def->clock.timers[i];
+
+        if (timer->present == -1)
+            continue;
+
+        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK) {
             virBufferAsprintf(&buf, "%s,%ckvmclock",
                               have_cpu ? "" : default_model,
-                              sign);
+                              timer->present ? '+' : '-');
             have_cpu = true;
-            break;
+        } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
+                   timer->present) {
+            virBufferAsprintf(&buf, "%s,hv_time",
+                              have_cpu ? "" : default_model);
+            have_cpu = true;
         }
     }
 
@@ -8007,8 +8010,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch (def->clock.timers[i]->name) {
-        default:
+        switch ((enum virDomainTimerNameType) def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
         case VIR_DOMAIN_TIMER_NAME_TSC:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -8017,7 +8019,9 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
 
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
-            /* This is handled when building -cpu.  */
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+            /* Timers above are handled when building -cpu.  */
+        case VIR_DOMAIN_TIMER_NAME_LAST:
             break;
 
         case VIR_DOMAIN_TIMER_NAME_RTC:
