@@ -674,6 +674,20 @@ cleanup:
     return ret;
 }
 
+static int
+virNodeCPUStatsAssign(virNodeCPUStatsPtr param,
+                      const char *name,
+                      unsigned long long value)
+{
+    if (virStrcpyStatic(param->field, name) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Field kernel cpu time too long for destination"));
+        return -1;
+    }
+    param->value = value;
+    return 0;
+}
+
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
 int
@@ -712,8 +726,6 @@ linuxNodeGetCPUStats(FILE *procstat,
         char *buf = line;
 
         if (STRPREFIX(buf, cpu_header)) { /* aka logical CPU time */
-            size_t i;
-
             if (sscanf(buf,
                        "%*s %llu %llu %llu %llu %llu" // user ~ iowait
                        "%llu %llu %llu %llu %llu",    // irq  ~ guest_nice
@@ -722,51 +734,22 @@ linuxNodeGetCPUStats(FILE *procstat,
                 continue;
             }
 
-            for (i = 0; i < *nparams; i++) {
-                virNodeCPUStatsPtr param = &params[i];
+            if (virNodeCPUStatsAssign(&params[0], VIR_NODE_CPU_STATS_KERNEL,
+                                      (sys + irq + softirq) * TICK_TO_NSEC) < 0)
+                goto cleanup;
 
-                switch (i) {
-                case 0: /* fill kernel cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_KERNEL) == NULL) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       "%s", _("Field kernel cpu time too long for destination"));
-                        goto cleanup;
-                    }
-                    param->value = (sys + irq + softirq) * TICK_TO_NSEC;
-                    break;
+            if (virNodeCPUStatsAssign(&params[1], VIR_NODE_CPU_STATS_USER,
+                                      (usr + ni) * TICK_TO_NSEC) < 0)
+                goto cleanup;
 
-                case 1: /* fill user cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_USER) == NULL) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       "%s", _("Field kernel cpu time too long for destination"));
-                        goto cleanup;
-                    }
-                    param->value = (usr + ni) * TICK_TO_NSEC;
-                    break;
+            if (virNodeCPUStatsAssign(&params[2], VIR_NODE_CPU_STATS_IDLE,
+                                      idle * TICK_TO_NSEC) < 0)
+                goto cleanup;
 
-                case 2: /* fill idle cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IDLE) == NULL) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       "%s", _("Field kernel cpu time too long for destination"));
-                        goto cleanup;
-                    }
-                    param->value = idle * TICK_TO_NSEC;
-                    break;
+            if (virNodeCPUStatsAssign(&params[3], VIR_NODE_CPU_STATS_IOWAIT,
+                                      iowait * TICK_TO_NSEC) < 0)
+                goto cleanup;
 
-                case 3: /* fill iowait cpu time here */
-                    if (virStrcpyStatic(param->field, VIR_NODE_CPU_STATS_IOWAIT) == NULL) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       "%s", _("Field kernel cpu time too long for destination"));
-                        goto cleanup;
-                    }
-                    param->value = iowait * TICK_TO_NSEC;
-                    break;
-
-                default:
-                    break;
-                    /* should not hit here */
-                }
-            }
             ret = 0;
             goto cleanup;
         }
