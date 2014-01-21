@@ -2621,6 +2621,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                     goto cleanup;
                 break;
 
+            /* coverity[dead_error_begin] */
             default:
                 break;
                 /* should not hit here */
@@ -2812,6 +2813,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 }
                 break;
 
+            /* coverity[dead_error_begin] */
             default:
                 break;
                 /* should not hit here */
