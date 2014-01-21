@@ -2566,7 +2566,7 @@ AC_ARG_WITH([ws-plugindir],
 
 if test "$with_wireshark_dissector" != "no" && test -z "$ws_plugindir"; then
     ws_version=`$WIRESHARK -v | head -1 | cut -f 2 -d' '`
-    ws_plugindir=`dirname $WIRESHARK`/../lib/wireshark/plugins/$ws_version
+    ws_plugindir="$libdir/wireshark/plugins/$ws_version"
 fi
 AC_SUBST([ws_plugindir])
 
