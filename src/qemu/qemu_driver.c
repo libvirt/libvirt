@@ -12206,7 +12206,7 @@ endjob:
 }
 
 static int
-qemuDomainSnapshotPrepareDiskExternalBacking(virDomainDiskDefPtr disk)
+qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
     int actualType = qemuDiskGetActualType(disk);
 
@@ -12242,6 +12242,23 @@ qemuDomainSnapshotPrepareDiskExternalBacking(virDomainDiskDefPtr disk)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external inactive snapshots are not supported on "
                          "'%s' disks"), virDomainDiskTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
+{
+    int actualType = qemuDiskGetActualType(disk);
+
+    if (actualType == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("external active snapshots are not supported on scsi "
+                         "passthrough devices"));
         return -1;
     }
 
@@ -12315,12 +12332,15 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
         if (qemuTranslateDiskSourcePool(conn, disk) < 0)
             return -1;
 
-        if (qemuDomainSnapshotPrepareDiskExternalBacking(disk) < 0)
+        if (qemuDomainSnapshotPrepareDiskExternalBackingInactive(disk) < 0)
             return -1;
 
         if (qemuDomainSnapshotPrepareDiskExternalOverlayInactive(snapdisk) < 0)
             return -1;
     } else {
+        if (qemuDomainSnapshotPrepareDiskExternalBackingActive(disk) < 0)
+            return -1;
+
         if (qemuDomainSnapshotPrepareDiskExternalOverlayActive(snapdisk) < 0)
             return -1;
     }
