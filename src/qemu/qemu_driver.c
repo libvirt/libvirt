@@ -1835,7 +1835,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
     if (agentRequested || (!flags && priv->agent))
         useAgent = true;
 
-    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (priv->agentError) {
@@ -1936,7 +1936,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     priv = vm->privateData;
 
-    if (virDomainRebootEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if ((flags & VIR_DOMAIN_REBOOT_GUEST_AGENT) ||
@@ -4898,7 +4898,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 
     priv = vm->privateData;
 
-    if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -13090,7 +13090,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, vm->def) < 0)
+    if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))

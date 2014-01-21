@@ -952,7 +952,7 @@ xenUnifiedDomainShutdownFlags(virDomainPtr dom,
     if (!(def = xenGetDomainDefForDom(dom)))
         goto cleanup;
 
-    if (virDomainShutdownFlagsEnsureACL(dom->conn, def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, def, flags) < 0)
         goto cleanup;
 
     ret = xenDaemonDomainShutdown(dom->conn, def);
@@ -979,7 +979,7 @@ xenUnifiedDomainReboot(virDomainPtr dom, unsigned int flags)
     if (!(def = xenGetDomainDefForDom(dom)))
         goto cleanup;
 
-    if (virDomainRebootEnsureACL(dom->conn, def) < 0)
+    if (virDomainRebootEnsureACL(dom->conn, def, flags) < 0)
         goto cleanup;
 
     ret = xenDaemonDomainReboot(dom->conn, def);
@@ -1526,7 +1526,7 @@ xenUnifiedDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     if (!(def = xenGetDomainDefForDom(dom)))
         goto cleanup;
 
-    if (virDomainGetVcpusFlagsEnsureACL(dom->conn, def) < 0)
+    if (virDomainGetVcpusFlagsEnsureACL(dom->conn, def, flags) < 0)
         goto cleanup;
 
     ret = xenUnifiedDomainGetVcpusFlagsInternal(dom, def, flags);

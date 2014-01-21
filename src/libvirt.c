@@ -3134,6 +3134,9 @@ error:
  * in which the hypervisor tries each shutdown method is undefined,
  * and a hypervisor is not required to support all methods.
  *
+ * To use guest agent (VIR_DOMAIN_SHUTDOWN_GUEST_AGENT) the domain XML
+ * must have <channel> configured.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -3180,7 +3183,7 @@ error:
  *
  * If @flags is set to zero, then the hypervisor will choose the
  * method of shutdown it considers best. To have greater control
- * pass one or more of the virDomainShutdownFlagValues. The order
+ * pass one or more of the virDomainRebootFlagValues. The order
  * in which the hypervisor tries each shutdown method is undefined,
  * and a hypervisor is not required to support all methods.
  *
@@ -9347,7 +9350,7 @@ error:
  * current virtual CPU count.
  *
  * If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of the processors
- * is modified in the guest instead of the hypervisor. This flag is only usable
+ * is queried in the guest instead of the hypervisor. This flag is only usable
  * on live domains. Guest agent may be needed for this flag to be available.
  *
  * Returns the number of vCPUs in case of success, -1 in case of failure.
@@ -9362,6 +9365,10 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     virResetLastError();
 
     virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    if (flags & VIR_DOMAIN_VCPU_GUEST)
+        virCheckReadOnlyGoto(conn->flags, error);
 
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
@@ -9372,7 +9379,6 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
                             __FUNCTION__);
         goto error;
     }
-    conn = domain->conn;
 
     if (conn->driver->domainGetVcpusFlags) {
         int ret;

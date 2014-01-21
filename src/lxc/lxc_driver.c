@@ -3335,7 +3335,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -3415,7 +3415,7 @@ lxcDomainReboot(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (virDomainRebootEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {

@@ -1635,7 +1635,7 @@ static int umlDomainShutdownFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
 #if 0

@@ -3105,6 +3105,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @acl: domain:init_control
+     * @acl: domain:write:VIR_DOMAIN_REBOOT_GUEST_AGENT
      */
     REMOTE_PROC_DOMAIN_REBOOT = 27,
 
@@ -4198,6 +4199,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @acl: domain:snapshot
+     * @acl: domain:write:VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE
      */
     REMOTE_PROC_DOMAIN_SNAPSHOT_CREATE_XML = 185,
 
@@ -4290,12 +4292,14 @@ enum remote_procedure {
      * @acl: domain:write
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     * @acl: domain:write:VIR_DOMAIN_VCPU_GUEST
      */
     REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
 
     /**
      * @generate: both
      * @acl: domain:read
+     * @acl: domain:write:VIR_DOMAIN_VCPU_GUEST
      */
     REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
 
@@ -4682,6 +4686,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @acl: domain:init_control
+     * @acl: domain:write:VIR_DOMAIN_SHUTDOWN_GUEST_AGENT
      */
     REMOTE_PROC_DOMAIN_SHUTDOWN_FLAGS = 258,
 
