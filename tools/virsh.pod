@@ -2650,6 +2650,15 @@ Refresh the list of volumes contained in I<pool>.
 
 Start the storage I<pool>, which is previously defined but inactive.
 
+B<Note>: A storage pool that relies on remote resources such as an
+"iscsi" or a (v)HBA backed "scsi" pool may need to be refreshed multiple
+times in order to have all the volumes detected (see B<pool-refresh>).
+This is because the corresponding volume devices may not be present in
+the host's filesystem during the initial pool startup or the current
+refresh attempt. The number of refresh retries is dependant upon the
+network connection and the time the host takes to export the
+corresponding devices.
+
 =item B<pool-undefine> I<pool-or-uuid>
 
 Undefine the configuration for an inactive I<pool>.

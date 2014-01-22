@@ -495,6 +495,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
     DIR *devicedir = NULL;
     struct dirent *lun_dirent = NULL;
     char devicepattern[64];
+    bool found = false;
 
     VIR_DEBUG("Discovering LUs on host %u", scanhost);
 
@@ -516,10 +517,14 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
             continue;
         }
 
+        found = true;
         VIR_DEBUG("Found LU '%s'", lun_dirent->d_name);
 
         processLU(pool, scanhost, bus, target, lun);
     }
+
+    if (!found)
+        VIR_DEBUG("No LU found for pool %s", pool->def->name);
 
     closedir(devicedir);
 
