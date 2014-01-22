@@ -297,11 +297,14 @@ If I<cell> is specified, this will prints specified cell statistics only.
 
 =item B<nodesuspend> [I<target>] [I<duration>]
 
-Puts the node (host machine) into a system-wide sleep state such as
-Suspend-to-RAM, Suspend-to-Disk or Hybrid-Suspend and sets up a
-Real-Time-Clock interrupt to fire (to wake up the node) after a time delay
-specified by the 'duration' parameter. The duration time should be
-at least 60 seconds.
+Puts the node (host machine) into a system-wide sleep state and schedule
+the node's Real-Time-Clock interrupt to resume the node after the time
+duration specified by I<duration> is out.
+I<target> specifies the state to which the host will be suspended to, it
+can be "mem" (suspend to RAM), "disk" (suspend to disk), or "hybrid"
+(suspend to both RAM and disk).  I<duration> specifies the time duration
+in seconds for which the host has to be suspended, it should be at least
+60 seconds.
 
 =item B<node-memory-tune> [I<shm-pages-to-scan>] [I<shm-sleep-millisecs>]
 
