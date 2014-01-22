@@ -1302,7 +1302,7 @@ cleanup:
 int
 qemuDiskGetActualType(virDomainDiskDefPtr def)
 {
-    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME)
+    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool)
         return def->srcpool->actualtype;
 
     return def->type;
