@@ -55,30 +55,53 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
     NULL
 };
 
+/* Serializes instantiation of filters. This is necessary
+ * to avoid lock ordering deadlocks. eg __virNWFilterInstantiateFilter
+ * will hold a lock on a virNWFilterObjPtr. This in turn invokes
+ * virNWFilterInstantiate which invokes virNWFilterDetermineMissingVarsRec
+ * which invokes virNWFilterObjFindByName. This iterates over every single
+ * virNWFilterObjPtr in the list. So if 2 threads try to instantiate a
+ * filter in parallel, they'll both hold 1 lock at the top level in
+ * __virNWFilterInstantiateFilter which will cause the other thread
+ * to deadlock in virNWFilterObjFindByName.
+ *
+ * XXX better long term solution is to make virNWFilterObjList use a
+ * hash table as is done for virDomainObjList. You can then get
+ * lockless lookup of objects by name.
+ */
+static virMutex updateMutex;
 
-void virNWFilterTechDriversInit(bool privileged) {
+int virNWFilterTechDriversInit(bool privileged)
+{
     int i = 0;
     VIR_DEBUG("Initializing NWFilter technology drivers");
+    if (virMutexInitRecursive(&updateMutex) < 0)
+        return -1;
+
     while (filter_tech_drivers[i]) {
         if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->init(privileged);
         i++;
     }
+    return 0;
 }
 
 
-void virNWFilterTechDriversShutdown(void) {
+void virNWFilterTechDriversShutdown(void)
+{
     int i = 0;
     while (filter_tech_drivers[i]) {
         if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->shutdown();
         i++;
     }
+    virMutexDestroy(&updateMutex);
 }
 
 
 virNWFilterTechDriverPtr
-virNWFilterTechDriverForName(const char *name) {
+virNWFilterTechDriverForName(const char *name)
+{
     int i = 0;
     while (filter_tech_drivers[i]) {
        if (STREQ(filter_tech_drivers[i]->name, name)) {
@@ -947,6 +970,8 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
     int ifindex;
     int rc;
 
+    virMutexLock(&updateMutex);
+
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
        (while holding the lock) and we don't want to build new ones */
@@ -974,6 +999,8 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                         foundNewFilter);
 
 cleanup:
+    virMutexUnlock(&updateMutex);
+
     return rc;
 }
 
@@ -993,6 +1020,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
     bool foundNewFilter = false;
 
     virNWFilterReadLockFilterUpdates();
+    virMutexLock(&updateMutex);
 
     rc = __virNWFilterInstantiateFilter(driver,
                                         vmuuid,
@@ -1018,6 +1046,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
     }
 
     virNWFilterUnlockFilterUpdates();
+    virMutexUnlock(&updateMutex);
 
     return rc;
 }
@@ -1141,7 +1170,11 @@ _virNWFilterTeardownFilter(const char *ifname)
 int
 virNWFilterTeardownFilter(const virDomainNetDefPtr net)
 {
-    return _virNWFilterTeardownFilter(net->ifname);
+    int ret;
+    virMutexLock(&updateMutex);
+    ret = _virNWFilterTeardownFilter(net->ifname);
+    virMutexUnlock(&updateMutex);
+    return ret;
 }
 
 
