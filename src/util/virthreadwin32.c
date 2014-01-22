@@ -121,6 +121,25 @@ void virMutexUnlock(virMutexPtr m)
 }
 
 
+int virRWLockInit(virRWLockPtr m ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+void virRWLockDestroy(virRWLockPtr m ATTRIBUTE_UNUSED)
+{}
+
+
+void virRWLockRead(virRWLockPtr m ATTRIBUTE_UNUSED)
+{}
+
+void virRWLockWrite(virRWLockPtr m ATTRIBUTE_UNUSED)
+{}
+
+
+void virRWLockUnlock(virRWLockPtr m ATTRIBUTE_UNUSED)
+{}
 
 int virCondInit(virCondPtr c)
 {
