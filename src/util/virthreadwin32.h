@@ -30,6 +30,10 @@ struct virMutex {
     HANDLE lock;
 };
 
+struct virRWLock {
+    bool ignored;
+};
+
 struct virCond {
     virMutex lock;
     size_t nwaiters;
