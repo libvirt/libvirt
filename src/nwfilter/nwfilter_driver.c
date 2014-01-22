@@ -197,7 +197,8 @@ nwfilterDriverStartup(bool privileged,
     if (virNWFilterDHCPSnoopInit() < 0)
         goto err_exit_learnshutdown;
 
-    virNWFilterTechDriversInit(privileged);
+    if (virNWFilterTechDriversInit(privileged) < 0)
+        goto err_dhcpsnoop_shutdown;
 
     if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB,
                                  driverState) < 0)
@@ -250,6 +251,7 @@ error:
 
 err_techdrivers_shutdown:
     virNWFilterTechDriversShutdown();
+err_dhcpsnoop_shutdown:
     virNWFilterDHCPSnoopShutdown();
 err_exit_learnshutdown:
     virNWFilterLearnShutdown();
@@ -332,10 +334,10 @@ nwfilterDriverShutdown(void) {
 
     if (driverState->privileged) {
         virNWFilterConfLayerShutdown();
-        virNWFilterTechDriversShutdown();
         virNWFilterDHCPSnoopShutdown();
         virNWFilterLearnShutdown();
         virNWFilterIPAddrMapShutdown();
+        virNWFilterTechDriversShutdown();
 
         nwfilterDriverLock(driverState);
 
