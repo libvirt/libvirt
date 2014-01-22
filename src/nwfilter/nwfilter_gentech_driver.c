@@ -935,8 +935,6 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
     int ifindex;
     int rc;
 
-    virNWFilterLockFilterUpdates();
-
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
        (while holding the lock) and we don't want to build new ones */
@@ -964,8 +962,6 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
                                         foundNewFilter);
 
 cleanup:
-    virNWFilterUnlockFilterUpdates();
-
     return rc;
 }
 
@@ -984,7 +980,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
     int rc;
     bool foundNewFilter = false;
 
-    virNWFilterLockFilterUpdates();
+    virNWFilterReadLockFilterUpdates();
 
     rc = __virNWFilterInstantiateFilter(driver,
                                         vmuuid,

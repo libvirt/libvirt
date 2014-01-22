@@ -575,7 +575,6 @@ virNWFilterDefParseString;
 virNWFilterInstFiltersOnAllVMs;
 virNWFilterJumpTargetTypeToString;
 virNWFilterLoadAllConfigs;
-virNWFilterLockFilterUpdates;
 virNWFilterObjAssignDef;
 virNWFilterObjDeleteDef;
 virNWFilterObjFindByName;
@@ -587,6 +586,7 @@ virNWFilterObjSaveDef;
 virNWFilterObjUnlock;
 virNWFilterPrintStateMatchFlags;
 virNWFilterPrintTCPFlags;
+virNWFilterReadLockFilterUpdates;
 virNWFilterRegisterCallbackDriver;
 virNWFilterRuleActionTypeToString;
 virNWFilterRuleDirectionTypeToString;
@@ -594,6 +594,7 @@ virNWFilterRuleProtocolTypeToString;
 virNWFilterTestUnassignDef;
 virNWFilterUnlockFilterUpdates;
 virNWFilterUnRegisterCallbackDriver;
+virNWFilterWriteLockFilterUpdates;
 
 
 # conf/nwfilter_ipaddrmap.h
