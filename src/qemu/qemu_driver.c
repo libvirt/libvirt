@@ -1570,6 +1570,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
         start_flags |= VIR_QEMU_PROCESS_START_AUTODESTROY;
 
+    virNWFilterReadLockFilterUpdates();
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -1647,6 +1649,7 @@ cleanup:
     }
     virObjectUnref(caps);
     virObjectUnref(qemuCaps);
+    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 
@@ -6101,6 +6104,8 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_START_BYPASS_CACHE |
                   VIR_DOMAIN_START_FORCE_BOOT, -1);
 
+    virNWFilterReadLockFilterUpdates();
+
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
@@ -6128,6 +6133,7 @@ endjob:
 cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
