@@ -141,8 +141,6 @@ UTIL_SOURCES =							\
 		util/virsysinfo.c util/virsysinfo.h		\
 		util/virsystemd.c util/virsystemd.h		\
 		util/virthread.c util/virthread.h		\
-		util/virthreadpthread.h				\
-		util/virthreadwin32.h				\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtime.h util/virtime.c			\
 		util/virtpm.h util/virtpm.c			\
@@ -164,8 +162,6 @@ util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py \
 	  <$(srcdir)/util/keymaps.csv >$(srcdir)/util/virkeymaps.h
-
-EXTRA_DIST += util/virthreadpthread.c util/virthreadwin32.c
 
 # Internal generic driver infrastructure
 NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c nodeinfopriv.h

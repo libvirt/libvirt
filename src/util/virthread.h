@@ -25,23 +25,56 @@
 # include "internal.h"
 # include "virerror.h"
 
+# include <pthread.h>
+
 typedef struct virMutex virMutex;
 typedef virMutex *virMutexPtr;
+
+struct virMutex {
+    pthread_mutex_t lock;
+};
 
 typedef struct virRWLock virRWLock;
 typedef virRWLock *virRWLockPtr;
 
+struct virRWLock {
+    pthread_rwlock_t lock;
+};
+
+
 typedef struct virCond virCond;
 typedef virCond *virCondPtr;
+
+struct virCond {
+    pthread_cond_t cond;
+};
 
 typedef struct virThreadLocal virThreadLocal;
 typedef virThreadLocal *virThreadLocalPtr;
 
+struct virThreadLocal {
+    pthread_key_t key;
+};
+
 typedef struct virThread virThread;
 typedef virThread *virThreadPtr;
 
+struct virThread {
+    pthread_t thread;
+};
+
 typedef struct virOnceControl virOnceControl;
 typedef virOnceControl *virOnceControlPtr;
+
+struct virOnceControl {
+    pthread_once_t once;
+};
+
+
+# define VIR_ONCE_CONTROL_INITIALIZER \
+    {                                 \
+        .once = PTHREAD_ONCE_INIT     \
+    }
 
 typedef void (*virOnceFunc)(void);
 
@@ -120,14 +153,6 @@ int virThreadLocalInit(virThreadLocalPtr l,
                        virThreadLocalCleanup c) ATTRIBUTE_RETURN_CHECK;
 void *virThreadLocalGet(virThreadLocalPtr l);
 int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
-
-# ifdef WIN32
-#  include "virthreadwin32.h"
-# elif defined HAVE_PTHREAD_MUTEXATTR_INIT
-#  include "virthreadpthread.h"
-# else
-#  error "Either pthreads or Win32 threads are required"
-# endif
 
 
 /**

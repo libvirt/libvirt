@@ -270,12 +270,21 @@ AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
   setrlimit symlink sysctlbyname])
 
-dnl Availability of pthread functions (if missing, win32 threading is
-dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
-dnl LIB_PTHREAD and LIBMULTITHREAD were set during gl_INIT by gnulib.
+dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
+dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD
+dnl were set during gl_INIT by gnulib.
 old_LIBS=$LIBS
 LIBS="$LIBS $LIB_PTHREAD $LIBMULTITHREAD"
+
+pthread_found=yes
 AC_CHECK_FUNCS([pthread_mutexattr_init])
+AC_CHECK_HEADER([pthread.h],,[pthread_found=no])
+
+if test "$ac_cv_func_pthread_mutexattr_init:$pthread_found" != "yes:yes"
+then
+  AC_MSG_ERROR([A pthreads impl is required for building libvirt])
+fi
+
 dnl At least mingw64-winpthreads #defines pthread_sigmask to 0,
 dnl which in turn causes compilation to complain about unused variables.
 dnl Expose this broken implementation, so we can work around it.
