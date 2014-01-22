@@ -1469,6 +1469,7 @@ virNetDevBandwidthClear;
 virNetDevBandwidthCopy;
 virNetDevBandwidthEqual;
 virNetDevBandwidthFree;
+virNetDevBandwidthMinimal;
 virNetDevBandwidthPlug;
 virNetDevBandwidthSet;
 virNetDevBandwidthUnplug;

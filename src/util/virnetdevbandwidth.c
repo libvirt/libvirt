@@ -27,6 +27,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -586,5 +587,88 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(rate);
     VIR_FREE(ceil);
+    return ret;
+}
+
+static void
+virNetDevBandwidthRateMinimal(virNetDevBandwidthRatePtr result,
+                              virNetDevBandwidthRatePtr band1,
+                              virNetDevBandwidthRatePtr band2)
+{
+    if (!band1 || !band2) {
+        memcpy(result, band1 ? band1 : band2, sizeof(*result));
+        return;
+    }
+
+    /* We can't do a simple MIN() here, because zero value doesn't mean the
+     * narrowest limit, but an unset value. Hence we need symmetric F(a, b)
+     * so that:
+     * F(a, 0) = F(0, a) = a; special corner case: F(0, 0) = 0
+     * F(a, b) = MIN(a, b) for a != 0 and b != 0
+     */
+#define NON_ZERO_MIN(a, b) \
+    ((a) && (b) ? MIN(a, b) : (a) ? (a) : (b))
+
+    result->average = NON_ZERO_MIN(band1->average, band2->average);
+    result->peak    = NON_ZERO_MIN(band1->peak,    band2->peak);
+    result->floor   = NON_ZERO_MIN(band1->floor,   band2->floor);
+    result->burst   = NON_ZERO_MIN(band1->burst,   band2->burst);
+}
+
+/**
+ * virNetDevBandwidthMinimal:
+ * @result: the minimal intersect of @band1 and @band2
+ * @band1: the first bandwidth
+ * @band2: the second bandwidth
+ *
+ * Combine the two bandwidths into one with choosing the minimal value for each
+ * pair of items within bandwidth structure. The resulting bandwidth is stored
+ * into @result. In case of both @band1 and @band2 being NULL pointers, the
+ * @ret is set to NULL as well as there's no bandwidth to calculate (this is
+ * not considered an error). The caller is responsible for freeing @result when
+ * no longer needed.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virNetDevBandwidthMinimal(virNetDevBandwidthPtr *result,
+                          virNetDevBandwidthPtr band1,
+                          virNetDevBandwidthPtr band2)
+{
+    int ret = -1;
+
+    if (!band1 && !band2) {
+        /* Nothing to compute */
+        *result = NULL;
+        return 0;
+    }
+
+    if (!band1 || !band2) {
+        /* Sweet, one of the args is NULL. The non-NULL one
+         * is our minimum then. */
+        return virNetDevBandwidthCopy(result, band1 ? band1 : band2);
+    }
+
+    if (VIR_ALLOC(*result) < 0)
+        goto cleanup;
+
+    if (band1->in || band2->in) {
+        if (VIR_ALLOC((*result)->in) < 0)
+            goto cleanup;
+
+        virNetDevBandwidthRateMinimal((*result)->in, band1->in, band2->in);
+    }
+
+    if (band1->out || band2->out) {
+        if (VIR_ALLOC((*result)->out) < 0)
+            goto cleanup;
+
+        virNetDevBandwidthRateMinimal((*result)->out, band1->out, band2->out);
+    }
+
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        VIR_FREE(*result);
     return ret;
 }

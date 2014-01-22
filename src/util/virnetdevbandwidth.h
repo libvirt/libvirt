@@ -74,4 +74,10 @@ int virNetDevBandwidthUpdateRate(const char *ifname,
                                  unsigned long long new_rate)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
+
+int
+virNetDevBandwidthMinimal(virNetDevBandwidthPtr *result,
+                          virNetDevBandwidthPtr band1,
+                          virNetDevBandwidthPtr band2)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_NETDEV_BANDWIDTH_H__ */
