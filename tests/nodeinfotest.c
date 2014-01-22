@@ -7,7 +7,7 @@
 
 #include "testutils.h"
 #include "internal.h"
-#include "nodeinfo.h"
+#include "nodeinfopriv.h"
 #include "virfile.h"
 #include "virstring.h"
 
@@ -26,10 +26,6 @@ main(void)
 }
 
 #else
-
-extern int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                                    char *sysfs_dir,
-                                    virNodeInfoPtr nodeinfo);
 
 static int
 linuxTestCompareFiles(const char *cpuinfofile,

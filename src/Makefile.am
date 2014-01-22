@@ -168,7 +168,7 @@ util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 EXTRA_DIST += util/virthreadpthread.c util/virthreadwin32.c
 
 # Internal generic driver infrastructure
-NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c
+NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c nodeinfopriv.h
 DATATYPES_SOURCES = datatypes.h datatypes.c
 DRIVER_SOURCES =							\
 		driver.c driver.h					\

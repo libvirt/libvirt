@@ -40,7 +40,7 @@
 
 #include "c-ctype.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
+#include "nodeinfopriv.h"
 #include "physmem.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -188,11 +188,6 @@ freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
 # define LINUX_NB_CPU_STATS 4
 # define LINUX_NB_MEMORY_STATS_ALL 4
 # define LINUX_NB_MEMORY_STATS_CELL 2
-
-/* NB, this is not static as we need to call it from the testsuite */
-int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             const char *sysfs_dir,
-                             virNodeInfoPtr nodeinfo);
 
 /* Return the positive decimal contents of the given
  * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
