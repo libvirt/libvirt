@@ -28,6 +28,9 @@
 typedef struct virMutex virMutex;
 typedef virMutex *virMutexPtr;
 
+typedef struct virRWLock virRWLock;
+typedef virRWLock *virRWLockPtr;
+
 typedef struct virCond virCond;
 typedef virCond *virCondPtr;
 
@@ -88,6 +91,13 @@ void virMutexDestroy(virMutexPtr m);
 void virMutexLock(virMutexPtr m);
 void virMutexUnlock(virMutexPtr m);
 
+
+int virRWLockInit(virRWLockPtr m) ATTRIBUTE_RETURN_CHECK;
+void virRWLockDestroy(virRWLockPtr m);
+
+void virRWLockRead(virRWLockPtr m);
+void virRWLockWrite(virRWLockPtr m);
+void virRWLockUnlock(virRWLockPtr m);
 
 
 int virCondInit(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
