@@ -516,7 +516,7 @@ static const vshCmdInfo info_nodesuspend[] = {
     },
     {.name = "desc",
      .data = N_("Suspend the host node for a given time duration "
-                               "and attempt to resume thereafter.")
+                "and attempt to resume thereafter.")
     },
     {.name = NULL}
 };
@@ -525,8 +525,8 @@ static const vshCmdOptDef opts_node_suspend[] = {
     {.name = "target",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("mem(Suspend-to-RAM), "
-                "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")
+     .help = N_("mem(Suspend-to-RAM), disk(Suspend-to-Disk), "
+                "hybrid(Hybrid-Suspend)")
     },
     {.name = "duration",
      .type = VSH_OT_INT,
