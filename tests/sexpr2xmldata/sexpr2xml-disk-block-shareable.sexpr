@@ -1,6 +1,0 @@
-(domain (domid 6)(name 'pvtest')(memory 384)(maxmem 512)(vcpus 1)\
-(uuid '49a0c6ffc066539264983632d093c2e7')(bootloader '/usr/bin/pygrub')\
-(on_poweroff 'destroy')(on_reboot 'restart')(on_crash 'restart')\
-(device (tap (dev 'xvda')(uname 'tap:aio:/var/lib/xen/images/rhel5pv.img')\
-(mode 'w!')))(device (vif (mac '00:16:3e:23:9e:eb')(bridge 'xenbr0')\
-(script 'vif-bridge'))))

@@ -1,4 +1,0 @@
-<cpu match='minimum'>
-  <model>Penryn</model>
-  <feature name='bogus' policy='optional'/>
-</cpu>

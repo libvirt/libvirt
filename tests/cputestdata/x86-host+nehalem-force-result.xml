@@ -1,4 +1,0 @@
-<cpu mode='custom' match='exact'>
-  <arch>x86_64</arch>
-  <model fallback='allow'>Nehalem</model>
-</cpu>

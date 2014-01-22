@@ -1,3 +1,0 @@
-<cpu mode='custom' match='exact'>
-  <model fallback='allow'>Opteron_G1</model>
-</cpu>

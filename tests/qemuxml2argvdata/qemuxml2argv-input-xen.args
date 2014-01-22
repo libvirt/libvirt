@@ -1,5 +1,0 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/xenner -S -M xenner -m 214 -smp 1 -domid 6 -monitor \
-unix:/tmp/test-monitor,server,nowait -no-acpi -bootloader /foo -usb -hda \
-/dev/HostVG/QEMUGuest1 -net none -serial none -parallel none -vnc \
-127.0.0.1:3

@@ -1,4 +1,0 @@
-<filter name='no-arp-spoofing' chain='root'>
-  <filterref filter='no-arp-mac-spoofing'/>
-  <filterref filter='no-arp-ip-spoofing'/>
-</filter>

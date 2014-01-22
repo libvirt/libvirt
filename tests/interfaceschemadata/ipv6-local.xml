@@ -1,5 +1,0 @@
-<interface type='ethernet' name='eth0'>
-  <start mode='onboot'/>
-  <protocol family='ipv6'>
-  </protocol>
-</interface>

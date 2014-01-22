@@ -1,4 +1,0 @@
-<cpu match='exact'>
-  <model>Penryn</model>
-  <feature name='vmx' policy='disable'/>
-</cpu>

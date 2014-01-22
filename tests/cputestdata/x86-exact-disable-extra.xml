@@ -1,4 +1,0 @@
-<cpu match='exact'>
-  <model>Penryn</model>
-  <feature name='3dnowext' policy='disable'/>
-</cpu>

@@ -1,3 +1,0 @@
-@DNSMASQ@ --strict-order \
---local=// --domain-needed --conf-file= \
---except-interface lo --bind-dynamic --interface virbr1\

@@ -1,3 +1,0 @@
-<cpu match='strict'>
-  <model>Penryn</model>
-</cpu>
