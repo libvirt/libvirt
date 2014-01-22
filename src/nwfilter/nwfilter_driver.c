@@ -284,12 +284,14 @@ nwfilterStateReload(void)
     virNWFilterLearnThreadsTerminate(true);
 
     nwfilterDriverLock(driverState);
+    virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
     virNWFilterLoadAllConfigs(&driverState->nwfilters,
                               driverState->configDir);
 
     virNWFilterCallbackDriversUnlock();
+    virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock(driverState);
 
     virNWFilterInstFiltersOnAllVMs();
@@ -540,6 +542,7 @@ nwfilterDefineXML(virConnectPtr conn,
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock(driver);
+    virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
     if (!(def = virNWFilterDefParseString(xml)))
@@ -566,6 +569,7 @@ cleanup:
         virNWFilterObjUnlock(nwfilter);
 
     virNWFilterCallbackDriversUnlock();
+    virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock(driver);
     return ret;
 }
@@ -578,9 +582,8 @@ nwfilterUndefine(virNWFilterPtr obj) {
     int ret = -1;
 
     nwfilterDriverLock(driver);
+    virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
-
-    virNWFilterLockFilterUpdates();
 
     nwfilter = virNWFilterObjFindByUUID(&driver->nwfilters, obj->uuid);
     if (!nwfilter) {
@@ -612,9 +615,8 @@ cleanup:
     if (nwfilter)
         virNWFilterObjUnlock(nwfilter);
 
-    virNWFilterUnlockFilterUpdates();
-
     virNWFilterCallbackDriversUnlock();
+    virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock(driver);
     return ret;
 }

@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010-2011 IBM Corporation
@@ -143,17 +143,22 @@ static const struct int_map chain_priorities[] = {
 /*
  * only one filter update allowed
  */
-static virMutex updateMutex;
+static virRWLock updateLock;
 static bool initialized = false;
 
 void
-virNWFilterLockFilterUpdates(void) {
-    virMutexLock(&updateMutex);
+virNWFilterReadLockFilterUpdates(void) {
+    virRWLockRead(&updateLock);
+}
+
+void
+virNWFilterWriteLockFilterUpdates(void) {
+    virRWLockWrite(&updateLock);
 }
 
 void
 virNWFilterUnlockFilterUpdates(void) {
-    virMutexUnlock(&updateMutex);
+    virRWLockUnlock(&updateLock);
 }
 
 
@@ -2992,14 +2997,12 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         return NULL;
     }
 
-    virNWFilterLockFilterUpdates();
 
     if ((nwfilter = virNWFilterObjFindByName(nwfilters, def->name))) {
 
         if (virNWFilterDefEqual(def, nwfilter->def, false)) {
             virNWFilterDefFree(nwfilter->def);
             nwfilter->def = def;
-            virNWFilterUnlockFilterUpdates();
             return nwfilter;
         }
 
@@ -3007,7 +3010,6 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         /* trigger the update on VMs referencing the filter */
         if (virNWFilterTriggerVMFilterRebuild()) {
             nwfilter->newDef = NULL;
-            virNWFilterUnlockFilterUpdates();
             virNWFilterObjUnlock(nwfilter);
             return NULL;
         }
@@ -3015,11 +3017,8 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         virNWFilterDefFree(nwfilter->def);
         nwfilter->def = def;
         nwfilter->newDef = NULL;
-        virNWFilterUnlockFilterUpdates();
         return nwfilter;
     }
-
-    virNWFilterUnlockFilterUpdates();
 
     if (VIR_ALLOC(nwfilter) < 0) {
         virReportOOMError();
@@ -3492,7 +3491,7 @@ int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB,
 
     initialized = true;
 
-    if (virMutexInitRecursive(&updateMutex) < 0)
+    if (virRWLockInit(&updateLock) < 0)
         return -1;
 
     return 0;
@@ -3504,7 +3503,7 @@ void virNWFilterConfLayerShutdown(void)
     if (!initialized)
         return;
 
-    virMutexDestroy(&updateMutex);
+    virRWLockDestroy(&updateLock);
 
     initialized = false;
     virNWFilterDomainFWUpdateOpaque = NULL;

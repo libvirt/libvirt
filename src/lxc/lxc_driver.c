@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -1102,6 +1102,8 @@ static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
+    virNWFilterReadLockFilterUpdates();
+
     lxcDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
@@ -1146,6 +1148,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -1183,6 +1186,8 @@ lxcDomainCreateXML(virConnectPtr conn,
     virDomainEventPtr event = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
+
+    virNWFilterReadLockFilterUpdates();
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
@@ -1235,6 +1240,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
+    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 
