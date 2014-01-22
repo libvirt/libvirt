@@ -307,6 +307,7 @@ in seconds for which the host has to be suspended, it should be at least
 60 seconds.
 
 =item B<node-memory-tune> [I<shm-pages-to-scan>] [I<shm-sleep-millisecs>]
+I<shm-merge-across-nodes>
 
 Allows you to display or set the node memory parameters.
 I<shm-pages-to-scan> can be used to set the number of pages to scan
@@ -316,6 +317,9 @@ sleep before next scan; I<shm-merge-across-nodes> specifies if pages from
 different numa nodes can be merged. When set to 0, only pages which physically
 reside in the memory area of same NUMA node can be merged. When set to 1,
 pages from all nodes can be merged. Default to 1.
+
+B<Note>: Currently the "shared memory service" only means KSM (Kernel Samepage
+Merging).
 
 =item B<capabilities>
 
