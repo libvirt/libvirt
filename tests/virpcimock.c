@@ -320,16 +320,33 @@ pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
     char *devpath;
+    char *id;
+    char *c;
     char *configSrc;
     char tmp[32];
     struct stat sb;
 
+    if (VIR_STRDUP_QUIET(id, data->id) < 0)
+        ABORT_OOM();
+
+    /* Replace ':' with '-' to create the config filename from the
+     * device ID. The device ID cannot be used directly as filename
+     * because it contains ':' and Windows does not allow ':' in
+     * filenames. */
+    c = strchr(id, ':');
+
+    while (c) {
+        *c = '-';
+        c = strchr(c, ':');
+    }
+
     if (VIR_ALLOC_QUIET(dev) < 0 ||
         virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config",
-                         abs_srcdir, data->id) < 0 ||
+                         abs_srcdir, id) < 0 ||
         virAsprintfQuiet(&devpath, "%s/devices/%s", fakesysfsdir, data->id) < 0)
         ABORT_OOM();
 
+    VIR_FREE(id);
     memcpy(dev, data, sizeof(*dev));
 
     if (virFileMakePath(devpath) < 0)
