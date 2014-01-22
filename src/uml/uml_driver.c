@@ -1493,6 +1493,7 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
+    virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
                                         1 << VIR_DOMAIN_VIRT_UML,
@@ -1530,6 +1531,7 @@ cleanup:
     if (event)
         umlDomainEventQueue(driver, event);
     umlDriverUnlock(driver);
+    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 
@@ -1878,6 +1880,7 @@ static int umlDomainStartWithFlags(virDomainPtr dom, unsigned int flags) {
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
+    virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
@@ -1901,6 +1904,7 @@ cleanup:
     if (event)
         umlDomainEventQueue(driver, event);
     umlDriverUnlock(driver);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 

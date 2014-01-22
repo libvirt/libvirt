@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1461,6 +1461,8 @@ static virDomainPtr qemuDomainCreate(virConnectPtr conn, const char *xml,
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
         start_flags |= VIR_QEMU_PROCESS_START_AUTODESTROY;
 
+    virNWFilterReadLockFilterUpdates();
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -1536,6 +1538,7 @@ cleanup:
     }
     virObjectUnref(caps);
     virObjectUnref(qemuCaps);
+    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 
@@ -5483,6 +5486,8 @@ qemuDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_START_BYPASS_CACHE |
                   VIR_DOMAIN_START_FORCE_BOOT, -1);
 
+    virNWFilterReadLockFilterUpdates();
+
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
@@ -5514,6 +5519,7 @@ endjob:
 cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
