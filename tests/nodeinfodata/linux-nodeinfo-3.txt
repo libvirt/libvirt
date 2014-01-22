@@ -1,1 +1,0 @@
-CPUs: 4, MHz: 1595, Nodes: 1, Cores: 2

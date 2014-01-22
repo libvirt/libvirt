@@ -1,7 +1,0 @@
-<volume type="file">
-  <name>sparse.img</name>
-  <storage>
-    <allocation>0</allocation>
-    <capacity unit="T">1</capacity>
-  </storage>
-</volume>

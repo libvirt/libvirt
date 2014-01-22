@@ -1,7 +1,0 @@
-Makefile
-Makefile.in
-.memdump
-apibuild.pyc
-*.html
-libvirt-api.xml
-libvirt-refs.xml

@@ -1,3 +1,0 @@
-<filter name='no-other-rarp-traffic' chain='rarp'>
-    <rule action='drop' direction='inout' priority='1000'/>
-</filter>

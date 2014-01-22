@@ -1,7 +1,0 @@
-\.fig$
-\.gif$
-\.ico$
-\.png$
-^ChangeLog$
-^NEWS$
-^docs/.*

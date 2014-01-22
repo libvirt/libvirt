@@ -1,5 +1,0 @@
-#
-
-# macvtap.h
-openMacvtapTap;
-delMacvtap;
