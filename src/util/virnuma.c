@@ -122,16 +122,16 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
         return -1;
     }
 
-    maxnode = numa_max_node() + 1;
+    maxnode = numa_max_node();
+    maxnode = maxnode < NUMA_NUM_NODES ? maxnode : NUMA_NUM_NODES;
 
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     bit = -1;
     while ((bit = virBitmapNextSetBit(tmp_nodemask, bit)) >= 0) {
-        if (bit > maxnode || bit > NUMA_NUM_NODES) {
+        if (bit > maxnode) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Nodeset is out of range, host cannot support "
-                             "NUMA node bigger than %d"), bit);
+                           _("NUMA node %d is out of range"), bit);
             return -1;
         }
         nodemask_set(&mask, bit);
