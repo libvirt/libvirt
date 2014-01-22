@@ -30,7 +30,7 @@ virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                                void *data);
 
-void virNWFilterTechDriversInit(bool privileged);
+int virNWFilterTechDriversInit(bool privileged);
 void virNWFilterTechDriversShutdown(void);
 
 enum instCase {
