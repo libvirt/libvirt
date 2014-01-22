@@ -27,6 +27,10 @@ struct virMutex {
     pthread_mutex_t lock;
 };
 
+struct virRWLock {
+    pthread_rwlock_t lock;
+};
+
 struct virCond {
     pthread_cond_t cond;
 };

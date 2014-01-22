@@ -91,6 +91,39 @@ void virMutexUnlock(virMutexPtr m)
 }
 
 
+int virRWLockInit(virRWLockPtr m)
+{
+    int ret;
+    ret = pthread_rwlock_init(&m->lock, NULL);
+    if (ret != 0) {
+        errno = ret;
+        return -1;
+    }
+    return 0;
+}
+
+void virRWLockDestroy(virRWLockPtr m)
+{
+    pthread_rwlock_destroy(&m->lock);
+}
+
+
+void virRWLockRead(virRWLockPtr m)
+{
+    pthread_rwlock_rdlock(&m->lock);
+}
+
+void virRWLockWrite(virRWLockPtr m)
+{
+    pthread_rwlock_wrlock(&m->lock);
+}
+
+
+void virRWLockUnlock(virRWLockPtr m)
+{
+    pthread_rwlock_unlock(&m->lock);
+}
+
 int virCondInit(virCondPtr c)
 {
     int ret;
