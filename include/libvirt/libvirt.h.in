@@ -4664,7 +4664,7 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * @opaque: application specified data
  *
  * The callback signature to use when registering for an event of type
- * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ * VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON with virConnectDomainEventRegisterAny()
  *
  */
 typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
