@@ -203,7 +203,7 @@ virSCSIDeviceNew(const char *adapter,
     dev->target = target;
     dev->unit = unit;
     dev->readonly = readonly;
-    dev->shareable= shareable;
+    dev->shareable = shareable;
 
     if (!(sg = virSCSIDeviceGetSgName(adapter, bus, target, unit)))
         goto cleanup;
