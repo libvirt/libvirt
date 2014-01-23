@@ -25,6 +25,7 @@
 
 #include "viralloc.h"
 #include "cpu.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -44,15 +45,18 @@ AArch64NodeData(virArch arch)
 }
 
 static int
-AArch64Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
-          const virCPUData *data ATTRIBUTE_UNUSED,
-          const char **models ATTRIBUTE_UNUSED,
-          unsigned int nmodels ATTRIBUTE_UNUSED,
-          const char *preferred ATTRIBUTE_UNUSED,
-          unsigned int flags)
+AArch64Decode(virCPUDefPtr cpu,
+              const virCPUData *data ATTRIBUTE_UNUSED,
+              const char **models ATTRIBUTE_UNUSED,
+              unsigned int nmodels ATTRIBUTE_UNUSED,
+              const char *preferred ATTRIBUTE_UNUSED,
+              unsigned int flags)
 {
-
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
+
+    if (cpu->model == NULL &&
+        VIR_STRDUP(cpu->model, "host") < 0)
+        return -1;
 
     return 0;
 }
@@ -61,6 +65,24 @@ static void
 AArch64DataFree(virCPUDataPtr data)
 {
     VIR_FREE(data);
+}
+
+static int
+AArch64Update(virCPUDefPtr guest,
+              const virCPUDef *host)
+{
+    guest->match = VIR_CPU_MATCH_EXACT;
+    virCPUDefFreeModel(guest);
+    return virCPUDefCopyModel(guest, host, true);
+}
+
+static virCPUCompareResult
+AArch64GuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
+                 virCPUDefPtr guest ATTRIBUTE_UNUSED,
+                 virCPUDataPtr *data ATTRIBUTE_UNUSED,
+                 char **message ATTRIBUTE_UNUSED)
+{
+    return VIR_CPU_COMPARE_IDENTICAL;
 }
 
 struct cpuArchDriver cpuDriverAARCH64 = {
@@ -72,8 +94,8 @@ struct cpuArchDriver cpuDriverAARCH64 = {
     .encode = NULL,
     .free = AArch64DataFree,
     .nodeData = AArch64NodeData,
-    .guestData = NULL,
+    .guestData = AArch64GuestData,
     .baseline = NULL,
-    .update = NULL,
+    .update = AArch64Update,
     .hasFeature = NULL,
 };
