@@ -226,4 +226,11 @@ size_t virStringListLength(char **strings);
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);
 
+ssize_t virStringSearch(const char *str,
+                        const char *regexp,
+                        size_t max_results,
+                        char ***matches)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+
+
 #endif /* __VIR_STRING_H__ */

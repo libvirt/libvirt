@@ -192,6 +192,7 @@ src/util/virscsi.c
 src/util/virsocketaddr.c
 src/util/virstatslinux.c
 src/util/virstoragefile.c
+src/util/virstring.c
 src/util/virsysinfo.c
 src/util/virerror.c
 src/util/virerror.h

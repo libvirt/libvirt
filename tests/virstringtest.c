@@ -274,6 +274,70 @@ testStringSortCompare(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+struct stringSearchData {
+    const char *str;
+    const char *regexp;
+    size_t maxMatches;
+    size_t expectNMatches;
+    const char **expectMatches;
+    bool expectError;
+};
+
+static int
+testStringSearch(const void *opaque ATTRIBUTE_UNUSED)
+{
+    const struct stringSearchData *data = opaque;
+    char **matches = NULL;
+    ssize_t nmatches;
+    int ret = -1;
+
+    nmatches = virStringSearch(data->str, data->regexp,
+                               data->maxMatches, &matches);
+
+    if (data->expectError) {
+        if (nmatches != -1) {
+            fprintf(stderr, "expected error on %s but got %zd matches\n",
+                    data->str, nmatches);
+            goto cleanup;
+        }
+    } else {
+        size_t i;
+
+        if (nmatches < 0) {
+            fprintf(stderr, "expected %zu matches on %s but got error\n",
+                    data->expectNMatches, data->str);
+            goto cleanup;
+        }
+
+        if (nmatches != data->expectNMatches) {
+            fprintf(stderr, "expected %zu matches on %s but got %zd\n",
+                    data->expectNMatches, data->str, nmatches);
+            goto cleanup;
+        }
+
+        if (virStringListLength(matches) != nmatches) {
+            fprintf(stderr, "expected %zu matches on %s but got %zd matches\n",
+                    data->expectNMatches, data->str,
+                    virStringListLength(matches));
+            goto cleanup;
+        }
+
+        for (i = 0; i < nmatches; i++) {
+            if (STRNEQ(matches[i], data->expectMatches[i])) {
+                fprintf(stderr, "match %zu expected '%s' but got '%s'\n",
+                        i, data->expectMatches[i], matches[i]);
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringFreeList(matches);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -327,6 +391,42 @@ mymain(void)
 
     if (virtTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
+
+
+#define TEST_SEARCH(s, r, x, n, m, e)                                   \
+    do {                                                                \
+        struct stringSearchData data = {                                \
+            .str = s,                                                   \
+            .maxMatches = x,                                            \
+            .regexp = r,                                                \
+            .expectNMatches = n,                                        \
+            .expectMatches = m,                                         \
+            .expectError = e,                                           \
+        };                                                              \
+        if (virtTestRun("virStringSearch " s, testStringSearch, &data) < 0) \
+            ret = -1;                                                   \
+    } while (0)
+
+    /* error due to missing () in regexp */
+    TEST_SEARCH("foo", "bar", 10, 0, NULL, true);
+
+    /* error due to too many () in regexp */
+    TEST_SEARCH("foo", "(b)(a)(r)", 10, 0, NULL, true);
+
+    /* None matching */
+    TEST_SEARCH("foo", "(bar)", 10, 0, NULL, false);
+
+    /* Full match */
+    const char *matches1[] = { "foo" };
+    TEST_SEARCH("foo", "(foo)", 10, 1, matches1, false);
+
+    /* Multi matches */
+    const char *matches2[] = { "foo", "bar", "eek" };
+    TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 10, 3, matches2, false);
+
+    /* Multi matches, limited returns */
+    const char *matches3[] = { "foo", "bar" };
+    TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
