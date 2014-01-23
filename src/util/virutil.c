@@ -1820,7 +1820,10 @@ cleanup:
 /* virGetHostNameByWWN:
  *
  * Iterate over the sysfs tree to get FC host name (e.g. host5)
- * by wwnn,wwpn pair.
+ * by the provided "wwnn,wwpn" pair.
+ *
+ * Returns the FC host name which must be freed by the caller,
+ * or NULL on failure.
  */
 char *
 virGetFCHostNameByWWN(const char *sysfs_prefix,

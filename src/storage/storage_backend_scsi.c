@@ -668,6 +668,8 @@ static int
 deleteVport(virStoragePoolSourceAdapter adapter)
 {
     unsigned int parent_host;
+    char *name = NULL;
+    int ret = -1;
 
     if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
@@ -680,18 +682,21 @@ deleteVport(virStoragePoolSourceAdapter adapter)
     if (!adapter.data.fchost.parent)
         return 0;
 
-    if (!(virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
-                                adapter.data.fchost.wwpn)))
+    if (!(name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
+                                       adapter.data.fchost.wwpn)))
         return -1;
 
     if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
-        return -1;
+        goto cleanup;
 
     if (virManageVport(parent_host, adapter.data.fchost.wwpn,
                        adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+cleanup:
+    VIR_FREE(name);
+    return ret;
 }
 
 
