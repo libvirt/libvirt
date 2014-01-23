@@ -141,6 +141,7 @@ test_programs = virshtest sockettest \
         virportallocatortest \
 	sysinfotest \
 	virstoragetest \
+	virnetdevbandwidthtest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -649,6 +650,10 @@ commandhelper_SOURCES = \
 	commandhelper.c
 commandhelper_LDADD = $(LDADDS)
 commandhelper_LDFLAGS = -static
+
+virnetdevbandwidthtest_SOURCES = \
+	virnetdevbandwidthtest.c testutils.h testutils.c
+virnetdevbandwidthtest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
