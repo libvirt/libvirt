@@ -1722,18 +1722,24 @@ else ! WITH_SANLOCK
 check-augeas-sanlock:
 endif ! WITH_SANLOCK
 
+if WITH_QEMU
 test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 		locking/qemu-lockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
+endif WITH_QEMU
 
 test_virtlockd.aug: locking/test_virtlockd.aug.in \
 		locking/virtlockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< $@
 
+if WITH_QEMU
 check-augeas-lockd: test_libvirt_lockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_lockd.aug; \
 	fi
+else ! WITH_QEMU
+check-augeas-lockd:
+endif ! WITH_QEMU
 
 check-augeas-virtlockd: test_virtlockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
