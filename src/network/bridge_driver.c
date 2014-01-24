@@ -2404,8 +2404,17 @@ networkValidate(virNetworkDriverStatePtr driver,
         virNetworkSetBridgeMacAddr(def);
     } else {
         /* They are also the only types that currently support setting
-         * an IP address for the host-side device (bridge)
+         * a MAC or IP address for the host-side device (bridge), DNS
+         * configuration, or network-wide bandwidth limits.
          */
+        if (def->mac_specified) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <mac> element in network %s "
+                             "with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forward.type));
+            return -1;
+        }
         if (virNetworkDefGetIpByIndex(def, AF_UNSPEC, 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported <ip> element in network %s "
@@ -2426,6 +2435,14 @@ networkValidate(virNetworkDriverStatePtr driver,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported <domain> element in network %s "
                              "with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forward.type));
+            return -1;
+        }
+        if (def->bandwidth) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported network-wide <bandwidth> element "
+                             "in network %s with forward mode='%s'"),
                            def->name,
                            virNetworkForwardTypeToString(def->forward.type));
             return -1;

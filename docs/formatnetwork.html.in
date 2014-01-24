@@ -411,24 +411,50 @@
 ...</pre>
 
       <p>
-        This part of network XML provides setting quality of service. Incoming
-        and outgoing traffic can be shaped independently. The
-        <code>bandwidth</code> element can have at most one <code>inbound</code>
-        and at most one <code>outbound</code> child elements. Leaving any of these
-        children element out result in no QoS applied on that traffic direction.
-        So, when you want to shape only network's incoming traffic, use
-        <code>inbound</code> only, and vice versa. Each of these elements have one
-        mandatory attribute <code>average</code>. It specifies average bit rate on
-        interface being shaped. Then there are two optional attributes:
-        <code>peak</code>, which specifies maximum rate at which bridge can send
-        data, and <code>burst</code>, amount of bytes that can be burst at
-        <code>peak</code> speed. Accepted values for attributes are integer
-        numbers, The units for <code>average</code> and <code>peak</code> attributes
-        are kilobytes per second, and for the <code>burst</code> just kilobytes.
-        The rate is shared equally within domains connected to the network.
-        Moreover, <code>bandwidth</code> element can be included in
-        <code>portgroup</code> element.
-        <span class="since">Since 0.9.4</span>
+        The <code>&lt;bandwidth&gt;</code> element allows setting
+        quality of service for a particular network.
+        <span class="since">Since 0.9.4</span> The limits specified
+        are applied to the aggregate of all traffic to/from all guest
+        interfaces attached to that network, <b>not</b> to each guest
+        interface individually.  Setting <code>bandwidth</code> for a
+        network is supported only for networks with
+        a <code>&lt;forward&gt;</code> mode
+        of <code>route</code>, <code>nat</code>, or no mode at all
+        (i.e. an "isolated" network). <code>bandwidth</code> setting
+        is <b>not</b> supported for forward modes
+        of <code>bridge</code>, <code>passthrough</code>, <code>private</code>,
+        or <code>hostdev</code>, and attempts to do this will lead to
+        a failure to define the network (or to create a transient
+        network).
+      </p>
+      <p>
+        Incoming and outgoing traffic can be shaped independently. The
+        <code>bandwidth</code> element can have at most
+        one <code>inbound</code> and at most one <code>outbound</code>
+        child element. Leaving either of these children elements out
+        results in no QoS applied for that traffic direction.  So,
+        when you want to shape only a network's incoming traffic, use
+        <code>inbound</code> only, and vice versa. Each of these
+        elements have one mandatory attribute - <code>average</code>,
+        which specifies the desired average bit rate for the interface
+        being shaped (in kibibytes/second). There are also two
+        optional attributes: <code>peak</code>, which specifies the
+        maximum rate at which the bridge can send data (again in
+        kibibytes/second), and <code>burst</code> - the amount of
+        bytes that can be transmitted in a single burst at
+        <code>peak</code> speed (in kibibytes). Accepted values for
+        attributes are integer numbers. The allotted bandwidth is
+        shared equally between domains connected to the network.
+      </p>
+      <p>
+        A <code>&lt;portgroup&gt;</code> element can also include
+        a <code>&lt;bandwidth&gt;</code> element. In that case, the
+        specified bandwidth will be applied individually to each guest
+        interface defined to be a member of that portgroup.
+        Any <code>&lt;bandwidth&gt;</code> element in the guest's
+        interface definition will override the setting in the
+        portgroup.
+        <span class="since">Since 1.0.1</span>
       </p>
 
     <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
