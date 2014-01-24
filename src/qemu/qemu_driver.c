@@ -2245,8 +2245,16 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
     } else {
         /* resize the current memory */
+        unsigned long oldmax = 0;
 
-        if (newmem > vm->def->mem.max_balloon) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE)
+            oldmax = vm->def->mem.max_balloon;
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (!oldmax || oldmax > persistentDef->mem.max_balloon)
+                oldmax = persistentDef->mem.max_balloon;
+        }
+
+        if (newmem > oldmax) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("cannot set memory higher than max memory"));
             goto endjob;
@@ -4124,6 +4132,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virDomainDefPtr persistentDef;
     int ret = -1;
     bool maximum;
+    unsigned int maxvcpus = 0;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     qemuAgentCPUInfoPtr cpuinfo = NULL;
@@ -4171,11 +4180,17 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!maximum && nvcpus > vm->def->maxvcpus) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+        maxvcpus = vm->def->maxvcpus;
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!maxvcpus || maxvcpus > persistentDef->maxvcpus)
+            maxvcpus = persistentDef->maxvcpus;
+    }
+    if (!maximum && nvcpus > maxvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
                          " vcpus for the domain: %d > %d"),
-                       nvcpus, vm->def->maxvcpus);
+                       nvcpus, maxvcpus);
         goto endjob;
     }
 
