@@ -42,6 +42,7 @@
 #include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virkmod.h"
 #include "virstring.h"
 #include "virutil.h"
 
@@ -990,16 +991,30 @@ recheck:
     VIR_FREE(drvpath);
 
     if (!probed) {
-        const char *const probecmd[] = { MODPROBE, driver, NULL };
+        char *errbuf = NULL;
         probed = true;
-        if (virRun(probecmd, NULL) < 0) {
-            char ebuf[1024];
-            VIR_WARN("failed to load driver %s: %s", driver,
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
-            return -1;
+        if ((errbuf = virKModLoad(driver, true))) {
+            VIR_WARN("failed to load driver %s: %s", driver, errbuf);
+            VIR_FREE(errbuf);
+            goto cleanup;
         }
 
         goto recheck;
+    }
+
+cleanup:
+    /* If we know failure was because of blacklist, let's report that;
+     * otherwise, report a more generic failure message
+     */
+    if (virKModIsBlacklisted(driver)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load PCI stub module %s: "
+                         "administratively prohibited"),
+                       driver);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load PCI stub module %s"),
+                       driver);
     }
 
     return -1;
@@ -1312,12 +1327,8 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *activeDevs,
                    virPCIDeviceList *inactiveDevs)
 {
-    if (virPCIProbeStubDriver(dev->stubDriver) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI stub module %s"),
-                       dev->stubDriver);
+    if (virPCIProbeStubDriver(dev->stubDriver) < 0)
         return -1;
-    }
 
     if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
