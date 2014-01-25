@@ -34,6 +34,7 @@
 
 #ifdef __FreeBSD__
 # include <sys/param.h>
+# include <sys/cpuset.h>
 # include <sys/sysctl.h>
 # include <sys/user.h>
 #endif
@@ -461,23 +462,49 @@ realloc:
 int virProcessSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
                           virBitmapPtr map)
 {
-    if (!virBitmapIsAllSet(map)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("setting process affinity isn't supported "
-                         "on FreeBSD yet"));
+    size_t i;
+    cpuset_t mask;
+    bool set = false;
+
+    CPU_ZERO(&mask);
+    for (i = 0; i < virBitmapSize(map); i++) {
+        if (virBitmapGetBit(map, i, &set) < 0)
+            return -1;
+        if (set)
+            CPU_SET(i, &mask);
+    }
+
+    if (cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
+                           sizeof(mask), &mask) != 0) {
+        virReportSystemError(errno,
+                             _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
 
     return 0;
 }
 
-int virProcessGetAffinity(pid_t pid ATTRIBUTE_UNUSED,
+int virProcessGetAffinity(pid_t pid,
                           virBitmapPtr *map,
                           int maxcpu)
 {
+    size_t i;
+    cpuset_t mask;
+
     if (!(*map = virBitmapNew(maxcpu)))
         return -1;
-    virBitmapSetAll(*map);
+
+    CPU_ZERO(&mask);
+    if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
+                           sizeof(mask), &mask) != 0) {
+        virReportSystemError(errno,
+                             _("cannot get CPU affinity of process %d"), pid);
+        return -1;
+    }
+
+    for (i = 0; i < maxcpu; i++)
+        if (CPU_ISSET(i, &mask))
+            ignore_value(virBitmapSetBit(*map, i));
 
     return 0;
 }
