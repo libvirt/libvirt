@@ -12,6 +12,8 @@
   network inet,
 
   deny @{PROC}/[0-9]*/mounts r,
+  @{PROC}/[0-9]*/net/psched r,
+  owner @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
 
   # for hostdev
@@ -35,4 +37,12 @@
   @{HOME}/** r,
   /var/lib/libvirt/images/ r,
   /var/lib/libvirt/images/** r,
+  /{media,mnt,opt,srv}/** r,
+
+  /**.img r,
+  /**.qcow{,2} r,
+  /**.qed r,
+  /**.vmdk r,
+  /**.[iI][sS][oO] r,
+  /**/disk{,.*} r,
 }

@@ -9,6 +9,10 @@
   capability dac_read_search,
   capability chown,
 
+  # needed to drop privileges
+  capability setgid,
+  capability setuid,
+
   network inet stream,
   network inet6 stream,
 
@@ -20,7 +24,7 @@
 
   # For hostdev access. The actual devices will be added dynamically
   /sys/bus/usb/devices/ r,
-  /sys/devices/*/*/usb[0-9]*/** r,
+  /sys/devices/**/usb[0-9]*/** r,
 
   # WARNING: this gives the guest direct access to host hardware and specific
   # portions of shared memory. This is required for sound using ALSA with kvm,
@@ -32,6 +36,8 @@
   /{dev,run}/shmpulse-shm* rwk,
   /dev/snd/* rw,
   capability ipc_lock,
+  # spice
+  owner /{dev,run}/shm/spice.* rw,
   # 'kill' is not required for sound and is a security risk. Do not enable
   # unless you absolutely need it.
   deny capability kill,
@@ -58,6 +64,7 @@
   /usr/share/proll/** r,
   /usr/share/vgabios/** r,
   /usr/share/seabios/** r,
+  /usr/share/ovmf/** r,
 
   # access PKI infrastructure
   /etc/pki/libvirt-vnc/** r,
@@ -109,9 +116,15 @@
   /bin/dd rmix,
   /bin/cat rmix,
 
-  /usr/libexec/qemu-bridge-helper Cx,
+  # for usb access
+  /dev/bus/usb/ r,
+  /etc/udev/udev.conf r,
+  /sys/bus/ r,
+  /sys/class/ r,
+
+  /usr/{lib,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
   # child profile for bridge helper process
-  profile /usr/libexec/qemu-bridge-helper {
+  profile qemu_bridge_helper {
    #include <abstractions/base>
 
    capability setuid,
@@ -125,5 +138,5 @@
    /etc/qemu/** r,
    owner @{PROC}/*/status r,
 
-   /usr/libexec/qemu-bridge-helper rmix,
+   /usr/{lib,libexec}/qemu-bridge-helper rmix,
   }
