@@ -1,0 +1,18 @@
+<cpuTest>
+<cpu>
+  <arch>x86_64</arch>
+  <model>Westmere</model>
+  <vendor>Intel</vendor>
+  <topology sockets='4' cores='1' threads='1'/>
+  <feature name='hypervisor'/>
+  <feature name='avx'/>
+  <feature name='osxsave'/>
+  <feature name='xsave'/>
+  <feature name='tsc-deadline'/>
+  <feature name='x2apic'/>
+  <feature name='pcid'/>
+  <feature name='pclmuldq'/>
+  <feature name='ss'/>
+  <feature name='vme'/>
+</cpu>
+</cpuTest>
