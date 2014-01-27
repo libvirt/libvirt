@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "testutils.h"
+#include "vircommand.h"
 #include "virnetdevbandwidth.h"
 #include "netdev_bandwidth_conf.c"
 
@@ -30,6 +31,13 @@ struct testMinimalStruct {
     const char *expected_result;
     const char *band1;
     const char *band2;
+};
+
+struct testSetStruct {
+    const char *band;
+    const char *exp_cmd;
+    const char *iface;
+    const bool hierarchical_class;
 };
 
 #define PARSE(xml, var)                                                 \
@@ -104,6 +112,49 @@ cleanup:
 }
 
 static int
+testVirNetDevBandwidthSet(const void *data)
+{
+    int ret = -1;
+    const struct testSetStruct *info = data;
+    const char *iface = info->iface;
+    virNetDevBandwidthPtr band = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual_cmd = NULL;
+
+    PARSE(info->band, band);
+
+    if (!iface)
+        iface = "eth0";
+
+    virCommandSetDryRun(&buf);
+
+    if (virNetDevBandwidthSet(iface, band, info->hierarchical_class) < 0)
+        goto cleanup;
+
+    if (!(actual_cmd = virBufferContentAndReset(&buf))) {
+        int err = virBufferError(&buf);
+        if (err) {
+            fprintf(stderr, "buffer's in error state: %d", err);
+            goto cleanup;
+        }
+        /* This is interesting, no command has been executed.
+         * Maybe that's expected, actually. */
+    }
+
+    if (STRNEQ_NULLABLE(info->exp_cmd, actual_cmd)) {
+        virtTestDifference(stderr, info->exp_cmd, actual_cmd);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetDevBandwidthFree(band);
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(actual_cmd);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -113,6 +164,17 @@ mymain(void)
         struct testMinimalStruct data = {r, __VA_ARGS__};   \
         if (virtTestRun("virNetDevBandwidthMinimal",        \
                         testVirNetDevBandwidthMinimal,      \
+                        &data) < 0)                         \
+            ret = -1;                                       \
+    } while (0)
+
+#define DO_TEST_SET(Band, Exp_cmd, ...)                     \
+    do {                                                    \
+        struct testSetStruct data = {.band = Band,          \
+                                     .exp_cmd = Exp_cmd,    \
+                                     __VA_ARGS__};          \
+        if (virtTestRun("virNetDevBandwidthSet",            \
+                        testVirNetDevBandwidthSet,          \
                         &data) < 0)                         \
             ret = -1;                                       \
     } while (0)
@@ -149,6 +211,21 @@ mymain(void)
                     "  <inbound average='1' peak='2' floor='3'/>"
                     "  <outbound average='5' peak='6'/>"
                     "</bandwidth>");
+
+    DO_TEST_SET(("<bandwidth>"
+                 "  <inbound average='1' peak='2' floor='3' burst='4'/>"
+                 "  <outbound average='5' peak='6' burst='7'/>"
+                 "</bandwidth>"),
+                ("/sbin/tc qdisc del dev eth0 root\n"
+                 "/sbin/tc qdisc del dev eth0 ingress\n"
+                 "/sbin/tc qdisc add dev eth0 root handle 1: htb default 1\n"
+                 "/sbin/tc class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb\n"
+                 "/sbin/tc qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                 "/sbin/tc filter add dev eth0 parent 1:0 protocol ip handle 1 fw flowid 1\n"
+                 "/sbin/tc qdisc add dev eth0 ingress\n"
+                 "/sbin/tc filter add dev eth0 parent ffff: protocol ip u32 match ip src 0.0.0.0/0 "
+                 "police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n"));
+
     return ret;
 }
 
