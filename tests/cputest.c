@@ -619,7 +619,12 @@ mymain(void)
     DO_TEST_BASELINE("x86", "some-vendors", 0, 0);
     DO_TEST_BASELINE("x86", "1", 0, 0);
     DO_TEST_BASELINE("x86", "2", 0, 0);
+    DO_TEST_BASELINE("x86", "3", 0, 0);
     DO_TEST_BASELINE("x86", "3", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86", "4", 0, 0);
+    DO_TEST_BASELINE("x86", "4", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86", "5", 0, 0);
+    DO_TEST_BASELINE("x86", "5", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
 
     DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
     DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);
