@@ -1851,6 +1851,8 @@ x86Baseline(virCPUDefPtr *cpus,
     const struct x86_vendor *vendor = NULL;
     struct x86_model *model = NULL;
     bool outputVendor = true;
+    const char *modelName;
+    bool matchingNames = true;
 
     if (!(map = virCPUx86GetMap()))
         goto error;
@@ -1873,8 +1875,18 @@ x86Baseline(virCPUDefPtr *cpus,
         goto error;
     }
 
+    modelName = cpus[0]->model;
     for (i = 1; i < ncpus; i++) {
         const char *vn = NULL;
+
+        if (matchingNames && cpus[i]->model) {
+            if (!modelName) {
+                modelName = cpus[i]->model;
+            } else if (STRNEQ(modelName, cpus[i]->model)) {
+                modelName = NULL;
+                matchingNames = false;
+            }
+        }
 
         if (!(model = x86ModelFromCPU(cpus[i], map, VIR_CPU_FEATURE_REQUIRE)))
             goto error;
@@ -1923,8 +1935,11 @@ x86Baseline(virCPUDefPtr *cpus,
     if (vendor && virCPUx86DataAddCPUID(base_model->data, &vendor->cpuid) < 0)
         goto error;
 
-    if (x86Decode(cpu, base_model->data, models, nmodels, NULL, flags) < 0)
+    if (x86Decode(cpu, base_model->data, models, nmodels, modelName, flags) < 0)
         goto error;
+
+    if (STREQ_NULLABLE(cpu->model, modelName))
+        cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
     if (!outputVendor)
         VIR_FREE(cpu->vendor);
