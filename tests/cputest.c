@@ -326,6 +326,7 @@ cpuTestBaseline(const void *arg)
     virCPUDefPtr baseline = NULL;
     unsigned int ncpus = 0;
     char *result = NULL;
+    const char *suffix;
     size_t i;
 
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
@@ -345,7 +346,11 @@ cpuTestBaseline(const void *arg)
     if (!baseline)
         goto cleanup;
 
-    if (virAsprintf(&result, "%s-result", data->name) < 0)
+    if (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES)
+        suffix = "expanded";
+    else
+        suffix = "result";
+    if (virAsprintf(&result, "%s-%s", data->name, suffix) < 0)
         goto cleanup;
 
     if (cpuTestCompareXML(data->arch, baseline, result, 0) < 0)
@@ -537,8 +542,19 @@ mymain(void)
     } while (0)
 
 #define DO_TEST_BASELINE(arch, name, flags, result)                     \
-    DO_TEST(arch, API_BASELINE, name, NULL, "baseline-" name,           \
-            NULL, 0, NULL, flags, result)
+    do {                                                                \
+        const char *suffix = "";                                        \
+        char *label;                                                    \
+        if ((flags) & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES)         \
+            suffix = " (expanded)";                                     \
+        if (virAsprintf(&label, "%s%s", name, suffix) < 0) {            \
+            ret = -1;                                                   \
+        } else {                                                        \
+            DO_TEST(arch, API_BASELINE, label, NULL, "baseline-" name,  \
+                    NULL, 0, NULL, flags, result);                      \
+        }                                                               \
+        VIR_FREE(label);                                                \
+    } while (0)
 
 #define DO_TEST_HASFEATURE(arch, host, feature, result)                 \
     DO_TEST(arch, API_HAS_FEATURE,                                      \
