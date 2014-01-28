@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Copyright (C) 2013 Red Hat, Inc.
+# Copyright (C) 2013-2014 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -140,7 +140,10 @@ while (<PROTO>) {
         } elsif ($filtered &&
                  m,REMOTE_PROC_(.*)\s+=\s*\d+,) {
             my $api = name_to_ProcName($1);
-            $filtered{$api} = 1;
+            # Event filtering is handled in daemon/remote.c instead of drivers
+            if (! m,_EVENT_REGISTER,) {
+                $filtered{$api} = 1;
+            }
             $incomment = 0;
         }
     }

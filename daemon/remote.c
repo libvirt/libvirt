@@ -49,6 +49,8 @@
 #include "qemu_protocol.h"
 #include "lxc_protocol.h"
 #include "virstring.h"
+#include "domain_conf.h"
+#include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -114,16 +116,45 @@ remoteDispatchDomainEventSend(virNetServerClientPtr client,
                               xdrproc_t proc,
                               void *data);
 
-static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                           virDomainPtr dom,
-                                           int event,
-                                           int detail,
-                                           void *opaque)
+
+static bool
+remoteRelayDomainEventCheckACL(virNetServerClientPtr client,
+                               virConnectPtr conn, virDomainPtr dom)
+{
+    virDomainDef def;
+    virIdentityPtr identity = NULL;
+    bool ret = false;
+
+    /* For now, we just create a virDomainDef with enough contents to
+     * satisfy what viraccessdriverpolkit.c references.  This is a bit
+     * fragile, but I don't know of anything better.  */
+    def.name = dom->name;
+    memcpy(def.uuid, dom->uuid, VIR_UUID_BUFLEN);
+
+    if (!(identity = virNetServerClientGetIdentity(client)))
+        goto cleanup;
+    if (virIdentitySetCurrent(identity) < 0)
+        goto cleanup;
+    ret = virConnectDomainEventRegisterAnyCheckACL(conn, &def);
+
+cleanup:
+    ignore_value(virIdentitySetCurrent(NULL));
+    virObjectUnref(identity);
+    return ret;
+}
+
+
+static int
+remoteRelayDomainEventLifecycle(virConnectPtr conn,
+                                virDomainPtr dom,
+                                int event,
+                                int detail,
+                                void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_lifecycle_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain lifecycle event %d %d", event, detail);
@@ -141,14 +172,15 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int remoteRelayDomainEventReboot(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                        virDomainPtr dom,
-                                        void *opaque)
+static int
+remoteRelayDomainEventReboot(virConnectPtr conn,
+                             virDomainPtr dom,
+                             void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_reboot_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain reboot event %s %d", dom->name, dom->id);
@@ -165,15 +197,16 @@ static int remoteRelayDomainEventReboot(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int remoteRelayDomainEventRTCChange(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                           virDomainPtr dom,
-                                           long long offset,
-                                           void *opaque)
+static int
+remoteRelayDomainEventRTCChange(virConnectPtr conn,
+                                virDomainPtr dom,
+                                long long offset,
+                                void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_rtc_change_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain rtc change event %s %d %lld", dom->name, dom->id, offset);
@@ -191,15 +224,16 @@ static int remoteRelayDomainEventRTCChange(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int remoteRelayDomainEventWatchdog(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                          virDomainPtr dom,
-                                          int action,
-                                          void *opaque)
+static int
+remoteRelayDomainEventWatchdog(virConnectPtr conn,
+                               virDomainPtr dom,
+                               int action,
+                               void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_watchdog_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain watchdog event %s %d %d", dom->name, dom->id, action);
@@ -217,17 +251,18 @@ static int remoteRelayDomainEventWatchdog(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                         virDomainPtr dom,
-                                         const char *srcPath,
-                                         const char *devAlias,
-                                         int action,
-                                         void *opaque)
+static int
+remoteRelayDomainEventIOError(virConnectPtr conn,
+                              virDomainPtr dom,
+                              const char *srcPath,
+                              const char *devAlias,
+                              int action,
+                              void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_io_error_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain io error %s %d %s %s %d", dom->name, dom->id, srcPath, devAlias, action);
@@ -252,18 +287,19 @@ error:
 }
 
 
-static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                               virDomainPtr dom,
-                                               const char *srcPath,
-                                               const char *devAlias,
-                                               int action,
-                                               const char *reason,
-                                               void *opaque)
+static int
+remoteRelayDomainEventIOErrorReason(virConnectPtr conn,
+                                    virDomainPtr dom,
+                                    const char *srcPath,
+                                    const char *devAlias,
+                                    int action,
+                                    const char *reason,
+                                    void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_io_error_reason_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain io error %s %d %s %s %d %s",
@@ -293,20 +329,21 @@ error:
 }
 
 
-static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                          virDomainPtr dom,
-                                          int phase,
-                                          virDomainEventGraphicsAddressPtr local,
-                                          virDomainEventGraphicsAddressPtr remote,
-                                          const char *authScheme,
-                                          virDomainEventGraphicsSubjectPtr subject,
-                                          void *opaque)
+static int
+remoteRelayDomainEventGraphics(virConnectPtr conn,
+                               virDomainPtr dom,
+                               int phase,
+                               virDomainEventGraphicsAddressPtr local,
+                               virDomainEventGraphicsAddressPtr remote,
+                               const char *authScheme,
+                               virDomainEventGraphicsSubjectPtr subject,
+                               void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_graphics_msg data;
     size_t i;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain graphics event %s %d %d - %d %s %s  - %d %s %s - %s", dom->name, dom->id, phase,
@@ -364,17 +401,18 @@ error:
     return -1;
 }
 
-static int remoteRelayDomainEventBlockJob(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                          virDomainPtr dom,
-                                          const char *path,
-                                          int type,
-                                          int status,
-                                          void *opaque)
+static int
+remoteRelayDomainEventBlockJob(virConnectPtr conn,
+                               virDomainPtr dom,
+                               const char *path,
+                               int type,
+                               int status,
+                               void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_block_job_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain block job event %s %d %s %i, %i",
@@ -399,14 +437,15 @@ error:
 }
 
 
-static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                              virDomainPtr dom,
-                                              void *opaque)
+static int
+remoteRelayDomainEventControlError(virConnectPtr conn,
+                                   virDomainPtr dom,
+                                   void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_control_error_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain control error %s %d", dom->name, dom->id);
@@ -423,19 +462,20 @@ static int remoteRelayDomainEventControlError(virConnectPtr conn ATTRIBUTE_UNUSE
 }
 
 
-static int remoteRelayDomainEventDiskChange(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                            virDomainPtr dom,
-                                            const char *oldSrcPath,
-                                            const char *newSrcPath,
-                                            const char *devAlias,
-                                            int reason,
-                                            void *opaque)
+static int
+remoteRelayDomainEventDiskChange(virConnectPtr conn,
+                                 virDomainPtr dom,
+                                 const char *oldSrcPath,
+                                 const char *newSrcPath,
+                                 const char *devAlias,
+                                 int reason,
+                                 void *opaque)
 {
     virNetServerClientPtr client = opaque;
     remote_domain_event_disk_change_msg data;
     char **oldSrcPath_p = NULL, **newSrcPath_p = NULL;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain %s %d disk change %s %s %s %d",
@@ -474,15 +514,17 @@ error:
 }
 
 
-static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                            virDomainPtr dom,
-                                            const char *devAlias,
-                                            int reason,
-                                            void *opaque) {
+static int
+remoteRelayDomainEventTrayChange(virConnectPtr conn,
+                                 virDomainPtr dom,
+                                 const char *devAlias,
+                                 int reason,
+                                 void *opaque)
+{
     virNetServerClientPtr client = opaque;
     remote_domain_event_tray_change_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain %s %d tray change devAlias: %s reason: %d",
@@ -504,14 +546,16 @@ static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                          virDomainPtr dom,
-                                          int reason ATTRIBUTE_UNUSED,
-                                          void *opaque) {
+static int
+remoteRelayDomainEventPMWakeup(virConnectPtr conn,
+                               virDomainPtr dom,
+                               int reason ATTRIBUTE_UNUSED,
+                               void *opaque)
+{
     virNetServerClientPtr client = opaque;
     remote_domain_event_pmwakeup_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain %s %d system pmwakeup", dom->name, dom->id);
@@ -527,14 +571,16 @@ static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int remoteRelayDomainEventPMSuspend(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                           virDomainPtr dom,
-                                           int reason ATTRIBUTE_UNUSED,
-                                           void *opaque) {
+static int
+remoteRelayDomainEventPMSuspend(virConnectPtr conn,
+                                virDomainPtr dom,
+                                int reason ATTRIBUTE_UNUSED,
+                                void *opaque)
+{
     virNetServerClientPtr client = opaque;
     remote_domain_event_pmsuspend_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain %s %d system pmsuspend", dom->name, dom->id);
@@ -551,7 +597,7 @@ static int remoteRelayDomainEventPMSuspend(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteRelayDomainEventBalloonChange(virConnectPtr conn ATTRIBUTE_UNUSED,
+remoteRelayDomainEventBalloonChange(virConnectPtr conn,
                                     virDomainPtr dom,
                                     unsigned long long actual,
                                     void *opaque)
@@ -559,7 +605,7 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn ATTRIBUTE_UNUSED,
     virNetServerClientPtr client = opaque;
     remote_domain_event_balloon_change_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain balloon change event %s %d %lld", dom->name, dom->id, actual);
@@ -577,14 +623,16 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                               virDomainPtr dom,
-                                               int reason ATTRIBUTE_UNUSED,
-                                               void *opaque) {
+static int
+remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn,
+                                    virDomainPtr dom,
+                                    int reason ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
     virNetServerClientPtr client = opaque;
     remote_domain_event_pmsuspend_disk_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain %s %d system pmsuspend-disk", dom->name, dom->id);
@@ -601,7 +649,7 @@ static int remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn ATTRIBUTE_UNUS
 }
 
 static int
-remoteRelayDomainEventDeviceRemoved(virConnectPtr conn ATTRIBUTE_UNUSED,
+remoteRelayDomainEventDeviceRemoved(virConnectPtr conn,
                                     virDomainPtr dom,
                                     const char *devAlias,
                                     void *opaque)
@@ -609,7 +657,7 @@ remoteRelayDomainEventDeviceRemoved(virConnectPtr conn ATTRIBUTE_UNUSED,
     virNetServerClientPtr client = opaque;
     remote_domain_event_device_removed_msg data;
 
-    if (!client)
+    if (!client || !remoteRelayDomainEventCheckACL(client, conn, dom))
         return -1;
 
     VIR_DEBUG("Relaying domain device removed event %s %d %s",
