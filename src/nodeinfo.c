@@ -34,8 +34,10 @@
 #include "conf/domain_conf.h"
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
+# include <sys/time.h>
 # include <sys/types.h>
 # include <sys/sysctl.h>
+# include <sys/resource.h>
 #endif
 
 #include "c-ctype.h"
@@ -99,7 +101,107 @@ appleFreebsdNodeGetMemorySize(unsigned long *memory)
 #endif /* defined(__FreeBSD__) || defined(__APPLE__) */
 
 #ifdef __FreeBSD__
+# define BSD_CPU_STATS_ALL 4
 # define BSD_MEMORY_STATS_ALL 4
+
+# define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / (stathz ? stathz : hz))
+
+static int
+freebsdNodeGetCPUStats(int cpuNum,
+                       virNodeCPUStatsPtr params,
+                       int *nparams)
+{
+    const char *sysctl_name;
+    long *cpu_times;
+    struct clockinfo clkinfo;
+    size_t i, j, cpu_times_size, clkinfo_size;
+    int cpu_times_num, offset, hz, stathz, ret = -1;
+    struct field_cpu_map {
+        const char *field;
+        int idx[CPUSTATES];
+    } cpu_map[] = {
+        {VIR_NODE_CPU_STATS_KERNEL, {CP_SYS}},
+        {VIR_NODE_CPU_STATS_USER, {CP_USER, CP_NICE}},
+        {VIR_NODE_CPU_STATS_IDLE, {CP_IDLE}},
+        {VIR_NODE_CPU_STATS_INTR, {CP_INTR}},
+        {NULL, {0}}
+    };
+
+    if ((*nparams) == 0) {
+        *nparams = BSD_CPU_STATS_ALL;
+        return 0;
+    }
+
+    if ((*nparams) != BSD_CPU_STATS_ALL) {
+        virReportInvalidArg(*nparams,
+                            _("nparams in %s must be equal to %d"),
+                            __FUNCTION__, BSD_CPU_STATS_ALL);
+        return -1;
+    }
+
+    clkinfo_size = sizeof(clkinfo);
+    if (sysctlbyname("kern.clockrate", &clkinfo, &clkinfo_size, NULL, 0) < 0) {
+        virReportSystemError(errno,
+                             _("sysctl failed for '%s'"),
+                             "kern.clockrate");
+        return -1;
+    }
+
+    stathz = clkinfo.stathz;
+    hz = clkinfo.hz;
+
+    if (cpuNum == VIR_NODE_CPU_STATS_ALL_CPUS) {
+        sysctl_name = "kern.cp_time";
+        cpu_times_num = 1;
+        offset = 0;
+    } else {
+        sysctl_name = "kern.cp_times";
+        cpu_times_num = appleFreebsdNodeGetCPUCount();
+
+        if (cpuNum >= cpu_times_num) {
+            virReportInvalidArg(cpuNum,
+                                _("Invalid cpuNum in %s"),
+                                __FUNCTION__);
+            return -1;
+        }
+
+        offset = cpu_times_num * CPUSTATES;
+    }
+
+    cpu_times_size = sizeof(long) * cpu_times_num * CPUSTATES;
+
+    if (VIR_ALLOC_N(cpu_times, cpu_times_num * CPUSTATES) < 0)
+        goto cleanup;
+
+    if (sysctlbyname(sysctl_name, cpu_times, &cpu_times_size, NULL, 0) < 0) {
+        virReportSystemError(errno,
+                             _("sysctl failed for '%s'"),
+                             sysctl_name);
+        goto cleanup;
+    }
+
+    for (i = 0; cpu_map[i].field != NULL; i++) {
+        virNodeCPUStatsPtr param = &params[i];
+
+        if (virStrcpyStatic(param->field, cpu_map[i].field) == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Field '%s' too long for destination"),
+                           cpu_map[i].field);
+            goto cleanup;
+        }
+
+        param->value = 0;
+        for (j = 0; j < ARRAY_CARDINALITY(cpu_map[i].idx); j++)
+            param->value += cpu_times[offset + cpu_map[i].idx[j]] * TICK_TO_NSEC;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpu_times);
+
+    return ret;
+}
 
 static int
 freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
@@ -1045,6 +1147,8 @@ int nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
 
         return ret;
     }
+#elif defined(__FreeBSD__)
+    return freebsdNodeGetCPUStats(cpuNum, params, nparams);
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node CPU stats not implemented on this platform"));

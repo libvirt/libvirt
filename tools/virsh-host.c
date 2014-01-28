@@ -347,9 +347,10 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
         unsigned long long sys;
         unsigned long long idle;
         unsigned long long iowait;
+        unsigned long long intr;
         unsigned long long util;
     } cpu_stats[2];
-    double user_time, sys_time, idle_time, iowait_time, total_time;
+    double user_time, sys_time, idle_time, iowait_time, intr_time, total_time;
     double usage;
 
     if (vshCommandOptInt(cmd, "cpu", &cpuNum) < 0) {
@@ -390,6 +391,8 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
                 cpu_stats[i].idle = value;
             } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_IOWAIT)) {
                 cpu_stats[i].iowait = value;
+            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_INTR)) {
+                cpu_stats[i].intr = value;
             } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_UTILIZATION)) {
                 cpu_stats[i].util = value;
                 flag_utilization = true;
@@ -406,6 +409,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %20llu\n", _("system:"), cpu_stats[0].sys);
             vshPrint(ctl, "%-15s %20llu\n", _("idle:"), cpu_stats[0].idle);
             vshPrint(ctl, "%-15s %20llu\n", _("iowait:"), cpu_stats[0].iowait);
+            vshPrint(ctl, "%-15s %20llu\n", _("intr:"), cpu_stats[0].intr);
         }
     } else {
         if (flag_utilization) {
@@ -418,7 +422,8 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
             sys_time    = cpu_stats[1].sys    - cpu_stats[0].sys;
             idle_time   = cpu_stats[1].idle   - cpu_stats[0].idle;
             iowait_time = cpu_stats[1].iowait - cpu_stats[0].iowait;
-            total_time  = user_time + sys_time + idle_time + iowait_time;
+            intr_time   = cpu_stats[1].intr   - cpu_stats[0].intr;
+            total_time  = user_time + sys_time + idle_time + iowait_time + intr_time;
 
             usage = (user_time + sys_time) / total_time * 100;
 
@@ -432,6 +437,8 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
                      _("idle:"), idle_time     / total_time * 100);
             vshPrint(ctl, "%-15s %5.1lf%%\n",
                      _("iowait:"), iowait_time   / total_time * 100);
+            vshPrint(ctl, "%-15s %5.1lf%%\n",
+                     _("intr:"), intr_time         / total_time * 100);
         }
     }
 

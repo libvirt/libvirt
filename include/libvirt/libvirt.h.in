@@ -692,6 +692,14 @@ typedef enum {
 #define VIR_NODE_CPU_STATS_IOWAIT "iowait"
 
 /**
+ * VIR_NODE_CPU_STATS_INTR:
+ *
+ * The cumulative interrupt CPU time,
+ * since the node booting up (in nanoseconds).
+ */
+#define VIR_NODE_CPU_STATS_INTR "intr"
+
+/**
  * VIR_NODE_CPU_STATS_UTILIZATION:
  *
  * The CPU utilization of a node.
