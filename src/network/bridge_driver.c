@@ -2310,7 +2310,6 @@ networkConnectNetworkEventRegisterAny(virConnectPtr conn,
         goto cleanup;
 
     if (virNetworkEventStateRegisterID(conn, driver->networkEventState,
-                                       virConnectNetworkEventRegisterAnyCheckACL,
                                        net, eventID, callback,
                                        opaque, freecb, &ret) < 0)
         ret = -1;

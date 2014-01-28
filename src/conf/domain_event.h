@@ -177,24 +177,20 @@ virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,
-                            virDomainObjListFilter filter,
                             virConnectDomainEventCallback callback,
                             void *opaque,
                             virFreeCallback freecb)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
-
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
 virDomainEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
-                              virDomainObjListFilter filter,
                               virDomainPtr dom,
                               int eventID,
                               virConnectDomainEventGenericCallback cb,
                               void *opaque,
                               virFreeCallback freecb,
                               int *callbackID)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6);
-
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 int
 virDomainEventStateDeregister(virConnectPtr conn,
                               virObjectEventStatePtr state,
