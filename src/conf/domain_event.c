@@ -360,30 +360,6 @@ virDomainEventDeviceRemovedDispose(void *obj)
 }
 
 
-/**
- * virDomainEventFilter:
- * @conn: pointer to the connection
- * @event: the event to check
- * @opaque: opaque data holding ACL filter to use
- *
- * Internal function to run ACL filtering before dispatching an event
- */
-static bool
-virDomainEventFilter(virConnectPtr conn, virObjectEventPtr event, void *opaque)
-{
-    virDomainDef dom;
-    virDomainObjListFilter filter = opaque;
-
-    /* For now, we just create a virDomainDef with enough contents to
-     * satisfy what viraccessdriverpolkit.c references.  This is a bit
-     * fragile, but I don't know of anything better.  */
-    dom.name = event->meta.name;
-    memcpy(dom.uuid, event->meta.uuid, VIR_UUID_BUFLEN);
-
-    return (filter)(conn, &dom);
-}
-
-
 static void *
 virDomainEventNew(virClassPtr klass,
                   int eventID,
@@ -1289,7 +1265,6 @@ cleanup:
  * virDomainEventStateRegister:
  * @conn: connection to associate with callback
  * @state: object event state
- * @filter: optional ACL filter to limit which events can be sent
  * @callback: the callback to add
  * @opaque: data blob to pass to @callback
  * @freecb: callback to free @opaque
@@ -1302,7 +1277,6 @@ cleanup:
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,
-                            virDomainObjListFilter filter,
                             virConnectDomainEventCallback callback,
                             void *opaque,
                             virFreeCallback freecb)
@@ -1311,8 +1285,7 @@ virDomainEventStateRegister(virConnectPtr conn,
         return -1;
 
     return virObjectEventStateRegisterID(conn, state, NULL,
-                                         filter ? virDomainEventFilter : NULL,
-                                         filter, virDomainEventClass,
+                                         NULL, NULL, virDomainEventClass,
                                          VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                          VIR_OBJECT_EVENT_CALLBACK(callback),
                                          opaque, freecb, NULL, false);
@@ -1323,7 +1296,6 @@ virDomainEventStateRegister(virConnectPtr conn,
  * virDomainEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: object event state
- * @filter: optional ACL filter to limit which events can be sent
  * @dom: optional domain for filtering the event
  * @eventID: ID of the event type to register for
  * @cb: function to invoke when event fires
@@ -1340,7 +1312,6 @@ virDomainEventStateRegister(virConnectPtr conn,
 int
 virDomainEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
-                              virDomainObjListFilter filter,
                               virDomainPtr dom,
                               int eventID,
                               virConnectDomainEventGenericCallback cb,
@@ -1352,8 +1323,8 @@ virDomainEventStateRegisterID(virConnectPtr conn,
         return -1;
 
     return virObjectEventStateRegisterID(conn, state, dom ? dom->uuid : NULL,
-                                         filter ? virDomainEventFilter : NULL,
-                                         filter, virDomainEventClass, eventID,
+                                         NULL, NULL,
+                                         virDomainEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
                                          opaque, freecb, callbackID, false);
 }

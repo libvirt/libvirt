@@ -4427,7 +4427,7 @@ remoteConnectDomainEventRegister(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateRegister(conn, priv->eventState, NULL,
+    if ((count = virDomainEventStateRegister(conn, priv->eventState,
                                              callback, opaque, freecb)) < 0)
          goto done;
 
@@ -5245,7 +5245,7 @@ remoteConnectDomainEventRegisterAny(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateRegisterID(conn, priv->eventState, NULL,
+    if ((count = virDomainEventStateRegisterID(conn, priv->eventState,
                                                dom, eventID,
                                                callback, opaque, freecb,
                                                &callbackID)) < 0)

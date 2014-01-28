@@ -2323,7 +2323,6 @@ xenUnifiedConnectDomainEventRegister(virConnectPtr conn,
     }
 
     if (virDomainEventStateRegister(conn, priv->domainEvents,
-                                    virConnectDomainEventRegisterCheckACL,
                                     callback, opaque, freefunc) < 0)
         ret = -1;
 
@@ -2383,7 +2382,6 @@ xenUnifiedConnectDomainEventRegisterAny(virConnectPtr conn,
     }
 
     if (virDomainEventStateRegisterID(conn, priv->domainEvents,
-                                      virConnectDomainEventRegisterAnyCheckACL,
                                       dom, eventID,
                                       callback, opaque, freefunc, &ret) < 0)
         ret = -1;
