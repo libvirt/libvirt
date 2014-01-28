@@ -32,20 +32,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-/**
- * virObjectEventCallbackFilter:
- * @conn: the connection pointer
- * @event: the event about to be dispatched
- * @opaque: opaque data registered with the filter
- *
- * Callback to do final filtering for a reason not tracked directly by
- * virObjectEventStateRegisterID().  Return false if @event must not
- * be sent to @conn.
- */
-typedef bool (*virObjectEventCallbackFilter)(virConnectPtr conn,
-                                             virDomainEventPtr event,
-                                             void *opaque);
-
 struct _virDomainMeta {
     int id;
     char *name;
@@ -82,8 +68,6 @@ struct _virDomainEventCallback {
     int eventID;
     virConnectPtr conn;
     virDomainMetaPtr dom;
-    virObjectEventCallbackFilter filter;
-    void *filter_opaque;
     virConnectDomainEventGenericCallback cb;
     void *opaque;
     virFreeCallback freecb;
@@ -360,9 +344,6 @@ virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList)
  * virDomainEventCallbackListAddID:
  * @conn: pointer to the connection
  * @cbList: the list
- * @dom: optional domain to filter on
- * @filter optional last-ditch filter callback
- * @filter_opaque: opaque data to pass to @filter
  * @eventID: the event ID
  * @callback: the callback to add
  * @opaque: opaque data tio pass to callback
@@ -374,8 +355,6 @@ static int
 virDomainEventCallbackListAddID(virConnectPtr conn,
                                 virDomainEventCallbackListPtr cbList,
                                 virDomainPtr dom,
-                                virObjectEventCallbackFilter filter,
-                                void *filter_opaque,
                                 int eventID,
                                 virConnectDomainEventGenericCallback callback,
                                 void *opaque,
@@ -422,8 +401,6 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
         memcpy(event->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
         event->dom->id = dom->id;
     }
-    event->filter = filter;
-    event->filter_opaque = filter_opaque;
 
     /* Make space on list */
     if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0)
@@ -463,8 +440,6 @@ error:
  * virDomainEventCallbackListAdd:
  * @conn: pointer to the connection
  * @cbList: the list
- * @filter optional last-ditch filter callback
- * @filter_opaque: opaque data to pass to @filter
  * @callback: the callback to add
  * @opaque: opaque data tio pass to callback
  *
@@ -473,14 +448,11 @@ error:
 static int
 virDomainEventCallbackListAdd(virConnectPtr conn,
                               virDomainEventCallbackListPtr cbList,
-                              virObjectEventCallbackFilter filter,
-                              void *filter_opaque,
                               virConnectDomainEventCallback callback,
                               void *opaque,
                               virFreeCallback freecb)
 {
     return virDomainEventCallbackListAddID(conn, cbList, NULL,
-                                           filter, filter_opaque,
                                            VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                            VIR_DOMAIN_EVENT_CALLBACK(callback),
                                            opaque, freecb, NULL);
@@ -707,32 +679,6 @@ static virDomainEventPtr virDomainEventNewInternal(int eventID,
 
     return event;
 }
-
-
-/**
- * virDomainEventFilter:
- * @conn: pointer to the connection
- * @event: the event to check
- * @opaque: opaque data holding ACL filter to use
- *
- * Internal function to run ACL filtering before dispatching an event
- */
-static bool
-virDomainEventFilter(virConnectPtr conn, virDomainEventPtr event,
-                     void *opaque)
-{
-    virDomainDef dom;
-    virDomainObjListFilter filter = opaque;
-
-    /* For now, we just create a virDomainDef with enough contents to
-     * satisfy what viraccessdriverpolkit.c references.  This is a bit
-     * fragile, but I don't know of anything better.  */
-    dom.name = event->dom.name;
-    memcpy(dom.uuid, event->dom.uuid, VIR_UUID_BUFLEN);
-
-    return (filter)(conn, &dom);
-}
-
 
 virDomainEventPtr virDomainEventNew(int id, const char *name,
                                     const unsigned char *uuid,
@@ -1435,9 +1381,6 @@ static int virDomainEventDispatchMatchCallback(virDomainEventPtr event,
     if (cb->eventID != event->eventID)
         return 0;
 
-    if (cb->filter && !(cb->filter)(cb->conn, event, cb->filter_opaque))
-        return 0;
-
     if (cb->dom) {
         /* Deliberately ignoring 'id' for matching, since that
          * will cause problems when a domain switches between
@@ -1567,7 +1510,6 @@ virDomainEventStateFlush(virDomainEventStatePtr state)
  * virDomainEventStateRegister:
  * @conn: connection to associate with callback
  * @state: domain event state
- * @filter: optional ACL filter to limit which events can be sent
  * @callback: function to remove from event
  * @opaque: data blob to pass to callback
  * @freecb: callback to free @opaque
@@ -1580,7 +1522,6 @@ virDomainEventStateFlush(virDomainEventStatePtr state)
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virDomainEventStatePtr state,
-                            virDomainObjListFilter filter,
                             virConnectDomainEventCallback callback,
                             void *opaque,
                             virFreeCallback freecb)
@@ -1601,8 +1542,7 @@ virDomainEventStateRegister(virConnectPtr conn,
     }
 
     ret = virDomainEventCallbackListAdd(conn, state->callbacks,
-                                        filter ? virDomainEventFilter : NULL,
-                                        filter, callback, opaque, freecb);
+                                        callback, opaque, freecb);
 
     if (ret == -1 &&
         state->callbacks->count == 0 &&
@@ -1621,7 +1561,6 @@ cleanup:
  * virDomainEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: domain event state
- * @filter: optional ACL filter to limit which events can be sent
  * @eventID: ID of the event type to register for
  * @cb: function to remove from event
  * @opaque: data blob to pass to callback
@@ -1636,7 +1575,6 @@ cleanup:
 int
 virDomainEventStateRegisterID(virConnectPtr conn,
                               virDomainEventStatePtr state,
-                              virDomainObjListFilter filter,
                               virDomainPtr dom,
                               int eventID,
                               virConnectDomainEventGenericCallback cb,
@@ -1659,9 +1597,8 @@ virDomainEventStateRegisterID(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virDomainEventCallbackListAddID(conn, state->callbacks, dom,
-                                          filter ? virDomainEventFilter : NULL,
-                                          filter, eventID, cb, opaque, freecb,
+    ret = virDomainEventCallbackListAddID(conn, state->callbacks,
+                                          dom, eventID, cb, opaque, freecb,
                                           callbackID);
 
     if (ret == -1 &&
