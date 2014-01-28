@@ -7265,7 +7265,7 @@ static int vboxConnectDomainEventRegister(virConnectPtr conn,
              * later you can iterate over them
              */
 
-            ret = virDomainEventStateRegister(conn, data->domainEvents, NULL,
+            ret = virDomainEventStateRegister(conn, data->domainEvents,
                                               callback, opaque, freecb);
             VIR_DEBUG("virDomainEventStateRegister (ret = %d) (conn: %p, "
                       "callback: %p, opaque: %p, "
@@ -7357,7 +7357,7 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
              * later you can iterate over them
              */
 
-            if (virDomainEventStateRegisterID(conn, data->domainEvents, NULL,
+            if (virDomainEventStateRegisterID(conn, data->domainEvents,
                                               dom, eventID,
                                               callback, opaque, freecb, &ret) < 0)
                 ret = -1;
