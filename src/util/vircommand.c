@@ -129,6 +129,9 @@ struct _virCommand {
 #endif
 };
 
+/* See virCommandSetDryRun for description for this variable */
+static virBufferPtr dryRunBuffer;
+
 /*
  * virCommandFDIsSet:
  * @fd: FD to test
@@ -2199,7 +2202,7 @@ int
 virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 {
     int ret = -1;
-    char *str;
+    char *str = NULL;
     size_t i;
     bool synchronous = false;
     int infd[2] = {-1, -1};
@@ -2262,9 +2265,21 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     }
 
     str = virCommandToString(cmd);
-    VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
-    VIR_FREE(str);
+    if (dryRunBuffer) {
+        if (!str) {
+            /* error already reported by virCommandToString */
+            goto cleanup;
+        }
 
+        VIR_DEBUG("Dry run requested, appending stringified "
+                  "command to dryRunBuffer=%p", dryRunBuffer);
+        virBufferAdd(dryRunBuffer, str, -1);
+        virBufferAddChar(dryRunBuffer, '\n');
+        ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
     ret = virExec(cmd);
     VIR_DEBUG("Command result %d, with PID %d",
               ret, (int)cmd->pid);
@@ -2303,6 +2318,7 @@ cleanup:
         VIR_FORCE_CLOSE(cmd->infd);
         VIR_FORCE_CLOSE(cmd->inpipe);
     }
+    VIR_FREE(str);
     return ret;
 }
 
@@ -2332,6 +2348,13 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
+    }
+
+    if (dryRunBuffer) {
+        VIR_DEBUG("Dry run requested, claiming success");
+        if (exitstatus)
+            *exitstatus = 0;
+        return 0;
     }
 
     if (cmd->pid == -1) {
@@ -2668,4 +2691,36 @@ virCommandDoAsyncIO(virCommandPtr cmd)
        return;
 
    cmd->flags |= VIR_EXEC_ASYNC_IO | VIR_EXEC_NONBLOCK;
+}
+
+/**
+ * virCommandSetDryRun:
+ * @buf: buffer to store stringified commands
+ *
+ * Sometimes it's desired to not actually run given command, but
+ * see its string representation without having to change the
+ * callee. Unit testing serves as a great example. In such cases,
+ * the callee constructs the command and calls it via
+ * virCommandRun* API. The virCommandSetDryRun allows you to
+ * modify this behavior: once called, every call to
+ * virCommandRun* results in command string representation being
+ * appended to @buf instead of being executed. the strings are
+ * escaped for a shell and separated by a newline. For example:
+ *
+ * virBuffer buffer = VIR_BUFFER_INITIALIZER;
+ * virCommandSetDryRun(&buffer);
+ *
+ * virCommandPtr echocmd = virCommandNewArgList("/bin/echo", "Hello world", NULL);
+ * virCommandRun(echocmd, NULL);
+ *
+ * After this, the @buffer should contain:
+ *
+ * /bin/echo 'Hello world'\n
+ *
+ * To cancel this effect pass NULL.
+ */
+void
+virCommandSetDryRun(virBufferPtr buf)
+{
+    dryRunBuffer = buf;
 }

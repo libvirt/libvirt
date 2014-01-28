@@ -1096,6 +1096,7 @@ virCommandRequireHandshake;
 virCommandRun;
 virCommandRunAsync;
 virCommandSetAppArmorProfile;
+virCommandSetDryRun;
 virCommandSetErrorBuffer;
 virCommandSetErrorFD;
 virCommandSetGID;
