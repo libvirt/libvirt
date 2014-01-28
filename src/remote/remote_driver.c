@@ -4320,7 +4320,7 @@ static int remoteConnectDomainEventRegister(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if ((count = virDomainEventStateRegister(conn, priv->domainEventState, NULL,
+    if ((count = virDomainEventStateRegister(conn, priv->domainEventState,
                                              callback, opaque, freecb)) < 0) {
          virReportError(VIR_ERR_RPC, "%s", _("adding cb to list"));
          goto done;
@@ -5106,7 +5106,7 @@ static int remoteConnectDomainEventRegisterAny(virConnectPtr conn,
     remoteDriverLock(priv);
 
     if ((count = virDomainEventStateRegisterID(conn,
-                                               priv->domainEventState, NULL,
+                                               priv->domainEventState,
                                                dom, eventID,
                                                callback, opaque, freecb,
                                                &callbackID)) < 0) {
