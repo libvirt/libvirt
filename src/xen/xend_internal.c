@@ -282,6 +282,7 @@ xend_req(int fd, char **content)
     size_t buffer_size = 4096;
     int content_length = 0;
     int retcode = 0;
+    char *end_ptr;
 
     if (VIR_ALLOC_N(buffer, buffer_size) < 0)
         return -1;
@@ -291,13 +292,13 @@ xend_req(int fd, char **content)
             break;
 
         if (istartswith(buffer, "Content-Length: ")) {
-            if (virStrToLong_i(buffer + 16, NULL, 10, &content_length) < 0) {
+            if (virStrToLong_i(buffer + 16, &end_ptr, 10, &content_length) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to parse Xend response content length"));
                 return -1;
             }
         } else if (istartswith(buffer, "HTTP/1.1 ")) {
-            if (virStrToLong_i(buffer + 9, NULL, 10, &retcode) < 0) {
+            if (virStrToLong_i(buffer + 9, &end_ptr, 10, &retcode) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to parse Xend response return code"));
                 return -1;
