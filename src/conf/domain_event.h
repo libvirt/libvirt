@@ -149,11 +149,11 @@ virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
 virObjectEventPtr
 virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj);
 virObjectEventPtr
-virDomainEventPMWakeupNewFromDom(virDomainPtr dom);
+virDomainEventPMWakeupNewFromDom(virDomainPtr dom, int reason);
 virObjectEventPtr
 virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj);
 virObjectEventPtr
-virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
+virDomainEventPMSuspendNewFromDom(virDomainPtr dom, int reason);
 
 virObjectEventPtr
 virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
@@ -165,7 +165,7 @@ virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
 virObjectEventPtr
 virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj);
 virObjectEventPtr
-virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom);
+virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom, int reason);
 
 virObjectEventPtr
 virDomainEventDeviceRemovedNewFromObj(virDomainObjPtr obj,

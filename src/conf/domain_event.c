@@ -47,6 +47,7 @@ static virClassPtr virDomainEventDiskChangeClass;
 static virClassPtr virDomainEventTrayChangeClass;
 static virClassPtr virDomainEventBalloonChangeClass;
 static virClassPtr virDomainEventDeviceRemovedClass;
+static virClassPtr virDomainEventPMClass;
 
 
 static void virDomainEventDispose(void *obj);
@@ -60,6 +61,7 @@ static void virDomainEventDiskChangeDispose(void *obj);
 static void virDomainEventTrayChangeDispose(void *obj);
 static void virDomainEventBalloonChangeDispose(void *obj);
 static void virDomainEventDeviceRemovedDispose(void *obj);
+static void virDomainEventPMDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -171,6 +173,14 @@ struct _virDomainEventDeviceRemoved {
 typedef struct _virDomainEventDeviceRemoved virDomainEventDeviceRemoved;
 typedef virDomainEventDeviceRemoved *virDomainEventDeviceRemovedPtr;
 
+struct _virDomainEventPM {
+    virDomainEvent parent;
+
+    int reason;
+};
+typedef struct _virDomainEventPM virDomainEventPM;
+typedef virDomainEventPM *virDomainEventPMPtr;
+
 
 static int
 virDomainEventsOnceInit(void)
@@ -240,6 +250,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventDeviceRemoved",
                       sizeof(virDomainEventDeviceRemoved),
                       virDomainEventDeviceRemovedDispose)))
+        return -1;
+    if (!(virDomainEventPMClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventPM",
+                      sizeof(virDomainEventPM),
+                      virDomainEventPMDispose)))
         return -1;
     return 0;
 }
@@ -357,6 +373,13 @@ virDomainEventDeviceRemovedDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     VIR_FREE(event->devAlias);
+}
+
+static void
+virDomainEventPMDispose(void *obj)
+{
+    virDomainEventPMPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
 }
 
 
@@ -907,19 +930,21 @@ virDomainEventTrayChangeNewFromDom(virDomainPtr dom,
 static virObjectEventPtr
 virDomainEventPMWakeupNew(int id,
                           const char *name,
-                          unsigned char *uuid)
+                          unsigned char *uuid,
+                          int reason)
 {
-    virObjectEventPtr ev;
+    virDomainEventPMPtr ev;
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventPMClass,
                                  VIR_DOMAIN_EVENT_ID_PMWAKEUP,
                                  id, name, uuid)))
         return NULL;
 
-    return ev;
+    ev->reason = reason;
+    return (virObjectEventPtr)ev;
 }
 
 virObjectEventPtr
@@ -927,31 +952,34 @@ virDomainEventPMWakeupNewFromObj(virDomainObjPtr obj)
 {
     return virDomainEventPMWakeupNew(obj->def->id,
                                      obj->def->name,
-                                     obj->def->uuid);
+                                     obj->def->uuid,
+                                     0);
 }
 
 virObjectEventPtr
-virDomainEventPMWakeupNewFromDom(virDomainPtr dom)
+virDomainEventPMWakeupNewFromDom(virDomainPtr dom, int reason)
 {
-    return virDomainEventPMWakeupNew(dom->id, dom->name, dom->uuid);
+    return virDomainEventPMWakeupNew(dom->id, dom->name, dom->uuid, reason);
 }
 
 static virObjectEventPtr
 virDomainEventPMSuspendNew(int id,
                            const char *name,
-                           unsigned char *uuid)
+                           unsigned char *uuid,
+                           int reason)
 {
-    virObjectEventPtr ev;
+    virDomainEventPMPtr ev;
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventPMClass,
                                  VIR_DOMAIN_EVENT_ID_PMSUSPEND,
                                  id, name, uuid)))
         return NULL;
 
-    return ev;
+    ev->reason = reason;
+    return (virObjectEventPtr)ev;
 }
 
 virObjectEventPtr
@@ -959,30 +987,34 @@ virDomainEventPMSuspendNewFromObj(virDomainObjPtr obj)
 {
     return virDomainEventPMSuspendNew(obj->def->id,
                                       obj->def->name,
-                                      obj->def->uuid);
+                                      obj->def->uuid,
+                                      0);
 }
 
 virObjectEventPtr
-virDomainEventPMSuspendNewFromDom(virDomainPtr dom)
+virDomainEventPMSuspendNewFromDom(virDomainPtr dom, int reason)
 {
-    return virDomainEventPMSuspendNew(dom->id, dom->name, dom->uuid);
+    return virDomainEventPMSuspendNew(dom->id, dom->name, dom->uuid, reason);
 }
 
 static virObjectEventPtr
 virDomainEventPMSuspendDiskNew(int id,
                                const char *name,
-                               unsigned char *uuid)
+                               unsigned char *uuid,
+                               int reason)
 {
-    virObjectEventPtr ev;
+    virDomainEventPMPtr ev;
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventClass,
+    if (!(ev = virDomainEventNew(virDomainEventPMClass,
                                  VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
                                  id, name, uuid)))
         return NULL;
-    return ev;
+
+    ev->reason = reason;
+    return (virObjectEventPtr)ev;
 }
 
 virObjectEventPtr
@@ -990,13 +1022,15 @@ virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj)
 {
     return virDomainEventPMSuspendDiskNew(obj->def->id,
                                           obj->def->name,
-                                          obj->def->uuid);
+                                          obj->def->uuid,
+                                          0);
 }
 
 virObjectEventPtr
-virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom)
+virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom, int reason)
 {
-    return virDomainEventPMSuspendDiskNew(dom->id, dom->name, dom->uuid);
+    return virDomainEventPMSuspendDiskNew(dom->id, dom->name, dom->uuid,
+                                          reason);
 }
 
 virObjectEventPtr
@@ -1217,12 +1251,24 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
-        ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom, 0, cbopaque);
-        goto cleanup;
+        {
+            virDomainEventPMPtr pmEvent = (virDomainEventPMPtr)event;
+
+            ((virConnectDomainEventPMWakeupCallback)cb)(conn, dom,
+                                                        pmEvent->reason,
+                                                        cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
-        ((virConnectDomainEventPMSuspendCallback)cb)(conn, dom, 0, cbopaque);
-        goto cleanup;
+        {
+            virDomainEventPMPtr pmEvent = (virDomainEventPMPtr)event;
+
+            ((virConnectDomainEventPMSuspendCallback)cb)(conn, dom,
+                                                         pmEvent->reason,
+                                                         cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
         {
@@ -1236,8 +1282,14 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         }
 
     case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
-        ((virConnectDomainEventPMSuspendDiskCallback)cb)(conn, dom, 0, cbopaque);
-        goto cleanup;
+        {
+            virDomainEventPMPtr pmEvent = (virDomainEventPMPtr)event;
+
+            ((virConnectDomainEventPMSuspendDiskCallback)cb)(conn, dom,
+                                                             pmEvent->reason,
+                                                             cbopaque);
+            goto cleanup;
+        }
 
     case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED:
         {

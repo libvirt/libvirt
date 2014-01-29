@@ -714,7 +714,7 @@ remoteRelayDomainEventTrayChange(virConnectPtr conn,
 static int
 remoteRelayDomainEventPMWakeup(virConnectPtr conn,
                                virDomainPtr dom,
-                               int reason ATTRIBUTE_UNUSED,
+                               int reason,
                                void *opaque)
 {
     daemonClientEventCallbackPtr callback = opaque;
@@ -737,7 +737,7 @@ remoteRelayDomainEventPMWakeup(virConnectPtr conn,
                                       (xdrproc_t)xdr_remote_domain_event_pmwakeup_msg, &data);
     } else {
         remote_domain_event_callback_pmwakeup_msg msg = { callback->callbackID,
-                                                          data };
+                                                          reason, data };
 
         remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMWAKEUP,
@@ -750,7 +750,7 @@ remoteRelayDomainEventPMWakeup(virConnectPtr conn,
 static int
 remoteRelayDomainEventPMSuspend(virConnectPtr conn,
                                 virDomainPtr dom,
-                                int reason ATTRIBUTE_UNUSED,
+                                int reason,
                                 void *opaque)
 {
     daemonClientEventCallbackPtr callback = opaque;
@@ -773,7 +773,7 @@ remoteRelayDomainEventPMSuspend(virConnectPtr conn,
                                       (xdrproc_t)xdr_remote_domain_event_pmsuspend_msg, &data);
     } else {
         remote_domain_event_callback_pmsuspend_msg msg = { callback->callbackID,
-                                                           data };
+                                                           reason, data };
 
         remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND,
@@ -824,7 +824,7 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn,
 static int
 remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn,
                                     virDomainPtr dom,
-                                    int reason ATTRIBUTE_UNUSED,
+                                    int reason,
                                     void *opaque)
 {
     daemonClientEventCallbackPtr callback = opaque;
@@ -847,7 +847,7 @@ remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn,
                                       (xdrproc_t)xdr_remote_domain_event_pmsuspend_disk_msg, &data);
     } else {
         remote_domain_event_callback_pmsuspend_disk_msg msg = { callback->callbackID,
-                                                                data };
+                                                                reason, data };
 
         remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND_DISK,

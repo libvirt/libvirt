@@ -2378,6 +2378,7 @@ struct remote_domain_event_pmwakeup_msg {
 };
 struct remote_domain_event_callback_pmwakeup_msg {
     int callbackID;
+    int reason;
     remote_domain_event_pmwakeup_msg msg;
 };
 
@@ -2386,6 +2387,7 @@ struct remote_domain_event_pmsuspend_msg {
 };
 struct remote_domain_event_callback_pmsuspend_msg {
     int callbackID;
+    int reason;
     remote_domain_event_pmsuspend_msg msg;
 };
 
@@ -2403,6 +2405,7 @@ struct remote_domain_event_pmsuspend_disk_msg {
 };
 struct remote_domain_event_callback_pmsuspend_disk_msg {
     int callbackID;
+    int reason;
     remote_domain_event_pmsuspend_disk_msg msg;
 };
 

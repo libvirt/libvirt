@@ -5189,7 +5189,8 @@ remoteDomainBuildEventCallbackTrayChange(virNetClientProgramPtr prog ATTRIBUTE_U
 static void
 remoteDomainBuildEventPMWakeupHelper(virConnectPtr conn,
                                      remote_domain_event_pmwakeup_msg *msg,
-                                     int callbackID)
+                                     int callbackID,
+                                     int reason)
 {
     struct private_data *priv = conn->privateData;
     virDomainPtr dom;
@@ -5199,7 +5200,7 @@ remoteDomainBuildEventPMWakeupHelper(virConnectPtr conn,
     if (!dom)
         return;
 
-    event = virDomainEventPMWakeupNewFromDom(dom);
+    event = virDomainEventPMWakeupNewFromDom(dom, reason);
 
     virDomainFree(dom);
 
@@ -5212,7 +5213,7 @@ remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 {
     virConnectPtr conn = opaque;
     remote_domain_event_pmwakeup_msg *msg = evdata;
-    remoteDomainBuildEventPMWakeupHelper(conn, msg, -1);
+    remoteDomainBuildEventPMWakeupHelper(conn, msg, -1, 0);
 }
 static void
 remoteDomainBuildEventCallbackPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5221,13 +5222,15 @@ remoteDomainBuildEventCallbackPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNU
 {
     virConnectPtr conn = opaque;
     remote_domain_event_callback_pmwakeup_msg *msg = evdata;
-    remoteDomainBuildEventPMWakeupHelper(conn, &msg->msg, msg->callbackID);
+    remoteDomainBuildEventPMWakeupHelper(conn, &msg->msg, msg->callbackID,
+                                         msg->reason);
 }
 
 static void
 remoteDomainBuildEventPMSuspendHelper(virConnectPtr conn,
                                       remote_domain_event_pmsuspend_msg *msg,
-                                      int callbackID)
+                                      int callbackID,
+                                      int reason)
 {
     struct private_data *priv = conn->privateData;
     virDomainPtr dom;
@@ -5237,7 +5240,7 @@ remoteDomainBuildEventPMSuspendHelper(virConnectPtr conn,
     if (!dom)
         return;
 
-    event = virDomainEventPMSuspendNewFromDom(dom);
+    event = virDomainEventPMSuspendNewFromDom(dom, reason);
 
     virDomainFree(dom);
 
@@ -5250,7 +5253,7 @@ remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 {
     virConnectPtr conn = opaque;
     remote_domain_event_pmsuspend_msg *msg = evdata;
-    remoteDomainBuildEventPMSuspendHelper(conn, msg, -1);
+    remoteDomainBuildEventPMSuspendHelper(conn, msg, -1, 0);
 }
 static void
 remoteDomainBuildEventCallbackPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5259,7 +5262,8 @@ remoteDomainBuildEventCallbackPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UN
 {
     virConnectPtr conn = opaque;
     remote_domain_event_callback_pmsuspend_msg *msg = evdata;
-    remoteDomainBuildEventPMSuspendHelper(conn, &msg->msg, msg->callbackID);
+    remoteDomainBuildEventPMSuspendHelper(conn, &msg->msg, msg->callbackID,
+                                          msg->reason);
 }
 
 
@@ -5304,7 +5308,8 @@ remoteDomainBuildEventCallbackBalloonChange(virNetClientProgramPtr prog ATTRIBUT
 static void
 remoteDomainBuildEventPMSuspendDiskHelper(virConnectPtr conn,
                                           remote_domain_event_pmsuspend_disk_msg *msg,
-                                          int callbackID)
+                                          int callbackID,
+                                          int reason)
 {
     struct private_data *priv = conn->privateData;
     virDomainPtr dom;
@@ -5314,7 +5319,7 @@ remoteDomainBuildEventPMSuspendDiskHelper(virConnectPtr conn,
     if (!dom)
         return;
 
-    event = virDomainEventPMSuspendDiskNewFromDom(dom);
+    event = virDomainEventPMSuspendDiskNewFromDom(dom, reason);
 
     virDomainFree(dom);
 
@@ -5327,7 +5332,7 @@ remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
 {
     virConnectPtr conn = opaque;
     remote_domain_event_pmsuspend_disk_msg *msg = evdata;
-    remoteDomainBuildEventPMSuspendDiskHelper(conn, msg, -1);
+    remoteDomainBuildEventPMSuspendDiskHelper(conn, msg, -1, 0);
 }
 static void
 remoteDomainBuildEventCallbackPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5336,7 +5341,8 @@ remoteDomainBuildEventCallbackPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUT
 {
     virConnectPtr conn = opaque;
     remote_domain_event_callback_pmsuspend_disk_msg *msg = evdata;
-    remoteDomainBuildEventPMSuspendDiskHelper(conn, &msg->msg, msg->callbackID);
+    remoteDomainBuildEventPMSuspendDiskHelper(conn, &msg->msg, msg->callbackID,
+                                              msg->reason);
 }
 
 
