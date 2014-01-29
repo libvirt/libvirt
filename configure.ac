@@ -2604,6 +2604,16 @@ AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
                 #include <net/if_bridgevar.h>
                ])
 
+# Check for BSD CPU affinity availability
+AC_CHECK_DECLS([cpuset_getaffinity],
+               [AC_DEFINE([HAVE_BSD_CPU_AFFINITY],
+                          [1],
+                          [whether BSD CPU affinity management is available])],
+               [],
+               [#include <sys/param.h>
+                #include <sys/cpuset.h>
+               ])
+
 # Check if we need to look for ifconfig
 if test "$want_ifconfig" = "yes"; then
      AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])

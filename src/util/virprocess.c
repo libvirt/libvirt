@@ -34,9 +34,12 @@
 
 #ifdef __FreeBSD__
 # include <sys/param.h>
-# include <sys/cpuset.h>
 # include <sys/sysctl.h>
 # include <sys/user.h>
+#endif
+
+#ifdef HAVE_BSD_CPU_AFFINITY
+# include <sys/cpuset.h>
 #endif
 
 #include "viratomic.h"
@@ -457,7 +460,7 @@ realloc:
     return 0;
 }
 
-#elif defined(__FreeBSD__)
+#elif defined(HAVE_BSD_CPU_AFFINITY)
 
 int virProcessSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
                           virBitmapPtr map)
