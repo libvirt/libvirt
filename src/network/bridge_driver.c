@@ -3284,30 +3284,9 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     else if (portgroup && portgroup->bandwidth)
         bandwidth = portgroup->bandwidth;
 
-    /* For bridgeless networks we must take into account any QoS set to them.
-     * This is, however, a bit tricky. With bridged network there are two
-     * points where QoS can be set: domain's interface and the bridge. The
-     * limits on those differ (in general) in which case the lower limit gets
-     * into effect. For example, if domain's interface average is 10Mbps but
-     * the network's is just 1Mbps, the domain will not be able to send data
-     * any faster than 1Mbps. However, on bridgeless networks we can't just set
-     * those two points and let kernel do its job since we have only single
-     * point. Therefore, we must combine the QoS settings from both domain's
-     * interface and network and choose the minimal value from pairs.
-     */
-    if (netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE ||
-        netdef->forward.type == VIR_NETWORK_FORWARD_VEPA ||
-        netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH ||
-        netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
-        if (virNetDevBandwidthMinimal(&iface->data.network.actual->bandwidth,
-                                      bandwidth,
-                                      netdef->bandwidth) < 0)
-            goto error;
-    } else if (bandwidth &&
-               virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                      bandwidth) < 0) {
+    if (bandwidth && virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
+                                            bandwidth) < 0)
         goto error;
-    }
 
     /* copy appropriate vlan info to actualNet */
     if (iface->vlan.nTags > 0)
