@@ -50,8 +50,8 @@ virSCSIDevicePtr virSCSIDeviceNew(const char *adapter,
                                   bool shareable);
 
 void virSCSIDeviceFree(virSCSIDevicePtr dev);
-void virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev, const char *name);
-const char *virSCSIDeviceGetUsedBy(virSCSIDevicePtr dev);
+int virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev, const char *name);
+bool virSCSIDeviceIsAvailable(virSCSIDevicePtr dev);
 const char *virSCSIDeviceGetName(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetAdapter(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetBus(virSCSIDevicePtr dev);
@@ -83,7 +83,8 @@ size_t virSCSIDeviceListCount(virSCSIDeviceListPtr list);
 virSCSIDevicePtr virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
                                         virSCSIDevicePtr dev);
 void virSCSIDeviceListDel(virSCSIDeviceListPtr list,
-                          virSCSIDevicePtr dev);
+                          virSCSIDevicePtr dev,
+                          const char *name);
 virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                                        virSCSIDevicePtr dev);
 

@@ -2798,6 +2798,11 @@
         between domains (assuming the hypervisor and OS support this).
         Only supported by SCSI host device.
         <span class="since">Since 1.0.6</span>
+        <p>
+          Note: Although <code>shareable</code> was introduced
+          <span class="since">in 1.0.6</span>, it did not work as
+          as expected until <span class="since">1.2.2</span>.
+        </p>
       </dd>
     </dl>
 

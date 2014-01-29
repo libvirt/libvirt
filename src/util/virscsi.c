@@ -1,6 +1,7 @@
 /*
  * virscsi.c: helper APIs for managing host SCSI devices
  *
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  * Copyright (C) 2013 Fujitsu, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -19,6 +20,7 @@
  *
  * Authors:
  *     Han Cheng <hanc.fnst@cn.fujitsu.com>
+ *     Osier Yang <jyang@redhat.com>
  */
 
 #include <config.h>
@@ -55,7 +57,8 @@ struct _virSCSIDevice {
     char *name; /* adapter:bus:target:unit */
     char *id;   /* model:vendor */
     char *sg_path; /* e.g. /dev/sg2 */
-    const char *used_by; /* name of the domain using this dev */
+    char **used_by; /* name of the domains using this dev */
+    size_t n_used_by; /* how many domains are using this dev */
 
     bool readonly;
     bool shareable;
@@ -256,26 +259,36 @@ cleanup:
 void
 virSCSIDeviceFree(virSCSIDevicePtr dev)
 {
+    size_t i;
+
     if (!dev)
         return;
 
     VIR_FREE(dev->id);
     VIR_FREE(dev->name);
     VIR_FREE(dev->sg_path);
+    for (i = 0; i < dev->n_used_by; i++)
+        VIR_FREE(dev->used_by[i]);
+    VIR_FREE(dev->used_by);
     VIR_FREE(dev);
 }
 
-void
+int
 virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
                        const char *name)
 {
-    dev->used_by = name;
+    char *copy = NULL;
+
+    if (VIR_STRDUP(copy, name) < 0)
+        return -1;
+
+    return VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy);
 }
 
-const char *
-virSCSIDeviceGetUsedBy(virSCSIDevicePtr dev)
+bool
+virSCSIDeviceIsAvailable(virSCSIDevicePtr dev)
 {
-    return dev->used_by;
+    return dev->n_used_by == 0;
 }
 
 const char *
@@ -406,10 +419,23 @@ virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
 
 void
 virSCSIDeviceListDel(virSCSIDeviceListPtr list,
-                     virSCSIDevicePtr dev)
+                     virSCSIDevicePtr dev,
+                     const char *name)
 {
-    virSCSIDevicePtr ret = virSCSIDeviceListSteal(list, dev);
-    virSCSIDeviceFree(ret);
+    virSCSIDevicePtr tmp = NULL;
+    size_t i;
+
+    for (i = 0; i < dev->n_used_by; i++) {
+        if (STREQ_NULLABLE(dev->used_by[i], name)) {
+            if (dev->n_used_by > 1) {
+                VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
+            } else {
+                tmp = virSCSIDeviceListSteal(list, dev);
+                virSCSIDeviceFree(tmp);
+            }
+            break;
+        }
+    }
 }
 
 virSCSIDevicePtr

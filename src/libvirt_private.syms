@@ -1687,7 +1687,7 @@ virSCSIDeviceGetSgName;
 virSCSIDeviceGetShareable;
 virSCSIDeviceGetTarget;
 virSCSIDeviceGetUnit;
-virSCSIDeviceGetUsedBy;
+virSCSIDeviceIsAvailable;
 virSCSIDeviceListAdd;
 virSCSIDeviceListCount;
 virSCSIDeviceListDel;
