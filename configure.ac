@@ -416,6 +416,8 @@ AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([MODPROBE], [modprobe], [modprobe],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([RMMOD], [rmmod], [rmmod],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([SCRUB], [scrub], [scrub],
@@ -443,6 +445,10 @@ fi
 if test -n "$MODPROBE"; then
   AC_DEFINE_UNQUOTED([MODPROBE],["$MODPROBE"],
         [Location or name of the modprobe program])
+fi
+if test -n "$RMMOD"; then
+  AC_DEFINE_UNQUOTED([RMMOD],["$RMMOD"],
+        [Location or name of the rmmod program])
 fi
 AC_DEFINE_UNQUOTED([SCRUB],["$SCRUB"],
         [Location or name of the scrub program (for wiping algorithms)])

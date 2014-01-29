@@ -1383,6 +1383,13 @@ virKeyFileLoadFile;
 virKeyFileNew;
 
 
+# util/virkmod.h
+virKModConfig;
+virKModIsBlacklisted;
+virKModLoad;
+virKModUnload;
+
+
 # util/virlockspace.h
 virLockSpaceAcquireResource;
 virLockSpaceCreateResource;
