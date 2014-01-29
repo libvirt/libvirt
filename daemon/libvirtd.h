@@ -54,6 +54,8 @@ struct daemonClientPrivate {
     size_t ndomainEventCallbacks;
     daemonClientEventCallbackPtr *networkEventCallbacks;
     size_t nnetworkEventCallbacks;
+    daemonClientEventCallbackPtr *qemuEventCallbacks;
+    size_t nqemuEventCallbacks;
 
 # if WITH_SASL
     virNetSASLSessionPtr sasl;

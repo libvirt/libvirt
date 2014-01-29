@@ -500,6 +500,19 @@ static virNetClientProgramEvent remoteEvents[] = {
       (xdrproc_t)xdr_remote_domain_event_callback_device_removed_msg },
 };
 
+
+static void
+remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+                                  void *evdata, void *opaque);
+
+static virNetClientProgramEvent qemuEvents[] = {
+    { QEMU_PROC_DOMAIN_MONITOR_EVENT,
+      remoteDomainBuildQemuMonitorEvent,
+      sizeof(qemu_domain_monitor_event_msg),
+      (xdrproc_t)xdr_qemu_domain_monitor_event_msg },
+};
+
 enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
     VIR_DRV_OPEN_REMOTE_USER      = (1 << 1), /* Use the per-user socket path */
@@ -977,9 +990,9 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
     if (!(priv->qemuProgram = virNetClientProgramNew(QEMU_PROGRAM,
                                                      QEMU_PROTOCOL_VERSION,
-                                                     NULL,
-                                                     0,
-                                                     NULL)))
+                                                     qemuEvents,
+                                                     ARRAY_CARDINALITY(qemuEvents),
+                                                     conn)))
         goto failed;
 
     if (virNetClientAddProgram(priv->client, priv->remoteProgram) < 0 ||
@@ -3163,6 +3176,103 @@ remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
 
         if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NETWORK_EVENT_DEREGISTER_ANY,
                  (xdrproc_t) xdr_remote_connect_network_event_deregister_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
+                                            virDomainPtr dom,
+                                            const char *event,
+                                            virConnectDomainQemuMonitorEventCallback callback,
+                                            void *opaque,
+                                            virFreeCallback freecb,
+                                            unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    qemu_connect_domain_monitor_event_register_args args;
+    qemu_connect_domain_monitor_event_register_ret ret;
+    int callbackID;
+    int count;
+    remote_nonnull_domain domain;
+
+    remoteDriverLock(priv);
+
+    if ((count = virDomainQemuMonitorEventStateRegisterID(conn,
+                                                          priv->eventState,
+                                                          dom, event, callback,
+                                                          opaque, freecb, -1,
+                                                          &callbackID)) < 0)
+        goto done;
+
+    /* If this is the first callback for this event, we need to enable
+     * events on the server */
+    if (count == 1) {
+        if (dom) {
+            make_nonnull_domain(&domain, dom);
+            args.dom = &domain;
+        } else {
+            args.dom = NULL;
+        }
+        args.event = event ? (char **) &event : NULL;
+        args.flags = flags;
+
+        memset(&ret, 0, sizeof(ret));
+        if (call(conn, priv, REMOTE_CALL_QEMU, QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_REGISTER,
+                 (xdrproc_t) xdr_qemu_connect_domain_monitor_event_register_args, (char *) &args,
+                 (xdrproc_t) xdr_qemu_connect_domain_monitor_event_register_ret, (char *) &ret) == -1) {
+            virObjectEventStateDeregisterID(conn, priv->eventState,
+                                            callbackID);
+            goto done;
+        }
+        virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                     ret.callbackID);
+    }
+
+    rv = callbackID;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
+                                              int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    qemu_connect_domain_monitor_event_deregister_args args;
+    int remoteID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if (virObjectEventStateEventID(conn, priv->eventState,
+                                   callbackID, &remoteID) < 0)
+        goto done;
+
+    if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                 callbackID)) < 0)
+        goto done;
+
+    /* If that was the last callback for this event, we need to disable
+     * events on the server */
+    if (count == 0) {
+        args.callbackID = remoteID;
+
+        if (call(conn, priv, REMOTE_CALL_QEMU, QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_DEREGISTER,
+                 (xdrproc_t) xdr_qemu_connect_domain_monitor_event_deregister_args, (char *) &args,
                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
             goto done;
     }
@@ -5410,6 +5520,31 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 
+static void
+remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+                                  void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    qemu_domain_monitor_event_msg *msg = evdata;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainQemuMonitorEventNew(dom->id, dom->name, dom->uuid,
+                                         msg->event, msg->seconds,
+                                         msg->micros,
+                                         msg->details ? *msg->details : NULL);
+    virDomainFree(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
 remoteSecretOpen(virConnectPtr conn, virConnectAuthPtr auth,
                  unsigned int flags)
@@ -7620,6 +7755,8 @@ static virDriver remote_driver = {
     .domainQemuMonitorCommand = remoteDomainQemuMonitorCommand, /* 0.8.3 */
     .domainQemuAttach = remoteDomainQemuAttach, /* 0.9.4 */
     .domainQemuAgentCommand = remoteDomainQemuAgentCommand, /* 0.10.0 */
+    .connectDomainQemuMonitorEventRegister = remoteConnectDomainQemuMonitorEventRegister, /* 1.2.3 */
+    .connectDomainQemuMonitorEventDeregister = remoteConnectDomainQemuMonitorEventDeregister, /* 1.2.3 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
     .domainOpenChannel = remoteDomainOpenChannel, /* 1.0.2 */
     .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */

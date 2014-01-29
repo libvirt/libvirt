@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,6 +58,30 @@ struct qemu_domain_agent_command_ret {
     remote_string result;
 };
 
+
+struct qemu_connect_domain_monitor_event_register_args {
+    remote_domain dom;
+    remote_string event;
+    unsigned int flags;
+};
+
+struct qemu_connect_domain_monitor_event_register_ret {
+    int callbackID;
+};
+
+struct qemu_connect_domain_monitor_event_deregister_args {
+    int callbackID;
+};
+
+struct qemu_domain_monitor_event_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string event;
+    hyper seconds;
+    unsigned int micros;
+    remote_string details;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const QEMU_PROGRAM = 0x20008087;
 const QEMU_PROTOCOL_VERSION = 1;
@@ -108,5 +132,27 @@ enum qemu_procedure {
      * @priority: low
      * @acl: domain:write
      */
-    QEMU_PROC_DOMAIN_AGENT_COMMAND = 3
+    QEMU_PROC_DOMAIN_AGENT_COMMAND = 3,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_domains
+     * @acl: connect:write
+     * @aclfilter: domain:getattr
+     */
+    QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_REGISTER = 4,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:write
+     */
+    QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_DEREGISTER = 5,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    QEMU_PROC_DOMAIN_MONITOR_EVENT = 6
 };

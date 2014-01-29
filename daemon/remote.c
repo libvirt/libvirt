@@ -54,6 +54,7 @@
 #include "network_conf.h"
 #include "virprobe.h"
 #include "viraccessapicheck.h"
+#include "viraccessapicheckqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -181,6 +182,33 @@ remoteRelayNetworkEventCheckACL(virNetServerClientPtr client,
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
     ret = virConnectNetworkEventRegisterAnyCheckACL(conn, &def);
+
+cleanup:
+    ignore_value(virIdentitySetCurrent(NULL));
+    virObjectUnref(identity);
+    return ret;
+}
+
+
+static bool
+remoteRelayDomainQemuMonitorEventCheckACL(virNetServerClientPtr client,
+                                          virConnectPtr conn, virDomainPtr dom)
+{
+    virDomainDef def;
+    virIdentityPtr identity = NULL;
+    bool ret = false;
+
+    /* For now, we just create a virDomainDef with enough contents to
+     * satisfy what viraccessdriverpolkit.c references.  This is a bit
+     * fragile, but I don't know of anything better.  */
+    def.name = dom->name;
+    memcpy(def.uuid, dom->uuid, VIR_UUID_BUFLEN);
+
+    if (!(identity = virNetServerClientGetIdentity(client)))
+        goto cleanup;
+    if (virIdentitySetCurrent(identity) < 0)
+        goto cleanup;
+    ret = virConnectDomainQemuMonitorEventRegisterCheckACL(conn, &def);
 
 cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -961,6 +989,52 @@ static virConnectNetworkEventGenericCallback networkEventCallbacks[] = {
 
 verify(ARRAY_CARDINALITY(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
 
+static void
+remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
+                                  virDomainPtr dom,
+                                  const char *event,
+                                  long long seconds,
+                                  unsigned int micros,
+                                  const char *details,
+                                  void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    qemu_domain_monitor_event_msg data;
+    char **details_p = NULL;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainQemuMonitorEventCheckACL(callback->client, conn,
+                                                   dom))
+        return;
+
+    VIR_DEBUG("Relaying qemu monitor event %s %s, callback %d",
+              event, details, callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    if (VIR_STRDUP(data.event, event) < 0)
+        goto error;
+    data.seconds = seconds;
+    data.micros = micros;
+    if (details &&
+        ((VIR_ALLOC(details_p) < 0) ||
+         VIR_STRDUP(*details_p, details) < 0))
+        goto error;
+    data.details = details_p;
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchObjectEventSend(callback->client, qemuProgram,
+                                  QEMU_PROC_DOMAIN_MONITOR_EVENT,
+                                  (xdrproc_t)xdr_qemu_domain_monitor_event_msg,
+                                  &data);
+    return;
+
+error:
+    VIR_FREE(data.event);
+    VIR_FREE(details_p);
+}
+
 /*
  * You must hold lock for at least the client
  * We don't free stuff here, merely disconnect the client's
@@ -1007,6 +1081,21 @@ void remoteClientFreeFunc(void *data)
                 VIR_WARN("unexpected network event deregister failure");
         }
         VIR_FREE(priv->networkEventCallbacks);
+
+        for (i = 0; i < priv->nqemuEventCallbacks; i++) {
+            int callbackID = priv->qemuEventCallbacks[i]->callbackID;
+            if (callbackID < 0) {
+                VIR_WARN("unexpected incomplete qemu monitor callback %zu", i);
+                continue;
+            }
+            VIR_DEBUG("Deregistering remote qemu monitor event relay %d",
+                      callbackID);
+            priv->qemuEventCallbacks[i]->callbackID = -1;
+            if (virConnectDomainQemuMonitorEventDeregister(priv->conn,
+                                                           callbackID) < 0)
+                VIR_WARN("unexpected qemu monitor event deregister failure");
+        }
+        VIR_FREE(priv->qemuEventCallbacks);
 
         virConnectClose(priv->conn);
 
@@ -5858,6 +5947,126 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
 
     VIR_DELETE_ELEMENT(priv->networkEventCallbacks, i,
                        priv->nnetworkEventCallbacks);
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
+
+
+static int
+qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                              virNetServerClientPtr client,
+                                              virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                              virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                              qemu_connect_domain_monitor_event_register_args *args,
+                                              qemu_connect_domain_monitor_event_register_ret *ret)
+{
+    int callbackID;
+    int rv = -1;
+    daemonClientEventCallbackPtr callback = NULL;
+    daemonClientEventCallbackPtr ref;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    virDomainPtr dom = NULL;
+    const char *event = args->event ? *args->event : NULL;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    if (args->dom &&
+        !(dom = get_nonnull_domain(priv->conn, *args->dom)))
+        goto cleanup;
+
+    /* If we call register first, we could append a complete callback
+     * to our array, but on OOM append failure, we'd have to then hope
+     * deregister works to undo our register.  So instead we append an
+     * incomplete callback to our array, then register, then fix up
+     * our callback; but since VIR_APPEND_ELEMENT clears 'callback' on
+     * success, we use 'ref' to save a copy of the pointer.  */
+    if (VIR_ALLOC(callback) < 0)
+        goto cleanup;
+    callback->client = client;
+    callback->callbackID = -1;
+    ref = callback;
+    if (VIR_APPEND_ELEMENT(priv->qemuEventCallbacks,
+                           priv->nqemuEventCallbacks,
+                           callback) < 0)
+        goto cleanup;
+
+    if ((callbackID = virConnectDomainQemuMonitorEventRegister(priv->conn,
+                                                               dom,
+                                                               event,
+                                                               remoteRelayDomainQemuMonitorEvent,
+                                                               ref,
+                                                               remoteEventCallbackFree,
+                                                               args->flags)) < 0) {
+        VIR_SHRINK_N(priv->qemuEventCallbacks,
+                     priv->nqemuEventCallbacks, 1);
+        callback = ref;
+        goto cleanup;
+    }
+
+    ref->callbackID = callbackID;
+    ret->callbackID = callbackID;
+
+    rv = 0;
+
+cleanup:
+    VIR_FREE(callback);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
+
+
+static int
+qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                virNetServerClientPtr client,
+                                                virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                                virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                                qemu_connect_domain_monitor_event_deregister_args *args)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    for (i = 0; i < priv->nqemuEventCallbacks; i++) {
+        if (priv->qemuEventCallbacks[i]->callbackID == args->callbackID)
+            break;
+    }
+    if (i == priv->nqemuEventCallbacks) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu monitor event callback %d not registered"),
+                       args->callbackID);
+        goto cleanup;
+    }
+
+    if (virConnectDomainQemuMonitorEventDeregister(priv->conn,
+                                                   args->callbackID) < 0)
+        goto cleanup;
+
+    VIR_DELETE_ELEMENT(priv->qemuEventCallbacks, i,
+                       priv->nqemuEventCallbacks);
 
     rv = 0;
 

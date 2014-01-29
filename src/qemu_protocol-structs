@@ -28,8 +28,30 @@ struct qemu_domain_agent_command_args {
 struct qemu_domain_agent_command_ret {
         remote_string              result;
 };
+struct qemu_connect_domain_monitor_event_register_args {
+        remote_domain              dom;
+        remote_string              event;
+        u_int                      flags;
+};
+struct qemu_connect_domain_monitor_event_register_ret {
+        int                        callbackID;
+};
+struct qemu_connect_domain_monitor_event_deregister_args {
+        int                        callbackID;
+};
+struct qemu_domain_monitor_event_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      event;
+        int64_t                    seconds;
+        u_int                      micros;
+        remote_string              details;
+};
 enum qemu_procedure {
         QEMU_PROC_DOMAIN_MONITOR_COMMAND = 1,
         QEMU_PROC_DOMAIN_ATTACH = 2,
         QEMU_PROC_DOMAIN_AGENT_COMMAND = 3,
+        QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_REGISTER = 4,
+        QEMU_PROC_CONNECT_DOMAIN_MONITOR_EVENT_DEREGISTER = 5,
+        QEMU_PROC_DOMAIN_MONITOR_EVENT = 6,
 };
