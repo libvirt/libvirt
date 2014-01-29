@@ -178,6 +178,51 @@ virStorageBackendGlusterReadHeader(glfs_fd_t *fd,
     return nread;
 }
 
+
+static int
+virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
+                                    virStorageVolDefPtr vol,
+                                    const char *name)
+{
+    int ret = -1;
+    char *tmp;
+
+    VIR_FREE(vol->key);
+    VIR_FREE(vol->target.path);
+
+    vol->type = VIR_STORAGE_VOL_NETWORK;
+    vol->target.format = VIR_STORAGE_FILE_RAW;
+
+    if (name) {
+        VIR_FREE(vol->name);
+        if (VIR_STRDUP(vol->name, name) < 0)
+            goto cleanup;
+    }
+
+    if (virAsprintf(&vol->key, "%s%s%s", state->volname, state->dir,
+                    vol->name) < 0)
+        goto cleanup;
+
+    tmp = state->uri->path;
+    if (virAsprintf(&state->uri->path, "/%s", vol->key) < 0) {
+        state->uri->path = tmp;
+        goto cleanup;
+    }
+    if (!(vol->target.path = virURIFormat(state->uri))) {
+        VIR_FREE(state->uri->path);
+        state->uri->path = tmp;
+        goto cleanup;
+    }
+    VIR_FREE(state->uri->path);
+    state->uri->path = tmp;
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 /* Populate *volptr for the given name and stat information, or leave
  * it NULL if the entry should be skipped (such as ".").  Return 0 on
  * success, -1 on failure. */
@@ -187,7 +232,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
                                    struct stat *st,
                                    virStorageVolDefPtr *volptr)
 {
-    char *tmp;
     int ret = -1;
     virStorageVolDefPtr vol = NULL;
     glfs_fd_t *fd = NULL;
@@ -220,24 +264,8 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
                                                &vol->capacity) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(vol->name, name) < 0)
+    if (virStorageBackendGlusterSetMetadata(state, vol, name) < 0)
         goto cleanup;
-    if (virAsprintf(&vol->key, "%s%s%s", state->volname, state->dir,
-                    vol->name) < 0)
-        goto cleanup;
-
-    tmp = state->uri->path;
-    if (virAsprintf(&state->uri->path, "/%s", vol->key) < 0) {
-        state->uri->path = tmp;
-        goto cleanup;
-    }
-    if (!(vol->target.path = virURIFormat(state->uri))) {
-        VIR_FREE(state->uri->path);
-        state->uri->path = tmp;
-        goto cleanup;
-    }
-    VIR_FREE(state->uri->path);
-    state->uri->path = tmp;
 
     if (S_ISDIR(st->st_mode)) {
         vol->type = VIR_STORAGE_VOL_NETDIR;
@@ -248,8 +276,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
     }
 
-    vol->type = VIR_STORAGE_VOL_NETWORK;
-    vol->target.format = VIR_STORAGE_FILE_RAW;
     /* No need to worry about O_NONBLOCK - gluster doesn't allow creation
      * of fifos, so there's nothing it would protect us from. */
     if (!(fd = glfs_open(state->vol, name, O_RDONLY | O_NOCTTY))) {
