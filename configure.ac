@@ -285,8 +285,10 @@ AC_CACHE_CHECK([whether pthread_sigmask does anything],
     #include <sys/types.h>
     #include <signal.h>
   ]], [[
-   int (*foo)(int, const sigset_t *, sigset_t *) = &pthread_sigmask;
-   return !foo;
+    #ifdef pthread_sigmask
+    int (*foo)(int, const sigset_t *, sigset_t *) = &pthread_sigmask;
+    return !foo;
+    #endif
   ]])], [lv_cv_pthread_sigmask_works=yes], [lv_cv_pthread_sigmask_works=no])])
 if test "x$lv_cv_pthread_sigmask_works" != xyes; then
   AC_DEFINE([FUNC_PTHREAD_SIGMASK_BROKEN], [1],
