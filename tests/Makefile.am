@@ -143,6 +143,7 @@ test_programs = virshtest sockettest \
 	sysinfotest \
 	virstoragetest \
 	virnetdevbandwidthtest \
+	virkmodtest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -659,6 +660,10 @@ commandhelper_LDFLAGS = -static
 virnetdevbandwidthtest_SOURCES = \
 	virnetdevbandwidthtest.c testutils.h testutils.c
 virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
+
+virkmodtest_SOURCES = \
+	virkmodtest.c testutils.h testutils.c
+virkmodtest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
