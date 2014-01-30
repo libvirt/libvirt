@@ -3557,11 +3557,7 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = dev->data.hostdev;
     int ret = -1;
-    char *dst = NULL;
-    char *vroot = NULL;
     struct stat sb;
-    bool created = false;
-    mode_t mode = 0;
 
     if (!def->source.caps.u.storage.block) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3589,54 +3585,35 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virAsprintf(&dst, "%s/%s",
-                    vroot,
-                    def->source.caps.u.storage.block) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (lxcContainerSetupHostdevCapsMakePath(dst) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create directory for device %s"),
-                             dst);
-        goto cleanup;
-    }
-
-    mode = 0700 | S_IFBLK;
-
-    VIR_DEBUG("Creating dev %s (%d,%d)",
-              def->source.caps.u.storage.block,
-              major(sb.st_rdev), minor(sb.st_rdev));
-    if (mknod(dst, mode, sb.st_rdev) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create device %s"),
-                             dst);
-        goto cleanup;
-    }
-    created = true;
-
-    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
-                                          vm->def, def, vroot) < 0)
-        goto cleanup;
-
-    if (virCgroupAllowDevicePath(priv->cgroup, def->source.caps.u.storage.block,
-                                 VIR_CGROUP_DEVICE_RW |
-                                 VIR_CGROUP_DEVICE_MKNOD) != 0) {
+    if (virCgroupAllowDevice(priv->cgroup,
+                             'b',
+                             major(sb.st_rdev),
+                             minor(sb.st_rdev),
+                             VIR_CGROUP_DEVICE_RWM) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot allow device %s for domain %s"),
-                       def->source.caps.u.storage.block, vm->def->name);
+                       _("Unable to allow device %s"),
+                       def->source.caps.u.storage.block);
+        goto cleanup;
+    }
+
+    if (lxcDomainAttachDeviceMknod(driver,
+                                   0700 | S_IFBLK,
+                                   sb.st_rdev,
+                                   vm,
+                                   dev,
+                                   def->source.caps.u.storage.block) < 0) {
+        if (virCgroupDenyDevice(priv->cgroup,
+                                'b',
+                                major(sb.st_rdev),
+                                minor(sb.st_rdev),
+                                VIR_CGROUP_DEVICE_RWM) < 0)
+            VIR_WARN("cannot deny device %s for domain %s",
+                     def->source.caps.u.storage.block, vm->def->name);
         goto cleanup;
     }
 
@@ -3646,10 +3623,6 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
 
 cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
-    if (dst && created && ret < 0)
-        unlink(dst);
-    VIR_FREE(dst);
-    VIR_FREE(vroot);
     return ret;
 }
 
