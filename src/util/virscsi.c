@@ -222,7 +222,8 @@ virSCSIDeviceNew(const char *sysfs_prefix,
 
     if (virAsprintf(&dev->name, "%d:%d:%d:%d", dev->adapter,
                     dev->bus, dev->target, dev->unit) < 0 ||
-        virAsprintf(&dev->sg_path, "/dev/%s", sg) < 0)
+        virAsprintf(&dev->sg_path, "%s/%s",
+                    sysfs_prefix ? sysfs_prefix : "/dev", sg) < 0)
         goto cleanup;
 
     if (!virFileExists(dev->sg_path)) {
