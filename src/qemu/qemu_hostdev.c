@@ -264,7 +264,8 @@ qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
             continue;
 
-        if (!(scsi = virSCSIDeviceNew(hostdev->source.subsys.u.scsi.adapter,
+        if (!(scsi = virSCSIDeviceNew(NULL,
+                                      hostdev->source.subsys.u.scsi.adapter,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,
@@ -1102,7 +1103,8 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!(scsi = virSCSIDeviceNew(hostdev->source.subsys.u.scsi.adapter,
+        if (!(scsi = virSCSIDeviceNew(NULL,
+                                      hostdev->source.subsys.u.scsi.adapter,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,
@@ -1406,7 +1408,8 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
             continue;
 
-        if (!(scsi = virSCSIDeviceNew(hostdev->source.subsys.u.scsi.adapter,
+        if (!(scsi = virSCSIDeviceNew(NULL,
+                                      hostdev->source.subsys.u.scsi.adapter,
                                       hostdev->source.subsys.u.scsi.bus,
                                       hostdev->source.subsys.u.scsi.target,
                                       hostdev->source.subsys.u.scsi.unit,

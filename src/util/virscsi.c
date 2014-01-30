@@ -102,7 +102,8 @@ virSCSIDeviceGetAdapterId(const char *adapter,
 }
 
 char *
-virSCSIDeviceGetSgName(const char *adapter,
+virSCSIDeviceGetSgName(const char *sysfs_prefix,
+                       const char *adapter,
                        unsigned int bus,
                        unsigned int target,
                        unsigned int unit)
@@ -112,13 +113,14 @@ virSCSIDeviceGetSgName(const char *adapter,
     char *path = NULL;
     char *sg = NULL;
     unsigned int adapter_id;
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
     if (virSCSIDeviceGetAdapterId(adapter, &adapter_id) < 0)
         return NULL;
 
     if (virAsprintf(&path,
-                    SYSFS_SCSI_DEVICES "/%d:%d:%d:%d/scsi_generic",
-                    adapter_id, bus, target, unit) < 0)
+                    "%s/%d:%d:%d:%d/scsi_generic",
+                    prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
     if (!(dir = opendir(path))) {
@@ -145,7 +147,8 @@ cleanup:
  * on failure.
  */
 char *
-virSCSIDeviceGetDevName(const char *adapter,
+virSCSIDeviceGetDevName(const char *sysfs_prefix,
+                        const char *adapter,
                         unsigned int bus,
                         unsigned int target,
                         unsigned int unit)
@@ -155,13 +158,14 @@ virSCSIDeviceGetDevName(const char *adapter,
     char *path = NULL;
     char *name = NULL;
     unsigned int adapter_id;
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
     if (virSCSIDeviceGetAdapterId(adapter, &adapter_id) < 0)
         return NULL;
 
     if (virAsprintf(&path,
-                    SYSFS_SCSI_DEVICES "/%d:%d:%d:%d/block",
-                    adapter_id, bus, target, unit) < 0)
+                    "%s/%d:%d:%d:%d/block",
+                    prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
     if (!(dir = opendir(path))) {
@@ -185,7 +189,8 @@ cleanup:
 }
 
 virSCSIDevicePtr
-virSCSIDeviceNew(const char *adapter,
+virSCSIDeviceNew(const char *sysfs_prefix,
+                 const char *adapter,
                  unsigned int bus,
                  unsigned int target,
                  unsigned int unit,
@@ -198,6 +203,7 @@ virSCSIDeviceNew(const char *adapter,
     char *model_path = NULL;
     char *vendor = NULL;
     char *model = NULL;
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -208,7 +214,7 @@ virSCSIDeviceNew(const char *adapter,
     dev->readonly = readonly;
     dev->shareable = shareable;
 
-    if (!(sg = virSCSIDeviceGetSgName(adapter, bus, target, unit)))
+    if (!(sg = virSCSIDeviceGetSgName(prefix, adapter, bus, target, unit)))
         goto cleanup;
 
     if (virSCSIDeviceGetAdapterId(adapter, &dev->adapter) < 0)
@@ -227,9 +233,9 @@ virSCSIDeviceNew(const char *adapter,
     }
 
     if (virAsprintf(&vendor_path,
-                    SYSFS_SCSI_DEVICES "/%s/vendor", dev->name) < 0 ||
+                    "%s/%s/vendor", prefix, dev->name) < 0 ||
         virAsprintf(&model_path,
-                    SYSFS_SCSI_DEVICES "/%s/model", dev->name) < 0)
+                    "%s/%s/model", prefix, dev->name) < 0)
         goto cleanup;
 
     if (virFileReadAll(vendor_path, 1024, &vendor) < 0)

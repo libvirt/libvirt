@@ -57,7 +57,8 @@
 typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
 typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
 struct _qemuBuildCommandLineCallbacks {
-    char * (*qemuGetSCSIDeviceSgName) (const char *adapter,
+    char * (*qemuGetSCSIDeviceSgName) (const char *sysfs_prefix,
+                                       const char *adapter,
                                        unsigned int bus,
                                        unsigned int target,
                                        unsigned int unit);

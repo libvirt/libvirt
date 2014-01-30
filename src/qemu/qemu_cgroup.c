@@ -291,7 +291,8 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if ((scsi = virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+            if ((scsi = virSCSIDeviceNew(NULL,
+                                         dev->source.subsys.u.scsi.adapter,
                                          dev->source.subsys.u.scsi.bus,
                                          dev->source.subsys.u.scsi.target,
                                          dev->source.subsys.u.scsi.unit,

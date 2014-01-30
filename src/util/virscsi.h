@@ -33,16 +33,19 @@ typedef virSCSIDevice *virSCSIDevicePtr;
 typedef struct _virSCSIDeviceList virSCSIDeviceList;
 typedef virSCSIDeviceList *virSCSIDeviceListPtr;
 
-char *virSCSIDeviceGetSgName(const char *adapter,
+char *virSCSIDeviceGetSgName(const char *sysfs_prefix,
+                             const char *adapter,
                              unsigned int bus,
                              unsigned int target,
                              unsigned int unit);
-char *virSCSIDeviceGetDevName(const char *adapter,
+char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
+                              const char *adapter,
                               unsigned int bus,
                               unsigned int target,
                               unsigned int unit);
 
-virSCSIDevicePtr virSCSIDeviceNew(const char *adapter,
+virSCSIDevicePtr virSCSIDeviceNew(const char *sysfs_prefix,
+                                  const char *adapter,
                                   unsigned int bus,
                                   unsigned int target,
                                   unsigned int unit,

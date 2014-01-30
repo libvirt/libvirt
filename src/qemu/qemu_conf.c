@@ -761,7 +761,8 @@ qemuCheckSharedDevice(virHashTablePtr sharedDevices,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;
 
-        if (!(hostdev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+        if (!(hostdev_name = virSCSIDeviceGetDevName(NULL,
+                                                     hostdev->source.subsys.u.scsi.adapter,
                                                      hostdev->source.subsys.u.scsi.bus,
                                                      hostdev->source.subsys.u.scsi.target,
                                                      hostdev->source.subsys.u.scsi.unit)))
@@ -949,7 +950,8 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
         if (!(key = qemuGetSharedDeviceKey(disk->src)))
             goto cleanup;
     } else {
-        if (!(dev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+        if (!(dev_name = virSCSIDeviceGetDevName(NULL,
+                                                 hostdev->source.subsys.u.scsi.adapter,
                                                  hostdev->source.subsys.u.scsi.bus,
                                                  hostdev->source.subsys.u.scsi.target,
                                                  hostdev->source.subsys.u.scsi.unit)))
@@ -1053,7 +1055,8 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
         if (!(key = qemuGetSharedDeviceKey(disk->src)))
             goto cleanup;
     } else {
-        if (!(dev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+        if (!(dev_name = virSCSIDeviceGetDevName(NULL,
+                                                 hostdev->source.subsys.u.scsi.adapter,
                                                  hostdev->source.subsys.u.scsi.bus,
                                                  hostdev->source.subsys.u.scsi.target,
                                                  hostdev->source.subsys.u.scsi.unit)))
@@ -1137,7 +1140,8 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
               hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
             return 0;
 
-        if (!(hostdev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+        if (!(hostdev_name = virSCSIDeviceGetDevName(NULL,
+                                                     hostdev->source.subsys.u.scsi.adapter,
                                                      hostdev->source.subsys.u.scsi.bus,
                                                      hostdev->source.subsys.u.scsi.target,
                                                      hostdev->source.subsys.u.scsi.unit)))

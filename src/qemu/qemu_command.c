@@ -5785,7 +5785,8 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *sg = NULL;
 
-    sg = (callbacks->qemuGetSCSIDeviceSgName)(dev->source.subsys.u.scsi.adapter,
+    sg = (callbacks->qemuGetSCSIDeviceSgName)(NULL,
+                                              dev->source.subsys.u.scsi.adapter,
                                               dev->source.subsys.u.scsi.bus,
                                               dev->source.subsys.u.scsi.target,
                                               dev->source.subsys.u.scsi.unit);
