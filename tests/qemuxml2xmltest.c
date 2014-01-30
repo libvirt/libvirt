@@ -241,6 +241,8 @@ mymain(void)
     DO_TEST("serial-udp");
     DO_TEST("serial-tcp-telnet");
     DO_TEST("serial-many");
+    DO_TEST("serial-spiceport");
+    DO_TEST("serial-spiceport-nospice");
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
     DO_TEST("console-virtio-many");

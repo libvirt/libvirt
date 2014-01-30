@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.c: QEMU capabilities generation
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -247,7 +247,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "boot-strict", /* 160 */
               "pvpanic",
               "enable-fips",
-              "spice-file-xfer-disable"
+              "spice-file-xfer-disable",
+              "spiceport",
     );
 
 struct _virQEMUCaps {
@@ -1012,6 +1013,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
         if (strstr(help, "-chardev spicevmc"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
+        if (strstr(help, "-chardev spiceport"))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
     }
     if (strstr(help, "-balloon"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BALLOON);
@@ -2566,6 +2569,12 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* WebSockets were introduced between 1.3.0 and 1.3.1 */
     if (qemuCaps->version >= 1003001)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);
+
+    /* -chardev spiceport is supported from 1.4.0, but usable through
+     * qapi only since 1.5.0, however, it still cannot be queried
+     * for as a capability */
+    if (qemuCaps->version >= 1005000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
 
     if (qemuCaps->version >= 1006000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);

@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.h: QEMU capabilities generation
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -202,6 +202,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_PANIC       = 161, /* -device pvpanic */
     QEMU_CAPS_ENABLE_FIPS        = 162, /* -enable-fips */
     QEMU_CAPS_SPICE_FILE_XFER_DISABLE = 163, /* -spice disable-agent-file-xfer */
+    QEMU_CAPS_CHARDEV_SPICEPORT  = 164, /* -chardev spiceport */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

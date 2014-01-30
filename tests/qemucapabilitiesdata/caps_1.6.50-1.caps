@@ -138,4 +138,5 @@
     <flag name='pvpanic'/>
     <flag name='reboot-timeout'/>
     <flag name='spice-file-xfer-disable'/>
+    <flag name='spiceport'/>
   </qemuCaps>

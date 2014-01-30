@@ -949,6 +949,13 @@ mymain(void)
     DO_TEST("serial-udp", NONE);
     DO_TEST("serial-tcp-telnet", NONE);
     DO_TEST("serial-many", NONE);
+    DO_TEST("serial-spiceport",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE,
+            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEPORT);
+    DO_TEST("serial-spiceport-nospice", QEMU_CAPS_NAME);
+
     DO_TEST("parallel-tcp", NONE);
     DO_TEST("console-compat", NONE);
     DO_TEST("console-compat-auto", NONE);

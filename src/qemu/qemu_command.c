@@ -5977,6 +5977,16 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
                           virDomainChrSpicevmcTypeToString(dev->data.spicevmc));
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("spiceport not supported in this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "spiceport,id=char%s,name=%s", alias,
+                          dev->data.spiceport.channel);
+        break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported chardev '%s'"),
@@ -6071,6 +6081,9 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
         virBufferAsprintf(&buf, "unix:%s%s",
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         break;
     }
 
@@ -7740,6 +7753,20 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     emulator = def->emulator;
 
+    for (i = 0; i < def->ngraphics; ++i) {
+        switch (def->graphics[i]->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            ++sdl;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            ++vnc;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            ++spice;
+            break;
+        }
+    }
+
     /*
      * do not use boot=on for drives when not using KVM since this
      * is not supported at all in upstream QEmu.
@@ -8811,6 +8838,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainChrDefPtr serial = def->serials[i];
         char *devstr;
 
+        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !spice)
+            continue;
+
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
             virCommandAddArg(cmd, "-chardev");
@@ -9021,19 +9051,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    for (i = 0; i < def->ngraphics; ++i) {
-        switch (def->graphics[i]->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-            ++sdl;
-            break;
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            ++vnc;
-            break;
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            ++spice;
-            break;
-        }
-    }
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) && sdl + vnc + spice > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only 1 graphics device is supported"));

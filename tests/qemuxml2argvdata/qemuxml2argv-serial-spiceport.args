@@ -1,0 +1,13 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=spice \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nodefconfig -nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi -boot c -usb \
+-hda /dev/HostVG/QEMUGuest1 \
+-chardev spiceport,id=charserial0,name=org.qemu.console.serial.0 \
+-device isa-serial,chardev=charserial0,id=serial0 \
+-device usb-tablet,id=input0 \
+-spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice \
+-device \
+qxl-vga,id=video0,ram_size=67107840,vram_size=67107840,bus=pci.0,addr=0x2 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
