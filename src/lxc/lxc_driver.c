@@ -3320,6 +3320,13 @@ lxcDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         def->src = tmpsrc;
     }   break;
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV: {
+        virDomainHostdevDefPtr def = data->def->data.hostdev;
+        if (virSecurityManagerSetHostdevLabel(data->driver->securityManager,
+                                              data->vm->def, def, NULL) < 0)
+            goto cleanup;
+    }   break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected device type %d"),
@@ -3621,39 +3628,14 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = dev->data.hostdev;
     int ret = -1;
-    char *vroot = NULL;
     char *src = NULL;
-    char *dstdir = NULL;
-    char *dstfile = NULL;
     struct stat sb;
-    mode_t mode;
-    bool created = false;
     virUSBDevicePtr usb = NULL;
 
     if (virDomainHostdevFind(vm->def, def, NULL) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("host USB device already exists"));
         return -1;
-    }
-
-    if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virAsprintf(&dstdir, "%s/dev/bus/usb/%03d",
-                    vroot,
-                    def->source.subsys.u.usb.bus) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virAsprintf(&dstfile, "%s/%03d",
-                    dstdir,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError();
-        goto cleanup;
     }
 
     if (virAsprintf(&src, "/dev/bus/usb/%03d/%03d",
@@ -3664,7 +3646,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     }
 
     if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
-                                def->source.subsys.u.usb.device, vroot)))
+                                def->source.subsys.u.usb.device, NULL)))
         goto cleanup;
 
     if (stat(src, &sb) < 0) {
@@ -3680,37 +3662,29 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    mode = 0700 | S_IFCHR;
-
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (virFileMakePath(dstdir) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create %s"), dstdir);
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Creating dev %s (%d,%d)",
-              dstfile, major(sb.st_rdev), minor(sb.st_rdev));
-    if (mknod(dstfile, mode, sb.st_rdev) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create device %s"),
-                             dstfile);
-        goto cleanup;
-    }
-    created = true;
-
-    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
-                                          vm->def, def, vroot) < 0)
-        goto cleanup;
-
     if (virUSBDeviceFileIterate(usb,
                                 virLXCSetupHostUsbDeviceCgroup,
                                 priv->cgroup) < 0)
         goto cleanup;
+
+    if (lxcDomainAttachDeviceMknod(driver,
+                                   0700 | S_IFCHR,
+                                   sb.st_rdev,
+                                   vm,
+                                   dev,
+                                   src) < 0) {
+        if (virUSBDeviceFileIterate(usb,
+                                    virLXCTeardownHostUsbDeviceCgroup,
+                                    priv->cgroup) < 0)
+            VIR_WARN("cannot deny device %s for domain %s",
+                     src, vm->def->name);
+        goto cleanup;
+    }
 
     vm->def->hostdevs[vm->def->nhostdevs++] = def;
 
@@ -3718,14 +3692,8 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
 
 cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
-    if (ret < 0 && created)
-        unlink(dstfile);
-
     virUSBDeviceFree(usb);
     VIR_FREE(src);
-    VIR_FREE(dstfile);
-    VIR_FREE(dstdir);
-    VIR_FREE(vroot);
     return ret;
 }
 
