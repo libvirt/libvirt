@@ -1135,8 +1135,8 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("SCSI device %s is already in use by "
                                  "other domain(s) as '%s'"),
-                               tmp_shareable ? "shareable" : "non-shareable",
-                               virSCSIDeviceGetName(tmp));
+                               virSCSIDeviceGetName(tmp),
+                               tmp_shareable ? "shareable" : "non-shareable");
                 goto error;
             }
 
