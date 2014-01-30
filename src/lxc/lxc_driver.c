@@ -3229,6 +3229,39 @@ lxcDomainAttachDeviceMknod(virLXCDriverPtr driver,
 
 
 static int
+lxcDomainAttachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                  void *opaque)
+{
+    const char *path = opaque;
+
+    VIR_DEBUG("Unlinking %s", path);
+    if (unlink(path) < 0 && errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Unable to remove device %s"), path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+lxcDomainAttachDeviceUnlink(virDomainObjPtr vm,
+                            char *file)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+    if (virProcessRunInMountNamespace(priv->initpid,
+                                      lxcDomainAttachDeviceUnlinkHelper,
+                                      file) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainDeviceDefPtr dev)
@@ -3842,8 +3875,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
 
     def = vm->def->disks[i];
 
-    if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
-                    (unsigned long long)priv->initpid, def->dst) < 0) {
+    if (virAsprintf(&dst, "/dev/%s", def->dst) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -3854,11 +3886,8 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    VIR_DEBUG("Unlinking %s (backed by %s)", dst, def->src);
-    if (unlink(dst) < 0 && errno != ENOENT) {
+    if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {
         virDomainAuditDisk(vm, def->src, NULL, "detach", false);
-        virReportSystemError(errno,
-                             _("Unable to remove device %s"), dst);
         goto cleanup;
     }
     virDomainAuditDisk(vm, def->src, NULL, "detach", true);
@@ -3953,7 +3982,6 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     virDomainHostdevDefPtr def = NULL;
     int idx, ret = -1;
     char *dst = NULL;
-    char *vroot = NULL;
     virUSBDevicePtr usb = NULL;
 
     if ((idx = virDomainHostdevFind(vm->def,
@@ -3964,14 +3992,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (virAsprintf(&vroot, "/proc/%llu/root",
-                    (unsigned long long)priv->initpid) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virAsprintf(&dst, "%s/dev/bus/usb/%03d/%03d",
-                    vroot,
+    if (virAsprintf(&dst, "/dev/bus/usb/%03d/%03d",
                     def->source.subsys.u.usb.bus,
                     def->source.subsys.u.usb.device) < 0) {
         virReportOOMError();
@@ -3988,11 +4009,8 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
                                 def->source.subsys.u.usb.device, NULL)))
         goto cleanup;
 
-    VIR_DEBUG("Unlinking %s", dst);
-    if (unlink(dst) < 0 && errno != ENOENT) {
+    if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {
         virDomainAuditHostdev(vm, def, "detach", false);
-        virReportSystemError(errno,
-                             _("Unable to remove device %s"), dst);
         goto cleanup;
     }
     virDomainAuditHostdev(vm, def, "detach", true);
@@ -4013,7 +4031,6 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
 cleanup:
     virUSBDeviceFree(usb);
     VIR_FREE(dst);
-    VIR_FREE(vroot);
     return ret;
 }
 
@@ -4025,7 +4042,6 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = NULL;
     int i, ret = -1;
-    char *dst = NULL;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4042,24 +4058,14 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&dst, "/proc/%llu/root/%s",
-                    (unsigned long long)priv->initpid,
-                    def->source.caps.u.storage.block) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("devices cgroup isn't mounted"));
         goto cleanup;
     }
 
-    VIR_DEBUG("Unlinking %s", dst);
-    if (unlink(dst) < 0 && errno != ENOENT) {
+    if (lxcDomainAttachDeviceUnlink(vm, def->source.caps.u.storage.block) < 0) {
         virDomainAuditHostdev(vm, def, "detach", false);
-        virReportSystemError(errno,
-                             _("Unable to remove device %s"), dst);
         goto cleanup;
     }
     virDomainAuditHostdev(vm, def, "detach", true);
@@ -4074,7 +4080,6 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
     ret = 0;
 
 cleanup:
-    VIR_FREE(dst);
     return ret;
 }
 
@@ -4086,7 +4091,6 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = NULL;
     int i, ret = -1;
-    char *dst = NULL;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4103,24 +4107,14 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&dst, "/proc/%llu/root/%s",
-                    (unsigned long long)priv->initpid,
-                    def->source.caps.u.misc.chardev) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("devices cgroup isn't mounted"));
         goto cleanup;
     }
 
-    VIR_DEBUG("Unlinking %s", dst);
-    if (unlink(dst) < 0 && errno != ENOENT) {
+    if (lxcDomainAttachDeviceUnlink(vm, def->source.caps.u.misc.chardev) < 0) {
         virDomainAuditHostdev(vm, def, "detach", false);
-        virReportSystemError(errno,
-                             _("Unable to remove device %s"), dst);
         goto cleanup;
     }
     virDomainAuditHostdev(vm, def, "detach", true);
@@ -4135,7 +4129,6 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
     ret = 0;
 
 cleanup:
-    VIR_FREE(dst);
     return ret;
 }
 
