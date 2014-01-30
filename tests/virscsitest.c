@@ -43,7 +43,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
                                          "scsi_host1", 0, 0, 0)))
         return -1;
 
-    if (STRNEQ(name, "sr0"))
+    if (STRNEQ(name, "sdh"))
         goto cleanup;
 
     ret = 0;
@@ -72,7 +72,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
     sgname = virSCSIDeviceGetSgName(virscsi_prefix,
                                     "scsi_host1", 0, 0, 0);
 
-    if (!sgname || STRNEQ(sgname, "sg1"))
+    if (!sgname || STRNEQ(sgname, "sg8"))
         goto cleanup;
 
     if (!(dev = virSCSIDeviceNew(virscsi_prefix, "scsi_host1",
