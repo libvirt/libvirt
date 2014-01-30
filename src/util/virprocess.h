@@ -60,4 +60,15 @@ int virProcessSetNamespaces(size_t nfdlist,
 int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes);
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
+
+/* Callback to run code within the mount namespace tied to the given
+ * pid.  This function must use only async-signal-safe functions, as
+ * it gets run after a fork of a multi-threaded process.  The return
+ * value of this function is passed to _exit(), except that a
+ * negative value is treated as an error.  */
+typedef int (*virProcessNamespaceCallback)(pid_t pid, void *opaque);
+
+int virProcessRunInMountNamespace(pid_t pid,
+                                  virProcessNamespaceCallback cb,
+                                  void *opaque);
 #endif /* __VIR_PROCESS_H__ */
