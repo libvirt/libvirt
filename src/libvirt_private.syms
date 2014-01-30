@@ -1194,6 +1194,7 @@ virFileIsLink;
 virFileLinkPointsTo;
 virFileLock;
 virFileLoopDeviceAssociate;
+virFileMakeParentPath;
 virFileMakePath;
 virFileMakePathWithMode;
 virFileMatchesNameSuffix;

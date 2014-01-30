@@ -2174,6 +2174,35 @@ cleanup:
     return ret;
 }
 
+
+int
+virFileMakeParentPath(const char *path)
+{
+    char *p;
+    char *tmp;
+    int ret = -1;
+
+    VIR_DEBUG("path=%s", path);
+
+    if (VIR_STRDUP(tmp, path) < 0) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    if ((p = strrchr(tmp, '/')) == NULL) {
+        errno = EINVAL;
+        goto cleanup;
+    }
+    *p = '\0';
+
+    ret = virFileMakePathHelper(tmp, 0777);
+
+ cleanup:
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 /* Build up a fully qualified path for a config file to be
  * associated with a persistent guest or network */
 char *
