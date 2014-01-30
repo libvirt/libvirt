@@ -111,6 +111,7 @@ EXTRA_DIST =		\
 	virsh-uriprecedence \
 	virfiledata \
 	virpcitestdata \
+	virscsidata \
 	vmx2xmldata \
 	xencapsdata \
 	xmconfigdata \
@@ -239,6 +240,10 @@ test_programs += nwfilterxml2xmltest
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
 endif WITH_STORAGE
+
+if WITH_LINUX
+test_programs += virscsitest
+endif WITH_LINUX
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
 
@@ -914,6 +919,15 @@ fchosttest_LDADD = $(LDADDS)
 
 else ! WITH_LINUX
 EXTRA_DIST += fchosttest.c
+endif  ! WITH_LINUX
+
+if WITH_LINUX
+virscsitest_SOURCES = \
+       virscsitest.c testutils.h testutils.c
+virscsitest_LDADD = $(LDADDS)
+
+else ! WITH_LINUX
+EXTRA_DIST += virscsitest.c
 endif  ! WITH_LINUX
 
 if WITH_CIL

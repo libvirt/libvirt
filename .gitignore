@@ -207,6 +207,7 @@
 /tests/virnet*test
 /tests/virpcitest
 /tests/virportallocatortest
+/tests/virscsitest
 /tests/virshtest
 /tests/virstoragetest
 /tests/virstringtest
