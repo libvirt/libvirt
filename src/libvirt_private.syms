@@ -1874,6 +1874,7 @@ virFileIsExecutable;
 virFileIsLink;
 virFileLinkPointsTo;
 virFileLock;
+virFileMakeParentPath;
 virFileMakePath;
 virFileMakePathWithMode;
 virFileMatchesNameSuffix;
