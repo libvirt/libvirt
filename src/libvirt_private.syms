@@ -1674,6 +1674,7 @@ virProcessGetAffinity;
 virProcessGetNamespaces;
 virProcessKill;
 virProcessKillPainfully;
+virProcessRunInMountNamespace;
 virProcessSetAffinity;
 virProcessSetMaxFiles;
 virProcessSetMaxMemLock;
