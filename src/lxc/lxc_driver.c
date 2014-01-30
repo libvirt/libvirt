@@ -3657,6 +3657,115 @@ cleanup:
 }
 
 
+struct lxcDomainAttachDeviceMknodData {
+    virLXCDriverPtr driver;
+    mode_t mode;
+    dev_t dev;
+    virDomainObjPtr vm;
+    virDomainDeviceDefPtr def;
+    char *file;
+};
+
+static int
+lxcDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    struct lxcDomainAttachDeviceMknodData *data = opaque;
+    int ret = -1;
+
+    virSecurityManagerPostFork(data->driver->securityManager);
+
+    if (virFileMakeParentPath(data->file) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create %s"), data->file);
+        goto cleanup;
+    }
+
+    /* Yes, the device name we're creating may not
+     * actually correspond to the major:minor number
+     * we're using, but we've no other option at this
+     * time. Just have to hope that containerized apps
+     * don't get upset that the major:minor is different
+     * to that normally implied by the device name
+     */
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              data->file, major(data->dev), minor(data->dev));
+    if (mknod(data->file, data->mode, data->dev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             data->file);
+        goto cleanup;
+    }
+
+    if (lxcContainerChown(data->vm->def, data->file) < 0)
+        goto cleanup;
+
+    /* Labelling normally operates on src, but we need
+     * to actually label the dst here, so hack the config */
+    switch (data->def->type) {
+    case VIR_DOMAIN_DEVICE_DISK: {
+        virDomainDiskDefPtr def = data->def->data.disk;
+        char *tmpsrc = def->src;
+        def->src = data->file;
+        if (virSecurityManagerSetImageLabel(data->driver->securityManager,
+                                            data->vm->def, def) < 0) {
+            def->src = tmpsrc;
+            goto cleanup;
+        }
+        def->src = tmpsrc;
+    }   break;
+
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected device type %d"),
+                       data->def->type);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0)
+        unlink(data->file);
+    return ret;
+}
+
+
+static int
+lxcDomainAttachDeviceMknod(virLXCDriverPtr driver,
+                           mode_t mode,
+                           dev_t dev,
+                           virDomainObjPtr vm,
+                           virDomainDeviceDefPtr def,
+                           char *file)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    struct lxcDomainAttachDeviceMknodData data;
+
+    memset(&data, 0, sizeof(data));
+
+    data.driver = driver;
+    data.mode = mode;
+    data.dev = dev;
+    data.vm = vm;
+    data.def = def;
+    data.file = file;
+
+    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        return -1;
+
+    if (virProcessRunInMountNamespace(priv->initpid,
+                                      lxcDomainAttachDeviceMknodHelper,
+                                      &data) < 0) {
+        virSecurityManagerPostFork(driver->securityManager);
+        return -1;
+    }
+
+    virSecurityManagerPostFork(driver->securityManager);
+    return 0;
+}
+
+
 static int
 lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
                               virDomainObjPtr vm,
@@ -3665,11 +3774,9 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainDiskDefPtr def = dev->data.disk;
     int ret = -1;
-    char *dst = NULL;
     struct stat sb;
-    bool created = false;
-    mode_t mode = 0;
-    char *tmpsrc = def->src;
+    char *file = NULL;
+    int perms;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3713,51 +3820,44 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
-                    (unsigned long long)priv->initpid, def->dst) < 0)
-        goto cleanup;
-
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
-        goto cleanup;
-
-    mode = 0700 | S_IFBLK;
-
-    /* Yes, the device name we're creating may not
-     * actually correspond to the major:minor number
-     * we're using, but we've no other option at this
-     * time. Just have to hope that containerized apps
-     * don't get upset that the major:minor is different
-     * to that normally implied by the device name
-     */
-    VIR_DEBUG("Creating dev %s (%d,%d) from %s",
-              dst, major(sb.st_rdev), minor(sb.st_rdev), def->src);
-    if (mknod(dst, mode, sb.st_rdev) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create device %s"),
-                             dst);
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
         goto cleanup;
     }
 
-    if (lxcContainerChown(vm->def, dst) < 0)
+    perms = (def->readonly ?
+             VIR_CGROUP_DEVICE_READ :
+             VIR_CGROUP_DEVICE_RW) |
+        VIR_CGROUP_DEVICE_MKNOD;
+
+    if (virCgroupAllowDevice(priv->cgroup,
+                             'b',
+                             major(sb.st_rdev),
+                             minor(sb.st_rdev),
+                             perms) < 0)
         goto cleanup;
 
-    created = true;
-
-    /* Labelling normally operates on src, but we need
-     * to actually label the dst here, so hack the config */
-    def->src = dst;
-    if (virSecurityManagerSetImageLabel(driver->securityManager,
-                                        vm->def, def) < 0)
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1) < 0)
         goto cleanup;
 
-    if (virCgroupAllowDevicePath(priv->cgroup, def->src,
-                                 (def->readonly ?
-                                  VIR_CGROUP_DEVICE_READ :
-                                  VIR_CGROUP_DEVICE_RW) |
-                                 VIR_CGROUP_DEVICE_MKNOD) != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot allow device %s for domain %s"),
-                       def->src, vm->def->name);
+    if (virAsprintf(&file,
+                    "/dev/%s", def->dst) < 0)
+        goto cleanup;
+
+    if (lxcDomainAttachDeviceMknod(driver,
+                                   0700 | S_IFBLK,
+                                   sb.st_rdev,
+                                   vm,
+                                   dev,
+                                   file) < 0) {
+        if (virCgroupDenyDevice(priv->cgroup,
+                                'b',
+                                major(sb.st_rdev),
+                                minor(sb.st_rdev),
+                                perms) < 0)
+            VIR_WARN("cannot deny device %s for domain %s",
+                     def->src, vm->def->name);
         goto cleanup;
     }
 
@@ -3766,11 +3866,8 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     ret = 0;
 
 cleanup:
-    def->src = tmpsrc;
     virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
-    if (dst && created && ret < 0)
-        unlink(dst);
-    VIR_FREE(dst);
+    VIR_FREE(file);
     return ret;
 }
 
