@@ -1216,6 +1216,7 @@ virFileIsMountPoint;
 virFileLinkPointsTo;
 virFileLock;
 virFileLoopDeviceAssociate;
+virFileMakeParentPath;
 virFileMakePath;
 virFileMakePathWithMode;
 virFileMatchesNameSuffix;
