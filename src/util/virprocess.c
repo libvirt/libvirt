@@ -46,6 +46,7 @@
 #include "virlog.h"
 #include "virutil.h"
 #include "virstring.h"
+#include "vircommand.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -845,5 +846,110 @@ int virProcessGetStartTime(pid_t pid,
     }
     *timestamp = 0;
     return 0;
+}
+#endif
+
+
+#ifdef HAVE_SETNS
+static int virProcessNamespaceHelper(int errfd,
+                                     pid_t pid,
+                                     virProcessNamespaceCallback cb,
+                                     void *opaque)
+{
+    char *path;
+    int fd = -1;
+    int ret = -1;
+
+    if (virAsprintf(&path, "/proc/%llu/ns/mnt", (unsigned long long)pid) < 0)
+        goto cleanup;
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Kernel does not provide mount namespace"));
+        goto cleanup;
+    }
+
+    if (setns(fd, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to enter mount namespace"));
+        goto cleanup;
+    }
+
+    ret = cb(pid, opaque);
+
+ cleanup:
+    if (ret < 0) {
+        virErrorPtr err = virGetLastError();
+        if (err) {
+            size_t len = strlen(err->message) + 1;
+            ignore_value(safewrite(errfd, err->message, len));
+        }
+    }
+    VIR_FREE(path);
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+/* Run cb(opaque) in the mount namespace of pid.  Return -1 with error
+ * message raised if we fail to run the child, if the child dies from
+ * a signal, or if the child has status 1; otherwise return the exit
+ * status of the child. The callback will be run in a child process
+ * so must be careful to only use async signal safe functions.
+ */
+int
+virProcessRunInMountNamespace(pid_t pid,
+                              virProcessNamespaceCallback cb,
+                              void *opaque)
+{
+    int ret = -1;
+    pid_t child = -1;
+    int errfd[2] = { -1, -1 };
+
+    if (pipe(errfd) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot create pipe for child"));
+        return -1;
+    }
+
+    ret = virFork(&child);
+
+    if (ret < 0 || child < 0) {
+        if (child == 0)
+            _exit(1);
+
+        /* parent */
+        virProcessAbort(child);
+        goto cleanup;
+    }
+
+    if (child == 0) {
+        VIR_FORCE_CLOSE(errfd[0]);
+        ret = virProcessNamespaceHelper(errfd[1], pid,
+                                        cb, opaque);
+        VIR_FORCE_CLOSE(errfd[1]);
+        _exit(ret < 0 ? 1 : 0);
+    } else {
+        char *buf = NULL;
+        VIR_FORCE_CLOSE(errfd[1]);
+
+        ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
+        ret = virProcessWait(child, NULL);
+        VIR_FREE(buf);
+    }
+
+cleanup:
+    VIR_FORCE_CLOSE(errfd[0]);
+    VIR_FORCE_CLOSE(errfd[1]);
+    return ret;
+}
+#else /* !HAVE_SETNS */
+int
+virProcessRunInMountNamespace(pid_t pid ATTRIBUTE_UNUSED,
+                              virProcessNamespaceCallback cb ATTRIBUTE_UNUSED,
+                              void *opaque ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Mount namespaces are not available on this platform"));
+    return -1;
 }
 #endif
