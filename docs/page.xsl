@@ -187,7 +187,7 @@
   </xsl:template>
 
   <xsl:template match="html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">
-    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+    <xsl:element name="{name()}">
       <xsl:apply-templates mode="copy" />
       <xsl:if test="./html:a/@name">
         <a class="headerlink" href="#{html:a/@name}" title="Permalink to this headline">&#xb6;</a>
@@ -200,7 +200,7 @@
   </xsl:template>
 
   <xsl:template match="node()" mode="copy">
-    <xsl:element name="{name()}" namespace="{namespace-uri()}">
+    <xsl:element name="{name()}">
       <xsl:copy-of select="./@*"/>
       <xsl:apply-templates mode="copy" />
     </xsl:element>
