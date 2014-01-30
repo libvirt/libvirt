@@ -16355,6 +16355,55 @@ cleanup:
     return result;
 }
 
+
+static int
+qemuConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
+                                          virDomainPtr dom,
+                                          const char *event,
+                                          virConnectDomainQemuMonitorEventCallback callback,
+                                          void *opaque,
+                                          virFreeCallback freecb,
+                                          unsigned int flags)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    int ret = -1;
+
+    if (virConnectDomainQemuMonitorEventRegisterEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virDomainQemuMonitorEventStateRegisterID(conn,
+                                                 driver->domainEventState,
+                                                 dom, event, callback,
+                                                 opaque, freecb, flags,
+                                                 &ret) < 0)
+        ret = -1;
+
+cleanup:
+    return ret;
+}
+
+
+static int
+qemuConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
+                                            int callbackID)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    int ret = -1;
+
+    if (virConnectDomainQemuMonitorEventDeregisterEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virObjectEventStateDeregisterID(conn, driver->domainEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 static int
 qemuDomainFSTrim(virDomainPtr dom,
                  const char *mountPoint,
@@ -16688,6 +16737,8 @@ static virDriver qemuDriver = {
     .domainQemuMonitorCommand = qemuDomainQemuMonitorCommand, /* 0.8.3 */
     .domainQemuAttach = qemuDomainQemuAttach, /* 0.9.4 */
     .domainQemuAgentCommand = qemuDomainQemuAgentCommand, /* 0.10.0 */
+    .connectDomainQemuMonitorEventRegister = qemuConnectDomainQemuMonitorEventRegister, /* 1.2.3 */
+    .connectDomainQemuMonitorEventDeregister = qemuConnectDomainQemuMonitorEventDeregister, /* 1.2.3 */
     .domainOpenConsole = qemuDomainOpenConsole, /* 0.8.6 */
     .domainOpenGraphics = qemuDomainOpenGraphics, /* 0.9.7 */
     .domainInjectNMI = qemuDomainInjectNMI, /* 0.9.2 */

@@ -648,6 +648,34 @@ qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
     }
 }
 
+
+static int
+qemuProcessHandleEvent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                       virDomainObjPtr vm,
+                       const char *eventName,
+                       long long seconds,
+                       unsigned int micros,
+                       const char *details,
+                       void *opaque)
+{
+    virQEMUDriverPtr driver = opaque;
+    virObjectEventPtr event = NULL;
+
+    VIR_DEBUG("vm=%p", vm);
+
+    virObjectLock(vm);
+    event = virDomainQemuMonitorEventNew(vm->def->id, vm->def->name,
+                                         vm->def->uuid, eventName,
+                                         seconds, micros, details);
+
+    virObjectUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
+    return 0;
+}
+
+
 static int
 qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm,
@@ -1369,6 +1397,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuProcessHandleMonitorEOF,
     .errorNotify = qemuProcessHandleMonitorError,
     .diskSecretLookup = qemuProcessFindVolumeQcowPassphrase,
+    .domainEvent = qemuProcessHandleEvent,
     .domainShutdown = qemuProcessHandleShutdown,
     .domainStop = qemuProcessHandleStop,
     .domainResume = qemuProcessHandleResume,

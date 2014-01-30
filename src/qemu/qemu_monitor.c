@@ -1168,6 +1168,20 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
+                     long long seconds, unsigned int micros,
+                     const char *details)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p event=%s", mon, event);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainEvent, mon->vm, event, seconds,
+                          micros, details);
+    return ret;
+}
+
+
 int qemuMonitorEmitShutdown(qemuMonitorPtr mon)
 {
     int ret = -1;

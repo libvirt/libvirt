@@ -129,6 +129,12 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
 {
     const char *type;
     qemuEventHandler *handler;
+    virJSONValuePtr data;
+    char *details = NULL;
+    virJSONValuePtr timestamp;
+    long long seconds = -1;
+    unsigned int micros = 0;
+
     VIR_DEBUG("mon=%p obj=%p", mon, obj);
 
     type = virJSONValueObjectGetString(obj, "event");
@@ -138,10 +144,23 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
         return -1;
     }
 
+    /* Not all events have data; and event reporting is best-effort only */
+    if ((data = virJSONValueObjectGet(obj, "data")))
+        details = virJSONValueToString(data, false);
+    if ((timestamp = virJSONValueObjectGet(obj, "timestamp"))) {
+        virJSONValuePtr elt;
+
+        if ((elt = virJSONValueObjectGet(timestamp, "seconds")))
+            ignore_value(virJSONValueGetNumberLong(elt, &seconds));
+        if ((elt = virJSONValueObjectGet(timestamp, "microseconds")))
+            ignore_value(virJSONValueGetNumberUint(elt, &micros));
+    }
+    qemuMonitorEmitEvent(mon, type, seconds, micros, details);
+    VIR_FREE(details);
+
     handler = bsearch(type, eventHandlers, ARRAY_CARDINALITY(eventHandlers),
                       sizeof(eventHandlers[0]), qemuMonitorEventCompare);
     if (handler) {
-        virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
         VIR_DEBUG("handle %s handler=%p data=%p", type,
                   handler->handler, data);
         (handler->handler)(mon, data);

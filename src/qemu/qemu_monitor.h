@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -90,6 +90,13 @@ typedef int (*qemuMonitorDiskSecretLookupCallback)(qemuMonitorPtr mon,
                                                    char **secret,
                                                    size_t *secretLen,
                                                    void *opaque);
+typedef int (*qemuMonitorDomainEventCallback)(qemuMonitorPtr mon,
+                                              virDomainObjPtr vm,
+                                              const char *event,
+                                              long long seconds,
+                                              unsigned int micros,
+                                              const char *details,
+                                              void *opaque);
 typedef int (*qemuMonitorDomainShutdownCallback)(qemuMonitorPtr mon,
                                                  virDomainObjPtr vm,
                                                  void *opaque);
@@ -171,6 +178,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorEofNotifyCallback eofNotify;
     qemuMonitorErrorNotifyCallback errorNotify;
     qemuMonitorDiskSecretLookupCallback diskSecretLookup;
+    qemuMonitorDomainEventCallback domainEvent;
     qemuMonitorDomainShutdownCallback domainShutdown;
     qemuMonitorDomainResetCallback domainReset;
     qemuMonitorDomainPowerdownCallback domainPowerdown;
@@ -236,6 +244,9 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              char **secret,
                              size_t *secretLen);
 
+int qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
+                         long long seconds, unsigned int micros,
+                         const char *details);
 int qemuMonitorEmitShutdown(qemuMonitorPtr mon);
 int qemuMonitorEmitReset(qemuMonitorPtr mon);
 int qemuMonitorEmitPowerdown(qemuMonitorPtr mon);
