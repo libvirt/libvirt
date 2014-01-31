@@ -1478,10 +1478,6 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
                 return -1;
 
             break;
-
-        /* coverity[dead_error_begin] */
-        default:
-            break;
         }
     }
 

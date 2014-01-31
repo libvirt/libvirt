@@ -4167,9 +4167,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
             nodeset = NULL;
 
             break;
-
-        default:
-            break;
         }
     }
 

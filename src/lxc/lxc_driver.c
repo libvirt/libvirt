@@ -950,11 +950,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
                 goto cleanup;
             break;
-
-        /* coverity[dead_error_begin] */
-        default:
-            break;
-            /* should not hit here */
         }
     }
 
@@ -2626,11 +2621,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                                             param->value.s) < 0)
                     goto cleanup;
                 break;
-
-            /* coverity[dead_error_begin] */
-            default:
-                break;
-                /* should not hit here */
             }
         }
     } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -2818,11 +2808,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                     goto cleanup;
                 }
                 break;
-
-            /* coverity[dead_error_begin] */
-            default:
-                break;
-                /* should not hit here */
             }
         }
     }
