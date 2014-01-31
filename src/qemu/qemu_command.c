@@ -6134,7 +6134,8 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev,
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
-        STRNEQ_NULLABLE(dev->target.name, "com.redhat.spice.0")) {
+        dev->target.name &&
+        STRNEQ(dev->target.name, "com.redhat.spice.0")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported spicevmc target name '%s'"),
                        dev->target.name);
