@@ -764,6 +764,7 @@ sc_prohibit_cross_inclusion:
 	    cpu/ | locking/ | network/ | rpc/ | security/)		\
 	      safe="($$dir|util|conf)";;				\
 	    xenapi/ | xenxs/ ) safe="($$dir|util|conf|xen)";;		\
+	    qemu/ ) safe="($$dir|util|conf|cpu|network|locking|rpc|security|storage)";; \
 	    *) safe="($$dir|util|conf|cpu|network|locking|rpc|security)";; \
 	  esac;								\
 	  in_vc_files="^src/$$dir"					\

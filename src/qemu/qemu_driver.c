@@ -94,6 +94,7 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "viraccessapicheckqemu.h"
+#include "storage/storage_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -12648,6 +12649,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     int ret = -1;
     int fd = -1;
     bool need_unlink = false;
+    virStorageFilePtr snapfile = NULL;
 
     if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -12666,6 +12668,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
      * track the chain across libvirtd restarts.  */
     virStorageFileFreeMetadata(disk->backingChain);
     disk->backingChain = NULL;
+
+    if (!(snapfile = virStorageFileInitFromSnapshotDef(snap)))
+        goto cleanup;
 
     switch (snap->type) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:
@@ -12742,8 +12747,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
 cleanup:
-    if (need_unlink && unlink(source))
+    if (need_unlink && virStorageFileUnlink(snapfile))
         VIR_WARN("unable to unlink just-created %s", source);
+    virStorageFileFree(snapfile);
     VIR_FREE(device);
     VIR_FREE(source);
     VIR_FREE(persistSource);
@@ -12763,7 +12769,10 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
 {
     char *source = NULL;
     char *persistSource = NULL;
+    virStorageFilePtr diskfile = NULL;
     struct stat st;
+
+    diskfile = virStorageFileInitFromDiskDef(disk);
 
     if (VIR_STRDUP(source, origdisk->src) < 0 ||
         (persistDisk && VIR_STRDUP(persistSource, source) < 0))
@@ -12771,8 +12780,9 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
 
     qemuDomainPrepareDiskChainElement(driver, vm, disk, disk->src,
                                       VIR_DISK_CHAIN_NO_ACCESS);
-    if (need_unlink && stat(disk->src, &st) == 0 &&
-        S_ISREG(st.st_mode) && unlink(disk->src) < 0)
+    if (need_unlink && diskfile &&
+        virStorageFileStat(diskfile, &st) == 0 && S_ISREG(st.st_mode) &&
+        virStorageFileUnlink(diskfile) < 0)
         VIR_WARN("Unable to remove just-created %s", disk->src);
 
     /* Update vm in place to match changes.  */
@@ -12790,6 +12800,7 @@ qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
     }
 
 cleanup:
+    virStorageFileFree(diskfile);
     VIR_FREE(source);
     VIR_FREE(persistSource);
 }
