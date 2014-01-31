@@ -1,7 +1,7 @@
 /*
  * libxl_domain.c: libxl domain object private state
  *
- * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -92,7 +92,13 @@ libxlDomainObjPrivateOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(libxlDomainObjPrivate)
 
 static void
-libxlDomainObjEventHookInfoFree(void *obj)
+libxlDomainObjFDEventHookInfoFree(void *obj)
+{
+    VIR_FREE(obj);
+}
+
+static void
+libxlDomainObjTimerEventHookInfoFree(void *obj)
 {
     libxlEventHookInfoPtr info = obj;
 
@@ -138,12 +144,6 @@ libxlDomainObjFDRegisterEventHook(void *priv,
         return -1;
 
     info->priv = priv;
-    /*
-     * Take a reference on the domain object.  Reference is dropped in
-     * libxlDomainObjEventHookInfoFree, ensuring the domain object outlives
-     * the fd event objects.
-     */
-    virObjectRef(info->priv);
     info->xl_priv = xl_priv;
 
     if (events & POLLIN)
@@ -152,9 +152,8 @@ libxlDomainObjFDRegisterEventHook(void *priv,
         vir_events |= VIR_EVENT_HANDLE_WRITABLE;
 
     info->id = virEventAddHandle(fd, vir_events, libxlDomainObjFDEventCallback,
-                                 info, libxlDomainObjEventHookInfoFree);
+                                 info, libxlDomainObjFDEventHookInfoFree);
     if (info->id < 0) {
-        virObjectUnref(info->priv);
         VIR_FREE(info);
         return -1;
     }
@@ -259,7 +258,7 @@ libxlDomainObjTimeoutRegisterEventHook(void *priv,
         timeout = res.tv_sec * 1000 + (res.tv_usec + 999) / 1000;
     }
     info->id = virEventAddTimeout(timeout, libxlDomainObjTimerCallback,
-                                  info, libxlDomainObjEventHookInfoFree);
+                                  info, libxlDomainObjTimerEventHookInfoFree);
     if (info->id < 0) {
         virObjectUnref(info->priv);
         VIR_FREE(info);
