@@ -7916,6 +7916,135 @@ cleanup:
 }
 
 /*
+ * "qemu-monitor-event" command
+ */
+
+struct vshQemuEventData {
+    vshControl *ctl;
+    bool loop;
+    bool pretty;
+    int count;
+};
+typedef struct vshQemuEventData vshQemuEventData;
+
+static void
+vshEventPrint(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainPtr dom,
+              const char *event, long long seconds, unsigned int micros,
+              const char *details, void *opaque)
+{
+    vshQemuEventData *data = opaque;
+    virJSONValuePtr pretty = NULL;
+    char *str = NULL;
+
+    if (!data->loop && data->count)
+        return;
+    if (data->pretty && details) {
+        pretty = virJSONValueFromString(details);
+        if (pretty && (str = virJSONValueToString(pretty, true)))
+            details = str;
+    }
+    vshPrint(data->ctl, "event %s at %lld.%06u for domain %s: %s\n",
+             event, seconds, micros, virDomainGetName(dom), NULLSTR(details));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+
+    VIR_FREE(str);
+}
+
+static const vshCmdInfo info_qemu_monitor_event[] = {
+    {.name = "help",
+     .data = N_("QEMU Monitor Events")
+    },
+    {.name = "desc",
+     .data = N_("Listen for QEMU Monitor Events")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_qemu_monitor_event[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .help = N_("filter by domain name, id or uuid")
+    },
+    {.name = "event",
+     .type = VSH_OT_DATA,
+     .help = N_("filter by event name")
+    },
+    {.name = "pretty",
+     .type = VSH_OT_BOOL,
+     .help = N_("pretty-print any JSON output")
+    },
+    {.name = "loop",
+     .type = VSH_OT_BOOL,
+     .help = N_("loop until timeout or interrupt, rather than one-shot")
+    },
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("timeout seconds")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    unsigned int flags = 0;
+    int eventId = -1;
+    int timeout = 0;
+    const char *event = NULL;
+    vshQemuEventData data;
+
+    data.ctl = ctl;
+    data.loop = vshCommandOptBool(cmd, "loop");
+    data.pretty = vshCommandOptBool(cmd, "pretty");
+    data.count = 0;
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+    if (vshCommandOptString(cmd, "event", &event) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "domain"))
+        dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (vshEventStart(ctl, timeout) < 0)
+        goto cleanup;
+
+    if ((eventId = virConnectDomainQemuMonitorEventRegister(ctl->conn, dom,
+                                                            event,
+                                                            vshEventPrint,
+                                                            &data, NULL,
+                                                            flags)) < 0)
+        goto cleanup;
+    switch (vshEventWait(ctl)) {
+    case VSH_EVENT_INTERRUPT:
+        vshPrint(ctl, _("event loop interrupted\n"));
+        break;
+    case VSH_EVENT_TIMEOUT:
+        vshPrint(ctl, _("event loop timed out\n"));
+        break;
+    case VSH_EVENT_DONE:
+        break;
+    default:
+        goto cleanup;
+    }
+    vshPrint(ctl, _("events received: %d\n"), data.count);
+    if (data.count)
+        ret = true;
+
+cleanup:
+    vshEventCleanup(ctl);
+    if (eventId >= 0 &&
+        virConnectDomainQemuMonitorEventDeregister(ctl->conn, eventId) < 0)
+        ret = false;
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/*
  * "qemu-attach" command
  */
 static const vshCmdInfo info_qemu_attach[] = {
@@ -11548,6 +11677,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdQemuMonitorCommand,
      .opts = opts_qemu_monitor_command,
      .info = info_qemu_monitor_command,
+     .flags = 0
+    },
+    {.name = "qemu-monitor-event",
+     .handler = cmdQemuMonitorEvent,
+     .opts = opts_qemu_monitor_event,
+     .info = info_qemu_monitor_event,
      .flags = 0
     },
     {.name = "qemu-agent-command",

@@ -3326,12 +3326,15 @@ variables, and defaults to C<vi>.
 
 =back
 
-=head1 QEMU-SPECIFIC COMMANDS
+=head1 HYPERVISOR-SPECIFIC COMMANDS
 
 NOTE: Use of the following commands is B<strongly> discouraged.  They
 can cause libvirt to become confused and do the wrong thing on subsequent
-operations.  Once you have used this command, please do not report
-problems to the libvirt developers; the reports will be ignored.
+operations.  Once you have used these commands, please do not report
+problems to the libvirt developers; the reports will be ignored.  If
+you find that these commands are the only way to accomplish something,
+then it is better to request that the feature be added as a first-class
+citizen in the regular libvirt library.
 
 =over 4
 
@@ -3370,7 +3373,8 @@ and the monitor uses QMP, then the output will be pretty-printed.  If more
 than one argument is provided for I<command>, they are concatenated with a
 space in between before passing the single command to the monitor.
 
-=item B<qemu-agent-command> I<domain> [I<--timeout> I<seconds> | I<--async> | I<--block>] I<command>...
+=item B<qemu-agent-command> I<domain> [I<--timeout> I<seconds> | I<--async> |
+I<--block>] I<command>...
 
 Send an arbitrary guest agent command I<command> to domain I<domain> through
 qemu agent.
@@ -3379,6 +3383,21 @@ I<--timeout> requires timeout seconds I<seconds> and it must be positive.
 When I<--aysnc> is given, the command waits for timeout whether success or
 failed. And when I<--block> is given, the command waits forever with blocking
 timeout.
+
+=item B<qemu-monitor-event> [I<domain>] [I<--event> I<event-name>] [I<--loop>]
+[I<--timeout> I<seconds>] [I<--pretty>]
+
+Wait for arbitrary QEMU monitor events to occur, and print out the
+details of events as they happen.  The events can optionally be filtered
+by I<domain> or I<event-name>.  The 'query-events' QMP command can be
+used via I<qemu-monitor-command> to learn what events are supported.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.  With I<--loop>, the command prints all
+events until a timeout or interrupt key.  If I<--pretty> is specified,
+any JSON event details are pretty-printed for better legibility.
 
 =item B<lxc-enter-namespace> I<domain> -- /path/to/binary [arg1, [arg2, ...]]
 
