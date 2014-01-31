@@ -183,6 +183,8 @@ virObjectEventCallbackListCount(virConnectPtr conn,
     for (i = 0; i < cbList->count; i++) {
         virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
+        if (cb->filter)
+            continue;
         if (cb->klass == klass &&
             cb->eventID == eventID &&
             cb->conn == conn &&
@@ -218,10 +220,11 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
         if (cb->callbackID == callbackID && cb->conn == conn) {
             int ret;
 
-            ret = virObjectEventCallbackListCount(conn, cbList, cb->klass,
-                                                  cb->eventID,
-                                                  cb->uuid_filter ? cb->uuid : NULL,
-                                                  cb->remoteID >= 0) - 1;
+            ret = cb->filter ? 0 :
+                (virObjectEventCallbackListCount(conn, cbList, cb->klass,
+                                                 cb->eventID,
+                                                 cb->uuid_filter ? cb->uuid : NULL,
+                                                 cb->remoteID >= 0) - 1);
 
             if (cb->freecb)
                 (*cb->freecb)(cb->opaque);
@@ -251,10 +254,11 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
             cb->deleted = true;
-            return virObjectEventCallbackListCount(conn, cbList, cb->klass,
-                                                   cb->eventID,
-                                                   cb->uuid_filter ? cb->uuid : NULL,
-                                                   cb->remoteID >= 0);
+            return cb->filter ? 0 :
+                virObjectEventCallbackListCount(conn, cbList, cb->klass,
+                                                cb->eventID,
+                                                cb->uuid_filter ? cb->uuid : NULL,
+                                                cb->remoteID >= 0);
         }
     }
 
@@ -388,8 +392,10 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
         return -1;
     }
 
-    /* check if we already have this callback on our list */
-    if (virObjectEventCallbackLookup(conn, cbList, uuid,
+    /* If there is no additional filtering, then check if we already
+     * have this callback on our list.  */
+    if (!filter &&
+        virObjectEventCallbackLookup(conn, cbList, uuid,
                                      klass, eventID, callback, legacy,
                                      serverFilter ? &remoteID : NULL) != -1) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -422,10 +428,16 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
         goto cleanup;
 
-    ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID,
-                                          uuid, serverFilter);
-    if (serverFilter && remoteID < 0)
-        ret++;
+    /* When additional filtering is being done, every client callback
+     * is matched to exactly one server callback.  */
+    if (filter) {
+        ret = 1;
+    } else {
+        ret = virObjectEventCallbackListCount(conn, cbList, klass, eventID,
+                                              uuid, serverFilter);
+        if (serverFilter && remoteID < 0)
+            ret++;
+    }
 
 cleanup:
     if (event)

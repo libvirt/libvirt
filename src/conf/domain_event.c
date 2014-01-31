@@ -1384,6 +1384,18 @@ error:
 }
 
 
+/* In order to filter by event name, we need to store a copy of the
+ * name to filter on.  By wrapping the caller's freecb, we can
+ * piggyback our cleanup to happen at the same time the caller
+ * deregisters.  */
+struct virDomainQemuMonitorEventData {
+    char *event;
+    void *opaque;
+    virFreeCallback freecb;
+};
+typedef struct virDomainQemuMonitorEventData virDomainQemuMonitorEventData;
+
+
 static void
 virDomainQemuMonitorEventDispatchFunc(virConnectPtr conn,
                                       virObjectEventPtr event,
@@ -1392,6 +1404,7 @@ virDomainQemuMonitorEventDispatchFunc(virConnectPtr conn,
 {
     virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
     virDomainQemuMonitorEventPtr qemuMonitorEvent;
+    virDomainQemuMonitorEventData *data = cbopaque;
 
     if (!dom)
         return;
@@ -1403,7 +1416,7 @@ virDomainQemuMonitorEventDispatchFunc(virConnectPtr conn,
                                                    qemuMonitorEvent->seconds,
                                                    qemuMonitorEvent->micros,
                                                    qemuMonitorEvent->details,
-                                                   cbopaque);
+                                                   data->opaque);
     virDomainFree(dom);
 }
 
@@ -1578,6 +1591,41 @@ virDomainEventStateDeregister(virConnectPtr conn,
 
 
 /**
+ * virDomainQemuMonitorEventFilter:
+ * @conn: the connection pointer
+ * @event: the event about to be dispatched
+ * @opaque: the opaque data registered with the filter
+ *
+ * Callback for filtering based on event names.  Returns true if the
+ * event should be dispatched.
+ */
+static bool
+virDomainQemuMonitorEventFilter(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virObjectEventPtr event,
+                                void *opaque)
+{
+    virDomainQemuMonitorEventData *data = opaque;
+    virDomainQemuMonitorEventPtr monitorEvent;
+
+    monitorEvent = (virDomainQemuMonitorEventPtr) event;
+
+    return STREQ(monitorEvent->event, data->event);
+}
+
+
+static void
+virDomainQemuMonitorEventCleanup(void *opaque)
+{
+    virDomainQemuMonitorEventData *data = opaque;
+
+    VIR_FREE(data->event);
+    if (data->freecb)
+        (data->freecb)(data->opaque);
+    VIR_FREE(data);
+}
+
+
+/**
  * virDomainQemuMonitorEventStateRegisterID:
  * @conn: connection to associate with callback
  * @state: object event state
@@ -1605,23 +1653,30 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
                                          unsigned int flags,
                                          int *callbackID)
 {
+    virDomainQemuMonitorEventData *data = NULL;
+    virObjectEventCallbackFilter filter = NULL;
+
     if (virDomainEventsInitialize() < 0)
         return -1;
 
-    /* FIXME support event filtering */
     if (flags != -1)
         virCheckFlags(0, -1);
-    if (event) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("event filtering on '%s' not implemented yet"),
-                       event);
+    if (VIR_ALLOC(data) < 0)
+        return -1;
+    if (VIR_STRDUP(data->event, event) < 0) {
+        VIR_FREE(data);
         return -1;
     }
+    data->opaque = opaque;
+    data->freecb = freecb;
+    if (event)
+        filter = virDomainQemuMonitorEventFilter;
+    freecb = virDomainQemuMonitorEventCleanup;
 
     return virObjectEventStateRegisterID(conn, state, dom ? dom->uuid : NULL,
-                                         NULL, NULL,
+                                         filter, data,
                                          virDomainQemuMonitorEventClass, 0,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
-                                         opaque, freecb,
+                                         data, freecb,
                                          false, callbackID, false);
 }
