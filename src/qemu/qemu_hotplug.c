@@ -837,7 +837,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
      * network's pool of devices, or resolve bridge device name
      * to the one defined in the network definition.
      */
-    if (networkAllocateActualDevice(net) < 0)
+    if (networkAllocateActualDevice(vm->def, net) < 0)
         goto cleanup;
 
     actualType = virDomainNetGetActualType(net);
@@ -1082,7 +1082,7 @@ cleanup:
 
         virDomainNetRemoveHostdev(vm->def, net);
 
-        networkReleaseActualDevice(net);
+        networkReleaseActualDevice(vm->def, net);
     }
 
     VIR_FREE(nicstr);
@@ -2017,7 +2017,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
      * free it if we fail for any reason
      */
     if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        networkAllocateActualDevice(newdev) < 0) {
+        networkAllocateActualDevice(vm->def, newdev) < 0) {
         goto cleanup;
     }
 
@@ -2204,7 +2204,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
         /* this function doesn't work with HOSTDEV networks yet, thus
          * no need to change the pointer in the hostdev structure */
-        networkReleaseActualDevice(olddev);
+        networkReleaseActualDevice(vm->def, olddev);
         virDomainNetDefFree(olddev);
         /* move newdev into the nets list, and NULL it out from the
          * virDomainDeviceDef that we were given so that the caller
@@ -2236,7 +2236,7 @@ cleanup:
      * replace the entire device object.
      */
     if (newdev)
-        networkReleaseActualDevice(newdev);
+        networkReleaseActualDevice(vm->def, newdev);
 
     return ret;
 }
@@ -2649,7 +2649,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     virDomainHostdevDefFree(hostdev);
 
     if (net) {
-        networkReleaseActualDevice(net);
+        networkReleaseActualDevice(vm->def, net);
         virDomainNetDefFree(net);
     }
     virObjectUnref(cfg);
@@ -2717,7 +2717,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                         virDomainNetGetActualBridgeName(net),
                         net->ifname));
 
-    networkReleaseActualDevice(net);
+    networkReleaseActualDevice(vm->def, net);
     virDomainNetDefFree(net);
     virObjectUnref(cfg);
 }

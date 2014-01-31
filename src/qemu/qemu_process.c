@@ -2773,7 +2773,7 @@ qemuProcessNotifyNets(virDomainDefPtr def)
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        if (networkNotifyActualDevice(net) < 0)
+        if (networkNotifyActualDevice(def, net) < 0)
             return -1;
     }
     return 0;
@@ -4393,7 +4393,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
         /* kick the device out of the hostdev list too */
         virDomainNetRemoveHostdev(def, net);
-        networkReleaseActualDevice(net);
+        networkReleaseActualDevice(vm->def, net);
     }
 
 retry:

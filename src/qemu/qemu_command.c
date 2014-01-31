@@ -548,7 +548,7 @@ qemuNetworkPrepareDevices(virDomainDefPtr def)
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (networkAllocateActualDevice(net) < 0)
+        if (networkAllocateActualDevice(def, net) < 0)
             goto cleanup;
 
         actualType = virDomainNetGetActualType(net);

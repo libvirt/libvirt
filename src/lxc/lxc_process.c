@@ -198,7 +198,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
                                 iface->ifname));
             ignore_value(virNetDevVethDelete(iface->ifname));
         }
-        networkReleaseActualDevice(iface);
+        networkReleaseActualDevice(vm->def, iface);
     }
 
     virDomainConfVMNWFilterTeardown(vm);
@@ -374,7 +374,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (networkAllocateActualDevice(def->nets[i]) < 0)
+        if (networkAllocateActualDevice(def, def->nets[i]) < 0)
             goto cleanup;
 
         if (VIR_EXPAND_N(*veths, *nveths, 1) < 0)
@@ -476,7 +476,7 @@ cleanup:
                 ignore_value(virNetDevOpenvswitchRemovePort(
                                 virDomainNetGetActualBridgeName(iface),
                                 iface->ifname));
-            networkReleaseActualDevice(iface);
+            networkReleaseActualDevice(def, iface);
         }
     }
     return ret;

@@ -13,9 +13,15 @@
        actions occur:</p>
     <ul>
       <li>The libvirt daemon starts, stops, or reloads its
-          configuration<br/><br/></li>
-      <li>A QEMU guest is started or stopped<br/><br/></li>
-      <li>An LXC guest is started or stopped<br/><br/></li>
+          configuration
+          (<span class="since">since 0.8.0</span>)<br/><br/></li>
+      <li>A QEMU guest is started or stopped
+         (<span class="since">since 0.8.0</span>)<br/><br/></li>
+         <li>An LXC guest is started or stopped
+         (<span class="since">since 0.8.0</span>)<br/><br/></li>
+      <li>A network is started or stopped or an interface is
+          plugged/unplugged to/from the network
+          (<span class="since">since 1.2.2</span>)<br/><br/></li>
     </ul>
 
     <h2><a name="location">Script location</a></h2>
@@ -44,6 +50,9 @@
           Executed when a QEMU guest is started, stopped, or migrated<br/><br/></li>
       <li><code>/etc/libvirt/hooks/lxc</code><br /><br/>
           Executed when an LXC guest is started or stopped</li>
+      <li><code>/etc/libvirt/hooks/network</code><br/><br/>
+          Executed when a network is started or stopped or an
+          interface is plugged/unplugged to/from the network</li>
     </ul>
     <br/>
 
@@ -66,6 +75,39 @@
        XML description for the domain on their stdin. This includes items
        such the UUID of the domain and its storage information, and is
        intended to provide all the libvirt information the script needs.</p>
+    <p>For all cases, stdin of the network hook script is provided with the
+       full XML description of the network status in the following form:</p>
+
+<pre>&lt;hookData&gt;
+  &lt;network&gt;
+     &lt;name&gt;$network_name&lt;/name&gt;
+     &lt;uuid&gt;afca425a-2c3a-420c-b2fb-dd7b4950d722&lt;/uuid&gt;
+     ...
+  &lt;/network&gt;
+&lt;/hookData&gt;</pre>
+
+    <p>In the case of an interface
+       being plugged/unplugged to/from the network, the network XML will be
+       followed with the full XML description of the domain containing the
+       interface that is being plugged/unplugged:</p>
+
+<pre>&lt;hookData&gt;
+  &lt;network&gt;
+     &lt;name&gt;$network_name&lt;/name&gt;
+     &lt;uuid&gt;afca425a-2c3a-420c-b2fb-dd7b4950d722&lt;/uuid&gt;
+     ...
+  &lt;/network&gt;
+  &lt;domain type='$domain_type' id='$domain_id'&gt;
+     &lt;name&gt;$domain_name&lt;/name&gt;
+     &lt;uuid&gt;afca425a-2c3a-420c-b2fb-dd7b4950d722&lt;/uuid&gt;
+     ...
+  &lt;/domain&gt;
+&lt;/hookData&gt;</pre>
+
+    <p>Please note that this approach is different from other cases such as
+       <code>daemon</code>, <code>qemu</code> or <code>lxc</code> hook scripts,
+       because two XMLs may be passed here, while in the other cases only a single
+       XML is passed.</p>
 
     <p>The command line arguments take this approach:</p>
     <ol>
@@ -181,25 +223,49 @@
         <pre>/etc/libvirt/hooks/lxc guest_name reconnect begin -</pre>
       </li>
     </ul>
+
+    <h5><a name="network">/etc/libvirt/hooks/network</a></h5>
+    <ul>
+      <li><span class="since">Since 1.2.2</span>, before a network is started,
+        this script is called as:<br/>
+          <pre>/etc/libvirt/hooks/network network_name start begin -</pre></li>
+      <li>After the network is started, up &and; running, the script is
+        called as:<br/>
+          <pre>/etc/libvirt/hooks/network network_name started begin -</pre></li>
+      <li>When a network is shut down, this script is called as:<br/>
+          <pre>/etc/libvirt/hooks/network network_name stopped end -</pre></li>
+      <li>Later, when network is started and there's an interface from a
+        domain to be plugged into the network, the hook script is called as:<br/>
+          <pre>/etc/libvirt/hooks/network network_name plugged begin -</pre>
+        Please note, that in this case, the script is passed both network and
+        domain XMLs on its stdin.</li>
+      <li>When the domain from previous case is shutting down, the interface
+        is unplugged. This leads to another script invocation:<br/>
+          <pre>/etc/libvirt/hooks/network network_name unplugged begin -</pre>
+        And again, as in previous case, both network and domain XMLs are passed
+        onto script's stdin.</li>
+    </ul>
+
     <br/>
 
     <h2><a name="execution">Script execution</a></h2>
     <ul>
-      <li>The "start" operation for the guest hook scripts, qemu and lxc,
-          executes <b>prior</b> to the guest being created.  This allows the
-          guest start operation to be aborted if the script returns indicating
-          failure.<br/><br/></li>
-      <li>The "shutdown" operation for the guest hook scripts, qemu and lxc,
-          executes <b>after</b> the guest has stopped.  If the hook script
-          indicates failure in its return, the shut down of the guest cannot
-          be aborted because it has already been performed.<br/><br/></li>
+      <li>The "start" operation for the guest and network hook scripts,
+          executes <b>prior</b> to the object (guest or network) being created.
+          This allows the object start operation to be aborted if the script
+          returns indicating failure.<br/><br/></li>
+      <li>The "shutdown" operation for the guest and network hook scripts,
+          executes <b>after</b> the object (guest or network) has stopped. If
+          the hook script indicates failure in its return, the shut down of the
+          object cannot be aborted because it has already been performed.
+          <br/><br/></li>
       <li>Hook scripts execute in a synchronous fashion.  Libvirt waits
           for them to return before continuing the given operation.<br/><br/>
-          This is most noticeable with the guest start operation, as a lengthy
-          operation in the hook script can mean an extended wait for the guest
-          to be available to end users.<br/><br/></li>
+          This is most noticeable with the guest or network start operation,
+          as a lengthy operation in the hook script can mean an extended wait
+          for the guest or network to be available to end users.<br/><br/></li>
       <li>For a hook script to be utilised, it must have its execute bit set
-          (ie. chmod o+rx <i>qemu</i>), and must be present when the libvirt
+          (e.g. chmod o+rx <i>qemu</i>), and must be present when the libvirt
           daemon is started.<br/><br/></li>
       <li>If a hook script is added to a host after the libvirt daemon is
           already running, it won't be used until the libvirt daemon

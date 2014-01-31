@@ -34,12 +34,15 @@
 int networkRegister(void);
 
 # if WITH_NETWORK
-int networkAllocateActualDevice(virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1);
-int networkNotifyActualDevice(virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1);
-int networkReleaseActualDevice(virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1);
+int networkAllocateActualDevice(virDomainDefPtr dom,
+                                virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int networkNotifyActualDevice(virDomainDefPtr dom,
+                              virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int networkReleaseActualDevice(virDomainDefPtr dom,
+                               virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int networkGetNetworkAddress(const char *netname, char **netaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
@@ -51,9 +54,9 @@ int networkDnsmasqConfContents(virNetworkObjPtr network,
                         dnsmasqCapsPtr caps);
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
-#  define networkAllocateActualDevice(iface) 0
+#  define networkAllocateActualDevice(dom, iface) 0
 #  define networkNotifyActualDevice(iface) (iface=iface, 0)
-#  define networkReleaseActualDevice(iface) (iface=iface, 0)
+#  define networkReleaseActualDevice(dom, iface) (dom=dom, iface=iface, 0)
 #  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
                     dctx, caps) 0
