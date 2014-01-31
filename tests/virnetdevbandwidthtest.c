@@ -125,14 +125,14 @@ mymain(void)
                  "  <inbound average='1' peak='2' floor='3' burst='4'/>"
                  "  <outbound average='5' peak='6' burst='7'/>"
                  "</bandwidth>"),
-                ("/sbin/tc qdisc del dev eth0 root\n"
-                 "/sbin/tc qdisc del dev eth0 ingress\n"
-                 "/sbin/tc qdisc add dev eth0 root handle 1: htb default 1\n"
-                 "/sbin/tc class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb\n"
-                 "/sbin/tc qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
-                 "/sbin/tc filter add dev eth0 parent 1:0 protocol ip handle 1 fw flowid 1\n"
-                 "/sbin/tc qdisc add dev eth0 ingress\n"
-                 "/sbin/tc filter add dev eth0 parent ffff: protocol ip u32 match ip src 0.0.0.0/0 "
+                (TC " qdisc del dev eth0 root\n"
+                 TC " qdisc del dev eth0 ingress\n"
+                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
+                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb\n"
+                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                 TC " filter add dev eth0 parent 1:0 protocol ip handle 1 fw flowid 1\n"
+                 TC " qdisc add dev eth0 ingress\n"
+                 TC " filter add dev eth0 parent ffff: protocol ip u32 match ip src 0.0.0.0/0 "
                  "police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n"));
 
     return ret;
