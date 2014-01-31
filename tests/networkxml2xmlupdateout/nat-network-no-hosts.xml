@@ -5,6 +5,7 @@
     <interface dev='eth0'/>
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
+  <dns forwardPlainNames='no'/>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
   </ip>
 </network>
