@@ -92,7 +92,9 @@ testVirNetDevBandwidthSet(const void *data)
     }
 
     if (STRNEQ_NULLABLE(info->exp_cmd, actual_cmd)) {
-        virtTestDifference(stderr, info->exp_cmd, actual_cmd);
+        virtTestDifference(stderr,
+                           NULLSTR(info->exp_cmd),
+                           NULLSTR(actual_cmd));
         goto cleanup;
     }
 
@@ -120,6 +122,31 @@ mymain(void)
             ret = -1;                                       \
     } while (0)
 
+
+    DO_TEST_SET(NULL, NULL);
+
+    DO_TEST_SET(("<bandwidth/>"),
+                (TC " qdisc del dev eth0 root\n"
+                 TC " qdisc del dev eth0 ingress\n"));
+
+    DO_TEST_SET(("<bandwidth>"
+                 "  <inbound average='1024'/>"
+                 "</bandwidth>"),
+                (TC " qdisc del dev eth0 root\n"
+                 TC " qdisc del dev eth0 ingress\n"
+                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
+                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps\n"
+                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                 TC " filter add dev eth0 parent 1:0 protocol ip handle 1 fw flowid 1\n"));
+
+    DO_TEST_SET(("<bandwidth>"
+                 "  <outbound average='1024'/>"
+                 "</bandwidth>"),
+                (TC " qdisc del dev eth0 root\n"
+                 TC " qdisc del dev eth0 ingress\n"
+                 TC " qdisc add dev eth0 ingress\n"
+                 TC " filter add dev eth0 parent ffff: protocol ip u32 match ip src 0.0.0.0/0 "
+                 "police rate 1024kbps burst 1024kb mtu 64kb drop flowid :1\n"));
 
     DO_TEST_SET(("<bandwidth>"
                  "  <inbound average='1' peak='2' floor='3' burst='4'/>"
