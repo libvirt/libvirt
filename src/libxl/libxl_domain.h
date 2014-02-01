@@ -1,7 +1,7 @@
 /*
  * libxl_domain.h: libxl domain object private state
  *
- * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,9 +43,6 @@ struct _libxlDomainObjPrivate {
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
-
-    /* list of libxl timeout registrations */
-    libxlEventHookInfoPtr timerRegistrations;
 };
 
 
@@ -55,8 +52,5 @@ extern virDomainDefParserConfig libxlDomainDefParserConfig;
 
 int
 libxlDomainObjPrivateInitCtx(virDomainObjPtr vm);
-
-void
-libxlDomainObjRegisteredTimeoutsCleanup(libxlDomainObjPrivatePtr priv);
 
 #endif /* LIBXL_DOMAIN_H */

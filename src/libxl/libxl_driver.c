@@ -2,7 +2,7 @@
  * libxl_driver.c: core driver methods for managing libxenlight domains
  *
  * Copyright (C) 2006-2014 Red Hat, Inc.
- * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
@@ -313,7 +313,6 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
         vm->newDef = NULL;
     }
 
-    libxlDomainObjRegisteredTimeoutsCleanup(priv);
     virObjectUnref(cfg);
 }
 

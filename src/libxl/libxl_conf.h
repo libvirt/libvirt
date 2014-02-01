@@ -1,7 +1,7 @@
 /*
  * libxl_conf.h: libxl configuration management
  *
- * Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2011-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
@@ -114,9 +114,6 @@ struct _libxlDriverPrivate {
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 };
-
-typedef struct _libxlEventHookInfo libxlEventHookInfo;
-typedef libxlEventHookInfo *libxlEventHookInfoPtr;
 
 # define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"
 # define LIBXL_SAVE_VERSION 1

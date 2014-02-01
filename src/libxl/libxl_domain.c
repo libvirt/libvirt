@@ -34,37 +34,9 @@
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
 
-/* Append an event registration to the list of registrations */
-#define LIBXL_EV_REG_APPEND(head, add)                 \
-    do {                                               \
-        libxlEventHookInfoPtr temp;                    \
-        if (head) {                                    \
-            temp = head;                               \
-            while (temp->next)                         \
-                temp = temp->next;                     \
-            temp->next = add;                          \
-        } else {                                       \
-            head = add;                                \
-        }                                              \
-    } while (0)
-
-/* Remove an event registration from the list of registrations */
-#define LIBXL_EV_REG_REMOVE(head, del)                 \
-    do {                                               \
-        libxlEventHookInfoPtr temp;                    \
-        if (head == del) {                             \
-            head = head->next;                         \
-        } else {                                       \
-            temp = head;                               \
-            while (temp->next && temp->next != del)    \
-                temp = temp->next;                     \
-            if (temp->next) {                          \
-                temp->next = del->next;                \
-            }                                          \
-        }                                              \
-    } while (0)
-
 /* Object used to store info related to libxl event registrations */
+typedef struct _libxlEventHookInfo libxlEventHookInfo;
+typedef libxlEventHookInfo *libxlEventHookInfoPtr;
 struct _libxlEventHookInfo {
     libxlEventHookInfoPtr next;
     libxlDomainObjPrivatePtr priv;
@@ -214,12 +186,7 @@ libxlDomainObjTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_info)
     virObjectUnlock(p);
     libxl_osevent_occurred_timeout(p->ctx, info->xl_priv);
     virObjectLock(p);
-    /*
-     * Timeout could have been freed while the lock was dropped.
-     * Only remove it from the list if it still exists.
-     */
-    if (virEventRemoveTimeout(info->id) == 0)
-        LIBXL_EV_REG_REMOVE(p->timerRegistrations, info);
+    virEventRemoveTimeout(info->id);
     virObjectUnlock(p);
 }
 
@@ -265,9 +232,6 @@ libxlDomainObjTimeoutRegisterEventHook(void *priv,
         return -1;
     }
 
-    virObjectLock(info->priv);
-    LIBXL_EV_REG_APPEND(info->priv->timerRegistrations, info);
-    virObjectUnlock(info->priv);
     *hndp = info;
 
     return 0;
@@ -306,12 +270,7 @@ libxlDomainObjTimeoutDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
     libxlDomainObjPrivatePtr p = info->priv;
 
     virObjectLock(p);
-    /*
-     * Only remove the timeout from the list if removal from the
-     * event loop is successful.
-     */
-    if (virEventRemoveTimeout(info->id) == 0)
-        LIBXL_EV_REG_REMOVE(p->timerRegistrations, info);
+    virEventRemoveTimeout(info->id);
     virObjectUnlock(p);
 }
 
@@ -442,27 +401,4 @@ libxlDomainObjPrivateInitCtx(virDomainObjPtr vm)
 cleanup:
     VIR_FREE(log_file);
     return ret;
-}
-
-void
-libxlDomainObjRegisteredTimeoutsCleanup(libxlDomainObjPrivatePtr priv)
-{
-    libxlEventHookInfoPtr info;
-
-    virObjectLock(priv);
-    info = priv->timerRegistrations;
-    while (info) {
-        /*
-         * libxl expects the event to be deregistered when calling
-         * libxl_osevent_occurred_timeout, but we dont want the event info
-         * destroyed.  Disable the timeout and only remove it after returning
-         * from libxl.
-         */
-        virEventUpdateTimeout(info->id, -1);
-        libxl_osevent_occurred_timeout(priv->ctx, info->xl_priv);
-        virEventRemoveTimeout(info->id);
-        info = info->next;
-    }
-    priv->timerRegistrations = NULL;
-    virObjectUnlock(priv);
 }
