@@ -352,61 +352,107 @@ libxlVmReap(libxlDriverPrivatePtr driver,
 # define VIR_LIBXL_EVENT_CONST const
 #endif
 
+struct libxlShutdownThreadInfo
+{
+    virDomainObjPtr vm;
+    libxl_event *event;
+};
+
+
 static void
-libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
+libxlDomainShutdownThread(void *opaque)
 {
     libxlDriverPrivatePtr driver = libxl_driver;
-    libxlDomainObjPrivatePtr priv = ((virDomainObjPtr)data)->privateData;
-    virDomainObjPtr vm = NULL;
+    struct libxlShutdownThreadInfo *shutdown_info = opaque;
+    virDomainObjPtr vm = shutdown_info->vm;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxl_event *ev = shutdown_info->event;
+    libxl_ctx *ctx = priv->ctx;
     virObjectEventPtr dom_event = NULL;
-    libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
+    libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
+    virDomainShutoffReason reason;
 
-    if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
-        virDomainShutoffReason reason;
+    virObjectLock(vm);
 
-        /*
-         * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
-         * after calling libxl_domain_suspend() are handled by it's callers.
-         */
-        if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
-            goto cleanup;
-
-        vm = virDomainObjListFindByID(driver->domains, event->domid);
-        if (!vm)
-            goto cleanup;
-
-        switch (xl_reason) {
-            case LIBXL_SHUTDOWN_REASON_POWEROFF:
-            case LIBXL_SHUTDOWN_REASON_CRASH:
-                if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
-                    dom_event = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_STOPPED,
-                                              VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-                    reason = VIR_DOMAIN_SHUTOFF_CRASHED;
-                } else {
-                    reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
-                }
-                libxlVmReap(driver, vm, reason);
-                if (!vm->persistent) {
-                    virDomainObjListRemove(driver->domains, vm);
-                    vm = NULL;
-                }
-                break;
-            case LIBXL_SHUTDOWN_REASON_REBOOT:
-                libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-                libxlVmStart(driver, vm, 0, -1);
-                break;
-            default:
-                VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
-                break;
-        }
+    switch (xl_reason) {
+        case LIBXL_SHUTDOWN_REASON_POWEROFF:
+        case LIBXL_SHUTDOWN_REASON_CRASH:
+            if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
+                dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+                reason = VIR_DOMAIN_SHUTOFF_CRASHED;
+            } else {
+                reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+            }
+            libxlVmReap(driver, vm, reason);
+            if (!vm->persistent) {
+                virDomainObjListRemove(driver->domains, vm);
+                vm = NULL;
+            }
+            break;
+        case LIBXL_SHUTDOWN_REASON_REBOOT:
+            libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+            libxlVmStart(driver, vm, 0, -1);
+            break;
+        default:
+            VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
+            break;
     }
 
-cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (dom_event)
         libxlDomainEventQueue(driver, dom_event);
+    libxl_event_free(ctx, ev);
+    VIR_FREE(shutdown_info);
+}
+
+static void
+libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
+{
+    virDomainObjPtr vm = data;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
+    struct libxlShutdownThreadInfo *shutdown_info;
+    virThread thread;
+
+    if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
+        VIR_INFO("Unhandled event type %d", event->type);
+        goto error;
+    }
+
+    /*
+     * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
+     * after calling libxl_domain_suspend() are handled by it's callers.
+     */
+    if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
+        goto error;
+
+    /*
+     * Start a thread to handle shutdown.  We don't want to be tying up
+     * libxl's event machinery by doing a potentially lengthy shutdown.
+     */
+    if (VIR_ALLOC(shutdown_info) < 0)
+        goto error;
+
+    shutdown_info->vm = data;
+    shutdown_info->event = (libxl_event *)event;
+    if (virThreadCreate(&thread, false, libxlDomainShutdownThread,
+                        shutdown_info) < 0) {
+        /*
+         * Not much we can do on error here except log it.
+         */
+        VIR_ERROR(_("Failed to create thread to handle domain shutdown"));
+        goto error;
+    }
+
+    /*
+     * libxl_event freed in shutdown thread
+     */
+    return;
+
+error:
     /* Cast away any const */
     libxl_event_free(priv->ctx, (libxl_event *)event);
 }
