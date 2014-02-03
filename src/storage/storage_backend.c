@@ -123,6 +123,10 @@ static virStorageBackendPtr backends[] = {
 
 
 static virStorageFileBackendPtr fileBackends[] = {
+#if WITH_STORAGE_FS
+    &virStorageFileBackendFile,
+    &virStorageFileBackendBlock,
+#endif
     NULL
 };
 

@@ -1327,4 +1327,52 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .deleteVol = virStorageBackendFileSystemVolDelete,
     .resizeVol = virStorageBackendFileSystemVolResize,
 };
+
+
+static int
+virStorageFileBackendFileUnlink(virStorageFilePtr file)
+{
+    int ret;
+
+    ret = unlink(file->path);
+    /* preserve errno */
+
+    VIR_DEBUG("removing storage file %p(%s): ret=%d, errno=%d",
+              file, file->path, ret, errno);
+
+    return ret;
+}
+
+
+static int
+virStorageFileBackendFileStat(virStorageFilePtr file,
+                              struct stat *st)
+{
+    int ret;
+
+    ret = stat(file->path, st);
+    /* preserve errno */
+
+    VIR_DEBUG("stat of storage file %p(%s): ret=%d, errno=%d",
+              file, file->path, ret, errno);
+
+    return ret;
+}
+
+
+virStorageFileBackend virStorageFileBackendFile = {
+    .type = VIR_DOMAIN_DISK_TYPE_FILE,
+
+    .storageFileUnlink = virStorageFileBackendFileUnlink,
+    .storageFileStat = virStorageFileBackendFileStat,
+};
+
+
+virStorageFileBackend virStorageFileBackendBlock = {
+    .type = VIR_DOMAIN_DISK_TYPE_BLOCK,
+
+    .storageFileStat = virStorageFileBackendFileStat,
+};
+
+
 #endif /* WITH_STORAGE_FS */

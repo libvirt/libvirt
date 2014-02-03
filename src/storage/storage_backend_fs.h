@@ -38,4 +38,6 @@ typedef enum {
 } virStoragePoolProbeResult;
 extern virStorageBackend virStorageBackendDirectory;
 
+extern virStorageFileBackend virStorageFileBackendFile;
+extern virStorageFileBackend virStorageFileBackendBlock;
 #endif /* __VIR_STORAGE_BACKEND_FS_H__ */
