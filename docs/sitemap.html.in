@@ -352,6 +352,10 @@
             <a href="virshcmdref.html">Virsh Commands</a>
             <span>Command reference for virsh</span>
           </li>
+          <li>
+            <a href="governance.html">Governance</a>
+            <span>Project governance and code of conduct</span>
+          </li>
         </ul>
       </li>
       <li>

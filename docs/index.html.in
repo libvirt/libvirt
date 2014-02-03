@@ -30,6 +30,11 @@
       <li>
         A <a href="/qpid/">QMF agent</a> for the AMQP/QPid messaging system
       </li>
+      <li>
+        A <a href="governance.html">technical meritocracy</a>, in which
+        participants gain influence over a project through recognition
+        of their contributions.
+      </li>
     </ul>
 
     <h2>libvirt supports:</h2>
