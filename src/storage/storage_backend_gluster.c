@@ -477,3 +477,142 @@ virStorageBackend virStorageBackendGluster = {
 
     .deleteVol = virStorageBackendGlusterVolDelete,
 };
+
+
+typedef struct _virStorageFileBackendGlusterPriv virStorageFileBackendGlusterPriv;
+typedef virStorageFileBackendGlusterPriv *virStorageFileBackendGlusterPrivPtr;
+
+struct _virStorageFileBackendGlusterPriv {
+    glfs_t *vol;
+    char *volname;
+    char *path;
+};
+
+
+static void
+virStorageFileBackendGlusterDeinit(virStorageFilePtr file)
+{
+    VIR_DEBUG("deinitializing gluster storage file %p(%s/%s)",
+              file, file->hosts[0].name, file->path);
+    virStorageFileBackendGlusterPrivPtr priv = file->priv;
+
+    glfs_fini(priv->vol);
+    VIR_FREE(priv->volname);
+
+    VIR_FREE(priv);
+    file->priv = NULL;
+}
+
+static int
+virStorageFileBackendGlusterInit(virStorageFilePtr file)
+{
+    virStorageFileBackendGlusterPrivPtr priv = NULL;
+    virDomainDiskHostDefPtr host = &(file->hosts[0]);
+    const char *hostname = host->name;
+    int port = 0;
+
+    VIR_DEBUG("initializing gluster storage file %p(%s/%s)",
+              file, hostname, file->path);
+
+    if (VIR_ALLOC(priv) < 0)
+        return -1;
+
+    if (VIR_STRDUP(priv->volname, file->path) < 0)
+        goto error;
+
+    if (!(priv->path = strchr(priv->volname, '/'))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid path of gluster volume: '%s'"),
+                       file->path);
+        goto error;
+    }
+
+    *priv->path = '\0';
+    priv->path++;
+
+    if (host->port &&
+        virStrToLong_i(host->port, NULL, 10, &port) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse port number '%s'"),
+                       host->port);
+        goto error;
+    }
+
+    if (host->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX)
+        hostname = host->socket;
+
+
+    if (!(priv->vol = glfs_new(priv->volname))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    if (glfs_set_volfile_server(priv->vol,
+                                virDomainDiskProtocolTransportTypeToString(host->transport),
+                                hostname, port) < 0) {
+        virReportSystemError(errno,
+                             _("failed to set gluster volfile server '%s'"),
+                             hostname);
+        goto error;
+    }
+
+    if (glfs_init(priv->vol) < 0) {
+        virReportSystemError(errno,
+                             _("failed to initialize gluster connection to "
+                               "server: '%s'"), hostname);
+        goto error;
+    }
+
+    file->priv = priv;
+
+    return 0;
+
+error:
+    VIR_FREE(priv->volname);
+    glfs_fini(priv->vol);
+
+    return -1;
+}
+
+
+static int
+virStorageFileBackendGlusterUnlink(virStorageFilePtr file)
+{
+    virStorageFileBackendGlusterPrivPtr priv = file->priv;
+    int ret;
+
+    ret = glfs_unlink(priv->vol, priv->path);
+    /* preserve errno */
+
+    VIR_DEBUG("removing storage file %p(%s/%s): ret=%d, errno=%d",
+              file, file->hosts[0].name, file->path, ret, errno);
+    return ret;
+}
+
+
+static int
+virStorageFileBackendGlusterStat(virStorageFilePtr file,
+                                 struct stat *st)
+{
+    virStorageFileBackendGlusterPrivPtr priv = file->priv;
+    int ret;
+
+    ret = glfs_stat(priv->vol, priv->path, st);
+    /* preserve errno */
+
+    VIR_DEBUG("stat of storage file %p(%s/%s): ret=%d, errno=%d",
+              file, file->hosts[0].name, file->path, ret, errno);
+    return ret;
+}
+
+
+virStorageFileBackend virStorageFileBackendGluster = {
+    .type = VIR_DOMAIN_DISK_TYPE_NETWORK,
+    .protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
+
+    .backendInit = virStorageFileBackendGlusterInit,
+    .backendDeinit = virStorageFileBackendGlusterDeinit,
+
+    .storageFileUnlink = virStorageFileBackendGlusterUnlink,
+    .storageFileStat = virStorageFileBackendGlusterStat,
+};

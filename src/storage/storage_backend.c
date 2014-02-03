@@ -127,6 +127,9 @@ static virStorageFileBackendPtr fileBackends[] = {
     &virStorageFileBackendFile,
     &virStorageFileBackendBlock,
 #endif
+#if WITH_STORAGE_GLUSTER
+    &virStorageFileBackendGluster,
+#endif
     NULL
 };
 
