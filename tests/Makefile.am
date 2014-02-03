@@ -658,7 +658,7 @@ commandhelper_LDFLAGS = -static
 
 virnetdevbandwidthtest_SOURCES = \
 	virnetdevbandwidthtest.c testutils.h testutils.c
-virnetdevbandwidthtest_LDADD = $(LDADDS)
+virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
