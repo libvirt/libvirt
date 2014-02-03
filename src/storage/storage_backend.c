@@ -121,6 +121,12 @@ static virStorageBackendPtr backends[] = {
     NULL
 };
 
+
+static virStorageFileBackendPtr fileBackends[] = {
+    NULL
+};
+
+
 enum {
     TOOL_QEMU_IMG,
     TOOL_KVM_IMG,
@@ -1148,6 +1154,37 @@ virStorageBackendForType(int type)
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("missing backend for pool type %d (%s)"),
                    type, NULLSTR(virStoragePoolTypeToString(type)));
+    return NULL;
+}
+
+
+virStorageFileBackendPtr
+virStorageFileBackendForType(int type,
+                             int protocol)
+{
+    size_t i;
+
+    for (i = 0; fileBackends[i]; i++) {
+        if (fileBackends[i]->type == type) {
+            if (type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
+                fileBackends[i]->protocol != protocol)
+                continue;
+
+            return fileBackends[i];
+        }
+    }
+
+    if (type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing storage backend for network files "
+                         "using %s protocol"),
+                       virDomainDiskProtocolTypeToString(protocol));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing storage backend for '%s' storage"),
+                       virDomainDiskTypeToString(type));
+    }
+
     return NULL;
 }
 

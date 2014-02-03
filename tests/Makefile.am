@@ -433,6 +433,9 @@ qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
 if WITH_NETWORK
 qemu_LDADDS += ../src/libvirt_driver_network_impl.la
 endif WITH_NETWORK
+if WITH_STORAGE
+qemu_LDADDS += ../src/libvirt_driver_storage_impl.la
+endif WITH_STORAGE
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
 endif WITH_DTRACE_PROBES

@@ -29,6 +29,7 @@
 # include "internal.h"
 # include "storage_conf.h"
 # include "vircommand.h"
+# include "storage_driver.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn,
                                                    const char *srcSpec,
@@ -188,5 +189,45 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
                                   unsigned int flags,
                                   const char *create_tool,
                                   int imgformat);
+
+/* ------- virStorageFile backends ------------ */
+typedef int
+(*virStorageFileBackendInit)(virStorageFilePtr file);
+
+typedef void
+(*virStorageFileBackendDeinit)(virStorageFilePtr file);
+
+typedef int
+(*virStorageFileBackendCreate)(virStorageFilePtr file);
+
+typedef int
+(*virStorageFileBackendUnlink)(virStorageFilePtr file);
+
+typedef int
+(*virStorageFileBackendStat)(virStorageFilePtr file,
+                             struct stat *st);
+
+typedef struct _virStorageFileBackend virStorageFileBackend;
+typedef virStorageFileBackend *virStorageFileBackendPtr;
+
+virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
+
+struct _virStorageFileBackend {
+    int type;
+    int protocol;
+
+    /* All storage file callbacks may be omitted if not implemented */
+
+    /* The following group of callbacks is expected to set a libvirt
+     * error on failure. */
+    virStorageFileBackendInit backendInit;
+    virStorageFileBackendDeinit backendDeinit;
+
+    /* The following group of callbacks is expected to set errno
+     * and return -1 on error. No libvirt error shall be reported */
+    virStorageFileBackendCreate storageFileCreate;
+    virStorageFileBackendUnlink storageFileUnlink;
+    virStorageFileBackendStat   storageFileStat;
+};
 
 #endif /* __VIR_STORAGE_BACKEND_H__ */
