@@ -2230,6 +2230,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     char *migrateFrom = NULL;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
+    bool taint_hook = false;
 
     if (virTimeMillisNow(&now) < 0)
         return -1;
@@ -2300,6 +2301,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
 
                 virDomainDefFree(*def);
                 *def = newdef;
+                /* We should taint the domain here. However, @vm and therefore
+                 * privateData too are still NULL, so just notice the fact and
+                 * taint it later. */
+                taint_hook = true;
             }
         }
     }
@@ -2384,6 +2389,11 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     priv = vm->privateData;
     if (VIR_STRDUP(priv->origname, origname) < 0)
         goto cleanup;
+
+    if (taint_hook) {
+        /* Domain XML has been altered by a hook script. */
+        priv->hookRun = true;
+    }
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE |

@@ -1628,12 +1628,16 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
 {
     size_t i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = obj->privateData;
 
     if (cfg->privileged &&
         (!cfg->clearEmulatorCapabilities ||
          cfg->user == 0 ||
          cfg->group == 0))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
+
+    if (priv->hookRun)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOOK, logFD);
 
     if (obj->def->namespaceData) {
         qemuDomainCmdlineDefPtr qemucmd = obj->def->namespaceData;
