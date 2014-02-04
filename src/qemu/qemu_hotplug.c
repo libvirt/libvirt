@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.h: QEMU device hotplug management
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1152,7 +1152,7 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     bool releaseaddr = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
-    int backend = hostdev->source.subsys.u.pci.backend;
+    int backend;
     unsigned long long memKB;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -1161,6 +1161,9 @@ qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
     if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
                                      &hostdev, 1, priv->qemuCaps) < 0)
         return -1;
+
+    /* this could have been changed by qemuPrepareHostdevPCIDevices */
+    backend = hostdev->source.subsys.u.pci.backend;
 
     switch ((virDomainHostdevSubsysPciBackendType) backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
