@@ -3870,7 +3870,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     }
 
     if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
-                                def->source.subsys.u.usb.device, vroot)))
+                                def->source.subsys.u.usb.device, NULL)))
         goto cleanup;
 
     VIR_DEBUG("Unlinking %s", dst);
@@ -3884,7 +3884,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
 
     if (virUSBDeviceFileIterate(usb,
                                 virLXCTeardownHostUsbDeviceCgroup,
-                                &priv->cgroup) < 0)
+                                priv->cgroup) < 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  dst, vm->def->name);
 
