@@ -16225,7 +16225,7 @@ virDomainTimerDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     } else {
         virBufferAddLit(buf, ">\n");
-        virBufferAddLit(buf, "      <catchup ");
+        virBufferAddLit(buf, "      <catchup");
         if (def->catchup.threshold > 0) {
             virBufferAsprintf(buf, " threshold='%lu'", def->catchup.threshold);
         }

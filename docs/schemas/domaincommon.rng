@@ -857,54 +857,68 @@
   </define>
   <define name="timer">
     <element name="timer">
-      <attribute name="name">
-        <choice>
-          <value>platform</value>
-          <value>hpet</value>
-          <value>kvmclock</value>
-          <value>pit</value>
-          <value>rtc</value>
-          <value>tsc</value>
-        </choice>
-      </attribute>
-      <optional>
-        <attribute name="track">
-          <choice>
-            <value>boot</value>
-            <value>guest</value>
-            <value>wall</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="tickpolicy">
-          <choice>
-            <value>delay</value>
-            <value>catchup</value>
-            <value>merge</value>
-            <value>discard</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <ref name="catchup"/>
-      </optional>
-      <optional>
-        <attribute name="frequency">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="mode">
-          <choice>
-            <value>auto</value>
-            <value>native</value>
-            <value>emulate</value>
-            <value>paravirt</value>
-            <value>smpsafe</value>
-          </choice>
-        </attribute>
-      </optional>
+      <choice>
+        <group>
+          <attribute name="name">
+            <choice>
+              <value>platform</value>
+              <value>rtc</value>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="track">
+              <choice>
+                <value>boot</value>
+                <value>guest</value>
+                <value>wall</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <ref name="tickpolicy"/>
+          </optional>
+        </group>
+        <group>
+          <attribute name="name">
+            <value>tsc</value>
+          </attribute>
+          <optional>
+            <ref name="tickpolicy"/>
+          </optional>
+          <optional>
+            <attribute name="frequency">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="mode">
+              <choice>
+                <value>auto</value>
+                <value>native</value>
+                <value>emulate</value>
+                <value>paravirt</value>
+                <value>smpsafe</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="name">
+            <choice>
+              <value>hpet</value>
+              <value>pit</value>
+            </choice>
+          </attribute>
+          <optional>
+            <ref name="tickpolicy"/>
+          </optional>
+        </group>
+        <group>
+          <attribute name="name">
+            <value>kvmclock</value>
+          </attribute>
+        </group>
+      </choice>
       <optional>
         <attribute name="present">
           <choice>
@@ -916,20 +930,43 @@
       <empty/>
     </element>
   </define>
-  <define name="catchup">
-    <element name="catchup">
-      <optional>
-        <attribute name="threshold">
-          <ref name="unsignedInt"/>
+
+  <define name="tickpolicy">
+    <choice>
+      <group>
+        <attribute name="tickpolicy">
+          <choice>
+            <value>delay</value>
+            <value>merge</value>
+            <value>discard</value>
+          </choice>
         </attribute>
-        <attribute name="slew">
-          <ref name="unsignedInt"/>
+      </group>
+      <group>
+        <attribute name="tickpolicy">
+          <value>catchup</value>
         </attribute>
-        <attribute name="limit">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </optional>
-    </element>
+        <optional>
+          <element name="catchup">
+            <optional>
+              <attribute name="threshold">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="slew">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="limit">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+      </group>
+    </choice>
   </define>
 <!--
       A bootloader may be used to extract the OS information instead of
