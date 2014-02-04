@@ -20,3 +20,4 @@
 if WITH_WIRESHARK_DISSECTOR
 SUBDIRS              = src
 endif WITH_WIRESHARK_DISSECTOR
+EXTRA_DIST           = util/genxdrstub.pl util/make-dissector-reg
