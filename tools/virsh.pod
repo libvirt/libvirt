@@ -307,7 +307,7 @@ in seconds for which the host has to be suspended, it should be at least
 60 seconds.
 
 =item B<node-memory-tune> [I<shm-pages-to-scan>] [I<shm-sleep-millisecs>]
-I<shm-merge-across-nodes>
+[I<shm-merge-across-nodes>]
 
 Allows you to display or set the node memory parameters.
 I<shm-pages-to-scan> can be used to set the number of pages to scan
