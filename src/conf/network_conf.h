@@ -287,6 +287,8 @@ struct _virNetworkObj {
 
     virBitmapPtr class_id; /* bitmap of class IDs for QoS */
     unsigned long long floor_sum; /* sum of all 'floor'-s of attached NICs */
+
+    unsigned int taint;
 };
 
 typedef struct _virNetworkObjList virNetworkObjList;
@@ -296,11 +298,25 @@ struct _virNetworkObjList {
     virNetworkObjPtr *objs;
 };
 
+enum virNetworkTaintFlags {
+    VIR_NETWORK_TAINT_HOOK,                 /* Hook script was executed over
+                                               network. We can't guarantee
+                                               connectivity or other settings
+                                               as the script may have played
+                                               with iptables, tc, you name it.
+                                             */
+
+    VIR_NETWORK_TAINT_LAST
+};
+
 static inline int
 virNetworkObjIsActive(const virNetworkObj *net)
 {
     return net->active;
 }
+
+bool virNetworkObjTaint(virNetworkObjPtr obj,
+                        enum virNetworkTaintFlags taint);
 
 virNetworkObjPtr virNetworkFindByUUID(virNetworkObjListPtr nets,
                                       const unsigned char *uuid);
@@ -455,4 +471,5 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                            const char *xml,
                            unsigned int flags);  /* virNetworkUpdateFlags */
 
+VIR_ENUM_DECL(virNetworkTaint)
 #endif /* __NETWORK_CONF_H__ */

@@ -529,6 +529,7 @@ virNetworkObjListFree;
 virNetworkObjLock;
 virNetworkObjReplacePersistentDef;
 virNetworkObjSetDefTransient;
+virNetworkObjTaint;
 virNetworkObjUnlock;
 virNetworkObjUnsetDefTransient;
 virNetworkObjUpdate;
@@ -537,6 +538,8 @@ virNetworkSaveConfig;
 virNetworkSaveStatus;
 virNetworkSetBridgeMacAddr;
 virNetworkSetBridgeName;
+virNetworkTaintTypeFromString;
+virNetworkTaintTypeToString;
 virPortGroupFindByName;
 
 

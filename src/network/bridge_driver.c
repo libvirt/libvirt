@@ -112,6 +112,9 @@ static int networkPlugBandwidth(virNetworkObjPtr net,
 static int networkUnplugBandwidth(virNetworkObjPtr net,
                                   virDomainNetDefPtr iface);
 
+static void networkNetworkObjTaint(virNetworkObjPtr net,
+                                   enum virNetworkTaintFlags taint);
+
 static virNetworkDriverStatePtr driverState = NULL;
 
 static virNetworkObjPtr
@@ -169,6 +172,8 @@ networkRunHook(virNetworkObjPtr network,
          */
         if (hookret < 0)
             goto cleanup;
+
+        networkNetworkObjTaint(network, VIR_NETWORK_TAINT_HOOK);
     }
 
     ret = 0;
@@ -4343,4 +4348,19 @@ networkUnplugBandwidth(virNetworkObjPtr net,
 
 cleanup:
     return ret;
+}
+
+static void
+networkNetworkObjTaint(virNetworkObjPtr net,
+                       enum virNetworkTaintFlags taint)
+{
+    if (virNetworkObjTaint(net, taint)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(net->def->uuid, uuidstr);
+
+        VIR_WARN("Network name='%s' uuid=%s is tainted: %s",
+                 net->def->name,
+                 uuidstr,
+                 virNetworkTaintTypeToString(taint));
+    }
 }
