@@ -3338,7 +3338,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
                     (unsigned long long)priv->initpid) < 0)
         goto cleanup;
 
-    if (virAsprintf(&dstdir, "%s/dev/bus/%03d",
+    if (virAsprintf(&dstdir, "%s/dev/bus/usb/%03d",
                     vroot,
                     def->source.subsys.u.usb.bus) < 0)
         goto cleanup;
@@ -3403,7 +3403,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
 
     if (virUSBDeviceFileIterate(usb,
                                 virLXCSetupHostUsbDeviceCgroup,
-                                &priv->cgroup) < 0)
+                                priv->cgroup) < 0)
         goto cleanup;
 
     ret = 0;
