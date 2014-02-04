@@ -332,26 +332,45 @@ static const vshCmdOptDef opts_node_cpustats[] = {
     {.name = NULL}
 };
 
+typedef enum {
+    VSH_CPU_USER,
+    VSH_CPU_SYSTEM,
+    VSH_CPU_IDLE,
+    VSH_CPU_IOWAIT,
+    VSH_CPU_INTR,
+    VSH_CPU_USAGE,
+    VSH_CPU_LAST
+} vshCPUStats;
+
+VIR_ENUM_DECL(vshCPUStats);
+VIR_ENUM_IMPL(vshCPUStats, VSH_CPU_LAST,
+              VIR_NODE_CPU_STATS_USER,
+              VIR_NODE_CPU_STATS_KERNEL,
+              VIR_NODE_CPU_STATS_IDLE,
+              VIR_NODE_CPU_STATS_IOWAIT,
+              VIR_NODE_CPU_STATS_INTR,
+              VIR_NODE_CPU_STATS_UTILIZATION);
+
+const char *vshCPUOutput[] = {
+    "user:",
+    "system:",
+    "idle:",
+    "iowait:",
+    "intr:",
+    "usage:"
+};
+
 static bool
 cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
 {
     size_t i, j;
-    bool flag_utilization = false;
     bool flag_percent = vshCommandOptBool(cmd, "percent");
     int cpuNum = VIR_NODE_CPU_STATS_ALL_CPUS;
     virNodeCPUStatsPtr params;
     int nparams = 0;
     bool ret = false;
-    struct cpu_stats {
-        unsigned long long user;
-        unsigned long long sys;
-        unsigned long long idle;
-        unsigned long long iowait;
-        unsigned long long intr;
-        unsigned long long util;
-    } cpu_stats[2];
-    double user_time, sys_time, idle_time, iowait_time, intr_time, total_time;
-    double usage;
+    unsigned long long cpu_stats[VSH_CPU_LAST] = { 0 };
+    bool present[VSH_CPU_LAST] = { false };
 
     if (vshCommandOptInt(cmd, "cpu", &cpuNum) < 0) {
         vshError(ctl, "%s", _("Invalid value of cpuNum"));
@@ -372,79 +391,62 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     params = vshCalloc(ctl, nparams, sizeof(*params));
 
     for (i = 0; i < 2; i++) {
-        if (i > 0)
-            sleep(1);
-
         if (virNodeGetCPUStats(ctl->conn, cpuNum, params, &nparams, 0) != 0) {
             vshError(ctl, "%s", _("Unable to get node cpu stats"));
             goto cleanup;
         }
 
         for (j = 0; j < nparams; j++) {
-            unsigned long long value = params[j].value;
+            int field = vshCPUStatsTypeFromString(params[j].field);
 
-            if (STREQ(params[j].field, VIR_NODE_CPU_STATS_KERNEL)) {
-                cpu_stats[i].sys = value;
-            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_USER)) {
-                cpu_stats[i].user = value;
-            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_IDLE)) {
-                cpu_stats[i].idle = value;
-            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_IOWAIT)) {
-                cpu_stats[i].iowait = value;
-            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_INTR)) {
-                cpu_stats[i].intr = value;
-            } else if (STREQ(params[j].field, VIR_NODE_CPU_STATS_UTILIZATION)) {
-                cpu_stats[i].util = value;
-                flag_utilization = true;
+            if (field < 0)
+                continue;
+
+            if (i == 0) {
+                cpu_stats[field] = params[j].value;
+                present[field] = true;
+            } else if (present[field]) {
+                cpu_stats[field] = params[j].value - cpu_stats[field];
             }
         }
 
-        if (flag_utilization || !flag_percent)
+        if (present[VSH_CPU_USAGE] || !flag_percent)
             break;
+
+        sleep(1);
     }
 
     if (!flag_percent) {
-        if (!flag_utilization) {
-            vshPrint(ctl, "%-15s %20llu\n", _("user:"), cpu_stats[0].user);
-            vshPrint(ctl, "%-15s %20llu\n", _("system:"), cpu_stats[0].sys);
-            vshPrint(ctl, "%-15s %20llu\n", _("idle:"), cpu_stats[0].idle);
-            vshPrint(ctl, "%-15s %20llu\n", _("iowait:"), cpu_stats[0].iowait);
-            vshPrint(ctl, "%-15s %20llu\n", _("intr:"), cpu_stats[0].intr);
+        for (i = 0; i < VSH_CPU_USAGE; i++) {
+            if (present[i]) {
+                vshPrint(ctl, "%-15s %20llu\n", _(vshCPUOutput[i]),
+                         cpu_stats[i]);
+            }
         }
     } else {
-        if (flag_utilization) {
-            usage = cpu_stats[0].util;
+        if (present[VSH_CPU_USAGE]) {
+            vshPrint(ctl, "%-15s %5.1llu%%\n", _("usage:"), cpu_stats[VSH_CPU_USAGE]);
+            vshPrint(ctl, "%-15s %5.1llu%%\n", _("idle:"), 100 - cpu_stats[VSH_CPU_USAGE]);
+        } else {
+            double usage, total_time = 0;
+            for (i = 0; i < VSH_CPU_USAGE; i++)
+                total_time += cpu_stats[i];
+
+            usage = (cpu_stats[VSH_CPU_USER] + cpu_stats[VSH_CPU_SYSTEM]) / total_time * 100;
 
             vshPrint(ctl, "%-15s %5.1lf%%\n", _("usage:"), usage);
-            vshPrint(ctl, "%-15s %5.1lf%%\n", _("idle:"), 100 - usage);
-        } else {
-            user_time   = cpu_stats[1].user   - cpu_stats[0].user;
-            sys_time    = cpu_stats[1].sys    - cpu_stats[0].sys;
-            idle_time   = cpu_stats[1].idle   - cpu_stats[0].idle;
-            iowait_time = cpu_stats[1].iowait - cpu_stats[0].iowait;
-            intr_time   = cpu_stats[1].intr   - cpu_stats[0].intr;
-            total_time  = user_time + sys_time + idle_time + iowait_time + intr_time;
-
-            usage = (user_time + sys_time) / total_time * 100;
-
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("usage:"), usage);
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("user:"), user_time / total_time * 100);
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("system:"), sys_time  / total_time * 100);
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("idle:"), idle_time     / total_time * 100);
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("iowait:"), iowait_time   / total_time * 100);
-            vshPrint(ctl, "%-15s %5.1lf%%\n",
-                     _("intr:"), intr_time         / total_time * 100);
+            for (i = 0; i < VSH_CPU_USAGE; i++) {
+                if (present[i]) {
+                    vshPrint(ctl, "%-15s %5.1lf%%\n", _(vshCPUOutput[i]),
+                             cpu_stats[i] / total_time * 100);
+                }
+            }
         }
     }
 
     ret = true;
 
-  cleanup:
+cleanup:
     VIR_FREE(params);
     return ret;
 }
