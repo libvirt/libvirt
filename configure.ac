@@ -2578,8 +2578,8 @@ AM_CONDITIONAL([WITH_WIRESHARK_DISSECTOR], [test "$with_wireshark_dissector" = "
 
 AC_ARG_WITH([ws-plugindir],
   [AS_HELP_STRING([--with-ws-plugindir],
-    [wireshark plugins directory that plugin will installed])],
-  [ ws_plugindir=$withval ])
+    [wireshark plugins directory for use when installing wireshark plugin])],
+  [ws_plugindir=$withval])
 
 if test "$with_wireshark_dissector" != "no" && test -z "$ws_plugindir"; then
     ws_version=`$WIRESHARK -v | head -1 | cut -f 2 -d' '`

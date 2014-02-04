@@ -129,6 +129,7 @@
 %define with_numad         0%{!?_without_numad:0}
 %define with_firewalld     0%{!?_without_firewalld:0}
 %define with_libssh2       0%{!?_without_libssh2:0}
+%define with_wireshark     0%{!?_without_wireshark:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_sasl          0%{!?_without_sasl:1}
@@ -267,6 +268,11 @@
 # Enable libssh2 transport for new enough distros
 %if 0%{?fedora} >= 17
     %define with_libssh2 0%{!?_without_libssh2:1}
+%endif
+
+# Enable wireshark plugins for all distros shipping libvirt 1.2.2 or newer
+%if 0%{?fedora} >= 21
+    %define with_wireshark 0%{!?_without_wireshark:1}
 %endif
 
 # Disable some drivers when building without libvirt daemon.
@@ -629,6 +635,10 @@ BuildRequires: scrub
 
 %if %{with_numad}
 BuildRequires: numad
+%endif
+
+%if %{with_wireshark}
+BuildRequires: wireshark-devel
 %endif
 
 Provides: bundled(gnulib)
@@ -1115,6 +1125,17 @@ Requires: cyrus-sasl-md5
 Shared libraries and client binaries needed to access to the
 virtualization capabilities of recent versions of Linux (and other OSes).
 
+%if %{with_wireshark}
+%package wireshark
+Summary: Wireshark dissector plugin for libvirt RPC transactions
+Group: Development/Libraries
+Requires: wireshark
+Requires: %{name}-client = %{version}-%{release}
+
+%description wireshark
+Wireshark dissector plugin for better analysis of libvirt RPC traffic.
+%endif
+
 %if %{with_lxc}
 %package login-shell
 Summary: Login shell for connecting users to an LXC container
@@ -1340,6 +1361,10 @@ driver
     %define _with_firewalld --with-firewalld
 %endif
 
+%if ! %{with_wireshark}
+    %define _without_wireshark --without-wireshark-dissector
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1412,6 +1437,7 @@ driver
            %{?_without_dtrace} \
            %{?_without_driver_modules} \
            %{?_with_firewalld} \
+           %{?_without_wireshark} \
            %{with_packager} \
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
@@ -1441,6 +1467,9 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
 %if %{with_driver_modules}
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
+%endif
+%if %{with_wireshark}
+rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
 %endif
 
 %if %{with_network}
@@ -2115,6 +2144,11 @@ exit 0
 
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
+%endif
+
+%if %{with_wireshark}
+%files wireshark
+%{_libdir}/wireshark/plugins/*/libvirt.so
 %endif
 
 %if %{with_lxc}
