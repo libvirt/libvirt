@@ -3446,6 +3446,11 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
 
     mode = 0700 | S_IFCHR;
 
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     if (virFileMakePath(dstdir) < 0) {
         virReportSystemError(errno,
                              _("Unable to create %s"), dstdir);
@@ -3470,6 +3475,8 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
                                 virLXCSetupHostUsbDeviceCgroup,
                                 priv->cgroup) < 0)
         goto cleanup;
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = def;
 
     ret = 0;
 
