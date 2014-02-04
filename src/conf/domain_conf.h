@@ -2114,6 +2114,7 @@ enum virDomainTaintFlags {
     VIR_DOMAIN_TAINT_DISK_PROBING,     /* Relying on potentially unsafe disk format probing */
     VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH,  /* Externally launched guest domain */
     VIR_DOMAIN_TAINT_HOST_CPU,         /* Host CPU passthrough in use */
+    VIR_DOMAIN_TAINT_HOOK,             /* Domain (possibly) changed via hook script */
 
     VIR_DOMAIN_TAINT_LAST
 };
