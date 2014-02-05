@@ -607,6 +607,42 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
     return 0;
 }
 
+static int
+lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+    unsigned long long size = 0;
+
+    if ((value = virConfGetValue(properties,
+                "lxc.cgroup.memory.limit_in_bytes")) &&
+            value->str && STRNEQ(value->str, "-1")) {
+        if (lxcConvertSize(value->str, &size) < 0)
+            return -1;
+        size = size / 1024;
+        def->mem.max_balloon = size;
+        def->mem.hard_limit = size;
+    }
+
+    if ((value = virConfGetValue(properties,
+                "lxc.cgroup.memory.soft_limit_in_bytes")) &&
+            value->str && STRNEQ(value->str, "-1")) {
+        if (lxcConvertSize(value->str, &size) < 0)
+            return -1;
+
+        def->mem.soft_limit = size / 1024;
+    }
+
+    if ((value = virConfGetValue(properties,
+                "lxc.cgroup.memory.memsw.limit_in_bytes")) &&
+            value->str && STRNEQ(value->str, "-1")) {
+        if (lxcConvertSize(value->str, &size) < 0)
+            return -1;
+
+       def->mem.swap_hard_limit = size / 1024;
+    }
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -677,6 +713,10 @@ lxcParseConfigString(const char *config)
 
     /* lxc.id_map */
     if (virConfWalk(properties, lxcIdmapWalkCallback, vmdef) < 0)
+        goto error;
+
+    /* lxc.cgroup.memory.* */
+    if (lxcSetMemTune(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;

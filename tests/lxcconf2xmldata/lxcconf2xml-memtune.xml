@@ -1,0 +1,29 @@
+<domain type='lxc'>
+  <name>migrate_test</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>0</currentMemory>
+  <memtune>
+    <hard_limit unit='KiB'>1048576</hard_limit>
+    <soft_limit unit='KiB'>131072</soft_limit>
+    <swap_hard_limit unit='KiB'>2097152</swap_hard_limit>
+  </memtune>
+  <vcpu placement='static' current='0'>1</vcpu>
+  <os>
+    <type>exe</type>
+    <init>/sbin/init</init>
+  </os>
+  <features>
+    <privnet/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/var/lib/lxc/migrate_test/rootfs'/>
+      <target dir='/'/>
+    </filesystem>
+  </devices>
+</domain>

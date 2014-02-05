@@ -109,6 +109,7 @@ mymain(void)
     DO_TEST("physnetwork", false);
     DO_TEST("macvlannetwork", false);
     DO_TEST("idmap", false);
+    DO_TEST("memtune", false);
 
     return ret;
 }
