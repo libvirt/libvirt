@@ -619,6 +619,7 @@ LXC_DRIVER_SOURCES =						\
 		lxc/lxc_monitor.c lxc/lxc_monitor.h		\
 		lxc/lxc_process.c lxc/lxc_process.h		\
 		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
+		lxc/lxc_native.c lxc/lxc_native.h		\
 		lxc/lxc_driver.c lxc/lxc_driver.h
 
 LXC_CONTROLLER_SOURCES =					\

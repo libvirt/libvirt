@@ -200,7 +200,7 @@ test_programs += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
 endif WITH_QEMU
 
 if WITH_LXC
-test_programs += lxcxml2xmltest
+test_programs += lxcxml2xmltest lxcconf2xmltest
 endif WITH_LXC
 
 if WITH_OPENVZ
@@ -523,6 +523,11 @@ lxcxml2xmltest_SOURCES = \
 	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
 	testutils.c testutils.h
 lxcxml2xmltest_LDADD = $(lxc_LDADDS)
+
+lxcconf2xmltest_SOURCES = \
+	lxcconf2xmltest.c \
+	testutils.c testutils.h
+lxcconf2xmltest_LDADD = $(lxc_LDADDS)
 else ! WITH_LXC
 EXTRA_DIST += lxcxml2xmltest.c testutilslxc.c testutilslxc.h
 endif ! WITH_LXC

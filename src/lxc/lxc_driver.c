@@ -44,6 +44,7 @@
 #include "lxc_container.h"
 #include "lxc_domain.h"
 #include "lxc_driver.h"
+#include "lxc_native.h"
 #include "lxc_process.h"
 #include "viralloc.h"
 #include "virnetdevbridge.h"
@@ -986,6 +987,35 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     return ret;
+}
+
+static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
+                                           const char *nativeFormat,
+                                           const char *nativeConfig,
+                                           unsigned int flags)
+{
+    char *xml = NULL;
+    virDomainDefPtr def = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (STRNEQ(nativeFormat, LXC_CONFIG_FORMAT)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported config type %s"), nativeFormat);
+        goto cleanup;
+    }
+
+    if (!(def = lxcParseConfigString(nativeConfig)))
+        goto cleanup;
+
+    xml = virDomainDefFormat(def, 0);
+
+cleanup:
+    virDomainDefFree(def);
+    return xml;
 }
 
 /**
@@ -5374,6 +5404,7 @@ static virDriver lxcDriver = {
     .domainGetSecurityLabel = lxcDomainGetSecurityLabel, /* 0.9.10 */
     .nodeGetSecurityModel = lxcNodeGetSecurityModel, /* 0.9.10 */
     .domainGetXMLDesc = lxcDomainGetXMLDesc, /* 0.4.2 */
+    .connectDomainXMLFromNative = lxcConnectDomainXMLFromNative, /* 1.2.2 */
     .connectListDefinedDomains = lxcConnectListDefinedDomains, /* 0.4.2 */
     .connectNumOfDefinedDomains = lxcConnectNumOfDefinedDomains, /* 0.4.2 */
     .domainCreate = lxcDomainCreate, /* 0.4.4 */

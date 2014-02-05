@@ -157,6 +157,7 @@
 /tests/hashtest
 /tests/jsontest
 /tests/libvirtdconftest
+/tests/lxcconf2xmltest
 /tests/metadatatest
 /tests/networkxml2argvtest
 /tests/nodeinfotest
