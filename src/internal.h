@@ -244,7 +244,7 @@
 /*
  * Use this when passing possibly-NULL strings to printf-a-likes.
  */
-# define NULLSTR(s) ((s) ? (s) : "(null)")
+# define NULLSTR(s) ((s) ? (s) : "<null>")
 
 /**
  * TODO:
