@@ -1956,11 +1956,6 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
         return -1;
     }
 
-    /* Lock the driver until domain def is read from the saved
-       image and a virDomainObj is created and locked.
-    */
-    libxlDriverLock(driver);
-
     fd = libxlSaveImageOpen(driver, cfg, from, &def, &hdr);
     if (fd < 0)
         goto cleanup_unlock;
@@ -1975,7 +1970,6 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
                                    NULL)))
         goto cleanup_unlock;
 
-    libxlDriverUnlock(driver);
     def = NULL;
 
     ret = libxlVmStart(driver, vm, (flags & VIR_DOMAIN_SAVE_PAUSED) != 0, fd);
