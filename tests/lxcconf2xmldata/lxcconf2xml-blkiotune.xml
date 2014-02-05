@@ -8,6 +8,10 @@
     <device>
       <path>/dev/block/8:16</path>
       <weight>1000</weight>
+      <read_iops_sec>4321</read_iops_sec>
+      <write_iops_sec>8765</write_iops_sec>
+      <read_bytes_sec>1234</read_bytes_sec>
+      <write_bytes_sec>5678</write_bytes_sec>
     </device>
     <device>
       <path>/dev/block/8:0</path>

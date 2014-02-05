@@ -733,8 +733,12 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
     char **parts = NULL;
     virBlkioDevicePtr device = NULL;
     virDomainDefPtr def = data;
+    size_t i = 0;
+    char *path = NULL;
+    int ret = -1;
 
-    if (STRNEQ(name, "lxc.cgroup.blkio.device_weight") || !value->str)
+    if (!STRPREFIX(name, "lxc.cgroup.blkio.") ||
+            STREQ(name, "lxc.cgroup.blkio.weight")|| !value->str)
         return 0;
 
     if (!(parts = lxcStringSplit(value->str)))
@@ -742,32 +746,74 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
 
     if (!parts[0] || !parts[1]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid blkio.device_weight value: '%s'"),
-                       value->str);
-        goto error;
+                       _("invalid %s value: '%s'"),
+                       name, value->str);
+        goto cleanup;
     }
 
-    if (VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1) < 0)
-        goto error;
-    device = &def->blkio.devices[def->blkio.ndevices - 1];
+    if (virAsprintf(&path, "/dev/block/%s", parts[0]) < 0)
+        goto cleanup;
 
-    if (virAsprintf(&device->path, "/dev/block/%s", parts[0]) < 0)
-        goto error;
-
-    if (virStrToLong_ui(parts[1], NULL, 10, &device->weight) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse integer: '%s'"), parts[1]);
-        goto error;
+    /* Do we already have a device definition for this path?
+     * Get that device or create a new one */
+    for (i = 0; !device && i < def->blkio.ndevices; i++) {
+        if (STREQ(def->blkio.devices[i].path, path))
+            device = &def->blkio.devices[i];
+    }
+    if (!device) {
+        if (VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1) < 0)
+            goto cleanup;
+        device = &def->blkio.devices[def->blkio.ndevices - 1];
+        device->path = path;
+        path = NULL;
     }
 
+    /* Set the value */
+    if (STREQ(name, "lxc.cgroup.blkio.device_weight")) {
+        if (virStrToLong_ui(parts[1], NULL, 10, &device->weight) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse device weight: '%s'"), parts[1]);
+            goto cleanup;
+        }
+    } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_bps_device")) {
+        if (virStrToLong_ull(parts[1], NULL, 10, &device->rbps) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse read_bps_device: '%s'"),
+                           parts[1]);
+            goto cleanup;
+        }
+    } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_bps_device")) {
+        if (virStrToLong_ull(parts[1], NULL, 10, &device->wbps) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse write_bps_device: '%s'"),
+                           parts[1]);
+            goto cleanup;
+        }
+    } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_iops_device")) {
+        if (virStrToLong_ui(parts[1], NULL, 10, &device->riops) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse read_iops_device: '%s'"),
+                           parts[1]);
+            goto cleanup;
+        }
+    } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_iops_device")) {
+        if (virStrToLong_ui(parts[1], NULL, 10, &device->wiops) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse write_iops_device: '%s'"),
+                           parts[1]);
+            goto cleanup;
+        }
+    } else {
+        VIR_WARN("Unhandled blkio tune config: %s", name);
+    }
+
+    ret = 0;
+
+ cleanup:
     virStringFreeList(parts);
+    VIR_FREE(path);
 
-    return 0;
-
-error:
-    if (parts)
-        virStringFreeList(parts);
-    return -1;
+    return ret;
 }
 
 static int
