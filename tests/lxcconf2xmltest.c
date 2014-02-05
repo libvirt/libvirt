@@ -110,6 +110,7 @@ mymain(void)
     DO_TEST("macvlannetwork", false);
     DO_TEST("idmap", false);
     DO_TEST("memtune", false);
+    DO_TEST("cputune", false);
 
     return ret;
 }

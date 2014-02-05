@@ -643,6 +643,36 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
     return 0;
 }
 
+static int
+lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+
+    if ((value = virConfGetValue(properties, "lxc.cgroup.cpu.shares")) &&
+            value->str && virStrToLong_ul(value->str, NULL, 10,
+                                          &def->cputune.shares) < 0)
+        goto error;
+
+    if ((value = virConfGetValue(properties,
+                                 "lxc.cgroup.cpu.cfs_quota_us")) &&
+            value->str && virStrToLong_ll(value->str, NULL, 10,
+                                          &def->cputune.quota) < 0)
+        goto error;
+
+    if ((value = virConfGetValue(properties,
+                                 "lxc.cgroup.cpu.cfs_period_us")) &&
+            value->str && virStrToLong_ull(value->str, NULL, 10,
+                                           &def->cputune.period) < 0)
+        goto error;
+
+    return 0;
+
+error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("failed to parse integer: '%s'"), value->str);
+    return -1;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -717,6 +747,10 @@ lxcParseConfigString(const char *config)
 
     /* lxc.cgroup.memory.* */
     if (lxcSetMemTune(vmdef, properties) < 0)
+        goto error;
+
+    /* lxc.cgroup.cpu.* */
+    if (lxcSetCpuTune(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;
