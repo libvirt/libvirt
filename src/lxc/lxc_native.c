@@ -797,6 +797,15 @@ lxcParseConfigString(const char *config)
     if (VIR_STRDUP(vmdef->os.type, "exe") < 0)
         goto error;
 
+    if ((value = virConfGetValue(properties, "lxc.arch")) && value->str) {
+        virArch arch = virArchFromString(value->str);
+        if (arch == VIR_ARCH_NONE && STREQ(value->str, "x86"))
+            arch = VIR_ARCH_I686;
+        else if (arch == VIR_ARCH_NONE && STREQ(value->str, "amd64"))
+            arch = VIR_ARCH_X86_64;
+        vmdef->os.arch = arch;
+    }
+
     if (VIR_STRDUP(vmdef->os.init, "/sbin/init") < 0)
         goto error;
 

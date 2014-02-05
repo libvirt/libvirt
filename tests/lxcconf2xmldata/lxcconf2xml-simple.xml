@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>0</currentMemory>
   <vcpu placement='static' current='0'>1</vcpu>
   <os>
-    <type>exe</type>
+    <type arch='i686'>exe</type>
     <init>/sbin/init</init>
   </os>
   <clock offset='utc'/>
