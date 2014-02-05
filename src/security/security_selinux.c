@@ -670,7 +670,14 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_SECLABEL_NONE:
-        /* no op */
+        if (virSecuritySELinuxMCSGetProcessRange(&sens,
+                                                 &catMin,
+                                                 &catMax) < 0)
+            goto cleanup;
+
+        if (VIR_STRDUP(mcs, sens) < 0)
+            goto cleanup;
+
         break;
 
     default:
