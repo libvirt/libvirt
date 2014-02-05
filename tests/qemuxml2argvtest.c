@@ -618,10 +618,8 @@ mymain(void)
     DO_TEST("bios", QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
     DO_TEST("clock-utc", NONE);
     DO_TEST("clock-localtime", NONE);
-    /*
-     * Can't be enabled since the absolute timestamp changes every time
+    DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
     DO_TEST("clock-variable", QEMU_CAPS_RTC);
-    */
     DO_TEST("clock-france", QEMU_CAPS_RTC);
     DO_TEST("clock-hpet-off", QEMU_CAPS_RTC, QEMU_CAPS_NO_HPET,
             QEMU_CAPS_NO_KVM_PIT);
@@ -1335,7 +1333,7 @@ mymain(void)
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemuxml2argvmock.so")
 
 #else
 

@@ -325,6 +325,7 @@ test_libraries = libshunload.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
 		virpcimock.la \
+		qemuxml2argvmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
@@ -440,6 +441,12 @@ qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 qemuxml2argvtest_LDADD = $(qemu_LDADDS) $(LIBXML_LIBS)
+
+qemuxml2argvmock_la_SOURCES = \
+	qemuxml2argvmock.c
+qemuxml2argvmock_la_CFLAGS = $(AM_CFLAGS)
+qemuxml2argvmock_la_LDFLAGS = -module -avoid-version \
+	-rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \

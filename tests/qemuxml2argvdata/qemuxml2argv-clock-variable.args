@@ -1,5 +1,5 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait -rtc \
-base=2010-2-2T18:22:10 -no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 -net none \
--serial none -parallel none
+base=2009-02-15T09:49:06 -no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 \
+-net none -serial none -parallel none
