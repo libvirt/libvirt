@@ -3080,6 +3080,12 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
     if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Can't setup disk for non-block device"));
@@ -3146,12 +3152,6 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     if (virSecurityManagerSetImageLabel(driver->securityManager,
                                         vm->def, def) < 0)
         goto cleanup;
-
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("devices cgroup isn't mounted"));
-        goto cleanup;
-    }
 
     if (virCgroupAllowDevicePath(priv->cgroup, def->src,
                                  (def->readonly ?
@@ -3349,12 +3349,6 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
                     def->source.subsys.u.usb.device) < 0)
         goto cleanup;
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("devices cgroup isn't mounted"));
-        goto cleanup;
-    }
-
     if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
                                 def->source.subsys.u.usb.device, vroot)))
         goto cleanup;
@@ -3502,12 +3496,6 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
                                           vm->def, def, vroot) < 0)
         goto cleanup;
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("devices cgroup isn't mounted"));
-        goto cleanup;
-    }
-
     if (virCgroupAllowDevicePath(priv->cgroup, def->source.caps.u.storage.block,
                                  VIR_CGROUP_DEVICE_RW |
                                  VIR_CGROUP_DEVICE_MKNOD) != 0) {
@@ -3610,12 +3598,6 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
                                           vm->def, def, vroot) < 0)
         goto cleanup;
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("devices cgroup isn't mounted"));
-        goto cleanup;
-    }
-
     if (virCgroupAllowDevicePath(priv->cgroup, def->source.caps.u.misc.chardev,
                                  VIR_CGROUP_DEVICE_RW |
                                  VIR_CGROUP_DEVICE_MKNOD) != 0) {
@@ -3688,6 +3670,12 @@ lxcDomainAttachDeviceHostdevLive(virLXCDriverPtr driver,
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Cannot attach hostdev until init PID is known"));
+        return -1;
+    }
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
         return -1;
     }
 
