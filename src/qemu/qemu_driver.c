@@ -15180,7 +15180,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     if (!top_meta || !top_meta->backingStore) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("top '%s' in chain for '%s' has no backing file"),
-                       top, path);
+                       top_canon, path);
         goto endjob;
     }
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW)) {
