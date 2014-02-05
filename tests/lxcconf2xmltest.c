@@ -107,6 +107,7 @@ mymain(void)
     DO_TEST("nonetwork", false);
     DO_TEST("nonenetwork", false);
     DO_TEST("physnetwork", false);
+    DO_TEST("macvlannetwork", false);
 
     return ret;
 }
