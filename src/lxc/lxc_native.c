@@ -673,6 +673,32 @@ error:
     return -1;
 }
 
+static int
+lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+
+    if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.cpus")) &&
+            value->str) {
+        if (virBitmapParse(value->str, 0, &def->cpumask,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            return -1;
+
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+    }
+
+    if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.mems")) &&
+            value->str) {
+        def->numatune.memory.placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
+        def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+        if (virBitmapParse(value->str, 0, &def->numatune.memory.nodemask,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -751,6 +777,10 @@ lxcParseConfigString(const char *config)
 
     /* lxc.cgroup.cpu.* */
     if (lxcSetCpuTune(vmdef, properties) < 0)
+        goto error;
+
+    /* lxc.cgroup.cpuset.* */
+    if (lxcSetCpusetTune(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;
