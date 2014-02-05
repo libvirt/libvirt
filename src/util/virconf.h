@@ -40,6 +40,9 @@ typedef enum {
     VIR_CONF_FLAG_VMX_FORMAT = 1,  /* allow ':', '.' and '-' in names for compatibility
                                       with VMware VMX configuration file, but restrict
                                       allowed value types to string only */
+    VIR_CONF_FLAG_LXC_FORMAT = 2,  /* allow '.' in names for compatibility with LXC
+                                      configuration file, restricts allowed value types
+                                      to string only and don't expect quotes for values */
 } virConfFlags;
 
 static inline const char *
@@ -79,6 +82,10 @@ struct _virConfValue {
 typedef struct _virConf virConf;
 typedef virConf *virConfPtr;
 
+typedef int (*virConfWalkCallback)(const char* name,
+                                   virConfValuePtr value,
+                                   void *opaque);
+
 virConfPtr      virConfNew             (void);
 virConfPtr	virConfReadFile	(const char *filename, unsigned int flags);
 virConfPtr	virConfReadMem		(const char *memory,
@@ -91,6 +98,9 @@ virConfValuePtr	virConfGetValue	(virConfPtr conf,
 int             virConfSetValue        (virConfPtr conf,
                                          const char *setting,
                                          virConfValuePtr value);
+int virConfWalk(virConfPtr conf,
+                virConfWalkCallback callback,
+                void *opaque);
 int		virConfWriteFile	(const char *filename,
                                          virConfPtr conf);
 int		virConfWriteMem	(char *memory,

@@ -1130,6 +1130,7 @@ virConfNew;
 virConfReadFile;
 virConfReadMem;
 virConfSetValue;
+virConfWalk;
 virConfWriteFile;
 virConfWriteMem;
 

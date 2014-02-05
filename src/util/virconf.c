@@ -429,6 +429,16 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
             return NULL;
         NEXT;
+    } else if (ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT) {
+        base = ctxt->cur;
+        /* LXC config format doesn't support comments after the value */
+        while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR)))
+            NEXT;
+        /* Reverse to exclude the trailing blanks from the value */
+        while ((ctxt->cur > base) && (c_isblank(CUR)))
+            ctxt->cur--;
+        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
+            return NULL;
     }
     return ret;
 }
@@ -454,7 +464,8 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a value"));
         return NULL;
     }
-    if ((CUR == '"') || (CUR == '\'')) {
+    if ((CUR == '"') || (CUR == '\'') ||
+         (ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT)) {
         type = VIR_CONF_STRING;
         str = virConfParseString(ctxt);
         if (str == NULL)
@@ -561,7 +572,9 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) &&
            (c_isalnum(CUR) || (CUR == '_') ||
             ((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) &&
-             ((CUR == ':') || (CUR == '.') || (CUR == '-')))))
+             ((CUR == ':') || (CUR == '.') || (CUR == '-'))) ||
+            ((ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT) &&
+             (CUR == '.'))))
         NEXT;
     if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
         return NULL;
@@ -905,6 +918,35 @@ virConfSetValue(virConfPtr conf,
     return 0;
 }
 
+/**
+ * virConfWalk:
+ * @conf: a configuration file handle
+ * @callback: the function to call to process each entry
+ * @data: obscure data passed to callback
+ *
+ * Walk over all entries of the configuration file and run the callback
+ * for each with entry name, value and the obscure data.
+ *
+ * Returns 0 on success, or -1 on failure.
+ */
+int virConfWalk(virConfPtr conf,
+                 virConfWalkCallback callback,
+                 void *opaque)
+{
+    virConfEntryPtr cur;
+
+    if (!conf)
+        return 0;
+
+    cur = conf->entries;
+    while (cur != NULL) {
+        if (cur->name && cur->value &&
+                callback(cur->name, cur->value, opaque) < 0)
+            return -1;
+        cur = cur->next;
+    }
+    return 0;
+}
 
 /**
  * virConfWriteFile:
