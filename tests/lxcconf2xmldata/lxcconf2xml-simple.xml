@@ -17,5 +17,14 @@
       <source dir='/var/lib/lxc/migrate_test/rootfs'/>
       <target dir='/'/>
     </filesystem>
+    <filesystem type='ram' accessmode='passthrough'>
+      <source usage='8192' units='KiB'/>
+      <target dir='/run'/>
+    </filesystem>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/etc/resolv.conf'/>
+      <target dir='/etc/resolv.conf'/>
+      <readonly/>
+    </filesystem>
   </devices>
 </domain>

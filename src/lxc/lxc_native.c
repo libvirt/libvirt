@@ -21,10 +21,13 @@
  */
 
 #include <config.h>
+#include <stdio.h>
 
 #include "internal.h"
+#include "lxc_container.h"
 #include "lxc_native.h"
 #include "util/viralloc.h"
+#include "util/virfile.h"
 #include "util/virlog.h"
 #include "util/virstring.h"
 #include "util/virconf.h"
@@ -35,7 +38,9 @@
 static virDomainFSDefPtr
 lxcCreateFSDef(int type,
                const char *src,
-               const char* dst)
+               const char* dst,
+               bool readonly,
+               unsigned long long usage)
 {
     virDomainFSDefPtr def;
 
@@ -48,6 +53,8 @@ lxcCreateFSDef(int type,
         goto error;
     if (VIR_STRDUP(def->dst, dst) < 0)
         goto error;
+    def->readonly = readonly;
+    def->usage = usage;
 
     return def;
 
@@ -56,15 +63,121 @@ lxcCreateFSDef(int type,
     return NULL;
 }
 
+typedef struct _lxcFstab lxcFstab;
+typedef lxcFstab *lxcFstabPtr;
+struct _lxcFstab {
+    lxcFstabPtr next;
+    char *src;
+    char *dst;
+    char *type;
+    char *options;
+};
+
+static void
+lxcFstabFree(lxcFstabPtr fstab)
+{
+    while (fstab) {
+        lxcFstabPtr next = NULL;
+        next = fstab->next;
+
+        VIR_FREE(fstab->src);
+        VIR_FREE(fstab->dst);
+        VIR_FREE(fstab->type);
+        VIR_FREE(fstab->options);
+        VIR_FREE(fstab);
+
+        fstab = next;
+    }
+}
+
+static char ** lxcStringSplit(const char *string)
+{
+    char *tmp;
+    size_t i;
+    size_t ntokens = 0;
+    char **parts;
+    char **result = NULL;
+
+    if (VIR_STRDUP(tmp, string) < 0)
+        return NULL;
+
+    /* Replace potential \t by a space */
+    for (i = 0; tmp[i]; i++) {
+        if (tmp[i] == '\t')
+            tmp[i] = ' ';
+    }
+
+    if (!(parts = virStringSplit(tmp, " ", 0)))
+        goto error;
+
+    /* Append NULL element */
+    if (VIR_EXPAND_N(result, ntokens, 1) < 0)
+        goto error;
+
+    for (i = 0; parts[i]; i++) {
+        if (STREQ(parts[i], ""))
+            continue;
+
+        if (VIR_EXPAND_N(result, ntokens, 1) < 0)
+            goto error;
+
+        if (VIR_STRDUP(result[ntokens-2], parts[i]) < 0)
+            goto error;
+    }
+
+    VIR_FREE(tmp);
+    virStringFreeList(parts);
+    return result;
+
+error:
+    VIR_FREE(tmp);
+    virStringFreeList(parts);
+    virStringFreeList(result);
+    return NULL;
+}
+
+static lxcFstabPtr
+lxcParseFstabLine(char *fstabLine)
+{
+    lxcFstabPtr fstab = NULL;
+    char **parts;
+
+    if (!fstabLine || VIR_ALLOC(fstab) < 0)
+        return NULL;
+
+    if (!(parts = lxcStringSplit(fstabLine)))
+        goto error;
+
+    if (!parts[0] || !parts[1] || !parts[2] || !parts[3])
+        goto error;
+
+    if (VIR_STRDUP(fstab->src, parts[0]) < 0 ||
+            VIR_STRDUP(fstab->dst, parts[1]) < 0 ||
+            VIR_STRDUP(fstab->type, parts[2]) < 0 ||
+            VIR_STRDUP(fstab->options, parts[3]) < 0)
+        goto error;
+
+    virStringFreeList(parts);
+
+    return fstab;
+
+error:
+    lxcFstabFree(fstab);
+    virStringFreeList(parts);
+    return NULL;
+}
+
 static int
 lxcAddFSDef(virDomainDefPtr def,
             int type,
             const char *src,
-            const char *dst)
+            const char *dst,
+            bool readonly,
+            unsigned long long usage)
 {
     virDomainFSDefPtr fsDef = NULL;
 
-    if (!(fsDef = lxcCreateFSDef(type, src, dst)))
+    if (!(fsDef = lxcCreateFSDef(type, src, dst, readonly, usage)))
         goto error;
 
     if (VIR_EXPAND_N(def->fss, def->nfss, 1) < 0)
@@ -95,10 +208,124 @@ lxcSetRootfs(virDomainDefPtr def,
     if (STRPREFIX(value->str, "/dev/"))
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
 
-    if (lxcAddFSDef(def, type, value->str, "/") < 0)
+    if (lxcAddFSDef(def, type, value->str, "/", false, 0) < 0)
         return -1;
 
     return 0;
+}
+
+static int
+lxcConvertSize(const char *size, unsigned long long *value)
+{
+    char *unit = NULL;
+
+    /* Split the string into value and unit */
+    if (virStrToLong_ull(size, &unit, 10, value) < 0)
+        goto error;
+
+    if (STREQ(unit, "%")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("can't convert relative size: '%s'"),
+                       size);
+        return -1;
+    } else {
+        if (virScaleInteger(value, unit, 1, ULLONG_MAX) < 0)
+            goto error;
+    }
+
+    return 0;
+
+error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("failed to convert size: '%s'"),
+                   size);
+    return -1;
+}
+
+static int
+lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
+{
+    const char *src = NULL;
+    char *dst = NULL;
+    char **options = virStringSplit(fstab->options, ",", 0);
+    bool readonly;
+    int type = VIR_DOMAIN_FS_TYPE_MOUNT;
+    unsigned long long usage = 0;
+    int ret = -1;
+
+    if (!options)
+        return -1;
+
+    if (fstab->dst[0] != '/') {
+        if (virAsprintf(&dst, "/%s", fstab->dst) < 0)
+            goto cleanup;
+    } else {
+        if (VIR_STRDUP(dst, fstab->dst) < 0)
+            goto cleanup;
+    }
+
+    /* Check that we don't add basic mounts */
+    if (lxcIsBasicMountLocation(dst)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (STREQ(fstab->type, "tmpfs")) {
+        char *sizeStr = NULL;
+        size_t i;
+        type = VIR_DOMAIN_FS_TYPE_RAM;
+
+        for (i = 0; options[i]; i++) {
+            if ((sizeStr = STRSKIP(options[i], "size="))) {
+                if (lxcConvertSize(sizeStr, &usage) < 0)
+                    goto cleanup;
+                break;
+            }
+        }
+        if (!sizeStr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing tmpfs size, set the size option"));
+            goto cleanup;
+        }
+    } else {
+        src = fstab->src;
+    }
+
+    /* Do we have ro in options? */
+    readonly = virStringArrayHasString(options, "ro");
+
+    if (lxcAddFSDef(def, type, src, dst, readonly, usage) < 0)
+        goto cleanup;
+
+    ret = 1;
+
+ cleanup:
+    VIR_FREE(dst);
+    virStringFreeList(options);
+    return ret;
+}
+
+static int
+lxcFstabWalkCallback(const char* name, virConfValuePtr value, void * data)
+{
+    int ret = 0;
+    lxcFstabPtr fstabLine;
+    virDomainDefPtr def = data;
+
+    /* We only care about lxc.mount.entry lines */
+    if (STRNEQ(name, "lxc.mount.entry"))
+        return 0;
+
+    fstabLine = lxcParseFstabLine(value->str);
+
+    if (!fstabLine)
+        return -1;
+
+    if (lxcAddFstabLine(def, fstabLine) < 0)
+        ret = -1;
+
+    lxcFstabFree(fstabLine);
+    return ret;
 }
 
 virDomainDefPtr
@@ -119,6 +346,7 @@ lxcParseConfigString(const char *config)
                        _("failed to generate uuid"));
         goto error;
     }
+
     vmdef->id = -1;
     vmdef->mem.max_balloon = 64 * 1024;
 
@@ -130,6 +358,8 @@ lxcParseConfigString(const char *config)
     /* Value not handled by the LXC driver, setting to
      * minimum required to make XML parsing pass */
     vmdef->maxvcpus = 1;
+
+    vmdef->nfss = 0;
 
     if (VIR_STRDUP(vmdef->os.type, "exe") < 0)
         goto error;
@@ -144,6 +374,18 @@ lxcParseConfigString(const char *config)
         goto error;
 
     if (lxcSetRootfs(vmdef, properties) < 0)
+        goto error;
+
+    /* Look for fstab: we shouldn't have it */
+    if (virConfGetValue(properties, "lxc.mount")) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("lxc.mount found, use lxc.mount.entry lines instead"));
+        goto error;
+    }
+
+    /* Loop over lxc.mount.entry to add filesystem devices for them */
+    value = virConfGetValue(properties, "lxc.mount.entry");
+    if (virConfWalk(properties, lxcFstabWalkCallback, vmdef) < 0)
         goto error;
 
     goto cleanup;

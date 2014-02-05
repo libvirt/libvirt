@@ -18,7 +18,8 @@ blankProblemElements(char *data)
 
 static int
 testCompareXMLToConfigFiles(const char *xml,
-                            const char *configfile)
+                            const char *configfile,
+                            bool expectError)
 {
     int ret = -1;
     char *config = NULL;
@@ -28,22 +29,26 @@ testCompareXMLToConfigFiles(const char *xml,
 
     if (virtTestLoadFile(configfile, &config) < 0)
         goto fail;
-    if (virtTestLoadFile(xml, &expectxml) < 0)
+
+    vmdef = lxcParseConfigString(config);
+    if ((vmdef && expectError) || (!vmdef && !expectError))
         goto fail;
 
-    if (!(vmdef = lxcParseConfigString(config)))
-        goto fail;
+    if (vmdef) {
+        if (!(actualxml = virDomainDefFormat(vmdef, 0)))
+            goto fail;
 
-    if (!(actualxml = virDomainDefFormat(vmdef, 0)))
-        goto fail;
+        if (virtTestLoadFile(xml, &expectxml) < 0)
+            goto fail;
 
-    if (blankProblemElements(expectxml) < 0 ||
-        blankProblemElements(actualxml) < 0)
-        goto fail;
+        if (blankProblemElements(expectxml) < 0 ||
+            blankProblemElements(actualxml) < 0)
+            goto fail;
 
-    if (STRNEQ(expectxml, actualxml)) {
-        virtTestDifference(stderr, expectxml, actualxml);
-        goto fail;
+        if (STRNEQ(expectxml, actualxml)) {
+            virtTestDifference(stderr, expectxml, actualxml);
+            goto fail;
+        }
     }
 
     ret = 0;
@@ -56,21 +61,26 @@ fail:
     return ret;
 }
 
+struct testInfo {
+    const char *name;
+    bool expectError;
+};
+
 static int
 testCompareXMLToConfigHelper(const void *data)
 {
     int result = -1;
-    const char *name = data;
+    const struct testInfo *info = data;
     char *xml = NULL;
     char *config = NULL;
 
     if (virAsprintf(&xml, "%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
-                    abs_srcdir, name) < 0 ||
+                    abs_srcdir, info->name) < 0 ||
         virAsprintf(&config, "%s/lxcconf2xmldata/lxcconf2xml-%s.config",
-                    abs_srcdir, name) < 0)
+                    abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    result = testCompareXMLToConfigFiles(xml, config);
+    result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
 cleanup:
     VIR_FREE(xml);
@@ -83,13 +93,17 @@ mymain(void)
 {
     int ret = EXIT_SUCCESS;
 
-# define DO_TEST(name)                                  \
-    if (virtTestRun("LXC Native-2-XML " name,           \
-                    testCompareXMLToConfigHelper,       \
-                    name) < 0)                          \
-        ret = EXIT_FAILURE
+# define DO_TEST(name, expectError)                         \
+    do {                                                    \
+        const struct testInfo info = { name, expectError }; \
+        if (virtTestRun("LXC Native-2-XML " name,           \
+                        testCompareXMLToConfigHelper,       \
+                        &info) < 0)                         \
+            ret = EXIT_FAILURE;                             \
+    } while (0)
 
-    DO_TEST("simple");
+    DO_TEST("simple", false);
+    DO_TEST("fstab", true);
 
     return ret;
 }

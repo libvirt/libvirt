@@ -744,7 +744,7 @@ static const virLXCBasicMountInfo lxcBasicMounts[] = {
 };
 
 
-static bool lxcIsBasicMountLocation(const char *path)
+bool lxcIsBasicMountLocation(const char *path)
 {
     size_t i;
 
