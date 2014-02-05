@@ -369,6 +369,26 @@ error:
     return NULL;
 }
 
+static virDomainHostdevDefPtr
+lxcCreateHostdevDef(int mode, int type, const char *data)
+{
+    virDomainHostdevDefPtr hostdev = virDomainHostdevDefAlloc();
+
+    if (!hostdev)
+        return NULL;
+
+    hostdev->mode = mode;
+    hostdev->source.caps.type = type;
+
+    if (type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET &&
+        VIR_STRDUP(hostdev->source.caps.u.net.iface, data) < 0) {
+        virDomainHostdevDefFree(hostdev);
+        hostdev = NULL;
+    }
+
+    return hostdev;
+}
+
 static int
 lxcAddNetworkDefinition(virDomainDefPtr def,
                         const char *type,
@@ -377,22 +397,36 @@ lxcAddNetworkDefinition(virDomainDefPtr def,
                         const char *flag)
 {
     virDomainNetDefPtr net = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
 
     if ((type == NULL) || STREQ(type, "empty") || STREQ(type, "") ||
             STREQ(type, "none"))
         return 0;
 
-    if (!(net = lxcCreateNetDef(type, link, mac, flag)))
-        goto error;
+    if (type != NULL && STREQ(type, "phys")) {
+        if (!link ||
+            !(hostdev = lxcCreateHostdevDef(VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
+                                            VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET,
+                                            link)))
+            goto error;
 
-    if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
-        goto error;
-    def->nets[def->nnets - 1] = net;
+        if (VIR_EXPAND_N(def->hostdevs, def->nhostdevs, 1) < 0)
+            goto error;
+        def->hostdevs[def->nhostdevs - 1] = hostdev;
+    } else {
+        if (!(net = lxcCreateNetDef(type, link, mac, flag)))
+            goto error;
+
+        if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
+            goto error;
+        def->nets[def->nnets - 1] = net;
+    }
 
     return 1;
 
 error:
     virDomainNetDefFree(net);
+    virDomainHostdevDefFree(hostdev);
     return -1;
 }
 
