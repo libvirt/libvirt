@@ -414,21 +414,38 @@ lxcAddNetworkDefinition(virDomainDefPtr def,
                         const char *link,
                         const char *mac,
                         const char *flag,
-                        const char *macvlanmode)
+                        const char *macvlanmode,
+                        const char *vlanid)
 {
     virDomainNetDefPtr net = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
+    bool isPhys, isVlan = false;
 
     if ((type == NULL) || STREQ(type, "empty") || STREQ(type, "") ||
             STREQ(type, "none"))
         return 0;
 
-    if (type != NULL && STREQ(type, "phys")) {
-        if (!link ||
-            !(hostdev = lxcCreateHostdevDef(VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
+    isPhys = STREQ(type, "phys");
+    isVlan = STREQ(type, "vlan");
+    if (type != NULL && (isPhys || isVlan)) {
+        if (!link) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Missing 'link' attribute for NIC"));
+            goto error;
+        }
+        if (!(hostdev = lxcCreateHostdevDef(VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
                                             VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET,
                                             link)))
             goto error;
+
+        /* This still requires the user to manually setup the vlan interface
+         * on the host */
+        if (isVlan && vlanid) {
+            VIR_FREE(hostdev->source.caps.u.net.iface);
+            if (virAsprintf(&hostdev->source.caps.u.net.iface,
+                            "%s.%s", link, vlanid) < 0)
+                goto error;
+        }
 
         if (VIR_EXPAND_N(def->hostdevs, def->nhostdevs, 1) < 0)
             goto error;
@@ -457,6 +474,7 @@ typedef struct {
     char *mac;
     char *flag;
     char *macvlanmode;
+    char *vlanid;
     bool privnet;
     size_t networks;
 } lxcNetworkParseData;
@@ -472,7 +490,8 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
         status = lxcAddNetworkDefinition(parseData->def, parseData->type,
                                          parseData->link, parseData->mac,
                                          parseData->flag,
-                                         parseData->macvlanmode);
+                                         parseData->macvlanmode,
+                                         parseData->vlanid);
 
         if (status < 0)
             return -1;
@@ -487,6 +506,7 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
         parseData->mac = NULL;
         parseData->flag = NULL;
         parseData->macvlanmode = NULL;
+        parseData->vlanid = NULL;
 
         /* Keep the new value */
         parseData->type = value->str;
@@ -499,6 +519,8 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
         parseData->flag = value->str;
     else if (STREQ(name, "lxc.network.macvlan.mode"))
         parseData->macvlanmode = value->str;
+    else if (STREQ(name, "lxc.network.vlan.id"))
+        parseData->vlanid = value->str;
     else if (STRPREFIX(name, "lxc.network"))
         VIR_WARN("Unhandled network property: %s = %s",
                  name,
@@ -511,14 +533,16 @@ static int
 lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 {
     int status;
-    lxcNetworkParseData data = {def, NULL, NULL, NULL, NULL, NULL, true, 0};
+    lxcNetworkParseData data = {def, NULL, NULL, NULL, NULL,
+                                NULL, NULL, true, 0};
 
     virConfWalk(properties, lxcNetworkWalkCallback, &data);
 
     /* Add the last network definition found */
     status = lxcAddNetworkDefinition(def, data.type, data.link,
                                      data.mac, data.flag,
-                                     data.macvlanmode);
+                                     data.macvlanmode,
+                                     data.vlanid);
     if (status < 0)
         return -1;
     else if (status > 0)

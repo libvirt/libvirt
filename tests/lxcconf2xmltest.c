@@ -108,6 +108,7 @@ mymain(void)
     DO_TEST("nonenetwork", false);
     DO_TEST("physnetwork", false);
     DO_TEST("macvlannetwork", false);
+    DO_TEST("vlannetwork", false);
     DO_TEST("idmap", false);
     DO_TEST("memtune", false);
     DO_TEST("cputune", false);
