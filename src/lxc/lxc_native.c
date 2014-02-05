@@ -291,6 +291,10 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
         src = fstab->src;
     }
 
+    /* Is it a block device that needs special favor? */
+    if (STRPREFIX(fstab->src, "/dev/"))
+        type = VIR_DOMAIN_FS_TYPE_BLOCK;
+
     /* Do we have ro in options? */
     readonly = virStringArrayHasString(options, "ro");
 
