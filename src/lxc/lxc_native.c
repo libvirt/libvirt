@@ -31,6 +31,76 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+
+static virDomainFSDefPtr
+lxcCreateFSDef(int type,
+               const char *src,
+               const char* dst)
+{
+    virDomainFSDefPtr def;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    def->type = type;
+    def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+    if (src && VIR_STRDUP(def->src, src) < 0)
+        goto error;
+    if (VIR_STRDUP(def->dst, dst) < 0)
+        goto error;
+
+    return def;
+
+ error:
+    virDomainFSDefFree(def);
+    return NULL;
+}
+
+static int
+lxcAddFSDef(virDomainDefPtr def,
+            int type,
+            const char *src,
+            const char *dst)
+{
+    virDomainFSDefPtr fsDef = NULL;
+
+    if (!(fsDef = lxcCreateFSDef(type, src, dst)))
+        goto error;
+
+    if (VIR_EXPAND_N(def->fss, def->nfss, 1) < 0)
+        goto error;
+    def->fss[def->nfss - 1] = fsDef;
+
+    return 0;
+
+error:
+    virDomainFSDefFree(fsDef);
+    return -1;
+}
+
+static int
+lxcSetRootfs(virDomainDefPtr def,
+             virConfPtr properties)
+{
+    int type = VIR_DOMAIN_FS_TYPE_MOUNT;
+    virConfValuePtr value;
+
+    if (!(value = virConfGetValue(properties, "lxc.rootfs")) ||
+        !value->str) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Missing lxc.rootfs configuration"));
+        return -1;
+    }
+
+    if (STRPREFIX(value->str, "/dev/"))
+        type = VIR_DOMAIN_FS_TYPE_BLOCK;
+
+    if (lxcAddFSDef(def, type, value->str, "/") < 0)
+        return -1;
+
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -71,6 +141,9 @@ lxcParseConfigString(const char *config)
             !value->str || (VIR_STRDUP(vmdef->name, value->str) < 0))
         goto error;
     if (!vmdef->name && (VIR_STRDUP(vmdef->name, "unnamed") < 0))
+        goto error;
+
+    if (lxcSetRootfs(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;

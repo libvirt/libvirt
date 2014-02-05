@@ -13,5 +13,9 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/var/lib/lxc/migrate_test/rootfs'/>
+      <target dir='/'/>
+    </filesystem>
   </devices>
 </domain>
