@@ -570,6 +570,43 @@ error:
     return -1;
 }
 
+static int
+lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
+{
+    virDomainDefPtr def = data;
+    virDomainIdMapEntryPtr idmap = NULL;
+    char type;
+    unsigned long start, target, count;
+
+    if (STRNEQ(name, "lxc.id_map") || !value->str)
+        return 0;
+
+    if (sscanf(value->str, "%c %lu %lu %lu", &type,
+               &target, &start, &count) != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("invalid lxc.id_map: '%s'"),
+                       value->str);
+        return -1;
+    }
+
+    if (type == 'u') {
+        if (VIR_EXPAND_N(def->idmap.uidmap, def->idmap.nuidmap, 1) < 0)
+            return -1;
+        idmap = &def->idmap.uidmap[def->idmap.nuidmap - 1];
+    } else if (type == 'g') {
+        if (VIR_EXPAND_N(def->idmap.gidmap, def->idmap.ngidmap, 1) < 0)
+            return -1;
+        idmap = &def->idmap.gidmap[def->idmap.ngidmap - 1];
+    } else {
+        return -1;
+    }
+
+    idmap->start = start;
+    idmap->target = target;
+    idmap->count = count;
+
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -636,6 +673,10 @@ lxcParseConfigString(const char *config)
 
     /* Consoles */
     if (lxcCreateConsoles(vmdef, properties) < 0)
+        goto error;
+
+    /* lxc.id_map */
+    if (virConfWalk(properties, lxcIdmapWalkCallback, vmdef) < 0)
         goto error;
 
     goto cleanup;
