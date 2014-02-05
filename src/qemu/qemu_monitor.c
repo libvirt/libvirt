@@ -1019,7 +1019,7 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
                                  virDomainObjPtr vm,
                                  const char *curpath)
 {
-    size_t i, j, npaths = 0, nprops = 0;
+    ssize_t i, j, npaths = 0, nprops = 0;
     int ret = 0;
     char *nextpath = NULL;
     qemuMonitorJSONListPathPtr *paths = NULL;
@@ -1045,6 +1045,8 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
     VIR_DEBUG("Searching for Balloon Object Path starting at %s", curpath);
 
     npaths = qemuMonitorJSONGetObjectListPaths(mon, curpath, &paths);
+    if (npaths < 0)
+        return -1;
 
     for (i = 0; i < npaths && ret == 0; i++) {
 
@@ -1061,6 +1063,11 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
              * then this version of qemu/kvm does not support the feature.
              */
             nprops = qemuMonitorJSONGetObjectListPaths(mon, nextpath, &bprops);
+            if (nprops < 0) {
+                ret = -1;
+                goto cleanup;
+            }
+
             for (j = 0; j < nprops; j++) {
                 if (STREQ(bprops[j]->name, "guest-stats-polling-interval")) {
                     VIR_DEBUG("Found Balloon Object Path %s", nextpath);
