@@ -112,6 +112,7 @@ mymain(void)
     DO_TEST("memtune", false);
     DO_TEST("cputune", false);
     DO_TEST("cpusettune", false);
+    DO_TEST("blkiotune", false);
 
     return ret;
 }

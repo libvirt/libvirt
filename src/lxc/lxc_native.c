@@ -699,6 +699,68 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
     return 0;
 }
 
+static int
+lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
+{
+    char **parts = NULL;
+    virBlkioDevicePtr device = NULL;
+    virDomainDefPtr def = data;
+
+    if (STRNEQ(name, "lxc.cgroup.blkio.device_weight") || !value->str)
+        return 0;
+
+    if (!(parts = lxcStringSplit(value->str)))
+        return -1;
+
+    if (!parts[0] || !parts[1]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid blkio.device_weight value: '%s'"),
+                       value->str);
+        goto error;
+    }
+
+    if (VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1) < 0)
+        goto error;
+    device = &def->blkio.devices[def->blkio.ndevices - 1];
+
+    if (virAsprintf(&device->path, "/dev/block/%s", parts[0]) < 0)
+        goto error;
+
+    if (virStrToLong_ui(parts[1], NULL, 10, &device->weight) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse integer: '%s'"), parts[1]);
+        goto error;
+    }
+
+    virStringFreeList(parts);
+
+    return 0;
+
+error:
+    if (parts)
+        virStringFreeList(parts);
+    return -1;
+}
+
+static int
+lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+
+    if ((value = virConfGetValue(properties, "lxc.cgroup.blkio.weight")) &&
+            value->str && virStrToLong_ui(value->str, NULL, 10,
+                                          &def->blkio.weight) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse integer: '%s'"), value->str);
+        return -1;
+    }
+
+    if (virConfWalk(properties, lxcBlkioDeviceWalkCallback, def) < 0)
+        return -1;
+
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -781,6 +843,10 @@ lxcParseConfigString(const char *config)
 
     /* lxc.cgroup.cpuset.* */
     if (lxcSetCpusetTune(vmdef, properties) < 0)
+        goto error;
+
+    /* lxc.cgroup.blkio.* */
+    if (lxcSetBlkioTune(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;
