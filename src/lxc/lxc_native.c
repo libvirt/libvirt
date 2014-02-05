@@ -328,6 +328,57 @@ lxcFstabWalkCallback(const char* name, virConfValuePtr value, void * data)
     return ret;
 }
 
+typedef struct {
+    char *type;
+    bool privnet;
+    size_t networks;
+} lxcNetworkParseData;
+
+static int
+lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
+{
+    lxcNetworkParseData *parseData = data;
+
+    if (STREQ(name, "lxc.network.type")) {
+        if (parseData->type != NULL && STREQ(parseData->type, "none"))
+            parseData->privnet = false;
+        else if ((parseData->type != NULL) &&
+                        STRNEQ(parseData->type, "empty") &&
+                        STRNEQ(parseData->type, "")) {
+            parseData->networks++;
+        }
+
+        /* Start a new network interface config */
+        parseData->type = NULL;
+
+        /* Keep the new value */
+        parseData->type = value->str;
+    }
+    return 0;
+}
+
+static int
+lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
+{
+    lxcNetworkParseData data = {NULL, true, 0};
+
+    virConfWalk(properties, lxcNetworkWalkCallback, &data);
+
+    if ((data.type != NULL) && STREQ(data.type, "none"))
+        data.privnet = false;
+    else if ((data.type != NULL) && STRNEQ(data.type, "empty") &&
+                    STRNEQ(data.type, "")) {
+        data.networks++;
+    }
+
+    if (data.networks == 0 && data.privnet) {
+        /* When no network type is provided LXC only adds loopback */
+        def->features[VIR_DOMAIN_FEATURE_PRIVNET] = VIR_DOMAIN_FEATURE_STATE_ON;
+    }
+
+    return 0;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -386,6 +437,10 @@ lxcParseConfigString(const char *config)
     /* Loop over lxc.mount.entry to add filesystem devices for them */
     value = virConfGetValue(properties, "lxc.mount.entry");
     if (virConfWalk(properties, lxcFstabWalkCallback, vmdef) < 0)
+        goto error;
+
+    /* Network configuration */
+    if (lxcConvertNetworkSettings(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;

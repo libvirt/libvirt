@@ -104,6 +104,8 @@ mymain(void)
 
     DO_TEST("simple", false);
     DO_TEST("fstab", true);
+    DO_TEST("nonetwork", false);
+    DO_TEST("nonenetwork", false);
 
     return ret;
 }
