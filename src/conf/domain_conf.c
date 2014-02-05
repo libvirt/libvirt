@@ -2924,6 +2924,61 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
         return -1;
+
+    /* verify settings of guest timers */
+    for (i = 0; i < def->clock.ntimers; i++) {
+        virDomainTimerDefPtr timer = def->clock.timers[i];
+
+        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK) {
+            if (timer->tickpolicy != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("timer %s doesn't support setting of "
+                                 "timer tickpolicy"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+            }
+        }
+
+        if (timer->tickpolicy != VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP &&
+            (timer->catchup.threshold != 0 ||
+             timer->catchup.limit != 0 ||
+             timer->catchup.slew != 0)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("setting of timer catchup policies is only "
+                             "supported with tickpolicy='catchup'"));
+            return -1;
+        }
+
+        if (timer->name != VIR_DOMAIN_TIMER_NAME_TSC) {
+            if (timer->frequency != 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("timer %s doesn't support setting of "
+                                 "timer frequency"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+             }
+
+            if (timer->mode != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("timer %s doesn't support setting of "
+                                 "timer mode"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+             }
+        }
+
+        if (timer->name != VIR_DOMAIN_TIMER_NAME_PLATFORM &&
+            timer->name != VIR_DOMAIN_TIMER_NAME_RTC) {
+            if (timer->track != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("timer %s doesn't support setting of "
+                                 "timer track"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+            }
+        }
+    }
+
     return 0;
 }
 

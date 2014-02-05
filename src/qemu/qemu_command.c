@@ -10924,6 +10924,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                     dom->clock.timers[j]->present = present;
                     dom->clock.timers[j]->tickpolicy = -1;
                     dom->clock.timers[j]->track = -1;
+                    dom->clock.timers[j]->mode = -1;
                     dom->clock.ntimers++;
                 } else if (dom->clock.timers[j]->present != -1 &&
                     dom->clock.timers[j]->present != present) {
