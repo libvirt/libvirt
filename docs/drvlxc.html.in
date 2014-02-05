@@ -555,7 +555,7 @@ and LXC. For further details about usage of virsh consult its
 manual page.
 </p>
 
-<h3><a name="usageSave">Defining (saving) container configuration></a></h3>
+<h3><a name="usageSave">Defining (saving) container configuration</a></h3>
 
 <p>
 The <code>virsh define</code> command takes an XML configuration
@@ -701,6 +701,38 @@ host
 <pre>
 # virt-top -c lxc:///
 </pre>
+
+<h3><a name="usageConvert">Converting LXC container configuration</a></h3>
+
+<p>
+The <code>virsh domxml-from-native</code> command can be used to convert
+most of the LXC container configuration into a domain XML fragment
+</p>
+
+<pre>
+# virsh -c lxc:/// domxml-from-native lxc-tools /var/lib/lxc/myguest/config
+</pre>
+
+<p>
+This conversion has some limitations due to the fact that the
+domxml-from-native command output has to be independent of the host. Here
+are a few things to take care of before converting:
+</p>
+
+<ul>
+<li>
+Replace the fstab file referenced by <tt>lxc.mount</tt> by the corresponding
+lxc.mount.entry lines.
+</li>
+<li>
+Replace all relative sizes of tmpfs mount entries to absolute sizes. Also
+make sure that tmpfs entries all have a size option (default is 50%).
+</li>
+<li>
+Define <tt>lxc.cgroup.memory.limit_in_bytes</tt> to properly limit the memory
+available to the container. The conversion will use 64MiB as the default.
+</li>
+</ul>
 
   </body>
 </html>
