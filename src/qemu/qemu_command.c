@@ -6491,14 +6491,18 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         time_t now = time(NULL);
         struct tm nowbits;
 
-        if (def->data.variable.basis != VIR_DOMAIN_CLOCK_BASIS_UTC) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported clock basis '%s'"),
-                           virDomainClockBasisTypeToString(def->data.variable.basis));
-            goto error;
+        switch ((enum virDomainClockBasis) def->data.variable.basis) {
+        case VIR_DOMAIN_CLOCK_BASIS_UTC:
+            now += def->data.variable.adjustment;
+            gmtime_r(&now, &nowbits);
+            break;
+        case VIR_DOMAIN_CLOCK_BASIS_LOCALTIME:
+            now += def->data.variable.adjustment;
+            localtime_r(&now, &nowbits);
+            break;
+        case VIR_DOMAIN_CLOCK_BASIS_LAST:
+            break;
         }
-        now += def->data.variable.adjustment;
-        gmtime_r(&now, &nowbits);
 
         /* Store the guest's basedate */
         def->data.variable.basedate = now;
