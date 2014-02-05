@@ -3161,9 +3161,9 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode)) {
+    if (!S_ISBLK(sb.st_mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disk source %s must be a character/block device"),
+                       _("Disk source %s must be a block device"),
                        def->src);
         goto cleanup;
     }
@@ -3179,11 +3179,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    mode = 0700;
-    if (S_ISCHR(sb.st_mode))
-        mode |= S_IFCHR;
-    else
-        mode |= S_IFBLK;
+    mode = 0700 | S_IFBLK;
 
     /* Yes, the device name we're creating may not
      * actually correspond to the major:minor number
