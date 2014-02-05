@@ -328,8 +328,80 @@ lxcFstabWalkCallback(const char* name, virConfValuePtr value, void * data)
     return ret;
 }
 
+static virDomainNetDefPtr
+lxcCreateNetDef(const char *type,
+                const char *link,
+                const char *mac,
+                const char *flag)
+{
+    virDomainNetDefPtr net = NULL;
+
+    if (VIR_ALLOC(net) < 0)
+        goto error;
+
+    if (flag) {
+        if (STREQ(flag, "up"))
+            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
+        else
+            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
+    }
+
+    if (STREQ(type, "veth")) {
+        virMacAddr macAddr;
+
+        if (!link)
+            goto error;
+
+        net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
+        if (VIR_STRDUP(net->data.bridge.brname, link) < 0)
+            goto error;
+
+        if (mac && virMacAddrParse(mac, &macAddr) == 0)
+            net->mac = macAddr;
+
+    }
+
+    return net;
+
+error:
+    virDomainNetDefFree(net);
+    return NULL;
+}
+
+static int
+lxcAddNetworkDefinition(virDomainDefPtr def,
+                        const char *type,
+                        const char *link,
+                        const char *mac,
+                        const char *flag)
+{
+    virDomainNetDefPtr net = NULL;
+
+    if ((type == NULL) || STREQ(type, "empty") || STREQ(type, "") ||
+            STREQ(type, "none"))
+        return 0;
+
+    if (!(net = lxcCreateNetDef(type, link, mac, flag)))
+        goto error;
+
+    if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
+        goto error;
+    def->nets[def->nnets - 1] = net;
+
+    return 1;
+
+error:
+    virDomainNetDefFree(net);
+    return -1;
+}
+
 typedef struct {
+    virDomainDefPtr def;
     char *type;
+    char *link;
+    char *mac;
+    char *flag;
     bool privnet;
     size_t networks;
 } lxcNetworkParseData;
@@ -338,38 +410,56 @@ static int
 lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
 {
     lxcNetworkParseData *parseData = data;
+    int status;
 
     if (STREQ(name, "lxc.network.type")) {
-        if (parseData->type != NULL && STREQ(parseData->type, "none"))
-            parseData->privnet = false;
-        else if ((parseData->type != NULL) &&
-                        STRNEQ(parseData->type, "empty") &&
-                        STRNEQ(parseData->type, "")) {
+        /* Store the previous NIC */
+        status = lxcAddNetworkDefinition(parseData->def, parseData->type,
+                                         parseData->link, parseData->mac,
+                                         parseData->flag);
+        if (status < 0)
+            return -1;
+        else if (status > 0)
             parseData->networks++;
-        }
+        else if (parseData->type != NULL && STREQ(parseData->type, "none"))
+            parseData->privnet = false;
 
         /* Start a new network interface config */
         parseData->type = NULL;
+        parseData->link = NULL;
+        parseData->mac = NULL;
+        parseData->flag = NULL;
 
         /* Keep the new value */
         parseData->type = value->str;
     }
+    else if (STREQ(name, "lxc.network.link"))
+        parseData->link = value->str;
+    else if (STREQ(name, "lxc.network.hwaddr"))
+        parseData->mac = value->str;
+    else if (STREQ(name, "lxc.network.flags"))
+        parseData->flag = value->str;
+
     return 0;
 }
 
 static int
 lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 {
-    lxcNetworkParseData data = {NULL, true, 0};
+    int status;
+    lxcNetworkParseData data = {def, NULL, NULL, NULL, NULL, true, 0};
 
     virConfWalk(properties, lxcNetworkWalkCallback, &data);
 
-    if ((data.type != NULL) && STREQ(data.type, "none"))
-        data.privnet = false;
-    else if ((data.type != NULL) && STRNEQ(data.type, "empty") &&
-                    STRNEQ(data.type, "")) {
+    /* Add the last network definition found */
+    status = lxcAddNetworkDefinition(def, data.type, data.link,
+                                     data.mac, data.flag);
+    if (status < 0)
+        return -1;
+    else if (status > 0)
         data.networks++;
-    }
+    else if (data.type != NULL && STREQ(data.type, "none"))
+        data.privnet = false;
 
     if (data.networks == 0 && data.privnet) {
         /* When no network type is provided LXC only adds loopback */
