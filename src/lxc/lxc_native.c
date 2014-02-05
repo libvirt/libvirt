@@ -503,6 +503,46 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
     return 0;
 }
 
+static int
+lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
+{
+    virConfValuePtr value;
+    int nbttys = 0;
+    virDomainChrDefPtr console;
+    size_t i;
+
+    if (!(value = virConfGetValue(properties, "lxc.tty")) || !value->str)
+        return 0;
+
+    if (virStrToLong_i(value->str, NULL, 10, &nbttys) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("failed to parse int: '%s'"),
+                       value->str);
+        return -1;
+    }
+
+    if (VIR_ALLOC_N(def->consoles, nbttys) < 0)
+        return -1;
+
+    def->nconsoles = nbttys;
+    for (i = 0; i < nbttys; i++) {
+        if (!(console = virDomainChrDefNew()))
+            goto error;
+
+        console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
+        console->target.port = i;
+        console->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+
+        def->consoles[i] = console;
+    }
+
+    return 0;
+
+error:
+    virDomainChrDefFree(console);
+    return -1;
+}
+
 virDomainDefPtr
 lxcParseConfigString(const char *config)
 {
@@ -565,6 +605,10 @@ lxcParseConfigString(const char *config)
 
     /* Network configuration */
     if (lxcConvertNetworkSettings(vmdef, properties) < 0)
+        goto error;
+
+    /* Consoles */
+    if (lxcCreateConsoles(vmdef, properties) < 0)
         goto error;
 
     goto cleanup;

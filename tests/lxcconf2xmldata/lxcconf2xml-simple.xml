@@ -31,5 +31,11 @@
       <source bridge='virbr0'/>
       <link state='up'/>
     </interface>
+    <console type='pty'>
+      <target type='lxc' port='0'/>
+    </console>
+    <console type='pty'>
+      <target type='lxc' port='1'/>
+    </console>
   </devices>
 </domain>
