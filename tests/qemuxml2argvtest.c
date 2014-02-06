@@ -486,6 +486,16 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = abs_srcdir "/..";
 
+    /* Set the timezone because we are mocking the time() function.
+     * If we don't do that, then localtime() may return unpredictable
+     * results. In order to detect things that just work by a blind
+     * chance, we need to set an virtual timezone that no libvirt
+     * developer resides in. */
+    if (setenv("TZ", "VIR00:30", 1) < 0) {
+        perror("setenv");
+        return EXIT_FAILURE;
+    }
+
     driver.config = virQEMUDriverConfigNew(false);
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
