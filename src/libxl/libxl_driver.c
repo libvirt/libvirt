@@ -2063,6 +2063,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     libxlDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
+    bool remove_dom = false;
     bool paused = false;
     int ret = -1;
 
@@ -2074,9 +2075,12 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     if (virDomainCoreDumpEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -2088,39 +2092,42 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
                            _("Before dumping core, failed to suspend domain '%d'"
                              " with libxenlight"),
                            dom->id);
-            goto cleanup;
+            goto endjob;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_DUMP);
         paused = true;
     }
 
-    if (libxl_domain_core_dump(priv->ctx, dom->id, to, NULL) != 0) {
+    /* Unlock virDomainObj while dumping core */
+    virObjectUnlock(vm);
+    ret = libxl_domain_core_dump(priv->ctx, dom->id, to, NULL);
+    virObjectLock(vm);
+    if (ret != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to dump core of domain '%d' with libxenlight"),
                        dom->id);
-        goto cleanup_unpause;
+        ret = -1;
+        goto unpause;
     }
 
     if (flags & VIR_DUMP_CRASH) {
         if (libxl_domain_destroy(priv->ctx, dom->id, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to destroy domain '%d'"), dom->id);
-            goto cleanup_unpause;
+            goto unpause;
         }
 
         libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-        if (!vm->persistent) {
-            virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
-        }
+        if (!vm->persistent)
+            remove_dom = true;
     }
 
     ret = 0;
 
-cleanup_unpause:
-    if (vm && virDomainObjIsActive(vm) && paused) {
+unpause:
+    if (virDomainObjIsActive(vm) && paused) {
         if (libxl_domain_unpause(priv->ctx, dom->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("After dumping core, failed to resume domain '%d' with"
@@ -2130,7 +2137,16 @@ cleanup_unpause:
                                  VIR_DOMAIN_RUNNING_UNPAUSED);
         }
     }
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
 cleanup:
+    if (remove_dom && vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
     if (vm)
         virObjectUnlock(vm);
     if (event)
