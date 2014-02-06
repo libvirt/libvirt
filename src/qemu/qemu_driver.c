@@ -6606,6 +6606,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
     virDomainHostdevDefPtr hostdev;
     virDomainLeaseDefPtr lease;
     virDomainControllerDefPtr controller;
+    virDomainFSDefPtr fs;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -6687,6 +6688,19 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         dev->data.chr = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_FS:
+        fs = dev->data.fs;
+        if (virDomainFSIndexByName(vmdef, fs->dst) >= 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                         "%s", _("Target already exists"));
+            return -1;
+        }
+
+        if (virDomainFSInsert(vmdef, fs) < 0)
+            return -1;
+        dev->data.fs = NULL;
+        break;
+
     default:
          virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                         _("persistent attach of device '%s' is not supported"),
@@ -6707,6 +6721,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainLeaseDefPtr lease, det_lease;
     virDomainControllerDefPtr cont, det_cont;
     virDomainChrDefPtr chr;
+    virDomainFSDefPtr fs;
     int idx;
     char mac[VIR_MAC_STRING_BUFLEN];
 
@@ -6781,6 +6796,19 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         virDomainChrDefFree(chr);
         virDomainChrDefFree(dev->data.chr);
         dev->data.chr = NULL;
+        break;
+
+    case VIR_DOMAIN_DEVICE_FS:
+        fs = dev->data.fs;
+        idx = virDomainFSIndexByName(vmdef, fs->dst);
+        if (idx < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("no matching filesystem device was found"));
+            return -1;
+        }
+
+        fs = virDomainFSRemove(vmdef, idx);
+        virDomainFSDefFree(fs);
         break;
 
     default:
