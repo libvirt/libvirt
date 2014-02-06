@@ -24,6 +24,8 @@
 
 #include <config.h>
 
+#include <regex.h>
+
 #include "domain_event.h"
 #include "object_event.h"
 #include "object_event_private.h"
@@ -1390,6 +1392,8 @@ error:
  * deregisters.  */
 struct virDomainQemuMonitorEventData {
     char *event;
+    regex_t regex;
+    unsigned int flags;
     void *opaque;
     virFreeCallback freecb;
 };
@@ -1609,6 +1613,12 @@ virDomainQemuMonitorEventFilter(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     monitorEvent = (virDomainQemuMonitorEventPtr) event;
 
+    if (data->flags == -1)
+        return true;
+    if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
+        return regexec(&data->regex, monitorEvent->event, 0, NULL, 0) == 0;
+    if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
+        return STRCASEEQ(monitorEvent->event, data->event);
     return STREQ(monitorEvent->event, data->event);
 }
 
@@ -1619,6 +1629,8 @@ virDomainQemuMonitorEventCleanup(void *opaque)
     virDomainQemuMonitorEventData *data = opaque;
 
     VIR_FREE(data->event);
+    if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
+        regfree(&data->regex);
     if (data->freecb)
         (data->freecb)(data->opaque);
     VIR_FREE(data);
@@ -1634,7 +1646,8 @@ virDomainQemuMonitorEventCleanup(void *opaque)
  * @cb: function to invoke when event occurs
  * @opaque: data blob to pass to callback
  * @freecb: callback to free @opaque
- * @flags: -1 for client, or set of registration flags on server
+ * @flags: -1 for client, valid virConnectDomainQemuMonitorEventRegisterFlags
+ *         for server
  * @callbackID: filled with callback ID
  *
  * Register the function @cb with connection @conn, from @state, for
@@ -1660,12 +1673,34 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
         return -1;
 
     if (flags != -1)
-        virCheckFlags(0, -1);
+        virCheckFlags(VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX |
+                      VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE,
+                      -1);
     if (VIR_ALLOC(data) < 0)
         return -1;
-    if (VIR_STRDUP(data->event, event) < 0) {
-        VIR_FREE(data);
-        return -1;
+    data->flags = flags;
+    if (flags != -1) {
+        int rflags = REG_NOSUB;
+
+        if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
+            rflags |= REG_ICASE;
+        if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX) {
+            int err = regcomp(&data->regex, event, rflags);
+
+            if (err) {
+                char error[100];
+                regerror(err, &data->regex, error, sizeof(error));
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("failed to compile regex '%s': %s"),
+                               event, error);
+                regfree(&data->regex);
+                VIR_FREE(data);
+                return -1;
+            }
+        } else if (VIR_STRDUP(data->event, event) < 0) {
+            VIR_FREE(data);
+            return -1;
+        }
     }
     data->opaque = opaque;
     data->freecb = freecb;

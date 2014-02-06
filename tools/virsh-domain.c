@@ -7983,6 +7983,14 @@ static const vshCmdOptDef opts_qemu_monitor_event[] = {
      .type = VSH_OT_INT,
      .help = N_("timeout seconds")
     },
+    {.name = "regex",
+     .type = VSH_OT_BOOL,
+     .help = N_("treat event as a regex rather than literal filter")
+    },
+    {.name = "no-case",
+     .type = VSH_OT_BOOL,
+     .help = N_("treat event case-insensitively")
+    },
     {.name = NULL}
 };
 
@@ -7996,6 +8004,11 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     int timeout = 0;
     const char *event = NULL;
     vshQemuEventData data;
+
+    if (vshCommandOptBool(cmd, "regex"))
+        flags |= VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX;
+    if (vshCommandOptBool(cmd, "no-case"))
+        flags |= VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE;
 
     data.ctl = ctl;
     data.loop = vshCommandOptBool(cmd, "loop");

@@ -3385,12 +3385,15 @@ failed. And when I<--block> is given, the command waits forever with blocking
 timeout.
 
 =item B<qemu-monitor-event> [I<domain>] [I<--event> I<event-name>] [I<--loop>]
-[I<--timeout> I<seconds>] [I<--pretty>]
+[I<--timeout> I<seconds>] [I<--pretty>] [I<--regex>] [I<--no-case>]
 
 Wait for arbitrary QEMU monitor events to occur, and print out the
 details of events as they happen.  The events can optionally be filtered
 by I<domain> or I<event-name>.  The 'query-events' QMP command can be
 used via I<qemu-monitor-command> to learn what events are supported.
+If I<--regex> is used, I<event-name> is a basic regular expression
+instead of a literal string.  If I<--no-case> is used, I<event-name>
+will match case-insensitively.
 
 By default, this command is one-shot, and returns success once an event
 occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.

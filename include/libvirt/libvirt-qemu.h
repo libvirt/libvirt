@@ -76,6 +76,16 @@ typedef void (*virConnectDomainQemuMonitorEventCallback)(virConnectPtr conn,
                                                          const char *details,
                                                          void *opaque);
 
+
+typedef enum {
+    /* Event filter is a regex rather than a literal string */
+    VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX = (1 << 0),
+
+    /* Event filter is case insensitive */
+    VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE = (1 << 1),
+} virConnectDomainQemuMonitorEventRegisterFlags;
+
+
 int virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
                                              virDomainPtr dom,
                                              const char *event,

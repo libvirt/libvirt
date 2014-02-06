@@ -227,7 +227,7 @@ error:
  * @cb: callback to the function handling monitor events
  * @opaque: opaque data to pass on to the callback
  * @freecb: optional function to deallocate opaque when not used anymore
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virConnectDomainQemuMonitorEventRegisterFlags
  *
  * This API is QEMU specific, so it will only work with hypervisor
  * connections to the QEMU driver.
@@ -242,9 +242,12 @@ error:
  * is non-NULL, then only the specific domain will be monitored.
  *
  * If @event is NULL, then all monitor events will be reported. If @event is
- * non-NULL, then only the specific monitor event will be reported.  @flags
- * is currently unused, but in the future may support a flag for passing
- * @event as a glob instead of a literal name to match a category of events.
+ * non-NULL, then only specific monitor events will be reported.  @flags
+ * controls how the filtering is performed: 0 requests an exact match, while
+ * VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX states that @event
+ * is a basic regular expression.  Additionally, including
+ * VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE lets @event match
+ * case-insensitively.
  *
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
