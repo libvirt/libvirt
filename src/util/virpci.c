@@ -1327,6 +1327,8 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *activeDevs,
                    virPCIDeviceList *inactiveDevs)
 {
+    sa_assert(dev->stubDriver);
+
     if (virPCIProbeStubDriver(dev->stubDriver) < 0)
         return -1;
 
@@ -1657,7 +1659,7 @@ int
 virPCIDeviceSetStubDriver(virPCIDevicePtr dev, const char *driver)
 {
     VIR_FREE(dev->stubDriver);
-    return driver ? VIR_STRDUP(dev->stubDriver, driver) : 0;
+    return VIR_STRDUP(dev->stubDriver, driver);
 }
 
 const char *
