@@ -1342,9 +1342,12 @@ libxlDomainSuspend(virDomainPtr dom)
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -1354,7 +1357,7 @@ libxlDomainSuspend(virDomainPtr dom)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to suspend domain '%d' with libxenlight"),
                            dom->id);
-            goto cleanup;
+            goto endjob;
         }
 
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
@@ -1364,9 +1367,13 @@ libxlDomainSuspend(virDomainPtr dom)
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
+        goto endjob;
 
     ret = 0;
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     if (vm)
@@ -1394,9 +1401,12 @@ libxlDomainResume(virDomainPtr dom)
     if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -1406,7 +1416,7 @@ libxlDomainResume(virDomainPtr dom)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to resume domain '%d' with libxenlight"),
                            dom->id);
-            goto cleanup;
+            goto endjob;
         }
 
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
@@ -1417,9 +1427,13 @@ libxlDomainResume(virDomainPtr dom)
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto cleanup;
+        goto endjob;
 
     ret = 0;
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     if (vm)
