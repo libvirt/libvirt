@@ -1902,10 +1902,16 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (libxl_domain_suspend(priv->ctx, vm->def->id, fd, 0, NULL) != 0) {
+    /* Unlock virDomainObj while saving domain */
+    virObjectUnlock(vm);
+    ret = libxl_domain_suspend(priv->ctx, vm->def->id, fd, 0, NULL);
+    virObjectLock(vm);
+
+    if (ret != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to save domain '%d' with libxenlight"),
                        vm->def->id);
+        ret = -1;
         goto cleanup;
     }
 
@@ -1938,6 +1944,7 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+    bool remove_dom = false;
 
     virCheckFlags(0, -1);
     if (dxml) {
@@ -1952,22 +1959,31 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     if (virDomainSaveFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (libxlDoDomainSave(driver, vm, to) < 0)
-        goto cleanup;
+        goto endjob;
 
-    if (!vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
+    if (!vm->persistent)
+        remove_dom = true;
 
     ret = 0;
 
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
 cleanup:
+    if (remove_dom && vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
     if (vm)
         virObjectUnlock(vm);
     return ret;
@@ -2129,6 +2145,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm = NULL;
     char *name = NULL;
     int ret = -1;
+    bool remove_dom = false;
 
     virCheckFlags(0, -1);
 
@@ -2138,33 +2155,42 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot do managed save for transient domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     name = libxlDomainManagedSavePath(driver, vm);
     if (name == NULL)
-        goto cleanup;
+        goto endjob;
 
     VIR_INFO("Saving state to %s", name);
 
     if (libxlDoDomainSave(driver, vm, name) < 0)
-        goto cleanup;
+        goto endjob;
 
-    if (!vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
+    if (!vm->persistent)
+        remove_dom = true;
 
     ret = 0;
 
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
 cleanup:
+    if (remove_dom && vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
     if (vm)
         virObjectUnlock(vm);
     VIR_FREE(name);
