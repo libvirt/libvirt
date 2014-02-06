@@ -464,16 +464,16 @@ static const struct libxl_event_hooks ev_hooks = {
 };
 
 /*
- * Register domain events with libxenlight and insert event handles
- * in libvirt's event loop.
+ * Register for domain events emitted by libxl.
  */
 static int
-libxlCreateDomEvents(virDomainObjPtr vm)
+libxlDomEventsRegister(virDomainObjPtr vm)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
     libxl_event_register_callbacks(priv->ctx, &ev_hooks, vm);
 
+    /* Always enable domain death events */
     if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
         goto error;
 
@@ -700,7 +700,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto error;
     }
 
-    if (libxlCreateDomEvents(vm) < 0)
+    if (libxlDomEventsRegister(vm) < 0)
         goto error;
 
     if (libxlDomainSetVcpuAffinities(driver, vm) < 0)
@@ -791,8 +791,8 @@ libxlReconnectDomain(virDomainObjPtr vm,
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
-    /* Recreate domain death et. al. events */
-    libxlCreateDomEvents(vm);
+    /* Re-register domain death et. al. events */
+    libxlDomEventsRegister(vm);
     virObjectUnlock(vm);
     return 0;
 
