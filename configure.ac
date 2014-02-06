@@ -1907,7 +1907,6 @@ fi
 AM_CONDITIONAL([WITH_STORAGE_SHEEPDOG],
   [test "$with_storage_sheepdog" = "yes"])
 
-LIBGLUSTER_LIBS=
 if test "$with_storage_gluster" = "check"; then
   with_storage_gluster=$with_glusterfs
 fi
