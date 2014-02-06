@@ -4408,7 +4408,8 @@ virDomainMigrateVersion1(virDomainPtr domain,
     if (ret == 0 && info.state == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
-    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
+                          VIR_MIGRATE_AUTO_CONVERGE);
 
     /* Prepare the migration.
      *
@@ -4538,7 +4539,8 @@ virDomainMigrateVersion2(virDomainPtr domain,
     if (ret == 0 && info.state == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
-    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
+                          VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare2 %p flags=%lx", dconn, destflags);
     ret = dconn->driver->domainMigratePrepare2
@@ -4710,7 +4712,8 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
     if (ret == 0 && state == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
-    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
+                          VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare3 %p flags=%x", dconn, destflags);
     cookiein = cookieout;

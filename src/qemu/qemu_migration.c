@@ -1622,6 +1622,41 @@ cleanup:
 }
 
 static int
+qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             enum qemuDomainAsyncJob job)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
+        return -1;
+
+    ret = qemuMonitorGetMigrationCapability(
+                priv->mon,
+                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE);
+
+    if (ret < 0) {
+        goto cleanup;
+    } else if (ret == 0) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Auto-Converge is not supported by "
+                         "QEMU binary"));
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = qemuMonitorSetMigrationCapability(
+                priv->mon,
+                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE);
+
+cleanup:
+    qemuDomainObjExitMonitor(driver, vm);
+    return ret;
+}
+
+
+static int
 qemuMigrationWaitForSpice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
@@ -3234,6 +3269,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                     QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
+    if (flags & VIR_MIGRATE_AUTO_CONVERGE &&
+        qemuMigrationSetAutoConverge(driver, vm,
+                                     QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
+
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
@@ -3587,7 +3627,8 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
-    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
+                          VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare2 %p", dconn);
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -3780,7 +3821,8 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
-    destflags = flags & ~VIR_MIGRATE_ABORT_ON_ERROR;
+    destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
+                          VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare3 %p", dconn);
     cookiein = cookieout;

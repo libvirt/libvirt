@@ -451,6 +451,7 @@ int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+    QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
 
     QEMU_MONITOR_MIGRATION_CAPS_LAST
 } qemuMonitorMigrationCaps;

@@ -1200,6 +1200,7 @@ typedef enum {
     VIR_MIGRATE_OFFLINE           = (1 << 10), /* offline migrate */
     VIR_MIGRATE_COMPRESSED        = (1 << 11), /* compress data during migration */
     VIR_MIGRATE_ABORT_ON_ERROR    = (1 << 12), /* abort migration on I/O errors happened during migration */
+    VIR_MIGRATE_AUTO_CONVERGE     = (1 << 13), /* force convergence */
 } virDomainMigrateFlags;
 
 

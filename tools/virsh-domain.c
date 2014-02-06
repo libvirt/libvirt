@@ -8757,6 +8757,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("compress repeated pages during live migration")
     },
+    {.name = "auto-converge",
+     .type = VSH_OT_BOOL,
+     .help = N_("force convergence during live migration")
+    },
     {.name = "abort-on-error",
      .type = VSH_OT_BOOL,
      .help = N_("abort on soft errors during migration")
@@ -8900,6 +8904,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "compressed"))
         flags |= VIR_MIGRATE_COMPRESSED;
+
+    if (vshCommandOptBool(cmd, "auto-converge"))
+        flags |= VIR_MIGRATE_AUTO_CONVERGE;
 
     if (vshCommandOptBool(cmd, "offline")) {
         flags |= VIR_MIGRATE_OFFLINE;
