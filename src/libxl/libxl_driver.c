@@ -690,6 +690,9 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     }
 
     vm->def->id = domid;
+    if (libxlDomEventsRegister(vm) < 0)
+        goto error;
+
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
         goto error;
 
@@ -699,9 +702,6 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                        _("libxenlight failed to store userdata"));
         goto error;
     }
-
-    if (libxlDomEventsRegister(vm) < 0)
-        goto error;
 
     if (libxlDomainSetVcpuAffinities(driver, vm) < 0)
         goto error;
