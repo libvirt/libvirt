@@ -1075,6 +1075,53 @@ error:
     return NULL;
 }
 
+static void
+qemuMigrationStoreDomainState(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    priv->preMigrationState = virDomainObjGetState(vm, NULL);
+
+    VIR_DEBUG("Storing pre-migration state=%d domain=%p",
+              priv->preMigrationState, vm);
+}
+
+/* Returns true if the domain was resumed, false otherwise */
+static bool
+qemuMigrationRestoreDomainState(virConnectPtr conn, virDomainObjPtr vm)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int state = virDomainObjGetState(vm, NULL);
+    bool ret = false;
+
+    VIR_DEBUG("driver=%p, vm=%p, pre-mig-state=%d, state=%d",
+              driver, vm, priv->preMigrationState, state);
+
+    if (state == VIR_DOMAIN_PAUSED &&
+        priv->preMigrationState == VIR_DOMAIN_RUNNING) {
+        /* This is basically the only restore possibility that's safe
+         * and we should attempt to do */
+
+        VIR_DEBUG("Restoring pre-migration state due to migration error");
+
+        /* we got here through some sort of failure; start the domain again */
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
+                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
+            /* Hm, we already know we are in error here.  We don't want to
+             * overwrite the previous error, though, so we just throw something
+             * to the logs and hope for the best */
+            VIR_ERROR(_("Failed to resume guest %s after failure"), vm->def->name);
+            goto cleanup;
+        }
+        ret = true;
+    }
+
+ cleanup:
+    priv->preMigrationState = VIR_DOMAIN_NOSTATE;
+    return ret;
+}
+
 /**
  * qemuMigrationStartNBDServer:
  * @driver: qemu driver
@@ -2075,6 +2122,8 @@ qemuMigrationBegin(virConnectPtr conn,
         asyncJob = QEMU_ASYNC_JOB_NONE;
     }
 
+    qemuMigrationStoreDomainState(vm);
+
     if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
@@ -2744,22 +2793,12 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         /* cancel any outstanding NBD jobs */
         qemuMigrationCancelDriveMirror(mig, driver, vm);
 
-        /* run 'cont' on the destination, which allows migration on qemu
-         * >= 0.10.6 to work properly.  This isn't strictly necessary on
-         * older qemu's, but it also doesn't hurt anything there
-         */
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATED,
-                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
-            if (virGetLastError() == NULL)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("resume operation failed"));
-            goto cleanup;
+        if (qemuMigrationRestoreDomainState(conn, vm)) {
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_RESUMED,
+                                                      VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         }
 
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto cleanup;
@@ -4065,7 +4104,6 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
 {
     virObjectEventPtr event = NULL;
     int ret = -1;
-    int resume = 0;
     virErrorPtr orig_err = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
@@ -4085,7 +4123,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
         goto endjob;
 
-    resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
+    qemuMigrationStoreDomainState(vm);
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         ret = doPeer2PeerMigrate(driver, conn, vm, xmlin,
@@ -4112,25 +4150,12 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     }
-    resume = 0;
 
 endjob:
     if (ret < 0)
         orig_err = virSaveLastError();
 
-    if (resume && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        /* we got here through some sort of failure; start the domain again */
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
-                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
-            /* Hm, we already know we are in error here.  We don't want to
-             * overwrite the previous error, though, so we just throw something
-             * to the logs and hope for the best
-             */
-            VIR_ERROR(_("Failed to resume guest %s after failure"),
-                      vm->def->name);
-        }
-
+    if (qemuMigrationRestoreDomainState(conn, vm)) {
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
@@ -4179,7 +4204,6 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
 {
     virObjectEventPtr event = NULL;
     int ret = -1;
-    bool resume;
     bool hasrefs;
 
     /* If we didn't start the job in the begin phase, start it now. */
@@ -4194,32 +4218,18 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            qemuMigrationCleanup);
 
-    resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
     ret = doNativeMigrate(driver, vm, uri, cookiein, cookieinlen,
                           cookieout, cookieoutlen,
                           flags, resource, NULL, graphicsuri);
 
-    if (ret < 0 && resume &&
-        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        /* we got here through some sort of failure; start the domain again */
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
-                                 QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
-            /* Hm, we already know we are in error here.  We don't want to
-             * overwrite the previous error, though, so we just throw something
-             * to the logs and hope for the best
-             */
-            VIR_ERROR(_("Failed to resume guest %s after failure"),
-                      vm->def->name);
+    if (ret < 0) {
+        if (qemuMigrationRestoreDomainState(conn, vm)) {
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_RESUMED,
+                                                      VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         }
-
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_RESUMED,
-                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-    }
-
-    if (ret < 0)
         goto endjob;
+    }
 
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE);
 

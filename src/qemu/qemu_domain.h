@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -161,6 +161,7 @@ struct _qemuDomainObjPrivate {
     char *origname;
     int nbdPort; /* Port used for migration with NBD */
     unsigned short migrationPort;
+    int preMigrationState;
 
     virChrdevsPtr devs;
 
