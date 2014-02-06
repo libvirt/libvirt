@@ -573,26 +573,30 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     virDomainDefPtr def = NULL;
     virObjectEventPtr event = NULL;
     libxlSavefileHeader hdr;
-    int ret;
+    int ret = -1;
     uint32_t domid = 0;
     char *dom_xml = NULL;
     char *managed_save_path = NULL;
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDriverConfigPtr cfg;
 #ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
     libxl_domain_restore_params params;
 #endif
 
     if (libxlDomainObjPrivateInitCtx(vm) < 0)
-        goto error;
+        return ret;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        return ret;
+
+    cfg = libxlDriverConfigGet(driver);
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
     if (restore_fd < 0) {
         managed_save_path = libxlDomainManagedSavePath(driver, vm);
         if (managed_save_path == NULL)
-            goto error;
+            goto endjob;
 
         if (virFileExists(managed_save_path)) {
 
@@ -600,7 +604,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                                  managed_save_path,
                                                  &def, &hdr);
             if (managed_save_fd < 0)
-                goto error;
+                goto endjob;
 
             restore_fd = managed_save_fd;
 
@@ -614,7 +618,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                _("cannot restore domain '%s' uuid %s from a file"
                                  " which belongs to domain '%s' uuid %s"),
                                vm->def->name, vm_uuidstr, def->name, def_uuidstr);
-                goto error;
+                goto endjob;
             }
 
             virDomainObjAssignDef(vm, def, true, NULL);
@@ -632,17 +636,17 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     libxl_domain_config_init(&d_config);
 
     if (libxlBuildDomainConfig(driver, vm, &d_config) < 0)
-        goto error;
+        goto endjob;
 
     if (cfg->autoballoon && libxlFreeMem(priv, &d_config) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to get free memory for domain '%s'"),
                        d_config.c_info.name);
-        goto error;
+        goto endjob;
     }
 
-    /* use as synchronous operations => ao_how = NULL and no intermediate reports => ao_progress = NULL */
-
+    /* Unlock virDomainObj while creating the domain */
+    virObjectUnlock(vm);
     if (restore_fd < 0) {
         ret = libxl_domain_create_new(priv->ctx, &d_config,
                                       &domid, NULL, NULL);
@@ -656,6 +660,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                           restore_fd, NULL, NULL);
 #endif
     }
+    virObjectLock(vm);
 
     if (ret) {
         if (restore_fd < 0)
@@ -666,25 +671,29 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to restore domain '%s'"),
                            d_config.c_info.name);
-        goto error;
+        goto endjob;
     }
 
+    /*
+     * The domain has been successfully created with libxl, so it should
+     * be cleaned up if there are any subsequent failures.
+     */
     vm->def->id = domid;
     if (libxlDomEventsRegister(vm) < 0)
-        goto error;
+        goto cleanup_dom;
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
-        goto error;
+        goto cleanup_dom;
 
     if (libxl_userdata_store(priv->ctx, domid, "libvirt-xml",
                              (uint8_t *)dom_xml, strlen(dom_xml) + 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxenlight failed to store userdata"));
-        goto error;
+        goto cleanup_dom;
     }
 
     if (libxlDomainSetVcpuAffinities(driver, vm) < 0)
-        goto error;
+        goto cleanup_dom;
 
     if (!start_paused) {
         libxl_domain_unpause(priv->ctx, domid);
@@ -693,9 +702,8 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     }
 
-
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto error;
+        goto cleanup_dom;
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
@@ -707,25 +715,25 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (event)
         libxlDomainEventQueue(driver, event);
 
-    libxl_domain_config_dispose(&d_config);
-    VIR_FREE(dom_xml);
-    VIR_FORCE_CLOSE(managed_save_fd);
-    virObjectUnref(cfg);
-    return 0;
+    ret = 0;
+    goto endjob;
 
-error:
-    if (domid > 0) {
-        libxl_domain_destroy(priv->ctx, domid, NULL);
-        vm->def->id = -1;
-        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
-    }
+cleanup_dom:
+    libxl_domain_destroy(priv->ctx, domid, NULL);
+    vm->def->id = -1;
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
     libxl_domain_config_dispose(&d_config);
     VIR_FREE(dom_xml);
     VIR_FREE(managed_save_path);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(managed_save_fd);
     virObjectUnref(cfg);
-    return -1;
+    return ret;
 }
 
 
