@@ -20,9 +20,8 @@
 
 #include <config.h>
 
-#ifdef __linux__
-# include "internal.h"
-# include <time.h>
+#include "internal.h"
+#include <time.h>
 
 time_t time(time_t *t)
 {
@@ -31,7 +30,3 @@ time_t time(time_t *t)
         *t = ret;
     return ret;
 }
-
-#else
-/* Nothing to override on non-__linux__ platforms */
-#endif
