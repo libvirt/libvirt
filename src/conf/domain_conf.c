@@ -9868,10 +9868,8 @@ virDomainChrTargetTypeToString(int deviceType,
 int
 virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev)
 {
-    if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs + 1) < 0)
-        return -1;
-    def->hostdevs[def->nhostdevs++]  = hostdev;
-    return 0;
+
+    return VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
 }
 
 virDomainHostdevDefPtr
@@ -9879,19 +9877,7 @@ virDomainHostdevRemove(virDomainDefPtr def, size_t i)
 {
     virDomainHostdevDefPtr hostdev = def->hostdevs[i];
 
-    if (def->nhostdevs > 1) {
-        memmove(def->hostdevs + i,
-                def->hostdevs + i + 1,
-                sizeof(*def->hostdevs) *
-                (def->nhostdevs - (i + 1)));
-        def->nhostdevs--;
-        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(def->hostdevs);
-        def->nhostdevs = 0;
-    }
+    VIR_DELETE_ELEMENT(def->hostdevs, i, def->nhostdevs);
     return hostdev;
 }
 
