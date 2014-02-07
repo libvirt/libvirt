@@ -1812,8 +1812,9 @@ libxlDomainGetState(virDomainPtr dom,
     return ret;
 }
 
-/* This internal function expects the driver lock to already be held on
- * entry and the vm must be active. */
+/*
+ * virDomainObjPtr must be locked on invocation
+ */
 static int
 libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                   const char *to)
