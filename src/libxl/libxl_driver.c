@@ -3866,46 +3866,53 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot set autostart for transient domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
         if (!(configFile = virDomainConfigFile(cfg->configDir, vm->def->name)))
-            goto cleanup;
+            goto endjob;
         if (!(autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name)))
-            goto cleanup;
+            goto endjob;
 
         if (autostart) {
             if (virFileMakePath(cfg->autostartDir) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      cfg->autostartDir);
-                goto cleanup;
+                goto endjob;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create symlink '%s to '%s'"),
                                      autostartLink, configFile);
-                goto cleanup;
+                goto endjob;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
                 virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      autostartLink);
-                goto cleanup;
+                goto endjob;
             }
         }
 
         vm->autostart = autostart;
     }
     ret = 0;
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     VIR_FREE(configFile);
