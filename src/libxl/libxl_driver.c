@@ -2329,22 +2329,25 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (virDomainSetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm) && (flags & VIR_DOMAIN_VCPU_LIVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot set vcpus on an inactive domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!vm->persistent && (flags & VIR_DOMAIN_VCPU_CONFIG)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot change persistent config of a transient domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     if ((max = libxlConnectGetMaxVcpus(dom->conn, NULL)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("could not determine max vcpus for the domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && vm->def->maxvcpus < max) {
@@ -2355,17 +2358,17 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
                          " vcpus for the domain: %d > %d"), nvcpus, max);
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
 
     if (!(def = virDomainObjGetPersistentDef(cfg->caps, driver->xmlopt, vm)))
-        goto cleanup;
+        goto endjob;
 
     maplen = VIR_CPU_MAPLEN(nvcpus);
     if (VIR_ALLOC_N(bitmask, maplen) < 0)
-        goto cleanup;
+        goto endjob;
 
     for (i = 0; i < nvcpus; ++i) {
         pos = i / 8;
@@ -2391,7 +2394,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to set vcpus for domain '%d'"
                              " with libxenlight"), dom->id);
-            goto cleanup;
+            goto endjob;
         }
         break;
 
@@ -2400,7 +2403,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to set vcpus for domain '%d'"
                              " with libxenlight"), dom->id);
-            goto cleanup;
+            goto endjob;
         }
         def->vcpus = nvcpus;
         break;
@@ -2410,6 +2413,10 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (flags & VIR_DOMAIN_VCPU_CONFIG)
         ret = virDomainSaveConfig(cfg->configDir, def);
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     VIR_FREE(bitmask);
@@ -2502,15 +2509,18 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     if (virDomainPinVcpuFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) && !virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is inactive"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virDomainLiveConfigHelperMethod(cfg->caps, driver->xmlopt, vm,
                                         &flags, &targetDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         targetDef = vm->def;
@@ -2521,7 +2531,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
 
     pcpumap = virBitmapNewData(cpumap, maplen);
     if (!pcpumap)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         libxl_bitmap map = { .size = maplen, .map = cpumap };
@@ -2532,7 +2542,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to pin vcpu '%d' with libxenlight"),
                            vcpu);
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -2542,14 +2552,14 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to delete vcpupin xml for vcpu '%d'"),
                            vcpu);
-            goto cleanup;
+            goto endjob;
         }
-        goto out;
+        goto done;
     }
 
     if (!targetDef->cputune.vcpupin) {
         if (VIR_ALLOC(targetDef->cputune.vcpupin) < 0)
-            goto cleanup;
+            goto endjob;
         targetDef->cputune.nvcpupin = 0;
     }
     if (virDomainVcpuPinAdd(&targetDef->cputune.vcpupin,
@@ -2559,10 +2569,10 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
                             vcpu) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("failed to update or add vcpupin xml"));
-        goto cleanup;
+        goto endjob;
     }
 
-out:
+done:
     ret = 0;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -2570,6 +2580,10 @@ out:
     } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainSaveConfig(cfg->configDir, targetDef);
     }
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     if (vm)
