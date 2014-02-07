@@ -3423,6 +3423,9 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
             flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
@@ -3433,14 +3436,14 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("Domain is not running"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
          virReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot modify device on transient domain"));
-         goto cleanup;
+         goto endjob;
     }
 
     priv = vm->privateData;
@@ -3449,15 +3452,15 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
-            goto cleanup;
+            goto endjob;
 
         /* Make a copy for updated domain. */
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
                                                     driver->xmlopt)))
-            goto cleanup;
+            goto endjob;
 
         if ((ret = libxlDomainAttachDeviceConfig(vmdef, dev)) < 0)
-            goto cleanup;
+            goto endjob;
     } else {
         ret = 0;
     }
@@ -3468,10 +3471,10 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
-            goto cleanup;
+            goto endjob;
 
         if ((ret = libxlDomainAttachDeviceLive(priv, vm, dev)) < 0)
-            goto cleanup;
+            goto endjob;
 
         /*
          * update domain status forcibly because the domain status may be
@@ -3489,6 +3492,10 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
             vmdef = NULL;
         }
     }
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     virDomainDefFree(vmdef);
@@ -3527,6 +3534,9 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (virDomainDetachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
             flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
@@ -3537,14 +3547,14 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("Domain is not running"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
          virReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("cannot modify device on transient domain"));
-         goto cleanup;
+         goto endjob;
     }
 
     priv = vm->privateData;
@@ -3553,15 +3563,15 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
-            goto cleanup;
+            goto endjob;
 
         /* Make a copy for updated domain. */
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
                                                     driver->xmlopt)))
-            goto cleanup;
+            goto endjob;
 
         if ((ret = libxlDomainDetachDeviceConfig(vmdef, dev)) < 0)
-            goto cleanup;
+            goto endjob;
     } else {
         ret = 0;
     }
@@ -3572,10 +3582,10 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
-            goto cleanup;
+            goto endjob;
 
         if ((ret = libxlDomainDetachDeviceLive(priv, vm, dev)) < 0)
-            goto cleanup;
+            goto endjob;
 
         /*
          * update domain status forcibly because the domain status may be
@@ -3593,6 +3603,10 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
             vmdef = NULL;
         }
     }
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     virDomainDefFree(vmdef);
