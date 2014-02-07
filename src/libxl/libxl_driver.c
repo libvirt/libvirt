@@ -4057,6 +4057,7 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                        int nparams,
                                        unsigned int flags)
 {
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     libxl_domain_sched_params sc_info;
@@ -4079,9 +4080,12 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainSetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -4091,14 +4095,14 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (sched_id != LIBXL_SCHEDULER_CREDIT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only 'credit' scheduler is supported"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (libxl_domain_sched_params_get(priv->ctx, dom->id, &sc_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to get scheduler parameters for domain '%d'"
                          " with libxenlight"), dom->id);
-        goto cleanup;
+        goto endjob;
     }
 
     for (i = 0; i < nparams; ++i) {
@@ -4114,10 +4118,14 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to set scheduler parameters for domain '%d'"
                          " with libxenlight"), dom->id);
-        goto cleanup;
+        goto endjob;
     }
 
     ret = 0;
+
+endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
 cleanup:
     if (vm)
