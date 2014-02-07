@@ -353,6 +353,7 @@ int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
 int qemuDiskChainCheckBroken(virDomainDiskDefPtr disk);
 
 int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk,
                                  bool force);
 

@@ -719,7 +719,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (qemuSetUnprivSGIO(dev) < 0)
         goto end;
 
-    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto end;
 
     if (qemuSetupDiskCgroup(vm, disk) < 0)

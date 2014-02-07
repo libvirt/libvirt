@@ -6499,7 +6499,7 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
     if (qemuTranslateDiskSourcePool(conn, disk) < 0)
         goto end;
 
-    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto end;
 
     if (qemuSetupDiskCgroup(vm, disk) < 0)
@@ -14632,7 +14632,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
     disk->src = disk->mirror;
     disk->format = disk->mirrorFormat;
     disk->backingChain = NULL;
-    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0) {
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0) {
         disk->src = oldsrc;
         disk->format = oldformat;
         disk->backingChain = oldchain;
@@ -14983,7 +14983,7 @@ qemuDomainBlockCopy(virDomainObjPtr vm,
         goto endjob;
     }
 
-    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) &&
@@ -15190,7 +15190,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                        disk->dst);
         goto endjob;
     }
-    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, false) < 0)
         goto endjob;
 
     if (!top) {

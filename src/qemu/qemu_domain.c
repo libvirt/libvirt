@@ -2210,7 +2210,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
         if (!disk->src)
             continue;
 
-        if (qemuDomainDetermineDiskChain(driver, disk, false) >= 0 &&
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, false) >= 0 &&
             qemuDiskChainCheckBroken(disk) >= 0)
             continue;
 
@@ -2319,13 +2319,46 @@ qemuDiskChainCheckBroken(virDomainDiskDefPtr disk)
     return 0;
 }
 
+static void
+qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
+                      virDomainObjPtr vm,
+                      virDomainDiskDefPtr disk,
+                      uid_t *uid, gid_t *gid)
+{
+    virSecurityLabelDefPtr vmlabel;
+    virSecurityDeviceLabelDefPtr disklabel;
+
+    if (uid)
+        *uid = -1;
+    if (gid)
+        *gid = -1;
+
+    if (cfg) {
+        if (uid)
+            *uid = cfg->user;
+
+        if (gid)
+            *gid = cfg->group;
+    }
+
+    if (vm && (vmlabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")))
+        virParseOwnershipIds(vmlabel->label, uid, gid);
+
+    if ((disklabel = virDomainDiskDefGetSecurityLabelDef(disk, "dac")))
+        virParseOwnershipIds(disklabel->label, uid, gid);
+}
+
+
 int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
                              bool force)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
+    uid_t uid;
+    gid_t gid;
 
     if (!disk->src ||
         disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
@@ -2340,8 +2373,11 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
+
+    qemuDomainGetImageIds(cfg, vm, disk, &uid, &gid);
+
     disk->backingChain = virStorageFileGetMetadata(disk->src, disk->format,
-                                                   cfg->user, cfg->group,
+                                                   uid, gid,
                                                    cfg->allowDiskFormatProbing);
     if (!disk->backingChain)
         ret = -1;
