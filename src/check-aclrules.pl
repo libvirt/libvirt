@@ -254,6 +254,8 @@ while (<>) {
     $brace += $count;
     $count = s/}//g;
     $brace -= $count;
+} continue {
+    close ARGV if eof;
 }
 
 exit $status;
