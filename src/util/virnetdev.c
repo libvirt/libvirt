@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -732,7 +732,7 @@ int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* ! SIOCGIFINDEX */
 
 
-#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ) && defined(GET_VLAN_VID_CMD)
+#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ) && HAVE_DECL_GET_VLAN_VID_CMD
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
     struct vlan_ioctl_args vlanargs = {

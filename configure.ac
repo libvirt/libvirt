@@ -2470,6 +2470,8 @@ if test "$with_virtualport" != "no"; then
 fi
 AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
 
+dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
+AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
 
 dnl netlink library
 
