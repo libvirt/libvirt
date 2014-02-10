@@ -286,18 +286,18 @@
 
 
     <p>
-      If you want to enable user namespace,set the <code>idmap</code> element.
-      the <code>uid</code> and <code>gid</code> elements have three attributes:
+      If you want to enable user namespace, set the <code>idmap</code> element.
+      The <code>uid</code> and <code>gid</code> elements have three attributes:
     </p>
 
     <dl>
       <dt><code>start</code></dt>
-      <dd>First user id in container.</dd>
+      <dd>First user ID in container.</dd>
       <dt><code>target</code></dt>
-      <dd>The first user id in container will be mapped to this target user
-          id in host.</dd>
+      <dd>The first user ID in container will be mapped to this target user
+          ID in host.</dd>
       <dt><code>count</code></dt>
-      <dd>How many users in container being allowed to map to host's user.</dd>
+      <dd>How many users in container are allowed to map to host's user.</dd>
     </dl>
 
     <pre>
