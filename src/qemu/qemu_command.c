@@ -8807,32 +8807,30 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgBuffer(cmd, &opt);
     }
 
-    if (def->nserials) {
-        for (i = 0; i < def->nserials; i++) {
-            virDomainChrDefPtr serial = def->serials[i];
-            char *devstr;
+    for (i = 0; i < def->nserials; i++) {
+        virDomainChrDefPtr serial = def->serials[i];
+        char *devstr;
 
-            /* Use -chardev with -device if they are available */
-            if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
-                virCommandAddArg(cmd, "-chardev");
-                if (!(devstr = qemuBuildChrChardevStr(&serial->source,
-                                                      serial->info.alias,
-                                                      qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
+        /* Use -chardev with -device if they are available */
+        if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(&serial->source,
+                                                  serial->info.alias,
+                                                  qemuCaps)))
+                goto error;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
 
-                if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
-                   goto error;
-            } else {
-                virCommandAddArg(cmd, "-serial");
-                if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-            actualSerials++;
+            if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
+                goto error;
+        } else {
+            virCommandAddArg(cmd, "-serial");
+            if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
+                goto error;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
         }
+        actualSerials++;
     }
 
     /* If we have -device, then we set -nodefault already */
