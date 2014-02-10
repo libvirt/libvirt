@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -5318,6 +5318,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_LAST:

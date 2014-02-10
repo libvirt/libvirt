@@ -437,7 +437,8 @@ VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "udp",
               "tcp",
               "unix",
-              "spicevmc")
+              "spicevmc",
+              "spiceport")
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol, VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
               "raw",
@@ -1582,6 +1583,11 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         return src->data.nix.listen == tgt->data.nix.listen &&
             STREQ_NULLABLE(src->data.nix.path, tgt->data.nix.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        return STREQ_NULLABLE(src->data.spiceport.channel,
+                              tgt->data.spiceport.channel);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -7141,6 +7147,9 @@ error:
     return ret;
 }
 
+#define SERIAL_CHANNEL_NAME_CHARS \
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+
 /* Parse the source half of the XML definition for a character device,
  * where node is the first element of node->children of the parent
  * element.  def->type must already be valid.  Return -1 on failure,
@@ -7161,6 +7170,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *path = NULL;
     char *mode = NULL;
     char *protocol = NULL;
+    char *channel = NULL;
     int remaining = 0;
 
     while (cur != NULL) {
@@ -7203,6 +7213,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
                     if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
                         VIR_FREE(mode);
+                    break;
+
+                case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+                    if (!channel)
+                        channel = virXMLPropString(cur, "channel");
                     break;
 
                 case VIR_DOMAIN_CHR_TYPE_LAST:
@@ -7344,6 +7359,21 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         def->data.nix.path = path;
         path = NULL;
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        if (!channel) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing source channel attribute for char device"));
+            goto error;
+        }
+        if (strspn(channel, SERIAL_CHANNEL_NAME_CHARS) < strlen(channel)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Invalid character in source channel for char device"));
+            goto error;
+        }
+        def->data.spiceport.channel = channel;
+        channel = NULL;
+        break;
     }
 
 cleanup:
@@ -7354,6 +7384,7 @@ cleanup:
     VIR_FREE(connectHost);
     VIR_FREE(connectService);
     VIR_FREE(path);
+    VIR_FREE(channel);
 
     return remaining;
 
@@ -15686,6 +15717,12 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
         virBufferAddLit(buf, "/>\n");
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        virBufferAsprintf(buf, "      <source channel='%s'/>\n",
+                          def->data.spiceport.channel);
+        break;
+
     }
 
     return 0;

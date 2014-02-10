@@ -4724,6 +4724,24 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;/devices&gt;
   ...</pre>
 
+    <h6><a name="elementsCharSpiceport">Spice channel</a></h6>
+
+    <p>
+      The character device is accessible through spice connection
+      under a channel name specified in the <code>channel</code>
+      attribute.  <span class="since">Since 1.2.2</span>
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="spiceport"&gt;
+      &lt;source channel="org.qemu.console.serial.0"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
 
     <h4><a name="elementsSound">Sound devices</a></h4>
 

@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1104,6 +1104,7 @@ enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_TCP,
     VIR_DOMAIN_CHR_TYPE_UNIX,
     VIR_DOMAIN_CHR_TYPE_SPICEVMC,
+    VIR_DOMAIN_CHR_TYPE_SPICEPORT,
 
     VIR_DOMAIN_CHR_TYPE_LAST
 };
@@ -1152,6 +1153,9 @@ struct _virDomainChrSourceDef {
             bool listen;
         } nix;
         int spicevmc;
+        struct {
+            char *channel;
+        } spiceport;
     } data;
 };
 

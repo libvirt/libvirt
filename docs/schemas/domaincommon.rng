@@ -2916,6 +2916,7 @@
       <value>vc</value>
       <value>pty</value>
       <value>spicevmc</value>
+      <value>spiceport</value>
     </choice>
   </define>
 
@@ -2984,6 +2985,9 @@
         </optional>
         <optional>
           <attribute name="wiremode"/>
+        </optional>
+        <optional>
+          <attribute name="channel"/>
         </optional>
         <optional>
           <ref name='devSeclabel'/>
