@@ -2959,6 +2959,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
                            _("Malformed 'floor_sum' attribute: %s"),
                            floor_sum);
             VIR_FREE(floor_sum);
+            goto error;
         }
         VIR_FREE(floor_sum);
     }
