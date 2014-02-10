@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -7710,6 +7710,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     int vnc = 0;
     int spice = 0;
     int usbcontroller = 0;
+    int actualSerials = 0;
     bool usblegacy = false;
     bool mlock = false;
     int contOrder[] = {
@@ -8806,11 +8807,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgBuffer(cmd, &opt);
     }
 
-    if (!def->nserials) {
-        /* If we have -device, then we set -nodefault already */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            virCommandAddArgList(cmd, "-serial", "none", NULL);
-    } else {
+    if (def->nserials) {
         for (i = 0; i < def->nserials; i++) {
             virDomainChrDefPtr serial = def->serials[i];
             char *devstr;
@@ -8834,8 +8831,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
             }
+            actualSerials++;
         }
     }
+
+    /* If we have -device, then we set -nodefault already */
+    if (!actualSerials && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+            virCommandAddArgList(cmd, "-serial", "none", NULL);
 
     if (!def->nparallels) {
         /* If we have -device, then we set -nodefault already */
