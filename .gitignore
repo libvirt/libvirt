@@ -193,6 +193,7 @@
 /tests/virauthconfigtest
 /tests/virbitmaptest
 /tests/virbuftest
+/tests/vircapstest
 /tests/vircgrouptest
 /tests/virdbustest
 /tests/virdrivermoduletest
