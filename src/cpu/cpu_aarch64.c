@@ -85,6 +85,29 @@ AArch64GuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
     return VIR_CPU_COMPARE_IDENTICAL;
 }
 
+static virCPUDefPtr
+AArch64Baseline(virCPUDefPtr *cpus,
+                unsigned int ncpus ATTRIBUTE_UNUSED,
+                const char **models ATTRIBUTE_UNUSED,
+                unsigned int nmodels ATTRIBUTE_UNUSED,
+                unsigned int flags)
+{
+    virCPUDefPtr cpu = NULL;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+
+    if (VIR_ALLOC(cpu) < 0 ||
+        VIR_STRDUP(cpu->model, cpus[0]->model) < 0) {
+        virCPUDefFree(cpu);
+        return NULL;
+    }
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+
+    return cpu;
+}
+
 struct cpuArchDriver cpuDriverAARCH64 = {
     .name = "aarch64",
     .arch = archs,
@@ -95,7 +118,7 @@ struct cpuArchDriver cpuDriverAARCH64 = {
     .free = AArch64DataFree,
     .nodeData = AArch64NodeData,
     .guestData = AArch64GuestData,
-    .baseline = NULL,
+    .baseline = AArch64Baseline,
     .update = AArch64Update,
     .hasFeature = NULL,
 };
