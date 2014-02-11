@@ -1002,11 +1002,11 @@ virCapabilitiesGetCpusForNode(virCapsPtr caps,
 {
     virCapsHostNUMACellPtr cell = NULL;
     size_t cpu;
-    size_t index;
+    size_t i;
     /* The numa node numbers can be non-contiguous. Ex: 0,1,16,17. */
-    for (index = 0; index < caps->host.nnumaCell; index++) {
-        if (caps->host.numaCell[index]->num == node) {
-            cell = caps->host.numaCell[index];
+    for (i = 0; i < caps->host.nnumaCell; i++) {
+        if (caps->host.numaCell[i]->num == node) {
+            cell = caps->host.numaCell[i];
             break;
         }
     }
