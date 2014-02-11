@@ -8566,12 +8566,13 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
 
     for (i = 0; i < caps->host.nnumaCell; i++) {
         bool result;
-        if (virBitmapGetBit(nodeset, i, &result) < 0) {
+        virCapsHostNUMACellPtr cell = caps->host.numaCell[i];
+        if (virBitmapGetBit(nodeset, cell->num, &result) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to get cpuset bit values"));
             goto cleanup;
         }
-        if (result && (virBitmapSetBit(temp_nodeset, i) < 0)) {
+        if (result && (virBitmapSetBit(temp_nodeset, cell->num) < 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to set temporary cpuset bit values"));
             goto cleanup;

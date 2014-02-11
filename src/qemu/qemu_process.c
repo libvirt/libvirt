@@ -2002,7 +2002,7 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
             size_t j;
             int cur_ncpus = caps->host.numaCell[i]->ncpus;
             bool result;
-            if (virBitmapGetBit(nodemask, i, &result) < 0) {
+            if (virBitmapGetBit(nodemask, caps->host.numaCell[i]->num, &result) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Failed to convert nodeset to cpuset"));
                 virBitmapFree(cpumap);

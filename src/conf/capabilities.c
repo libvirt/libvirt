@@ -1000,10 +1000,18 @@ virCapabilitiesGetCpusForNode(virCapsPtr caps,
                               size_t node,
                               virBitmapPtr cpumask)
 {
-    virCapsHostNUMACellPtr cell = caps->host.numaCell[node];
+    virCapsHostNUMACellPtr cell = NULL;
     size_t cpu;
+    size_t index;
+    /* The numa node numbers can be non-contiguous. Ex: 0,1,16,17. */
+    for (index = 0; index < caps->host.nnumaCell; index++) {
+        if (caps->host.numaCell[index]->num == node) {
+            cell = caps->host.numaCell[index];
+            break;
+        }
+    }
 
-    for (cpu = 0; cpu < cell->ncpus; cpu++) {
+    for (cpu = 0; cell && cpu < cell->ncpus; cpu++) {
         if (virBitmapSetBit(cpumask, cell->cpus[cpu].id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cpu '%u' in node '%zu' is out of range "
