@@ -720,6 +720,9 @@ Summary: Default configuration files for the libvirtd daemon
 Group: Development/Libraries
 
 Requires: libvirt-daemon = %{version}-%{release}
+        %if %{with_driver_modules}
+Requires: libvirt-daemon-driver-network = %{version}-%{release}
+        %endif
 
 %description daemon-config-network
 Default configuration files for setting up NAT based networking
