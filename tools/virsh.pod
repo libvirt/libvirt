@@ -681,7 +681,10 @@ or the MAC address.
 If no I<--inbound> or I<--outbound> is specified, this command will
 query and show the bandwidth settings. Otherwise, it will set the
 inbound or outbound bandwidth. I<average,peak,burst> is the same as
-in command I<attach-interface>.
+in command I<attach-interface>.  Values for I<average> and I<peak> are
+expressed in kilobytes per second, while I<burst> is expressed in kilobytes
+in a single burst at -I<peak> speed as described in the Network XML
+documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
@@ -2020,7 +2023,10 @@ of the network interface.  I<script> allows to specify a path to a script
 handling a bridge instead of the default one.  I<model> allows to specify the
 model type.  I<inbound> and I<outbound> control the bandwidth of the interface.
 I<peak> and I<burst> are optional, so "average,peak", "average,,burst" and
-"average" are also legal.
+"average" are also legal. Values for I<average> and I<peak> are
+expressed in kilobytes per second, while I<burst> is expressed in kilobytes
+in a single burst at -I<peak> speed as described in the Network XML
+documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.

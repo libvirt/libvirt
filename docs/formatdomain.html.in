@@ -3750,37 +3750,10 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       This part of interface XML provides setting quality of service. Incoming
-      and outgoing traffic can be shaped independently. The
-      <code>bandwidth</code> element can have at most one <code>inbound</code>
-      and at most one <code>outbound</code> child elements. Leaving any of these
-      children element out result in no QoS applied on that traffic direction.
-      So, when you want to shape only domain's incoming traffic, use
-      <code>inbound</code> only, and vice versa. Each of these elements have one
-      mandatory attribute <code>average</code> (or <code>floor</code> as
-      described below). <code>average</code> specifies average bit rate on
-      the interface being shaped. Then there are two optional attributes:
-      <code>peak</code>, which specifies maximum rate at which interface can send
-      data, and <code>burst</code>, amount of bytes that can be burst at
-      <code>peak</code> speed. Accepted values for attributes are integer
-      numbers. The units for <code>average</code> and <code>peak</code> attributes
-      are kilobytes per second, and for the <code>burst</code> just kilobytes.
-      Note the limitation of implementation: the <code>peak</code> attribute in
-      <code>outbound</code> element is ignored (as linux ingress filters don't
-      know it yet). <span class="since">Since 0.9.4</span> The <code>inbound</code> can
-      optionally have <code>floor</code> attribute. This is there for
-      guaranteeing minimal throughput for shaped interfaces. This, however,
-      requires that all traffic goes through one point where QoS decisions can
-      take place. That's why this attribute works only for virtual networks for
-      now (that is <code>&lt;interface type='network'/&gt;</code> with a
-      forward type of route, nat, or no forward at all). Moreover, the
-      virtual network the interface is connected to is required to have at least
-      inbound QoS set (<code>average</code> at least). Moreover, with
-      <code>floor</code> attribute users don't need to specify
-      <code>average</code>. However, <code>peak</code> and <code>burst</code>
-      attributes still require <code>average</code>. Currently, linux kernel
-      doesn't allow ingress qdiscs to have any classes therefore
-      <code>floor</code> can be applied only on <code>inbound</code> and not
-      <code>outbound</code>. <span class="since">Since 1.0.1</span>
+      and outgoing traffic can be shaped independently.
+      The <code>bandwidth</code> element and its child elements are described
+      in the <a href="formatnetwork.html#elementQoS">QoS</a> section of
+      the Network XML.
     </p>
 
     <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
