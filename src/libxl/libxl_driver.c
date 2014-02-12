@@ -317,6 +317,26 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
 }
 
 /*
+ * Cleanup function for domain that has reached shutoff state.
+ * Executed in the context of a job.
+ *
+ * virDomainObjPtr should be locked on invocation
+ * Returns true if references remain on virDomainObjPtr, false otherwise.
+ */
+static bool
+libxlVmCleanupJob(libxlDriverPrivatePtr driver,
+                  virDomainObjPtr vm,
+                  virDomainShutoffReason reason)
+{
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_DESTROY) < 0)
+        return true;
+
+    libxlVmCleanup(driver, vm, reason);
+
+    return libxlDomainObjEndJob(driver, vm);
+}
+
+/*
  * Handle previously registered event notification from libxenlight.
  *
  * Note: Xen 4.3 removed the const from the event handler signature.
@@ -364,10 +384,11 @@ libxlDomainShutdownThread(void *opaque)
                 reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
             }
             libxl_domain_destroy(ctx, vm->def->id, NULL);
-            libxlVmCleanup(driver, vm, reason);
-            if (!vm->persistent) {
-                virDomainObjListRemove(driver->domains, vm);
-                vm = NULL;
+            if (libxlVmCleanupJob(driver, vm, reason)) {
+                if (!vm->persistent) {
+                    virDomainObjListRemove(driver->domains, vm);
+                    vm = NULL;
+                }
             }
             break;
         case LIBXL_SHUTDOWN_REASON_REBOOT:
@@ -1561,10 +1582,11 @@ libxlDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
-    if (!vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+    if (libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED)) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
     }
 
     ret = 0;
