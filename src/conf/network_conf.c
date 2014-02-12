@@ -2593,10 +2593,10 @@ cleanup:
     return ret;
 }
 
-static int
-virNetworkDefFormatInternal(virBufferPtr buf,
-                            const virNetworkDef *def,
-                            unsigned int flags)
+int
+virNetworkDefFormatBuf(virBufferPtr buf,
+                       const virNetworkDef *def,
+                       unsigned int flags)
 {
     const unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2763,7 +2763,7 @@ virNetworkDefFormat(const virNetworkDef *def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virNetworkDefFormatInternal(&buf, def, flags) < 0)
+    if (virNetworkDefFormatBuf(&buf, def, flags) < 0)
         goto error;
 
     if (virBufferError(&buf))
@@ -2794,7 +2794,7 @@ virNetworkObjFormat(virNetworkObjPtr net,
     VIR_FREE(class_id);
 
     virBufferAdjustIndent(&buf, 2);
-    if (virNetworkDefFormatInternal(&buf, net->def, flags) < 0)
+    if (virNetworkDefFormatBuf(&buf, net->def, flags) < 0)
         goto error;
 
     virBufferAdjustIndent(&buf, -2);

@@ -505,6 +505,7 @@ virNetworkConfigChangeSetup;
 virNetworkConfigFile;
 virNetworkDefCopy;
 virNetworkDefFormat;
+virNetworkDefFormatBuf;
 virNetworkDefFree;
 virNetworkDefGetIpByIndex;
 virNetworkDefParseFile;

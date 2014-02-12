@@ -338,6 +338,9 @@ virNetworkDefPtr virNetworkDefParseFile(const char *filename);
 virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root);
 char *virNetworkDefFormat(const virNetworkDef *def, unsigned int flags);
+int virNetworkDefFormatBuf(virBufferPtr buf,
+                           const virNetworkDef *def,
+                           unsigned int flags);
 
 static inline const char *
 virNetworkDefForwardIf(const virNetworkDef *def, size_t n)
