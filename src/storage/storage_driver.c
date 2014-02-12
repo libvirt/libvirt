@@ -1828,6 +1828,10 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     pool->volumes.objs[pool->volumes.count++] = newvol;
     volobj = virGetStorageVol(obj->conn, pool->def->name, newvol->name,
                               newvol->key, NULL, NULL);
+    if (!volobj) {
+        pool->volumes.count--;
+        goto cleanup;
+    }
 
     /* Drop the pool lock during volume allocation */
     pool->asyncjobs++;
