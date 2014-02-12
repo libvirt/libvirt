@@ -266,15 +266,15 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
     char *file;
     size_t i;
 
+    vm->def->id = -1;
+
     if (priv->deathW) {
         libxl_evdisable_domain_death(priv->ctx, priv->deathW);
         priv->deathW = NULL;
     }
 
-    if (vm->persistent) {
-        vm->def->id = -1;
+    if (vm->persistent)
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
-    }
 
     if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
