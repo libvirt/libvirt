@@ -734,6 +734,9 @@ Summary: Network filter configuration files for the libvirtd daemon
 Group: Development/Libraries
 
 Requires: libvirt-daemon = %{version}-%{release}
+        %if %{with_driver_modules}
+Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
+        %endif
 
 %description daemon-config-nwfilter
 Network filter configuration files for cleaning guest traffic
