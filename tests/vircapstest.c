@@ -40,7 +40,7 @@ static virCapsPtr
 buildNUMATopology(int seq)
 {
     virCapsPtr caps;
-    virCapsHostNUMACellCPUPtr cell_cpus;
+    virCapsHostNUMACellCPUPtr cell_cpus = NULL;
     int core_id, cell_id;
     int id;
 
@@ -75,6 +75,8 @@ buildNUMATopology(int seq)
     return caps;
 
 error:
+    virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
+    VIR_FREE(cell_cpus);
     virObjectUnref(caps);
     return NULL;
 
@@ -87,7 +89,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
     const char *nodestr = "3,4,5,6";
     virBitmapPtr nodemask = NULL;
     virBitmapPtr cpumap = NULL;
-    virCapsPtr caps;
+    virCapsPtr caps = NULL;
     int mask_size = 8;
     int ret = -1;
 
@@ -107,6 +109,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
     ret = 0;
 
 error:
+    virObjectUnref(caps);
     virBitmapFree(nodemask);
     virBitmapFree(cpumap);
     return ret;
