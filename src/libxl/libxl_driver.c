@@ -317,28 +317,6 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
 }
 
 /*
- * Reap a domain from libxenlight.
- *
- * virDomainObjPtr should be locked on invocation
- */
-static int
-libxlVmReap(libxlDriverPrivatePtr driver,
-            virDomainObjPtr vm,
-            virDomainShutoffReason reason)
-{
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-
-    if (libxl_domain_destroy(priv->ctx, vm->def->id, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to cleanup domain %d"), vm->def->id);
-        return -1;
-    }
-
-    libxlVmCleanup(driver, vm, reason);
-    return 0;
-}
-
-/*
  * Handle previously registered event notification from libxenlight.
  *
  * Note: Xen 4.3 removed the const from the event handler signature.
@@ -385,14 +363,16 @@ libxlDomainShutdownThread(void *opaque)
             } else {
                 reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
             }
-            libxlVmReap(driver, vm, reason);
+            libxl_domain_destroy(ctx, vm->def->id, NULL);
+            libxlVmCleanup(driver, vm, reason);
             if (!vm->persistent) {
                 virDomainObjListRemove(driver->domains, vm);
                 vm = NULL;
             }
             break;
         case LIBXL_SHUTDOWN_REASON_REBOOT:
-            libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+            libxl_domain_destroy(ctx, vm->def->id, NULL);
+            libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             libxlVmStart(driver, vm, 0, -1);
             break;
         default:
@@ -1533,6 +1513,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
     virObjectEventPtr event = NULL;
+    libxlDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
 
@@ -1551,12 +1532,14 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED) != 0) {
+    priv = vm->privateData;
+    if (libxl_domain_destroy(priv->ctx, vm->def->id, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to destroy domain '%d'"), dom->id);
         goto cleanup;
     }
 
+    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
     if (!vm->persistent) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
@@ -1872,12 +1855,13 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
-    if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED) != 0) {
+    if (libxl_domain_destroy(priv->ctx, vm->def->id, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to destroy domain '%d'"), vm->def->id);
         goto cleanup;
     }
 
+    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED);
     vm->hasManagedSave = true;
     ret = 0;
 
@@ -2045,12 +2029,13 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     }
 
     if (flags & VIR_DUMP_CRASH) {
-        if (libxlVmReap(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED) != 0) {
+        if (libxl_domain_destroy(priv->ctx, dom->id, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to destroy domain '%d'"), dom->id);
             goto cleanup_unpause;
         }
 
+        libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
         if (!vm->persistent) {
