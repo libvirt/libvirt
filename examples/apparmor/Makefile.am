@@ -32,7 +32,7 @@ abstractions_DATA = \
 	libvirt-qemu \
 	$(NULL)
 
-templatesdir = $(apparmordir)/libvirtd
+templatesdir = $(apparmordir)/libvirt
 templates_DATA = \
 	TEMPLATE \
 	$(NULL)
