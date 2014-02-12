@@ -66,7 +66,6 @@
  * */
 
 static unsigned const int HMC = 0;
-static unsigned const int IVM = 127;
 static unsigned const int PHYP_IFACENAME_SIZE = 24;
 static unsigned const int PHYP_MAC_SIZE = 12;
 

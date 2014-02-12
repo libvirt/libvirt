@@ -1281,7 +1281,7 @@ int virDBusIsServiceEnabled(const char *name)
                           "/org/freedesktop/DBus",
                           "org.freedesktop.DBus",
                           "ListActivatableNames",
-                          DBUS_TYPE_INVALID) < 0)
+                          NULL) < 0)
         return ret;
 
     if (!dbus_message_iter_init(reply, &iter) ||

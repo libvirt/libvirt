@@ -1,7 +1,7 @@
 /*
  * storage_backend_scsi.c: storage backend for SCSI handling
  *
- * Copyright (C) 2007-2008, 2013 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2013-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -99,37 +99,6 @@ out:
     VIR_FREE(type_path);
     return retval;
 }
-
-struct diskType {
-    int part_table_type;
-    unsigned short offset;
-    unsigned short length;
-    unsigned long long magic;
-};
-
-static struct diskType const disk_types[] = {
-    { VIR_STORAGE_POOL_DISK_LVM2, 0x218, 8, 0x31303020324D564CULL },
-    { VIR_STORAGE_POOL_DISK_GPT,  0x200, 8, 0x5452415020494645ULL },
-    { VIR_STORAGE_POOL_DISK_DVH,  0x0,   4, 0x41A9E50BULL },
-    { VIR_STORAGE_POOL_DISK_MAC,  0x0,   2, 0x5245ULL },
-    { VIR_STORAGE_POOL_DISK_BSD,  0x40,  4, 0x82564557ULL },
-    { VIR_STORAGE_POOL_DISK_SUN,  0x1fc, 2, 0xBEDAULL },
-    /*
-     * NOTE: pc98 is funky; the actual signature is 0x55AA (just like dos), so
-     * we can't use that.  At the moment I'm relying on the "dummy" IPL
-     * bootloader data that comes from parted.  Luckily, the chances of running
-     * into a pc98 machine running libvirt are approximately nil.
-     */
-    /*{ 0x1fe, 2, 0xAA55UL },*/
-    { VIR_STORAGE_POOL_DISK_PC98, 0x0,   8, 0x314C5049000000CBULL },
-    /*
-     * NOTE: the order is important here; some other disk types (like GPT and
-     * and PC98) also have 0x55AA at this offset.  For that reason, the DOS
-     * one must be the last one.
-     */
-    { VIR_STORAGE_POOL_DISK_DOS,  0x1fe, 2, 0xAA55ULL },
-    { -1,                         0x0,   0, 0x0ULL },
-};
 
 static int
 virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
