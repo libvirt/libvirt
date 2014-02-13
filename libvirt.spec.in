@@ -428,9 +428,6 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
     %endif
-    %if %{with_wireshark}
-Requires: libvirt-wireshark = %{version}-%{release}
-    %endif
 %endif
 Requires: libvirt-client = %{version}-%{release}
 
