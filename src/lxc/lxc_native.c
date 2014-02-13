@@ -900,7 +900,6 @@ lxcParseConfigString(const char *config)
     }
 
     /* Loop over lxc.mount.entry to add filesystem devices for them */
-    value = virConfGetValue(properties, "lxc.mount.entry");
     if (virConfWalk(properties, lxcFstabWalkCallback, vmdef) < 0)
         goto error;
 
