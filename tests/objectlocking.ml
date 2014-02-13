@@ -1,7 +1,7 @@
 (*
  * Analyse libvirt driver API methods for mutex locking mistakes
  *
- * Copyright (C) 2008-2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2008-2010, 2012, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -623,7 +623,7 @@ module L = DF.ForwardsDataFlow(Locking)
 
 let () =
   (* Read the list of files from "libvirt-files". *)
-  let files = input_file "object-locking-files.txt" in
+  let files = input_file "objectlocking-files.txt" in
 
   (* Load & parse each input file. *)
   let files =
@@ -645,7 +645,6 @@ let () =
   let driverVars = List.filter (
     function
     | GVar (varinfo, initinfo, loc) -> (* global variable *)
-      let name = varinfo.vname in
       if isDriverTable varinfo then
         true
       else
@@ -656,7 +655,6 @@ let () =
   let driverVarFuncs = List.map (
     function
     | GVar (varinfo, initinfo, loc) -> (* global variable *)
-      let name = varinfo.vname in
       if isDriverTable varinfo then
         getDriverFuncNames initinfo
       else
@@ -752,7 +750,7 @@ let () =
                                    IH.find Locking.stmtStartData st.sid in
 			   let leakDrivers = not (VS.is_empty ld) in
 			   let leakObjects = not (VS.is_empty lo) in
-			   leakDrivers or leakObjects
+			   leakDrivers || leakObjects
                      ) exitPoints in
 
          let mistakes = List.filter (
@@ -767,7 +765,7 @@ let () =
 
 			   let deadLocked = (List.length dead) > 0 in
 
-			   lockDriverOrdering or lockObjectOrdering or useDriverUnlocked or useObjectUnlocked or deadLocked
+			   lockDriverOrdering || lockObjectOrdering || useDriverUnlocked || useObjectUnlocked || deadLocked
                      ) fundec.sallstmts in
 
          if (List.length leaks) > 0 || (List.length mistakes) > 0 then (

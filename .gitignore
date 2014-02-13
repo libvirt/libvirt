@@ -149,9 +149,9 @@
 /tests/*test
 !/tests/*schematest
 !/tests/virt-aa-helper-test
-/tests/object-locking
-/tests/object-locking-files.txt
-/tests/object-locking.cm[ix]
+/tests/objectlocking
+/tests/objectlocking-files.txt
+/tests/objectlocking.cm[ix]
 /tests/reconnect
 /tests/ssh
 /tests/test_conf

@@ -228,7 +228,7 @@ test_programs += vmwarevertest
 endif WITH_VMWARE
 
 if WITH_CIL
-test_programs += object-locking
+test_programs += objectlocking
 endif WITH_CIL
 
 if WITH_YAJL
@@ -1016,21 +1016,21 @@ CILOPTINCS =
 CILOPTPACKAGES = -package unix,str,cil
 CILOPTLIBS = -linkpkg
 
-object_locking_SOURCES = object-locking.ml
+object_locking_SOURCES = objectlocking.ml
 
 %.cmx: %.ml
 	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) -c $<
 
-object-locking: object-locking.cmx object-locking-files.txt
+objectlocking: objectlocking.cmx objectlocking-files.txt
 	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) \
 	  $(CILOPTLIBS) $< -o $@
 
-object-locking-files.txt:
+objectlocking-files.txt:
 	find $(top_builddir)/src/ -name '*.i' > $@
 
 else ! WITH_CIL
-EXTRA_DIST += object-locking.ml
+EXTRA_DIST += objectlocking.ml
 endif ! WITH_CIL
 
 CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.cmi *.cmx \
-	object-locking-files.txt
+	objectlocking-files.txt
