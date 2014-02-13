@@ -308,8 +308,6 @@ virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
 int qemuTranslateDiskSourcePool(virConnectPtr conn,
                                 virDomainDiskDefPtr def);
 
-int qemuSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def);
-
 int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
                                         virDomainSnapshotDiskDefPtr def);
 

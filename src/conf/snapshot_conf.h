@@ -187,6 +187,8 @@ int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   bool *update_current,
                                   unsigned int flags);
 
+int virDomainSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def);
+
 VIR_ENUM_DECL(virDomainSnapshotLocation)
 VIR_ENUM_DECL(virDomainSnapshotState)
 

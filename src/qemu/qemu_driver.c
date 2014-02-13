@@ -12321,7 +12321,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr disk)
 {
-    int actualType = qemuSnapshotDiskGetActualType(disk);
+    int actualType = virDomainSnapshotDiskGetActualType(disk);
 
     switch ((enum virDomainDiskType) actualType) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:
@@ -12345,7 +12345,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
 static int
 qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr disk)
 {
-    int actualType = qemuSnapshotDiskGetActualType(disk);
+    int actualType = virDomainSnapshotDiskGetActualType(disk);
 
     switch ((enum virDomainDiskType) actualType) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:
@@ -12397,7 +12397,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
             return -1;
     }
 
-    actualType = qemuSnapshotDiskGetActualType(snapdisk);
+    actualType = virDomainSnapshotDiskGetActualType(snapdisk);
 
     switch ((enum virDomainDiskType) actualType) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:

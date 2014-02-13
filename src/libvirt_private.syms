@@ -659,6 +659,7 @@ virDomainSnapshotDefFormat;
 virDomainSnapshotDefFree;
 virDomainSnapshotDefIsExternal;
 virDomainSnapshotDefParseString;
+virDomainSnapshotDiskGetActualType;
 virDomainSnapshotDropParent;
 virDomainSnapshotFindByName;
 virDomainSnapshotForEach;

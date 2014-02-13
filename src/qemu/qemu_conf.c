@@ -1465,13 +1465,6 @@ cleanup:
 
 
 int
-qemuSnapshotDiskGetActualType(virDomainSnapshotDiskDefPtr def)
-{
-    return def->type;
-}
-
-
-int
 qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     virDomainSnapshotDiskDefPtr def)
 {
