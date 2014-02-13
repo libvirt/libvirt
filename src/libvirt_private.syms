@@ -198,6 +198,7 @@ virDomainDiskErrorPolicyTypeToString;
 virDomainDiskFindByBusAndDst;
 virDomainDiskGeometryTransTypeFromString;
 virDomainDiskGeometryTransTypeToString;
+virDomainDiskGetActualType;
 virDomainDiskHostDefClear;
 virDomainDiskHostDefCopy;
 virDomainDiskHostDefFree;

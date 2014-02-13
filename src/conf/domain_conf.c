@@ -1345,6 +1345,16 @@ error:
 }
 
 
+int
+virDomainDiskGetActualType(virDomainDiskDefPtr def)
+{
+    if (def->type == VIR_DOMAIN_DISK_TYPE_VOLUME && def->srcpool)
+        return def->srcpool->actualtype;
+
+    return def->type;
+}
+
+
 void virDomainControllerDefFree(virDomainControllerDefPtr def)
 {
     if (!def)

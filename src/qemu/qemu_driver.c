@@ -12260,7 +12260,7 @@ endjob:
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 {
-    int actualType = qemuDiskGetActualType(disk);
+    int actualType = virDomainDiskGetActualType(disk);
 
     switch ((enum virDomainDiskType) actualType) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:
@@ -12304,7 +12304,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 static int
 qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
 {
-    int actualType = qemuDiskGetActualType(disk);
+    int actualType = virDomainDiskGetActualType(disk);
 
     if (actualType == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -12448,7 +12448,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (qemuTranslateDiskSourcePool(conn, disk) < 0)
         return -1;
 
-    actualType = qemuDiskGetActualType(disk);
+    actualType = virDomainDiskGetActualType(disk);
 
     switch ((enum virDomainDiskType) actualType) {
     case VIR_DOMAIN_DISK_TYPE_BLOCK:

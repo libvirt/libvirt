@@ -3869,7 +3869,7 @@ qemuDomainDiskGetSourceString(virConnectPtr conn,
                               virDomainDiskDefPtr disk,
                               char **source)
 {
-    int actualType = qemuDiskGetActualType(disk);
+    int actualType = virDomainDiskGetActualType(disk);
     char *secret = NULL;
     int ret = -1;
 
@@ -3899,7 +3899,7 @@ qemuDomainDiskGetSourceString(virConnectPtr conn,
             goto cleanup;
     }
 
-    ret = qemuGetDriveSourceString(qemuDiskGetActualType(disk),
+    ret = qemuGetDriveSourceString(virDomainDiskGetActualType(disk),
                                    disk->src,
                                    disk->protocol,
                                    disk->nhosts,
@@ -3927,7 +3927,7 @@ qemuBuildDriveStr(virConnectPtr conn,
     int idx = virDiskNameToIndex(disk->dst);
     int busid = -1, unitid = -1;
     char *source = NULL;
-    int actualType = qemuDiskGetActualType(disk);
+    int actualType = virDomainDiskGetActualType(disk);
 
     if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

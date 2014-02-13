@@ -2252,6 +2252,7 @@ void virDomainDiskHostDefClear(virDomainDiskHostDefPtr def);
 void virDomainDiskHostDefFree(size_t nhosts, virDomainDiskHostDefPtr hosts);
 virDomainDiskHostDefPtr virDomainDiskHostDefCopy(size_t nhosts,
                                                  virDomainDiskHostDefPtr hosts);
+int virDomainDiskGetActualType(virDomainDiskDefPtr def);
 int virDomainDeviceFindControllerModel(virDomainDefPtr def,
                                        virDomainDeviceInfoPtr info,
                                        int controllerType);
