@@ -1,0 +1,7 @@
+<secret ephemeral='no' private='yes'>
+  <uuid>27f25d34-aea6-4e2a-be85-fa2c18380be8</uuid>
+  <description>iSCSI secret</description>
+  <usage type='iscsi'>
+    <target>iscsitarget</target>
+  </usage>
+</secret>

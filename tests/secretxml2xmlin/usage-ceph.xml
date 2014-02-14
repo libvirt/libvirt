@@ -1,0 +1,7 @@
+<secret ephemeral='no' private='yes'>
+  <uuid>f52a81b2-424e-490c-823d-6bd4235bc572</uuid>
+  <description>Ceph secret</description>
+  <usage type='ceph'>
+    <name>CephCephCephCeph</name>
+  </usage>
+</secret>

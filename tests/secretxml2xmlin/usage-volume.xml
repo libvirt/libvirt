@@ -1,0 +1,7 @@
+<secret ephemeral='yes' private='yes'>
+  <uuid>22e1353d-c27e-4d6d-bf15-465053e6ba0b</uuid>
+  <description>Ephemeral Private Secret</description>
+  <usage type='volume'>
+    <volume>/var/lib/libvirt/images/image.img</volume>
+  </usage>
+</secret>

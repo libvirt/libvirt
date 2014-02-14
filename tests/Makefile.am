@@ -95,6 +95,7 @@ EXTRA_DIST =		\
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
+	secretxml2xmlin \
 	securityselinuxlabeldata \
 	schematestutils.sh \
 	sexpr2xmldata \
@@ -258,6 +259,8 @@ test_programs += cputest
 
 test_programs += metadatatest
 
+test_programs += secretxml2xmltest
+
 test_scripts = \
 	capabilityschematest \
 	interfaceschematest \
@@ -267,7 +270,8 @@ test_scripts = \
 	domainschematest \
 	nodedevschematest \
 	nwfilterschematest \
-	domainsnapshotschematest
+	domainsnapshotschematest \
+	secretschematest
 
 if WITH_LIBVIRTD
 test_scripts +=				\
@@ -611,6 +615,12 @@ nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
 	testutils.c testutils.h
 nwfilterxml2xmltest_LDADD = $(LDADDS)
+
+secretxml2xmltest_SOURCES = \
+	secretxml2xmltest.c \
+	testutils.c testutils.h
+secretxml2xmltest_LDADD = $(LDADDS)
+
 
 if WITH_STORAGE
 storagevolxml2argvtest_SOURCES = \
