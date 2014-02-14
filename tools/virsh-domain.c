@@ -10294,6 +10294,338 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+/*
+ * "event" command
+ */
+static const char *
+vshDomainEventToString(int event)
+{
+    const char *ret = _("unknown");
+    switch ((virDomainEventType) event) {
+    case VIR_DOMAIN_EVENT_DEFINED:
+        ret = _("Defined");
+        break;
+    case VIR_DOMAIN_EVENT_UNDEFINED:
+        ret = _("Undefined");
+        break;
+    case VIR_DOMAIN_EVENT_STARTED:
+        ret = _("Started");
+        break;
+    case VIR_DOMAIN_EVENT_SUSPENDED:
+        ret = _("Suspended");
+        break;
+    case VIR_DOMAIN_EVENT_RESUMED:
+        ret = _("Resumed");
+        break;
+    case VIR_DOMAIN_EVENT_STOPPED:
+        ret = _("Stopped");
+        break;
+    case VIR_DOMAIN_EVENT_SHUTDOWN:
+        ret = _("Shutdown");
+        break;
+    case VIR_DOMAIN_EVENT_PMSUSPENDED:
+        ret = _("PMSuspended");
+        break;
+    case VIR_DOMAIN_EVENT_CRASHED:
+        ret = _("Crashed");
+        break;
+    case VIR_DOMAIN_EVENT_LAST:
+        break;
+    }
+    return ret;
+}
+
+static const char *
+vshDomainEventDetailToString(int event, int detail)
+{
+    const char *ret = _("unknown");
+    switch ((virDomainEventType) event) {
+    case VIR_DOMAIN_EVENT_DEFINED:
+        switch ((virDomainEventDefinedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_DEFINED_ADDED:
+            ret = _("Added");
+            break;
+        case VIR_DOMAIN_EVENT_DEFINED_UPDATED:
+            ret = _("Updated");
+            break;
+        case VIR_DOMAIN_EVENT_DEFINED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_UNDEFINED:
+        switch ((virDomainEventUndefinedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_UNDEFINED_REMOVED:
+            ret = _("Removed");
+            break;
+        case VIR_DOMAIN_EVENT_UNDEFINED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_STARTED:
+        switch ((virDomainEventStartedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_STARTED_BOOTED:
+            ret = _("Booted");
+            break;
+        case VIR_DOMAIN_EVENT_STARTED_MIGRATED:
+            ret = _("Migrated");
+            break;
+        case VIR_DOMAIN_EVENT_STARTED_RESTORED:
+            ret = _("Restored");
+            break;
+        case VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT:
+            ret = _("Snapshot");
+            break;
+        case VIR_DOMAIN_EVENT_STARTED_WAKEUP:
+            ret = _("Event wakeup");
+            break;
+        case VIR_DOMAIN_EVENT_STARTED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_SUSPENDED:
+        switch ((virDomainEventSuspendedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_SUSPENDED_PAUSED:
+            ret = _("Paused");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED:
+            ret = _("Migrated");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_IOERROR:
+            ret = _("I/O Error");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG:
+            ret = _("Watchdog");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_RESTORED:
+            ret = _("Restored");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT:
+            ret = _("Snapshot");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR:
+            ret = _("API error");
+            break;
+        case VIR_DOMAIN_EVENT_SUSPENDED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_RESUMED:
+        switch ((virDomainEventResumedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_RESUMED_UNPAUSED:
+            ret = _("Unpaused");
+            break;
+        case VIR_DOMAIN_EVENT_RESUMED_MIGRATED:
+            ret = _("Migrated");
+            break;
+        case VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT:
+            ret = _("Snapshot");
+            break;
+        case VIR_DOMAIN_EVENT_RESUMED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_STOPPED:
+        switch ((virDomainEventStoppedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN:
+            ret = _("Shutdown");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_DESTROYED:
+            ret = _("Destroyed");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_CRASHED:
+            ret = _("Crashed");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_MIGRATED:
+            ret = _("Migrated");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_SAVED:
+            ret = _("Saved");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_FAILED:
+            ret = _("Failed");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
+            ret = _("Snapshot");
+            break;
+        case VIR_DOMAIN_EVENT_STOPPED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_SHUTDOWN:
+        switch ((virDomainEventShutdownDetailType) detail) {
+        case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
+            ret = _("Finished");
+            break;
+        case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_PMSUSPENDED:
+        switch ((virDomainEventPMSuspendedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY:
+            ret = _("Memory");
+            break;
+        case VIR_DOMAIN_EVENT_PMSUSPENDED_DISK:
+            ret = _("Disk");
+            break;
+        case VIR_DOMAIN_EVENT_PMSUSPENDED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_CRASHED:
+        switch ((virDomainEventCrashedDetailType) detail) {
+        case VIR_DOMAIN_EVENT_CRASHED_PANICKED:
+            ret = _("Panicked");
+            break;
+        case VIR_DOMAIN_EVENT_CRASHED_LAST:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_EVENT_LAST:
+        break;
+    }
+    return ret;
+}
+
+struct vshDomEventData {
+    vshControl *ctl;
+    bool loop;
+    int count;
+};
+typedef struct vshDomEventData vshDomEventData;
+
+/* FIXME: Support all callbacks, not just lifecycle */
+VIR_ENUM_DECL(vshDomainEvent)
+VIR_ENUM_IMPL(vshDomainEvent,
+              /* VIR_DOMAIN_EVENT_ID_LAST, */ 1,
+              "lifecycle")
+
+static void
+vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       virDomainPtr dom,
+                       int event,
+                       int detail,
+                       void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'lifecycle' for domain %s: %s %s\n"),
+             virDomainGetName(dom), vshDomainEventToString(event),
+             vshDomainEventDetailToString(event, detail));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static const vshCmdInfo info_event[] = {
+    {.name = "event",
+     .data = N_("Domain Events")
+    },
+    {.name = "desc",
+     .data = N_("List event types, or wait for domain events to occur")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_event[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .help = N_("filter by domain name, id, or uuid")
+    },
+    {.name = "event",
+     .type = VSH_OT_DATA,
+     .help = N_("which event type to wait for")
+    },
+    {.name = "loop",
+     .type = VSH_OT_BOOL,
+     .help = N_("loop until timeout or interrupt, rather than one-shot")
+    },
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("timeout seconds")
+    },
+    {.name = "list",
+     .type = VSH_OT_BOOL,
+     .help = N_("list valid event types")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdEvent(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    int eventId = -1;
+    int timeout = 0;
+    vshDomEventData data;
+    const char *eventName = NULL;
+    int event;
+
+    if (vshCommandOptBool(cmd, "list")) {
+        size_t i;
+
+        for (i = 0; i < 1 /* VIR_DOMAIN_EVENT_ID_LAST */; i++)
+            vshPrint(ctl, "%s\n", vshDomainEventTypeToString(i));
+        return true;
+    }
+
+    if (vshCommandOptString(cmd, "event", &eventName) < 0)
+        return false;
+    if (!eventName) {
+        vshError(ctl, "%s", _("either --list or event type is required"));
+        return false;
+    }
+    if ((event = vshDomainEventTypeFromString(eventName) < 0)) {
+        vshError(ctl, _("unknown event type %s"), eventName);
+        return false;
+    }
+
+    data.ctl = ctl;
+    data.loop = vshCommandOptBool(cmd, "loop");
+    data.count = 0;
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "domain"))
+        dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (vshEventStart(ctl, timeout) < 0)
+        goto cleanup;
+
+    if ((eventId = virConnectDomainEventRegisterAny(ctl->conn, dom, event,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(vshEventLifecyclePrint),
+                                                    &data, NULL)) < 0)
+        goto cleanup;
+    switch (vshEventWait(ctl)) {
+    case VSH_EVENT_INTERRUPT:
+        vshPrint(ctl, "%s", _("event loop interrupted\n"));
+        break;
+    case VSH_EVENT_TIMEOUT:
+        vshPrint(ctl, "%s", _("event loop timed out\n"));
+        break;
+    case VSH_EVENT_DONE:
+        break;
+    default:
+        goto cleanup;
+    }
+    vshPrint(ctl, _("events received: %d\n"), data.count);
+    if (data.count)
+        ret = true;
+
+cleanup:
+    vshEventCleanup(ctl);
+    if (eventId >= 0 &&
+        virConnectDomainEventDeregisterAny(ctl->conn, eventId) < 0)
+        ret = false;
+    if (dom)
+        virDomainFree(dom);
+    return ret;
+}
+
+
 /*
  * "change-media" command
  */
@@ -10748,6 +11080,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdEdit,
      .opts = opts_edit,
      .info = info_edit,
+     .flags = 0
+    },
+    {.name = "event",
+     .handler = cmdEvent,
+     .opts = opts_event,
+     .info = info_event,
      .flags = 0
     },
     {.name = "inject-nmi",
