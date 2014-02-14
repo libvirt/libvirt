@@ -106,7 +106,6 @@
 
 #define QEMU_NB_NUMA_PARAM 2
 
-#define QEMU_NB_TOTAL_CPU_STAT_PARAM 3
 #define QEMU_NB_PER_CPU_STAT_PARAM 2
 
 #define QEMU_SCHED_MIN_PERIOD              1000LL
@@ -15903,56 +15902,6 @@ cleanup:
     return ret;
 }
 
-/* qemuDomainGetCPUStats() with start_cpu == -1 */
-static int
-qemuDomainGetTotalcpuStats(virDomainObjPtr vm,
-                           virTypedParameterPtr params,
-                           int nparams)
-{
-    unsigned long long cpu_time;
-    int ret;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (nparams == 0) /* return supported number of params */
-        return QEMU_NB_TOTAL_CPU_STAT_PARAM;
-    /* entry 0 is cputime */
-    ret = virCgroupGetCpuacctUsage(priv->cgroup, &cpu_time);
-    if (ret < 0) {
-        virReportSystemError(-ret, "%s", _("unable to get cpu account"));
-        return -1;
-    }
-
-    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
-                                VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
-        return -1;
-
-    if (nparams > 1) {
-        unsigned long long user;
-        unsigned long long sys;
-
-        ret = virCgroupGetCpuacctStat(priv->cgroup, &user, &sys);
-        if (ret < 0) {
-            virReportSystemError(-ret, "%s", _("unable to get cpu account"));
-            return -1;
-        }
-
-        if (virTypedParameterAssign(&params[1],
-                                    VIR_DOMAIN_CPU_STATS_USERTIME,
-                                    VIR_TYPED_PARAM_ULLONG, user) < 0)
-            return -1;
-        if (nparams > 2 &&
-            virTypedParameterAssign(&params[2],
-                                    VIR_DOMAIN_CPU_STATS_SYSTEMTIME,
-                                    VIR_TYPED_PARAM_ULLONG, sys) < 0)
-            return -1;
-
-        if (nparams > QEMU_NB_TOTAL_CPU_STAT_PARAM)
-            nparams = QEMU_NB_TOTAL_CPU_STAT_PARAM;
-    }
-
-    return nparams;
-}
-
 /* This function gets the sums of cpu time consumed by all vcpus.
  * For example, if there are 4 physical cpus, and 2 vcpus in a domain,
  * then for each vcpu, the cpuacct.usage_percpu looks like this:
@@ -16150,7 +16099,8 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     }
 
     if (start_cpu == -1)
-        ret = qemuDomainGetTotalcpuStats(vm, params, nparams);
+        ret = virCgroupGetDomainTotalCpuStats(priv->cgroup,
+                                              params, nparams);
     else
         ret = qemuDomainGetPercpuStats(vm, params, nparams,
                                        start_cpu, ncpus);

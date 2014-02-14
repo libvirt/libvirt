@@ -201,6 +201,11 @@ int virCgroupDenyDevicePath(virCgroupPtr group,
                             const char *path,
                             int perms);
 
+int
+virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
+                                virTypedParameterPtr params,
+                                int nparams);
+
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 

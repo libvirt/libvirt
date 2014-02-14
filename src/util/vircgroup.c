@@ -51,10 +51,13 @@
 #include "virhashcode.h"
 #include "virstring.h"
 #include "virsystemd.h"
+#include "virtypedparam.h"
 
 #define CGROUP_MAX_VAL 512
 
 #define VIR_FROM_THIS VIR_FROM_CGROUP
+
+#define CGROUP_NB_TOTAL_CPU_STAT_PARAM 3
 
 #if defined(__linux__) && defined(HAVE_GETMNTENT_R) && \
     defined(_DIRENT_HAVE_D_TYPE) && defined(_SC_CLK_TCK)
@@ -2818,6 +2821,56 @@ virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
                                major(sb.st_rdev),
                                minor(sb.st_rdev),
                                perms);
+}
+
+
+
+int
+virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
+                                virTypedParameterPtr params,
+                                int nparams)
+{
+    unsigned long long cpu_time;
+    int ret;
+
+    if (nparams == 0) /* return supported number of params */
+        return CGROUP_NB_TOTAL_CPU_STAT_PARAM;
+    /* entry 0 is cputime */
+    ret = virCgroupGetCpuacctUsage(group, &cpu_time);
+    if (ret < 0) {
+        virReportSystemError(-ret, "%s", _("unable to get cpu account"));
+        return -1;
+    }
+
+    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
+        return -1;
+
+    if (nparams > 1) {
+        unsigned long long user;
+        unsigned long long sys;
+
+        ret = virCgroupGetCpuacctStat(group, &user, &sys);
+        if (ret < 0) {
+            virReportSystemError(-ret, "%s", _("unable to get cpu account"));
+            return -1;
+        }
+
+        if (virTypedParameterAssign(&params[1],
+                                    VIR_DOMAIN_CPU_STATS_USERTIME,
+                                    VIR_TYPED_PARAM_ULLONG, user) < 0)
+            return -1;
+        if (nparams > 2 &&
+            virTypedParameterAssign(&params[2],
+                                    VIR_DOMAIN_CPU_STATS_SYSTEMTIME,
+                                    VIR_TYPED_PARAM_ULLONG, sys) < 0)
+            return -1;
+
+        if (nparams > CGROUP_NB_TOTAL_CPU_STAT_PARAM)
+            nparams = CGROUP_NB_TOTAL_CPU_STAT_PARAM;
+    }
+
+    return nparams;
 }
 
 

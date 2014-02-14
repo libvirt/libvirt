@@ -1025,6 +1025,7 @@ virCgroupGetCpuCfsQuota;
 virCgroupGetCpusetCpus;
 virCgroupGetCpusetMems;
 virCgroupGetCpuShares;
+virCgroupGetDomainTotalCpuStats;
 virCgroupGetFreezerState;
 virCgroupGetMemoryHardLimit;
 virCgroupGetMemorySoftLimit;
