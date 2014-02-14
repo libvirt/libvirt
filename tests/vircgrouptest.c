@@ -33,6 +33,7 @@
 # include "virlog.h"
 # include "virfile.h"
 # include "testutilslxc.h"
+# include "nodeinfo.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -530,6 +531,68 @@ static int testCgroupAvailable(const void *args)
     return 0;
 }
 
+static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    size_t i;
+    int rv, ret = -1;
+    virTypedParameter params[2];
+
+    // TODO: mock nodeGetCPUCount() as well & check 2nd cpu, too
+    unsigned long long expected[] = {
+        1413142688153030
+    };
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_CPU) |
+                                    (1 << VIR_CGROUP_CONTROLLER_CPUACCT),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if (nodeGetCPUCount() < 1) {
+        fprintf(stderr, "Unexpected: nodeGetCPUCount() yields: %d\n", nodeGetCPUCount());
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetPercpuStats(cgroup,
+                                      params,
+                                      2, 0, 1)) < 0) {
+        fprintf(stderr, "Failed call to virCgroupGetPercpuStats for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected); i++) {
+        if (!STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME)) {
+            fprintf(stderr,
+                    "Wrong parameter name value from virCgroupGetPercpuStats (is: %s)\n",
+                    params[i].field);
+            goto cleanup;
+        }
+
+        if (params[i].type != VIR_TYPED_PARAM_ULLONG) {
+            fprintf(stderr,
+                    "Wrong parameter value type from virCgroupGetPercpuStats (is: %d)\n",
+                    params[i].type);
+            goto cleanup;
+        }
+
+        if (params[i].value.ul != expected[i]) {
+            fprintf(stderr,
+                    "Wrong value from virCgroupGetMemoryUsage (expected %llu)\n",
+                    params[i].value.ul);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
 static int testCgroupGetMemoryUsage(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -733,6 +796,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("virCgroupGetMemoryUsage works", testCgroupGetMemoryUsage, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("virCgroupGetPercpuStats works", testCgroupGetPercpuStats, NULL) < 0)
         ret = -1;
 
     setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
