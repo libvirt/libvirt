@@ -242,6 +242,9 @@ struct _vshControl {
     virMutex lock;
     bool eventLoopStarted;
     bool quit;
+    int eventPipe[2];           /* Write-to-self pipe to end waiting for an
+                                 * event to occur */
+    int eventTimerId;           /* id of event loop timeout registration */
 
     const char *escapeChar;     /* String representation of
                                    console escape character */
@@ -369,6 +372,16 @@ int vshTTYRestore(vshControl *ctl);
 int vshTTYMakeRaw(vshControl *ctl, bool report_errors);
 bool vshTTYAvailable(vshControl *ctl);
 
+/* waiting for events */
+enum {
+    VSH_EVENT_INTERRUPT,
+    VSH_EVENT_TIMEOUT,
+    VSH_EVENT_DONE,
+};
+int vshEventStart(vshControl *ctl, int timeout_ms);
+void vshEventDone(vshControl *ctl);
+int vshEventWait(vshControl *ctl);
+void vshEventCleanup(vshControl *ctl);
 
 /* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);

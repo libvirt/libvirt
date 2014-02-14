@@ -42,6 +42,7 @@
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <strings.h>
+#include <signal.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -84,6 +85,11 @@
 #include "virsh-secret.h"
 #include "virsh-snapshot.h"
 #include "virsh-volume.h"
+
+/* Gnulib doesn't guarantee SA_SIGINFO support.  */
+#ifndef SA_SIGINFO
+# define SA_SIGINFO 0
+#endif
 
 static char *progname;
 
@@ -2435,6 +2441,149 @@ vshEventLoop(void *opaque)
 
 
 /*
+ * Helpers for waiting for a libvirt event.
+ */
+
+/* We want to use SIGINT to cancel a wait; but as signal handlers
+ * don't have an opaque argument, we have to use static storage.  */
+static int vshEventFd = -1;
+static struct sigaction vshEventOldAction;
+
+
+/* Signal handler installed in vshEventStart, removed in vshEventCleanup.  */
+static void
+vshEventInt(int sig ATTRIBUTE_UNUSED,
+            siginfo_t *siginfo ATTRIBUTE_UNUSED,
+            void *context ATTRIBUTE_UNUSED)
+{
+    char reason = VSH_EVENT_INTERRUPT;
+    if (vshEventFd >= 0)
+        ignore_value(safewrite(vshEventFd, &reason, 1));
+}
+
+
+/* Event loop handler used to limit length of waiting for any other event. */
+static void
+vshEventTimeout(int timer ATTRIBUTE_UNUSED,
+                void *opaque)
+{
+    vshControl *ctl = opaque;
+    char reason = VSH_EVENT_TIMEOUT;
+
+    if (ctl->eventPipe[1] >= 0)
+        ignore_value(safewrite(ctl->eventPipe[1], &reason, 1));
+}
+
+
+/**
+ * vshEventStart:
+ * @ctl virsh command struct
+ * @timeout_ms max wait time in milliseconds, or 0 for indefinite
+ *
+ * Set up a wait for a libvirt event.  The wait can be canceled by
+ * SIGINT or by calling vshEventDone() in your event handler.  If
+ * @timeout_ms is positive, the wait will also end if the timeout
+ * expires.  Call vshEventWait() to block the main thread (the event
+ * handler runs in the event loop thread).  When done (including if
+ * there was an error registering for an event), use vshEventCleanup()
+ * to quit waiting.  Returns 0 on success, -1 on failure.  */
+int
+vshEventStart(vshControl *ctl, int timeout_ms)
+{
+    struct sigaction action;
+
+    assert(ctl->eventPipe[0] == -1 && ctl->eventPipe[1] == -1 &&
+           vshEventFd == -1 && ctl->eventTimerId >= 0);
+    if (pipe2(ctl->eventPipe, O_CLOEXEC) < 0) {
+        char ebuf[1024];
+
+        vshError(ctl, _("failed to create pipe: %s"),
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
+        return -1;
+    }
+    vshEventFd = ctl->eventPipe[1];
+
+    action.sa_sigaction = vshEventInt;
+    action.sa_flags = SA_SIGINFO;
+    sigemptyset(&action.sa_mask);
+    sigaction(SIGINT, &action, &vshEventOldAction);
+
+    if (timeout_ms)
+        virEventUpdateTimeout(ctl->eventTimerId, timeout_ms);
+
+    return 0;
+}
+
+
+/**
+ * vshEventDone:
+ * @ctl virsh command struct
+ *
+ * Call this from an event callback to let the main thread quit
+ * blocking on further events.
+ */
+void
+vshEventDone(vshControl *ctl)
+{
+    char reason = VSH_EVENT_DONE;
+
+    if (ctl->eventPipe[1] >= 0)
+        ignore_value(safewrite(ctl->eventPipe[1], &reason, 1));
+}
+
+
+/**
+ * vshEventWait:
+ * @ctl virsh command struct
+ *
+ * Call this in the main thread after calling vshEventStart() then
+ * registering for one or more events.  This call will block until
+ * SIGINT, the timeout registered at the start, or until one of your
+ * event handlers calls vshEventDone().  Returns an enum VSH_EVENT_*
+ * stating how the wait concluded, or -1 on error.
+ */
+int
+vshEventWait(vshControl *ctl)
+{
+    char buf;
+    int rv;
+
+    assert(ctl->eventPipe[0] >= 0);
+    while ((rv = read(ctl->eventPipe[0], &buf, 1)) < 0 && errno == EINTR);
+    if (rv != 1) {
+        char ebuf[1024];
+
+        if (!rv)
+            errno = EPIPE;
+        vshError(ctl, _("failed to determine loop exit status: %s"),
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
+        return -1;
+    }
+    return buf;
+}
+
+
+/**
+ * vshEventCleanup:
+ * @ctl virsh command struct
+ *
+ * Call at the end of any function that has used vshEventStart(), to
+ * tear down any remaining SIGINT or timeout handlers.
+ */
+void
+vshEventCleanup(vshControl *ctl)
+{
+    if (vshEventFd >= 0) {
+        sigaction(SIGINT, &vshEventOldAction, NULL);
+        vshEventFd = -1;
+    }
+    VIR_FORCE_CLOSE(ctl->eventPipe[0]);
+    VIR_FORCE_CLOSE(ctl->eventPipe[1]);
+    virEventUpdateTimeout(ctl->eventTimerId, -1);
+}
+
+
+/*
  * Initialize debug settings.
  */
 static void
@@ -2489,6 +2638,10 @@ vshInit(vshControl *ctl)
     if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0)
         return false;
     ctl->eventLoopStarted = true;
+
+    if ((ctl->eventTimerId = virEventAddTimeout(-1, vshEventTimeout, ctl,
+                                                NULL)) < 0)
+        return false;
 
     if (ctl->name) {
         vshReconnect(ctl);
@@ -2933,6 +3086,9 @@ vshDeinit(vshControl *ctl)
         if (timer != -1)
             virEventRemoveTimeout(timer);
 
+        if (ctl->eventTimerId != -1)
+            virEventRemoveTimeout(ctl->eventTimerId);
+
         ctl->eventLoopStarted = false;
     }
 
@@ -3334,7 +3490,9 @@ main(int argc, char **argv)
     ctl->log_fd = -1;           /* Initialize log file descriptor */
     ctl->debug = VSH_DEBUG_DEFAULT;
     ctl->escapeChar = "^]";     /* Same default as telnet */
-
+    ctl->eventPipe[0] = -1;
+    ctl->eventPipe[1] = -1;
+    ctl->eventTimerId = -1;
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
