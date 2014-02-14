@@ -1,7 +1,7 @@
 /*
  * virsh.c: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1720,6 +1720,30 @@ vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname)
                  cmd->def->name, optname);
     return found;
 }
+
+/* Parse an optional --timeout parameter in seconds, but store the
+ * value of the timeout in milliseconds.  Return -1 on error, 0 if
+ * no timeout was requested, and 1 if timeout was set.  */
+int
+vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
+{
+    int rv = vshCommandOptInt(cmd, "timeout", timeout);
+
+    if (rv < 0 || (rv > 0 && *timeout < 1)) {
+        vshError(ctl, "%s", _("invalid timeout"));
+        return -1;
+    }
+    if (rv > 0) {
+        /* Ensure that we can multiply by 1000 without overflowing. */
+        if (*timeout > INT_MAX / 1000) {
+            vshError(ctl, "%s", _("timeout is too big"));
+            return -1;
+        }
+        *timeout *= 1000;
+    }
+    return rv;
+}
+
 
 static bool
 vshConnectionUsability(vshControl *ctl, virConnectPtr conn)

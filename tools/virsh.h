@@ -1,7 +1,7 @@
 /*
  * virsh.h: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -301,6 +301,8 @@ bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                    const vshCmdOpt *opt);
 bool vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname);
+
+int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 
 /* Filter flags for various vshCommandOpt*By() functions */
 typedef enum {
