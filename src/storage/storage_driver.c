@@ -376,8 +376,7 @@ storageConnectNumOfStoragePools(virConnectPtr conn) {
         virStoragePoolObjPtr obj = driver->pools.objs[i];
         virStoragePoolObjLock(obj);
         if (virConnectNumOfStoragePoolsCheckACL(conn, obj->def) &&
-            virStoragePoolObjIsActive(obj) &&
-            !obj->internal)
+            virStoragePoolObjIsActive(obj))
             nactive++;
         virStoragePoolObjUnlock(obj);
     }
@@ -402,8 +401,7 @@ storageConnectListStoragePools(virConnectPtr conn,
         virStoragePoolObjPtr obj = driver->pools.objs[i];
         virStoragePoolObjLock(obj);
         if (virConnectListStoragePoolsCheckACL(conn, obj->def) &&
-            virStoragePoolObjIsActive(obj) &&
-            !obj->internal) {
+            virStoragePoolObjIsActive(obj)) {
             if (VIR_STRDUP(names[got], obj->def->name) < 0) {
                 virStoragePoolObjUnlock(obj);
                 goto cleanup;
@@ -437,8 +435,7 @@ storageConnectNumOfDefinedStoragePools(virConnectPtr conn) {
         virStoragePoolObjPtr obj = driver->pools.objs[i];
         virStoragePoolObjLock(obj);
         if (virConnectNumOfDefinedStoragePoolsCheckACL(conn, obj->def) &&
-            !virStoragePoolObjIsActive(obj) &&
-            !obj->internal)
+            !virStoragePoolObjIsActive(obj))
             nactive++;
         virStoragePoolObjUnlock(obj);
     }
@@ -463,8 +460,7 @@ storageConnectListDefinedStoragePools(virConnectPtr conn,
         virStoragePoolObjPtr obj = driver->pools.objs[i];
         virStoragePoolObjLock(obj);
         if (virConnectListDefinedStoragePoolsCheckACL(conn, obj->def) &&
-            !virStoragePoolObjIsActive(obj) &&
-            !obj->internal) {
+            !virStoragePoolObjIsActive(obj)) {
             if (VIR_STRDUP(names[got], obj->def->name) < 0) {
                 virStoragePoolObjUnlock(obj);
                 goto cleanup;

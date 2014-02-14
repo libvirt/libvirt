@@ -2172,9 +2172,6 @@ static bool
 virStoragePoolMatch(virStoragePoolObjPtr poolobj,
                     unsigned int flags)
 {
-    if (poolobj->internal)
-        return false;
-
     /* filter by active state */
     if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) &&
         !((MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE) &&
