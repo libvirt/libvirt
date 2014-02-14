@@ -53,11 +53,14 @@
 #include "virsystemd.h"
 #include "virtypedparam.h"
 
+#include "nodeinfo.h"
+
 #define CGROUP_MAX_VAL 512
 
 #define VIR_FROM_THIS VIR_FROM_CGROUP
 
 #define CGROUP_NB_TOTAL_CPU_STAT_PARAM 3
+#define CGROUP_NB_PER_CPU_STAT_PARAM   1
 
 #if defined(__linux__) && defined(HAVE_GETMNTENT_R) && \
     defined(_DIRENT_HAVE_D_TYPE) && defined(_SC_CLK_TCK)
@@ -2823,6 +2826,78 @@ virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
                                perms);
 }
 
+
+int
+virCgroupGetPercpuStats(virCgroupPtr group,
+                        virTypedParameterPtr params,
+                        unsigned int nparams,
+                        int start_cpu,
+                        unsigned int ncpus)
+{
+    int rv = -1;
+    size_t i;
+    int id, max_id;
+    char *pos;
+    char *buf = NULL;
+    virTypedParameterPtr ent;
+    int param_idx;
+    unsigned long long cpu_time;
+
+    /* return the number of supported params */
+    if (nparams == 0 && ncpus != 0)
+        return CGROUP_NB_PER_CPU_STAT_PARAM;
+
+    /* To parse account file, we need to know how many cpus are present.  */
+    max_id = nodeGetCPUCount();
+    if (max_id < 0)
+        return rv;
+
+    if (ncpus == 0) { /* returns max cpu ID */
+        rv = max_id;
+        goto cleanup;
+    }
+
+    if (start_cpu > max_id) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("start_cpu %d larger than maximum of %d"),
+                       start_cpu, max_id);
+        goto cleanup;
+    }
+
+    /* we get percpu cputime accounting info. */
+    if (virCgroupGetCpuacctPercpuUsage(group, &buf))
+        goto cleanup;
+    pos = buf;
+
+    /* return percpu cputime in index 0 */
+    param_idx = 0;
+
+    /* number of cpus to compute */
+    if (start_cpu >= max_id - ncpus)
+        id = max_id - 1;
+    else
+        id = start_cpu + ncpus - 1;
+
+    for (i = 0; i <= id; i++) {
+        if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cpuacct parse error"));
+            goto cleanup;
+        }
+        if (i < start_cpu)
+            continue;
+        ent = &params[(i - start_cpu) * nparams + param_idx];
+        if (virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                    VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
+            goto cleanup;
+    }
+
+    rv = nparams;
+
+cleanup:
+    VIR_FREE(buf);
+    return rv;
+}
 
 
 int

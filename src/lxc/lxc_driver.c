@@ -77,6 +77,7 @@
 
 #define LXC_NB_MEM_PARAM  3
 
+
 static int lxcStateInitialize(bool privileged,
                               virStateInhibitCallback callback,
                               void *opaque);
@@ -5420,6 +5421,53 @@ cleanup:
 }
 
 
+static int
+lxcDomainGetCPUStats(virDomainPtr dom,
+                     virTypedParameterPtr params,
+                     unsigned int nparams,
+                     int start_cpu,
+                     unsigned int ncpus,
+                     unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    virLXCDomainObjPrivatePtr priv;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return ret;
+
+    priv = vm->privateData;
+
+    if (virDomainGetCPUStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUACCT)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cgroup CPUACCT controller is not mounted"));
+        goto cleanup;
+    }
+
+    if (start_cpu == -1)
+        ret = virCgroupGetDomainTotalCpuStats(priv->cgroup,
+                                              params, nparams);
+    else
+        ret = virCgroupGetPercpuStats(priv->cgroup, params,
+                                      nparams, start_cpu, ncpus);
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -5499,6 +5547,7 @@ static virDriver lxcDriver = {
     .nodeSuspendForDuration = lxcNodeSuspendForDuration, /* 0.9.8 */
     .domainSetMetadata = lxcDomainSetMetadata, /* 1.1.3 */
     .domainGetMetadata = lxcDomainGetMetadata, /* 1.1.3 */
+    .domainGetCPUStats = lxcDomainGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */

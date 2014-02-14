@@ -202,6 +202,13 @@ int virCgroupDenyDevicePath(virCgroupPtr group,
                             int perms);
 
 int
+virCgroupGetPercpuStats(virCgroupPtr group,
+                        virTypedParameterPtr params,
+                        unsigned int nparams,
+                        int start_cpu,
+                        unsigned int ncpus);
+
+int
 virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
                                 virTypedParameterPtr params,
                                 int nparams);
