@@ -530,6 +530,38 @@ static int testCgroupAvailable(const void *args)
     return 0;
 }
 
+static int testCgroupGetMemoryUsage(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int rv, ret = -1;
+    unsigned long kb;
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_MEMORY),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetMemoryUsage(cgroup, &kb)) < 0) {
+        fprintf(stderr, "Could not retrieve GetMemoryUsage for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if (kb != 1421212UL) {
+        fprintf(stderr,
+                "Wrong value from virCgroupGetMemoryUsage (expected %ld)\n",
+                1421212UL);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
 static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -698,6 +730,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("virCgroupGetBlkioIoDeviceServiced works", testCgroupGetBlkioIoDeviceServiced, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("virCgroupGetMemoryUsage works", testCgroupGetMemoryUsage, NULL) < 0)
         ret = -1;
 
     setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);
