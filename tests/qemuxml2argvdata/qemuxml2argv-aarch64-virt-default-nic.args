@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 -S -M virt -m 1024 -smp 1 -nographic \
+-nodefconfig -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-boot c -kernel /aarch64.kernel -initrd /aarch64.initrd -append console=ttyAMA0 \
+-usb -device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \
+-net user,vlan=0,name=hostnet0

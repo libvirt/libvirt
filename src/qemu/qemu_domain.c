@@ -818,7 +818,8 @@ qemuDomainDefaultNetModel(const virDomainDef *def)
         def->os.arch == VIR_ARCH_S390X)
         return "virtio";
 
-    if (def->os.arch == VIR_ARCH_ARMV7L) {
+    if (def->os.arch == VIR_ARCH_ARMV7L ||
+        def->os.arch == VIR_ARCH_AARCH64) {
         if (STREQ(def->os.machine, "versatilepb"))
             return "smc91c111";
 
