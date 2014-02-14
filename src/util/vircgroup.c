@@ -1786,6 +1786,233 @@ virCgroupPathOfController(virCgroupPtr group,
 
 
 /**
+ * virCgroupGetBlkioIoServiced:
+ *
+ * @group: The cgroup to get throughput for
+ * @bytes_read: Pointer to returned bytes read
+ * @bytes_write: Pointer to returned bytes written
+ * @requests_read: Pointer to returned read io ops
+ * @requests_write: Pointer to returned write io ops
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupGetBlkioIoServiced(virCgroupPtr group,
+                            long long *bytes_read,
+                            long long *bytes_write,
+                            long long *requests_read,
+                            long long *requests_write)
+{
+    long long stats_val;
+    char *str1 = NULL, *str2 = NULL, *p1, *p2;
+    size_t i;
+    int ret = -1;
+
+    const char *value_names[] = {
+        "Read ",
+        "Write "
+    };
+    long long *bytes_ptrs[] = {
+        bytes_read,
+        bytes_write
+    };
+    long long *requests_ptrs[] = {
+        requests_read,
+        requests_write
+    };
+
+    *bytes_read = 0;
+    *bytes_write = 0;
+    *requests_read = 0;
+    *requests_write = 0;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_service_bytes", &str1) < 0)
+        goto cleanup;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_serviced", &str2) < 0)
+        goto cleanup;
+
+    /* sum up all entries of the same kind, from all devices */
+    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+        p1 = str1;
+        p2 = str2;
+
+        while ((p1 = strstr(p1, value_names[i]))) {
+            p1 += strlen(value_names[i]);
+            if (virStrToLong_ll(p1, &p1, 10, &stats_val) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse byte %sstat '%s'"),
+                               value_names[i],
+                               p1);
+                goto cleanup;
+            }
+
+            if (stats_val < 0 ||
+                (stats_val > 0 && *bytes_ptrs[i] > (LLONG_MAX - stats_val)))
+            {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("Sum of byte %sstat overflows"),
+                               value_names[i]);
+                goto cleanup;
+            }
+            *bytes_ptrs[i] += stats_val;
+        }
+
+        while ((p2 = strstr(p2, value_names[i]))) {
+            p2 += strlen(value_names[i]);
+            if (virStrToLong_ll(p2, &p2, 10, &stats_val) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse %srequest stat '%s'"),
+                               value_names[i],
+                               p2);
+                goto cleanup;
+            }
+
+            if (stats_val < 0 ||
+                (stats_val > 0 && *requests_ptrs[i] > (LLONG_MAX - stats_val)))
+            {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("Sum of %srequest stat overflows"),
+                               value_names[i]);
+                goto cleanup;
+            }
+            *requests_ptrs[i] += stats_val;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(str2);
+    VIR_FREE(str1);
+    return ret;
+}
+
+
+/**
+ * virCgroupGetBlkioIoDeviceServiced:
+ *
+ * @group: The cgroup to get throughput for
+ * @path: The device to get throughput for
+ * @bytes_read: Pointer to returned bytes read
+ * @bytes_write: Pointer to returned bytes written
+ * @requests_read: Pointer to returned read io ops
+ * @requests_write: Pointer to returned write io ops
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
+                                  const char *path,
+                                  long long *bytes_read,
+                                  long long *bytes_write,
+                                  long long *requests_read,
+                                  long long *requests_write)
+{
+    char *str1 = NULL, *str2 = NULL, *str3 = NULL, *p1, *p2;
+    struct stat sb;
+    size_t i;
+    int ret = -1;
+
+    const char *value_names[] = {
+        "Read ",
+        "Write "
+    };
+    long long *bytes_ptrs[] = {
+        bytes_read,
+        bytes_write
+    };
+    long long *requests_ptrs[] = {
+        requests_read,
+        requests_write
+    };
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Path '%s' is not accessible"),
+                             path);
+        return -1;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportSystemError(EINVAL,
+                             _("Path '%s' must be a block device"),
+                             path);
+        return -1;
+    }
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_service_bytes", &str1) < 0)
+        goto cleanup;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.io_serviced", &str2) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&str3, "%d:%d ", major(sb.st_rdev), minor(sb.st_rdev)) < 0)
+        goto cleanup;
+
+    if (!(p1 = strstr(str1, str3))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find byte stats for block device '%s'"),
+                       str3);
+        goto cleanup;
+    }
+
+    if (!(p2 = strstr(str2, str3))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot find request stats for block device '%s'"),
+                       str3);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+        if (!(p1 = strstr(p1, value_names[i]))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find byte %sstats for block device '%s'"),
+                           value_names[i], str3);
+            goto cleanup;
+        }
+
+        if (virStrToLong_ll(p1 + strlen(value_names[i]), &p1, 10, bytes_ptrs[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse %sstat '%s'"),
+                           value_names[i], p1 + strlen(value_names[i]));
+            goto cleanup;
+        }
+
+        if (!(p2 = strstr(p2, value_names[i]))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot find request %sstats for block device '%s'"),
+                           value_names[i], str3);
+            goto cleanup;
+        }
+
+        if (virStrToLong_ll(p2 + strlen(value_names[i]), &p2, 10, requests_ptrs[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse %sstat '%s'"),
+                           value_names[i], p2 + strlen(value_names[i]));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(str3);
+    VIR_FREE(str2);
+    VIR_FREE(str1);
+    return ret;
+}
+
+
+/**
  * virCgroupSetBlkioWeight:
  *
  * @group: The cgroup to change io weight for
@@ -3451,6 +3678,33 @@ virCgroupAddTaskController(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupMoveTask(virCgroupPtr src_group ATTRIBUTE_UNUSED,
                   virCgroupPtr dest_group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetBlkioIoServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
+                            long long *bytes_read ATTRIBUTE_UNUSED,
+                            long long *bytes_write ATTRIBUTE_UNUSED,
+                            long long *requests_read ATTRIBUTE_UNUSED,
+                            long long *requests_write ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                  const char *path ATTRIBUTE_UNUSED,
+                                  long long *bytes_read ATTRIBUTE_UNUSED,
+                                  long long *bytes_write ATTRIBUTE_UNUSED,
+                                  long long *requests_read ATTRIBUTE_UNUSED,
+                                  long long *requests_write ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));

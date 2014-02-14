@@ -1014,6 +1014,8 @@ virCgroupDenyDevice;
 virCgroupDenyDeviceMajor;
 virCgroupDenyDevicePath;
 virCgroupFree;
+virCgroupGetBlkioIoDeviceServiced;
+virCgroupGetBlkioIoServiced;
 virCgroupGetBlkioWeight;
 virCgroupGetCpuacctPercpuUsage;
 virCgroupGetCpuacctStat;

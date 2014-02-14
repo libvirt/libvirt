@@ -122,6 +122,18 @@ int virCgroupMoveTask(virCgroupPtr src_group,
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
 
+int virCgroupGetBlkioIoServiced(virCgroupPtr group,
+                                long long *bytes_read,
+                                long long *bytes_write,
+                                long long *requests_read,
+                                long long *requests_write);
+int virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
+                                      const char *path,
+                                      long long *bytes_read,
+                                      long long *bytes_write,
+                                      long long *requests_read,
+                                      long long *requests_write);
+
 int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                                   const char *path,
                                   unsigned int weight);
