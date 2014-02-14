@@ -76,6 +76,7 @@
 
 
 #define LXC_NB_MEM_PARAM  3
+#define LXC_NB_DOMAIN_BLOCK_STAT_PARAM 4
 
 
 static int lxcStateInitialize(bool privileged,
@@ -2226,6 +2227,198 @@ lxcDomainMergeBlkioDevice(virBlkioDevicePtr *dest_array,
     }
 
     return 0;
+}
+
+
+static int
+lxcDomainBlockStats(virDomainPtr dom,
+                    const char *path,
+                    struct _virDomainBlockStats *stats)
+{
+    int ret = -1, idx;
+    virDomainObjPtr vm;
+    virDomainDiskDefPtr disk = NULL;
+    virLXCDomainObjPrivatePtr priv;
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return ret;
+
+    priv = vm->privateData;
+
+    if (virDomainBlockStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (!*path) {
+        /* empty path - return entire domain blkstats instead */
+        ret = virCgroupGetBlkioIoServiced(priv->cgroup,
+                                          &stats->rd_bytes,
+                                          &stats->wr_bytes,
+                                          &stats->rd_req,
+                                          &stats->wr_req);
+        goto cleanup;
+    }
+
+    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path: %s"), path);
+        goto cleanup;
+    }
+    disk = vm->def->disks[idx];
+
+    if (!disk->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing disk device alias name for %s"), disk->dst);
+        goto cleanup;
+    }
+
+    ret = virCgroupGetBlkioIoDeviceServiced(priv->cgroup,
+                                            disk->info.alias,
+                                            &stats->rd_bytes,
+                                            &stats->wr_bytes,
+                                            &stats->rd_req,
+                                            &stats->wr_req);
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
+static int
+lxcDomainBlockStatsFlags(virDomainPtr dom,
+                         const char * path,
+                         virTypedParameterPtr params,
+                         int * nparams,
+                         unsigned int flags)
+{
+    int tmp, ret = -1, idx;
+    virDomainObjPtr vm;
+    virDomainDiskDefPtr disk = NULL;
+    virLXCDomainObjPrivatePtr priv;
+    long long rd_req, rd_bytes, wr_req, wr_bytes;
+    virTypedParameterPtr param;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    /* We don't return strings, and thus trivially support this flag.  */
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (!params && !*nparams) {
+        *nparams = LXC_NB_DOMAIN_BLOCK_STAT_PARAM;
+        return 0;
+    }
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return ret;
+
+    priv = vm->privateData;
+
+    if (virDomainBlockStatsFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (!*path) {
+        /* empty path - return entire domain blkstats instead */
+        if (virCgroupGetBlkioIoServiced(priv->cgroup,
+                                        &rd_bytes,
+                                        &wr_bytes,
+                                        &rd_req,
+                                        &wr_req) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("domain stats query failed"));
+            goto cleanup;
+        }
+    } else {
+        if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("invalid path: %s"), path);
+            goto cleanup;
+        }
+        disk = vm->def->disks[idx];
+
+        if (!disk->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing disk device alias name for %s"), disk->dst);
+            goto cleanup;
+        }
+
+        if (virCgroupGetBlkioIoDeviceServiced(priv->cgroup,
+                                              disk->info.alias,
+                                              &rd_bytes,
+                                              &wr_bytes,
+                                              &rd_req,
+                                              &wr_req) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("domain stats query failed"));
+            goto cleanup;
+        }
+    }
+
+    tmp = 0;
+    ret = -1;
+
+    if (tmp < *nparams && wr_bytes != -1) {
+        param = &params[tmp];
+        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES,
+                                    VIR_TYPED_PARAM_LLONG, wr_bytes) < 0)
+            goto cleanup;
+        tmp++;
+    }
+
+    if (tmp < *nparams && wr_req != -1) {
+        param = &params[tmp];
+        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ,
+                                    VIR_TYPED_PARAM_LLONG, wr_req) < 0)
+            goto cleanup;
+        tmp++;
+    }
+
+    if (tmp < *nparams && rd_bytes != -1) {
+        param = &params[tmp];
+        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_BYTES,
+                                    VIR_TYPED_PARAM_LLONG, rd_bytes) < 0)
+            goto cleanup;
+        tmp++;
+    }
+
+    if (tmp < *nparams && rd_req != -1) {
+        param = &params[tmp];
+        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_REQ,
+                                    VIR_TYPED_PARAM_LLONG, rd_req) < 0)
+            goto cleanup;
+        tmp++;
+    }
+
+    ret = 0;
+    *nparams = tmp;
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
 }
 
 
@@ -5526,6 +5719,8 @@ static virDriver lxcDriver = {
     .domainGetSchedulerParametersFlags = lxcDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = lxcDomainSetSchedulerParameters, /* 0.5.0 */
     .domainSetSchedulerParametersFlags = lxcDomainSetSchedulerParametersFlags, /* 0.9.2 */
+    .domainBlockStats = lxcDomainBlockStats, /* 1.2.2 */
+    .domainBlockStatsFlags = lxcDomainBlockStatsFlags, /* 1.2.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
     .domainMemoryStats = lxcDomainMemoryStats, /* 1.2.2 */
     .nodeGetCPUStats = lxcNodeGetCPUStats, /* 0.9.3 */
