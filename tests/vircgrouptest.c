@@ -32,6 +32,7 @@
 # include "virerror.h"
 # include "virlog.h"
 # include "virfile.h"
+# include "testutilslxc.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -529,6 +530,128 @@ static int testCgroupAvailable(const void *args)
     return 0;
 }
 
+static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    size_t i;
+    int rv, ret = -1;
+
+    const long long expected_values[] = {
+        119084214273,
+        822880960513,
+        9665167,
+        73283807
+    };
+    const char* names[] = {
+        "bytes read",
+        "bytes written",
+        "requests read",
+        "requests written"
+    };
+    long long values[ARRAY_CARDINALITY(expected_values)];
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_BLKIO),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetBlkioIoServiced(cgroup,
+                                          values, &values[1],
+                                          &values[2], &values[3])) < 0) {
+        fprintf(stderr, "Could not retrieve BlkioIoServiced for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected_values); i++) {
+        if (expected_values[i] != values[i]) {
+            fprintf(stderr,
+                    "Wrong value for %s from virCgroupBlkioIoServiced (expected %lld)\n",
+                    names[i], expected_values[i]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+static int testCgroupGetBlkioIoDeviceServiced(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    size_t i;
+    int rv, ret = -1;
+    const long long expected_values0[] = {
+        59542107136,
+        411440480256,
+        4832583,
+        36641903
+    };
+    const long long expected_values1[] = {
+        59542107137,
+        411440480257,
+        4832584,
+        36641904
+    };
+    const char* names[] = {
+        "bytes read",
+        "bytes written",
+        "requests read",
+        "requests written"
+    };
+    long long values[ARRAY_CARDINALITY(expected_values0)];
+
+    if ((rv = virCgroupNewPartition("/virtualmachines", true,
+                                    (1 << VIR_CGROUP_CONTROLLER_BLKIO),
+                                    &cgroup)) < 0) {
+        fprintf(stderr, "Could not create /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupGetBlkioIoDeviceServiced(cgroup,
+                                                FAKEDEVDIR0,
+                                                values, &values[1],
+                                                &values[2], &values[3])) < 0) {
+        fprintf(stderr, "Could not retrieve BlkioIoDeviceServiced for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected_values0); i++) {
+        if (expected_values0[i] != values[i]) {
+            fprintf(stderr,
+                    "Wrong value for %s from virCgroupGetBlkioIoDeviceServiced (expected %lld)\n",
+                    names[i], expected_values0[i]);
+            goto cleanup;
+        }
+    }
+
+    if ((rv = virCgroupGetBlkioIoDeviceServiced(cgroup,
+                                                FAKEDEVDIR1,
+                                                values, &values[1],
+                                                &values[2], &values[3])) < 0) {
+        fprintf(stderr, "Could not retrieve BlkioIoDeviceServiced for /virtualmachines cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(expected_values1); i++) {
+        if (expected_values1[i] != values[i]) {
+            fprintf(stderr,
+                    "Wrong value for %s from virCgroupGetBlkioIoDeviceServiced (expected %lld)\n",
+                    names[i], expected_values1[i]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
 
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
@@ -569,6 +692,12 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+
+    if (virtTestRun("virCgroupGetBlkioIoServiced works", testCgroupGetBlkioIoServiced, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("virCgroupGetBlkioIoDeviceServiced works", testCgroupGetBlkioIoDeviceServiced, NULL) < 0)
         ret = -1;
 
     setenv("VIR_CGROUP_MOCK_MODE", "allinone", 1);

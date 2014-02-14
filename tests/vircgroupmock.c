@@ -30,10 +30,13 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <stdarg.h>
+# include "testutilslxc.h"
 
 static int (*realopen)(const char *path, int flags, ...);
 static FILE *(*realfopen)(const char *path, const char *mode);
 static int (*realaccess)(const char *path, int mode);
+static int (*realstat)(const char *path, struct stat *sb);
+static int (*real__xstat)(int ver, const char *path, struct stat *sb);
 static int (*reallstat)(const char *path, struct stat *sb);
 static int (*real__lxstat)(int ver, const char *path, struct stat *sb);
 static int (*realmkdir)(const char *path, mode_t mode);
@@ -43,6 +46,8 @@ static int (*realmkdir)(const char *path, mode_t mode);
  * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
  */
 char *fakesysfsdir;
+const char *fakedevicedir0 = FAKEDEVDIR0;
+const char *fakedevicedir1 = FAKEDEVDIR1;
 
 
 # define SYSFS_PREFIX "/not/really/sys/fs/cgroup/"
@@ -332,13 +337,23 @@ static int make_controller(const char *path, mode_t mode)
                   "8:0 Write 411440480256\n"
                   "8:0 Sync 248486822912\n"
                   "8:0 Async 222495764480\n"
-                  "8:0 Total 470982587392\n");
+                  "8:0 Total 470982587392\n"
+                  "9:0 Read 59542107137\n"
+                  "9:0 Write 411440480257\n"
+                  "9:0 Sync 248486822912\n"
+                  "9:0 Async 222495764480\n"
+                  "9:0 Total 470982587392\n");
         MAKE_FILE("blkio.throttle.io_serviced",
                   "8:0 Read 4832583\n"
                   "8:0 Write 36641903\n"
                   "8:0 Sync 30723171\n"
                   "8:0 Async 10751315\n"
-                  "8:0 Total 41474486\n");
+                  "8:0 Total 41474486\n"
+                  "9:0 Read 4832584\n"
+                  "9:0 Write 36641904\n"
+                  "9:0 Sync 30723171\n"
+                  "9:0 Async 10751315\n"
+                  "9:0 Total 41474486\n");
         MAKE_FILE("blkio.throttle.read_bps_device", "");
         MAKE_FILE("blkio.throttle.read_iops_device", "");
         MAKE_FILE("blkio.throttle.write_bps_device", "");
@@ -382,6 +397,7 @@ static void init_syms(void)
     LOAD_SYM(fopen);
     LOAD_SYM(access);
     LOAD_SYM_ALT(lstat, __lxstat);
+    LOAD_SYM_ALT(stat, __xstat);
     LOAD_SYM(mkdir);
     LOAD_SYM(open);
 }
@@ -529,6 +545,14 @@ int __lxstat(int ver, const char *path, struct stat *sb)
         }
         ret = real__lxstat(ver, newpath, sb);
         free(newpath);
+    } else if (STRPREFIX(path, fakedevicedir0)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(8, 0);
+        return 0;
+    } else if (STRPREFIX(path, fakedevicedir1)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(9, 0);
+        return 0;
     } else {
         ret = real__lxstat(ver, path, sb);
     }
@@ -552,8 +576,78 @@ int lstat(const char *path, struct stat *sb)
         }
         ret = reallstat(newpath, sb);
         free(newpath);
+    } else if (STRPREFIX(path, fakedevicedir0)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(8, 0);
+        return 0;
+    } else if (STRPREFIX(path, fakedevicedir1)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(9, 0);
+        return 0;
     } else {
         ret = reallstat(path, sb);
+    }
+    return ret;
+}
+
+int __xstat(int ver, const char *path, struct stat *sb)
+{
+    int ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PREFIX)) {
+        init_sysfs();
+        char *newpath;
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     path + strlen(SYSFS_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+        ret = real__xstat(ver, newpath, sb);
+        free(newpath);
+    } else if (STRPREFIX(path, fakedevicedir0)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(8, 0);
+        return 0;
+    } else if (STRPREFIX(path, fakedevicedir1)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(9, 0);
+        return 0;
+    } else {
+        ret = real__xstat(ver, path, sb);
+    }
+    return ret;
+}
+
+int stat(const char *path, struct stat *sb)
+{
+    int ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PREFIX)) {
+        init_sysfs();
+        char *newpath;
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     path + strlen(SYSFS_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+        ret = realstat(newpath, sb);
+        free(newpath);
+    } else if (STRPREFIX(path, fakedevicedir0)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(8, 0);
+        return 0;
+    } else if (STRPREFIX(path, fakedevicedir1)) {
+        sb->st_mode = S_IFBLK;
+        sb->st_rdev = makedev(9, 0);
+        return 0;
+    } else {
+        ret = realstat(path, sb);
     }
     return ret;
 }
