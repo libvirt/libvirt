@@ -888,7 +888,7 @@ static const vshCmdOptDef opts_domblkstat[] = {
     },
     {.name = "device",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
+     .flags = VSH_OFLAG_EMPTY_OK,
      .help = N_("block device")
     },
     {.name = "human",
@@ -954,8 +954,15 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
+    /* device argument is optional now. if it's missing, supply empty
+       string to denote 'all devices'. A NULL device arg would violate
+       API contract.
+     */
     if (vshCommandOptStringReq(ctl, cmd, "device", &device) < 0)
         goto cleanup;
+
+    if (!device)
+        device = "";
 
     rc = virDomainBlockStatsFlags(dom, device, NULL, &nparams, 0);
 

@@ -7750,7 +7750,9 @@ error:
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
- * elements within //domain/devices/disk.
+ * elements within //domain/devices/disk. Some drivers might also
+ * accept the empty string for the @disk parameter, and then yield
+ * summary stats for the entire domain.
  *
  * Domains may have more than one block device.  To get stats for
  * each you should make multiple calls to this function.
@@ -7816,7 +7818,9 @@ error:
  * an unambiguous source name of the block device (the <source
  * file='...'/> sub-element, such as "/path/to/image").  Valid names
  * can be found by calling virDomainGetXMLDesc() and inspecting
- * elements within //domain/devices/disk.
+ * elements within //domain/devices/disk. Some drivers might also
+ * accept the empty string for the @disk parameter, and then yield
+ * summary stats for the entire domain.
  *
  * Domains may have more than one block device.  To get stats for
  * each you should make multiple calls to this function.
