@@ -207,9 +207,6 @@ typedef int
 (*virStorageFileBackendStat)(virStorageFilePtr file,
                              struct stat *st);
 
-typedef struct _virStorageFileBackend virStorageFileBackend;
-typedef virStorageFileBackend *virStorageFileBackendPtr;
-
 virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
 
 struct _virStorageFileBackend {
