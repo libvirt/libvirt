@@ -697,6 +697,30 @@ int virLXCProcessStop(virLXCDriverPtr driver,
         VIR_FREE(vm->def->seclabels[0]->imagelabel);
     }
 
+    /* If the LXC domain is suspended we send all processes a SIGKILL
+     * and thaw them. Upon wakeup the process sees the pending signal
+     * and dies immediately. It is guaranteed that priv->cgroup != NULL
+     * here because the domain has aleady been suspended using the
+     * freezer cgroup.
+     */
+    if (reason == VIR_DOMAIN_SHUTOFF_DESTROYED &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        if (virCgroupKillRecursive(priv->cgroup, SIGKILL) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to kill all processes"));
+            return -1;
+        }
+
+        if (virCgroupSetFreezerState(priv->cgroup, "THAWED") < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Unable to thaw all processes"));
+
+            return -1;
+        }
+
+        goto cleanup;
+    }
+
     if (priv->cgroup) {
         rc = virCgroupKillPainfully(priv->cgroup);
         if (rc < 0)
@@ -716,6 +740,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
         }
     }
 
+cleanup:
     virLXCProcessCleanup(driver, vm, reason);
 
     return 0;
