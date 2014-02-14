@@ -570,6 +570,7 @@ virStorageFileBackendGlusterInit(virStorageFilePtr file)
 error:
     VIR_FREE(priv->volname);
     glfs_fini(priv->vol);
+    VIR_FREE(priv);
 
     return -1;
 }
