@@ -334,7 +334,7 @@ lxcFstabWalkCallback(const char* name, virConfValuePtr value, void * data)
 
 static virDomainNetDefPtr
 lxcCreateNetDef(const char *type,
-                const char *link,
+                const char *linkdev,
                 const char *mac,
                 const char *flag,
                 const char *macvlanmode)
@@ -357,18 +357,18 @@ lxcCreateNetDef(const char *type,
         net->mac = macAddr;
 
     if (STREQ(type, "veth")) {
-        if (!link)
+        if (!linkdev)
             goto error;
 
         net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
-        if (VIR_STRDUP(net->data.bridge.brname, link) < 0)
+        if (VIR_STRDUP(net->data.bridge.brname, linkdev) < 0)
             goto error;
 
     } else if (STREQ(type, "macvlan")) {
         net->type = VIR_DOMAIN_NET_TYPE_DIRECT;
 
-        if (!link || VIR_STRDUP(net->data.direct.linkdev, link) < 0)
+        if (!linkdev || VIR_STRDUP(net->data.direct.linkdev, linkdev) < 0)
             goto error;
 
         if (!macvlanmode || STREQ(macvlanmode, "private"))
@@ -411,7 +411,7 @@ lxcCreateHostdevDef(int mode, int type, const char *data)
 static int
 lxcAddNetworkDefinition(virDomainDefPtr def,
                         const char *type,
-                        const char *link,
+                        const char *linkdev,
                         const char *mac,
                         const char *flag,
                         const char *macvlanmode,
@@ -428,14 +428,14 @@ lxcAddNetworkDefinition(virDomainDefPtr def,
     isPhys = STREQ(type, "phys");
     isVlan = STREQ(type, "vlan");
     if (type != NULL && (isPhys || isVlan)) {
-        if (!link) {
+        if (!linkdev) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Missing 'link' attribute for NIC"));
             goto error;
         }
         if (!(hostdev = lxcCreateHostdevDef(VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
                                             VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET,
-                                            link)))
+                                            linkdev)))
             goto error;
 
         /* This still requires the user to manually setup the vlan interface
@@ -443,7 +443,7 @@ lxcAddNetworkDefinition(virDomainDefPtr def,
         if (isVlan && vlanid) {
             VIR_FREE(hostdev->source.caps.u.net.iface);
             if (virAsprintf(&hostdev->source.caps.u.net.iface,
-                            "%s.%s", link, vlanid) < 0)
+                            "%s.%s", linkdev, vlanid) < 0)
                 goto error;
         }
 
@@ -451,7 +451,7 @@ lxcAddNetworkDefinition(virDomainDefPtr def,
             goto error;
         def->hostdevs[def->nhostdevs - 1] = hostdev;
     } else {
-        if (!(net = lxcCreateNetDef(type, link, mac, flag, macvlanmode)))
+        if (!(net = lxcCreateNetDef(type, linkdev, mac, flag, macvlanmode)))
             goto error;
 
         if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
