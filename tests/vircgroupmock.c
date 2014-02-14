@@ -215,7 +215,7 @@ static int make_controller(const char *path, mode_t mode)
                   "user 216687025\n"
                   "system 43421396\n");
         MAKE_FILE("cpuacct.usage", "2787788855799582\n");
-        MAKE_FILE("cpuacct.usage_per_cpu", "1413142688153030 1374646168910542\n");
+        MAKE_FILE("cpuacct.usage_percpu", "1413142688153030 1374646168910542\n");
     } else if (STRPREFIX(controller, "cpuset")) {
         MAKE_FILE("cpuset.cpu_exclusive", "1\n");
         if (STREQ(controller, "cpuset"))
