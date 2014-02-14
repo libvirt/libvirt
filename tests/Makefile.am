@@ -72,6 +72,7 @@ EXTRA_DIST =		\
 	domainsnapshotxml2xmlout \
 	fchostdata \
 	interfaceschemadata \
+	lxcconf2xmldata \
 	lxcxml2xmldata \
 	lxcxml2xmloutdata \
 	networkschematest \
