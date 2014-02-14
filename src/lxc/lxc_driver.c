@@ -5195,6 +5195,61 @@ lxcNodeGetInfo(virConnectPtr conn,
 
 
 static int
+lxcDomainMemoryStats(virDomainPtr dom,
+                     struct _virDomainMemoryStat *stats,
+                     unsigned int nr_stats,
+                     unsigned int flags)
+{
+    virDomainObjPtr vm;
+    int ret = -1;
+    virLXCDomainObjPrivatePtr priv;
+    unsigned long long swap_usage;
+    unsigned long mem_usage;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virCgroupGetMemSwapUsage(priv->cgroup, &swap_usage))
+        goto cleanup;
+
+    if (!virCgroupGetMemoryUsage(priv->cgroup, &mem_usage))
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm))
+        goto cleanup;
+
+    ret = 0;
+    if (ret < nr_stats) {
+        stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON;
+        stats[ret].val = vm->def->mem.cur_balloon;
+        ret++;
+    }
+    if (ret < nr_stats) {
+        stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_SWAP_IN;
+        stats[ret].val = swap_usage;
+        ret++;
+    }
+    if (ret < nr_stats) {
+        stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
+        stats[ret].val = mem_usage;
+        ret++;
+    }
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+
+static int
 lxcNodeGetCPUStats(virConnectPtr conn,
                    int cpuNum,
                    virNodeCPUStatsPtr params,
@@ -5424,6 +5479,7 @@ static virDriver lxcDriver = {
     .domainSetSchedulerParameters = lxcDomainSetSchedulerParameters, /* 0.5.0 */
     .domainSetSchedulerParametersFlags = lxcDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
+    .domainMemoryStats = lxcDomainMemoryStats, /* 1.2.2 */
     .nodeGetCPUStats = lxcNodeGetCPUStats, /* 0.9.3 */
     .nodeGetMemoryStats = lxcNodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = lxcNodeGetCellsFreeMemory, /* 0.6.5 */
