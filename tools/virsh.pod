@@ -2327,6 +2327,21 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
+=item B<net-event> {[I<network>] I<event> [I<--loop>] [I<--timeout>
+I<seconds>] | I<--list>}
+
+Wait for a class of network events to occur, and print appropriate details
+of events as they happen.  The events can optionally be filtered by
+I<network>.  Using I<--list> as the only argument will provide a list
+of possible I<event> values known by this client, although the connection
+might not allow registering for all these events.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.   With I<--loop>, the command prints all
+events until a timeout or interrupt key.
+
 =item B<net-info> I<network>
 
 Returns basic information about the I<network> object.
