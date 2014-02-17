@@ -11051,6 +11051,35 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
 }
 
 
+int
+virDomainDefMaybeAddInput(virDomainDefPtr def,
+                          int type,
+                          int bus)
+{
+    size_t i;
+    virDomainInputDefPtr input;
+
+    for (i = 0; i < def->ninputs; i++) {
+        if (def->inputs[i]->type == type &&
+            def->inputs[i]->bus == bus)
+            return 0;
+    }
+
+    if (VIR_ALLOC(input) < 0)
+        return -1;
+
+    input->type = type;
+    input->bus = bus;
+
+    if (VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input) < 0) {
+        VIR_FREE(input);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /* Parse a memory element located at XPATH within CTXT, and store the
  * result into MEM.  If REQUIRED, then the value must exist;
  * otherwise, the value is optional.  The value is in blocks of 1024.
@@ -12464,25 +12493,15 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* If graphics are enabled, there's an implicit PS2 mouse */
     if (def->ngraphics > 0) {
-        virDomainInputDefPtr input;
+        int input_bus = VIR_DOMAIN_INPUT_BUS_XEN;
 
-        if (VIR_ALLOC(input) < 0) {
-            goto error;
-        }
-        if (STREQ(def->os.type, "hvm")) {
-            input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
-            input->bus = VIR_DOMAIN_INPUT_BUS_PS2;
-        } else {
-            input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
-            input->bus = VIR_DOMAIN_INPUT_BUS_XEN;
-        }
+        if (STREQ(def->os.type, "hvm"))
+            input_bus = VIR_DOMAIN_INPUT_BUS_PS2;
 
-        if (VIR_REALLOC_N(def->inputs, def->ninputs + 1) < 0) {
-            virDomainInputDefFree(input);
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                                      input_bus) < 0)
             goto error;
-        }
-        def->inputs[def->ninputs] = input;
-        def->ninputs++;
     }
 
 
