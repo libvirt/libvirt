@@ -886,14 +886,18 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             goto cleanup;
         if (str &&
             (STREQ(str, "tablet") ||
-             STREQ(str, "mouse"))) {
+             STREQ(str, "mouse") ||
+             STREQ(str, "keyboard"))) {
             virDomainInputDefPtr input;
             if (VIR_ALLOC(input) < 0)
                 goto cleanup;
             input->bus = VIR_DOMAIN_INPUT_BUS_USB;
-            input->type = STREQ(str, "tablet") ?
-                VIR_DOMAIN_INPUT_TYPE_TABLET :
-                VIR_DOMAIN_INPUT_TYPE_MOUSE;
+            if (STREQ(str, "mouse"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
+            else if (STREQ(str, "tablet"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
+            else if (STREQ(str, "keyboard"))
+                input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
             if (VIR_ALLOC_N(def->inputs, 1) < 0) {
                 virDomainInputDefFree(input);
                 goto cleanup;
@@ -1746,10 +1750,20 @@ virConfPtr xenFormatXM(virConnectPtr conn,
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenXMConfigSetInt(conf, "usb", 1) < 0)
                     goto cleanup;
-                if (xenXMConfigSetString(conf, "usbdevice",
-                                         def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
-                                         "mouse" : "tablet") < 0)
-                    goto cleanup;
+                switch (def->inputs[i]->type) {
+                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                        if (xenXMConfigSetString(conf, "usbdevice", "mouse") < 0)
+                            goto cleanup;
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                        if (xenXMConfigSetString(conf, "usbdevice", "tablet") < 0)
+                            goto cleanup;
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_KBD:
+                        if (xenXMConfigSetString(conf, "usbdevice", "keyboard") < 0)
+                            goto cleanup;
+                        break;
+                }
                 break;
             }
         }

@@ -724,21 +724,23 @@ xenParseSxprUSB(virDomainDefPtr def,
             tmp = sexpr_node(node, "usbdevice");
             if (tmp && *tmp) {
                 if (STREQ(tmp, "tablet") ||
-                    STREQ(tmp, "mouse")) {
+                    STREQ(tmp, "mouse") ||
+                    STREQ(tmp, "keyboard")) {
                     virDomainInputDefPtr input;
                     if (VIR_ALLOC(input) < 0)
                         goto error;
                     input->bus = VIR_DOMAIN_INPUT_BUS_USB;
                     if (STREQ(tmp, "tablet"))
                         input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
-                    else
+                    else if (STREQ(tmp, "mouse"))
                         input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
+                    else
+                        input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
 
-                    if (VIR_REALLOC_N(def->inputs, def->ninputs+1) < 0) {
+                    if (VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input) < 0) {
                         VIR_FREE(input);
                         goto error;
                     }
-                    def->inputs[def->ninputs++] = input;
                 } else {
                     /* XXX Handle other non-input USB devices later */
                 }
@@ -2144,15 +2146,24 @@ xenFormatSxprInput(virDomainInputDefPtr input,
         return 0;
 
     if (input->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
-        input->type != VIR_DOMAIN_INPUT_TYPE_TABLET) {
+        input->type != VIR_DOMAIN_INPUT_TYPE_TABLET &&
+        input->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input type %d"), input->type);
         return -1;
     }
 
-    virBufferAsprintf(buf, "(usbdevice %s)",
-                      input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
-                      "mouse" : "tablet");
+    switch (input->type) {
+        case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+            virBufferAsprintf(buf, "(usbdevice %s)", "mouse");
+            break;
+        case VIR_DOMAIN_INPUT_TYPE_TABLET:
+            virBufferAsprintf(buf, "(usbdevice %s)", "tablet");
+            break;
+        case VIR_DOMAIN_INPUT_TYPE_KBD:
+            virBufferAsprintf(buf, "(usbdevice %s)", "keyboard");
+            break;
+    }
 
     return 0;
 }
