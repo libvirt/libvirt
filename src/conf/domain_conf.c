@@ -18638,8 +18638,11 @@ virDomainNetGetActualVirtPortProfile(virDomainNetDefPtr iface)
 virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
 {
+    /* if there is an ActualNetDef, *always* return
+     * its bandwidth rather than the NetDef's bandwidth.
+     */
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        iface->data.network.actual && iface->data.network.actual->bandwidth) {
+        iface->data.network.actual) {
         return iface->data.network.actual->bandwidth;
     }
     return iface->bandwidth;
@@ -18648,13 +18651,18 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
 virNetDevVlanPtr
 virDomainNetGetActualVlan(virDomainNetDefPtr iface)
 {
+    virNetDevVlanPtr vlan = &iface->vlan;
+
+    /* if there is an ActualNetDef, *always* return
+     * its vlan rather than the NetDef's vlan.
+     */
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-        iface->data.network.actual &&
-        iface->data.network.actual->vlan.nTags > 0)
-        return &iface->data.network.actual->vlan;
-    if (iface->vlan.nTags > 0)
-        return &iface->vlan;
-    return 0;
+        iface->data.network.actual)
+        vlan = &iface->data.network.actual->vlan;
+
+    if (vlan->nTags > 0)
+        return vlan;
+    return NULL;
 }
 
 /* Return listens[i] from the appropriate union for the graphics
