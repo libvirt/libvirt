@@ -30,6 +30,8 @@
     <controller type='usb' index='0'/>
     <controller type='scsi' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <input type='keyboard' bus='usb'/>
+    <input type='mouse' bus='usb'/>
     <graphics type='sdl'/>
     <video>
       <model type='cirrus' vram='9216' heads='1'/>

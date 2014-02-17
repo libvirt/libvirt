@@ -691,6 +691,8 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
     bool addDefaultMemballoon = true;
+    bool addDefaultUSBKBD = false;
+    bool addDefaultUSBMouse = false;
 
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
@@ -732,9 +734,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
        addDefaultMemballoon = false;
        break;
 
+    case VIR_ARCH_PPC64:
+        addPCIRoot = true;
+        addDefaultUSBKBD = true;
+        addDefaultUSBMouse = true;
+        break;
+
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:
-    case VIR_ARCH_PPC64:
     case VIR_ARCH_PPCEMB:
     case VIR_ARCH_SH4:
     case VIR_ARCH_SH4EB:
@@ -786,6 +793,20 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
         def->memballoon = memballoon;
     }
+
+    if (addDefaultUSBKBD &&
+        def->ngraphics > 0 &&
+        virDomainDefMaybeAddInput(def,
+                                  VIR_DOMAIN_INPUT_TYPE_KBD,
+                                  VIR_DOMAIN_INPUT_BUS_USB) < 0)
+        return -1;
+
+    if (addDefaultUSBMouse &&
+        def->ngraphics > 0 &&
+        virDomainDefMaybeAddInput(def,
+                                  VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                                  VIR_DOMAIN_INPUT_BUS_USB) < 0)
+        return -1;
 
     return 0;
 }
