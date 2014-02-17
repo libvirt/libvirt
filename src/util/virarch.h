@@ -70,6 +70,8 @@ typedef enum {
     VIR_ARCH_LAST,
 } virArch;
 
+# define ARCH_IS_X86(arch)  ((arch) == VIR_ARCH_X86_64 ||\
+                             (arch) == VIR_ARCH_I686)
 
 typedef enum {
     VIR_ARCH_LITTLE_ENDIAN,

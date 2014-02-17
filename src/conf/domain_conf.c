@@ -7839,10 +7839,12 @@ virDomainInputDefParseXML(const virDomainDef *dom,
     } else {
         if (STREQ(dom->os.type, "hvm")) {
             if ((def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
-                def->type == VIR_DOMAIN_INPUT_TYPE_KBD))
+                def->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
+                (ARCH_IS_X86(dom->os.arch) || dom->os.arch == VIR_ARCH_NONE)) {
                 def->bus = VIR_DOMAIN_INPUT_BUS_PS2;
-            else
+            } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
+            }
         } else {
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         }
@@ -12498,7 +12500,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* If graphics are enabled, there's an implicit PS2 mouse */
-    if (def->ngraphics > 0) {
+    if (def->ngraphics > 0 &&
+        (ARCH_IS_X86(def->os.arch) || def->os.arch == VIR_ARCH_NONE)) {
         int input_bus = VIR_DOMAIN_INPUT_BUS_XEN;
 
         if (STREQ(def->os.type, "hvm"))
@@ -17531,20 +17534,22 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->ngraphics > 0) {
         /* If graphics is enabled, add the implicit mouse/keyboard */
-        virDomainInputDef autoInput = {
-            VIR_DOMAIN_INPUT_TYPE_MOUSE,
-            STREQ(def->os.type, "hvm") ?
-            VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN,
-            { .alias = NULL },
-        };
+        if ((ARCH_IS_X86(def->os.arch)) || def->os.arch == VIR_ARCH_NONE) {
+            virDomainInputDef autoInput = {
+                VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                STREQ(def->os.type, "hvm") ?
+                VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN,
+                { .alias = NULL },
+            };
 
-        if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
-            goto error;
-
-        if (!(flags & VIR_DOMAIN_XML_MIGRATABLE)) {
-            autoInput.type = VIR_DOMAIN_INPUT_TYPE_KBD;
             if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
                 goto error;
+
+            if (!(flags & VIR_DOMAIN_XML_MIGRATABLE)) {
+                autoInput.type = VIR_DOMAIN_INPUT_TYPE_KBD;
+                if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
+                    goto error;
+            }
         }
 
         for (n = 0; n < def->ngraphics; n++)
