@@ -249,6 +249,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "enable-fips",
               "spice-file-xfer-disable",
               "spiceport",
+
+              "usb-kbd", /* 165 */
     );
 
 struct _virQEMUCaps {
@@ -1403,6 +1405,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-mmio", QEMU_CAPS_DEVICE_VIRTIO_MMIO },
     { "ich9-intel-hda", QEMU_CAPS_DEVICE_ICH9_INTEL_HDA },
     { "pvpanic", QEMU_CAPS_DEVICE_PANIC },
+    { "usb-kbd", QEMU_CAPS_DEVICE_USB_KBD },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

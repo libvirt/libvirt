@@ -139,4 +139,5 @@
     <flag name='reboot-timeout'/>
     <flag name='spice-file-xfer-disable'/>
     <flag name='spiceport'/>
+    <flag name='usb-kbd'/>
   </qemuCaps>
