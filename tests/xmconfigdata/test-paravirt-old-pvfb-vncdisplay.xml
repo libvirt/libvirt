@@ -27,6 +27,7 @@
       <target type='xen' port='0'/>
     </console>
     <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
     <graphics type='vnc' port='5925' autoport='no' listen='127.0.0.1' passwd='123poi'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>

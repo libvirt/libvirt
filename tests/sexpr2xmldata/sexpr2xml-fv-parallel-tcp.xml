@@ -41,6 +41,7 @@
       <target port='0'/>
     </parallel>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='5901' autoport='no'/>
   </devices>
 </domain>

@@ -12,6 +12,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='5903' autoport='no' keymap='de' passwd='password'/>
     <video>
       <model type='vmvga' vram='4096'/>

@@ -44,6 +44,7 @@
       <target type='serial' port='0'/>
     </console>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>

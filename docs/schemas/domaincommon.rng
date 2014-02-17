@@ -3269,6 +3269,7 @@
         <choice>
           <value>tablet</value>
           <value>mouse</value>
+          <value>keyboard</value>
         </choice>
       </attribute>
       <optional>

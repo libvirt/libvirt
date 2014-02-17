@@ -22,6 +22,7 @@
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
     <graphics type='vnc' port='5903' autoport='no' listen='127.0.0.1'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>

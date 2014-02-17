@@ -36,6 +36,7 @@
       <target dev='vif3.0'/>
     </interface>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes' keymap='ja'/>
   </devices>
 </domain>

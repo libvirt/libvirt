@@ -22,6 +22,7 @@
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' listen='1.2.3.4' autoport='yes'>
       <listen type='address' address='1.2.3.4'/>
       <listen type='network' network='Bobsnetwork'/>

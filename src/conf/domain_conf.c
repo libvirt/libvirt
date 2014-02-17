@@ -507,7 +507,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
-              "tablet")
+              "tablet",
+              "keyboard")
 
 VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
               "ps2",
@@ -7773,7 +7774,7 @@ error:
 
 /* Parse the XML definition for an input device */
 static virDomainInputDefPtr
-virDomainInputDefParseXML(const char *ostype,
+virDomainInputDefParseXML(const virDomainDef *dom,
                           xmlNodePtr node,
                           unsigned int flags)
 {
@@ -7806,9 +7807,10 @@ virDomainInputDefParseXML(const char *ostype,
             goto error;
         }
 
-        if (STREQ(ostype, "hvm")) {
-            if (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 && /* Only allow mouse for ps2 */
-                def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE) {
+        if (STREQ(dom->os.type, "hvm")) {
+            if (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
+                def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+                def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("ps2 bus does not support %s input device"),
                                type);
@@ -7826,7 +7828,8 @@ virDomainInputDefParseXML(const char *ostype,
                                _("unsupported input bus %s"),
                                bus);
             }
-            if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE) {
+            if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+                def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("xen bus does not support %s input device"),
                                type);
@@ -7834,8 +7837,9 @@ virDomainInputDefParseXML(const char *ostype,
             }
         }
     } else {
-        if (STREQ(ostype, "hvm")) {
-            if (def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE)
+        if (STREQ(dom->os.type, "hvm")) {
+            if ((def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+                def->type == VIR_DOMAIN_INPUT_TYPE_KBD))
                 def->bus = VIR_DOMAIN_INPUT_BUS_PS2;
             else
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
@@ -9857,7 +9861,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
-        if (!(dev->data.input = virDomainInputDefParseXML(def->os.type,
+        if (!(dev->data.input = virDomainInputDefParseXML(def,
                                                           node, flags)))
             goto error;
         break;
@@ -12442,7 +12446,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainInputDefPtr input = virDomainInputDefParseXML(def->os.type,
+        virDomainInputDefPtr input = virDomainInputDefParseXML(def,
                                                                nodes[i],
                                                                flags);
         if (!input)
@@ -12462,10 +12466,12 @@ virDomainDefParseXML(xmlDocPtr xml,
          * XXX will this be true for other virt types ? */
         if ((STREQ(def->os.type, "hvm") &&
              input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
-             input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE) ||
+             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+              input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
             (STRNEQ(def->os.type, "hvm") &&
              input->bus == VIR_DOMAIN_INPUT_BUS_XEN &&
-             input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE)) {
+             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+              input->type == VIR_DOMAIN_INPUT_TYPE_KBD))) {
             virDomainInputDefFree(input);
             continue;
         }
@@ -12502,8 +12508,12 @@ virDomainDefParseXML(xmlDocPtr xml,
                                       VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                       input_bus) < 0)
             goto error;
-    }
 
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_KBD,
+                                      input_bus) < 0)
+            goto error;
+    }
 
     /* analysis of the sound devices */
     if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0) {
@@ -17520,7 +17530,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (def->ngraphics > 0) {
-        /* If graphics is enabled, add the implicit mouse */
+        /* If graphics is enabled, add the implicit mouse/keyboard */
         virDomainInputDef autoInput = {
             VIR_DOMAIN_INPUT_TYPE_MOUSE,
             STREQ(def->os.type, "hvm") ?
@@ -17530,6 +17540,12 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
             goto error;
+
+        if (!(flags & VIR_DOMAIN_XML_MIGRATABLE)) {
+            autoInput.type = VIR_DOMAIN_INPUT_TYPE_KBD;
+            if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
+                goto error;
+        }
 
         for (n = 0; n < def->ngraphics; n++)
             if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)

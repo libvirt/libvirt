@@ -24,6 +24,7 @@
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='5900' autoport='no' listen='127.0.0.1' sharePolicy='allow-exclusive'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>

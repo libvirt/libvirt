@@ -31,6 +31,7 @@
       <target type='xen' port='0'/>
     </console>
     <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
     <graphics type='vnc' port='-1' autoport='yes'/>
   </devices>
 </domain>

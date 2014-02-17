@@ -32,6 +32,7 @@
     </console>
     <input type='tablet' bus='usb'/>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>

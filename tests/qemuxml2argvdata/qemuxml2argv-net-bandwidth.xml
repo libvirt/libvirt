@@ -60,6 +60,7 @@
     </console>
     <input type='tablet' bus='usb'/>
     <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes'/>
     <sound model='ac97'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
