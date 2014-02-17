@@ -98,7 +98,7 @@
 %else
     %define with_storage_sheepdog 0
 %endif
-%if 0%{?fedora} >= 19
+%if 0%{?fedora} >= 19 || 0%{?rhel >= 6}
     %define with_storage_gluster 0%{!?_without_storage_gluster:%{server_drivers}}
 %else
     %define with_storage_gluster 0
@@ -151,6 +151,13 @@
 # Numactl is not available on s390[x] and ARM
 %ifarch s390 s390x %{arm}
     %define with_numactl 0
+%endif
+
+# libgfapi is built only on x86_64 on rhel
+%ifnarch x86_64
+    %if 0%{?rhel >= 6}
+        %define with_storage_gluster 0
+    %endif
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, UML, PowerHypervisor,
@@ -571,8 +578,13 @@ BuildRequires: ceph-devel
     %endif
 %endif
 %if %{with_storage_gluster}
+    %if 0%{?rhel} >= 6
+BuildRequires: glusterfs-api-devel >= 3.4.0
+BuildRequires: glusterfs-devel >= 3.4.0
+    %else
 BuildRequires: glusterfs-api-devel >= 3.4.1
 BuildRequires: glusterfs-devel >= 3.4.1
+    %endif
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
