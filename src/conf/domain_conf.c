@@ -123,7 +123,8 @@ VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "hyperv",
               "vbox",
               "phyp",
-              "parallels")
+              "parallels",
+              "bhyve")
 
 VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "fd",

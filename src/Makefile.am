@@ -512,6 +512,7 @@ DRIVER_SOURCE_FILES = \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES = \
+	$(BHYVE_DRIVER_SOURCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
 	$(LXC_DRIVER_SOURCES) \
@@ -771,6 +772,16 @@ PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_utils.h			\
 		parallels/parallels_storage.c		\
 		parallels/parallels_network.c
+
+BHYVE_DRIVER_SOURCES =						\
+		bhyve/bhyve_command.c				\
+		bhyve/bhyve_command.h				\
+		bhyve/bhyve_driver.h				\
+		bhyve/bhyve_driver.c				\
+		bhyve/bhyve_process.c				\
+		bhyve/bhyve_process.h				\
+		bhyve/bhyve_utils.h				\
+		$(NULL)
 
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c \
@@ -1308,6 +1319,26 @@ libvirt_driver_parallels_la_CFLAGS = \
 libvirt_driver_parallels_la_SOURCES = $(PARALLELS_DRIVER_SOURCES)
 endif WITH_PARALLELS
 
+if WITH_BHYVE
+noinst_LTLIBRARIES += libvirt_driver_bhyve_impl.la
+libvirt_driver_bhyve_la_SOURCES =
+libvirt_driver_bhyve_la_LIBADD = libvirt_driver_bhyve_impl.la
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_bhyve.la
+libvirt_driver_bhyve_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_bhyve_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
+else ! WITH_DRIVER_MODULES
+noinst_LTLIBRARIES += libvirt_driver_bhyve.la
+endif ! WITH_DRIVER_MODULES
+
+libvirt_driver_bhyve_impl_la_CFLAGS = \
+	-I$(top_srcdir)/src/access \
+	-I$(top_srcdir)/src/conf \
+	$(AM_CFLAGS)
+libvirt_driver_bhyve_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_bhyve_impl_la_SOURCES = $(BHYVE_DRIVER_SOURCES)
+endif WITH_BHYVE
+
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network_impl.la
 libvirt_driver_network_la_SOURCES =
@@ -1642,6 +1673,7 @@ EXTRA_DIST +=							\
 		$(HYPERV_DRIVER_SOURCES)			\
 		$(HYPERV_DRIVER_EXTRA_DIST)			\
 		$(PARALLELS_DRIVER_SOURCES)			\
+		$(BHYVE_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\

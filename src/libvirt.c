@@ -96,6 +96,9 @@
 #ifdef WITH_PARALLELS
 # include "parallels/parallels_driver.h"
 #endif
+#ifdef WITH_BHYVE
+# include "bhyve/bhyve_driver.h"
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

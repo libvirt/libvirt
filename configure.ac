@@ -1048,6 +1048,12 @@ fi
 AM_CONDITIONAL([WITH_PARALLELS], [test "$with_parallels" = "yes"])
 
 dnl
+dnl Checks for bhyve driver
+dnl
+
+LIBVIRT_DRIVER_CHECK_BHYVE
+
+dnl
 dnl check for shell that understands <> redirection without truncation,
 dnl needed by src/qemu/qemu_monitor_{text,json}.c.
 dnl
@@ -2705,6 +2711,7 @@ AC_MSG_NOTICE([     PHYP: $with_phyp])
 AC_MSG_NOTICE([      ESX: $with_esx])
 AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
 AC_MSG_NOTICE([Parallels: $with_parallels])
+LIBVIRT_DRIVER_RESULT_BHYVE
 AC_MSG_NOTICE([     Test: $with_test])
 AC_MSG_NOTICE([   Remote: $with_remote])
 AC_MSG_NOTICE([  Network: $with_network])

@@ -77,6 +77,9 @@
 # ifdef WITH_VBOX
 #  include "vbox/vbox_driver.h"
 # endif
+# ifdef WITH_BHYVE
+#  include "bhyve/bhyve_driver.h"
+# endif
 # ifdef WITH_NETWORK
 #  include "network/bridge_driver.h"
 # endif
@@ -405,6 +408,9 @@ static void daemonInitialize(void)
 # ifdef WITH_VBOX
     virDriverLoadModule("vbox");
 # endif
+# ifdef WITH_BHYVE
+    virDriverLoadModule("bhyve");
+# endif
 #else
 # ifdef WITH_NETWORK
     networkRegister();
@@ -441,6 +447,9 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_VBOX
     vboxRegister();
+# endif
+# ifdef WITH_BHYVE
+    bhyveRegister();
 # endif
 #endif
 }
