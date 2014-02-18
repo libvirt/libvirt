@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2014-01-16 20:33-0500\n"
+"POT-Creation-Date: 2014-02-18 18:12-0500\n"
 "PO-Revision-Date: 2013-09-26 08:41+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
@@ -280,28 +280,28 @@ msgstr "ഉപയോക്താവിനുള്ള ഡയറക്ടറി �
 msgid "unable to create rundir %s: %s"
 msgstr "rundir %s ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: daemon/qemu_dispatch.h:38 daemon/qemu_dispatch.h:102 daemon/remote.c:805
-#: daemon/remote.c:1000 daemon/remote.c:1050 daemon/remote.c:1110
-#: daemon/remote.c:1163 daemon/remote.c:1223 daemon/remote.c:1278
-#: daemon/remote.c:1341 daemon/remote.c:1392 daemon/remote.c:1438
-#: daemon/remote.c:1495 daemon/remote.c:1537 daemon/remote.c:1600
-#: daemon/remote.c:1640 daemon/remote.c:1692 daemon/remote.c:1774
-#: daemon/remote.c:1829 daemon/remote.c:1878 daemon/remote.c:1941
-#: daemon/remote.c:2004 daemon/remote.c:2068 daemon/remote.c:2140
-#: daemon/remote.c:2209 daemon/remote.c:2251 daemon/remote.c:3043
-#: daemon/remote.c:3093 daemon/remote.c:3134 daemon/remote.c:3212
-#: daemon/remote.c:3249 daemon/remote.c:3282 daemon/remote.c:3331
-#: daemon/remote.c:3377 daemon/remote.c:3418 daemon/remote.c:3469
-#: daemon/remote.c:3527 daemon/remote.c:3581 daemon/remote.c:3630
-#: daemon/remote.c:3677 daemon/remote.c:3717 daemon/remote.c:3762
-#: daemon/remote.c:3824 daemon/remote.c:3896 daemon/remote.c:3957
-#: daemon/remote.c:4023 daemon/remote.c:4092 daemon/remote.c:4152
-#: daemon/remote.c:4216 daemon/remote.c:4275 daemon/remote.c:4334
-#: daemon/remote.c:4393 daemon/remote.c:4452 daemon/remote.c:4512
-#: daemon/remote.c:4570 daemon/remote.c:4616 daemon/remote.c:4666
-#: daemon/remote.c:4720 daemon/remote.c:4777 daemon/remote.c:4838
-#: daemon/remote.c:4908 daemon/remote.c:4969 daemon/remote.c:5027
-#: daemon/remote.c:5078 daemon/remote.c:5133 daemon/remote.c:5182
+#: daemon/qemu_dispatch.h:38 daemon/qemu_dispatch.h:102 daemon/remote.c:853
+#: daemon/remote.c:1048 daemon/remote.c:1098 daemon/remote.c:1158
+#: daemon/remote.c:1211 daemon/remote.c:1271 daemon/remote.c:1326
+#: daemon/remote.c:1389 daemon/remote.c:1440 daemon/remote.c:1486
+#: daemon/remote.c:1543 daemon/remote.c:1585 daemon/remote.c:1648
+#: daemon/remote.c:1688 daemon/remote.c:1740 daemon/remote.c:1822
+#: daemon/remote.c:1877 daemon/remote.c:1926 daemon/remote.c:1989
+#: daemon/remote.c:2052 daemon/remote.c:2116 daemon/remote.c:2188
+#: daemon/remote.c:2257 daemon/remote.c:2299 daemon/remote.c:3091
+#: daemon/remote.c:3141 daemon/remote.c:3182 daemon/remote.c:3260
+#: daemon/remote.c:3297 daemon/remote.c:3330 daemon/remote.c:3379
+#: daemon/remote.c:3425 daemon/remote.c:3466 daemon/remote.c:3517
+#: daemon/remote.c:3575 daemon/remote.c:3629 daemon/remote.c:3678
+#: daemon/remote.c:3725 daemon/remote.c:3765 daemon/remote.c:3810
+#: daemon/remote.c:3872 daemon/remote.c:3944 daemon/remote.c:4005
+#: daemon/remote.c:4071 daemon/remote.c:4140 daemon/remote.c:4200
+#: daemon/remote.c:4264 daemon/remote.c:4323 daemon/remote.c:4382
+#: daemon/remote.c:4441 daemon/remote.c:4500 daemon/remote.c:4560
+#: daemon/remote.c:4618 daemon/remote.c:4664 daemon/remote.c:4714
+#: daemon/remote.c:4768 daemon/remote.c:4825 daemon/remote.c:4886
+#: daemon/remote.c:4956 daemon/remote.c:5017 daemon/remote.c:5075
+#: daemon/remote.c:5126 daemon/remote.c:5181 daemon/remote.c:5230
 #: daemon/remote_dispatch.h:143 daemon/remote_dispatch.h:213
 #: daemon/remote_dispatch.h:347 daemon/remote_dispatch.h:397
 #: daemon/remote_dispatch.h:448 daemon/remote_dispatch.h:498
@@ -419,226 +419,226 @@ msgstr "rundir %s ഉണ്ടാക്കുവാന്‍ സാധ്യമ�
 msgid "connection not open"
 msgstr "കണക്ഷന്‍ തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: daemon/remote.c:60 src/remote/remote_driver.c:59
+#: daemon/remote.c:62 src/remote/remote_driver.c:59
 #, c-format
 msgid "conversion from hyper to %s overflowed"
 msgstr "hyper-ഇല്‍ നിന്ന് %s-ഇലേക്ക് മാറ്റുമ്പോള്‍ കവിഞ്ഞൊഴുകി"
 
-#: daemon/remote.c:712 src/locking/lock_daemon.c:784
+#: daemon/remote.c:760 src/locking/lock_daemon.c:784
 #: src/util/virnetdevmacvlan.c:80
 msgid "unable to init mutex"
 msgstr "mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: daemon/remote.c:741
+#: daemon/remote.c:789
 msgid "connection already open"
 msgstr "കണക്ഷന്‍ നിലവില്‍ ലഭ്യമാണു്"
 
-#: daemon/remote.c:747
+#: daemon/remote.c:795
 msgid "keepalive support is required to connect"
 msgstr "കണക്റ്റ് ചെയ്യാന്‍ കീപ്‌എലൈവ് പിന്തുണ ആവശ്യമാണ്‌"
 
-#: daemon/remote.c:883 daemon/remote.c:968 src/remote/remote_driver.c:1554
+#: daemon/remote.c:931 daemon/remote.c:1016 src/remote/remote_driver.c:1554
 #: src/remote/remote_driver.c:1639
 #, c-format
 msgid "unknown parameter type: %d"
 msgstr "അപരിചിതമായ പരാമീറ്റര്‍ തരം: %d"
 
-#: daemon/remote.c:919 daemon/remote.c:1005 daemon/remote.c:1115
-#: daemon/remote.c:1287 daemon/remote.c:1885 daemon/remote.c:1948
-#: daemon/remote.c:2011 daemon/remote.c:2075 daemon/remote.c:2147
-#: daemon/remote.c:2256 daemon/remote.c:3769 daemon/remote.c:3829
-#: daemon/remote.c:4519
+#: daemon/remote.c:967 daemon/remote.c:1053 daemon/remote.c:1163
+#: daemon/remote.c:1335 daemon/remote.c:1933 daemon/remote.c:1996
+#: daemon/remote.c:2059 daemon/remote.c:2123 daemon/remote.c:2195
+#: daemon/remote.c:2304 daemon/remote.c:3817 daemon/remote.c:3877
+#: daemon/remote.c:4567
 msgid "nparams too large"
 msgstr "nparams വളരെ വലുതു്"
 
-#: daemon/remote.c:932 src/remote/remote_driver.c:1602
+#: daemon/remote.c:980 src/remote/remote_driver.c:1602
 #, c-format
 msgid "Parameter %s too big for destination"
 msgstr "പരാമീറ്റര്‍ %s വളരെ വലുതാണു്"
 
-#: daemon/remote.c:1061 src/remote/remote_driver.c:1392
+#: daemon/remote.c:1109 src/remote/remote_driver.c:1392
 #: src/remote/remote_driver.c:1406 src/remote/remote_driver.c:1455
 #, c-format
 msgid "Too many domains '%d' for limit '%d'"
 msgstr "അനവധി '%d' ഡൊമെയിനുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:1169
+#: daemon/remote.c:1217
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
-#: daemon/remote.c:1236 daemon/remote.c:1353
+#: daemon/remote.c:1284 daemon/remote.c:1401
 msgid "size > maximum buffer size"
 msgstr "വലിപ്പും > ഏറ്റവും കൂടിയ ബഫര്‍ വലിപ്പം"
 
-#: daemon/remote.c:1462
+#: daemon/remote.c:1510
 msgid "failed to copy security label"
 msgstr "സുരക്ഷ ലേബല്‍ പകര്‍ത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: daemon/remote.c:1545
+#: daemon/remote.c:1593
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
 
-#: daemon/remote.c:1551 daemon/remote.c:1706
+#: daemon/remote.c:1599 daemon/remote.c:1754
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 
-#: daemon/remote.c:1700
+#: daemon/remote.c:1748
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#: daemon/remote.c:2384
+#: daemon/remote.c:2432
 msgid "client tried invalid SASL init request"
 msgstr "തെറ്റായ SASL init ആവശ്യം ക്ലയന്റ് ശ്രമിച്ചു"
 
-#: daemon/remote.c:2432 daemon/remote.c:2581 daemon/remote.c:2679
-#: daemon/remote.c:2695 daemon/remote.c:2709 daemon/remote.c:2723
-#: daemon/remote.c:2843 daemon/remote.c:2988 daemon/remote.c:3017
+#: daemon/remote.c:2480 daemon/remote.c:2629 daemon/remote.c:2727
+#: daemon/remote.c:2743 daemon/remote.c:2757 daemon/remote.c:2771
+#: daemon/remote.c:2891 daemon/remote.c:3036 daemon/remote.c:3065
 #: src/util/virerror.c:985
 msgid "authentication failed"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു"
 
-#: daemon/remote.c:2459
+#: daemon/remote.c:2507
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ചോദ്യം ചെയ്ത SSF %d മതിയാകുന്നതല്ല"
 
-#: daemon/remote.c:2512 daemon/remote.c:2610
+#: daemon/remote.c:2560 daemon/remote.c:2658
 msgid "client tried invalid SASL start request"
 msgstr "തെറ്റായ SASL ആരംഭിയ്ക്കുന്നതിനുള്ള ആവശ്യം ക്ലയന്റ് ശ്രമിച്ചു"
 
-#: daemon/remote.c:2530
+#: daemon/remote.c:2578
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl ആരംഭ മറുപടി ഡേറ്റാ വളരെ വലുതു് %d"
 
-#: daemon/remote.c:2627
+#: daemon/remote.c:2675
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr "sasl നടപടി മറുപടി ഡേറ്റാ വളരെ വലുതു് %d"
 
-#: daemon/remote.c:2766 daemon/remote.c:2895
+#: daemon/remote.c:2814 daemon/remote.c:2943
 msgid "client tried invalid PolicyKit init request"
 msgstr "ക്ലയന്റ് തെറ്റായ PolicyKit init ആവശ്യത്തിനായി ശ്രമിച്ചു"
 
-#: daemon/remote.c:2812
+#: daemon/remote.c:2860
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d: %s"
 msgstr "പോളിസി കിറ്റ് %s പ്രവര്‍ത്തി നിഷേധിച്ചിരിയ്ക്കുന്നുസ pid %lld-ല്‍ നിന്നും, uid %d: %s"
 
-#: daemon/remote.c:2839
+#: daemon/remote.c:2887
 msgid "authentication cancelled by user"
 msgstr "ഉപയോക്താവു് ആധികാരികത ഉറപ്പാക്കല്‍ റദ്ദാക്കിയിരിയ്ക്കുന്നു"
 
-#: daemon/remote.c:2841
+#: daemon/remote.c:2889
 #, c-format
 msgid "polkit: %s"
 msgstr "polkit: %s"
 
-#: daemon/remote.c:2901
+#: daemon/remote.c:2949
 msgid "cannot get peer socket identity"
 msgstr "പിയര്‍ സോക്കറ്റ് തിരിച്ചറിയല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: daemon/remote.c:2917
+#: daemon/remote.c:2965
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "പോളിസി കിറ്റ് കോളറിനെ തെരയുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: daemon/remote.c:2924
+#: daemon/remote.c:2972
 #, c-format
 msgid "Failed to create polkit action %s"
 msgstr "polkit പ്രവര്‍ത്തി %s തയ്യാറാക്കുന്നതില്‍ പരാജയം"
 
-#: daemon/remote.c:2934
+#: daemon/remote.c:2982
 #, c-format
 msgid "Failed to create polkit context %s"
 msgstr "പോള്‍കിറ്റ് കോണ്ടെക്സ്റ്റ് %s തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: daemon/remote.c:2952
+#: daemon/remote.c:3000
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "പോളിസി കിറ്റ് ആധികാരികത ഉറപ്പാക്കല്‍ %d %s പരിശോധനയില്‍ പരാജയപ്പെട്ടു"
 
-#: daemon/remote.c:2966
+#: daemon/remote.c:3014
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr ""
 "പോളിസി കിറ്റ് %s പ്രവര്‍ത്തി നിഷേധിച്ചിരിയ്ക്കുന്നുസ pid %lld-ല്‍ നിന്നും, uid %d, ഫലം: %s"
 
-#: daemon/remote.c:3015
+#: daemon/remote.c:3063
 msgid "client tried unsupported PolicyKit init request"
 msgstr "പിന്തുണയില്ലാത്ത  PolicyKit ആവശ്യം ക്ലയന്റ് ശ്രമിച്ചു"
 
-#: daemon/remote.c:3100 daemon/remote.c:3295
+#: daemon/remote.c:3148 daemon/remote.c:3343
 #, c-format
 msgid "domain event %d already registered"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് %d നിലവില്‍ രജിസ്ടര്‍ ചെയ്തിരിയ്ക്കുന്നു"
 
-#: daemon/remote.c:3141 daemon/remote.c:3345
+#: daemon/remote.c:3189 daemon/remote.c:3393
 #, c-format
 msgid "domain event %d not registered"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് %d രജിസ്ടര്‍ ചെയ്തിട്ടില്ല"
 
-#: daemon/remote.c:3290 daemon/remote.c:3339
+#: daemon/remote.c:3338 daemon/remote.c:3387
 #, c-format
 msgid "unsupported event ID %d"
 msgstr "പിന്തുണയില്ലാത്ത ഇവന്റ് ഐഡി %d"
 
-#: daemon/remote.c:3833
+#: daemon/remote.c:3881
 msgid "ncpus too large"
 msgstr "ncpus വളരെ വലുതു്"
 
-#: daemon/remote.c:3905
+#: daemon/remote.c:3953
 msgid "maxerrors too large"
 msgstr "maxerrors വളരെ വലുതു്"
 
-#: daemon/remote.c:3971 daemon/remote.c:4040 src/remote/remote_driver.c:5902
+#: daemon/remote.c:4019 daemon/remote.c:4088 src/remote/remote_driver.c:5902
 #: src/remote/remote_driver.c:5969
 #, c-format
 msgid "Too many domain snapshots '%d' for limit '%d'"
 msgstr "അനവധി '%d' സ്നാപ്പ്ഷോട്ടുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4103 src/remote/remote_driver.c:3333
+#: daemon/remote.c:4151 src/remote/remote_driver.c:3333
 #, c-format
 msgid "Too many storage pools '%d' for limit '%d'"
 msgstr "അനവധി '%d' സംഭരണ പൂളുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4166 src/remote/remote_driver.c:3400
+#: daemon/remote.c:4214 src/remote/remote_driver.c:3400
 #, c-format
 msgid "Too many storage volumes '%d' for limit '%d'"
 msgstr "അനവധി '%d' സംഭരണ വോള്യങ്ങള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4227 src/remote/remote_driver.c:2865
+#: daemon/remote.c:4275 src/remote/remote_driver.c:2865
 #, c-format
 msgid "Too many networks '%d' for limit '%d'"
 msgstr "അനവധി '%d' നെറ്റ്‌വര്‍ക്കുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4286 src/remote/remote_driver.c:2931
+#: daemon/remote.c:4334 src/remote/remote_driver.c:2931
 #, c-format
 msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "അനവധി '%d' ഇന്റര്‍ഫെയിസുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4345 src/remote/remote_driver.c:2997
+#: daemon/remote.c:4393 src/remote/remote_driver.c:2997
 #, c-format
 msgid "Too many node devices '%d' for limit '%d'"
 msgstr "അനവധി '%d' നോഡ് ഡിവൈസുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4404 src/remote/remote_driver.c:3063
+#: daemon/remote.c:4452 src/remote/remote_driver.c:3063
 #, c-format
 msgid "Too many network filters '%d' for limit '%d'"
 msgstr "അനവധി '%d' നെറ്റ്‌വര്‍ക്ക് ഫില്‍റ്ററുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4463 src/remote/remote_driver.c:3129
+#: daemon/remote.c:4511 src/remote/remote_driver.c:3129
 #, c-format
 msgid "Too many secrets '%d' for limit '%d'"
 msgstr "അനവധി '%d' രഹസ്യങ്ങള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4679 src/remote/remote_driver.c:6156
+#: daemon/remote.c:4727 src/remote/remote_driver.c:6156
 #, c-format
 msgid "Too many job stats '%d' for limit '%d'"
 msgstr "അനവധി '%d' ജോലി അവസ്ഥകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:4726 daemon/remote.c:4783 daemon/remote.c:4844
-#: daemon/remote.c:4914 daemon/remote.c:4975 daemon/remote.c:5033
+#: daemon/remote.c:4774 daemon/remote.c:4831 daemon/remote.c:4892
+#: daemon/remote.c:4962 daemon/remote.c:5023 daemon/remote.c:5081
 #: src/remote/remote_driver.c:6203 src/remote/remote_driver.c:6269
 #: src/remote/remote_driver.c:6351 src/remote/remote_driver.c:6437
 #: src/remote/remote_driver.c:6509 src/remote/remote_driver.c:6581
@@ -646,7 +646,7 @@ msgstr "അനവധി '%d' ജോലി അവസ്ഥകള്‍, '%d' പ�
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr "അനവധി '%d' മൈഗ്രേഷന്‍ പരാമീറ്ററുകള്‍, '%d' പരധിയ്ക്കു്"
 
-#: daemon/remote.c:5090
+#: daemon/remote.c:5138
 #, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr ""
@@ -931,7 +931,7 @@ msgstr "അറിയാത്ത സി.പി.യു മോഡല്‍"
 msgid "Unknown architecture %s"
 msgstr "അപരിചിതമായ ആര്‍ക്കിറ്റക്ചര്‍ %s"
 
-#: src/conf/cpu_conf.c:279 src/cpu/cpu_powerpc.c:220 src/cpu/cpu_x86.c:961
+#: src/conf/cpu_conf.c:279 src/cpu/cpu_powerpc.c:220 src/cpu/cpu_x86.c:991
 msgid "Missing CPU model name"
 msgstr "സിപിയു മോഡല്‍ നാമം ലഭ്യമല്ല"
 
@@ -1134,38 +1134,38 @@ msgstr "ഡൊമെയിന്‍ '%s' നിലിവില്‍ പ്ര�
 msgid "domain '%s' already exists with uuid %s"
 msgstr "ഡൊമെയിന്‍ '%s' നിലവില്‍ uuid %s നല്‍കിയിട്ടുണ്ടു്"
 
-#: src/conf/domain_conf.c:2313 src/lxc/lxc_driver.c:2562
-#: src/lxc/lxc_driver.c:2636 src/libxl/libxl_driver.c:3863
-#: src/openvz/openvz_driver.c:1981 src/qemu/qemu_driver.c:1683
-#: src/qemu/qemu_driver.c:1695 src/qemu/qemu_driver.c:1767
-#: src/qemu/qemu_driver.c:1868 src/qemu/qemu_driver.c:1983
-#: src/qemu/qemu_driver.c:2032 src/qemu/qemu_driver.c:2119
-#: src/qemu/qemu_driver.c:2384 src/qemu/qemu_driver.c:2395
-#: src/qemu/qemu_driver.c:2459 src/qemu/qemu_driver.c:2602
-#: src/qemu/qemu_driver.c:3202 src/qemu/qemu_driver.c:3258
-#: src/qemu/qemu_driver.c:3518 src/qemu/qemu_driver.c:3626
-#: src/qemu/qemu_driver.c:3711 src/qemu/qemu_driver.c:3776
-#: src/qemu/qemu_driver.c:3853 src/qemu/qemu_driver.c:4916
-#: src/qemu/qemu_driver.c:5682 src/qemu/qemu_driver.c:8876
-#: src/qemu/qemu_driver.c:8938 src/qemu/qemu_driver.c:9014
-#: src/qemu/qemu_driver.c:9167 src/qemu/qemu_driver.c:9514
-#: src/qemu/qemu_driver.c:9636 src/qemu/qemu_driver.c:10936
-#: src/qemu/qemu_driver.c:10975 src/qemu/qemu_driver.c:11109
-#: src/qemu/qemu_driver.c:11166 src/qemu/qemu_driver.c:11216
-#: src/qemu/qemu_driver.c:11271 src/qemu/qemu_driver.c:11330
-#: src/qemu/qemu_driver.c:11642 src/qemu/qemu_driver.c:12005
-#: src/qemu/qemu_driver.c:13531 src/qemu/qemu_driver.c:13540
-#: src/qemu/qemu_driver.c:13688 src/qemu/qemu_driver.c:13769
-#: src/qemu/qemu_driver.c:13878 src/qemu/qemu_driver.c:14018
-#: src/qemu/qemu_driver.c:14046 src/qemu/qemu_driver.c:14136
-#: src/qemu/qemu_driver.c:14247 src/qemu/qemu_driver.c:14466
-#: src/qemu/qemu_driver.c:14593 src/qemu/qemu_driver.c:14980
-#: src/qemu/qemu_driver.c:15331 src/qemu/qemu_driver.c:15390
-#: src/qemu/qemu_driver.c:15438 src/qemu/qemu_driver.c:15478
-#: src/qemu/qemu_driver.c:15549 src/qemu/qemu_driver.c:15571
-#: src/qemu/qemu_driver.c:15621 src/qemu/qemu_driver.c:15643
+#: src/conf/domain_conf.c:2313 src/lxc/lxc_driver.c:2566
+#: src/lxc/lxc_driver.c:2640 src/libxl/libxl_driver.c:3862
+#: src/openvz/openvz_driver.c:1981 src/qemu/qemu_driver.c:1686
+#: src/qemu/qemu_driver.c:1698 src/qemu/qemu_driver.c:1770
+#: src/qemu/qemu_driver.c:1871 src/qemu/qemu_driver.c:1986
+#: src/qemu/qemu_driver.c:2035 src/qemu/qemu_driver.c:2122
+#: src/qemu/qemu_driver.c:2387 src/qemu/qemu_driver.c:2398
+#: src/qemu/qemu_driver.c:2462 src/qemu/qemu_driver.c:2605
+#: src/qemu/qemu_driver.c:3205 src/qemu/qemu_driver.c:3261
+#: src/qemu/qemu_driver.c:3521 src/qemu/qemu_driver.c:3629
+#: src/qemu/qemu_driver.c:3714 src/qemu/qemu_driver.c:3779
+#: src/qemu/qemu_driver.c:3856 src/qemu/qemu_driver.c:4919
+#: src/qemu/qemu_driver.c:5685 src/qemu/qemu_driver.c:8882
+#: src/qemu/qemu_driver.c:8944 src/qemu/qemu_driver.c:9020
+#: src/qemu/qemu_driver.c:9173 src/qemu/qemu_driver.c:9520
+#: src/qemu/qemu_driver.c:9642 src/qemu/qemu_driver.c:10940
+#: src/qemu/qemu_driver.c:10979 src/qemu/qemu_driver.c:11113
+#: src/qemu/qemu_driver.c:11170 src/qemu/qemu_driver.c:11220
+#: src/qemu/qemu_driver.c:11275 src/qemu/qemu_driver.c:11334
+#: src/qemu/qemu_driver.c:11646 src/qemu/qemu_driver.c:12009
+#: src/qemu/qemu_driver.c:13535 src/qemu/qemu_driver.c:13544
+#: src/qemu/qemu_driver.c:13692 src/qemu/qemu_driver.c:13773
+#: src/qemu/qemu_driver.c:13882 src/qemu/qemu_driver.c:14022
+#: src/qemu/qemu_driver.c:14050 src/qemu/qemu_driver.c:14140
+#: src/qemu/qemu_driver.c:14251 src/qemu/qemu_driver.c:14470
+#: src/qemu/qemu_driver.c:14597 src/qemu/qemu_driver.c:14984
+#: src/qemu/qemu_driver.c:15335 src/qemu/qemu_driver.c:15394
+#: src/qemu/qemu_driver.c:15442 src/qemu/qemu_driver.c:15482
+#: src/qemu/qemu_driver.c:15553 src/qemu/qemu_driver.c:15575
+#: src/qemu/qemu_driver.c:15625 src/qemu/qemu_driver.c:15647
 #: src/qemu/qemu_migration.c:2086 src/qemu/qemu_migration.c:4040
-#: src/uml/uml_driver.c:2560 src/xen/xen_driver.c:2626
+#: src/uml/uml_driver.c:2564 src/xen/xen_driver.c:2624
 #: src/xen/xm_internal.c:675
 msgid "domain is not running"
 msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്കുന്നില്ല"
@@ -2677,7 +2677,7 @@ msgid "Failed to generate UUID"
 msgstr "UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
 #: src/conf/domain_conf.c:10894 src/conf/network_conf.c:1979
-#: src/conf/nwfilter_conf.c:2561 src/conf/secret_conf.c:196
+#: src/conf/nwfilter_conf.c:2566 src/conf/secret_conf.c:196
 #: src/conf/storage_conf.c:889
 msgid "malformed uuid element"
 msgstr "തെറ്റായ uuid എലമെന്റ്"
@@ -3678,82 +3678,82 @@ msgstr "അപ്രതീക്ഷിതമായ smbios മോഡ് %d"
 msgid "unexpected feature %zu"
 msgstr "അപ്രതീക്ഷിത വിശേഷത %zu"
 
-#: src/conf/domain_conf.c:17116
+#: src/conf/domain_conf.c:17117
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr "ഡിവൈസ് ക്രമീകരണം പൊരുത്തപ്പെടുന്നില്ല: ഡൊമെയിനു് യുഎസ്ബി പിന്തുണ ലഭ്യമല്ല"
 
-#: src/conf/domain_conf.c:17138 src/conf/network_conf.c:2832
-#: src/conf/nwfilter_conf.c:2711 src/util/virdnsmasq.c:547
+#: src/conf/domain_conf.c:17139 src/conf/network_conf.c:2832
+#: src/conf/nwfilter_conf.c:2716 src/util/virdnsmasq.c:547
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "ക്രമീകരണ ഡയറക്ടറി '%s' ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_conf.c:17277
+#: src/conf/domain_conf.c:17278
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ %s നിലവിലുണ്ടു്"
 
-#: src/conf/domain_conf.c:17317 src/conf/network_conf.c:3050
-#: src/conf/network_conf.c:3083 src/conf/nwfilter_conf.c:3085
+#: src/conf/domain_conf.c:17318 src/conf/network_conf.c:3050
+#: src/conf/network_conf.c:3083 src/conf/nwfilter_conf.c:3084
 #: src/conf/storage_conf.c:1826 src/util/virpci.c:2407
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/conf/domain_conf.c:17387
+#: src/conf/domain_conf.c:17388
 #, c-format
 msgid "cannot remove config %s"
 msgstr "കോണ്‍ഫിഗ് %s നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_conf.c:17741
+#: src/conf/domain_conf.c:17742
 #, c-format
 msgid "unable to visit backing chain file %s"
 msgstr "ബാക്കിങ് ചെയിന്‍ ഫയല്‍ %s-ലേക്കു് പോകുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_conf.c:17842
+#: src/conf/domain_conf.c:17843
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "തെറ്റായ ഡൊമെയിന്‍ അവസ്ഥ: %d"
 
-#: src/conf/domain_conf.c:18289
+#: src/conf/domain_conf.c:18290
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "'%d' തരത്തിന്റെ നിര്‍വചനം പകര്‍ത്തുന്നതു് ഇതു് വരെ ലഭ്യമാക്കിയിട്ടില്ല."
 
-#: src/conf/domain_conf.c:18571
+#: src/conf/domain_conf.c:18572
 #, c-format
 msgid "no device found with alias %s"
 msgstr "%s എന്നു് വിളിപ്പേരുള്ളൊരു ഡിവൈസും ലഭ്യമായില്ല"
 
-#: src/conf/domain_conf.c:18663 src/conf/domain_conf.c:18745
+#: src/conf/domain_conf.c:18664 src/conf/domain_conf.c:18746
 msgid "unknown metadata type"
 msgstr "അപരിചിതമായ മെറ്റാഡേറ്റാ തരം"
 
-#: src/conf/domain_conf.c:18670
+#: src/conf/domain_conf.c:18671
 msgid "Requested metadata element is not present"
 msgstr "ആവശ്യപ്പെട്ട മെറ്റാഡേറ്റാ എലമെന്റ് നിലവിലില്ല"
 
-#: src/conf/domain_conf.c:18710
+#: src/conf/domain_conf.c:18711
 msgid "(metadata_xml)"
 msgstr ""
 
-#: src/conf/domain_event.c:220 src/conf/domain_event.c:273
+#: src/conf/domain_event.c:204 src/conf/domain_event.c:257
 msgid "could not find event callback for removal"
 msgstr "ഇല്ലാതാക്കുന്നതിനായി ഇവന്റ് പിന്‍വിളി കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_event.c:299 src/conf/domain_event.c:324
+#: src/conf/domain_event.c:283 src/conf/domain_event.c:308
 msgid "could not find event callback for deletion"
 msgstr "വെട്ടി നീക്കുന്നതിനായി ഇവന്റ് പിന്‍വിളി കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_event.c:404
+#: src/conf/domain_event.c:383
 msgid "event callback already tracked"
 msgstr "ഇവന്റ് പിന്‍വിളി നിലവില്‍ ട്രാക്ക് ചെയ്തിരിയ്ക്കുന്നു"
 
-#: src/conf/domain_event.c:670
+#: src/conf/domain_event.c:642
 msgid "unable to initialize state mutex"
 msgstr "മ്യൂട്ടക്സ് ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/domain_event.c:1599 src/conf/domain_event.c:1658
+#: src/conf/domain_event.c:1540 src/conf/domain_event.c:1596
 msgid "could not initialize domain event timer"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് ടൈമര്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -3901,7 +3901,7 @@ msgid "unexpected interface type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഇന്റര്‍ഫെയിസ് രീതി %d"
 
 #: src/conf/interface_conf.c:1260 src/conf/network_conf.c:360
-#: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3019
+#: src/conf/node_device_conf.c:184 src/conf/nwfilter_conf.c:3018
 #: src/conf/storage_conf.c:1751 src/libxl/libxl_driver.c:830
 #: src/parallels/parallels_driver.c:894 src/qemu/qemu_driver.c:585
 #: src/remote/remote_driver.c:929 src/test/test_driver.c:602
@@ -5324,49 +5324,49 @@ msgstr "'%s'-നുള്ള പേരന്റ് ഡിവൈസ് കണ്�
 msgid "Parent device %s is not capable of vport operations"
 msgstr "പിതൃ ഉപകരണം %s-ത്തിന് vport പ്രവര്‍ത്തനങ്ങള്‍ക്ക് കഴിവില്ല"
 
-#: src/conf/nwfilter_conf.c:991
+#: src/conf/nwfilter_conf.c:996
 msgid "ipset name is too long"
 msgstr "ipset നാമം വളരെ വലുതു്"
 
-#: src/conf/nwfilter_conf.c:997
+#: src/conf/nwfilter_conf.c:1002
 msgid "ipset name contains invalid characters"
 msgstr "ipset പേരില്‍ അസാധുവായ അക്ഷരങ്ങള്‍ ഉണ്ടാകുന്നു"
 
-#: src/conf/nwfilter_conf.c:1029
+#: src/conf/nwfilter_conf.c:1034
 msgid "malformed ipset flags"
 msgstr "തെറ്റായ ipset ഫ്ലാഗുകള്‍"
 
-#: src/conf/nwfilter_conf.c:2014
+#: src/conf/nwfilter_conf.c:2019
 #, c-format
 msgid "%s has illegal value %s"
 msgstr "%s-നു് തെറ്റായ മൂല്ല്യം %s"
 
-#: src/conf/nwfilter_conf.c:2047 src/conf/nwfilter_conf.c:2313
+#: src/conf/nwfilter_conf.c:2052 src/conf/nwfilter_conf.c:2318
 msgid "rule node requires action attribute"
 msgstr "നിയമ നോഡിന് നടപടി സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
 
-#: src/conf/nwfilter_conf.c:2320
+#: src/conf/nwfilter_conf.c:2325
 msgid "unknown rule action attribute value"
 msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
 
-#: src/conf/nwfilter_conf.c:2327
+#: src/conf/nwfilter_conf.c:2332
 msgid "rule node requires direction attribute"
 msgstr "നിയമ നോഡിന് ദിശാ സവിശേഷതകള്‍ ആവശ്യമുണ്ട്"
 
-#: src/conf/nwfilter_conf.c:2334
+#: src/conf/nwfilter_conf.c:2339
 msgid "unknown rule direction attribute value"
 msgstr "അജ്ഞാതമായ നിയമ ദിശാ സവിശേഷതാ മൂല്യം"
 
-#: src/conf/nwfilter_conf.c:2409
+#: src/conf/nwfilter_conf.c:2414
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "ശൃംഖലയുടെ പേര് %u അക്ഷരങ്ങളേക്കാള്‍ വലുതാണ്"
 
-#: src/conf/nwfilter_conf.c:2417
+#: src/conf/nwfilter_conf.c:2422
 msgid "Chain name contains invalid characters"
 msgstr "ചെയിന്റെ പേരില്‍ തെറ്റായ അക്ഷരങ്ങള്‍"
 
-#: src/conf/nwfilter_conf.c:2455
+#: src/conf/nwfilter_conf.c:2460
 #, c-format
 msgid ""
 "Invalid chain name '%s'. Please use a chain name called '%s' or any of the "
@@ -5375,67 +5375,67 @@ msgstr ""
 "അസാധുവായ ശൃംഖല പേര് '%s'. ദയവായി '%s' എന്ന ശൃംഖല പേരോ താഴെ പറയുന്ന ഏതെങ്കിലും "
 "പ്രിഫിക്സോ ഉപയോഗിക്കുക:"
 
-#: src/conf/nwfilter_conf.c:2501
+#: src/conf/nwfilter_conf.c:2506
 msgid "filter has no name"
 msgstr "ഫില്‍റ്ററിനു് പേരില്ല"
 
-#: src/conf/nwfilter_conf.c:2509
+#: src/conf/nwfilter_conf.c:2514
 #, c-format
 msgid "Could not parse chain priority '%s'"
 msgstr "'%s' ചെയിന്‍ മുന്‍ഗണന പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/nwfilter_conf.c:2516
+#: src/conf/nwfilter_conf.c:2521
 #, c-format
 msgid "Priority '%d' is outside valid range of [%d,%d]"
 msgstr "മുന്‍ഗണന '%d' സാധുവായ പരിധിക്ക് [%d,%d] പുറത്താണ്"
 
-#: src/conf/nwfilter_conf.c:2555 src/conf/storage_conf.c:883
+#: src/conf/nwfilter_conf.c:2560 src/conf/storage_conf.c:883
 #: src/storage/storage_backend.c:421
 msgid "unable to generate uuid"
 msgstr "uuid ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/nwfilter_conf.c:2617
+#: src/conf/nwfilter_conf.c:2622
 msgid "unknown root element for nw filter"
 msgstr "nw അരിപ്പയില്‍ അജ്ഞാതമായ മൂല ഘടകം"
 
-#: src/conf/nwfilter_conf.c:2642
+#: src/conf/nwfilter_conf.c:2647
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
-#: src/conf/nwfilter_conf.c:2970
+#: src/conf/nwfilter_conf.c:2975
 #, c-format
 msgid "filter with same UUID but different name ('%s') already exists"
 msgstr "ഇതേ UUID ഉള്ള അരിപ്പ മറ്റൊരു പേരില്‍ ('%s') മുമ്പുതന്നെ നിലവിലുണ്ട്"
 
-#: src/conf/nwfilter_conf.c:2981
+#: src/conf/nwfilter_conf.c:2986
 msgid "filter would introduce a loop"
 msgstr "അരിപ്പ ഒരു ലൂപ്പ് അവതരിപ്പിക്കും"
 
-#: src/conf/nwfilter_conf.c:3053
+#: src/conf/nwfilter_conf.c:3052
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
 msgstr "നെറ്റ്‌‌വര്‍ക്ക് അരിപ്പ ക്രമീകരണ ഫയല്‍ നാമം '%s' പേര് '%s'-നോട് യോജിക്കുന്നില്ല"
 
-#: src/conf/nwfilter_conf.c:3128 src/conf/storage_conf.c:1877
+#: src/conf/nwfilter_conf.c:3127 src/conf/storage_conf.c:1877
 #, c-format
 msgid "cannot create config directory %s"
 msgstr "ക്രമീകരണ ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/nwfilter_conf.c:3141 src/conf/storage_conf.c:1896
+#: src/conf/nwfilter_conf.c:3140 src/conf/storage_conf.c:1896
 msgid "failed to generate XML"
 msgstr "XML ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/conf/nwfilter_conf.c:3160 src/conf/storage_conf.c:1914
+#: src/conf/nwfilter_conf.c:3159 src/conf/storage_conf.c:1914
 #, c-format
 msgid "no config file for %s"
 msgstr "%s-നുള്ള ക്രമികരണ ഫയല്‍ ലഭ്യമല്ല"
 
-#: src/conf/nwfilter_conf.c:3166 src/conf/storage_conf.c:1920
+#: src/conf/nwfilter_conf.c:3165 src/conf/storage_conf.c:1920
 #, c-format
 msgid "cannot remove config for %s"
 msgstr " %s-നുള്ള ക്രമീകരണം നീക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/conf/nwfilter_conf.c:3241
+#: src/conf/nwfilter_conf.c:3240
 #, c-format
 msgid "formatter for %s %s reported error"
 msgstr "%s %s സമര്‍പ്പിച്ച പിശകിനുള്ള ഫോര്‍മാറ്റര്‍"
@@ -6027,7 +6027,7 @@ msgid "cannot find a driver for the architecture %s"
 msgstr ""
 
 #: src/cpu/cpu_generic.c:129 src/cpu/cpu_powerpc.c:475
-#: src/cpu/cpu_powerpc.c:579 src/cpu/cpu_x86.c:1377
+#: src/cpu/cpu_powerpc.c:579 src/cpu/cpu_x86.c:1381
 #, c-format
 msgid "CPU model %s is not supported by hypervisor"
 msgstr "സിപിയു മോഡല്‍ %s ഹൈപ്പര്‍വൈസര്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -6061,8 +6061,8 @@ msgstr "%s ആര്‍ക്കിറ്റക്ചറിനുള്ള സ�
 msgid "cannot parse CPU map for %s architecture"
 msgstr "%s ആര്‍ക്കിറ്റക്ചറിനുള്ള സിപിയു മാപ്പ് പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/cpu/cpu_powerpc.c:154 src/cpu/cpu_powerpc.c:573 src/cpu/cpu_x86.c:827
-#: src/cpu/cpu_x86.c:874
+#: src/cpu/cpu_powerpc.c:154 src/cpu/cpu_powerpc.c:573 src/cpu/cpu_x86.c:857
+#: src/cpu/cpu_x86.c:904
 #, c-format
 msgid "Unknown CPU model %s"
 msgstr "അപരിചിതമായ സിപിയു മോഡല്‍ %s"
@@ -6081,12 +6081,12 @@ msgstr "സിപിയു  %s നിലവില്‍ നിഷ്കര്‍
 msgid "CPU model %s already defined"
 msgstr "സിപിയു മോഡല്‍ %s നിലവില്‍ നിഷ്കര്‍ഷിച്ചിരിയ്ക്കുന്നു"
 
-#: src/cpu/cpu_powerpc.c:234 src/cpu/cpu_x86.c:997
+#: src/cpu/cpu_powerpc.c:234 src/cpu/cpu_x86.c:1027
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ തെറ്റായ വെണ്ടര്‍ എലമെന്റ്"
 
-#: src/cpu/cpu_powerpc.c:241 src/cpu/cpu_x86.c:1004
+#: src/cpu/cpu_powerpc.c:241 src/cpu/cpu_x86.c:1034
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "അപരിചിതമായ വെണ്ടര്‍ %s - സിപിയു മോഡല്‍ %s സൂചിപ്പിയ്ക്കുന്നതു്"
@@ -6096,12 +6096,12 @@ msgstr "അപരിചിതമായ വെണ്ടര്‍ %s - സിപ�
 msgid "Missing or invalid PVR value in CPU model %s"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ തെറ്റായ പിവിആര്‍ മൂല്ല്യം അല്ലെങ്കില്‍ ലഭ്യമല്ല"
 
-#: src/cpu/cpu_powerpc.c:376 src/cpu/cpu_x86.c:1187
+#: src/cpu/cpu_powerpc.c:376 src/cpu/cpu_x86.c:1217
 #, c-format
 msgid "CPU arch %s does not match host arch"
 msgstr "സിപിയു ആര്‍ക്കിറ്റക്ചര്‍ %s ഹോസ്റ്റ് ആര്‍ക്കുമായി പൊരുത്തപ്പെടുന്നില്ല"
 
-#: src/cpu/cpu_powerpc.c:394 src/cpu/cpu_x86.c:1203
+#: src/cpu/cpu_powerpc.c:394 src/cpu/cpu_x86.c:1233
 #, c-format
 msgid "host CPU vendor does not match required CPU vendor %s"
 msgstr "ഹോസ്റ്റ് സിപിയു വെണ്ടര്‍, ആവശ്യമായ സിപിയു വേണ്ടര്‍ %s-മായി ചേരുന്നില്ല"
@@ -6116,26 +6116,26 @@ msgstr ""
 msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x ഉള്ള സിപിയു മോഡല്‍ കണ്ടുപിടിയ്ക്കുവാനായില്ല"
 
-#: src/cpu/cpu_powerpc.c:549 src/cpu/cpu_x86.c:1918
+#: src/cpu/cpu_powerpc.c:549 src/cpu/cpu_x86.c:1949
 #, c-format
 msgid "Unexpected CPU mode: %d"
 msgstr "അപ്രതീക്ഷിത സിപിയു മോഡ്: %d"
 
-#: src/cpu/cpu_powerpc.c:589 src/cpu/cpu_x86.c:1787
+#: src/cpu/cpu_powerpc.c:589 src/cpu/cpu_x86.c:1815
 msgid "CPUs are incompatible"
 msgstr "സിപിയുകള്‍ പൊരുത്തപ്പെടുന്നില്ല"
 
-#: src/cpu/cpu_powerpc.c:598 src/cpu/cpu_x86.c:1740 src/cpu/cpu_x86.c:1770
+#: src/cpu/cpu_powerpc.c:598 src/cpu/cpu_x86.c:1758 src/cpu/cpu_x86.c:1798
 #, c-format
 msgid "Unknown CPU vendor %s"
 msgstr "അപരിചിതമായ സിപിയു വെണ്ടര്‍ %s"
 
-#: src/cpu/cpu_powerpc.c:605 src/cpu/cpu_x86.c:1753
+#: src/cpu/cpu_powerpc.c:605 src/cpu/cpu_x86.c:1781
 #, c-format
 msgid "CPU vendor %s of model %s differs from vendor %s"
 msgstr "സിപിയു വെണ്ടര്‍ %s (മോഡല്‍ %s) കച്ചവടക്കാരന്‍ %s-ല്‍ നിന്നും വ്യത്യസ്ഥം"
 
-#: src/cpu/cpu_powerpc.c:614 src/cpu/cpu_x86.c:1775
+#: src/cpu/cpu_powerpc.c:614 src/cpu/cpu_x86.c:1803
 msgid "CPU vendors do not match"
 msgstr "സിപിയുകള്‍ തമ്മില്‍ ചേരുന്നില്ല"
 
@@ -6159,53 +6159,49 @@ msgstr "സിപിയു വിശേഷത %s നിലവില്‍ നി
 msgid "Invalid cpuid[%zu] in %s feature"
 msgstr "തെറ്റായ  cpuid[%zu] %s വിശേഷതയില്‍ "
 
-#: src/cpu/cpu_x86.c:848 src/cpu/cpu_x86.c:886 src/cpu/cpu_x86.c:1834
+#: src/cpu/cpu_x86.c:765 src/cpu/cpu_x86.c:878 src/cpu/cpu_x86.c:916
+#: src/cpu/cpu_x86.c:1865
 #, c-format
 msgid "Unknown CPU feature %s"
 msgstr "അപരിചിതമായ സിപിയു വിശേഷത %s"
 
-#: src/cpu/cpu_x86.c:972
+#: src/cpu/cpu_x86.c:1002
 #, c-format
 msgid "Missing ancestor's name in CPU model %s"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ മുന്‍ഗാമിയുടെ പേരു് ലഭ്യമല്ല"
 
-#: src/cpu/cpu_x86.c:979
+#: src/cpu/cpu_x86.c:1009
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "%s എന്ന പിന്‍ഗാമി മോഡല്‍ ലഭ്യമല്ല - സിപിയു മോഡല്‍ %s-നുള്ളതു്"
 
-#: src/cpu/cpu_x86.c:1020
+#: src/cpu/cpu_x86.c:1050
 #, c-format
 msgid "Missing feature name for CPU model %s"
 msgstr "സിപിയു മോഡല്‍ %s-നുള്ള വിശേഷത നാമം ലഭ്യമല്ല"
 
-#: src/cpu/cpu_x86.c:1026
+#: src/cpu/cpu_x86.c:1056
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
 msgstr "%s എന്ന വിശേഷത സിപിയു മോഡല്‍ %s-നു് ആവശ്യമുണ്ടു്, പക്ഷേ ലഭ്യമല്ല"
 
-#: src/cpu/cpu_x86.c:1221
+#: src/cpu/cpu_x86.c:1251
 msgid "Host CPU provides forbidden features"
 msgstr "ഹോസ്റ്റ് സിപിയു നിഷേധിച്ച വിശേഷതകള്‍ ലഭ്യമാക്കുന്നു"
 
-#: src/cpu/cpu_x86.c:1235
+#: src/cpu/cpu_x86.c:1265
 msgid "Host CPU does not provide required features"
 msgstr "ആവശ്യമുള്ള വിശേഷതകള്‍ ഹോസ്റ്റ് സിപിയു ലഭ്യമാക്കുന്നില്ല"
 
-#: src/cpu/cpu_x86.c:1257
+#: src/cpu/cpu_x86.c:1287
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr "ഹോസ്റ്റ് സിപിയു ഗസ്റ്റ് സിപിയുമായി ചേരുന്നില്ല: അധിക വിശേഷതകള്‍"
 
-#: src/cpu/cpu_x86.c:1337
-#, c-format
-msgid "%s not a known CPU model"
-msgstr "%s പരിചിതമായൊരു സിപിയു മോഡലല്ല"
-
-#: src/cpu/cpu_x86.c:1436
+#: src/cpu/cpu_x86.c:1443
 msgid "Cannot find suitable CPU model for given data"
 msgstr "നല്‍കിയ ഡേറ്റായ്ക്കുചിതമായ സിപിയു മോഡല്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/cpu/cpu_x86.c:1559
+#: src/cpu/cpu_x86.c:1575
 #, c-format
 msgid "CPU vendor %s not found"
 msgstr "സിപിയു കച്ചവടക്കാരന്‍ %s ലഭ്യമല്ല"
@@ -6624,7 +6620,7 @@ msgstr "'%s' എന്ന പേരില്‍ സ്നാപ്പ്ഷോ�
 msgid "Could not create snapshot: %s"
 msgstr "സ്നാപ്പ്ഷോട്ട് തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/esx/esx_driver.c:4612 src/qemu/qemu_driver.c:12876
+#: src/esx/esx_driver.c:4612 src/qemu/qemu_driver.c:12880
 #: src/vbox/vbox_tmpl.c:6356
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -8770,7 +8766,7 @@ msgstr "ലോക്ക്സ്പെയിസ് %s തയ്യാറാക�
 
 #: src/locking/lock_driver_sanlock.c:257 src/locking/lock_driver_sanlock.c:312
 #: src/locking/lock_driver_sanlock.c:680 src/storage/storage_backend.c:288
-#: src/util/virfile.c:1631 src/util/virfile.c:1925
+#: src/util/virfile.c:1652 src/util/virfile.c:1946
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "'%s'-നെ (%u, %u)-ലേക്കു് chown ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -9509,26 +9505,25 @@ msgstr "ഡിവൈസ് %s ഉണ്ടാക്കുന്നതില്�
 
 #: src/lxc/lxc_controller.c:1350 src/lxc/lxc_controller.c:1428
 #: src/lxc/lxc_controller.c:1507 src/lxc/lxc_controller.c:1664
-#: src/lxc/lxc_driver.c:3056 src/lxc/lxc_driver.c:3322
-#: src/lxc/lxc_driver.c:3407 src/lxc/lxc_driver.c:3515
+#: src/lxc/lxc_driver.c:3215 src/lxc/lxc_driver.c:3436
+#: src/lxc/lxc_driver.c:3505 src/lxc/lxc_driver.c:3577
 #, c-format
 msgid "Unable to access %s"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1356 src/lxc/lxc_driver.c:3328
+#: src/lxc/lxc_controller.c:1356 src/lxc/lxc_driver.c:3442
 #, c-format
 msgid "USB source %s was not a character device"
 msgstr "യുഎസ്ബി ശ്രോതസ്സ് %s  ഒരു ക്യാരക്ടര്‍ ഡിവൈസല്ല"
 
-#: src/lxc/lxc_controller.c:1365 src/lxc/lxc_driver.c:3337
+#: src/lxc/lxc_controller.c:1365 src/lxc/lxc_driver.c:3043
 #, c-format
 msgid "Unable to create %s"
 msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/lxc/lxc_controller.c:1373 src/lxc/lxc_controller.c:1453
 #: src/lxc/lxc_controller.c:1532 src/lxc/lxc_controller.c:1692
-#: src/lxc/lxc_driver.c:3091 src/lxc/lxc_driver.c:3345
-#: src/lxc/lxc_driver.c:3445 src/lxc/lxc_driver.c:3553
+#: src/lxc/lxc_driver.c:3058
 #, c-format
 msgid "Unable to create device %s"
 msgstr "%s ഡിവൈസ് തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
@@ -9553,21 +9548,21 @@ msgid "Storage source %s must be a character device"
 msgstr "%s സംഭരണ ശ്രോതസ്സ് ഒരു ക്യാരക്ടര്‍ ഡിവൈസായിരിയ്ക്കണം"
 
 #: src/lxc/lxc_controller.c:1566 src/lxc/lxc_controller.c:1594
-#: src/lxc/lxc_controller.c:1626 src/lxc/lxc_driver.c:3656
-#: src/lxc/lxc_driver.c:4077
+#: src/lxc/lxc_controller.c:1626 src/lxc/lxc_driver.c:3692
+#: src/lxc/lxc_driver.c:4079
 #, c-format
 msgid "Unsupported host device mode %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഹോസ്റ്റ് ഡിവൈസ് മോഡ് %s"
 
-#: src/lxc/lxc_controller.c:1649 src/lxc/lxc_driver.c:3039
+#: src/lxc/lxc_controller.c:1649 src/lxc/lxc_driver.c:3198
 msgid "Can't setup disk for non-block device"
 msgstr "ബ്ലോക്ക് അല്ലാത്ത ഡിവൈസിനു് ഡിസ്ക് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1654 src/lxc/lxc_driver.c:3044
+#: src/lxc/lxc_controller.c:1654 src/lxc/lxc_driver.c:3203
 msgid "Can't setup disk without media"
 msgstr "മീഡിയാ ഇല്ലാതെ ഡിസ്ക് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_controller.c:1670 src/lxc/lxc_driver.c:3062
+#: src/lxc/lxc_controller.c:1670
 #, c-format
 msgid "Disk source %s must be a character/block device"
 msgstr "ഡിസ്ക് ശ്രോതസ്സ് %s ഒരു ക്യാരക്ടര്‍/ബ്ലോക്ക് ഡിവൈസായിരിയ്ക്കണം"
@@ -9661,8 +9656,8 @@ msgstr "ചേരുന്ന uuid '%s' ഉള്ള ഡൊമെയിന്‍
 msgid "No domain with matching name '%s'"
 msgstr "'%s' എന്ന പേരുമായി ചേരുന്ന ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:465 src/lxc/lxc_driver.c:1026
-#: src/lxc/lxc_driver.c:1128
+#: src/lxc/lxc_driver.c:465 src/lxc/lxc_driver.c:1028
+#: src/lxc/lxc_driver.c:1133
 msgid "System lacks NETNS support"
 msgstr "സിസ്റ്റമിനു് NETNS പിന്തുണ ലഭ്യമല്ല"
 
@@ -9683,19 +9678,19 @@ msgstr ""
 msgid "Cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:721 src/lxc/lxc_driver.c:1394
-#: src/lxc/lxc_driver.c:2232 src/lxc/lxc_driver.c:2461
-#: src/lxc/lxc_driver.c:2510 src/lxc/lxc_driver.c:2721
-#: src/lxc/lxc_driver.c:2801 src/lxc/lxc_driver.c:4499
+#: src/lxc/lxc_driver.c:721 src/lxc/lxc_driver.c:1398
+#: src/lxc/lxc_driver.c:2236 src/lxc/lxc_driver.c:2465
+#: src/lxc/lxc_driver.c:2514 src/lxc/lxc_driver.c:2733
+#: src/lxc/lxc_driver.c:2810 src/lxc/lxc_driver.c:4501
 #: src/libxl/libxl_driver.c:1300 src/libxl/libxl_driver.c:1352
 #: src/libxl/libxl_driver.c:1404 src/libxl/libxl_driver.c:1451
 #: src/libxl/libxl_driver.c:1489 src/libxl/libxl_driver.c:1856
 #: src/libxl/libxl_driver.c:1968 src/libxl/libxl_driver.c:2047
 #: src/libxl/libxl_driver.c:2326 src/libxl/libxl_driver.c:2427
 #: src/libxl/libxl_driver.c:3161 src/libxl/libxl_driver.c:3265
-#: src/libxl/libxl_driver.c:3369 src/libxl/libxl_driver.c:3647
-#: src/libxl/libxl_driver.c:3711 src/libxl/libxl_driver.c:3788
-#: src/libxl/libxl_driver.c:3959 src/openvz/openvz_driver.c:598
+#: src/libxl/libxl_driver.c:3369 src/libxl/libxl_driver.c:3646
+#: src/libxl/libxl_driver.c:3710 src/libxl/libxl_driver.c:3787
+#: src/libxl/libxl_driver.c:3958 src/openvz/openvz_driver.c:598
 #: src/openvz/openvz_driver.c:636 tools/virsh-domain.c:9051
 #: tools/virsh-domain.c:9220
 msgid "Domain is not running"
@@ -9706,8 +9701,8 @@ msgid "Failed to set memory for domain"
 msgstr "ഡൊമെയിനുള്ള മെമ്മറി പരിധി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/lxc/lxc_driver.c:788 src/lxc/lxc_driver.c:903
-#: src/qemu/qemu_driver.c:7885 src/qemu/qemu_driver.c:8008
-#: src/qemu/qemu_driver.c:8300
+#: src/qemu/qemu_driver.c:7891 src/qemu/qemu_driver.c:8014
+#: src/qemu/qemu_driver.c:8306
 msgid "cgroup memory controller is not mounted"
 msgstr "cgroup മെമ്മറി കണ്ട്രോളര്‍ മൌണ്ട് ചെയ്തിട്ടില്ല"
 
@@ -9718,331 +9713,329 @@ msgid ""
 "swap_hard_limit"
 msgstr "മെമ്മറി hard_limit ട്യൂണബിള്‍ മൂല്ല്യം swap_hard_limit-നേക്കാള്‍ കുറവായിരിയ്ക്കണം"
 
-#: src/lxc/lxc_driver.c:829 src/qemu/qemu_driver.c:7927
+#: src/lxc/lxc_driver.c:829 src/qemu/qemu_driver.c:7933
 #, c-format
 msgid "unable to set memory %s tunable"
 msgstr "മെമ്മറി %s ട്യൂണ്‍ ചെയ്യുവാന്‍ സാധ്യമാകുന്ന രീതിയില്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:1032 src/libxl/libxl_driver.c:2631
+#: src/lxc/lxc_driver.c:1034 src/libxl/libxl_driver.c:2631
 #: src/vmware/vmware_driver.c:723
 msgid "Domain is already running"
 msgstr "ഡൊമെയിന്‍ നിലവില്‍ പ്രവര്‍ത്തിയ്ക്കുന്നു"
 
-#: src/lxc/lxc_driver.c:1195 src/qemu/qemu_driver.c:4981
-#: src/qemu/qemu_driver.c:5033
+#: src/lxc/lxc_driver.c:1201 src/qemu/qemu_driver.c:4984
+#: src/qemu/qemu_driver.c:5036
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "ഡൊമെയിന്‍ '%d'-ല്‍ അപരിചിതമായ virt തരം"
 
-#: src/lxc/lxc_driver.c:1219 src/lxc/lxc_driver.c:2655
-#: src/lxc/lxc_driver.c:4505
+#: src/lxc/lxc_driver.c:1225 src/lxc/lxc_driver.c:2659
+#: src/lxc/lxc_driver.c:4507
 msgid "Init pid is not yet available"
 msgstr "Init pid ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:1226 src/qemu/qemu_driver.c:5004
-#: src/qemu/qemu_driver.c:5067
+#: src/lxc/lxc_driver.c:1232 src/qemu/qemu_driver.c:5007
+#: src/qemu/qemu_driver.c:5070
 msgid "Failed to get security label"
 msgstr "സുരക്ഷാ ലേബല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/lxc/lxc_driver.c:1262 src/qemu/qemu_driver.c:5108
+#: src/lxc/lxc_driver.c:1268 src/qemu/qemu_driver.c:5111
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "സുരക്ഷ മാതൃക സ്ട്രിങ് ഏറ്റവും കൂടിയ %d ബൈറ്റുകളേക്കാള്‍ കൂടുതല്‍"
 
-#: src/lxc/lxc_driver.c:1271 src/qemu/qemu_driver.c:5118
+#: src/lxc/lxc_driver.c:1277 src/qemu/qemu_driver.c:5121
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "സുരക്ഷ DOI സ്ട്രിങ് ഏറ്റവും കൂടിയ %d ബൈറ്റുകളേക്കാള്‍ കൂടുതല്‍"
 
-#: src/lxc/lxc_driver.c:1463 src/qemu/qemu_driver.c:392
+#: src/lxc/lxc_driver.c:1467 src/qemu/qemu_driver.c:392
 msgid "Failed to initialize security drivers"
 msgstr "സുരക്ഷ ഡ്രൈവറുകള്‍ ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_driver.c:1668
+#: src/lxc/lxc_driver.c:1672
 #, c-format
 msgid "Unknown release: %s"
 msgstr "അപരിചിതമായ റിലീസ്: %s"
 
-#: src/lxc/lxc_driver.c:1710 src/lxc/lxc_driver.c:1835
-#: src/lxc/lxc_driver.c:1967 src/qemu/qemu_driver.c:7378
-#: src/qemu/qemu_driver.c:8485 src/qemu/qemu_driver.c:8743
+#: src/lxc/lxc_driver.c:1714 src/lxc/lxc_driver.c:1839
+#: src/lxc/lxc_driver.c:1971 src/qemu/qemu_driver.c:7384
+#: src/qemu/qemu_driver.c:8491 src/qemu/qemu_driver.c:8749
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup സിപിയു കണ്ട്രോളര്‍ മൌണ്ട് ചെയ്തിട്ടില്ല"
 
-#: src/lxc/lxc_driver.c:2064 src/lxc/lxc_driver.c:2159
-#: src/qemu/qemu_driver.c:7562 src/qemu/qemu_driver.c:7709
+#: src/lxc/lxc_driver.c:2068 src/lxc/lxc_driver.c:2163
+#: src/qemu/qemu_driver.c:7568 src/qemu/qemu_driver.c:7715
 msgid "blkio cgroup isn't mounted"
 msgstr "blkio cgroup മൌണ്ട് ചെയ്തിട്ടില്ല"
 
-#: src/lxc/lxc_driver.c:2074 src/lxc/lxc_driver.c:2093
-#: src/qemu/qemu_driver.c:7575 src/qemu/qemu_driver.c:7623
+#: src/lxc/lxc_driver.c:2078 src/lxc/lxc_driver.c:2097
+#: src/qemu/qemu_driver.c:7581 src/qemu/qemu_driver.c:7629
 msgid "out of blkio weight range."
 msgstr "blkio ഭാരത്തിന്റെ പരിധിയില്‍ കൂടുതല്‍."
 
-#: src/lxc/lxc_driver.c:2249
+#: src/lxc/lxc_driver.c:2253
 #, c-format
 msgid "Invalid path, '%s' is not a known interface"
 msgstr "തെറ്റായ പാഥ്, '%s' പരിചിതമായൊരു ഇന്റര്‍ഫെയിസല്ല"
 
-#: src/lxc/lxc_driver.c:2304
+#: src/lxc/lxc_driver.c:2308
 msgid "Cannot set autostart for transient domain"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനുള്ള autostart സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2327
+#: src/lxc/lxc_driver.c:2331
 #, c-format
 msgid "Cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2334 src/libxl/libxl_driver.c:3605
-#: src/qemu/qemu_driver.c:7326 src/uml/uml_driver.c:2434
+#: src/lxc/lxc_driver.c:2338 src/libxl/libxl_driver.c:3604
+#: src/qemu/qemu_driver.c:7332 src/uml/uml_driver.c:2438
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s -> '%s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_driver.c:2341 src/libxl/libxl_driver.c:3612
-#: src/network/bridge_driver.c:2972 src/qemu/qemu_driver.c:7333
-#: src/storage/storage_driver.c:1171 src/uml/uml_driver.c:2441
+#: src/lxc/lxc_driver.c:2345 src/libxl/libxl_driver.c:3611
+#: src/network/bridge_driver.c:2972 src/qemu/qemu_driver.c:7339
+#: src/storage/storage_driver.c:1171 src/uml/uml_driver.c:2445
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "'%s' സിംലിങ്ക് വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc/lxc_driver.c:2468
+#: src/lxc/lxc_driver.c:2472
 msgid "Suspend operation failed"
 msgstr "താല്‍ക്കാലികമായി നിര്‍ത്താന്‍ സാധിച്ചില്ല"
 
-#: src/lxc/lxc_driver.c:2517
+#: src/lxc/lxc_driver.c:2521
 msgid "Resume operation failed"
 msgstr "തുടരാന്‍ സാധിച്ചില്ല"
 
-#: src/lxc/lxc_driver.c:2583 src/uml/uml_driver.c:2581
+#: src/lxc/lxc_driver.c:2587 src/uml/uml_driver.c:2585
 #, c-format
 msgid "cannot find console device '%s'"
 msgstr "കണ്‍സോള്‍ ഡിവൈസ് '%s' കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2584 src/uml/uml_driver.c:2582
+#: src/lxc/lxc_driver.c:2588 src/uml/uml_driver.c:2586
 msgid "default"
 msgstr "സ്വതവേ"
 
-#: src/lxc/lxc_driver.c:2590 src/libxl/libxl_driver.c:3881
-#: src/qemu/qemu_driver.c:13724 src/uml/uml_driver.c:2588
-#: src/xen/xen_driver.c:2654
+#: src/lxc/lxc_driver.c:2594 src/libxl/libxl_driver.c:3880
+#: src/qemu/qemu_driver.c:13728 src/uml/uml_driver.c:2592
+#: src/xen/xen_driver.c:2652
 #, c-format
 msgid "character device %s is not using a PTY"
 msgstr "ക്യാരക്ടര്‍ ഡിവൈസ് %s ഒരു PTY ഉപയോഗിയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_driver.c:2621
+#: src/lxc/lxc_driver.c:2625
 #, c-format
 msgid "signum value %d is out of range"
 msgstr "signum മൂല്ല്യം %d പരിധിയ്ക്കു് പുറത്തു്"
 
-#: src/lxc/lxc_driver.c:2649
+#: src/lxc/lxc_driver.c:2653
 msgid "Only the init process may be killed"
 msgstr "init പ്രക്രിയ മാത്രമേ ഇല്ലാതാക്കുവാന്‍ പാടുള്ളൂ"
 
-#: src/lxc/lxc_driver.c:2665
+#: src/lxc/lxc_driver.c:2669
 #, c-format
 msgid "Unable to send %d signal to process %d"
 msgstr "%d സിഗ്നല്‍ %d പ്രക്രിയയിലേക്കു് അയയ്ക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/lxc/lxc_driver.c:2727 src/lxc/lxc_driver.c:2807
+#: src/lxc/lxc_driver.c:2739 src/lxc/lxc_driver.c:2816
 msgid "Init process ID is not yet known"
 msgstr "Init പ്രക്രിയ ഐഡി ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2744 src/lxc/lxc_driver.c:2824
+#: src/lxc/lxc_driver.c:2754 src/lxc/lxc_driver.c:2831
 msgid "Container does not provide an initctl pipe"
 msgstr "കണ്ടെയിനര്‍ initctl പൈപ്പ് ലഭ്യമാക്കുന്നില്ല"
 
-#: src/lxc/lxc_driver.c:2757 src/lxc/lxc_driver.c:2837
+#: src/lxc/lxc_driver.c:2767 src/lxc/lxc_driver.c:2844
 #, c-format
 msgid "Unable to send SIGTERM to init pid %llu"
 msgstr "pid %llu init ചെയ്യുന്നതിനായി SIGTERM അയയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2867 src/libxl/libxl_driver.c:2987
+#: src/lxc/lxc_driver.c:2873 src/libxl/libxl_driver.c:2987
 #, c-format
 msgid "target %s already exists."
 msgstr "ലക്ഷ്യം %s നിലവിലുണ്ടു്."
 
-#: src/lxc/lxc_driver.c:2889 src/qemu/qemu_driver.c:6607
+#: src/lxc/lxc_driver.c:2895 src/qemu/qemu_driver.c:6613
 msgid "device is already in the domain configuration"
 msgstr "ഡിവൈസ് നിലവില്‍ ഡൊമെയിന്‍ ക്രമീകരണത്തിലാണു്"
 
-#: src/lxc/lxc_driver.c:2900 src/libxl/libxl_driver.c:2998
+#: src/lxc/lxc_driver.c:2906 src/libxl/libxl_driver.c:2998
 msgid "persistent attach of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2924 src/lxc/lxc_driver.c:2980
-#: src/lxc/lxc_driver.c:3773 src/qemu/qemu_driver.c:6694
+#: src/lxc/lxc_driver.c:2930 src/lxc/lxc_driver.c:2986
+#: src/lxc/lxc_driver.c:3805 src/qemu/qemu_driver.c:6700
 #: src/qemu/qemu_hotplug.c:3361
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr "മാക് വിലാസം %s-മായി പൊരുത്തപ്പെടുന്ന അനവധി ഡിവൈസുകള്‍ ലഭ്യമായി"
 
-#: src/lxc/lxc_driver.c:2929 src/lxc/lxc_driver.c:2985
-#: src/qemu/qemu_driver.c:6699
+#: src/lxc/lxc_driver.c:2935 src/lxc/lxc_driver.c:2991
+#: src/qemu/qemu_driver.c:6705
 msgid "no matching network device was found"
 msgstr "ചേരുന്ന നെറ്റ്‌‌വര്‍ക്ക് ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2943 src/libxl/libxl_driver.c:3120
+#: src/lxc/lxc_driver.c:2949 src/libxl/libxl_driver.c:3120
 msgid "persistent update of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_driver.c:2968 src/libxl/libxl_driver.c:3036
-#: src/qemu/qemu_driver.c:6683
+#: src/lxc/lxc_driver.c:2974 src/libxl/libxl_driver.c:3036
+#: src/qemu/qemu_driver.c:6689
 #, c-format
 msgid "no target device %s"
 msgstr "ലക്ഷ്യ ഡിവൈസ് %s ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2997 src/qemu/qemu_driver.c:6710
-#: src/qemu/qemu_driver.c:6734 src/qemu/qemu_hotplug.c:1365
+#: src/lxc/lxc_driver.c:3003 src/qemu/qemu_driver.c:6716
+#: src/qemu/qemu_driver.c:6740 src/qemu/qemu_hotplug.c:1365
 #: src/qemu/qemu_hotplug.c:3587
 msgid "device not present in domain configuration"
 msgstr "ഡൊമെയിന്‍ ക്രമീകരണത്തില്‍ ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3008 src/libxl/libxl_driver.c:3044
+#: src/lxc/lxc_driver.c:3014 src/libxl/libxl_driver.c:3044
 msgid "persistent detach of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ വേര്‍പെടുത്തലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3033 src/lxc/lxc_driver.c:3152
-#: src/lxc/lxc_driver.c:3713 src/lxc/lxc_driver.c:3910
-#: src/lxc/lxc_driver.c:3969
+#: src/lxc/lxc_driver.c:3090
+#, fuzzy, c-format
+msgid "Unexpected device type %d"
+msgstr "അപ്രതീക്ഷിതമായ ക്യാരക്ടര്‍ ഡിവൈസ് തരം %d"
+
+#: src/lxc/lxc_driver.c:3148
+#, c-format
+msgid "Unable to remove device %s"
+msgstr "%s ഡിവൈസ് നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#: src/lxc/lxc_driver.c:3186 src/lxc/lxc_driver.c:3291
+#: src/lxc/lxc_driver.c:3749 src/lxc/lxc_driver.c:3931
+#: src/lxc/lxc_driver.c:3980
 msgid "Cannot attach disk until init PID is known"
 msgstr "init PID പരിചിതമാകുന്നതു് വരെ ഡിസ്ക് ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3050 src/libxl/libxl_driver.c:2857
-#: src/qemu/qemu_driver.c:6580 src/qemu/qemu_hotplug.c:251
+#: src/lxc/lxc_driver.c:3192 src/lxc/lxc_driver.c:3228
+#: src/lxc/lxc_driver.c:3679 src/lxc/lxc_driver.c:3768
+#: src/lxc/lxc_driver.c:3885 src/lxc/lxc_driver.c:3946
+#: src/lxc/lxc_driver.c:3995
+msgid "devices cgroup isn't mounted"
+msgstr "ഡിവൈസുകളുടെ cgroup മൌണ്ട് ചെയ്തിട്ടില്ല"
+
+#: src/lxc/lxc_driver.c:3209 src/libxl/libxl_driver.c:2857
+#: src/qemu/qemu_driver.c:6586 src/qemu/qemu_hotplug.c:251
 #: src/qemu/qemu_hotplug.c:476 src/qemu/qemu_hotplug.c:599
-#: src/uml/uml_driver.c:2136
+#: src/uml/uml_driver.c:2140
 #, c-format
 msgid "target %s already exists"
 msgstr "ടാര്‍ഗറ്റ് %s നിലവിലുണ്ട്"
 
-#: src/lxc/lxc_driver.c:3110 src/lxc/lxc_driver.c:3312
-#: src/lxc/lxc_driver.c:3460 src/lxc/lxc_driver.c:3568
-#: src/lxc/lxc_driver.c:3733 src/lxc/lxc_driver.c:3859
-#: src/lxc/lxc_driver.c:3930 src/lxc/lxc_driver.c:3989
-msgid "devices cgroup isn't mounted"
-msgstr "ഡിവൈസുകളുടെ cgroup മൌണ്ട് ചെയ്തിട്ടില്ല"
+#: src/lxc/lxc_driver.c:3221
+#, fuzzy, c-format
+msgid "Disk source %s must be a block device"
+msgstr "Hostdev ശ്രോതസ്സ് %s ഒരു ബ്ലോക്ക് ഡിവൈസായിരിയ്ക്കണം"
 
-#: src/lxc/lxc_driver.c:3120 src/lxc/lxc_driver.c:3468
-#: src/lxc/lxc_driver.c:3576
-#, c-format
-msgid "cannot allow device %s for domain %s"
-msgstr "ഡിവൈസ് %s അനുവദിയ്ക്കുന്നില്ല, ഡൊമെയിന്‍ %s-നുള്ളതു്"
-
-#: src/lxc/lxc_driver.c:3174 src/lxc/lxc_process.c:436
+#: src/lxc/lxc_driver.c:3313 src/lxc/lxc_process.c:436
 msgid "No bridge name specified"
 msgstr "ബ്രിഡ്ജ് നാമം നല്‍കിയിട്ടില്ല"
 
-#: src/lxc/lxc_driver.c:3199 src/lxc/lxc_process.c:403
+#: src/lxc/lxc_driver.c:3338 src/lxc/lxc_process.c:403
 #: src/qemu/qemu_command.c:314 src/qemu/qemu_hotplug.c:1696
 #, c-format
 msgid "Network '%s' is not active."
 msgstr "നെറ്റ്‌വര്‍ക്ക് '%s' സജീവമല്ല."
 
-#: src/lxc/lxc_driver.c:3235
+#: src/lxc/lxc_driver.c:3374
 msgid "Network device type is not supported"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് തരം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/lxc/lxc_driver.c:3287
+#: src/lxc/lxc_driver.c:3421
 msgid "host USB device already exists"
 msgstr "ഹോസ്റ്റ് യുഎസ്ബി ഡിവൈസ് നിലവിലുണ്ടു്"
 
-#: src/lxc/lxc_driver.c:3395 src/lxc/lxc_driver.c:3503
+#: src/lxc/lxc_driver.c:3493 src/lxc/lxc_driver.c:3565
 msgid "Missing storage block path"
 msgstr "സംഭരണ ബ്ലോക്ക് പാഥ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3401 src/lxc/lxc_driver.c:3509
+#: src/lxc/lxc_driver.c:3499 src/lxc/lxc_driver.c:3571
 msgid "host device already exists"
 msgstr "ഹോസ്റ്റ് ഡിവൈസ് നിലവിലുണ്ടു്"
 
-#: src/lxc/lxc_driver.c:3414 src/lxc/lxc_driver.c:3522
+#: src/lxc/lxc_driver.c:3512 src/lxc/lxc_driver.c:3584
 #, c-format
 msgid "Hostdev source %s must be a block device"
 msgstr "Hostdev ശ്രോതസ്സ് %s ഒരു ബ്ലോക്ക് ഡിവൈസായിരിയ്ക്കണം"
 
-#: src/lxc/lxc_driver.c:3433 src/lxc/lxc_driver.c:3541
-#, c-format
-msgid "Unable to create directory for device %s"
-msgstr "%s ഡിവൈസിനുള്ള ഡയറക്ടറി തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
-
-#: src/lxc/lxc_driver.c:3606 src/lxc/lxc_driver.c:3627
-#: src/lxc/lxc_driver.c:4028 src/lxc/lxc_driver.c:4048
+#: src/lxc/lxc_driver.c:3636 src/lxc/lxc_driver.c:3657
+#: src/lxc/lxc_driver.c:4030 src/lxc/lxc_driver.c:4050
 #, c-format
 msgid "Unsupported host device type %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഹോസ്റ്റ് ഡിവൈസ് തരം %s"
 
-#: src/lxc/lxc_driver.c:3643 src/lxc/lxc_driver.c:4064
+#: src/lxc/lxc_driver.c:3673 src/lxc/lxc_driver.c:4066
 msgid "Cannot attach hostdev until init PID is known"
 msgstr "init PID പരിചിതമാകുന്നതു് വരെ hostdev ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3693 src/libxl/libxl_driver.c:2969
-#: src/uml/uml_driver.c:2217
+#: src/lxc/lxc_driver.c:3729 src/libxl/libxl_driver.c:2969
+#: src/uml/uml_driver.c:2221
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "ഡിവൈസ് രീതി '%s' ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3721 src/libxl/libxl_driver.c:2917
-#: src/qemu/qemu_hotplug.c:2983 src/uml/uml_driver.c:2267
+#: src/lxc/lxc_driver.c:3757 src/libxl/libxl_driver.c:2917
+#: src/qemu/qemu_hotplug.c:2983 src/uml/uml_driver.c:2271
 #, c-format
 msgid "disk %s not found"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3741 src/lxc/lxc_driver.c:3871
-#: src/lxc/lxc_driver.c:3938 src/lxc/lxc_driver.c:3997
-#, c-format
-msgid "Unable to remove device %s"
-msgstr "%s ഡിവൈസ് നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#: src/lxc/lxc_driver.c:3778 src/qemu/qemu_hotplug.c:3367
+#: src/lxc/lxc_driver.c:3810 src/qemu/qemu_hotplug.c:3367
 #, c-format
 msgid "network device %s not found"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് %s ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3803
+#: src/lxc/lxc_driver.c:3835
 msgid "Only bridged veth devices can be detached"
 msgstr "ബ്രിഡ്ജ് ചെയ്ത veth ഡിവൈസുകള്‍ മാത്രമേ വേര്‍പെടുത്തുവാന്‍ സാധ്യമുള്ളൂ"
 
-#: src/lxc/lxc_driver.c:3843
+#: src/lxc/lxc_driver.c:3874
 msgid "usb device not found"
 msgstr "യുഎസ്ബി ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:3918 src/lxc/lxc_driver.c:3977
+#: src/lxc/lxc_driver.c:3939 src/lxc/lxc_driver.c:3988
 #, c-format
 msgid "hostdev %s not found"
 msgstr "hostdev %s ലഭ്യമായില്ല"
 
-#: src/lxc/lxc_driver.c:4106 src/libxl/libxl_driver.c:3017
+#: src/lxc/lxc_driver.c:4108 src/libxl/libxl_driver.c:3017
 #: src/xen/xm_internal.c:1381
 #, c-format
 msgid "device type '%s' cannot be detached"
 msgstr "ഡിവൈസ് തരം '%s' വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:4148 src/lxc/lxc_driver.c:4274
-#: src/lxc/lxc_driver.c:4384 src/qemu/qemu_driver.c:6885
-#: src/qemu/qemu_driver.c:7032 src/qemu/qemu_driver.c:7167
+#: src/lxc/lxc_driver.c:4150 src/lxc/lxc_driver.c:4276
+#: src/lxc/lxc_driver.c:4386 src/qemu/qemu_driver.c:6891
+#: src/qemu/qemu_driver.c:7038 src/qemu/qemu_driver.c:7173
 msgid "cannot do live update a device on inactive domain"
 msgstr "നിര്‍ജീവ ഡൊമെയിനിലുള്ളൊരു ഡിവൈസില്‍ ഒരു ലൈവ് പരിഷ്കരണം സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:4159 src/lxc/lxc_driver.c:4282
-#: src/lxc/lxc_driver.c:4392 src/libxl/libxl_driver.c:3168
+#: src/lxc/lxc_driver.c:4161 src/lxc/lxc_driver.c:4284
+#: src/lxc/lxc_driver.c:4394 src/libxl/libxl_driver.c:3168
 #: src/libxl/libxl_driver.c:3272 src/libxl/libxl_driver.c:3376
-#: src/qemu/qemu_driver.c:6893 src/qemu/qemu_driver.c:7040
-#: src/qemu/qemu_driver.c:7175
+#: src/qemu/qemu_driver.c:6899 src/qemu/qemu_driver.c:7046
+#: src/qemu/qemu_driver.c:7181
 msgid "cannot modify device on transient domain"
 msgstr "ക്ഷണികമായ ഡൊമെയിനിലെ ഉപകരണത്തിന് മാറ്റം വരുത്താന്‍ കഴിയില്ല"
 
-#: src/lxc/lxc_driver.c:4324
+#: src/lxc/lxc_driver.c:4326
 msgid "Unable to modify live devices"
 msgstr "ലൈവ് ഡിവൈസുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:4533 src/libxl/libxl_driver.c:1068
+#: src/lxc/lxc_driver.c:4535 src/libxl/libxl_driver.c:1068
 #: src/qemu/qemu_command.c:7793 src/qemu/qemu_driver.c:1207
 #: src/xen/xen_driver.c:633
 msgid "Host SMBIOS information is not available"
 msgstr "ഹോസ്റ്റ് SMBIOS വിവരങ്ങള്‍ ലഭ്യമല്ല"
 
 #: src/lxc/lxc_process.c:280 src/network/bridge_driver.c:1862
-#: src/qemu/qemu_command.c:395 src/qemu/qemu_driver.c:9331
+#: src/qemu/qemu_command.c:395 src/qemu/qemu_driver.c:9337
 #: src/qemu/qemu_hotplug.c:2146 src/util/virnetdevmacvlan.c:938
 #, c-format
 msgid "cannot set bandwidth limits on %s"
@@ -10195,21 +10188,21 @@ msgstr "ഡൊമെയിന്‍ ഇമേജ് ഫയല്‍ '%s' തു�
 msgid "failed to read libxl header"
 msgstr "libxl തലക്കെട്ട് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:209 src/qemu/qemu_driver.c:5187
+#: src/libxl/libxl_driver.c:209 src/qemu/qemu_driver.c:5190
 msgid "image magic is incorrect"
 msgstr "ഇമേജ് മാജിക് തെറ്റാണു്"
 
-#: src/libxl/libxl_driver.c:215 src/qemu/qemu_driver.c:5213
+#: src/libxl/libxl_driver.c:215 src/qemu/qemu_driver.c:5216
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "ഇമേജ് പതിപ്പിനുള്ള പിന്തുണ ലഭ്യമല്ല (%d > %d)"
 
-#: src/libxl/libxl_driver.c:222 src/qemu/qemu_driver.c:5220
+#: src/libxl/libxl_driver.c:222 src/qemu/qemu_driver.c:5223
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "തെറ്റായ XML നീളം: %d"
 
-#: src/libxl/libxl_driver.c:230 src/qemu/qemu_driver.c:5229
+#: src/libxl/libxl_driver.c:230 src/qemu/qemu_driver.c:5232
 msgid "failed to read XML"
 msgstr "XML വായിക്കുന്നതില്‍ പരാജയം"
 
@@ -10223,7 +10216,7 @@ msgstr "%d ഡൊമെയിന്‍ വെടിപ്പാക്കുവ�
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് '%d' vcpu ഉറപ്പിക്കാന്‍ സാധിച്ചില്ല"
 
-#: src/libxl/libxl_driver.c:586 src/qemu/qemu_driver.c:5626
+#: src/libxl/libxl_driver.c:586 src/qemu/qemu_driver.c:5629
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -10326,8 +10319,8 @@ msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ക്കു വേണ്ടി പരമാവധി മെമ്മറി സജ്ജീകരിക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:1647 src/qemu/qemu_driver.c:2249
-#: src/uml/uml_driver.c:1836
+#: src/libxl/libxl_driver.c:1647 src/qemu/qemu_driver.c:2252
+#: src/uml/uml_driver.c:1838
 msgid "cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -10396,7 +10389,7 @@ msgstr ""
 "കോര്‍ ഡമ്പ് ചെയ്തതിനു ശേഷം libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' പുനരാരംഭിക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2052 src/qemu/qemu_driver.c:3263
+#: src/libxl/libxl_driver.c:2052 src/qemu/qemu_driver.c:3266
 msgid "cannot do managed save for transient domain"
 msgstr "ക്ഷണിക ഡൊമെയിനിനെ നിയന്ത്രിത സൂക്ഷിപ്പ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -10419,7 +10412,7 @@ msgstr "vcpuകള്‍ നിര്‍ജ്ജീവമായ ഒരു ഡ�
 msgid "could not determine max vcpus for the domain"
 msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/libxl/libxl_driver.c:2219 src/qemu/qemu_driver.c:4157
+#: src/libxl/libxl_driver.c:2219 src/qemu/qemu_driver.c:4160
 #: src/xen/xend_internal.c:1812 src/xen/xm_internal.c:699
 #, c-format
 msgid ""
@@ -10450,7 +10443,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ vcpuകള്‍ നിരത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #: src/libxl/libxl_driver.c:2511 src/libxl/libxl_driver.c:2555
-#: src/qemu/qemu_driver.c:5732 src/qemu/qemu_driver.c:5780
+#: src/qemu/qemu_driver.c:5735 src/qemu/qemu_driver.c:5783
 #: src/xen/xen_driver.c:1596 src/xen/xen_driver.c:1649
 #, c-format
 msgid "unsupported config type %s"
@@ -10460,23 +10453,23 @@ msgstr "പിന്തുണ ലഭ്യമല്ലാത്ത ക്രമ�
 msgid "parsing xm config failed"
 msgstr "xm ക്രമീകരണം പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2732 src/qemu/qemu_driver.c:6223
-#: src/uml/uml_driver.c:2096 src/vmware/vmware_driver.c:766
+#: src/libxl/libxl_driver.c:2732 src/qemu/qemu_driver.c:6229
+#: src/uml/uml_driver.c:2100 src/vmware/vmware_driver.c:766
 msgid "cannot undefine transient domain"
 msgstr "ക്ഷണിക ഡൊമെയിന്‍ വേണ്ടെന്നു് വയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:2744 src/qemu/qemu_driver.c:6248
+#: src/libxl/libxl_driver.c:2744 src/qemu/qemu_driver.c:6254
 msgid "Failed to remove domain managed save image"
 msgstr "ഡൊമെയിന്‍ നിയന്ത്രിത സൂക്ഷിപ്പ് തത്സ്വരൂപം (ഇമേജ്) നീക്കം ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/libxl/libxl_driver.c:2749 src/qemu/qemu_driver.c:6254
+#: src/libxl/libxl_driver.c:2749 src/qemu/qemu_driver.c:6260
 #: tools/virsh-domain.c:3132
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
 "ഡൊമെയിന്‍ നിയന്ത്രിത സൂക്ഷിപ്പ് തത്സ്വരൂപം (ഇമേജ്) നിലവിലുള്ളപ്പോള്‍, വേണ്ടെന്നു വയ്ക്കാനുള്ള അപേക്ഷ "
 "നിരസിക്കുന്നു"
 
-#: src/libxl/libxl_driver.c:2805 src/qemu/qemu_driver.c:6479
+#: src/libxl/libxl_driver.c:2805 src/qemu/qemu_driver.c:6485
 #: src/qemu/qemu_hotplug.c:717
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -10493,7 +10486,7 @@ msgid "libxenlight failed to change media for disk '%s'"
 msgstr "ഡിസ്ക് '%s'നു വേണ്ടി മാദ്ധ്യമം മാറ്റുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
 #: src/libxl/libxl_driver.c:2863 src/qemu/qemu_hotplug.c:618
-#: src/uml/uml_driver.c:2143
+#: src/uml/uml_driver.c:2147
 msgid "disk source path is missing"
 msgstr "ഡിസ്ക് ഉറവിട വഴി കാണ്മാനില്ല"
 
@@ -10503,7 +10496,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr "ഡിസ്ക് '%s' ചേര്‍ക്കുന്നതില്‍ libxenlight പരാജയപ്പെട്ടു"
 
 #: src/libxl/libxl_driver.c:2885 src/qemu/qemu_hotplug.c:764
-#: src/uml/uml_driver.c:2212
+#: src/uml/uml_driver.c:2216
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
@@ -10528,7 +10521,7 @@ msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട് അണ്‍പ്�
 msgid "device type '%s' cannot hot unplugged"
 msgstr "ഉപകരണത്തിന്റെ തരം '%s' ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3069 src/qemu/qemu_driver.c:6518
+#: src/libxl/libxl_driver.c:3069 src/qemu/qemu_driver.c:6524
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ഡിസ്ക് ബസ് '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല."
@@ -10539,12 +10532,12 @@ msgid "device type '%s' cannot be updated"
 msgstr "ഡിവൈസ് തരം '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/libxl/libxl_driver.c:3097 src/openvz/openvz_driver.c:2021
-#: src/qemu/qemu_driver.c:6777
+#: src/qemu/qemu_driver.c:6783
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "ലക്ഷ്യം %s നിലവിലില്ല."
 
-#: src/libxl/libxl_driver.c:3103 src/qemu/qemu_driver.c:6784
+#: src/libxl/libxl_driver.c:3103 src/qemu/qemu_driver.c:6790
 msgid "this disk doesn't support update"
 msgstr "ഈ ഡിസ്ക് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -10557,55 +10550,55 @@ msgstr "libxl_get_numainfo പരാജയപ്പെട്ടു"
 msgid "start cell %d out of range (0-%d)"
 msgstr "ആരംഭ സെല്‍ %d പരിധി (0-%d)"
 
-#: src/libxl/libxl_driver.c:3583 src/qemu/qemu_driver.c:7304
-#: src/uml/uml_driver.c:2412
+#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_driver.c:7310
+#: src/uml/uml_driver.c:2416
 msgid "cannot set autostart for transient domain"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനു് autostart സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3598 src/qemu/qemu_driver.c:7319
-#: src/storage/storage_driver.c:1156 src/uml/uml_driver.c:2427
+#: src/libxl/libxl_driver.c:3597 src/qemu/qemu_driver.c:7325
+#: src/storage/storage_driver.c:1156 src/uml/uml_driver.c:2431
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3673
+#: src/libxl/libxl_driver.c:3672
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
 msgstr "ഡൊമെയിന്‍ '%d'ന്റെ ഷെഡ്യൂളര്‍ ഐഡി libxenlight ഉപയോഗിച്ച് കിട്ടിയില്ല"
 
-#: src/libxl/libxl_driver.c:3721 src/libxl/libxl_driver.c:3798
+#: src/libxl/libxl_driver.c:3720 src/libxl/libxl_driver.c:3797
 msgid "Only 'credit' scheduler is supported"
 msgstr "'credit' ഷെഡ്യൂളര്‍ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
-#: src/libxl/libxl_driver.c:3727 src/libxl/libxl_driver.c:3804
+#: src/libxl/libxl_driver.c:3726 src/libxl/libxl_driver.c:3803
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
 msgstr "ഡൊമെയിന്‍ '%d'ന്റെ ഷെഡ്യൂളര്‍ പരാമീറ്ററുകള്‍ libxenlight ഉപയോഗിച്ച് കിട്ടിയില്ല"
 
-#: src/libxl/libxl_driver.c:3820
+#: src/libxl/libxl_driver.c:3819
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
 "ഡൊമെയിന്‍ '%d'ന്റെ ഷെഡ്യൂളര്‍ പരാമീറ്ററുകള്‍ libxenlight ഉപയോഗിച്ച് സജ്ജീകരിക്കാന്‍ സാധിച്ചില്ല"
 
-#: src/libxl/libxl_driver.c:3851 src/xen/xen_driver.c:2633
+#: src/libxl/libxl_driver.c:3850 src/xen/xen_driver.c:2631
 msgid "Named device aliases are not supported"
 msgstr "നെയിംഡ് ഡിവൈസ് വിളിപ്പേരുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libxl/libxl_driver.c:3874 src/qemu/qemu_driver.c:13717
+#: src/libxl/libxl_driver.c:3873 src/qemu/qemu_driver.c:13721
 #, c-format
 msgid "cannot find character device %s"
 msgstr "ക്യാരക്ടര്‍ ഡിവൈസ്  %s കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:3901 src/qemu/qemu_driver.c:13737
+#: src/libxl/libxl_driver.c:3900 src/qemu/qemu_driver.c:13741
 msgid "Active console session exists for this domain"
 msgstr "ഈ ഡൊമെയിനു് സജീവമായ കണ്‍സോള്‍ സെഷന്‍ നിലവിലുണ്ടു്"
 
-#: src/libxl/libxl_driver.c:4002
+#: src/libxl/libxl_driver.c:4001
 msgid "unable to get numa affinity"
 msgstr "ന്യൂമാ അഫിനിറ്റി ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/libxl/libxl_driver.c:4012
+#: src/libxl/libxl_driver.c:4011
 #, c-format
 msgid "Node %zu out of range"
 msgstr "നോഡ് %zu പരിധിയ്ക്കു് പുറത്തു്"
@@ -11396,7 +11389,7 @@ msgid "Cannot obtain CPU count"
 msgstr "സിപിയു കൌണ്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/nodeinfo.c:129 src/nodeinfo.c:172 src/nodeinfo.c:870 src/nodeinfo.c:942
-#: src/nodeinfo.c:1001 src/uml/uml_driver.c:2506 src/util/vircommand.c:325
+#: src/nodeinfo.c:1001 src/uml/uml_driver.c:2510 src/util/vircommand.c:325
 #: src/util/virpci.c:1829
 #, c-format
 msgid "cannot open %s"
@@ -11669,8 +11662,8 @@ msgstr "unlink(\"%s\")"
 msgid "open(\"%s\")"
 msgstr "open(\"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1910 src/qemu/qemu_driver.c:2988
-#: src/qemu/qemu_driver.c:3006 src/qemu/qemu_driver.c:3658
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1910 src/qemu/qemu_driver.c:2991
+#: src/qemu/qemu_driver.c:3009 src/qemu/qemu_driver.c:3661
 #: src/vbox/vbox_tmpl.c:9180
 #, c-format
 msgid "unable to close %s"
@@ -11710,17 +11703,17 @@ msgstr "libpcap യും  \" യും  ഉപയോഗിച്ചല്ലാ
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr "DBus matches ഇന്‍സ്റ്റാള്‍ ചെയ്യാന്‍ പറ്റിയില്ല. nwfilter ഡ്രൈവര്‍ പ്രവര്‍ത്തരഹിതമാക്കുക"
 
-#: src/nwfilter/nwfilter_driver.c:365 src/nwfilter/nwfilter_driver.c:603
-#: src/nwfilter/nwfilter_driver.c:654
+#: src/nwfilter/nwfilter_driver.c:367 src/nwfilter/nwfilter_driver.c:606
+#: src/nwfilter/nwfilter_driver.c:656
 msgid "no nwfilter with matching uuid"
 msgstr "uuid യുമായി ചേരുന്നു nwfilter ഒന്നും  തന്നെയില്ല"
 
-#: src/nwfilter/nwfilter_driver.c:394
+#: src/nwfilter/nwfilter_driver.c:396
 #, c-format
 msgid "no nwfilter with matching name '%s'"
 msgstr "'%s' എന്ന പേരുമായി ചേരുന്നൊരു nwfilter ലഭ്യമല്ല"
 
-#: src/nwfilter/nwfilter_driver.c:613
+#: src/nwfilter/nwfilter_driver.c:616
 msgid "nwfilter is in use"
 msgstr "nwfilter ഉപയോഗത്തിലുണ്ടു്"
 
@@ -11889,9 +11882,9 @@ msgstr ""
 "പ്രവര്‍ത്തനസജ്ജമാക്കാന്‍ സാധിച്ചില്ല : %s"
 
 #: src/nwfilter/nwfilter_gentech_driver.c:832
-#: src/nwfilter/nwfilter_gentech_driver.c:1058
-#: src/nwfilter/nwfilter_gentech_driver.c:1084
-#: src/nwfilter/nwfilter_gentech_driver.c:1109
+#: src/nwfilter/nwfilter_gentech_driver.c:1054
+#: src/nwfilter/nwfilter_gentech_driver.c:1080
+#: src/nwfilter/nwfilter_gentech_driver.c:1105
 #, c-format
 msgid "Could not get access to ACL tech driver '%s'"
 msgstr "ACL ടെക്ക് ഡ്രൈവറിലേക്ക് ഉപയോഗാനുമതി ലഭ്യമല്ല : '%s'"
@@ -11901,7 +11894,7 @@ msgstr "ACL ടെക്ക് ഡ്രൈവറിലേക്ക് ഉപയ
 msgid "Could not find filter '%s'"
 msgstr "'%s' ഫില്‍റ്റര്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/nwfilter/nwfilter_gentech_driver.c:1187
+#: src/nwfilter/nwfilter_gentech_driver.c:1183
 #, c-format
 msgid "Failure while applying current filter on VM %s"
 msgstr "%s എന്ന വി എമ്മില്‍ നിലവിലെ ഫില്‍ട്ടര്‍ പ്രയോഗിക്കാന്‍ കഴിഞ്ഞില്ല "
@@ -12080,11 +12073,11 @@ msgstr "ഹാര്‍ഡ് ലിമിറ്റ് ഇല്ലാതെ സ
 #: src/openvz/openvz_driver.c:673 src/openvz/openvz_driver.c:736
 #: src/openvz/openvz_driver.c:1193 src/openvz/openvz_driver.c:1242
 #: src/openvz/openvz_driver.c:1272 src/openvz/openvz_driver.c:1367
-#: src/openvz/openvz_driver.c:2073 src/uml/uml_driver.c:1723
-#: src/uml/uml_driver.c:1861 src/uml/uml_driver.c:1910
-#: src/uml/uml_driver.c:1942 src/uml/uml_driver.c:2005
-#: src/uml/uml_driver.c:2087 src/uml/uml_driver.c:2374
-#: src/uml/uml_driver.c:2403 src/uml/uml_driver.c:2481
+#: src/openvz/openvz_driver.c:2073 src/uml/uml_driver.c:1725
+#: src/uml/uml_driver.c:1863 src/uml/uml_driver.c:1912
+#: src/uml/uml_driver.c:1944 src/uml/uml_driver.c:2008
+#: src/uml/uml_driver.c:2091 src/uml/uml_driver.c:2378
+#: src/uml/uml_driver.c:2407 src/uml/uml_driver.c:2485
 #: src/vbox/vbox_tmpl.c:2097 src/vbox/vbox_tmpl.c:2157
 #: src/vbox/vbox_tmpl.c:5302 src/vbox/vbox_tmpl.c:5391
 #: src/vbox/vbox_tmpl.c:5620 src/vbox/vbox_tmpl.c:8734
@@ -12239,15 +12232,15 @@ msgstr "%s, %s-നായി സജ്ജമാക്കുന്നതില്�
 
 #: src/openvz/openvz_driver.c:1975 src/parallels/parallels_driver.c:67
 #: src/parallels/parallels_driver.c:1142 src/qemu/qemu_driver.c:1377
-#: src/test/test_driver.c:2290 src/uml/uml_driver.c:1756
-#: src/uml/uml_driver.c:1785 src/uml/uml_driver.c:1821
-#: src/uml/uml_driver.c:2186 src/uml/uml_driver.c:2306
-#: src/uml/uml_driver.c:2551 src/vmware/vmware_driver.c:760
+#: src/test/test_driver.c:2290 src/uml/uml_driver.c:1758
+#: src/uml/uml_driver.c:1787 src/uml/uml_driver.c:1823
+#: src/uml/uml_driver.c:2190 src/uml/uml_driver.c:2310
+#: src/uml/uml_driver.c:2555 src/vmware/vmware_driver.c:760
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "ചേരുന്ന uuid '%s' ഉള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/openvz/openvz_driver.c:1998 src/qemu/qemu_driver.c:9184
+#: src/openvz/openvz_driver.c:1998 src/qemu/qemu_driver.c:9190
 #: src/test/test_driver.c:3092
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
@@ -12282,8 +12275,8 @@ msgstr ""
 "പ്രതീക്ഷിക്കാത്ത പാരല്ലല്‍സ് യു ആര്‍ എല്‍ പാത്ത് : %s . parallels:///system ഉപയോഗിച്ച് ശ്രമിക്കൂ"
 
 #: src/parallels/parallels_driver.c:1169 src/qemu/qemu_driver.c:1403
-#: src/qemu/qemu_driver.c:10129 src/qemu/qemu_driver.c:10529
-#: src/qemu/qemu_driver.c:10572
+#: src/qemu/qemu_driver.c:10133 src/qemu/qemu_driver.c:10533
+#: src/qemu/qemu_driver.c:10576
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "'%s' ചേരുന്ന പേരുള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
@@ -13616,7 +13609,7 @@ msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കു
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr "ഈ  QEMU  ബൈനറി ഡിസ്ക് aio മോഡ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_command.c:4195 src/qemu/qemu_driver.c:14754
+#: src/qemu/qemu_command.c:4195 src/qemu/qemu_driver.c:14758
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി ബ്ലോക്ക് ഐ/ഒ ത്രോട്ടിലിങ് പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -15034,8 +15027,8 @@ msgstr "അപ്രതീക്ഷിതമായ QEMU URI പാഥ് '%s', q
 msgid "Unable to open %s"
 msgstr "%s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu/qemu_driver.c:1349 src/uml/uml_driver.c:1634
-#: src/uml/uml_driver.c:1678 src/vbox/vbox_tmpl.c:1258
+#: src/qemu/qemu_driver.c:1349 src/uml/uml_driver.c:1636
+#: src/uml/uml_driver.c:1680 src/vbox/vbox_tmpl.c:1258
 #: src/vbox/vbox_tmpl.c:1582 src/vbox/vbox_tmpl.c:1634
 #: src/vbox/vbox_tmpl.c:1688 src/vbox/vbox_tmpl.c:1746
 #: src/vbox/vbox_tmpl.c:1797 src/vbox/vbox_tmpl.c:1871
@@ -15044,49 +15037,49 @@ msgstr "%s തുറക്കുവാന്‍ സാധ്യമായില�
 msgid "no domain with matching id %d"
 msgstr "ചേരുന്ന id %d ഉള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:1713 src/qemu/qemu_driver.c:1774
+#: src/qemu/qemu_driver.c:1716 src/qemu/qemu_driver.c:1777
 msgid "domain is pmsuspended"
 msgstr "ഡൊമെയിന്‍ pmsuspend ചെയ്തിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:1782 src/qemu/qemu_migration.c:2735
+#: src/qemu/qemu_driver.c:1785 src/qemu/qemu_migration.c:2735
 #: src/qemu/qemu_migration.c:4460 src/qemu/qemu_process.c:587
 #: src/qemu/qemu_process.c:4019
 msgid "resume operation failed"
 msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:1845 src/qemu/qemu_driver.c:1951
-#: src/qemu/qemu_driver.c:4173 src/qemu/qemu_driver.c:4903
-#: src/qemu/qemu_driver.c:11452 src/qemu/qemu_driver.c:11479
-#: src/qemu/qemu_driver.c:15422 src/qemu/qemu_driver.c:15555
-#: src/qemu/qemu_driver.c:15633
+#: src/qemu/qemu_driver.c:1848 src/qemu/qemu_driver.c:1954
+#: src/qemu/qemu_driver.c:4176 src/qemu/qemu_driver.c:4906
+#: src/qemu/qemu_driver.c:11456 src/qemu/qemu_driver.c:11483
+#: src/qemu/qemu_driver.c:15426 src/qemu/qemu_driver.c:15559
+#: src/qemu/qemu_driver.c:15637
 msgid "QEMU guest agent is not available due to an error"
 msgstr "ഒരു പിശക് കാരണം QEMU ഗസ്റ്റ് ഏജന്റ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:1856 src/qemu/qemu_driver.c:1957
-#: src/qemu/qemu_driver.c:4180 src/qemu/qemu_driver.c:4910
-#: src/qemu/qemu_driver.c:11458 src/qemu/qemu_driver.c:11486
-#: src/qemu/qemu_driver.c:15429 src/qemu/qemu_driver.c:15562
-#: src/qemu/qemu_driver.c:15627
+#: src/qemu/qemu_driver.c:1859 src/qemu/qemu_driver.c:1960
+#: src/qemu/qemu_driver.c:4183 src/qemu/qemu_driver.c:4913
+#: src/qemu/qemu_driver.c:11462 src/qemu/qemu_driver.c:11490
+#: src/qemu/qemu_driver.c:15433 src/qemu/qemu_driver.c:15566
+#: src/qemu/qemu_driver.c:15631
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU ഗസ്റ്റ് ഏജന്റ് ക്രമീകരിച്ചിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:1924
+#: src/qemu/qemu_driver.c:1927
 msgid "flags for acpi power button and guest agent are mutually exclusive"
 msgstr "acpi പവര്‍ ബട്ടനും അതിഥി പ്രവര്‍ത്തകനുമുള്ള അടയാളങ്ങള്‍ പരസ്പരവിരുദ്ധമാണ്"
 
-#: src/qemu/qemu_driver.c:1965
+#: src/qemu/qemu_driver.c:1968
 msgid "Reboot is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയ്ക്കൊപ്പം റീബൂട്ട് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:1971
+#: src/qemu/qemu_driver.c:1974
 msgid "Reboot is not supported without the JSON monitor"
 msgstr "JSON മോണിറ്ററില്ലാതെ റീബൂട്ട് പിന്തുണയ്ക്കുന്നതല്ല"
 
-#: src/qemu/qemu_driver.c:2229
+#: src/qemu/qemu_driver.c:2232
 msgid "cannot resize the maximum memory on an active domain"
 msgstr "സജീവമായൊരു ഡൊമെയിനില്‍ ഏറ്റവും കൂടിയ മെമ്മറിയുടെ വ്യാപ്തി മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:2266
+#: src/qemu/qemu_driver.c:2269
 msgid ""
 "Unable to change memory of active domain without the balloon device and "
 "guest OS balloon driver"
@@ -15094,79 +15087,79 @@ msgstr ""
 "ബലൂണ്‍ ഡിവൈസും ഗസ്റ്റ് ഒഎസ് ബലൂണ്‍ ഡ്രൈവറും ഇല്ലാതെ സജീവമായ ഡൊമെയിന്റെ മെമ്മറി മാറ്റുവാന്‍ "
 "സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:2344
+#: src/qemu/qemu_driver.c:2347
 msgid "unable to set balloon driver collection period"
 msgstr "balloon ഡ്രൈവര്‍ കലക്ഷന്‍ പീരിയഡ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല "
 
-#: src/qemu/qemu_driver.c:2437
+#: src/qemu/qemu_driver.c:2440
 #, c-format
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr "%u എന്ന കീ സെറ്റിലെ %s എന്ന കീകോഡ്  rfb കീകോഡിലേക്ക് പരിഭാഷപ്പെടുത്താന്‍ കഴിഞ്ഞില്ല"
 
-#: src/qemu/qemu_driver.c:2499 src/uml/uml_driver.c:1875
+#: src/qemu/qemu_driver.c:2502 src/uml/uml_driver.c:1877
 msgid "cannot read cputime for domain"
 msgstr "ഡൊമെയിനുള്ള cputime ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:2701
+#: src/qemu/qemu_driver.c:2704
 #, c-format
 msgid "failed to write header to domain save file '%s'"
 msgstr "'%s' ഫയല്‍ സൂക്ഷിയ്ക്കുന്നതിനു് ഡൊമെയിനിലേക്കു് ഹെഡര്‍ സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:2709 src/qemu/qemu_driver.c:5581
+#: src/qemu/qemu_driver.c:2712 src/qemu/qemu_driver.c:5584
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "'%s'-ലേക്കു് എക്സ്എംഎല്‍ സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:2733
+#: src/qemu/qemu_driver.c:2736
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "തെറ്റായ കംപ്രസ്സ് ചെയ്ത സൂക്ഷിക്കുന്നതിനുള്ള മാതൃക %d"
 
-#: src/qemu/qemu_driver.c:2849
+#: src/qemu/qemu_driver.c:2852
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr "'%s' തയ്യാറാക്കുന്നതില്‍ പരാജയം: ഏതു് തരമെന്നു് കണ്ടുപിടിയ്ക്കുവാനായില്ല"
 
-#: src/qemu/qemu_driver.c:2851
+#: src/qemu/qemu_driver.c:2854
 #, c-format
 msgid "Failed to open file '%s': couldn't determine fs type"
 msgstr "'%s' ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം: fs രീതി കണ്ടുപിടിയ്ക്കുവാനായില്ല"
 
-#: src/qemu/qemu_driver.c:2869
+#: src/qemu/qemu_driver.c:2872
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' തയ്യാറാക്കുന്നതില്‍ ചൈള്‍ഡ് പ്രക്രിയയില്‍ പിശക്"
 
-#: src/qemu/qemu_driver.c:2870
+#: src/qemu/qemu_driver.c:2873
 #, c-format
 msgid "Error from child process opening '%s'"
 msgstr "ചൈള്‍ഡ് പ്രക്രിയ '%s' തുറക്കുന്നതില്‍ പിശക്"
 
-#: src/qemu/qemu_driver.c:2891 src/storage/storage_backend.c:397
+#: src/qemu/qemu_driver.c:2894 src/storage/storage_backend.c:397
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr "ഫയല്‍ '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:2892 src/util/virfile.c:1263
-#: src/util/virstoragefile.c:977 src/util/virstoragefile.c:1036
+#: src/qemu/qemu_driver.c:2895 src/util/virfile.c:1284
+#: src/util/virstoragefile.c:971 src/util/virstoragefile.c:1030
 #, c-format
 msgid "Failed to open file '%s'"
 msgstr "ഫയല്‍ '%s' തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:2957 src/qemu/qemu_driver.c:3412
-#: src/qemu/qemu_driver.c:5155
+#: src/qemu/qemu_driver.c:2960 src/qemu/qemu_driver.c:3415
+#: src/qemu/qemu_driver.c:5158
 msgid "bypass cache unsupported by this system"
 msgstr "ഈ സിസ്റ്റം ബൈപ്പാസ് കാഷിനെ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:3001
+#: src/qemu/qemu_driver.c:3004
 #, c-format
 msgid "unable to write %s"
 msgstr "%s സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:3062 src/qemu/qemu_driver.c:3536
-#: src/qemu/qemu_driver.c:11658 src/qemu/qemu_driver.c:12156
-#: src/qemu/qemu_driver.c:13190 src/qemu/qemu_driver.c:13242
-#: src/qemu/qemu_driver.c:13911 src/qemu/qemu_hotplug.c:449
+#: src/qemu/qemu_driver.c:3065 src/qemu/qemu_driver.c:3539
+#: src/qemu/qemu_driver.c:11662 src/qemu/qemu_driver.c:12160
+#: src/qemu/qemu_driver.c:13194 src/qemu/qemu_driver.c:13246
+#: src/qemu/qemu_driver.c:13915 src/qemu/qemu_hotplug.c:449
 #: src/qemu/qemu_hotplug.c:979 src/qemu/qemu_migration.c:3224
 #: src/qemu/qemu_migration.c:3542 src/qemu/qemu_migration.c:3972
 #: src/qemu/qemu_migration.c:4380 src/qemu/qemu_process.c:562
@@ -15174,516 +15167,516 @@ msgstr "%s സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യ�
 msgid "guest unexpectedly quit"
 msgstr "ഗസ്റ്റ് അപ്രതീക്ഷിതമായി നിന്നിരിക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3095
+#: src/qemu/qemu_driver.c:3098
 msgid "failed to get domain xml"
 msgstr "ഡൊമെയിന്‍ xml ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:3182
+#: src/qemu/qemu_driver.c:3185
 msgid "Invalid save image format specified in configuration file"
 msgstr "ക്രമീകരണ ഫയലില്‍ തെറ്റായ രീതിയിലുള്ള സൂക്ഷിക്കുന്നതിനുള്ള മാതൃക"
 
-#: src/qemu/qemu_driver.c:3188
+#: src/qemu/qemu_driver.c:3191
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr "ക്രമീകരണ ഫയലിലുള്ള ചിത്ര ശൈലിയ്ക്കുള്ള കംപ്രഷന്‍ പ്രോഗ്രാം ലഭ്യമല്ല, റോ ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3352
+#: src/qemu/qemu_driver.c:3355
 #, c-format
 msgid "Failed to remove managed save file '%s'"
 msgstr "കൈകാര്യം ചെയ്ത '%s' ഫയല്‍ നീക്കം ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:3374
+#: src/qemu/qemu_driver.c:3377
 msgid "dump-guest-memory is not supported"
 msgstr "dump-guest-memory പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:3440
+#: src/qemu/qemu_driver.c:3443
 #, c-format
 msgid "unable to close file %s"
 msgstr "ഫയല്‍ %s അടയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:3473
+#: src/qemu/qemu_driver.c:3476
 msgid "Invalid dump image format specified in configuration file, using raw"
 msgstr "ക്രമീകരണ ഫയലില്‍ തെറ്റായ ഡംപ് ചിത്ര ശൈലി നല്‍കിയിരിയ്ക്കുന്നു, റോ ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3479
+#: src/qemu/qemu_driver.c:3482
 msgid ""
 "Compression program for dump image format in configuration file isn't "
 "available, using raw"
 msgstr ""
 "ക്രമീകരണ ഫയലിലുള്ള ഡംപ് ചിത്ര ശൈലിയ്ക്കുള്ള കംപ്രഷന്‍ പ്രോഗ്രാം ലഭ്യമല്ല, റോ ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3576
+#: src/qemu/qemu_driver.c:3579
 msgid "resuming after dump failed"
 msgstr "ഡംപിനു് ശേഷം വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:3634
+#: src/qemu/qemu_driver.c:3637
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr "സ്ക്രീന്‍ ID 0-നുള്ള സ്ക്രീന്‍ഷോട്ടുകള്‍ എടുക്കുന്നതു് മാത്രം നിലവില്‍ പിന്തുണയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3643 src/qemu/qemu_driver.c:9646
+#: src/qemu/qemu_driver.c:3646 src/qemu/qemu_driver.c:9652
 #: src/vbox/vbox_tmpl.c:9132
 #, c-format
 msgid "mkostemp(\"%s\") failed"
 msgstr "mkostemp(\"%s\") പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:3664 src/vbox/vbox_tmpl.c:9189
+#: src/qemu/qemu_driver.c:3667 src/vbox/vbox_tmpl.c:9189
 msgid "unable to open stream"
 msgstr "സ്ട്രീം തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:3721 src/qemu/qemu_driver.c:3785
+#: src/qemu/qemu_driver.c:3724 src/qemu/qemu_driver.c:3788
 msgid "Dump failed"
 msgstr "ഡംപ് പരാജയപ്പെട്ടിരിക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:3729
+#: src/qemu/qemu_driver.c:3732
 msgid "Resuming after dump failed"
 msgstr "ഡംപിനു് പരാജയപ്പെട്ടതിനു് ശേഷം പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:3980
+#: src/qemu/qemu_driver.c:3983
 msgid "qemu didn't unplug the vCPUs properly"
 msgstr "qemu vCPU ശരിയായി പ്ലഗ് ചെയ്യുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:3988 src/qemu/qemu_process.c:1897
+#: src/qemu/qemu_driver.c:3991 src/qemu/qemu_process.c:1897
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 "QEMU മോണിറ്ററില്‍ നിന്നും തെറ്റായ vCPU pid-കളുടെ എണ്ണം കിട്ടിയിരിയ്ക്കുന്നു.  ലഭ്യമായതു് %d, "
 "ആവശ്യമായതു് %d"
 
-#: src/qemu/qemu_driver.c:4008
+#: src/qemu/qemu_driver.c:4011
 #, c-format
 msgid "unable to add vcpu %zu task %d to cgroup"
 msgstr "cgroup-ലേക്കു് vcpu %zu ജോലി %d ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4039
+#: src/qemu/qemu_driver.c:4042
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for vcpu %zu"
 msgstr "vcpu %zu-യ്ക്കുള്ള cgroup-ല്‍ cpuset.cpus സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4048
+#: src/qemu/qemu_driver.c:4051
 #, c-format
 msgid "failed to set cpu affinity for vcpu %zu"
 msgstr "vcpu %zu-യ്ക്കുള്ള സിപിയു അഫിനിറ്റി സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4094
+#: src/qemu/qemu_driver.c:4097
 msgid "cannot change vcpu count of this domain"
 msgstr "ഈ ഡൊമെയിന്റെ vcpu എണ്ണം മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4121 src/test/test_driver.c:2340
+#: src/qemu/qemu_driver.c:4124 src/test/test_driver.c:2340
 #: src/xen/xen_driver.c:1371
 #, c-format
 msgid "argument out of range: %d"
 msgstr "മൂല്ല്യം പരിധിയ്ക്ക് പുറത്ത്: %d"
 
-#: src/qemu/qemu_driver.c:4151
+#: src/qemu/qemu_driver.c:4154
 msgid "cannot adjust maximum on running domain"
 msgstr "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനില്‍ ഏറ്റവും കൂടുതലായി സജ്ജമാക്കുവാന്‍ പാടില്ല"
 
-#: src/qemu/qemu_driver.c:4166
+#: src/qemu/qemu_driver.c:4169
 msgid "changing of maximum vCPU count isn't supported via guest agent"
 msgstr "ഏറ്റവും കൂടിയ vCPU-ന്റെ എണ്ണം മാറ്റുന്നതു് ഗസ്റ്റ് ഏജന്റ് മുഖേന അനുവദിയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:4203
+#: src/qemu/qemu_driver.c:4206
 #, c-format
 msgid "failed to set state of cpu %d via guest agent"
 msgstr "ഹസ്റ്റ് ഏജന്റ് മുഖേന സിപിയു %d-ന്റെ അവസ്ഥ സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:4292
+#: src/qemu/qemu_driver.c:4295
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu നമ്പര്‍ പരിധിയ്ക്കു് പുറത്തു് %d > %d"
 
-#: src/qemu/qemu_driver.c:4303 src/qemu/qemu_driver.c:4577
+#: src/qemu/qemu_driver.c:4306 src/qemu/qemu_driver.c:4580
 msgid "Empty cpu list for pinning"
 msgstr "പിന്നിങ്ങിനായി സിപിയു പട്ടിക കാലിയാക്കുക"
 
-#: src/qemu/qemu_driver.c:4317 src/qemu/qemu_driver.c:4642
+#: src/qemu/qemu_driver.c:4320 src/qemu/qemu_driver.c:4645
 #: src/qemu/qemu_process.c:2061
 msgid "cpu affinity is not supported"
 msgstr "cpu അഫിനിറ്റി പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:4336 src/qemu/qemu_driver.c:4597
+#: src/qemu/qemu_driver.c:4339 src/qemu/qemu_driver.c:4600
 msgid "failed to update vcpupin"
 msgstr "vcpupin പരിഷ്കരിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4347
+#: src/qemu/qemu_driver.c:4350
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for vcpu %d"
 msgstr "vcpu %d-യ്ക്കുള്ള cgroup-ല്‍ cpuset.cpus സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4354
+#: src/qemu/qemu_driver.c:4357
 #, c-format
 msgid "failed to set cpu affinity for vcpu %d"
 msgstr "vcpu %d-യ്ക്കുള്ള സിപിയു അഫിനിറ്റി സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4363
+#: src/qemu/qemu_driver.c:4366
 msgid "failed to delete vcpupin xml of a running domain"
 msgstr "പ്രവര്‍ത്തനത്തിലുള്ളൊരു ഡൊമെയിന്റെ vcpupin xml വെട്ടി നീക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4388
+#: src/qemu/qemu_driver.c:4391
 msgid "failed to delete vcpupin xml of a persistent domain"
 msgstr "സ്ഥിരമായൊരു ഡൊമെയിന്റെ vcpupin xml വെട്ടി നീക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4404
+#: src/qemu/qemu_driver.c:4407
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr ""
 "സ്ഥിരമായൊരു ഡൊമെയിന്റെ vcpupin xml ചേര്‍ക്കുന്നതില്‍ അല്ലെങ്കില്‍ വെട്ടി നീക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4560
+#: src/qemu/qemu_driver.c:4563
 msgid ""
 "Changing affinity for emulator thread dynamically is not allowed when CPU "
 "placement is 'auto'"
 msgstr ""
 "സിപിയു 'ഓട്ടോ' ആകുമ്പോള്‍, എമുലേറ്റര്‍ ത്രെഡിനുള്ള അഫിനിറ്റി ഡൈനമിക്കായി മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4612
+#: src/qemu/qemu_driver.c:4615
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
 msgstr "എമുലേറ്റര്‍ ത്രെഡുകള്‍ക്കുള്ള cgroup-ല്‍ cpuset.cpus സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:4619
+#: src/qemu/qemu_driver.c:4622
 msgid "failed to set cpu affinity for emulator threads"
 msgstr "എമുലേറ്റര്‍ ത്രെഡുകള്‍ക്കുള്ള സിപിയു അഫിനിറ്റി സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:4628
+#: src/qemu/qemu_driver.c:4631
 msgid "failed to delete emulatorpin xml of a running domain"
 msgstr "പ്രവര്‍ത്തിയ്ക്കുന്നൊരു ഡൊമെയിന്റെ എമ്യുലേറ്റര്‍ xml വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:4655
+#: src/qemu/qemu_driver.c:4658
 msgid "failed to delete emulatorpin xml of a persistent domain"
 msgstr "സ്ഥിരമായൊരു ഡൊമെയിന്റെ എമ്യുലേറ്റര്‍ xml വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:4662
+#: src/qemu/qemu_driver.c:4665
 msgid "failed to update or add emulatorpin xml of a persistent domain"
 msgstr ""
 "സ്ഥിരമായൊരു ഡൊമെയിന്റെ emulatorpin xml ചേര്‍ക്കുന്നതില്‍ അല്ലെങ്കില്‍ വെട്ടി നീക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:4781
+#: src/qemu/qemu_driver.c:4784
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "നിര്‍ജ്ജീവമായൊരു ഡൊമെയിനു് vcpu പിന്നിങ് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4812
+#: src/qemu/qemu_driver.c:4815
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU പ്ലെയിസ്മെന്റും pCPU സമയവും ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4840
+#: src/qemu/qemu_driver.c:4843
 msgid "cpu affinity is not available"
 msgstr "cpu അഫിനിറ്റി ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:4893
+#: src/qemu/qemu_driver.c:4896
 msgid ""
 "vCPU count provided by the guest agent can only be  requested for live "
 "domains"
 msgstr ""
 "ഗസ്റ്റ് ഏജന്റ് ലഭ്യമാക്കിയ vCPU എണ്ണം ലൈവ് ഡൊമെയിനുകള്‍ക്കു് മാത്രമേ ആവശ്യപ്പെടുവാന്‍ സാധ്യമുള്ളൂ"
 
-#: src/qemu/qemu_driver.c:5175 src/qemu/qemu_driver.c:5195
+#: src/qemu/qemu_driver.c:5178 src/qemu/qemu_driver.c:5198
 #, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr "തകരാറുള്ള ഫയല്‍ നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:5182
+#: src/qemu/qemu_driver.c:5185
 msgid "failed to read qemu header"
 msgstr "qemu ഹെഡര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:5191
+#: src/qemu/qemu_driver.c:5194
 msgid "save image is incomplete"
 msgstr "സൂക്ഷിച്ച ചിത്രം പൂര്‍ണ്ണമല്ല"
 
-#: src/qemu/qemu_driver.c:5237 src/qemu/qemu_driver.c:5368
+#: src/qemu/qemu_driver.c:5240 src/qemu/qemu_driver.c:5371
 #, c-format
 msgid "cannot close file: %s"
 msgstr "ഫയല്‍ അടയ്ക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:5392
+#: src/qemu/qemu_driver.c:5395
 msgid "failed to resume domain"
 msgstr "ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:5568
+#: src/qemu/qemu_driver.c:5571
 msgid "new xml too large to fit in file"
 msgstr "പുതിയ xml, ഫയലില്‍ പാകമാകാത്ത വിധം വളരെ വലുതാണു്"
 
-#: src/qemu/qemu_driver.c:5575
+#: src/qemu/qemu_driver.c:5578
 #, c-format
 msgid "cannot seek in '%s'"
 msgstr "'%s'-ല്‍ തിരയുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6009
+#: src/qemu/qemu_driver.c:6012
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr "കൈകാര്യം ചെയ്ത സൂക്ഷിച്ച ഫയല്‍ %s നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6080
+#: src/qemu/qemu_driver.c:6085
 msgid "domain is already running"
 msgstr "ഡൊമെയിന്‍ നിലവില്‍ പ്രവര്‍ത്തനത്തില്‍"
 
-#: src/qemu/qemu_driver.c:6149 src/qemu/qemu_driver.c:12338
-#: src/qemu/qemu_driver.c:13064
+#: src/qemu/qemu_driver.c:6155 src/qemu/qemu_driver.c:12342
+#: src/qemu/qemu_driver.c:13068
 msgid "domain has active block copy job"
 msgstr "ഡൊമെയിനു് സജീവമായ ബ്ലോക്ക് പകര്‍പ്പ് ജോലി"
 
-#: src/qemu/qemu_driver.c:6231
+#: src/qemu/qemu_driver.c:6237
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുള്ള നിര്‍ജ്ജീവ ഡൊമെയിന്‍ വെട്ടി നീക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6312
+#: src/qemu/qemu_driver.c:6318
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "'%s' കണ്ട്രോളര്‍ ഹോട്ട് പ്ലഗ്ഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6379
+#: src/qemu/qemu_driver.c:6385
 #, c-format
 msgid "live attach of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:6404
+#: src/qemu/qemu_driver.c:6410
 #, c-format
 msgid "'%s' controller cannot be hot unplugged."
 msgstr "'%s' കണ്ട്രോളര്‍ ഹോട്ട്പ്ലഗ്ഗ് ചെയ്യാന്‍ സാധ്യമല്ല."
 
-#: src/qemu/qemu_driver.c:6439
+#: src/qemu/qemu_driver.c:6445
 #, c-format
 msgid "live detach of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് അറ്റാച്ച് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:6556
+#: src/qemu/qemu_driver.c:6562
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:6621
+#: src/qemu/qemu_driver.c:6627
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr "ലീസ് %s ലോക്ക്സ്പെയിസ് %s-ല്‍, നിലവിലുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:6637
+#: src/qemu/qemu_driver.c:6643
 msgid "Target already exists"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഫയല്‍ നിലവിലുണ്ട്"
 
-#: src/qemu/qemu_driver.c:6657
+#: src/qemu/qemu_driver.c:6663
 #, c-format
 msgid "persistent attach of device '%s' is not supported"
 msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6722 src/qemu/qemu_hotplug.c:3561
+#: src/qemu/qemu_driver.c:6728 src/qemu/qemu_hotplug.c:3561
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ലീസ് %s, ലോക്ക്സ്പെയിസ് %s-ല്‍ നിലവിവില്ല"
 
-#: src/qemu/qemu_driver.c:6753
+#: src/qemu/qemu_driver.c:6759
 #, c-format
 msgid "persistent detach of device '%s' is not supported"
 msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ ഡീറ്റാച്ചിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6811 src/qemu/qemu_driver.c:6817
+#: src/qemu/qemu_driver.c:6817 src/qemu/qemu_driver.c:6823
 #, c-format
 msgid "couldn't find matching device with mac address %s"
 msgstr "മാക് വിലാസം %s-മായി ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:6833
+#: src/qemu/qemu_driver.c:6839
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ പരിഷ്കരണത്തിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:7473
+#: src/qemu/qemu_driver.c:7479
 #, c-format
 msgid "unable to parse device weight '%s'"
 msgstr "ഡിവൈസിന്റെ തൂക്കം '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:7772 src/qemu/qemu_driver.c:7807
+#: src/qemu/qemu_driver.c:7778 src/qemu/qemu_driver.c:7813
 #: src/util/virtypedparam.c:187 src/util/virtypedparam.c:245
 #, c-format
 msgid "Field name '%s' too long"
 msgstr "ഫീള്‍ഡ് നാമം '%s' വളരെ വലുതു്"
 
-#: src/qemu/qemu_driver.c:7917
+#: src/qemu/qemu_driver.c:7923
 msgid "memory hard_limit tunable value must be lower than swap_hard_limit"
 msgstr "മെമ്മറി hard_limit ട്യൂണബിള്‍ മൂല്ല്യം swap_hard_limit-നേക്കാള്‍ കുറവായിരിയ്ക്കണം"
 
-#: src/qemu/qemu_driver.c:8155
+#: src/qemu/qemu_driver.c:8161
 msgid "cgroup cpuset controller is not mounted"
 msgstr "cgroup cpuset കണ്ട്രോളര്‍ മൌണ്ട് ചെയ്തിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:8168
+#: src/qemu/qemu_driver.c:8174
 msgid "can't change numa mode for running domain"
 msgstr "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനിനുള്ള ന്യൂമാ മോഡ് മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:8191
+#: src/qemu/qemu_driver.c:8197
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനിനുള്ള ചെയിഞ്ച്സെറ്റ് മാറ്റുന്നതിനായി കര്‍ശനമായ ന്യൂമാ മോഡ് ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:8201
+#: src/qemu/qemu_driver.c:8207
 msgid "Failed to format nodeset"
 msgstr "നോഡ്സെറ്റ് ഫോര്‍മാറ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:8419
+#: src/qemu/qemu_driver.c:8425
 #, c-format
 msgid "value of '%s' is out of range [%lld, %lld]"
 msgstr "'%s'-ന്റെ മൂല്ല്യം പരധിയ്ക്കു് പുറത്തു് [%lld, %lld]"
 
-#: src/qemu/qemu_driver.c:8848
+#: src/qemu/qemu_driver.c:8854
 msgid "empty path"
 msgstr "കാലി പാഥ"
 
-#: src/qemu/qemu_driver.c:8856
+#: src/qemu/qemu_driver.c:8862
 #, c-format
 msgid "size must be less than %llu"
 msgstr "വ്യാപ്തി %llu-നേക്കാള്‍ കുറവായിരിയ്ക്കണം"
 
-#: src/qemu/qemu_driver.c:8882 src/qemu/qemu_driver.c:8944
-#: src/qemu/qemu_driver.c:9021 src/test/test_driver.c:3036
+#: src/qemu/qemu_driver.c:8888 src/qemu/qemu_driver.c:8950
+#: src/qemu/qemu_driver.c:9027 src/test/test_driver.c:3036
 #, c-format
 msgid "invalid path: %s"
 msgstr "തെറ്റായ പാഥ്: %s"
 
-#: src/qemu/qemu_driver.c:8951 src/qemu/qemu_driver.c:9028
+#: src/qemu/qemu_driver.c:8957 src/qemu/qemu_driver.c:9034
 #: src/qemu/qemu_hotplug.c:75
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s-നുള്ള ഡിസ്ക് ഡിവൈസ് വിളിപ്പേരു് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:9198
+#: src/qemu/qemu_driver.c:9204
 msgid "interface stats not implemented on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ ഇന്റര്‍ഫെയിസ് സ്റ്റാറ്റ്സ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:9257 src/qemu/qemu_driver.c:9265
-#: src/qemu/qemu_driver.c:9420
+#: src/qemu/qemu_driver.c:9263 src/qemu/qemu_driver.c:9271
+#: src/qemu/qemu_driver.c:9426
 #, c-format
 msgid "Can't find device %s"
 msgstr "%s ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:9525
+#: src/qemu/qemu_driver.c:9531
 msgid "cannot get RSS for domain"
 msgstr "ഡൊമെയിനുള്ള ആര്‍എസ്എസ് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:9566 src/qemu/qemu_driver.c:9724
-#: src/uml/uml_driver.c:2490
+#: src/qemu/qemu_driver.c:9572 src/qemu/qemu_driver.c:9730
+#: src/uml/uml_driver.c:2494
 msgid "NULL or empty path"
 msgstr "NULL അല്ലെങ്കില്‍ ശൂന്യമായ പാഥ്"
 
-#: src/qemu/qemu_driver.c:9573 src/uml/uml_driver.c:2497
+#: src/qemu/qemu_driver.c:9579 src/uml/uml_driver.c:2501
 #, c-format
 msgid "invalid path '%s'"
 msgstr "തെറ്റായ പാഥ് '%s'"
 
-#: src/qemu/qemu_driver.c:9589
+#: src/qemu/qemu_driver.c:9595
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: seek അല്ലെങ്കില്‍ read ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:9627
+#: src/qemu/qemu_driver.c:9633
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "ഫ്ലാഗ് പരാമീറ്ററുകള്‍ VIR_MEMORY_VIRTUAL അല്ലെങ്കില്‍ VIR_MEMORY_PHYSICAL ആയിരിക്കണം"
 
-#: src/qemu/qemu_driver.c:9670
+#: src/qemu/qemu_driver.c:9676
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "ടെംപ്ലേറ്റ് %s-നൊപ്പം ഉണ്ടാക്കിയ താല്‍ക്കാലിക ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:9731
+#: src/qemu/qemu_driver.c:9737
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr "ഡൊമെയിനു് തെറ്റായ പാഥ് %s നല്‍കിയിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:9737
+#: src/qemu/qemu_driver.c:9743
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr "ഡിസ്ക് %s-ല്‍ നിലവില്‍ ഒരു ശ്രോതസ്സും നല്‍കിയിട്ടില്ല "
 
-#: src/qemu/qemu_driver.c:9759
+#: src/qemu/qemu_driver.c:9765
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s-നുള്ള ഡിസ്ക് ശൈലി ലഭ്യമല്ല, പ്രോബിങ് പ്രവര്‍ത്തന രഹിതം"
 
-#: src/qemu/qemu_driver.c:9771 src/storage/storage_backend.c:1134
+#: src/qemu/qemu_driver.c:9777 src/storage/storage_backend.c:1134
 #: src/storage/storage_backend.c:1162 src/storage/storage_backend.c:1282
-#: src/util/virstoragefile.c:777 src/util/virstoragefile.c:927
+#: src/util/virstoragefile.c:777 src/util/virstoragefile.c:924
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "'%s' stat ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:9793
+#: src/qemu/qemu_driver.c:9799
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "%s-ന്റെ അവസാനം വരെ തെരയുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:9971 src/qemu/qemu_driver.c:10347
-#: src/qemu/qemu_driver.c:10400
+#: src/qemu/qemu_driver.c:9975 src/qemu/qemu_driver.c:10351
+#: src/qemu/qemu_driver.c:10404
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel വിളിച്ചു, പക്ഷേ TUNNELLED ഫ്ലാഗ് സജ്ജമാക്കിയിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:9977 src/qemu/qemu_driver.c:10032
-#: src/qemu/qemu_driver.c:10078
+#: src/qemu/qemu_driver.c:9981 src/qemu/qemu_driver.c:10036
+#: src/qemu/qemu_driver.c:10082
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr "ലോക്ക് മാനേജര്‍ %s-നൊപ്പം മൈഗ്രേറ്റ് v2 സമ്പ്രദായം ഉപയോഗിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:10025 src/qemu/qemu_driver.c:10240
-#: src/qemu/qemu_driver.c:10302
+#: src/qemu/qemu_driver.c:10029 src/qemu/qemu_driver.c:10244
+#: src/qemu/qemu_driver.c:10306
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
 "Tunnelled മൈഗ്രേഷന്‍ ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു,  പക്ഷേ തെറ്റായ ആര്‍പിസി മാര്‍ഗ്ഗം "
 "വിളിച്ചിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:10666 src/xen/xen_driver.c:2448
+#: src/qemu/qemu_driver.c:10670 src/xen/xen_driver.c:2446
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "ഡിവൈസ് %s ഒരു PCI ഡിവൈസ് അല്ല"
 
-#: src/qemu/qemu_driver.c:10715 src/xen/xen_driver.c:2482
+#: src/qemu/qemu_driver.c:10719 src/xen/xen_driver.c:2480
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "അപരിചിതമായ ഡ്രൈവര്‍ നാമം '%s'"
 
-#: src/qemu/qemu_driver.c:10781
+#: src/qemu/qemu_driver.c:10785
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr "പിസിഐ ഡിവൈസ് %s ഇപ്പോഴും %s ഡൊമെയിന്‍ ഉപയോഗിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:10785
+#: src/qemu/qemu_driver.c:10789
 #, c-format
 msgid "PCI device %s is still in use"
 msgstr "പിസിഐ ഡിവൈസ് %s ഇപ്പോഴും ഉപയോഗത്തില്‍"
 
-#: src/qemu/qemu_driver.c:11117
+#: src/qemu/qemu_driver.c:11121
 msgid "no job is active on the domain"
 msgstr "ഡൊമെയിനില്‍ ഒരു ജോലിയും സജീവമല്ല"
 
-#: src/qemu/qemu_driver.c:11121
+#: src/qemu/qemu_driver.c:11125
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 "അകത്തേക്കുള്ള നീക്കം ചെയ്യല്‍ നിര്‍ത്തുവാന്‍ സാധ്യമല്ല; പകരം virDomainDestroy ഉപയോഗിയ്ക്കുക"
 
-#: src/qemu/qemu_driver.c:11174
+#: src/qemu/qemu_driver.c:11178
 msgid "domain is not being migrated"
 msgstr "ഡൊമെയിന്‍ നീക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:11229 src/qemu/qemu_driver.c:11284
+#: src/qemu/qemu_driver.c:11233 src/qemu/qemu_driver.c:11288
 msgid "Compressed migration is not supported by QEMU binary"
 msgstr "ക്യൂഇഎംയു ബൈനറി കമ്പ്രസ്സ്ഡ് മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:11562
+#: src/qemu/qemu_driver.c:11566
 #, c-format
 msgid "unknown image format of '%s' and format probing is disabled"
 msgstr "'%s'-ന്റെ അപരിചിതമായ ഇമേജ് ശൈലി, ഫോര്‍മാറ്റ് പ്രോബിങ് പ്രവര്‍ത്തന സജ്ജം"
 
-#: src/qemu/qemu_driver.c:11691 src/qemu/qemu_driver.c:12245
+#: src/qemu/qemu_driver.c:11695 src/qemu/qemu_driver.c:12249
 msgid "resuming after snapshot failed"
 msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ പരാജയപ്പെട്ട ശേഷം വീണ്ടും ആരംഭിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:11726
+#: src/qemu/qemu_driver.c:11730
 msgid "reuse is not supported with this QEMU binary"
 msgstr "QEMU ലൈബ്രറി വീണ്ടും ഉപയോഗിയ്ക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:11747
+#: src/qemu/qemu_driver.c:11751
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr "%s ഡിസ്കിനു് അകമേയുള്ള സ്നാപ്പ്ഷോട്ടിനു് %s സംഭരണ ശൈലിയില്‍ പിന്തുണ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:11756
+#: src/qemu/qemu_driver.c:11760
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
@@ -15692,352 +15685,352 @@ msgstr ""
 "സജീവമായ qemu ഡൊമെയിനുകള്‍ക്കു് എക്സ്റ്റേണല്‍ ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ ആവശ്യമുണ്ടു്; ഡിസ്ക് %s "
 "ആവശ്യപ്പെട്ടതു് ആന്തരികം"
 
-#: src/qemu/qemu_driver.c:11769
+#: src/qemu/qemu_driver.c:11773
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr "ഡിസ്ക് %s-നു് പുറമേയുള്ള സ്നാപ്പ്ഷോട്ടിനു് പിന്തുണ ലഭ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:11778 src/qemu/qemu_driver.c:14295
+#: src/qemu/qemu_driver.c:11782 src/qemu/qemu_driver.c:14299
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "ഡിസ്ക് %s സ്റ്റാറ്റ് ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:11783
+#: src/qemu/qemu_driver.c:11787
 #, c-format
 msgid "missing existing file for disk %s: %s"
 msgstr "%s ഡിസ്കിനു് നിലവിലുള്ള ഫയല്‍ ലഭ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:11789
+#: src/qemu/qemu_driver.c:11793
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr "ഡിസ്ക് %s-നു് പുറമേയുള്ള സ്നാപ്പ്ഷോട്ട് നിലവിലുണ്ടു്, ഇതൊരു ബ്ലോക്ക് ഡിവൈസല്ല: %s"
 
-#: src/qemu/qemu_driver.c:11803 src/qemu/qemu_driver.c:11879
+#: src/qemu/qemu_driver.c:11807 src/qemu/qemu_driver.c:11883
 msgid "unexpected code path"
 msgstr "അപ്രതീക്ഷിതമായ കോഡ് പാഥ്"
 
-#: src/qemu/qemu_driver.c:11812
+#: src/qemu/qemu_driver.c:11816
 msgid ""
 "internal checkpoints require at least one disk to be selected for snapshot"
 msgstr ""
 "സ്നാപ്പ്ഷോട്ടിനു് തെരഞ്ഞെടുക്കുന്നതിനായി കുറഞ്ഞതു് ഒരു ഡിസ്കെങ്കിലും ആന്തരിക ചെക്ക്പോയിന്റുകള്‍ക്കു് "
 "ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:11820
+#: src/qemu/qemu_driver.c:11824
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 "സ്നാപ്പ്ഷോട്ടിനു് തെരഞ്ഞെടുക്കുന്നതിനായി കുറഞ്ഞതു് ഒരു ഡിസ്കെങ്കിലും ഡിസ്ക്-ഒണ്‍ലി സ്നാപ്പ്ഷോട്ടിനു് "
 "ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:11830
+#: src/qemu/qemu_driver.c:11834
 msgid "mixing internal and external snapshots is not supported yet"
 msgstr "ആന്തരികവും പുറമേയും നിന്നുള്ള സ്നാപ്പ്ഷോട്ടുകള്‍ ഒന്നിച്ചുള്ളതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:11845
+#: src/qemu/qemu_driver.c:11849
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr "അനവധി ഡിസ്കുകള്‍ക്കുള്ള അറ്റോമിക് ലൈവ് സ്നാപ്പ്ഷോട്ട് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:12014
+#: src/qemu/qemu_driver.c:12018
 msgid "live disk snapshot not supported with this QEMU binary"
 msgstr "ഈ ക്യുഇഎംയു ബൈനറിയില്‍ ലൈവ് ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:12307
+#: src/qemu/qemu_driver.c:12311
 msgid "quiesce requires disk-only"
 msgstr "quiesce-നു് ഡിസ്ക്-ഒണ്‍ലി ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:12333 src/qemu/qemu_migration.c:1410
+#: src/qemu/qemu_driver.c:12337 src/qemu/qemu_migration.c:1410
 msgid "domain is marked for auto destroy"
 msgstr "ഡൊമെയിന്‍ സ്വയം ഇല്ലാതാകുന്നതിനായി അടയാളപ്പെടുത്തിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:12344
+#: src/qemu/qemu_driver.c:12348
 msgid "cannot halt after transient domain snapshot"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ സ്നാപ്പ്ഷോട്ടിനു് ശേഷം നിര്‍ത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12361
+#: src/qemu/qemu_driver.c:12365
 #, c-format
 msgid "invalid snapshot name '%s': name can't contain '/'"
 msgstr "തെറ്റായ സ്നാപ്പ്ഷോട്ട് നാമം '%s': '/' ഉപയോഗിച്ചു് പേരു് ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12369
+#: src/qemu/qemu_driver.c:12373
 #, c-format
 msgid "invalid snapshot name '%s': name can't start with '.'"
 msgstr "തെറ്റായ സ്നാപ്പ്ഷോട്ട് നാമം '%s': '.' ഉപയോഗിച്ചു് പേരു് ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12382
+#: src/qemu/qemu_driver.c:12386
 msgid "live snapshot creation is supported only with external checkpoints"
 msgstr "പുറത്തു് നിന്നുള്ള ചെക്ക്പോയിന്റുകളില്‍ മാത്രം ലൈവ് സ്നാപ്പ്ഷോട്ട് തയ്യാറാക്കല്‍ പിന്തുണയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:12392
+#: src/qemu/qemu_driver.c:12396
 #, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s-നെ സ്വന്തം പേരന്റായി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12399
+#: src/qemu/qemu_driver.c:12403
 #, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr "പേരന്റ് %s, %s സ്നാപ്പ്ഷോട്ടിനുള്ളതു് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12406
+#: src/qemu/qemu_driver.c:12410
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr "പേരന്റ് %s-നു് സൈക്കിള്‍ %s ആയി തയ്യാറാക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:12424
+#: src/qemu/qemu_driver.c:12428
 #, c-format
 msgid "disk-only flag for snapshot %s requires disk-snapshot state"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s-നുള്ള ഡിസ്ക്-ഒണ്‍ലി ഫ്ലാഗിനു് disk-snapshot അവസ്ഥ ആ"
 
-#: src/qemu/qemu_driver.c:12434
+#: src/qemu/qemu_driver.c:12438
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s നിഷ്കര്‍ഷിയ്ക്കുന്നതിനായി uuid %s ഉപയോഗിയ്ക്കണം"
 
-#: src/qemu/qemu_driver.c:12446
+#: src/qemu/qemu_driver.c:12450
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s-ല്‍ ഓണ്‍ലൈനും ഓഫ്‌ലൈനും സ്നാപ്പ്ഷോട്ട് അവസ്ഥ തമ്മില്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12455
+#: src/qemu/qemu_driver.c:12459
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 "ഡിസ്ക് സ്നാപ്പ്ഷോട്ടിനും %s സ്നാപ്പ്ഷോട്ടിലുള്ള സിസ്റ്റം ചെക്ക്പോയിന്റിനും ഇടയില്‍ മാറ്റം സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12620
+#: src/qemu/qemu_driver.c:12624
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "%s സ്നാപ്പ്ഷോട്ടിനുള്ള മെറ്റാഡേറ്റാ സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:12905
+#: src/qemu/qemu_driver.c:12909
 msgid "the domain does not have a current snapshot"
 msgstr "ഡൊമെയിനു് നിലവില്‍ ഒരു സ്നാപ്പ്ഷോട്ടും ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:13077
+#: src/qemu/qemu_driver.c:13081
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 "സജീവമല്ലാത്ത സ്നാപ്പ്ഷോട്ടിലേക്കു് തിരികെ പോകുന്നതിനായി പ്രവര്‍ത്തിപ്പിയ്ക്കുക അല്ലെങ്കില്‍ "
 "തല്‍ക്കാലത്തക്കു് നിര്‍ത്തുക എന്നു് ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ ആവശ്യപ്പടേണ്ടതുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:13083
+#: src/qemu/qemu_driver.c:13087
 msgid "revert to external disk snapshot not supported yet"
 msgstr "ആന്തരിക ഡിസ്ക് സ്നാപ്പ്ഷോട്ടിലേക്കു് തിരികെ പോകുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:13090
+#: src/qemu/qemu_driver.c:13094
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "സ്നാപ്പ്ഷോട്ട് '%s'-നു് ഡൊമെയിന്‍ '%s' റോള്‍ബാക്ക് വിവരമില്ല"
 
-#: src/qemu/qemu_driver.c:13100
+#: src/qemu/qemu_driver.c:13104
 msgid "must respawn qemu to start inactive snapshot"
 msgstr "സജീവമല്ലാത്ത സ്നാപ്പ്ഷോട്ട് ആരംഭിയ്ക്കുവാന്‍ qemu respawn ചെയ്യുക"
 
-#: src/qemu/qemu_driver.c:13440
+#: src/qemu/qemu_driver.c:13444
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "പുറമേയുള്ള ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ %d വെട്ടി നീക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:13467
+#: src/qemu/qemu_driver.c:13471
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "ഇപ്പോഴുള്ളതായി സ്നാപ്പ്ഷോട്ട് '%s' സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_driver.c:13595
+#: src/qemu/qemu_driver.c:13599
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr "pid %u-യ്ക്കു് മോണിറ്റര്‍ കണക്ഷന്‍ ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:13600
+#: src/qemu/qemu_driver.c:13604
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr "'%s' തരത്തിലുള്ള മോണിറ്റര്‍ pid %u-നു് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:13792
+#: src/qemu/qemu_driver.c:13796
 #, c-format
 msgid "cannot find channel %s"
 msgstr "%s ചാനല്‍ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:13799
+#: src/qemu/qemu_driver.c:13803
 #, c-format
 msgid "channel %s is not using a UNIX socket"
 msgstr "%s ചാനല്‍ ഒരു യൂണിക്സ് സോക്കറ്റ് ഉപയോഗിയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:13812
+#: src/qemu/qemu_driver.c:13816
 msgid "Active channel stream exists for this domain"
 msgstr "ഈ ഡൊമെയിനു് സജീവമായ സ്ട്രീം നിലവിലില്ല"
 
-#: src/qemu/qemu_driver.c:13845
+#: src/qemu/qemu_driver.c:13849
 msgid "No device found for specified path"
 msgstr "നല്‍കിയിരിയ്ക്കുന്ന പാഥിനു് ഡിവൈസ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:13888
+#: src/qemu/qemu_driver.c:13892
 #, c-format
 msgid "disk '%s' not ready for pivot yet"
 msgstr "ഡിസ്ക് '%s' തയ്യാറല്ല"
 
-#: src/qemu/qemu_driver.c:13993
+#: src/qemu/qemu_driver.c:13997
 msgid "resuming after drive-reopen failed"
 msgstr "drive-reopen പരാജയപ്പെട്ടശേഷം തുടങ്ങുന്നു"
 
-#: src/qemu/qemu_driver.c:14027
+#: src/qemu/qemu_driver.c:14031
 msgid "block jobs not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയ്ക്കൊപ്പം ബ്ലോക്ക് ജോലികള്‍ "
 
-#: src/qemu/qemu_driver.c:14031
+#: src/qemu/qemu_driver.c:14035
 msgid "partial block pull not supported with this QEMU binary"
 msgstr "ഈ QEMU ലൈബ്രറിയ്ക്കൊപ്പം പകുതി ബ്ലോക്ക് പുള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:14036
+#: src/qemu/qemu_driver.c:14040
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr ""
 "ഈ QEMU ലൈബ്രറിയ്ക്കു് ബ്ലോക്ക് പുള്ളിന്റെ ആരംഭത്തില്‍ ബാന്‍ഡ്‌വി‍ഡ്ത് സജ്ജമാക്കുന്നതു് പിന്തുയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:14057 src/qemu/qemu_driver.c:14258
+#: src/qemu/qemu_driver.c:14061 src/qemu/qemu_driver.c:14262
 #, c-format
 msgid "disk '%s' already in active block copy job"
 msgstr "ഡിസ്ക് '%s' നിലവില്‍ ഒരു സജീവമായ ബ്ലോക്ക് പകര്‍പ്പ് ജോലിയിലാകുന്നു"
 
-#: src/qemu/qemu_driver.c:14065
+#: src/qemu/qemu_driver.c:14069
 #, c-format
 msgid "pivot of disk '%s' requires an active copy job"
 msgstr "'%s' ഡിസ്കിനുള്ള ആരംഭത്തിനു് സജീവമായൊരു പകര്‍പ്പോ ജോലി ആവശ്യമുണ്ടു്"
 
-#: src/qemu/qemu_driver.c:14266
+#: src/qemu/qemu_driver.c:14270
 msgid "block copy is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി ബ്ലോക്ക് പകര്‍പ്പ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:14275
+#: src/qemu/qemu_driver.c:14279
 msgid "domain is not transient"
 msgstr "ഡൊമെയിന്‍ ട്രാന്‍സിയന്റല്ല"
 
-#: src/qemu/qemu_driver.c:14286
+#: src/qemu/qemu_driver.c:14290
 #, c-format
 msgid "disk '%s' has backing file, so raw shallow copy is not possible"
 msgstr "'%s' ഡിസ്കിനു് ബാക്കിങ് ഫയല്‍ ലഭ്യമല്ല, അതിനാല്‍ ചെറിയ പകര്‍പ്പ് ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:14300
+#: src/qemu/qemu_driver.c:14304
 #, c-format
 msgid "missing destination file for disk %s: %s"
 msgstr "%s ഡിസ്കിനുള്ള ലക്ഷ്യ ഫയല്‍ ലഭ്യമല്ല: %s"
 
-#: src/qemu/qemu_driver.c:14307
+#: src/qemu/qemu_driver.c:14311
 #, c-format
 msgid ""
 "external destination file for disk %s already exists and is not a block "
 "device: %s"
 msgstr "%s ഡിസ്കിനുള്ള ആന്തരിക ലക്ഷ്യ ഫയല്‍ നിലവിലുണ്ടു്, പക്ഷേ ഒരു ബ്ലോക്ക് ഡിവൈസല്ല: %s"
 
-#: src/qemu/qemu_driver.c:14324
+#: src/qemu/qemu_driver.c:14328
 #, c-format
 msgid "unrecognized format '%s'"
 msgstr "അപരിചിതമായ ഫോര്‍മാറ്റ് '%s'"
 
-#: src/qemu/qemu_driver.c:14471
+#: src/qemu/qemu_driver.c:14475
 msgid "online commit not supported with this QEMU binary"
 msgstr "ഓണ്‍ലൈന്‍ കമ്മിറ്റ് ഈ  QEMU ബൈനറി പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu/qemu_driver.c:14482
+#: src/qemu/qemu_driver.c:14486
 #, c-format
 msgid "disk %s has no source file to be committed"
 msgstr "ഡിസ്ക് %s-നു് ഒരു സോഴ്സ് ഫയലും കമ്മിറ്റ് ചെയ്തിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:14497
+#: src/qemu/qemu_driver.c:14501
 #, c-format
 msgid "could not find top '%s' in chain for '%s'"
 msgstr "മുകളിലുള്ള '%s' ലഭ്യമല്ല, '%s'-നുള്ള ചെയിനില്‍"
 
-#: src/qemu/qemu_driver.c:14503
+#: src/qemu/qemu_driver.c:14507
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "മുകളിലുള്ള '%s'-നു് ബാക്കിങ് ഫയല്‍ ലഭ്യമല്ല, '%s'-നുള്ള ചെയിനില്‍"
 
-#: src/qemu/qemu_driver.c:14512
+#: src/qemu/qemu_driver.c:14516
 #, c-format
 msgid "could not find base '%s' below '%s' in chain for '%s'"
 msgstr "ബെയിസ് '%s' '%s'-നു് താഴെ ലഭ്യമല്ല, '%s'-നുള്ള ചെയിനില്‍"
 
-#: src/qemu/qemu_driver.c:14523
+#: src/qemu/qemu_driver.c:14527
 #, c-format
 msgid "base '%s' is not immediately below '%s' in chain for '%s'"
 msgstr "ബെയിസ് '%s' '%s'-നു് താഴെ ലഭ്യമല്ല, '%s'-നുള്ള ചെയിനില്‍"
 
-#: src/qemu/qemu_driver.c:14601
+#: src/qemu/qemu_driver.c:14605
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "%d സൂചികയില്‍ ഒരു ഗ്രാഫിക്സ് ബാക്കെന്‍ഡും ലഭ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:14613
+#: src/qemu/qemu_driver.c:14617
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 "വിഎന്‍സി അല്ലെങ്കില്‍ സ്പയിസ് ഗ്രാഫിക്സ് ബാക്കെന്‍ഡുകള്‍ മാത്രമേ തുറക്കുവാന്‍ സാധിയ്ക്കു,  %s അല്ല"
 
-#: src/qemu/qemu_driver.c:14706
+#: src/qemu/qemu_driver.c:14710
 #, c-format
 msgid "block I/O throttle limit value must be less than %llu"
 msgstr "ബ്ലോക്ക് ഐ/ഒ ത്രോട്ടില്‍ പരിധി %llu-നേക്കാള്‍ കുറവായിരിയ്ക്കണം"
 
-#: src/qemu/qemu_driver.c:14740
+#: src/qemu/qemu_driver.c:14744
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "ഒരേ സമയത്തു് bytes_sec-നുള്ള മൊത്തം, റീഡ്/റൈറ്റ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:14747
+#: src/qemu/qemu_driver.c:14751
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "ഒരേ സമയത്തു് iops_sec-നുള്ള മൊത്തം, റീഡ്/റൈറ്റ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:14798
+#: src/qemu/qemu_driver.c:14802
 msgid "Write to config file failed"
 msgstr "ക്രമീകരണ ഫയലില്‍ സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_driver.c:15109 src/qemu/qemu_driver.c:15123
+#: src/qemu/qemu_driver.c:15113 src/qemu/qemu_driver.c:15127
 msgid "unable to get cpu account"
 msgstr "സിപിയു അക്കൌണ്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu/qemu_driver.c:15184 src/qemu/qemu_driver.c:15260
+#: src/qemu/qemu_driver.c:15188 src/qemu/qemu_driver.c:15264
 msgid "cpuacct parse error"
 msgstr "cpuacct പാഴ്സ് പിശക്"
 
-#: src/qemu/qemu_driver.c:15237
+#: src/qemu/qemu_driver.c:15241
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d, %d-ന്റെ ഏറ്റവും കൂടിയ മൂല്ല്യത്തില്‍ നിന്നും വലുതു്"
 
-#: src/qemu/qemu_driver.c:15337
+#: src/qemu/qemu_driver.c:15341
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "cgroup CPUACCT കണ്ട്രോളര്‍ മൌണ്ട് ചെയ്തിട്ടില്ല"
 
-#: src/qemu/qemu_driver.c:15367
+#: src/qemu/qemu_driver.c:15371
 msgid "Duration not supported. Use 0 for now"
 msgstr "കാലാവധി പിന്തുണയ്ക്കുന്നില്ല, തല്‍ക്കാലം 0 ഉപയോഗിയ്ക്കുക"
 
-#: src/qemu/qemu_driver.c:15375
+#: src/qemu/qemu_driver.c:15379
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "അപരിചിതമായ സസ്പെന്‍ഡ് ലക്ഷ്യം: %u"
 
-#: src/qemu/qemu_driver.c:15398
+#: src/qemu/qemu_driver.c:15402
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 "system_wakeup മെണിറ്റര്‍ കമാന്‍ഡ് ലഭ്യമല്ലാത്തതിനാല്‍ ഡൊമെയിന്‍ സസ്പെന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:15408
+#: src/qemu/qemu_driver.c:15412
 msgid "S3 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S3 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:15415
+#: src/qemu/qemu_driver.c:15419
 msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/qemu/qemu_driver.c:15486
+#: src/qemu/qemu_driver.c:15490
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "system_wakeup മെണിറ്റര്‍ കമാന്‍ഡ് ലഭ്യമല്ലാത്തതിനാല്‍ ഡൊമെയിന്‍ ഉണര്‍ത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_driver.c:15606
+#: src/qemu/qemu_driver.c:15610
 msgid "Specifying mount point is not supported for now"
 msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്നതു് ഇപ്പോള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -16384,7 +16377,7 @@ msgstr "ഇതിലുള്ള qemu %s ഡിസ്ക് നീക്കം �
 msgid "disk '%s' is in an active block copy job"
 msgstr "ഡിസ്ക് '%s'  സജീവമായൊരു ബ്ലോക്ക് പകര്‍പ്പ് ജോലിയിലാണു്"
 
-#: src/qemu/qemu_hotplug.c:2998 src/uml/uml_driver.c:2330
+#: src/qemu/qemu_hotplug.c:2998 src/uml/uml_driver.c:2334
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ഈ തരത്തിലുള്ള ഡിസ്ക് ഹോട്ട് അണ്‍പ്ലഗ്ഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -20340,14 +20333,14 @@ msgstr "ബ്ലോക്ക് വോള്യങ്ങള്‍ക്കു�
 msgid "cannot create path '%s'"
 msgstr "'%s' പാഥ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/storage/storage_backend.c:279 src/util/virfile.c:1620
-#: src/util/virfile.c:1919 src/util/virfile.c:2026
+#: src/storage/storage_backend.c:279 src/util/virfile.c:1641
+#: src/util/virfile.c:1940 src/util/virfile.c:2047
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s'-ന്റെ സ്റ്റാറ്റ് പരാജയപ്പെട്ടു"
 
 #: src/storage/storage_backend.c:295 src/storage/storage_backend.c:573
-#: src/util/virfile.c:1642 src/util/virfile.c:1933 src/util/virfile.c:2039
+#: src/util/virfile.c:1663 src/util/virfile.c:1954 src/util/virfile.c:2060
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "'%s'-ന്റെ മോഡ് %04o-ലേക്കു് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -21566,38 +21559,38 @@ msgstr "uml സ്റ്റേറ്റ് ഡ്രൈവര്‍ സജീവ
 msgid "cannot parse version %s"
 msgstr "%s പതിപ്പു് പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1644
+#: src/uml/uml_driver.c:1646
 msgid "shutdown operation failed"
 msgstr "അടച്ചുപൂട്ടുന്ന പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/uml/uml_driver.c:1794
+#: src/uml/uml_driver.c:1796
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "നിലവിലുള്ള മെമ്മറിയേക്കാള്‍ നല്‍കിയിരിക്കുന്ന ഏറ്റവും കുറഞ്ഞ മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1830
+#: src/uml/uml_driver.c:1832
 msgid "cannot set memory of an active domain"
 msgstr "സജീവമായ ഒരു ഡൊമെയിനിനു് മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2195
+#: src/uml/uml_driver.c:2199
 msgid "cannot attach device on inactive domain"
 msgstr "നിര്‍ജ്ജീവമായ ഡൊമെയിനില്‍ ഡിവൈസ് കൂട്ടിച്ചേര്‍ക്കുന്നതിനു് സാധ്യമായില്ല"
 
-#: src/uml/uml_driver.c:2241 src/uml/uml_driver.c:2355
+#: src/uml/uml_driver.c:2245 src/uml/uml_driver.c:2359
 #: src/vbox/vbox_tmpl.c:5574 src/vbox/vbox_tmpl.c:5589
 #: src/vbox/vbox_tmpl.c:5737
 msgid "cannot modify the persistent configuration of a domain"
 msgstr "ഡൊമെയിനുള്ള ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2315
+#: src/uml/uml_driver.c:2319
 msgid "cannot detach device on inactive domain"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനില്‍ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2334
+#: src/uml/uml_driver.c:2338
 msgid "This type of device cannot be hot unplugged"
 msgstr "ഈ തരത്തിലുള്ള ഡിവൈസ് ഹോട്ട് അണ്‍പ്ലഗ്ഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2517 tools/virsh-volume.c:664
+#: src/uml/uml_driver.c:2521 tools/virsh-volume.c:664
 #, c-format
 msgid "cannot read %s"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -21754,7 +21747,7 @@ msgstr "cgroup മൌണ്ട് '%s'-ല്‍ '/' വിടവടയാളം
 msgid "Cannot stat %s"
 msgstr "%s stat ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/vircgroup.c:477 src/util/virstoragefile.c:1186
+#: src/util/vircgroup.c:477 src/util/virstoragefile.c:1180
 #, c-format
 msgid "Unable to open '%s'"
 msgstr "'%s' തുറക്കാനാകുന്നില്ല"
@@ -22519,54 +22512,54 @@ msgstr "'%s' ‍ഡയറക്ടറി ലഭ്യമാക്കുവാന
 msgid "Cannot delete directory '%s'"
 msgstr "'%s' ഡയറക്ടറി വെട്ടി നീക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virfile.c:1270
+#: src/util/virfile.c:1291
 #, c-format
 msgid "Failed to read file '%s'"
 msgstr "'%s' ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virfile.c:1678
+#: src/util/virfile.c:1699
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "'%s' നു് വേണ്ട സോക്കറ്റ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virfile.c:1709
+#: src/util/virfile.c:1730
 #, c-format
 msgid "child process failed to create file '%s'"
 msgstr "ചൈള്‍ഡ് പ്രക്രിയ '%s' ഫയല്‍ ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virfile.c:1726
+#: src/util/virfile.c:1747
 msgid "child process failed to send fd to parent"
 msgstr "ചൈല്‍ഡ് പ്രോസസ്സ് പേരന്റിനു് എഫ്ഡി അയയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virfile.c:1769 src/util/virfile.c:1986
+#: src/util/virfile.c:1790 src/util/virfile.c:2007
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "ചൈഡ് '%s' സൃഷ്ടിയ്ക്കുന്നതിനു് കാത്തുനില്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virfile.c:1912
+#: src/util/virfile.c:1933
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "'%s' എന്ന തട്ടു് ഉണ്ടാക്കാന്‍ കഴിഞ്ഞില്ല"
 
-#: src/util/virfile.c:2016
+#: src/util/virfile.c:2037
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "%s എന്ന തട്ടു്  ഉണ്ടാക്കുന്നതില്‍ ചൈല്‍ഡ് പരാജയപ്പെട്ടു"
 
-#: src/util/virfile.c:2032
+#: src/util/virfile.c:2053
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "'%s' നെ %u ഗ്രൂപ്പിലേയ്ക്കു് chown സാധ്യമല്ല"
 
-#: src/util/virfile.c:2071
+#: src/util/virfile.c:2092
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs വിന്‍32വില്‍ ഇംപ്ലിമെന്റ് ചെയ്തിട്ടില്ല"
 
-#: src/util/virfile.c:2084
+#: src/util/virfile.c:2105
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate വിന്‍32വില്‍ ഇംപ്ലിമെന്റ് ചെയ്തിട്ടില്ല"
 
-#: src/util/virfile.c:2439
+#: src/util/virfile.c:2489
 msgid "Could not write to stream"
 msgstr "സ്ട്രീമിലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -22605,12 +22598,12 @@ msgstr "SELinux പ്രക്രിയ കോണ്‍ടെക്സ്റ്
 msgid "Identity attribute is already set"
 msgstr "ഐഡന്റിറ്റി വിശേഷത സജ്ജമാണു്"
 
-#: src/util/virinitctl.c:148
+#: src/util/virinitctl.c:143
 #, c-format
 msgid "Cannot open init control %s"
 msgstr "init കണ്ട്രോള്‍ %s തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virinitctl.c:155
+#: src/util/virinitctl.c:150
 #, c-format
 msgid "Failed to send request to init control %s"
 msgstr "init കണ്ട്രോള്‍ %s-ലേക്കു് ആവശ്യം അയയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -23671,122 +23664,142 @@ msgstr "%zu പോര്‍ട്ട് കരുതുവാന്‍ സാധ
 msgid "Failed to release port %d"
 msgstr "%d പോര്‍ട്ട് റിലീസ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virprocess.c:65
+#: src/util/virprocess.c:66
 #, c-format
 msgid "exit status %d"
 msgstr "%d അവസ്ഥയില്‍ നിന്നും പുറത്തു് കടക്കുക"
 
-#: src/util/virprocess.c:68
+#: src/util/virprocess.c:69
 #, c-format
 msgid "fatal signal %d"
 msgstr "തെറ്റായ സിഗ്നല്‍ %d"
 
-#: src/util/virprocess.c:71
+#: src/util/virprocess.c:72
 #, c-format
 msgid "invalid value %d"
 msgstr "തെറ്റായ മൂല്ല്യം %d"
 
-#: src/util/virprocess.c:166 src/util/virprocess.c:176
+#: src/util/virprocess.c:167 src/util/virprocess.c:177
 #, c-format
 msgid "unable to wait for process %lld"
 msgstr "%lld പ്രക്രിയയ്ക്കായി കാത്തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:185
+#: src/util/virprocess.c:186
 #, c-format
 msgid "Child process (%lld) unexpected %s"
 msgstr "ചൈള്‍ഡ് പ്രക്രിയ (%lld)-ല്‍ അപ്രതീക്ഷിതമായ %s"
 
-#: src/util/virprocess.c:302 src/util/virprocess.c:314
+#: src/util/virprocess.c:303 src/util/virprocess.c:315
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "%lld പ്രക്രിയ, SIG%s-നൊപ്പം ഇല്ലാതാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/util/virprocess.c:366 src/util/virprocess.c:384
+#: src/util/virprocess.c:367 src/util/virprocess.c:385
 #, c-format
 msgid "cannot set CPU affinity on process %d"
 msgstr "%d പ്രൊസസ്സിനു് സിപിയു അഫിനിറ്റി സെറ്റ് ചെയ്യാന്‍ കഴിയില്ല"
 
-#: src/util/virprocess.c:428 src/util/virprocess.c:447
+#: src/util/virprocess.c:429 src/util/virprocess.c:448
 #, c-format
 msgid "cannot get CPU affinity of process %d"
 msgstr "%d പ്രൊസസ്സിന്റെ സിപിയു അഫിനിറ്റി കിട്ടുകയില്ല"
 
-#: src/util/virprocess.c:466
+#: src/util/virprocess.c:467
 msgid "setting process affinity isn't supported on FreeBSD yet"
 msgstr "FreeBSD-ല്‍ ഇതുവരെ affinity പ്രക്രിയ സജ്ജമാക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/util/virprocess.c:491 src/util/virprocess.c:500
+#: src/util/virprocess.c:492 src/util/virprocess.c:501
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "പ്രൊസസ്സിന്റെ സിപിയു അഫിനിറ്റി ഈ പ്ലാറ്റിഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/util/virprocess.c:559
+#: src/util/virprocess.c:560
 msgid "Expected at least one file descriptor"
 msgstr "കുറഞ്ഞതു് ഒരു ഫയല്‍ വിവരണം എങ്കിലും പ്രതീക്ഷിച്ചു"
 
-#: src/util/virprocess.c:571
+#: src/util/virprocess.c:572
 msgid "Unable to join domain namespace"
 msgstr "ഡൊമെയിന്‍ മെയിംസ്പെയിസ് ചേരുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:583
+#: src/util/virprocess.c:584
 #, c-format
 msgid "Cannot get namespaces for %llu"
 msgstr "%llu-നുള്ള namespaces ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:593
+#: src/util/virprocess.c:594
 msgid "Cannot set namespaces"
 msgstr "namespaces സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:628
+#: src/util/virprocess.c:629
 #, c-format
 msgid "cannot limit locked memory to %llu"
 msgstr "പൂട്ടിയ മെമ്മറിയുടെ പരിധി %llu ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:635
+#: src/util/virprocess.c:636
 #, c-format
 msgid "cannot limit locked memory of process %lld to %llu"
 msgstr "%lld പ്രക്രിയയുടെ പൂട്ടിയ മെമ്മറിയുടെ പരിധി %llu ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:650 src/util/virprocess.c:691
-#: src/util/virprocess.c:739 src/util/virutil.c:2008 src/util/virutil.c:2016
+#: src/util/virprocess.c:651 src/util/virprocess.c:692
+#: src/util/virprocess.c:740 src/util/virutil.c:2008 src/util/virutil.c:2016
 #: src/util/virutil.c:2024 src/util/virutil.c:2034 src/util/virutil.c:2043
 #: src/util/virutil.c:2050
 msgid "Not supported on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/util/virprocess.c:669
+#: src/util/virprocess.c:670
 #, c-format
 msgid "cannot limit number of subprocesses to %u"
 msgstr "ഉപപ്രക്രിയകളുടെ എണ്ണത്തിന്റെ പരിധി %u ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:676
+#: src/util/virprocess.c:677
 #, c-format
 msgid "cannot limit number of subprocesses of process %lld to %u"
 msgstr "%lld പ്രക്രിയയുടെ ഉപപ്രക്രിയയുടെ എണ്ണത്തിന്റെ പരിധി %u ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:717
+#: src/util/virprocess.c:718
 #, c-format
 msgid "cannot limit number of open files to %u"
 msgstr "തുറന്ന ഫയലുകളുടെ എണ്ണത്തിന്റെ പരിധി %u ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:724
+#: src/util/virprocess.c:725
 #, c-format
 msgid "cannot limit number of open files of process %lld to %u"
 msgstr "%lld പ്രക്രിയയുടെ തുറന്ന ഫയലുകളുടെ എണ്ണത്തിന്റെ പരിധി %u ആക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:773 src/util/virprocess.c:780
-#: src/util/virprocess.c:789
+#: src/util/virprocess.c:774 src/util/virprocess.c:781
+#: src/util/virprocess.c:790
 #, c-format
 msgid "Cannot find start time in %s"
 msgstr "%s-ല്‍ പ്രാരംഭ സമയം കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:799
+#: src/util/virprocess.c:800
 #, c-format
 msgid "Cannot parse start time %s in %s"
 msgstr "പ്രാരംഭ സമയം %s, %s-ല്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virprocess.c:827
+#: src/util/virprocess.c:828
 msgid "Unable to query process ID start time"
 msgstr "പ്രക്രിയ ഐഡിയുടെ പ്രാരംഭ സമയം ചോദ്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#: src/util/virprocess.c:868
+#, fuzzy
+msgid "Kernel does not provide mount namespace"
+msgstr "കേര്‍ണല്‍ നെയിംസ്പെയിസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#: src/util/virprocess.c:874
+#, fuzzy
+msgid "Unable to enter mount namespace"
+msgstr "ഡൊമെയിന്‍ മെയിംസ്പെയിസ് ചേരുവാന്‍ സാധ്യമല്ല"
+
+#: src/util/virprocess.c:910
+#, fuzzy
+msgid "Cannot create pipe for child"
+msgstr "പൈപ്പ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
+
+#: src/util/virprocess.c:952
+#, fuzzy
+msgid "Mount namespaces are not available on this platform"
+msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ ഇന്റര്‍ഫെയിസ് സ്റ്റാറ്റ്സ് ലഭ്യമല്ല"
 
 #: src/util/virrandom.c:171
 msgid "argument virt_type must not be NULL"
@@ -23870,61 +23883,61 @@ msgstr "'%s' പാഥിനുള്ള പേരു് മാറ്റുവ�
 msgid "cannot seek to start of '%s'"
 msgstr "'%s' ന്റെ തുടക്കത്തിലേക്കു് മാറാന്‍ സാധ്യമല്ല"
 
-#: src/util/virstoragefile.c:795 src/util/virstoragefile.c:946
+#: src/util/virstoragefile.c:792 src/util/virstoragefile.c:940
 #, c-format
 msgid "cannot read header '%s'"
 msgstr "ഹെഡര്‍ '%s' ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virstoragefile.c:804
+#: src/util/virstoragefile.c:801
 #, c-format
 msgid "unknown storage file format %d"
 msgstr "അപരിചിതമായ സ്റ്റോറേജ് ഫയലിന്റെ ഫോര്‍മാറ്റ് %d"
 
-#: src/util/virstoragefile.c:941
+#: src/util/virstoragefile.c:935
 #, c-format
 msgid "cannot set to start of '%s'"
 msgstr "'%s' ന്റെ തുടക്കമായി സജ്ജീകരിയ്ക്കാന്‍ സാധ്യമല്ല"
 
-#: src/util/virstoragefile.c:1028
+#: src/util/virstoragefile.c:1022
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr "%s-നുള്ള ബാക്കിങ് സ്റ്റോര്‍ സ്വയം സൂചിപ്പിയ്ക്കുന്നു"
 
-#: src/util/virstoragefile.c:1194 src/util/virstoragefile.c:1201
+#: src/util/virstoragefile.c:1188 src/util/virstoragefile.c:1195
 #, c-format
 msgid "Failed to pre-allocate space for file '%s'"
 msgstr "'%s' ഫയലിനുള്ള സ്ഥലം മുമ്പു് അനുവദിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virstoragefile.c:1207
+#: src/util/virstoragefile.c:1201
 msgid "preallocate is not supported on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ preallocate പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/util/virstoragefile.c:1213
+#: src/util/virstoragefile.c:1207
 #, c-format
 msgid "Failed to truncate file '%s'"
 msgstr "'%s' എന്ന ഫയല്‍ കാലിയാക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virstoragefile.c:1219
+#: src/util/virstoragefile.c:1213
 #, c-format
 msgid "Unable to save '%s'"
 msgstr "'%s' സൂക്ഷിക്കുവാന്‍ സാധിക്കുന്നില്ല"
 
-#: src/util/virstoragefile.c:1274
+#: src/util/virstoragefile.c:1268
 #, c-format
 msgid "Invalid relative path '%s'"
 msgstr "അസാധുവായ ആപേക്ഷിക പാത്ത് '%s'"
 
-#: src/util/virstoragefile.c:1292
+#: src/util/virstoragefile.c:1286
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "%s-നുള്ള ഫയല്‍സിസ്റ്റം കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virstoragefile.c:1412
+#: src/util/virstoragefile.c:1406
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "%s-നുള്ള എല്‍വിഎം കീ കാണുന്നില്ല"
 
-#: src/util/virstoragefile.c:1462
+#: src/util/virstoragefile.c:1456
 #, c-format
 msgid "Unable to get SCSI key for %s"
 msgstr "%s-നുള്ള സ്കസി കീ കാണുന്നില്ല"
@@ -26315,12 +26328,12 @@ msgstr "നിര്‍ജ്ജീവ ഡൊമെയിനുകളുടെ V
 msgid "Cannot change scheduler parameters"
 msgstr "ഷെഡ്യൂളര്‍ പരാമീറ്ററുകള്‍ മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/xen/xen_driver.c:2574
+#: src/xen/xen_driver.c:2572
 #, c-format
 msgid "Device %s has been assigned to guest %d"
 msgstr "ഡിവൈസ് %s ഗസ്റ്റ് %d-നു് ലഭ്യമാക്കിയിരിയ്ക്കുന്നു"
 
-#: src/xen/xen_driver.c:2648
+#: src/xen/xen_driver.c:2646
 msgid "cannot find default console device"
 msgstr "സ്വതവേയുള്ള കണ്‍സോള്‍ ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -34654,3 +34667,12 @@ msgstr "chdir(%s) ചെയ്യുവാന്‍ സാധ്യമല്ല"
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr "%s ഷെല്‍ നടപ്പിലാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "%s not a known CPU model"
+#~ msgstr "%s പരിചിതമായൊരു സിപിയു മോഡലല്ല"
+
+#~ msgid "cannot allow device %s for domain %s"
+#~ msgstr "ഡിവൈസ് %s അനുവദിയ്ക്കുന്നില്ല, ഡൊമെയിന്‍ %s-നുള്ളതു്"
+
+#~ msgid "Unable to create directory for device %s"
+#~ msgstr "%s ഡിവൈസിനുള്ള ഡയറക്ടറി തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
