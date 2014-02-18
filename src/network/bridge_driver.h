@@ -55,7 +55,7 @@ int networkDnsmasqConfContents(virNetworkObjPtr network,
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
 #  define networkAllocateActualDevice(dom, iface) 0
-#  define networkNotifyActualDevice(iface) (iface=iface, 0)
+#  define networkNotifyActualDevice(dom, iface) (dom=dom, iface=iface, 0)
 #  define networkReleaseActualDevice(dom, iface) (dom=dom, iface=iface, 0)
 #  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
