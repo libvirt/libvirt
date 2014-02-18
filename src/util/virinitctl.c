@@ -159,8 +159,7 @@ cleanup:
     return ret;
 }
 #else
-int virInitctlSetRunLevel(virInitctlRunLevel level ATTRIBUTE_UNUSED,
-                          const char *vroot ATTRIBUTE_UNUSED)
+int virInitctlSetRunLevel(virInitctlRunLevel level ATTRIBUTE_UNUSED)
 {
    virReportError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
    return -1;
