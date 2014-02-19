@@ -15599,6 +15599,9 @@ virDomainNetDefFormat(virBufferPtr buf,
         return -1;
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
         return -1;
+    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
+        return -1;
+
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
     if (def->ifname &&
@@ -15650,9 +15653,6 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
     }
-
-    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
-        return -1;
 
     virBufferAdjustIndent(buf, -6);
 

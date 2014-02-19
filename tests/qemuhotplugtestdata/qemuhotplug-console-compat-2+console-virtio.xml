@@ -59,12 +59,12 @@
     <interface type='network'>
       <mac address='52:54:00:ea:35:6f'/>
       <source network='default'/>
-      <target dev='vnet0'/>
-      <model type='virtio'/>
       <bandwidth>
         <inbound average='4000' peak='8000' floor='200' burst='1024'/>
         <outbound average='4000' peak='8000' burst='1024'/>
       </bandwidth>
+      <target dev='vnet0'/>
+      <model type='virtio'/>
       <alias name='net0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
