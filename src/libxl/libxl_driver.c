@@ -368,42 +368,78 @@ libxlDomainShutdownThread(void *opaque)
     libxl_ctx *ctx = priv->ctx;
     virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
-    virDomainShutoffReason reason;
+    virDomainShutoffReason reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
 
     virObjectLock(vm);
 
-    switch (xl_reason) {
-        case LIBXL_SHUTDOWN_REASON_POWEROFF:
-        case LIBXL_SHUTDOWN_REASON_CRASH:
-            if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
-                dom_event = virDomainEventLifecycleNewFromObj(vm,
-                                           VIR_DOMAIN_EVENT_STOPPED,
-                                           VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-                reason = VIR_DOMAIN_SHUTOFF_CRASHED;
-            } else {
-                dom_event = virDomainEventLifecycleNewFromObj(vm,
+    if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-                reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
-            }
-            libxl_domain_destroy(ctx, vm->def->id, NULL);
-            if (libxlVmCleanupJob(driver, vm, reason)) {
-                if (!vm->persistent) {
-                    virDomainObjListRemove(driver->domains, vm);
-                    vm = NULL;
-                }
-            }
-            break;
-        case LIBXL_SHUTDOWN_REASON_REBOOT:
-            libxl_domain_destroy(ctx, vm->def->id, NULL);
-            libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-            libxlVmStart(driver, vm, 0, -1);
-            break;
-        default:
-            VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
-            break;
+        switch ((enum virDomainLifecycleAction) vm->def->onPoweroff) {
+        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_LAST:
+            goto cleanup;
+        }
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+        switch ((enum virDomainLifecycleCrashAction) vm->def->onCrash) {
+        case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_CRASHED;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
+            goto cleanup;
+        }
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_REBOOT) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        switch ((enum virDomainLifecycleAction) vm->def->onReboot) {
+        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_LAST:
+            goto cleanup;
+        }
+    } else {
+        VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
+        goto cleanup;
     }
 
+destroy:
+    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    if (libxlVmCleanupJob(driver, vm, reason)) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
+    }
+    goto cleanup;
+
+restart:
+    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    libxlVmStart(driver, vm, 0, -1);
+
+cleanup:
     if (vm)
         virObjectUnlock(vm);
     if (dom_event)
