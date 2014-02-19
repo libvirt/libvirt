@@ -1798,6 +1798,7 @@ virStringArrayHasString;
 virStringFreeList;
 virStringJoin;
 virStringListLength;
+virStringReplace;
 virStringSearch;
 virStringSortCompare;
 virStringSortRevCompare;

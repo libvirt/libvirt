@@ -749,3 +749,48 @@ cleanup:
     }
     return ret;
 }
+
+/**
+ * virStringReplace:
+ * @haystack: the source string to process
+ * @oldneedle: the substring to locate
+ * @newneedle: the substring to insert
+ *
+ * Search @haystack and replace all occurences of @oldneedle with @newneedle.
+ *
+ * Returns: a new string with all the replacements, or NULL on error
+ */
+char *
+virStringReplace(const char *haystack,
+                 const char *oldneedle,
+                 const char *newneedle)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *tmp1, *tmp2;
+    size_t oldneedlelen = strlen(oldneedle);
+    size_t newneedlelen = strlen(newneedle);
+
+    tmp1 = haystack;
+    tmp2 = NULL;
+
+    while (tmp1) {
+        tmp2 = strstr(tmp1, oldneedle);
+
+        if (tmp2) {
+            virBufferAdd(&buf, tmp1, (tmp2 - tmp1));
+            virBufferAdd(&buf, newneedle, newneedlelen);
+            tmp2 += oldneedlelen;
+        } else {
+            virBufferAdd(&buf, tmp1, -1);
+        }
+
+        tmp1 = tmp2;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}

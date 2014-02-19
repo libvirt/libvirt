@@ -338,6 +338,39 @@ testStringSearch(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+struct stringReplaceData {
+    const char *haystack;
+    const char *oldneedle;
+    const char *newneedle;
+    const char *result;
+};
+
+static int
+testStringReplace(const void *opaque ATTRIBUTE_UNUSED)
+{
+    const struct stringReplaceData *data = opaque;
+    char *result;
+    int ret = -1;
+
+    result = virStringReplace(data->haystack,
+                              data->oldneedle,
+                              data->newneedle);
+
+    if (STRNEQ_NULLABLE(data->result, result)) {
+        fprintf(stderr, "Expected '%s' but got '%s'\n",
+                data->result, NULLSTR(result));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(result);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -427,6 +460,37 @@ mymain(void)
     /* Multi matches, limited returns */
     const char *matches3[] = { "foo", "bar" };
     TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
+
+#define TEST_REPLACE(h, o, n, r)                                        \
+    do {                                                                \
+        struct stringReplaceData data = {                               \
+            .haystack = h,                                              \
+            .oldneedle = o,                                             \
+            .newneedle = n,                                             \
+            .result = r                                                 \
+        };                                                              \
+        if (virtTestRun("virStringReplace " h, testStringReplace, &data) < 0) \
+            ret = -1;                                                   \
+    } while (0)
+
+    /* no matches */
+    TEST_REPLACE("foo", "bar", "eek", "foo");
+
+    /* complete match */
+    TEST_REPLACE("foo", "foo", "bar", "bar");
+
+    /* middle match */
+    TEST_REPLACE("foobarwizz", "bar", "eek", "fooeekwizz");
+
+    /* many matches */
+    TEST_REPLACE("foofoofoofoo", "foo", "bar", "barbarbarbar");
+
+    /* many matches */
+    TEST_REPLACE("fooooofoooo", "foo", "bar", "barooobaroo");
+
+    /* different length old/new needles */
+    TEST_REPLACE("fooooofoooo", "foo", "barwizzeek", "barwizzeekooobarwizzeekoo");
+    TEST_REPLACE("fooooofoooo", "foooo", "foo", "fooofoo");
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
