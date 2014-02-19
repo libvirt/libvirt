@@ -1,7 +1,7 @@
 /*
  * nwfilter_ebiptables_driver.c: driver for ebtables/iptables on tap devices
  *
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corp.
  * Copyright (C) 2010-2012 Stefan Berger
  *
@@ -2797,10 +2797,9 @@ ebiptablesDisplayRuleInstance(void *_inst)
 
 /**
  * ebiptablesExecCLI:
- * @buf : pointer to virBuffer containing the string with the commands to
- *        execute.
- * @status: Pointer to an integer for returning the WEXITSTATUS of the
- *        commands executed via the script the was run.
+ * @buf: pointer to virBuffer containing the string with the commands to
+ *       execute.
+ * @ignoreNonzero: true if non-zero status is not fatal
  * @outbuf: Optional pointer to a string that will hold the buffer with
  *          output of the executed command. The actual buffer holding
  *          the message will be newly allocated by this function and
@@ -2811,18 +2810,15 @@ ebiptablesDisplayRuleInstance(void *_inst)
  * script.
  *
  * Execute a sequence of commands (held in the given buffer) as a /bin/sh
- * script and return the status of the execution in *status (if status is
- * NULL, then the script must exit with status 0).
+ * script.  Depending on ignoreNonzero, this function will fail if the
+ * script has unexpected status.
  */
 static int
-ebiptablesExecCLI(virBufferPtr buf,
-                  int *status, char **outbuf)
+ebiptablesExecCLI(virBufferPtr buf, bool ignoreNonzero, char **outbuf)
 {
     int rc = -1;
     virCommandPtr cmd;
-
-    if (status)
-         *status = 0;
+    int status;
 
     if (!virBufferError(buf) && !virBufferUse(buf))
         return 0;
@@ -2837,7 +2833,7 @@ ebiptablesExecCLI(virBufferPtr buf,
 
     virMutexLock(&execCLIMutex);
 
-    rc = virCommandRun(cmd, status);
+    rc = virCommandRun(cmd, ignoreNonzero ? &status : NULL);
 
     virMutexUnlock(&execCLIMutex);
 
@@ -3293,7 +3289,7 @@ ebtablesApplyBasicRules(const char *ifname,
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
     ebtablesRenameTmpRootChain(&buf, 1, ifname);
 
-    if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
+    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
         goto tear_down_tmpebchains;
 
     return 0;
@@ -3441,7 +3437,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
         ebtablesRenameTmpRootChain(&buf, 0, ifname);
     }
 
-    if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
+    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
         goto tear_down_tmpebchains;
 
     return 0;
@@ -3511,7 +3507,7 @@ ebtablesApplyDropAllRules(const char *ifname)
     ebtablesRenameTmpRootChain(&buf, 1, ifname);
     ebtablesRenameTmpRootChain(&buf, 0, ifname);
 
-    if (ebiptablesExecCLI(&buf, NULL, NULL) < 0)
+    if (ebiptablesExecCLI(&buf, false, NULL) < 0)
         goto tear_down_tmpebchains;
 
     return 0;
@@ -3537,7 +3533,6 @@ ebtablesRemoveBasicRules(const char *ifname)
 static int ebtablesCleanAll(const char *ifname)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int cli_status;
 
     if (!ebtables_cmd_path)
         return 0;
@@ -3556,7 +3551,7 @@ static int ebtablesCleanAll(const char *ifname)
     ebtablesRemoveTmpRootChain(&buf, 1, ifname);
     ebtablesRemoveTmpRootChain(&buf, 0, ifname);
 
-    ebiptablesExecCLI(&buf, &cli_status, NULL);
+    ebiptablesExecCLI(&buf, true, NULL);
     return 0;
 }
 
@@ -3704,7 +3699,6 @@ ebiptablesApplyNewRules(const char *ifname,
                         void **_inst)
 {
     size_t i, j;
-    int cli_status;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virHashTablePtr chains_in_set  = virHashCreate(10, NULL);
@@ -3752,7 +3746,7 @@ ebiptablesApplyNewRules(const char *ifname,
         ebtablesRemoveTmpSubChains(&buf, ifname);
         ebtablesRemoveTmpRootChain(&buf, 1, ifname);
         ebtablesRemoveTmpRootChain(&buf, 0, ifname);
-        ebiptablesExecCLI(&buf, &cli_status, NULL);
+        ebiptablesExecCLI(&buf, true, NULL);
     }
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
@@ -3771,7 +3765,7 @@ ebiptablesApplyNewRules(const char *ifname,
         qsort(&ebtChains[0], nEbtChains, sizeof(ebtChains[0]),
               ebiptablesRuleOrderSort);
 
-    if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+    if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_tmpebchains;
 
     NWFILTER_SET_EBTABLES_SHELLVAR(&buf);
@@ -3807,7 +3801,7 @@ ebiptablesApplyNewRules(const char *ifname,
                               ebtChains[j++].commandTemplate,
                               'A', -1, 1);
 
-    if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+    if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_tmpebchains;
 
     if (haveIptables) {
@@ -3818,21 +3812,21 @@ ebiptablesApplyNewRules(const char *ifname,
 
         iptablesCreateBaseChains(&buf);
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
             goto tear_down_tmpebchains;
 
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
         iptablesCreateTmpRootChains(&buf, ifname);
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpiptchains;
 
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
         iptablesLinkTmpRootChains(&buf, ifname);
         iptablesSetupVirtInPost(&buf, ifname);
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpiptchains;
 
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
@@ -3845,7 +3839,7 @@ ebiptablesApplyNewRules(const char *ifname,
                                     'A', -1, 1);
         }
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpiptchains;
 
         iptablesCheckBridgeNFCallEnabled(false);
@@ -3859,21 +3853,21 @@ ebiptablesApplyNewRules(const char *ifname,
 
         iptablesCreateBaseChains(&buf);
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
             goto tear_down_tmpiptchains;
 
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
         iptablesCreateTmpRootChains(&buf, ifname);
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpip6tchains;
 
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
         iptablesLinkTmpRootChains(&buf, ifname);
         iptablesSetupVirtInPost(&buf, ifname);
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpip6tchains;
 
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
@@ -3885,7 +3879,7 @@ ebiptablesApplyNewRules(const char *ifname,
                                     'A', -1, 1);
         }
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
            goto tear_down_tmpip6tchains;
 
         iptablesCheckBridgeNFCallEnabled(true);
@@ -3898,7 +3892,7 @@ ebiptablesApplyNewRules(const char *ifname,
     if (virHashSize(chains_out_set) != 0)
         ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
 
-    if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0)
+    if (ebiptablesExecCLI(&buf, false, &errmsg) < 0)
         goto tear_down_ebsubchains_and_unlink;
 
     virHashFree(chains_in_set);
@@ -3945,7 +3939,7 @@ tear_down_tmpebchains:
         ebtablesRemoveTmpRootChain(&buf, 0, ifname);
     }
 
-    ebiptablesExecCLI(&buf, &cli_status, NULL);
+    ebiptablesExecCLI(&buf, true, NULL);
 
     virReportError(VIR_ERR_BUILD_FIREWALL,
                    _("Some rules could not be created for "
@@ -3971,7 +3965,6 @@ exit_free_sets:
 static int
 ebiptablesTearNewRules(const char *ifname)
 {
-    int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (iptables_cmd_path) {
@@ -3999,7 +3992,7 @@ ebiptablesTearNewRules(const char *ifname)
         ebtablesRemoveTmpRootChain(&buf, 0, ifname);
     }
 
-    ebiptablesExecCLI(&buf, &cli_status, NULL);
+    ebiptablesExecCLI(&buf, true, NULL);
 
     return 0;
 }
@@ -4008,7 +4001,6 @@ ebiptablesTearNewRules(const char *ifname)
 static int
 ebiptablesTearOldRules(const char *ifname)
 {
-    int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     /* switch to new iptables user defined chains */
@@ -4019,7 +4011,7 @@ ebiptablesTearOldRules(const char *ifname)
         iptablesRemoveRootChains(&buf, ifname);
 
         iptablesRenameTmpRootChains(&buf, ifname);
-        ebiptablesExecCLI(&buf, &cli_status, NULL);
+        ebiptablesExecCLI(&buf, true, NULL);
     }
 
     if (ip6tables_cmd_path) {
@@ -4029,7 +4021,7 @@ ebiptablesTearOldRules(const char *ifname)
         iptablesRemoveRootChains(&buf, ifname);
 
         iptablesRenameTmpRootChains(&buf, ifname);
-        ebiptablesExecCLI(&buf, &cli_status, NULL);
+        ebiptablesExecCLI(&buf, true, NULL);
     }
 
     if (ebtables_cmd_path) {
@@ -4045,7 +4037,7 @@ ebiptablesTearOldRules(const char *ifname)
 
         ebtablesRenameTmpSubAndRootChains(&buf, ifname);
 
-        ebiptablesExecCLI(&buf, &cli_status, NULL);
+        ebiptablesExecCLI(&buf, true, NULL);
     }
 
     return 0;
@@ -4068,8 +4060,7 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
                       int nruleInstances,
                       void **_inst)
 {
-    int rc = 0;
-    int cli_status;
+    int rc = -1;
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
@@ -4082,17 +4073,12 @@ ebiptablesRemoveRules(const char *ifname ATTRIBUTE_UNUSED,
                               'D', -1,
                               0);
 
-    if (ebiptablesExecCLI(&buf, &cli_status, NULL) < 0)
-        goto err_exit;
+    if (ebiptablesExecCLI(&buf, true, NULL) < 0)
+        goto cleanup;
 
-    if (cli_status) {
-        virReportError(VIR_ERR_BUILD_FIREWALL,
-                       "%s",
-                       _("error while executing CLI commands"));
-        rc = -1;
-    }
+    rc = 0;
 
-err_exit:
+cleanup:
     return rc;
 }
 
@@ -4110,7 +4096,6 @@ static int
 ebiptablesAllTeardown(const char *ifname)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int cli_status;
 
     if (iptables_cmd_path) {
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
@@ -4139,7 +4124,7 @@ ebiptablesAllTeardown(const char *ifname)
         ebtablesRemoveRootChain(&buf, 1, ifname);
         ebtablesRemoveRootChain(&buf, 0, ifname);
     }
-    ebiptablesExecCLI(&buf, &cli_status, NULL);
+    ebiptablesExecCLI(&buf, true, NULL);
 
     return 0;
 }
@@ -4180,7 +4165,6 @@ ebiptablesDriverInitWithFirewallD(void)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *firewall_cmd_path;
     char *output = NULL;
-    int status;
     int ret = -1;
 
     if (!virNWFilterDriverIsWatchingFirewallD())
@@ -4196,8 +4180,7 @@ ebiptablesDriverInitWithFirewallD(void)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, &status, &output) < 0 ||
-            status != 0) {
+        if (ebiptablesExecCLI(&buf, false, &output) < 0) {
             VIR_INFO("firewalld support disabled for nwfilter");
         } else {
             VIR_INFO("firewalld support enabled for nwfilter");
@@ -4268,7 +4251,7 @@ ebiptablesDriverTestCLITools(void)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(ebtables_cmd_path);
             VIR_ERROR(_("Testing of ebtables command failed: %s"),
                       errmsg);
@@ -4285,7 +4268,7 @@ ebiptablesDriverTestCLITools(void)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(iptables_cmd_path);
             VIR_ERROR(_("Testing of iptables command failed: %s"),
                       errmsg);
@@ -4302,7 +4285,7 @@ ebiptablesDriverTestCLITools(void)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, &errmsg) < 0) {
+        if (ebiptablesExecCLI(&buf, false, &errmsg) < 0) {
             VIR_FREE(ip6tables_cmd_path);
             VIR_ERROR(_("Testing of ip6tables command failed: %s"),
                       errmsg);
@@ -4353,7 +4336,7 @@ ebiptablesDriverProbeStateMatch(void)
     virBufferAsprintf(&buf,
                       "$IPT --version");
 
-    if (ebiptablesExecCLI(&buf, NULL, &cmdout) < 0) {
+    if (ebiptablesExecCLI(&buf, false, &cmdout) < 0) {
         VIR_ERROR(_("Testing of iptables command failed: %s"),
                   cmdout);
         return;
