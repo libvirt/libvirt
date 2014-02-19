@@ -15427,78 +15427,112 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     return 0;
 }
 
+/* virDomainActualNetDefContentsFormat() - format just the subelements
+ * of <interface> that may be overridden by what is in the
+ * virDomainActualNetDef, but inside the current element, rather
+ * than enclosed in an <actual> subelement.
+ */
 static int
-virDomainActualNetDefFormat(virBufferPtr buf,
-                            virDomainActualNetDefPtr def,
-                            unsigned int flags)
+virDomainActualNetDefContentsFormat(virBufferPtr buf,
+                                    virDomainNetDefPtr def,
+                                    const char *typeStr,
+                                    bool inSubelement,
+                                    unsigned int flags)
 {
-    const char *type;
     const char *mode;
 
-    if (!def)
-        return 0;
-
-    type = virDomainNetTypeToString(def->type);
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected net type %d"), def->type);
-        return -1;
-    }
-
-    virBufferAsprintf(buf, "<actual type='%s'", type);
-    if (def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        def->data.hostdev.def.managed) {
-        virBufferAddLit(buf, " managed='yes'");
-    }
-    virBufferAddLit(buf, ">\n");
-
-    virBufferAdjustIndent(buf, 2);
-    switch (def->type) {
+    switch (virDomainNetGetActualType(def)) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferEscapeString(buf, "<source bridge='%s'/>\n",
-                              def->data.bridge.brname);
+                              virDomainNetGetActualBridgeName(def));
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         virBufferAddLit(buf, "<source");
-        if (def->data.direct.linkdev)
-            virBufferEscapeString(buf, " dev='%s'",
-                                  def->data.direct.linkdev);
+        virBufferEscapeString(buf, " dev='%s'",
+                              virDomainNetGetActualDirectDev(def));
 
-        mode = virNetDevMacVLanModeTypeToString(def->data.direct.mode);
+        mode = virNetDevMacVLanModeTypeToString(virDomainNetGetActualDirectMode(def));
         if (!mode) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected source mode %d"),
-                           def->data.direct.mode);
+                           virDomainNetGetActualDirectMode(def));
             return -1;
         }
         virBufferAsprintf(buf, " mode='%s'/>\n", mode);
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
+        if (virDomainHostdevDefFormatSubsys(buf, virDomainNetGetActualHostdev(def),
                                             flags, true) < 0) {
             return -1;
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        if (def->class_id)
-            virBufferAsprintf(buf, "<class id='%u'/>", def->class_id);
+        if (!inSubelement) {
+            /* the <source> element isn't included in <actual>
+             * (i.e. when we're putting our output into a subelement
+             * rather than inline) because the main element has the
+             * same info already. If we're outputting inline, though,
+             * we *do* need to output <source>, because the caller
+             * won't have done it.
+             */
+            virBufferEscapeString(buf, "<source network='%s'/>\n",
+                                  def->data.network.name);
+        }
+        if (def->data.network.actual && def->data.network.actual->class_id)
+            virBufferAsprintf(buf, "<class id='%u'/>\n",
+                              def->data.network.actual->class_id);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected net type %s"), type);
+                       _("unexpected actual net type %s"), typeStr);
         return -1;
     }
 
-    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
+    if (virNetDevVlanFormat(virDomainNetGetActualVlan(def), buf) < 0)
         return -1;
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
+    if (virNetDevVPortProfileFormat(virDomainNetGetActualVirtPortProfile(def), buf) < 0)
         return -1;
-    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
+    if (virNetDevBandwidthFormat(virDomainNetGetActualBandwidth(def), buf) < 0)
         return -1;
+    return 0;
+}
 
+
+/* virDomainActualNetDefFormat() - format the ActualNetDef
+ * info inside an <actual> element, as required for internal storage
+ * of domain status
+ */
+static int
+virDomainActualNetDefFormat(virBufferPtr buf,
+                            virDomainNetDefPtr def,
+                            unsigned int flags)
+{
+    unsigned int type = virDomainNetGetActualType(def);
+    const char *typeStr = virDomainNetTypeToString(type);
+
+    if (!def)
+        return 0;
+
+    if (!typeStr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected net type %d"), def->type);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "<actual type='%s'", typeStr);
+    if (type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        virDomainHostdevDefPtr hostdef = virDomainNetGetActualHostdev(def);
+        if  (hostdef && hostdef->managed)
+            virBufferAddLit(buf, " managed='yes'");
+    }
+    virBufferAddLit(buf, ">\n");
+
+    virBufferAdjustIndent(buf, 2);
+    if (virDomainActualNetDefContentsFormat(buf, def, typeStr, true, flags) < 0)
+       return -1;
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</actual>\n");
     return 0;
@@ -15536,8 +15570,13 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, " portgroup='%s'",
                               def->data.network.portgroup);
         virBufferAddLit(buf, "/>\n");
+
+        /* ONLY for internal status storage - format the ActualNetDef
+         * as a subelement of <interface> so that no persistent config
+         * data is overwritten.
+         */
         if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
-            (virDomainActualNetDefFormat(buf, def->data.network.actual, flags) < 0))
+            (virDomainActualNetDefFormat(buf, def, flags) < 0))
             return -1;
         break;
 
