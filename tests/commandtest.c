@@ -1,7 +1,7 @@
 /*
  * commandtest.c: Test the libCommand API
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -140,7 +140,7 @@ static int test1(const void *unused ATTRIBUTE_UNUSED)
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
-    if (status == 0)
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != EXIT_ENOENT)
         goto cleanup;
     ret = 0;
 
@@ -899,6 +899,44 @@ cleanup:
     return ret;
 }
 
+static int
+test22(const void *unused ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virCommandPtr cmd;
+    int status = -1;
+
+    cmd = virCommandNewArgList("/bin/sh", "-c", "exit 3", NULL);
+
+    if (virCommandRun(cmd, &status) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 3) {
+        printf("Unexpected status %d\n", status);
+        goto cleanup;
+    }
+
+    virCommandFree(cmd);
+    cmd = virCommandNewArgList("/bin/sh", "-c", "kill -9 $$", NULL);
+
+    if (virCommandRun(cmd, &status) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+    if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL) {
+        printf("Unexpected status %d\n", status);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
 static void virCommandThreadWorker(void *opaque)
 {
     virCommandTestDataPtr test = opaque;
@@ -1046,6 +1084,7 @@ mymain(void)
     DO_TEST(test19);
     DO_TEST(test20);
     DO_TEST(test21);
+    DO_TEST(test22);
 
     virMutexLock(&test->lock);
     if (test->running) {

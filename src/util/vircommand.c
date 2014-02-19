@@ -1,7 +1,7 @@
 /*
  * vircommand.c: Child command execution
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -199,7 +199,7 @@ virCommandFDSet(virCommandPtr cmd,
  * @pid - a pointer to a pid_t that will receive the return value from
  *        fork()
  *
- * fork a new process while avoiding various race/deadlock conditions
+ * Wrapper around fork() that avoids various race/deadlock conditions.
  *
  * on return from virFork(), if *pid < 0, the fork failed and there is
  * no new process. Otherwise, just like fork(), if *pid == 0, it is the
@@ -208,7 +208,7 @@ virCommandFDSet(virCommandPtr cmd,
  * Even if *pid >= 0, if the return value from virFork() is < 0, it
  * indicates a failure that occurred in the parent or child process
  * after the fork. In this case, the child process should call
- * _exit(EXIT_FAILURE) after doing any additional error reporting.
+ * _exit(EXIT_CANCELED) after doing any additional error reporting.
  */
 int
 virFork(pid_t *pid)
@@ -304,7 +304,8 @@ virFork(pid_t *pid)
         if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
             saved_errno = errno; /* save for caller */
             virReportSystemError(errno, "%s", _("cannot unblock signals"));
-            goto cleanup;
+            virDispatchError(NULL);
+            _exit(EXIT_CANCELED);
         }
         ret = 0;
     }
@@ -518,6 +519,7 @@ virExec(virCommandPtr cmd)
 
     /* child */
 
+    ret = EXIT_CANCELED;
     if (forkRet < 0) {
         /* The fork was successful, but after that there was an error
          * in the child (which was already logged).
@@ -603,7 +605,7 @@ virExec(virCommandPtr cmd)
                                      cmd->pidfile, pid);
                 goto fork_error;
             }
-            _exit(0);
+            _exit(EXIT_SUCCESS);
         }
     }
 
@@ -703,13 +705,14 @@ virExec(virCommandPtr cmd)
     else
         execv(binary, cmd->args);
 
+    ret = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
     virReportSystemError(errno,
                          _("cannot execute binary %s"),
                          cmd->args[0]);
 
  fork_error:
     virDispatchError(NULL);
-    _exit(EXIT_FAILURE);
+    _exit(ret);
 
  cleanup:
     /* This is cleanup of parent process only - child

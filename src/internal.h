@@ -438,5 +438,12 @@
                   #NAME ": " FMT, __VA_ARGS__);
 # endif
 
+/* Specific error values for use in forwarding programs such as
+ * virt-login-shell; these values match what GNU env does.  */
+enum {
+    EXIT_CANCELED = 125, /* Failed before attempting exec */
+    EXIT_CANNOT_INVOKE = 126, /* Exists but couldn't exec */
+    EXIT_ENOENT = 127, /* Could not find program to exec */
+};
 
 #endif                          /* __VIR_INTERNAL_H__ */
