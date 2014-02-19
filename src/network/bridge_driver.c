@@ -150,6 +150,12 @@ networkRunHook(virNetworkObjPtr network,
     int ret = -1;
 
     if (virHookPresent(VIR_HOOK_DRIVER_NETWORK)) {
+        if (!network) {
+            VIR_DEBUG("Not running hook as @network is NULL");
+            ret = 0;
+            goto cleanup;
+        }
+
         virBufferAddLit(&buf, "<hookData>\n");
         virBufferAdjustIndent(&buf, 2);
         if (virNetworkDefFormatBuf(&buf, network->def, 0) < 0)
