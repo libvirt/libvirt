@@ -381,6 +381,9 @@ libxlDomainShutdownThread(void *opaque)
                                            VIR_DOMAIN_EVENT_STOPPED_CRASHED);
                 reason = VIR_DOMAIN_SHUTOFF_CRASHED;
             } else {
+                dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
                 reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
             }
             libxl_domain_destroy(ctx, vm->def->id, NULL);
