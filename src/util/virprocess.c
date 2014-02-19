@@ -923,9 +923,9 @@ static int virProcessNamespaceHelper(int errfd,
 
 /* Run cb(opaque) in the mount namespace of pid.  Return -1 with error
  * message raised if we fail to run the child, if the child dies from
- * a signal, or if the child has status 1; otherwise return the exit
- * status of the child. The callback will be run in a child process
- * so must be careful to only use async signal safe functions.
+ * a signal, or if the child has status EXIT_CANCELED; otherwise return
+ * the exit status of the child. The callback will be run in a child
+ * process so must be careful to only use async signal safe functions.
  */
 int
 virProcessRunInMountNamespace(pid_t pid,
@@ -936,7 +936,7 @@ virProcessRunInMountNamespace(pid_t pid,
     pid_t child = -1;
     int errfd[2] = { -1, -1 };
 
-    if (pipe(errfd) < 0) {
+    if (pipe2(errfd, O_CLOEXEC) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot create pipe for child"));
         return -1;
@@ -946,7 +946,7 @@ virProcessRunInMountNamespace(pid_t pid,
 
     if (ret < 0 || child < 0) {
         if (child == 0)
-            _exit(1);
+            _exit(EXIT_CANCELED);
 
         /* parent */
         virProcessAbort(child);
@@ -958,13 +958,16 @@ virProcessRunInMountNamespace(pid_t pid,
         ret = virProcessNamespaceHelper(errfd[1], pid,
                                         cb, opaque);
         VIR_FORCE_CLOSE(errfd[1]);
-        _exit(ret < 0 ? 1 : 0);
+        _exit(ret < 0 ? EXIT_CANCELED : ret);
     } else {
         char *buf = NULL;
-        VIR_FORCE_CLOSE(errfd[1]);
+        int status;
 
+        VIR_FORCE_CLOSE(errfd[1]);
         ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
-        ret = virProcessWait(child, NULL);
+        ret = virProcessWait(child, &status);
+        if (!ret)
+            ret = status == EXIT_CANCELED ? -1 : status;
         VIR_FREE(buf);
     }
 

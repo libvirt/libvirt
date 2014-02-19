@@ -67,7 +67,7 @@ int virProcessSetMaxFiles(pid_t pid, unsigned int files);
  * pid.  This function must use only async-signal-safe functions, as
  * it gets run after a fork of a multi-threaded process.  The return
  * value of this function is passed to _exit(), except that a
- * negative value is treated as an error.  */
+ * negative value is treated as EXIT_CANCELED.  */
 typedef int (*virProcessNamespaceCallback)(pid_t pid, void *opaque);
 
 int virProcessRunInMountNamespace(pid_t pid,
