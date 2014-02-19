@@ -393,7 +393,7 @@ libxlDomainShutdownThread(void *opaque)
             break;
         case LIBXL_SHUTDOWN_REASON_REBOOT:
             libxl_domain_destroy(ctx, vm->def->id, NULL);
-            libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+            libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             libxlVmStart(driver, vm, 0, -1);
             break;
         default:
