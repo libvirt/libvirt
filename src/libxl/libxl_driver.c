@@ -977,6 +977,13 @@ libxlStateInitialize(bool privileged,
                        virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+    if (virFileMakePath(cfg->autoDumpDir) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create dump dir '%s': %s"),
+                       cfg->autoDumpDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
+        goto error;
+    }
 
     /* read the host sysinfo */
     libxl_driver->hostsysinfo = virSysinfoRead();

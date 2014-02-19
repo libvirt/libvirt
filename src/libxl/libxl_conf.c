@@ -97,6 +97,7 @@ libxlDriverConfigDispose(void *obj)
     VIR_FREE(cfg->stateDir);
     VIR_FREE(cfg->libDir);
     VIR_FREE(cfg->saveDir);
+    VIR_FREE(cfg->autoDumpDir);
 }
 
 static int
@@ -1077,6 +1078,8 @@ libxlDriverConfigNew(void)
     if (VIR_STRDUP(cfg->libDir, LIBXL_LIB_DIR) < 0)
         goto error;
     if (VIR_STRDUP(cfg->saveDir, LIBXL_SAVE_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->autoDumpDir, LIBXL_DUMP_DIR) < 0)
         goto error;
 
     if (virAsprintf(&log_file, "%s/libxl-driver.log", cfg->logDir) < 0)

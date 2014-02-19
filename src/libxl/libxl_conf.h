@@ -48,6 +48,7 @@
 # define LIBXL_LOG_DIR LOCALSTATEDIR "/log/libvirt/libxl"
 # define LIBXL_LIB_DIR LOCALSTATEDIR "/lib/libvirt/libxl"
 # define LIBXL_SAVE_DIR LIBXL_LIB_DIR "/save"
+# define LIBXL_DUMP_DIR LIBXL_LIB_DIR "/dump"
 # define LIBXL_BOOTLOADER_PATH BINDIR "/pygrub"
 
 
@@ -82,6 +83,7 @@ struct _libxlDriverConfig {
     char *stateDir;
     char *libDir;
     char *saveDir;
+    char *autoDumpDir;
 };
 
 
