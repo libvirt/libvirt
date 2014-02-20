@@ -308,16 +308,15 @@ xenUnifiedProbe(void)
 }
 
 #ifdef WITH_LIBXL
-static int
+static bool
 xenUnifiedXendProbe(void)
 {
     virCommandPtr cmd;
-    int status;
-    int ret = 0;
+    bool ret = false;
 
     cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-    if (virCommandRun(cmd, &status) == 0 && status == 0)
-        ret = 1;
+    if (virCommandRun(cmd, NULL) == 0)
+        ret = true;
     virCommandFree(cmd);
 
     return ret;

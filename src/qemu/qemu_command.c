@@ -232,7 +232,6 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
                                             unsigned int flags)
 {
     virCommandPtr cmd;
-    int status;
     int pair[2] = { -1, -1 };
 
     if ((flags & ~VIR_NETDEV_TAP_CREATE_VNET_HDR) != VIR_NETDEV_TAP_CREATE_IFUP)
@@ -269,7 +268,7 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     }
 
     if (virNetDevTapGetName(*tapfd, ifname) < 0 ||
-        virCommandWait(cmd, &status) < 0) {
+        virCommandWait(cmd, NULL) < 0) {
         VIR_FORCE_CLOSE(*tapfd);
         *tapfd = -1;
     }

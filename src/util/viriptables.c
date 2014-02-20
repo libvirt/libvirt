@@ -1,7 +1,7 @@
 /*
  * viriptables.c: helper APIs for managing iptables
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,6 @@ static int
 virIpTablesOnceInit(void)
 {
     virCommandPtr cmd;
-    int status;
 
 #if HAVE_FIREWALLD
     firewall_cmd_path = virFindFileInPath("firewall-cmd");
@@ -71,7 +70,7 @@ virIpTablesOnceInit(void)
         cmd = virCommandNew(firewall_cmd_path);
 
         virCommandAddArgList(cmd, "--state", NULL);
-        if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        if (virCommandRun(cmd, NULL) < 0) {
             VIR_INFO("firewall-cmd found but disabled for iptables");
             VIR_FREE(firewall_cmd_path);
             firewall_cmd_path = NULL;
@@ -88,7 +87,7 @@ virIpTablesOnceInit(void)
 
     cmd = virCommandNew(IPTABLES_PATH);
     virCommandAddArgList(cmd, "-w", "-L", "-n", NULL);
-    if (virCommandRun(cmd, &status) < 0 || status != 0) {
+    if (virCommandRun(cmd, NULL) < 0) {
         VIR_INFO("xtables locking not supported by your iptables");
     } else {
         VIR_INFO("using xtables locking for iptables");

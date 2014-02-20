@@ -141,6 +141,12 @@ static int test1(const void *unused ATTRIBUTE_UNUSED)
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
+    if (status != EXIT_ENOENT)
+        goto cleanup;
+
+    virCommandRawStatus(cmd);
+    if (virCommandRun(cmd, &status) < 0)
+        goto cleanup;
     if (!WIFEXITED(status) || WEXITSTATUS(status) != EXIT_ENOENT)
         goto cleanup;
     ret = 0;
@@ -914,6 +920,17 @@ test22(const void *unused ATTRIBUTE_UNUSED)
         printf("Cannot run child %s\n", err->message);
         goto cleanup;
     }
+    if (status != 3) {
+        printf("Unexpected status %d\n", status);
+        goto cleanup;
+    }
+
+    virCommandRawStatus(cmd);
+    if (virCommandRun(cmd, &status) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 3) {
         printf("Unexpected status %d\n", status);
         goto cleanup;
@@ -922,6 +939,12 @@ test22(const void *unused ATTRIBUTE_UNUSED)
     virCommandFree(cmd);
     cmd = virCommandNewArgList("/bin/sh", "-c", "kill -9 $$", NULL);
 
+    if (virCommandRun(cmd, &status) == 0) {
+        printf("Death by signal not detected, status %d\n", status);
+        goto cleanup;
+    }
+
+    virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0) {
         virErrorPtr err = virGetLastError();
         printf("Cannot run child %s\n", err->message);

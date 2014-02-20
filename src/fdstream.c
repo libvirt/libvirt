@@ -1,7 +1,7 @@
 /*
  * fdstream.c: generic streams impl for file descriptors
  *
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2012, 2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -302,6 +302,7 @@ virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
         else
             buf[len] = '\0';
 
+        virCommandRawStatus(fdst->cmd);
         if (virCommandWait(fdst->cmd, &status) < 0) {
             ret = -1;
         } else if (status != 0) {

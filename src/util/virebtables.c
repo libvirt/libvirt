@@ -1,7 +1,7 @@
 /*
  * virebtables.c: Helper APIs for managing ebtables
  *
- * Copyright (C) 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
  *
  * This library is free software; you can redistribute it and/or
@@ -66,10 +66,9 @@ virEbTablesOnceInit(void)
                  "firewalld support disabled for ebtables.");
     } else {
         virCommandPtr cmd = virCommandNew(firewall_cmd_path);
-        int status;
 
         virCommandAddArgList(cmd, "--state", NULL);
-        if (virCommandRun(cmd, &status) < 0 || status != 0) {
+        if (virCommandRun(cmd, NULL) < 0) {
             VIR_INFO("firewall-cmd found but disabled for ebtables");
             VIR_FREE(firewall_cmd_path);
             firewall_cmd_path = NULL;

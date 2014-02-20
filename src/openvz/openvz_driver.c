@@ -1,7 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -1710,7 +1710,7 @@ openvzDomainGetBarrierLimit(virDomainPtr domain,
                             unsigned long long *barrier,
                             unsigned long long *limit)
 {
-    int status, ret = -1;
+    int ret = -1;
     char *endp, *output = NULL;
     const char *tmp;
     virCommandPtr cmd = virCommandNewArgList(VZLIST, "--no-header", NULL);
@@ -1718,12 +1718,8 @@ openvzDomainGetBarrierLimit(virDomainPtr domain,
     virCommandSetOutputBuffer(cmd, &output);
     virCommandAddArgFormat(cmd, "-o%s.b,%s.l", param, param);
     virCommandAddArg(cmd, domain->name);
-    if (virCommandRun(cmd, &status) < 0 || status != 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to get %s for %s: %d"), param, domain->name,
-                       status);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     tmp = output;
     virSkipSpaces(&tmp);
@@ -1754,7 +1750,7 @@ openvzDomainSetBarrierLimit(virDomainPtr domain,
                             unsigned long long barrier,
                             unsigned long long limit)
 {
-    int status, ret = -1;
+    int ret = -1;
     virCommandPtr cmd = virCommandNewArgList(VZCTL, "--quiet", "set", NULL);
 
     /* LONG_MAX indicates unlimited so reject larger values */
@@ -1769,12 +1765,8 @@ openvzDomainSetBarrierLimit(virDomainPtr domain,
     virCommandAddArgFormat(cmd, "--%s", param);
     virCommandAddArgFormat(cmd, "%llu:%llu", barrier, limit);
     virCommandAddArg(cmd, "--save");
-    if (virCommandRun(cmd, &status) < 0 || status != 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to set %s for %s: %d"), param, domain->name,
-                       status);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 cleanup:

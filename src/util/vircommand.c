@@ -113,6 +113,7 @@ struct _virCommand {
     pid_t pid;
     char *pidfile;
     bool reap;
+    bool rawStatus;
 
     unsigned long long maxMemLock;
     unsigned int maxProcesses;
@@ -1120,6 +1121,25 @@ virCommandNonblockingFDs(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_NONBLOCK;
 }
 
+/**
+ * virCommandRawStatus:
+ * @cmd: the command to modify
+ *
+ * Mark this command as returning raw exit status via virCommandRun() or
+ * virCommandWait() (caller must use WIFEXITED() and friends, and can
+ * detect death from signals) instead of the default of only allowing
+ * normal exit status (caller must not use WEXITSTATUS(), and death from
+ * signals returns -1).
+ */
+void
+virCommandRawStatus(virCommandPtr cmd)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->rawStatus = true;
+}
+
 /* Add an environment variable to the cmd->env list.  'env' is a
  * string like "name=value".  If the named environment variable is
  * already set, then it is replaced in the list.
@@ -2045,7 +2065,11 @@ int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
  * Returns -1 on any error executing the
  * command. Returns 0 if the command executed,
  * with the exit status set.  If @exitstatus is NULL, then the
- * child must exit with status 0 for this to succeed.
+ * child must exit with status 0 for this to succeed.  By default,
+ * a non-NULL @exitstatus contains the normal exit status of the child
+ * (death from a signal is treated as execution error); but if
+ * virCommandRawStatus() was used, it instead contains the raw exit
+ * status that the caller must then decipher using WIFEXITED() and friends.
  */
 int
 virCommandRun(virCommandPtr cmd, int *exitstatus)
@@ -2335,7 +2359,11 @@ cleanup:
  * to complete. Return -1 on any error waiting for
  * completion. Returns 0 if the command
  * finished with the exit status set.  If @exitstatus is NULL, then the
- * child must exit with status 0 for this to succeed.
+ * child must exit with status 0 for this to succeed.  By default,
+ * a non-NULL @exitstatus contains the normal exit status of the child
+ * (death from a signal is treated as execution error); but if
+ * virCommandRawStatus() was used, it instead contains the raw exit
+ * status that the caller must then decipher using WIFEXITED() and friends.
  */
 int
 virCommandWait(virCommandPtr cmd, int *exitstatus)
@@ -2372,7 +2400,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
      * message is not as detailed as what we can provide.  So, we
      * guarantee that virProcessWait only fails due to failure to wait,
      * and repeat the exitstatus check code ourselves.  */
-    ret = virProcessWait(cmd->pid, exitstatus ? exitstatus : &status, true);
+    ret = virProcessWait(cmd->pid, &status, true);
     if (cmd->flags & VIR_EXEC_ASYNC_IO) {
         cmd->flags &= ~VIR_EXEC_ASYNC_IO;
         virThreadJoin(cmd->asyncioThread);
@@ -2390,7 +2418,9 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     if (ret == 0) {
         cmd->pid = -1;
         cmd->reap = false;
-        if (status) {
+        if (exitstatus && (cmd->rawStatus || WIFEXITED(status))) {
+            *exitstatus = cmd->rawStatus ? status : WEXITSTATUS(status);
+        } else if (status) {
             char *str = virCommandToString(cmd);
             char *st = virProcessTranslateStatus(status);
             bool haveErrMsg = cmd->errbuf && *cmd->errbuf && (*cmd->errbuf)[0];

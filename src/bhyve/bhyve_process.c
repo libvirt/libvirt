@@ -57,7 +57,7 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
     bhyveConnPtr privconn = conn->privateData;
-    int ret = -1, status;
+    int ret = -1;
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     BHYVE_LOG_DIR, vm->def->name) < 0)
@@ -114,14 +114,8 @@ virBhyveProcessStart(virConnectPtr conn,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
 
     VIR_DEBUG("Loading domain '%s'", vm->def->name);
-    if (virCommandRun(load_cmd, &status) < 0)
+    if (virCommandRun(load_cmd, NULL) < 0)
         goto cleanup;
-
-    if (status != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Guest failed to load: %d"), status);
-        goto cleanup;
-    }
 
     /* Now we can start the domain */
     VIR_DEBUG("Starting domain '%s'", vm->def->name);
@@ -165,7 +159,6 @@ virBhyveProcessStop(bhyveConnPtr driver,
 {
     size_t i;
     int ret = -1;
-    int status;
     virCommandPtr cmd = NULL;
 
     if (!virDomainObjIsActive(vm)) {
@@ -203,14 +196,8 @@ virBhyveProcessStop(bhyveConnPtr driver,
     if (!(cmd = virBhyveProcessBuildDestroyCmd(driver, vm)))
         goto cleanup;
 
-    if (virCommandRun(cmd, &status) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-
-    if (status != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Guest failed to stop: %d"), status);
-        goto cleanup;
-    }
 
     ret = 0;
 

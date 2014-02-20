@@ -145,15 +145,13 @@ static int
 virConnectAuthGainPolkit(const char *privilege)
 {
     virCommandPtr cmd;
-    int status;
     int ret = -1;
 
     if (geteuid() == 0)
         return 0;
 
     cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);
-    if (virCommandRun(cmd, &status) < 0 ||
-        status > 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     ret = 0;

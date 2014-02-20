@@ -430,7 +430,7 @@
   if (string)
       VIR_DEBUG("about to run %s", string);
   VIR_FREE(string);
-  if (virCommandRun(cmd) &lt; 0)
+  if (virCommandRun(cmd, NULL) &lt; 0)
       return -1;
 </pre>
 
@@ -458,15 +458,24 @@
       non-zero exit status can represent a success condition,
       it is possible to request the exit status and perform
       that check manually instead of letting <code>virCommandRun</code>
-      raise the error
+      raise the error.  By default, the captured status is only
+      for a normal exit (death from a signal is treated as an error),
+      but a caller can use <code>virCommandRawStatus</code> to get
+      encoded status that includes any terminating signals.
     </p>
 
 <pre>
   int status;
   if (virCommandRun(cmd, &amp;status) &lt; 0)
-     return -1;
+      return -1;
+  if (status == 1) {
+    ...do stuff...
+  }
 
-  if (WEXITSTATUS(status) ...) {
+  virCommandRawStatus(cmd2);
+  if (virCommandRun(cmd2, &amp;status) &lt; 0)
+      return -1;
+  if (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) == 1) {
     ...do stuff...
   }
 </pre>

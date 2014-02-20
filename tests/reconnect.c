@@ -15,7 +15,6 @@ mymain(void)
     bool ro = false;
     virConnectPtr conn;
     virDomainPtr dom;
-    int status;
     virCommandPtr cmd;
     struct utsname ut;
 
@@ -26,7 +25,7 @@ mymain(void)
     if (strstr(ut.release, "xen") == NULL)
         return EXIT_AM_SKIP;
     cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-    if (virCommandRun(cmd, &status) != 0 || status != 0) {
+    if (virCommandRun(cmd, NULL) < 0) {
         virCommandFree(cmd);
         return EXIT_AM_SKIP;
     }

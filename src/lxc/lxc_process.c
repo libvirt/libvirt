@@ -1224,12 +1224,19 @@ int virLXCProcessStart(virConnectPtr conn,
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof(ebuf)));
 
+    virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
 
     if (status != 0) {
-        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf, sizeof(ebuf)) <= 0)
-            snprintf(ebuf, sizeof(ebuf), "unexpected exit status %d", status);
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf,
+                                       sizeof(ebuf)) <= 0) {
+            if (WIFEXITED(status))
+                snprintf(ebuf, sizeof(ebuf), _("unexpected exit status %d"),
+                         WEXITSTATUS(status));
+            else
+                snprintf(ebuf, sizeof(ebuf), "%s", _("terminated abnormally"));
+        }
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("guest failed to start: %s"), ebuf);
         goto cleanup;

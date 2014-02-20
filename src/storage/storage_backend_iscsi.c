@@ -1,7 +1,7 @@
 /*
  * storage_backend_iscsi.c: storage backend for iSCSI handling
  *
- * Copyright (C) 2007-2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2014 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -111,10 +111,6 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
 
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode", "session", NULL);
 
-    /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
-     * returned an exit status of > 0, even if they succeeded.  We will just
-     * rely on whether session got filled in properly.
-     */
     if (virStorageBackendRunProgRegex(pool,
                                       cmd,
                                       1,
@@ -681,6 +677,7 @@ virStorageBackendISCSINodeUpdate(const char *portal,
                                 "--value", value,
                                 NULL);
 
+    /* Ignore non-zero status.  */
     if (virCommandRun(cmd, &status) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to update '%s' of node mode for target '%s'"),
