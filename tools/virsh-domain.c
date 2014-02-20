@@ -8206,7 +8206,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
             execv(cmdargv[0], cmdargv);
             _exit(255);
         } else {
-            if (virProcessWait(pid, NULL) < 0)
+            if (virProcessWait(pid, NULL, false) < 0)
                 _exit(255);
         }
         _exit(0);
@@ -8214,7 +8214,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
         VIR_FREE(fdlist);
-        if (virProcessWait(pid, NULL) < 0)
+        if (virProcessWait(pid, NULL, false) < 0)
             goto cleanup;
     }
 

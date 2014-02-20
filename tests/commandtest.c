@@ -958,13 +958,13 @@ test23(const void *unused ATTRIBUTE_UNUSED)
             _exit(EXIT_FAILURE);
         if (pid == 0)
             _exit(42);
-        if (virProcessWait(pid, &status) < 0)
+        if (virProcessWait(pid, &status, true) < 0)
             _exit(EXIT_FAILURE);
         virProcessExitWithStatus(status);
         _exit(EXIT_FAILURE);
     }
 
-    if (virProcessWait(pid, &status) < 0)
+    if (virProcessWait(pid, &status, true) < 0)
         goto cleanup;
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 42) {
         printf("Unexpected status %d\n", status);
@@ -982,13 +982,13 @@ test23(const void *unused ATTRIBUTE_UNUSED)
             raise(SIGKILL);
             _exit(EXIT_FAILURE);
         }
-        if (virProcessWait(pid, &status) < 0)
+        if (virProcessWait(pid, &status, true) < 0)
             _exit(EXIT_FAILURE);
         virProcessExitWithStatus(status);
         _exit(EXIT_FAILURE);
     }
 
-    if (virProcessWait(pid, &status) < 0)
+    if (virProcessWait(pid, &status, true) < 0)
         goto cleanup;
     if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL) {
         printf("Unexpected status %d\n", status);

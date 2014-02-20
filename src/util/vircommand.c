@@ -2372,7 +2372,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
      * message is not as detailed as what we can provide.  So, we
      * guarantee that virProcessWait only fails due to failure to wait,
      * and repeat the exitstatus check code ourselves.  */
-    ret = virProcessWait(cmd->pid, exitstatus ? exitstatus : &status);
+    ret = virProcessWait(cmd->pid, exitstatus ? exitstatus : &status, true);
     if (cmd->flags & VIR_EXEC_ASYNC_IO) {
         cmd->flags &= ~VIR_EXEC_ASYNC_IO;
         virThreadJoin(cmd->asyncioThread);

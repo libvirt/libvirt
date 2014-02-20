@@ -36,7 +36,7 @@ virProcessAbort(pid_t pid);
 void virProcessExitWithStatus(int status) ATTRIBUTE_NORETURN;
 
 int
-virProcessWait(pid_t pid, int *exitstatus)
+virProcessWait(pid_t pid, int *exitstatus, bool raw)
     ATTRIBUTE_RETURN_CHECK;
 
 int virProcessKill(pid_t pid, int sig);

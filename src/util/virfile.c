@@ -1,7 +1,7 @@
 /*
  * virfile.c: safer file handling
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Stefan Berger
  * Copyright (C) 2010 Eric Blake
@@ -1739,19 +1739,13 @@ virFileAccessibleAs(const char *path, int mode,
 
     if (pid) { /* parent */
         VIR_FREE(groups);
-        if (virProcessWait(pid, &status) < 0) {
-            /* virProcessWait() already
-             * reported error */
-            return -1;
-        }
-
-        if (!WIFEXITED(status)) {
-            errno = EINTR;
+        if (virProcessWait(pid, &status, false) < 0) {
+            /* virProcessWait() already reported error */
             return -1;
         }
 
         if (status) {
-            errno = WEXITSTATUS(status);
+            errno = status;
             return -1;
         }
 

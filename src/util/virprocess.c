@@ -155,15 +155,21 @@ virProcessAbort(pid_t pid)
  * virProcessWait:
  * @pid: child to wait on
  * @exitstatus: optional status collection
+ * @raw: whether to pass non-normal status back to caller
  *
- * Wait for a child process to complete.
- * Return -1 on any error waiting for
- * completion. Returns 0 if the command
- * finished with the exit status set.  If @exitstatus is NULL, then the
- * child must exit with status 0 for this to succeed.
+ * Wait for a child process to complete.  If @exitstatus is NULL, then the
+ * child must exit normally with status 0.  Otherwise, if @raw is false,
+ * the child must exit normally, and @exitstatus will contain the final
+ * exit status (no need for the caller to use WEXITSTATUS()).  If @raw is
+ * true, then the result of wait() is returned in @exitstatus, and the
+ * caller must use WIFEXITED() and friends to decipher the child's status.
+ *
+ * Returns 0 on a successful wait.  Returns -1 on any error waiting for
+ * completion, or if the command completed with a status that cannot be
+ * reflected via the choice of @exitstatus and @raw.
  */
 int
-virProcessWait(pid_t pid, int *exitstatus)
+virProcessWait(pid_t pid, int *exitstatus, bool raw)
 {
     int ret;
     int status;
@@ -185,19 +191,27 @@ virProcessWait(pid_t pid, int *exitstatus)
     }
 
     if (exitstatus == NULL) {
-        if (status != 0) {
-            char *st = virProcessTranslateStatus(status);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Child process (%lld) unexpected %s"),
-                           (long long) pid, NULLSTR(st));
-            VIR_FREE(st);
-            return -1;
-        }
-    } else {
+        if (status != 0)
+            goto error;
+    } else if (raw) {
         *exitstatus = status;
+    } else if (WIFEXITED(status)) {
+        *exitstatus = WEXITSTATUS(status);
+    } else {
+        goto error;
     }
 
     return 0;
+
+error:
+    {
+        char *st = virProcessTranslateStatus(status);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Child process (%lld) unexpected %s"),
+                       (long long) pid, NULLSTR(st));
+        VIR_FREE(st);
+    }
+    return -1;
 }
 
 
@@ -965,7 +979,7 @@ virProcessRunInMountNamespace(pid_t pid,
 
         VIR_FORCE_CLOSE(errfd[1]);
         ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
-        ret = virProcessWait(child, &status);
+        ret = virProcessWait(child, &status, false);
         if (!ret)
             ret = status == EXIT_CANCELED ? -1 : status;
         VIR_FREE(buf);

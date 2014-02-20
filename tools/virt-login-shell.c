@@ -369,9 +369,9 @@ main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
         }
-        return virProcessWait(ccpid, &status2);
+        return virProcessWait(ccpid, &status2, true);
     }
-    ret = virProcessWait(cpid, &status);
+    ret = virProcessWait(cpid, &status, true);
 
 cleanup:
     virConfFree(conf);
