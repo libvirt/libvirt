@@ -1,7 +1,7 @@
 /*
  * virprocess.c: interaction with processes
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #if HAVE_SETRLIMIT
 # include <sys/time.h>
@@ -983,3 +984,41 @@ virProcessRunInMountNamespace(pid_t pid ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif
+
+
+/**
+ * virProcessExitWithStatus:
+ * @status: raw status to be reproduced when this process dies
+ *
+ * Given a raw status obtained by waitpid() or similar, attempt to
+ * make this process exit in the same manner.  If the child died by
+ * signal, reset that signal handler to default and raise the same
+ * signal; if that doesn't kill this process, then exit with 128 +
+ * signal number.  If @status can't be deciphered, use
+ * EXIT_CANNOT_INVOKE.
+ *
+ * Never returns.
+ */
+void
+virProcessExitWithStatus(int status)
+{
+    int value = EXIT_CANNOT_INVOKE;
+
+    if (WIFEXITED(status)) {
+        value = WEXITSTATUS(status);
+    } else if (WIFSIGNALED(status)) {
+        struct sigaction act;
+        sigset_t sigs;
+
+        if (sigemptyset(&sigs) == 0 &&
+            sigaddset(&sigs, WTERMSIG(status)) == 0)
+            sigprocmask(SIG_UNBLOCK, &sigs, NULL);
+        memset(&act, 0, sizeof(act));
+        act.sa_handler = SIG_DFL;
+        sigfillset(&act.sa_mask);
+        sigaction(WTERMSIG(status), &act, NULL);
+        raise(WTERMSIG(status));
+        value = 128 + WTERMSIG(status);
+    }
+    exit(value);
+}

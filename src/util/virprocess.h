@@ -1,7 +1,7 @@
 /*
  * virprocess.h: interaction with processes
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,8 @@ virProcessTranslateStatus(int status);
 
 void
 virProcessAbort(pid_t pid);
+
+void virProcessExitWithStatus(int status) ATTRIBUTE_NORETURN;
 
 int
 virProcessWait(pid_t pid, int *exitstatus)

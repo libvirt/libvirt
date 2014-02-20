@@ -38,6 +38,7 @@
 #include "virerror.h"
 #include "virthread.h"
 #include "virstring.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -937,6 +938,68 @@ cleanup:
     return ret;
 }
 
+
+static int
+test23(const void *unused ATTRIBUTE_UNUSED)
+{
+    /* Not strictly a virCommand test, but this is the easiest place
+     * to test this lower-level interface.  It takes a double fork to
+     * test virProcessExitWithStatus.  */
+    int ret = -1;
+    int status = -1;
+    pid_t pid;
+
+    if (virFork(&pid) < 0)
+        goto cleanup;
+    if (pid < 0)
+        goto cleanup;
+    if (pid == 0) {
+        if (virFork(&pid) < 0)
+            _exit(EXIT_FAILURE);
+        if (pid == 0)
+            _exit(42);
+        if (virProcessWait(pid, &status) < 0)
+            _exit(EXIT_FAILURE);
+        virProcessExitWithStatus(status);
+        _exit(EXIT_FAILURE);
+    }
+
+    if (virProcessWait(pid, &status) < 0)
+        goto cleanup;
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 42) {
+        printf("Unexpected status %d\n", status);
+        goto cleanup;
+    }
+
+    if (virFork(&pid) < 0)
+        goto cleanup;
+    if (pid < 0)
+        goto cleanup;
+    if (pid == 0) {
+        if (virFork(&pid) < 0)
+            _exit(EXIT_FAILURE);
+        if (pid == 0) {
+            raise(SIGKILL);
+            _exit(EXIT_FAILURE);
+        }
+        if (virProcessWait(pid, &status) < 0)
+            _exit(EXIT_FAILURE);
+        virProcessExitWithStatus(status);
+        _exit(EXIT_FAILURE);
+    }
+
+    if (virProcessWait(pid, &status) < 0)
+        goto cleanup;
+    if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL) {
+        printf("Unexpected status %d\n", status);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
 static void virCommandThreadWorker(void *opaque)
 {
     virCommandTestDataPtr test = opaque;
@@ -1085,6 +1148,7 @@ mymain(void)
     DO_TEST(test20);
     DO_TEST(test21);
     DO_TEST(test22);
+    DO_TEST(test23);
 
     virMutexLock(&test->lock);
     if (test->running) {
