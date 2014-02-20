@@ -106,7 +106,7 @@ static int virPortAllocatorBindToPort(bool *used,
     struct sockaddr_in6 addr6 = {
         .sin6_family = AF_INET6,
         .sin6_port = htons(port),
-        .sin6_addr = IN6ADDR_ANY_INIT,
+        .sin6_addr = in6addr_any
     };
     struct sockaddr_in addr4 = {
         .sin_family = AF_INET,
