@@ -143,7 +143,7 @@ test_programs = virshtest sockettest \
 	virlockspacetest \
 	virlogtest \
 	virstringtest \
-        virportallocatortest \
+	virportallocatortest \
 	sysinfotest \
 	virstoragetest \
 	virnetdevbandwidthtest \
