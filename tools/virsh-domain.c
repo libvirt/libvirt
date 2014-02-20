@@ -3427,12 +3427,11 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
         vshError(ctl, "%s", _("Domain is already active"));
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
 
     if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
-        return false;
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
