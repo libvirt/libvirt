@@ -251,6 +251,50 @@ error:
 }
 
 /*
+ * Core dump domain to default dump path.
+ *
+ * virDomainObjPtr must be locked on invocation
+ */
+static int
+libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
+                        virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    time_t curtime = time(NULL);
+    char timestr[100];
+    struct tm time_info;
+    char *dumpfile = NULL;
+    int ret = -1;
+
+    localtime_r(&curtime, &time_info);
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+
+    if (virAsprintf(&dumpfile, "%s/%s-%s",
+                    cfg->autoDumpDir,
+                    vm->def->name,
+                    timestr) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    /* Unlock virDomainObj while dumping core */
+    virObjectUnlock(vm);
+    libxl_domain_core_dump(priv->ctx, vm->def->id, dumpfile, NULL);
+    virObjectLock(vm);
+
+    ignore_value(libxlDomainObjEndJob(driver, vm));
+    ret = 0;
+
+cleanup:
+    VIR_FREE(dumpfile);
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+/*
  * Cleanup function for domain that has reached shutoff state.
  *
  * virDomainObjPtr should be locked on invocation
@@ -399,10 +443,14 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME:
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
-        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
-        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
         case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
             goto cleanup;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+            libxlDomainAutoCoreDump(driver, vm);
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+            libxlDomainAutoCoreDump(driver, vm);
+            goto restart;
         }
     } else if (xl_reason == LIBXL_SHUTDOWN_REASON_REBOOT) {
         dom_event = virDomainEventLifecycleNewFromObj(vm,
