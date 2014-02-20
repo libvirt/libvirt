@@ -5410,13 +5410,16 @@ lxcDomainMemoryStats(virDomainPtr dom,
     if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virCgroupGetMemSwapUsage(priv->cgroup, &swap_usage))
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not active"));
+        goto cleanup;
+    }
+
+    if (virCgroupGetMemSwapUsage(priv->cgroup, &swap_usage) < 0)
         goto cleanup;
 
-    if (!virCgroupGetMemoryUsage(priv->cgroup, &mem_usage))
-        goto cleanup;
-
-    if (!virDomainObjIsActive(vm))
+    if (virCgroupGetMemoryUsage(priv->cgroup, &mem_usage) < 0)
         goto cleanup;
 
     ret = 0;
