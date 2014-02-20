@@ -15543,103 +15543,142 @@ virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
                       unsigned int flags)
 {
-    const char *type = virDomainNetTypeToString(def->type);
+    /* publicActual is true if we should report the current state in
+     * def->data.network.actual *instead of* the config (*not* in
+     * addition to)
+     */
+    unsigned int actualType = virDomainNetGetActualType(def);
+    bool publicActual
+       = (def->type == VIR_DOMAIN_NET_TYPE_NETWORK && def->data.network.actual &&
+          !(flags & (VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET)));
+    const char *typeStr;
+    virDomainHostdevDefPtr hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
 
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected net type %d"), def->type);
-        return -1;
+
+    if (publicActual) {
+        if (!(typeStr = virDomainNetTypeToString(actualType))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected actual net type %d"), actualType);
+            return -1;
+        }
+        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+            hostdef = virDomainNetGetActualHostdev(def);
+    } else {
+        if (!(typeStr = virDomainNetTypeToString(def->type))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected net type %d"), def->type);
+            return -1;
+        }
+        if (def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+            hostdef = &def->data.hostdev.def;
     }
 
-    virBufferAsprintf(buf, "    <interface type='%s'", type);
-    if (def->type == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        def->data.hostdev.def.managed) {
+    virBufferAsprintf(buf, "    <interface type='%s'", typeStr);
+    if (hostdef && hostdef->managed)
         virBufferAddLit(buf, " managed='yes'");
-    }
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 6);
     virBufferAsprintf(buf, "<mac address='%s'/>\n",
                       virMacAddrFormat(&def->mac, macstr));
 
-    switch (def->type) {
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        virBufferEscapeString(buf, "<source network='%s'",
-                              def->data.network.name);
-        virBufferEscapeString(buf, " portgroup='%s'",
-                              def->data.network.portgroup);
-        virBufferAddLit(buf, "/>\n");
-
-        /* ONLY for internal status storage - format the ActualNetDef
-         * as a subelement of <interface> so that no persistent config
-         * data is overwritten.
+    if (publicActual) {
+        /* when there is a virDomainActualNetDef, and we haven't been
+         * asked to 1) report the domain's inactive XML, or 2) give
+         * the internal version of the ActualNetDef separately in an
+         * <actual> subelement, we can just put the ActualDef data in
+         * the standard place...  (this is for public reporting of
+         * interface status)
          */
-        if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
-            (virDomainActualNetDefFormat(buf, def, flags) < 0))
+        if (virDomainActualNetDefContentsFormat(buf, def, typeStr, false, flags) < 0)
             return -1;
-        break;
+    } else {
+        /* ...but if we've asked for the inactive XML (rather than
+         * status), or to report the ActualDef as a separate <actual>
+         * subelement (this is how we privately store interface
+         * status), or there simply *isn't* any ActualNetDef, then
+         * format the NetDef's data here, and optionally format the
+         * ActualNetDef as an <actual> subelement of this element.
+         */
+        switch (def->type) {
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+            virBufferEscapeString(buf, "<source network='%s'",
+                                  def->data.network.name);
+            virBufferEscapeString(buf, " portgroup='%s'",
+                                  def->data.network.portgroup);
+            virBufferAddLit(buf, "/>\n");
 
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        virBufferEscapeString(buf, "<source dev='%s'/>\n",
-                              def->data.ethernet.dev);
-        if (def->data.ethernet.ipaddr)
-            virBufferAsprintf(buf, "<ip address='%s'/>\n",
-                              def->data.ethernet.ipaddr);
-        break;
+            /* ONLY for internal status storage - format the ActualNetDef
+             * as a subelement of <interface> so that no persistent config
+             * data is overwritten.
+             */
+            if ((flags & VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET) &&
+                (virDomainActualNetDefFormat(buf, def, flags) < 0))
+                return -1;
+            break;
 
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        virBufferEscapeString(buf, "<source bridge='%s'/>\n",
-                              def->data.bridge.brname);
-        if (def->data.bridge.ipaddr) {
-            virBufferAsprintf(buf, "<ip address='%s'/>\n",
-                              def->data.bridge.ipaddr);
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            virBufferEscapeString(buf, "<source dev='%s'/>\n",
+                                  def->data.ethernet.dev);
+            if (def->data.ethernet.ipaddr)
+                virBufferAsprintf(buf, "<ip address='%s'/>\n",
+                                  def->data.ethernet.ipaddr);
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+            virBufferEscapeString(buf, "<source bridge='%s'/>\n",
+                                  def->data.bridge.brname);
+            if (def->data.bridge.ipaddr) {
+                virBufferAsprintf(buf, "<ip address='%s'/>\n",
+                                  def->data.bridge.ipaddr);
+            }
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+            if (def->data.socket.address) {
+                virBufferAsprintf(buf, "<source address='%s' port='%d'/>\n",
+                                  def->data.socket.address, def->data.socket.port);
+            } else {
+                virBufferAsprintf(buf, "<source port='%d'/>\n",
+                                  def->data.socket.port);
+            }
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+            virBufferEscapeString(buf, "<source name='%s'/>\n",
+                                  def->data.internal.name);
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            virBufferEscapeString(buf, "<source dev='%s'",
+                                  def->data.direct.linkdev);
+            virBufferAsprintf(buf, " mode='%s'",
+                              virNetDevMacVLanModeTypeToString(def->data.direct.mode));
+            virBufferAddLit(buf, "/>\n");
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+            if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
+                                                flags, true) < 0) {
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
         }
-        break;
 
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-        if (def->data.socket.address) {
-            virBufferAsprintf(buf, "<source address='%s' port='%d'/>\n",
-                              def->data.socket.address, def->data.socket.port);
-        } else {
-            virBufferAsprintf(buf, "<source port='%d'/>\n",
-                              def->data.socket.port);
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        virBufferEscapeString(buf, "<source name='%s'/>\n",
-                              def->data.internal.name);
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-        virBufferEscapeString(buf, "<source dev='%s'",
-                              def->data.direct.linkdev);
-        virBufferAsprintf(buf, " mode='%s'",
-                          virNetDevMacVLanModeTypeToString(def->data.direct.mode));
-        virBufferAddLit(buf, "/>\n");
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
-                                            flags, true) < 0) {
+        if (virNetDevVlanFormat(&def->vlan, buf) < 0)
             return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_USER:
-    case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
+        if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
+            return -1;
+        if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
+            return -1;
     }
-
-    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
-        return -1;
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-        return -1;
-    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
-        return -1;
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
