@@ -141,6 +141,7 @@ test_programs = virshtest sockettest \
 	virendiantest \
 	virfiletest \
 	viridentitytest \
+	viriscsitest \
 	virkeycodetest \
 	virlockspacetest \
 	virlogtest \
@@ -643,6 +644,7 @@ storagevolxml2argvtest_SOURCES = \
     testutils.c testutils.h
 storagevolxml2argvtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la $(LDADDS)
+
 else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c
 endif ! WITH_STORAGE
@@ -786,6 +788,10 @@ if WITH_SELINUX
 viridentitytest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 endif WITH_SELINUX
+
+viriscsitest_SOURCES = \
+	viriscsitest.c testutils.h testutils.c
+viriscsitest_LDADD = $(LDADDS)
 
 virkeycodetest_SOURCES = \
 	virkeycodetest.c testutils.h testutils.c
