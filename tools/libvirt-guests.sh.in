@@ -37,6 +37,8 @@ SHUTDOWN_TIMEOUT=300
 PARALLEL_SHUTDOWN=0
 START_DELAY=0
 BYPASS_CACHE=0
+CONNECT_RETRIES=10
+RETRIES_SLEEP=1
 
 test -f "$sysconfdir"/sysconfig/libvirt-guests &&
     . "$sysconfdir"/sysconfig/libvirt-guests
@@ -87,12 +89,17 @@ test_connect()
 {
     uri=$1
 
-    run_virsh "$uri" connect 2>/dev/null
-    if [ $? -ne 0 ]; then
-        eval_gettext "Can't connect to \$uri. Skipping."
-        echo
-        return 1
-    fi
+    for ((i = 0; i < ${CONNECT_RETRIES}; i++)); do
+        run_virsh "$uri" connect 2>/dev/null
+        if [ $? -eq 0 ]; then
+            return 0;
+        fi
+        sleep ${RETRIES_SLEEP}
+        eval_gettext "Unable to connect to libvirt currently. Retrying .. \$i"
+    done
+    eval_gettext "Can't connect to \$uri. Skipping."
+    echo
+    return 1
 }
 
 # list_guests URI PERSISTENT
