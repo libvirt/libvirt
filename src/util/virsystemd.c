@@ -21,6 +21,10 @@
 
 #include <config.h>
 
+#ifdef WITH_SYSTEMD_DAEMON
+# include <systemd/sd-daemon.h>
+#endif
+
 #include "virsystemd.h"
 #include "virdbus.h"
 #include "virstring.h"
@@ -303,4 +307,12 @@ int virSystemdTerminateMachine(const char *name,
 cleanup:
     VIR_FREE(machinename);
     return ret;
+}
+
+void
+virSystemdNotifyStartup(void)
+{
+#ifdef WITH_SYSTEMD_DAEMON
+    sd_notify(0, "READY=1");
+#endif
 }

@@ -46,4 +46,6 @@ int virSystemdTerminateMachine(const char *name,
                                const char *drivername,
                                bool privileged);
 
+void virSystemdNotifyStartup(void);
+
 #endif /* __VIR_SYSTEMD_H__ */
