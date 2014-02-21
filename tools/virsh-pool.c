@@ -961,9 +961,8 @@ static bool
 cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStoragePoolInfo info;
-    int ret;
     size_t i;
-    bool functionReturn = false;
+    bool ret = false;
     size_t stringLength = 0, nameStrLength = 0;
     size_t autostartStrLength = 0, persistStrLength = 0;
     size_t stateStrLength = 0, capStrLength = 0;
@@ -1121,29 +1120,20 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     double val;
                     const char *unit;
 
-                    /* Create the capacity output string */
                     val = vshPrettyCapacity(info.capacity, &unit);
-                    ret = virAsprintf(&poolInfoTexts[i].capacity,
-                                      "%.2lf %s", val, unit);
-                    if (ret < 0)
-                        /* An error occurred creating the string, return */
-                        goto asprintf_failure;
+                    if (virAsprintf(&poolInfoTexts[i].capacity,
+                                    "%.2lf %s", val, unit) < 0)
+                        goto cleanup;
 
-                    /* Create the allocation output string */
                     val = vshPrettyCapacity(info.allocation, &unit);
-                    ret = virAsprintf(&poolInfoTexts[i].allocation,
-                                      "%.2lf %s", val, unit);
-                    if (ret < 0)
-                        /* An error occurred creating the string, return */
-                        goto asprintf_failure;
+                    if (virAsprintf(&poolInfoTexts[i].allocation,
+                                    "%.2lf %s", val, unit) < 0)
+                        goto cleanup;
 
-                    /* Create the available space output string */
                     val = vshPrettyCapacity(info.available, &unit);
-                    ret = virAsprintf(&poolInfoTexts[i].available,
-                                      "%.2lf %s", val, unit);
-                    if (ret < 0)
-                        /* An error occurred creating the string, return */
-                        goto asprintf_failure;
+                    if (virAsprintf(&poolInfoTexts[i].available,
+                                    "%.2lf %s", val, unit) < 0)
+                        goto cleanup;
                 } else {
                     /* Capacity related information isn't available */
                     poolInfoTexts[i].capacity = vshStrdup(ctl, _("-"));
@@ -1213,7 +1203,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
 
         /* Cleanup and return */
-        functionReturn = true;
+        ret = true;
         goto cleanup;
     }
 
@@ -1273,19 +1263,16 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     /* Create the output template.  Each column is sized according to
      * the longest string.
      */
-    ret = virAsprintf(&outputStr,
-              " %%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
-              (unsigned long) nameStrLength,
-              (unsigned long) stateStrLength,
-              (unsigned long) autostartStrLength,
-              (unsigned long) persistStrLength,
-              (unsigned long) capStrLength,
-              (unsigned long) allocStrLength,
-              (unsigned long) availStrLength);
-    if (ret < 0) {
-        /* An error occurred creating the string, return */
-        goto asprintf_failure;
-    }
+    if (virAsprintf(&outputStr,
+                    " %%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
+                    (unsigned long) nameStrLength,
+                    (unsigned long) stateStrLength,
+                    (unsigned long) autostartStrLength,
+                    (unsigned long) persistStrLength,
+                    (unsigned long) capStrLength,
+                    (unsigned long) allocStrLength,
+                    (unsigned long) availStrLength) < 0)
+        goto cleanup;
 
     /* Display the header */
     vshPrint(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
@@ -1310,21 +1297,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     /* Cleanup and return */
-    functionReturn = true;
-    goto cleanup;
-
-asprintf_failure:
-    /* Display an appropriate error message then cleanup and return */
-    switch (errno) {
-    case ENOMEM:
-        /* Couldn't allocate memory */
-        vshError(ctl, "%s", _("Out of memory"));
-        break;
-    default:
-        /* Some other error */
-        vshError(ctl, _("virAsprintf failed (errno %d)"), errno);
-    }
-    functionReturn = false;
+    ret = true;
 
 cleanup:
     VIR_FREE(outputStr);
@@ -1341,7 +1314,7 @@ cleanup:
     VIR_FREE(poolInfoTexts);
 
     vshStoragePoolListFree(list);
-    return functionReturn;
+    return ret;
 }
 
 /*
