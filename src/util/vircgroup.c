@@ -4261,6 +4261,17 @@ virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
+virCgroupGetDomainTotalCpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                virTypedParameterPtr params ATTRIBUTE_UNUSED,
+                                int nparams ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupSetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
                          const char *state ATTRIBUTE_UNUSED)
 {
