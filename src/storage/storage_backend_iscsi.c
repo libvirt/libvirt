@@ -102,7 +102,7 @@ virStorageBackendISCSISession(virStoragePoolObjPtr pool,
      * Pull out 2nd and 4th fields
      */
     const char *regexes[] = {
-        "^tcp:\\s+\\[(\\S+)\\]\\s+\\S+\\s+(\\S+)\\s*$"
+        "^tcp:\\s+\\[(\\S+)\\]\\s+\\S+\\s+(\\S+).*$"
     };
     int vars[] = {
         2,
