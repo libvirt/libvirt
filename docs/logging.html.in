@@ -173,6 +173,10 @@
       <dd>The line number of the file emitting the log record</dd>
       <dt><code>CODE_FUNC</code></dt>
       <dd>The name of the function emitting the log record</dd>
+      <dt><code>LIBVIRT_DOMAIN</code></dt>
+      <dd>The libvirt error domain (values from virErrorDomain enum), if LIBVIRT_SOURCE="error"</dd>
+      <dt><code>LIBVIRT_CODE</code></dt>
+      <dd>The libvirt error code (values from virErrorCode enum), if LIBVIRT_SOURCE="error"</dd>
     </dl>
 
     <h2>

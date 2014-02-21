@@ -649,6 +649,11 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     virErrorPtr to;
     char *str;
     int priority;
+    virLogMetadata meta[] = {
+        { .key = "LIBVIRT_DOMAIN", .s = NULL, .iv = domain },
+        { .key = "LIBVIRT_CODE", .s = NULL, .iv = code },
+        { .key = NULL },
+    };
 
     /*
      * All errors are recorded in thread local storage
@@ -703,10 +708,11 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     priority = virErrorLevelPriority(level);
     if (virErrorLogPriorityFilter)
         priority = virErrorLogPriorityFilter(to, priority);
+
     virLogMessage(virErrorLogPriorityFilter ? VIR_LOG_FROM_FILE : VIR_LOG_FROM_ERROR,
                   priority,
                   filename, linenr, funcname,
-                  NULL, "%s", str);
+                  meta, "%s", str);
 
     errno = save_errno;
 }
