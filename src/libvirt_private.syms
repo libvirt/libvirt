@@ -1955,6 +1955,7 @@ virSystemdCreateMachine;
 virSystemdMakeMachineName;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
+virSystemdNotifyStartup;
 virSystemdTerminateMachine;
 
 

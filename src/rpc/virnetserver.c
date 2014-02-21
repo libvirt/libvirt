@@ -38,6 +38,7 @@
 #include "virnetservermdns.h"
 #include "virdbus.h"
 #include "virstring.h"
+#include "virsystemd.h"
 
 #ifndef SA_SIGINFO
 # define SA_SIGINFO 0
@@ -1084,6 +1085,10 @@ void virNetServerRun(virNetServerPtr srv)
                        _("Failed to register shutdown timeout"));
         goto cleanup;
     }
+
+    /* We are accepting connections now. Notify systemd
+     * so it can start dependent services. */
+    virSystemdNotifyStartup();
 
     VIR_DEBUG("srv=%p quit=%d", srv, srv->quit);
     while (!srv->quit) {
