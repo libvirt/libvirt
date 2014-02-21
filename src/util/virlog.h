@@ -45,11 +45,11 @@ typedef enum {
 } virLogDestination;
 
 typedef enum {
-    VIR_LOG_FROM_FILE,
-    VIR_LOG_FROM_ERROR,
-    VIR_LOG_FROM_AUDIT,
-    VIR_LOG_FROM_TRACE,
-    VIR_LOG_FROM_LIBRARY,
+    VIR_LOG_FROM_FILE,    /* General debugging */
+    VIR_LOG_FROM_ERROR,   /* Errors reported */
+    VIR_LOG_FROM_AUDIT,   /* Audit operations */
+    VIR_LOG_FROM_TRACE,   /* DTrace probe pointers */
+    VIR_LOG_FROM_LIBRARY, /* 3rd party libraries */
 
     VIR_LOG_FROM_LAST,
 } virLogSource;
