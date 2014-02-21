@@ -1,7 +1,7 @@
 /*
  * virsh-volume.c: Commands to manage storage volume
  *
- * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -944,30 +944,20 @@ out:
 }
 
 
+VIR_ENUM_DECL(vshStorageVol)
+VIR_ENUM_IMPL(vshStorageVol,
+              VIR_STORAGE_VOL_LAST,
+              N_("file"),
+              N_("block"),
+              N_("dir"),
+              N_("network"),
+              N_("netdir"))
+
 static const char *
 vshVolumeTypeToString(int type)
 {
-    switch ((virStorageVolType) type) {
-    case VIR_STORAGE_VOL_FILE:
-        return N_("file");
-
-    case VIR_STORAGE_VOL_BLOCK:
-        return N_("block");
-
-    case VIR_STORAGE_VOL_DIR:
-        return N_("dir");
-
-    case VIR_STORAGE_VOL_NETWORK:
-        return N_("network");
-
-    case VIR_STORAGE_VOL_NETDIR:
-        return N_("netdir");
-
-    case VIR_STORAGE_VOL_LAST:
-        break;
-    }
-
-    return N_("unknown");
+    const char *str = vshStorageVolTypeToString(type);
+    return str ? _(str) : _("unknown");
 }
 
 
@@ -1014,7 +1004,7 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
         const char *unit;
 
         vshPrint(ctl, "%-15s %s\n", _("Type:"),
-                 _(vshVolumeTypeToString(info.type)));
+                 vshVolumeTypeToString(info.type));
 
         val = vshPrettyCapacity(info.capacity, &unit);
         vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
@@ -1390,7 +1380,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
                 /* Volume type */
                 volInfoTexts[i].type = vshStrdup(ctl,
-                                                 _(vshVolumeTypeToString(volumeInfo.type)));
+                                                 vshVolumeTypeToString(volumeInfo.type));
 
                 /* Create the capacity output string */
                 val = vshPrettyCapacity(volumeInfo.capacity, &unit);

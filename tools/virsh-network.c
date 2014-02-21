@@ -1134,27 +1134,19 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "net-event" command
  */
+VIR_ENUM_DECL(vshNetworkEvent)
+VIR_ENUM_IMPL(vshNetworkEvent,
+              VIR_NETWORK_EVENT_LAST,
+              N_("Defined"),
+              N_("Undefined"),
+              N_("Started"),
+              N_("Stopped"))
+
 static const char *
 vshNetworkEventToString(int event)
 {
-    const char *ret = _("unknown");
-    switch ((virNetworkEventLifecycleType) event) {
-    case VIR_NETWORK_EVENT_DEFINED:
-        ret = _("Defined");
-        break;
-    case VIR_NETWORK_EVENT_UNDEFINED:
-        ret = _("Undefined");
-        break;
-    case VIR_NETWORK_EVENT_STARTED:
-        ret = _("Started");
-        break;
-    case VIR_NETWORK_EVENT_STOPPED:
-        ret = _("Stopped");
-        break;
-    case VIR_NETWORK_EVENT_LAST:
-        break;
-    }
-    return ret;
+    const char *str = vshNetworkEventTypeToString(event);
+    return str ? _(str) : _("unknown");
 }
 
 struct vshNetEventData {
@@ -1164,8 +1156,8 @@ struct vshNetEventData {
 };
 typedef struct vshNetEventData vshNetEventData;
 
-VIR_ENUM_DECL(vshNetworkEvent)
-VIR_ENUM_IMPL(vshNetworkEvent,
+VIR_ENUM_DECL(vshNetworkEventId)
+VIR_ENUM_IMPL(vshNetworkEventId,
               VIR_NETWORK_EVENT_ID_LAST,
               "lifecycle")
 
@@ -1236,7 +1228,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         size_t i;
 
         for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++)
-            vshPrint(ctl, "%s\n", vshNetworkEventTypeToString(i));
+            vshPrint(ctl, "%s\n", vshNetworkEventIdTypeToString(i));
         return true;
     }
 
@@ -1246,7 +1238,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("either --list or event type is required"));
         return false;
     }
-    if ((event = vshNetworkEventTypeFromString(eventName) < 0)) {
+    if ((event = vshNetworkEventIdTypeFromString(eventName) < 0)) {
         vshError(ctl, _("unknown event type %s"), eventName);
         return false;
     }

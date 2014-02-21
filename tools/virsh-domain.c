@@ -111,20 +111,18 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     return dom;
 }
 
+VIR_ENUM_DECL(vshDomainVcpuState)
+VIR_ENUM_IMPL(vshDomainVcpuState,
+              VIR_VCPU_LAST,
+              N_("offline"),
+              N_("running"),
+              N_("blocked"))
+
 static const char *
 vshDomainVcpuStateToString(int state)
 {
-    switch ((virVcpuState) state) {
-    case VIR_VCPU_OFFLINE:
-        return N_("offline");
-    case VIR_VCPU_BLOCKED:
-        return N_("idle");
-    case VIR_VCPU_RUNNING:
-        return N_("running");
-    case VIR_VCPU_LAST:
-        break;
-    }
-    return N_("no state");
+    const char *str = vshDomainVcpuStateTypeToString(state);
+    return str ? _(str) : _("no state");
 }
 
 /*
@@ -1960,12 +1958,26 @@ static const vshCmdOptDef opts_block_job[] = {
     {.name = NULL}
 };
 
+VIR_ENUM_DECL(vshDomainBlockJob)
+VIR_ENUM_IMPL(vshDomainBlockJob,
+              VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
+              N_("Unknown job"),
+              N_("Block Pull"),
+              N_("Block Copy"),
+              N_("Block Commit"))
+
+static const char *
+vshDomainBlockJobToString(int type)
+{
+    const char *str = vshDomainBlockJobTypeToString(type);
+    return str ? _(str) : _("Unknown job");
+}
+
 static bool
 cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 {
     int mode;
     virDomainBlockJobInfo info;
-    const char *type;
     int ret;
     bool abortMode = (vshCommandOptBool(cmd, "abort") ||
                       vshCommandOptBool(cmd, "async") ||
@@ -1993,19 +2005,8 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     if (ret == 0 || mode != VSH_CMD_BLOCK_JOB_INFO)
         return true;
 
-    switch (info.type) {
-    case VIR_DOMAIN_BLOCK_JOB_TYPE_PULL:
-        type = _("Block Pull");
-        break;
-    case VIR_DOMAIN_BLOCK_JOB_TYPE_COPY:
-        type = _("Block Copy");
-        break;
-    default:
-        type = _("Unknown job");
-        break;
-    }
-
-    vshPrintJobProgress(type, info.end - info.cur, info.end);
+    vshPrintJobProgress(vshDomainBlockJobToString(info.type),
+                        info.end - info.cur, info.end);
     if (info.bandwidth != 0)
         vshPrint(ctl, _("    Bandwidth limit: %lu MiB/s\n"), info.bandwidth);
     return true;
@@ -5006,6 +5007,23 @@ static const vshCmdOptDef opts_domjobinfo[] = {
     {.name = NULL}
 };
 
+VIR_ENUM_DECL(vshDomainJob)
+VIR_ENUM_IMPL(vshDomainJob,
+              VIR_DOMAIN_JOB_LAST,
+              N_("None"),
+              N_("Bounded"),
+              N_("Unbounded"),
+              N_("Completed"),
+              N_("Failed"),
+              N_("Cancelled"))
+
+static const char *
+vshDomainJobToString(int type)
+{
+    const char *str = vshDomainJobTypeToString(type);
+    return str ? _(str) : _("unknown");
+}
+
 static bool
 cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
@@ -5068,26 +5086,18 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     if (rc < 0)
         goto cleanup;
 
-    vshPrint(ctl, "%-17s ", _("Job type:"));
-    switch (info.type) {
-    case VIR_DOMAIN_JOB_BOUNDED:
-        vshPrint(ctl, "%-12s\n", _("Bounded"));
-        break;
-
-    case VIR_DOMAIN_JOB_UNBOUNDED:
-        vshPrint(ctl, "%-12s\n", _("Unbounded"));
-        break;
-
-    case VIR_DOMAIN_JOB_NONE:
-    default:
-        vshPrint(ctl, "%-12s\n", _("None"));
+    vshPrint(ctl, "%-17s %-12s\n", _("Job type:"),
+             vshDomainJobToString(info.type));
+    if (info.type != VIR_DOMAIN_JOB_BOUNDED &&
+        info.type != VIR_DOMAIN_JOB_UNBOUNDED) {
         ret = true;
         goto cleanup;
     }
 
     vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
     if (info.type == VIR_DOMAIN_JOB_BOUNDED)
-        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"),
+                 info.timeRemaining);
 
     if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
         val = vshPrettyCapacity(info.dataProcessed, &unit);
@@ -5504,7 +5514,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
-                     _(vshDomainVcpuStateToString(cpuinfo[n].state)));
+                     vshDomainVcpuStateToString(cpuinfo[n].state));
             if (cpuinfo[n].cpuTime != 0) {
                 double cpuUsed = cpuinfo[n].cpuTime;
 
@@ -10301,194 +10311,127 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "event" command
  */
+VIR_ENUM_DECL(vshDomainEvent)
+VIR_ENUM_IMPL(vshDomainEvent,
+              VIR_DOMAIN_EVENT_LAST,
+              N_("Defined"),
+              N_("Undefined"),
+              N_("Started"),
+              N_("Suspended"),
+              N_("Resumed"),
+              N_("Stopped"),
+              N_("Shutdown"),
+              N_("PMSuspended"),
+              N_("Crashed"))
+
 static const char *
 vshDomainEventToString(int event)
 {
-    const char *ret = _("unknown");
-    switch ((virDomainEventType) event) {
-    case VIR_DOMAIN_EVENT_DEFINED:
-        ret = _("Defined");
-        break;
-    case VIR_DOMAIN_EVENT_UNDEFINED:
-        ret = _("Undefined");
-        break;
-    case VIR_DOMAIN_EVENT_STARTED:
-        ret = _("Started");
-        break;
-    case VIR_DOMAIN_EVENT_SUSPENDED:
-        ret = _("Suspended");
-        break;
-    case VIR_DOMAIN_EVENT_RESUMED:
-        ret = _("Resumed");
-        break;
-    case VIR_DOMAIN_EVENT_STOPPED:
-        ret = _("Stopped");
-        break;
-    case VIR_DOMAIN_EVENT_SHUTDOWN:
-        ret = _("Shutdown");
-        break;
-    case VIR_DOMAIN_EVENT_PMSUSPENDED:
-        ret = _("PMSuspended");
-        break;
-    case VIR_DOMAIN_EVENT_CRASHED:
-        ret = _("Crashed");
-        break;
-    case VIR_DOMAIN_EVENT_LAST:
-        break;
-    }
-    return ret;
+    const char *str = vshDomainEventTypeToString(event);
+    return str ? _(str) : _("unknown");
 }
+
+VIR_ENUM_DECL(vshDomainEventDefined)
+VIR_ENUM_IMPL(vshDomainEventDefined,
+              VIR_DOMAIN_EVENT_DEFINED_LAST,
+              N_("Added"),
+              N_("Updated"))
+
+VIR_ENUM_DECL(vshDomainEventUndefined)
+VIR_ENUM_IMPL(vshDomainEventUndefined,
+              VIR_DOMAIN_EVENT_UNDEFINED_LAST,
+              N_("Removed"))
+
+VIR_ENUM_DECL(vshDomainEventStarted)
+VIR_ENUM_IMPL(vshDomainEventStarted,
+              VIR_DOMAIN_EVENT_STARTED_LAST,
+              N_("Booted"),
+              N_("Migrated"),
+              N_("Restored"),
+              N_("Snapshot"),
+              N_("Event wakeup"))
+
+VIR_ENUM_DECL(vshDomainEventSuspended)
+VIR_ENUM_IMPL(vshDomainEventSuspended,
+              VIR_DOMAIN_EVENT_SUSPENDED_LAST,
+              N_("Paused"),
+              N_("Migrated"),
+              N_("I/O Error"),
+              N_("Watchdog"),
+              N_("Restored"),
+              N_("Snapshot"),
+              N_("API error"))
+
+VIR_ENUM_DECL(vshDomainEventResumed)
+VIR_ENUM_IMPL(vshDomainEventResumed,
+              VIR_DOMAIN_EVENT_RESUMED_LAST,
+              N_("Unpaused"),
+              N_("Migrated"),
+              N_("Snapshot"))
+
+VIR_ENUM_DECL(vshDomainEventStopped)
+VIR_ENUM_IMPL(vshDomainEventStopped,
+              VIR_DOMAIN_EVENT_STOPPED_LAST,
+              N_("Shutdown"),
+              N_("Destroyed"),
+              N_("Crashed"),
+              N_("Migrated"),
+              N_("Saved"),
+              N_("Failed"),
+              N_("Snapshot"))
+
+VIR_ENUM_DECL(vshDomainEventShutdown)
+VIR_ENUM_IMPL(vshDomainEventShutdown,
+              VIR_DOMAIN_EVENT_SHUTDOWN_LAST,
+              N_("Finished"))
+
+VIR_ENUM_DECL(vshDomainEventPMSuspended)
+VIR_ENUM_IMPL(vshDomainEventPMSuspended,
+              VIR_DOMAIN_EVENT_PMSUSPENDED_LAST,
+              N_("Memory"),
+              N_("Disk"))
+
+VIR_ENUM_DECL(vshDomainEventCrashed)
+VIR_ENUM_IMPL(vshDomainEventCrashed,
+              VIR_DOMAIN_EVENT_CRASHED_LAST,
+              N_("Panicked"))
 
 static const char *
 vshDomainEventDetailToString(int event, int detail)
 {
-    const char *ret = _("unknown");
+    const char *str;
     switch ((virDomainEventType) event) {
     case VIR_DOMAIN_EVENT_DEFINED:
-        switch ((virDomainEventDefinedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_DEFINED_ADDED:
-            ret = _("Added");
-            break;
-        case VIR_DOMAIN_EVENT_DEFINED_UPDATED:
-            ret = _("Updated");
-            break;
-        case VIR_DOMAIN_EVENT_DEFINED_LAST:
-            break;
-        }
+        str = vshDomainEventDefinedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_UNDEFINED:
-        switch ((virDomainEventUndefinedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_UNDEFINED_REMOVED:
-            ret = _("Removed");
-            break;
-        case VIR_DOMAIN_EVENT_UNDEFINED_LAST:
-            break;
-        }
+        str = vshDomainEventUndefinedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_STARTED:
-        switch ((virDomainEventStartedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_STARTED_BOOTED:
-            ret = _("Booted");
-            break;
-        case VIR_DOMAIN_EVENT_STARTED_MIGRATED:
-            ret = _("Migrated");
-            break;
-        case VIR_DOMAIN_EVENT_STARTED_RESTORED:
-            ret = _("Restored");
-            break;
-        case VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT:
-            ret = _("Snapshot");
-            break;
-        case VIR_DOMAIN_EVENT_STARTED_WAKEUP:
-            ret = _("Event wakeup");
-            break;
-        case VIR_DOMAIN_EVENT_STARTED_LAST:
-            break;
-        }
+        str = vshDomainEventStartedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_SUSPENDED:
-        switch ((virDomainEventSuspendedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_SUSPENDED_PAUSED:
-            ret = _("Paused");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED:
-            ret = _("Migrated");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_IOERROR:
-            ret = _("I/O Error");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG:
-            ret = _("Watchdog");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_RESTORED:
-            ret = _("Restored");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT:
-            ret = _("Snapshot");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR:
-            ret = _("API error");
-            break;
-        case VIR_DOMAIN_EVENT_SUSPENDED_LAST:
-            break;
-        }
+        str = vshDomainEventSuspendedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_RESUMED:
-        switch ((virDomainEventResumedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_RESUMED_UNPAUSED:
-            ret = _("Unpaused");
-            break;
-        case VIR_DOMAIN_EVENT_RESUMED_MIGRATED:
-            ret = _("Migrated");
-            break;
-        case VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT:
-            ret = _("Snapshot");
-            break;
-        case VIR_DOMAIN_EVENT_RESUMED_LAST:
-            break;
-        }
+        str = vshDomainEventResumedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_STOPPED:
-        switch ((virDomainEventStoppedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN:
-            ret = _("Shutdown");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_DESTROYED:
-            ret = _("Destroyed");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_CRASHED:
-            ret = _("Crashed");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_MIGRATED:
-            ret = _("Migrated");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_SAVED:
-            ret = _("Saved");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_FAILED:
-            ret = _("Failed");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
-            ret = _("Snapshot");
-            break;
-        case VIR_DOMAIN_EVENT_STOPPED_LAST:
-            break;
-        }
+        str = vshDomainEventStoppedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_SHUTDOWN:
-        switch ((virDomainEventShutdownDetailType) detail) {
-        case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
-            ret = _("Finished");
-            break;
-        case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
-            break;
-        }
+        str = vshDomainEventShutdownTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_PMSUSPENDED:
-        switch ((virDomainEventPMSuspendedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY:
-            ret = _("Memory");
-            break;
-        case VIR_DOMAIN_EVENT_PMSUSPENDED_DISK:
-            ret = _("Disk");
-            break;
-        case VIR_DOMAIN_EVENT_PMSUSPENDED_LAST:
-            break;
-        }
+        str = vshDomainEventPMSuspendedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_CRASHED:
-        switch ((virDomainEventCrashedDetailType) detail) {
-        case VIR_DOMAIN_EVENT_CRASHED_PANICKED:
-            ret = _("Panicked");
-            break;
-        case VIR_DOMAIN_EVENT_CRASHED_LAST:
-            break;
-        }
+        str = vshDomainEventCrashedTypeToString(detail);
         break;
     case VIR_DOMAIN_EVENT_LAST:
         break;
     }
-    return ret;
+    return str ? _(str) : _("unknown");
 }
 
 struct vshDomEventData {
@@ -10499,8 +10442,8 @@ struct vshDomEventData {
 typedef struct vshDomEventData vshDomEventData;
 
 /* FIXME: Support all callbacks, not just lifecycle */
-VIR_ENUM_DECL(vshDomainEvent)
-VIR_ENUM_IMPL(vshDomainEvent,
+VIR_ENUM_DECL(vshDomainEventId)
+VIR_ENUM_IMPL(vshDomainEventId,
               /* VIR_DOMAIN_EVENT_ID_LAST, */ 1,
               "lifecycle")
 
@@ -10572,7 +10515,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         size_t i;
 
         for (i = 0; i < 1 /* VIR_DOMAIN_EVENT_ID_LAST */; i++)
-            vshPrint(ctl, "%s\n", vshDomainEventTypeToString(i));
+            vshPrint(ctl, "%s\n", vshDomainEventIdTypeToString(i));
         return true;
     }
 
@@ -10582,7 +10525,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("either --list or event type is required"));
         return false;
     }
-    if ((event = vshDomainEventTypeFromString(eventName) < 0)) {
+    if ((event = vshDomainEventIdTypeFromString(eventName) < 0)) {
         vshError(ctl, _("unknown event type %s"), eventName);
         return false;
     }
