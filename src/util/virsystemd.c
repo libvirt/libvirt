@@ -243,8 +243,10 @@ int virSystemdCreateMachine(const char *name,
                           iscontainer ? "container" : "vm",
                           (unsigned int)pidleader,
                           rootdir ? rootdir : "",
-                          1, "Slice", "s",
-                          slicename) < 0)
+                          3,
+                          "Slice", "s", slicename,
+                          "After", "as", 1, "libvirtd.service",
+                          "Before", "as", 1, "libvirt-guests.service") < 0)
         goto cleanup;
 
     ret = 0;
