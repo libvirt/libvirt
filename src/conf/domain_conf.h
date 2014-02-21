@@ -2402,6 +2402,10 @@ int virDomainDiskSourceDefFormatInternal(virBufferPtr buf,
                                          virDomainDiskSourcePoolDefPtr srcpool,
                                          unsigned int flags);
 
+int virDomainNetDefFormat(virBufferPtr buf,
+                          virDomainNetDefPtr def,
+                          unsigned int flags);
+
 int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev);
 

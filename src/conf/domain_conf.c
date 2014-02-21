@@ -15504,7 +15504,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int
+int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
                       unsigned int flags)

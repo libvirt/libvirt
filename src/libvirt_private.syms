@@ -300,6 +300,7 @@ virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
 virDomainMemDumpTypeFromString;
 virDomainMemDumpTypeToString;
+virDomainNetDefFormat;
 virDomainNetDefFree;
 virDomainNetFind;
 virDomainNetFindIdx;
