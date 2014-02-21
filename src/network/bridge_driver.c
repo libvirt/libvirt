@@ -141,6 +141,7 @@ networkObjFromNetwork(virNetworkPtr net)
 static int
 networkRunHook(virNetworkObjPtr network,
                virDomainDefPtr dom,
+               virDomainNetDefPtr iface,
                int op,
                int sub_op)
 {
@@ -158,6 +159,8 @@ networkRunHook(virNetworkObjPtr network,
 
         virBufferAddLit(&buf, "<hookData>\n");
         virBufferAdjustIndent(&buf, 2);
+        if (iface && virDomainNetDefFormat(&buf, iface, 0) < 0)
+            goto cleanup;
         if (virNetworkDefFormatBuf(&buf, network->def, 0) < 0)
             goto cleanup;
         if (dom && virDomainDefFormatInternal(dom, 0, &buf) < 0)
@@ -2067,7 +2070,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
 
     /* Run an early hook to set-up missing devices.
      * If the script raised an error abort the launch. */
-    if (networkRunHook(network, NULL,
+    if (networkRunHook(network, NULL, NULL,
                        VIR_HOOK_NETWORK_OP_START,
                        VIR_HOOK_SUBOP_BEGIN) < 0)
         goto cleanup;
@@ -2092,7 +2095,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
     }
 
     /* finally we can call the 'started' hook script if any */
-    if (networkRunHook(network, NULL,
+    if (networkRunHook(network, NULL, NULL,
                        VIR_HOOK_NETWORK_OP_STARTED,
                        VIR_HOOK_SUBOP_BEGIN) < 0)
         goto cleanup;
@@ -2158,7 +2161,7 @@ static int networkShutdownNetwork(virNetworkDriverStatePtr driver,
     }
 
     /* now that we know it's stopped call the hook if present */
-    networkRunHook(network, NULL, VIR_HOOK_NETWORK_OP_STOPPED,
+    networkRunHook(network, NULL, NULL, VIR_HOOK_NETWORK_OP_STOPPED,
                    VIR_HOOK_SUBOP_END);
 
     network->active = 0;
@@ -3659,14 +3662,8 @@ validate:
         }
     }
 
-    /* finally we can call the 'plugged' hook script if any */
-    if (networkRunHook(network, dom,
-                       VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
-                       VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto error;
-
     if (dev) {
-        /* we are now assured of success, so mark the allocation */
+        /* mark the allocation */
         dev->connections++;
         if (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
             VIR_DEBUG("Using physical device %s, %d connections",
@@ -3684,6 +3681,19 @@ validate:
         VIR_DEBUG("Using network %s, %d connections",
                   netdef->name, netdef->connections);
     }
+
+    /* finally we can call the 'plugged' hook script if any */
+    if (networkRunHook(network, dom, iface,
+                       VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
+                       VIR_HOOK_SUBOP_BEGIN) < 0) {
+        /* adjust for failure */
+        if (dev)
+            dev->connections--;
+        if (netdef)
+            netdef->connections--;
+        goto error;
+    }
+
     ret = 0;
 
 cleanup:
@@ -3865,14 +3875,20 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     }
 
 success:
-    /* finally we can call the 'plugged' hook script if any */
-    if (networkRunHook(network, dom, VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
-                       VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto error;
-
     netdef->connections++;
     VIR_DEBUG("Using network %s, %d connections",
               netdef->name, netdef->connections);
+
+    /* finally we can call the 'plugged' hook script if any */
+    if (networkRunHook(network, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
+                       VIR_HOOK_SUBOP_BEGIN) < 0) {
+        /* adjust for failure */
+        if (dev)
+            dev->connections--;
+        netdef->connections--;
+        goto error;
+    }
+
     ret = 0;
 cleanup:
     if (network)
@@ -4018,7 +4034,7 @@ success:
         netdef->connections--;
 
     /* finally we can call the 'unplugged' hook script if any */
-    networkRunHook(network, dom, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
+    networkRunHook(network, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
                    VIR_HOOK_SUBOP_BEGIN);
 
     VIR_DEBUG("Releasing network %s, %d connections",
