@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (C) 2013-2014 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -540,7 +540,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 
     // TODO: mock nodeGetCPUCount() as well & check 2nd cpu, too
     unsigned long long expected[] = {
-        1413142688153030
+        1413142688153030ULL
     };
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
@@ -632,8 +632,8 @@ static int testCgroupGetBlkioIoServiced(const void *args ATTRIBUTE_UNUSED)
     int rv, ret = -1;
 
     const long long expected_values[] = {
-        119084214273,
-        822880960513,
+        119084214273ULL,
+        822880960513ULL,
         9665167,
         73283807
     };
@@ -681,14 +681,14 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args ATTRIBUTE_UNUSED)
     size_t i;
     int rv, ret = -1;
     const long long expected_values0[] = {
-        59542107136,
-        411440480256,
+        59542107136ULL,
+        411440480256ULL,
         4832583,
         36641903
     };
     const long long expected_values1[] = {
-        59542107137,
-        411440480257,
+        59542107137ULL,
+        411440480257ULL,
         4832584,
         36641904
     };
