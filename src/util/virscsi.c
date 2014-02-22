@@ -435,6 +435,7 @@ virSCSIDeviceListDel(virSCSIDeviceListPtr list,
     for (i = 0; i < dev->n_used_by; i++) {
         if (STREQ_NULLABLE(dev->used_by[i], name)) {
             if (dev->n_used_by > 1) {
+                VIR_FREE(dev->used_by[i]);
                 VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
             } else {
                 tmp = virSCSIDeviceListSteal(list, dev);
