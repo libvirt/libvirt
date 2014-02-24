@@ -3,27 +3,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <h1 >Logging in the library and the daemon</h1>
+
     <p>Libvirt includes logging facilities starting from version 0.6.0,
        this complements the <a href="errors.html">error handling</a>
        mechanism and APIs to allow tracing through the execution of the
        library as well as in the libvirtd daemon.</p>
-    <ul>
-      <li>
-        <a href="#log_library">Logging in the library</a>
-      </li>
-      <li>
-        <a href="#log_config">Configuring logging in the library</a>
-      </li>
-      <li>
-        <a href="#log_daemon">Logging in the daemon</a>
-      </li>
-      <li>
-        <a href="#log_syntax">Syntax for filters and output values</a>
-      </li>
-      <li>
-        <a href="#log_examples">Examples</a>
-      </li>
-    </ul>
+
+    <ul id="toc"/>
+
     <h2>
       <a name="log_library">Logging in the library</a>
     </h2>
