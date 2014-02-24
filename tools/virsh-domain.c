@@ -10543,8 +10543,9 @@ typedef struct vshEventCallback vshEventCallback;
 struct vshDomEventData {
     vshControl *ctl;
     bool loop;
-    int count;
+    int *count;
     vshEventCallback *cb;
+    int id;
 };
 typedef struct vshDomEventData vshDomEventData;
 
@@ -10555,11 +10556,11 @@ vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event '%s' for domain %s\n"),
              data->cb->name, virDomainGetName(dom));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10573,12 +10574,12 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'lifecycle' for domain %s: %s %s\n"),
              virDomainGetName(dom), vshDomainEventToString(event),
              vshDomainEventDetailToString(event, detail));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10591,11 +10592,11 @@ vshEventRTCChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'rtc-change' for domain %s: %lld\n"),
              virDomainGetName(dom), utcoffset);
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10608,11 +10609,11 @@ vshEventWatchdogPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'watchdog' for domain %s: %s\n"),
              virDomainGetName(dom), vshDomainEventWatchdogToString(action));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10627,12 +10628,12 @@ vshEventIOErrorPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'io-error' for domain %s: %s (%s) %s\n"),
              virDomainGetName(dom), srcPath, devAlias,
              vshDomainEventIOErrorToString(action));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10650,7 +10651,7 @@ vshEventGraphicsPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     vshDomEventData *data = opaque;
     size_t i;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'graphics' for domain %s: "
                           "%s local[%s %s %s] remote[%s %s %s] %s"),
@@ -10664,7 +10665,7 @@ vshEventGraphicsPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshPrint(data->ctl, " %s=%s", subject->identities[i].type,
                  subject->identities[i].name);
     vshPrint(data->ctl, "\n");
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10680,13 +10681,13 @@ vshEventIOErrorReasonPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'io-error-reason' for domain %s: "
                           "%s (%s) %s due to %s\n"),
              virDomainGetName(dom), srcPath, devAlias,
              vshDomainEventIOErrorToString(action), reason);
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10701,12 +10702,12 @@ vshEventBlockJobPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl, _("event 'block-job' for domain %s: %s for %s %s\n"),
              virDomainGetName(dom), vshDomainBlockJobToString(type),
              disk, vshDomainBlockJobStatusToString(status));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10722,13 +10723,13 @@ vshEventDiskChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl,
              _("event 'disk-change' for domain %s disk %s: %s -> %s: %s\n"),
              virDomainGetName(dom), alias, NULLSTR(oldSrc), NULLSTR(newSrc),
              vshDomainEventDiskChangeToString(reason));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10742,13 +10743,13 @@ vshEventTrayChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl,
              _("event 'disk-change' for domain %s disk %s: %s\n"),
              virDomainGetName(dom), alias,
              vshDomainEventTrayChangeToString(reason));
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10772,12 +10773,12 @@ vshEventBalloonChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl,
              _("event 'balloon-change' for domain %s: %lluKiB\n"),
              virDomainGetName(dom), actual);
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10790,12 +10791,12 @@ vshEventDeviceRemovedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vshDomEventData *data = opaque;
 
-    if (!data->loop && data->count)
+    if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl,
              _("event 'device-removed' for domain %s: %s\n"),
              virDomainGetName(dom), alias);
-    data->count++;
+    (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
 }
@@ -10853,6 +10854,10 @@ static const vshCmdOptDef opts_event[] = {
      .type = VSH_OT_DATA,
      .help = N_("which event type to wait for")
     },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .help = N_("wait for all events instead of just one type")
+    },
     {.name = "loop",
      .type = VSH_OT_BOOL,
      .help = N_("loop until timeout or interrupt, rather than one-shot")
@@ -10873,11 +10878,14 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
-    int eventId = -1;
     int timeout = 0;
-    vshDomEventData data;
+    vshDomEventData *data = NULL;
+    size_t i;
     const char *eventName = NULL;
-    int event;
+    int event = -1;
+    bool all = vshCommandOptBool(cmd, "all");
+    bool loop = vshCommandOptBool(cmd, "loop");
+    int count = 0;
 
     if (vshCommandOptBool(cmd, "list")) {
         for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
@@ -10887,34 +10895,63 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(cmd, "event", &eventName) < 0)
         return false;
-    if (!eventName) {
-        vshError(ctl, "%s", _("either --list or event type is required"));
-        return false;
-    }
-    for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
-        if (STREQ(eventName, vshEventCallbacks[event].name))
-            break;
-    if (event == VIR_DOMAIN_EVENT_ID_LAST) {
-        vshError(ctl, _("unknown event type %s"), eventName);
+    if (eventName) {
+        for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
+            if (STREQ(eventName, vshEventCallbacks[event].name))
+                break;
+        if (event == VIR_DOMAIN_EVENT_ID_LAST) {
+            vshError(ctl, _("unknown event type %s"), eventName);
+            return false;
+        }
+    } else if (!all) {
+        vshError(ctl, "%s",
+                 _("one of --list, --all, or event type is required"));
         return false;
     }
 
-    data.ctl = ctl;
-    data.loop = vshCommandOptBool(cmd, "loop");
-    data.count = 0;
-    data.cb = &vshEventCallbacks[event];
+    if (all) {
+        if (VIR_ALLOC_N(data, VIR_DOMAIN_EVENT_ID_LAST) < 0)
+            goto cleanup;
+        for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
+            data[i].ctl = ctl;
+            data[i].loop = loop;
+            data[i].count = &count;
+            data[i].cb = &vshEventCallbacks[i];
+            data[i].id = -1;
+        }
+    } else {
+        if (VIR_ALLOC_N(data, 1) < 0)
+            goto cleanup;
+        data[0].ctl = ctl;
+        data[0].loop = vshCommandOptBool(cmd, "loop");
+        data[0].count = &count;
+        data[0].cb = &vshEventCallbacks[event];
+        data[0].id = -1;
+    }
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-        return false;
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "domain"))
         dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (vshEventStart(ctl, timeout) < 0)
         goto cleanup;
 
-    if ((eventId = virConnectDomainEventRegisterAny(ctl->conn, dom, event,
-                                                    data.cb->cb,
-                                                    &data, NULL)) < 0)
-        goto cleanup;
+    for (i = 0; i < (all ? VIR_DOMAIN_EVENT_ID_LAST : 1); i++) {
+        if ((data[i].id = virConnectDomainEventRegisterAny(ctl->conn, dom,
+                                                           all ? i : event,
+                                                           data[i].cb->cb,
+                                                           &data[i],
+                                                           NULL)) < 0) {
+            /* When registering for all events: if the first
+             * registration succeeds, silently ignore failures on all
+             * later registrations on the assumption that the server
+             * is older and didn't know quite as many events.  */
+            if (i)
+                vshResetLibvirtError();
+            else
+                goto cleanup;
+        }
+    }
     switch (vshEventWait(ctl)) {
     case VSH_EVENT_INTERRUPT:
         vshPrint(ctl, "%s", _("event loop interrupted\n"));
@@ -10927,15 +10964,20 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     default:
         goto cleanup;
     }
-    vshPrint(ctl, _("events received: %d\n"), data.count);
-    if (data.count)
+    vshPrint(ctl, _("events received: %d\n"), count);
+    if (count)
         ret = true;
 
 cleanup:
     vshEventCleanup(ctl);
-    if (eventId >= 0 &&
-        virConnectDomainEventDeregisterAny(ctl->conn, eventId) < 0)
-        ret = false;
+    if (data) {
+        for (i = 0; i < (all ? VIR_DOMAIN_EVENT_ID_LAST : 1); i++) {
+            if (data[i].id >= 0 &&
+                virConnectDomainEventDeregisterAny(ctl->conn, data[i].id) < 0)
+                ret = false;
+        }
+        VIR_FREE(data);
+    }
     if (dom)
         virDomainFree(dom);
     return ret;

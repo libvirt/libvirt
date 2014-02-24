@@ -1047,14 +1047,16 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<event> {[I<domain>] I<event> [I<--loop>] [I<--timeout> I<seconds>] |
-I<--list>}
+=item B<event> {[I<domain>] { I<event> | I<--all> } [I<--loop>]
+[I<--timeout> I<seconds>] | I<--list>}
 
 Wait for a class of domain events to occur, and print appropriate details
 of events as they happen.  The events can optionally be filtered by
 I<domain>.  Using I<--list> as the only argument will provide a list
 of possible I<event> values known by this client, although the connection
-might not allow registering for all these events.
+might not allow registering for all these events.  It is also possible
+to use I<--all> instead of I<event> to register for all possible event
+types at once.
 
 By default, this command is one-shot, and returns success once an event
 occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
