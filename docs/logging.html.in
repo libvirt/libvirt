@@ -85,9 +85,13 @@
     <p>When starting the libvirt daemon, any logging environment variable
        settings will override settings in the config file. Command line options
        take precedence over all. If no outputs are defined for libvirtd, it
-       defaults to logging to /var/log/libvirt/libvirtd.log (before 0.9.0
-       it was using syslog) when it is running as a daemon, or to
-       stderr when it is running in the foreground.</p>
+       will try to use</p>
+    <ul>
+      <li>0.10.0 or later: systemd journal, if <code>/run/systemd/journal/socket</code> exists</li>
+      <li>0.9.0 or later: file <code>/var/log/libvirt/libvirtd.log</code> if running as a daemon</li>
+      <li>before 0.9.0: syslog if running as a daemon</li>
+      <li>all versions: to stderr stream if running in the foreground</li>
+    </ul>
     <p>Libvirtd does not reload its logging configuration when issued a SIGHUP.
        If you want to reload the configuration, you must do a <code>service
        libvirtd restart</code> or manually stop and restart the daemon
@@ -133,6 +137,7 @@
       given <code>name</code> as the ident</li>
       <li><code>x:file:file_path</code> output to a file, with the given
       filepath</li>
+      <li><code>x:journald</code> output goes to systemd journal</li>
     </ul>
     <p>In all cases the x prefix is the minimal level, acting as a filter:</p>
     <ul>
@@ -146,6 +151,30 @@
        will log all warnings and errors to syslog under the libvirtd ident
        but also log all debug and information included in the
        file <code>/tmp/libvirt.log</code></p>
+
+    <h2><a name="journald">Systemd journal fields</a></h2>
+
+    <p>
+      When logging to the systemd journal, the following fields
+      are defined, in addition to any automatically recorded
+      <a href="http://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html">standard fields</a>:
+    </p>
+
+    <dl>
+      <dt><code>MESSAGE</code></dt>
+      <dd>The log message string</dd>
+      <dt><code>PRIORITY</code></dt>
+      <dd>The log priority value</dd>
+      <dt><code>LIBVIRT_SOURCE</code></dt>
+      <dd>The source type, one of "file", "error", "audit", "trace", "library"</dd>
+      <dt><code>CODE_FILE</code></dt>
+      <dd>The name of the file emitting the log record</dd>
+      <dt><code>CODE_LINE</code></dt>
+      <dd>The line number of the file emitting the log record</dd>
+      <dt><code>CODE_FUNC</code></dt>
+      <dd>The name of the function emitting the log record</dd>
+    </dl>
+
     <h2>
       <a name="log_examples">Examples</a>
     </h2>
