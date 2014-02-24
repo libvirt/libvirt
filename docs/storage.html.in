@@ -711,12 +711,14 @@
       correspond to the files that can be found when mounting the
       gluster volume.  The <code>name</code> is the path relative to
       the effective mount specified for the pool; and
-      the <code>key</code> is a path including the gluster volume
-      name and any subdirectory specified by the pool.</p>
+      the <code>key</code> is a string that identifies a single volume
+      uniquely. Currently the <code>key</code> attribute consists of the
+      URI of the volume but it may be changed to a UUID of the volume
+      in the future.</p>
     <pre>
        &lt;volume&gt;
          &lt;name&gt;myfile&lt;/name&gt;
-         &lt;key&gt;volname/myfile&lt;/key&gt;
+         &lt;key&gt;gluster://localhost/volname/myfile&lt;/key&gt;
          &lt;source&gt;
          &lt;/source&gt;
          &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;

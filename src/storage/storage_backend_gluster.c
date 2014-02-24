@@ -187,6 +187,7 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
                                     const char *name)
 {
     int ret = -1;
+    char *path = NULL;
     char *tmp;
 
     VIR_FREE(vol->key);
@@ -201,12 +202,12 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
             goto cleanup;
     }
 
-    if (virAsprintf(&vol->key, "%s%s%s", state->volname, state->dir,
+    if (virAsprintf(&path, "%s%s%s", state->volname, state->dir,
                     vol->name) < 0)
         goto cleanup;
 
     tmp = state->uri->path;
-    if (virAsprintf(&state->uri->path, "/%s", vol->key) < 0) {
+    if (virAsprintf(&state->uri->path, "/%s", path) < 0) {
         state->uri->path = tmp;
         goto cleanup;
     }
@@ -218,9 +219,14 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
     VIR_FREE(state->uri->path);
     state->uri->path = tmp;
 
+    /* the path is unique enough to serve as a volume key */
+    if (VIR_STRDUP(vol->key, vol->target.path) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
+    VIR_FREE(path);
     return ret;
 }
 
