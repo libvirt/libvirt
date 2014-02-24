@@ -6518,7 +6518,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *from = NULL;
-    bool ret = true;
+    bool ret = false;
     char *buffer;
 #ifndef WIN32
     bool console = vshCommandOptBool(cmd, "console");
@@ -6534,7 +6534,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
-        return false;
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_START_PAUSED;
@@ -6545,20 +6545,23 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         dom = virDomainCreateXMLWithFiles(ctl->conn, buffer, nfds, fds, flags);
     else
         dom = virDomainCreateXML(ctl->conn, buffer, flags);
-    VIR_FREE(buffer);
 
-    if (dom != NULL) {
-        vshPrint(ctl, _("Domain %s created from %s\n"),
-                 virDomainGetName(dom), from);
-#ifndef WIN32
-        if (console)
-            cmdRunConsole(ctl, dom, NULL, 0);
-#endif
-        virDomainFree(dom);
-    } else {
+    if (!dom) {
         vshError(ctl, _("Failed to create domain from %s"), from);
-        ret = false;
+        goto cleanup;
     }
+
+    vshPrint(ctl, _("Domain %s created from %s\n"),
+             virDomainGetName(dom), from);
+#ifndef WIN32
+    if (console)
+        cmdRunConsole(ctl, dom, NULL, 0);
+#endif
+    virDomainFree(dom);
+    ret = true;
+
+cleanup:
+    VIR_FREE(buffer);
     VIR_FREE(fds);
     return ret;
 }
