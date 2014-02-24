@@ -48,6 +48,7 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "viraccessapicheck.h"
+#include "nodeinfo.h"
 
 #include "bhyve_driver.h"
 #include "bhyve_process.h"
@@ -497,6 +498,32 @@ cleanup:
 }
 
 static int
+bhyveNodeGetCPUStats(virConnectPtr conn,
+                     int cpuNum,
+                     virNodeCPUStatsPtr params,
+                     int *nparams,
+                     unsigned int flags)
+{
+    if (virNodeGetCPUStatsEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+static int
+bhyveNodeGetMemoryStats(virConnectPtr conn,
+                        int cellNum,
+                        virNodeMemoryStatsPtr params,
+                        int *nparams,
+                        unsigned int flags)
+{
+    if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
+        return -1;
+
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+}
+
+static int
 bhyveStateCleanup(void)
 {
     VIR_DEBUG("bhyve state cleanup");
@@ -594,6 +621,8 @@ static virDriver bhyveDriver = {
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
+    .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
+    .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
 };
 
 
