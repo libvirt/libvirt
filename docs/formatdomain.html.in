@@ -3847,15 +3847,17 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;input type='mouse' bus='usb'/&gt;
+    &lt;input type='keyboard' bus='usb'/&gt;
   &lt;/devices&gt;
   ...</pre>
 
     <dl>
       <dt><code>input</code></dt>
       <dd>The <code>input</code> element has one mandatory attribute,
-        the <code>type</code> whose value can be either 'mouse' or
-        'tablet'. The latter provides absolute
-        cursor movement, while the former uses relative movement. The optional
+        the <code>type</code> whose value can be 'mouse', 'tablet' or
+        (<span class="since">since 1.2.2</span>) 'keyboard'.
+        The tablet provides absolute cursor movement,
+        while the mouse uses relative movement. The optional
         <code>bus</code> attribute can be used to refine the exact device type.
         It takes values "xen" (paravirtualized), "ps2" and "usb".</dd>
     </dl>
