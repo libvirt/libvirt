@@ -1508,9 +1508,16 @@ storageVolLookupByPath(virConnectPtr conn,
         virStoragePoolObjUnlock(pool);
     }
 
-    if (!ret)
-        virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("no storage vol with matching path %s"), path);
+    if (!ret) {
+        if (STREQ(path, cleanpath)) {
+            virReportError(VIR_ERR_NO_STORAGE_VOL,
+                           _("no storage vol with matching path '%s'"), path);
+        } else {
+            virReportError(VIR_ERR_NO_STORAGE_VOL,
+                           _("no storage vol with matching path '%s' (%s)"),
+                           path, cleanpath);
+        }
+    }
 
 cleanup:
     VIR_FREE(cleanpath);
