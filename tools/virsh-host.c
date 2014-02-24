@@ -352,12 +352,12 @@ VIR_ENUM_IMPL(vshCPUStats, VSH_CPU_LAST,
               VIR_NODE_CPU_STATS_UTILIZATION);
 
 const char *vshCPUOutput[] = {
-    "user:",
-    "system:",
-    "idle:",
-    "iowait:",
-    "intr:",
-    "usage:"
+    N_("user:"),
+    N_("system:"),
+    N_("idle:"),
+    N_("iowait:"),
+    N_("intr:"),
+    N_("usage:")
 };
 
 static bool
