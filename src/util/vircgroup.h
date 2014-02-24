@@ -249,4 +249,9 @@ int virCgroupIsolateMount(virCgroupPtr group,
 
 bool virCgroupSupportsCpuBW(virCgroupPtr cgroup);
 
+int virCgroupSetOwner(virCgroupPtr cgroup,
+                      uid_t uid,
+                      gid_t gid,
+                      int controllers);
+
 #endif /* __VIR_CGROUP_H__ */

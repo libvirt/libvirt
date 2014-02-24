@@ -1067,6 +1067,7 @@ virCgroupSetMemory;
 virCgroupSetMemoryHardLimit;
 virCgroupSetMemorySoftLimit;
 virCgroupSetMemSwapHardLimit;
+virCgroupSetOwner;
 virCgroupSupportsCpuBW;
 
 

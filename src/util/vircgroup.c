@@ -3608,6 +3608,76 @@ cleanup:
 }
 
 
+int virCgroupSetOwner(virCgroupPtr cgroup,
+                      uid_t uid,
+                      gid_t gid,
+                      int controllers)
+{
+    int ret = -1;
+    size_t i;
+    char *base = NULL, *entry = NULL;
+    DIR *dh = NULL;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        struct dirent *de;
+
+        if (!((1 << i) & controllers))
+            continue;
+
+        if (!cgroup->controllers[i].mountPoint)
+            continue;
+
+        if (virAsprintf(&base, "%s%s", cgroup->controllers[i].mountPoint,
+                        cgroup->controllers[i].placement) < 0)
+            goto cleanup;
+
+        if (!(dh = opendir(base))) {
+            virReportSystemError(errno,
+                                 _("Unable to open dir '%s'"), base);
+            goto cleanup;
+        }
+
+        while ((de = readdir(dh)) != NULL) {
+            if (STREQ(de->d_name, ".") ||
+                STREQ(de->d_name, ".."))
+                continue;
+
+            if (virAsprintf(&entry, "%s/%s", base, de->d_name) < 0)
+                goto cleanup;
+
+            if (chown(entry, uid, gid) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot chown '%s' to (%u, %u)"),
+                                     entry, uid, gid);
+                goto cleanup;
+            }
+
+            VIR_FREE(entry);
+        }
+
+        if (chown(base, uid, gid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot chown '%s' to (%u, %u)"),
+                                 base, uid, gid);
+            goto cleanup;
+        }
+
+        VIR_FREE(base);
+        closedir(dh);
+        dh = NULL;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (dh)
+        closedir(dh);
+    VIR_FREE(entry);
+    VIR_FREE(base);
+    return ret;
+}
+
+
 /**
  * virCgroupSupportsCpuBW():
  * Check whether the host supports CFS bandwidth.

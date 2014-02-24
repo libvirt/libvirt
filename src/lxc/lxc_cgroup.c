@@ -484,6 +484,18 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
                             &cgroup) < 0)
         goto cleanup;
 
+    /* setup control group permissions for user namespace */
+    if (def->idmap.uidmap) {
+        if (virCgroupSetOwner(cgroup,
+                              def->idmap.uidmap[0].target,
+                              def->idmap.gidmap[0].target,
+                              (1 << VIR_CGROUP_CONTROLLER_SYSTEMD)) < 0) {
+            virCgroupFree(&cgroup);
+            cgroup = NULL;
+            goto cleanup;
+        }
+    }
+
 cleanup:
     return cgroup;
 }
