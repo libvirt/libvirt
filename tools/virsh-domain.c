@@ -10434,18 +10434,135 @@ vshDomainEventDetailToString(int event, int detail)
     return str ? _(str) : _("unknown");
 }
 
+VIR_ENUM_DECL(vshDomainEventWatchdog)
+VIR_ENUM_IMPL(vshDomainEventWatchdog,
+              VIR_DOMAIN_EVENT_WATCHDOG_LAST,
+              N_("none"),
+              N_("pause"),
+              N_("reset"),
+              N_("poweroff"),
+              N_("shutdown"),
+              N_("debug"))
+
+static const char *
+vshDomainEventWatchdogToString(int action)
+{
+    const char *str = vshDomainEventWatchdogTypeToString(action);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshDomainEventIOError)
+VIR_ENUM_IMPL(vshDomainEventIOError,
+              VIR_DOMAIN_EVENT_IO_ERROR_LAST,
+              N_("none"),
+              N_("pause"),
+              N_("report"))
+
+static const char *
+vshDomainEventIOErrorToString(int action)
+{
+    const char *str = vshDomainEventIOErrorTypeToString(action);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshGraphicsPhase)
+VIR_ENUM_IMPL(vshGraphicsPhase,
+              VIR_DOMAIN_EVENT_GRAPHICS_LAST,
+              N_("connect"),
+              N_("initialize"),
+              N_("disconnect"))
+
+static const char *
+vshGraphicsPhaseToString(int phase)
+{
+    const char *str = vshGraphicsPhaseTypeToString(phase);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshGraphicsAddress)
+VIR_ENUM_IMPL(vshGraphicsAddress,
+              VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
+              N_("IPv4"),
+              N_("IPv6"),
+              N_("unix"))
+
+static const char *
+vshGraphicsAddressToString(int family)
+{
+    const char *str = vshGraphicsAddressTypeToString(family);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshDomainBlockJobStatus)
+VIR_ENUM_IMPL(vshDomainBlockJobStatus,
+              VIR_DOMAIN_BLOCK_JOB_LAST,
+              N_("completed"),
+              N_("failed"),
+              N_("canceled"),
+              N_("ready"))
+
+static const char *
+vshDomainBlockJobStatusToString(int status)
+{
+    const char *str = vshDomainBlockJobStatusTypeToString(status);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshDomainEventDiskChange)
+VIR_ENUM_IMPL(vshDomainEventDiskChange,
+              VIR_DOMAIN_EVENT_DISK_CHANGE_LAST,
+              N_("changed"),
+              N_("dropped"))
+
+static const char *
+vshDomainEventDiskChangeToString(int reason)
+{
+    const char *str = vshDomainEventDiskChangeTypeToString(reason);
+    return str ? _(str) : _("unknown");
+}
+
+VIR_ENUM_DECL(vshDomainEventTrayChange)
+VIR_ENUM_IMPL(vshDomainEventTrayChange,
+              VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST,
+              N_("opened"),
+              N_("closed"))
+
+static const char *
+vshDomainEventTrayChangeToString(int reason)
+{
+    const char *str = vshDomainEventTrayChangeTypeToString(reason);
+    return str ? _(str) : _("unknown");
+}
+
+struct vshEventCallback {
+    const char *name;
+    virConnectDomainEventGenericCallback cb;
+};
+typedef struct vshEventCallback vshEventCallback;
+
 struct vshDomEventData {
     vshControl *ctl;
     bool loop;
     int count;
+    vshEventCallback *cb;
 };
 typedef struct vshDomEventData vshDomEventData;
 
-/* FIXME: Support all callbacks, not just lifecycle */
-VIR_ENUM_DECL(vshDomainEventId)
-VIR_ENUM_IMPL(vshDomainEventId,
-              /* VIR_DOMAIN_EVENT_ID_LAST, */ 1,
-              "lifecycle")
+static void
+vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virDomainPtr dom,
+                     void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event '%s' for domain %s\n"),
+             data->cb->name, virDomainGetName(dom));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
 
 static void
 vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -10465,6 +10582,257 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!data->loop)
         vshEventDone(data->ctl);
 }
+
+static void
+vshEventRTCChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       virDomainPtr dom,
+                       long long utcoffset,
+                       void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'rtc-change' for domain %s: %lld\n"),
+             virDomainGetName(dom), utcoffset);
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventWatchdogPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainPtr dom,
+                      int action,
+                      void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'watchdog' for domain %s: %s\n"),
+             virDomainGetName(dom), vshDomainEventWatchdogToString(action));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventIOErrorPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virDomainPtr dom,
+                     const char *srcPath,
+                     const char *devAlias,
+                     int action,
+                     void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'io-error' for domain %s: %s (%s) %s\n"),
+             virDomainGetName(dom), srcPath, devAlias,
+             vshDomainEventIOErrorToString(action));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventGraphicsPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainPtr dom,
+                      int phase,
+                      const virDomainEventGraphicsAddress *local,
+                      const virDomainEventGraphicsAddress *remote,
+                      const char *authScheme,
+                      const virDomainEventGraphicsSubject *subject,
+                      void *opaque)
+{
+    vshDomEventData *data = opaque;
+    size_t i;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'graphics' for domain %s: "
+                          "%s local[%s %s %s] remote[%s %s %s] %s"),
+             virDomainGetName(dom), vshGraphicsPhaseToString(phase),
+             vshGraphicsAddressToString(local->family),
+             local->node, local->service,
+             vshGraphicsAddressToString(remote->family),
+             remote->node, remote->service,
+             authScheme);
+    for (i = 0; i < subject->nidentity; i++)
+        vshPrint(data->ctl, " %s=%s", subject->identities[i].type,
+                 subject->identities[i].name);
+    vshPrint(data->ctl, "\n");
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventIOErrorReasonPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virDomainPtr dom,
+                           const char *srcPath,
+                           const char *devAlias,
+                           int action,
+                           const char *reason,
+                           void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'io-error-reason' for domain %s: "
+                          "%s (%s) %s due to %s\n"),
+             virDomainGetName(dom), srcPath, devAlias,
+             vshDomainEventIOErrorToString(action), reason);
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventBlockJobPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainPtr dom,
+                      const char *disk,
+                      int type,
+                      int status,
+                      void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl, _("event 'block-job' for domain %s: %s for %s %s\n"),
+             virDomainGetName(dom), vshDomainBlockJobToString(type),
+             disk, vshDomainBlockJobStatusToString(status));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventDiskChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virDomainPtr dom,
+                        const char *oldSrc,
+                        const char *newSrc,
+                        const char *alias,
+                        int reason,
+                        void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'disk-change' for domain %s disk %s: %s -> %s: %s\n"),
+             virDomainGetName(dom), alias, NULLSTR(oldSrc), NULLSTR(newSrc),
+             vshDomainEventDiskChangeToString(reason));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventTrayChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virDomainPtr dom,
+                        const char *alias,
+                        int reason,
+                        void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'disk-change' for domain %s disk %s: %s\n"),
+             virDomainGetName(dom), alias,
+             vshDomainEventTrayChangeToString(reason));
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventPMChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virDomainPtr dom,
+                      int reason ATTRIBUTE_UNUSED,
+                      void *opaque)
+{
+    /* As long as libvirt.h doesn't define any reasons, we might as
+     * well treat all PM state changes as generic events.  */
+    vshEventGenericPrint(conn, dom, opaque);
+}
+
+static void
+vshEventBalloonChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virDomainPtr dom,
+                           unsigned long long actual,
+                           void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'balloon-change' for domain %s: %lluKiB\n"),
+             virDomainGetName(dom), actual);
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
+vshEventDeviceRemovedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virDomainPtr dom,
+                           const char *alias,
+                           void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'device-removed' for domain %s: %s\n"),
+             virDomainGetName(dom), alias);
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static vshEventCallback vshEventCallbacks[] = {
+    { "lifecycle",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventLifecyclePrint), },
+    { "reboot", vshEventGenericPrint, },
+    { "rtc-change",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventRTCChangePrint), },
+    { "watchdog",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventWatchdogPrint), },
+    { "io-error",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventIOErrorPrint), },
+    { "graphics",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventGraphicsPrint), },
+    { "io-error-reason",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventIOErrorReasonPrint), },
+    { "control-error", vshEventGenericPrint, },
+    { "block-job",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventBlockJobPrint), },
+    { "disk-change",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventDiskChangePrint), },
+    { "tray-change",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventTrayChangePrint), },
+    { "pm-wakeup",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventPMChangePrint), },
+    { "pm-suspend",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventPMChangePrint), },
+    { "balloon-change",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventBalloonChangePrint), },
+    { "pm-suspend-disk",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventPMChangePrint), },
+    { "device-removed",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventDeviceRemovedPrint), },
+};
+verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 
 static const vshCmdInfo info_event[] = {
     {.name = "event",
@@ -10512,10 +10880,8 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     int event;
 
     if (vshCommandOptBool(cmd, "list")) {
-        size_t i;
-
-        for (i = 0; i < 1 /* VIR_DOMAIN_EVENT_ID_LAST */; i++)
-            vshPrint(ctl, "%s\n", vshDomainEventIdTypeToString(i));
+        for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
+            vshPrint(ctl, "%s\n", vshEventCallbacks[event].name);
         return true;
     }
 
@@ -10525,7 +10891,10 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("either --list or event type is required"));
         return false;
     }
-    if ((event = vshDomainEventIdTypeFromString(eventName) < 0)) {
+    for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
+        if (STREQ(eventName, vshEventCallbacks[event].name))
+            break;
+    if (event == VIR_DOMAIN_EVENT_ID_LAST) {
         vshError(ctl, _("unknown event type %s"), eventName);
         return false;
     }
@@ -10533,6 +10902,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     data.ctl = ctl;
     data.loop = vshCommandOptBool(cmd, "loop");
     data.count = 0;
+    data.cb = &vshEventCallbacks[event];
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
@@ -10542,7 +10912,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if ((eventId = virConnectDomainEventRegisterAny(ctl->conn, dom, event,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(vshEventLifecyclePrint),
+                                                    data.cb->cb,
                                                     &data, NULL)) < 0)
         goto cleanup;
     switch (vshEventWait(ctl)) {
