@@ -24,9 +24,9 @@
         <a href="#log_examples">Examples</a>
       </li>
     </ul>
-    <h3>
+    <h2>
       <a name="log_library">Logging in the library</a>
-    </h3>
+    </h2>
     <p>The logging functionalities in libvirt are based on 3 key concepts,
        similar to the one present in other generic logging facilities like
        log4j:</p>
@@ -58,9 +58,9 @@
        default is 64 kB. This can be used when debugging the library
        (see the virLogBuffer variable content).</p>
 
-    <h3>
+    <h2>
       <a name="log_config">Configuring logging in the library</a>
-    </h3>
+    </h2>
     <p>The library configuration of logging is through 3 environment variables
     allowing to control the logging behaviour:</p>
     <ul>
@@ -79,9 +79,9 @@
        you specify an invalid value, it will be ignored with a warning. If you
        have an error in a filter or output string, some of the settings may be
        applied up to the point at which libvirt encountered the error.</p>
-    <h3>
+    <h2>
       <a name="log_daemon">Logging in the daemon</a>
-    </h3>
+    </h2>
     <p>Similarly the daemon logging behaviour can be tuned using 3 config
     variables, stored in the configuration file:</p>
     <ul>
@@ -110,9 +110,9 @@
        by default) in case of crash, this can also be activated explicitly
        for debugging purposes by sending the daemon a USR2 signal:</p>
        <pre>killall -USR2 libvirtd</pre>
-    <h3>
+    <h2>
       <a name="log_syntax">Syntax for filters and output values</a>
-    </h3>
+    </h2>
     <p>The syntax for filters and outputs is the same for both types of
        variables.</p>
     <p>The format for a filter is one of:</p>
@@ -159,9 +159,9 @@
        will log all warnings and errors to syslog under the libvirtd ident
        but also log all debug and information included in the
        file <code>/tmp/libvirt.log</code></p>
-    <h3>
+    <h2>
       <a name="log_examples">Examples</a>
-    </h3>
+    </h2>
     <p>For example setting up the following:</p>
     <pre>export LIBVIRT_DEBUG=1
 export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
