@@ -833,7 +833,7 @@ virLogVMessage(virLogSource source,
         emit = false;
     }
 
-    if (!emit && ((virLogBuffer == NULL) || (virLogSize <= 0)))
+    if (!emit)
         goto cleanup;
 
     /*
@@ -862,11 +862,7 @@ virLogVMessage(virLogSource source,
     virLogStr(timestamp);
     virLogStr(": ");
     virLogStr(msg);
-    virLogUnlock();
-    if (!emit)
-        goto cleanup;
 
-    virLogLock();
     for (i = 0; i < virLogNbOutputs; i++) {
         if (priority >= virLogOutputs[i].priority) {
             if (virLogOutputs[i].logVersion) {
