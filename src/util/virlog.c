@@ -1000,7 +1000,22 @@ virLogAddOutputToFile(virLogPriority priority,
 }
 
 
-#if HAVE_SYSLOG_H
+#if HAVE_SYSLOG_H || USE_JOURNALD
+
+/* Compat in case we build with journald, but no syslog */
+# ifndef LOG_DEBUG
+#  define LOG_DEBUG 7
+# endif
+# ifndef LOG_INFO
+#  define LOG_INFO 6
+# endif
+# ifndef LOG_WARNING
+#  define LOG_WARNING 4
+# endif
+# ifndef LOG_ERR
+#  define LOG_ERR 3
+# endif
+
 static int
 virLogPrioritySyslog(virLogPriority priority)
 {
@@ -1017,8 +1032,10 @@ virLogPrioritySyslog(virLogPriority priority)
         return LOG_ERR;
     }
 }
+#endif /* HAVE_SYSLOG_H || USE_JOURNALD */
 
 
+#if HAVE_SYSLOG_H
 static void
 virLogOutputToSyslog(virLogSource source ATTRIBUTE_UNUSED,
                      virLogPriority priority,
@@ -1183,8 +1200,9 @@ virLogOutputToJournald(virLogSource source,
     state.bufs = iov_bufs;
     state.bufs_end = iov_bufs + ARRAY_CARDINALITY(iov_bufs);
 
-    journalAddString(&state ,"MESSAGE", rawstr);
-    journalAddInt(&state, "PRIORITY", priority);
+    journalAddString(&state, "MESSAGE", rawstr);
+    journalAddInt(&state, "PRIORITY",
+                  virLogPrioritySyslog(priority));
     journalAddString(&state, "LIBVIRT_SOURCE",
                      virLogSourceTypeToString(source));
     if (filename)
