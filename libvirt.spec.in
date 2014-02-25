@@ -566,7 +566,7 @@ BuildRequires: parted-devel
 BuildRequires: e2fsprogs-devel
     %endif
 %endif
-%if %{with_storage_mpath}
+%if %{with_storage_mpath} || %{with_storage_disk}
 # For Multipath support
     %if 0%{?rhel} == 5
 # Broken RHEL-5 packaging has header files in main RPM :-(
@@ -574,9 +574,9 @@ BuildRequires: device-mapper
     %else
 BuildRequires: device-mapper-devel
     %endif
-    %if %{with_storage_rbd}
+%endif
+%if %{with_storage_rbd}
 BuildRequires: ceph-devel
-    %endif
 %endif
 %if %{with_storage_gluster}
     %if 0%{?rhel} >= 6
