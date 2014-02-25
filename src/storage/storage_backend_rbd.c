@@ -60,6 +60,9 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     char secretUuid[VIR_UUID_STRING_BUFLEN];
     size_t i;
     char *mon_buff = NULL;
+    const char *client_mount_timeout = "30";
+    const char *mon_op_timeout = "30";
+    const char *osd_op_timeout = "30";
 
     VIR_DEBUG("Found Cephx username: %s",
               pool->def->source.auth.cephx.username);
@@ -196,6 +199,20 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                       "mon_host");
         goto cleanup;
     }
+
+    /*
+     * Set timeout options for librados.
+     * In case the Ceph cluster is down libvirt won't block forever.
+     * Operations in librados will return -ETIMEDOUT when the timeout is reached.
+     */
+    VIR_DEBUG("Setting RADOS option client_mount_timeout to %s", client_mount_timeout);
+    rados_conf_set(ptr->cluster, "client_mount_timeout", client_mount_timeout);
+
+    VIR_DEBUG("Setting RADOS option rados_mon_op_timeout to %s", mon_op_timeout);
+    rados_conf_set(ptr->cluster, "rados_mon_op_timeout", mon_op_timeout);
+
+    VIR_DEBUG("Setting RADOS option rados_osd_op_timeout to %s", osd_op_timeout);
+    rados_conf_set(ptr->cluster, "rados_osd_op_timeout", osd_op_timeout);
 
     ptr->starttime = time(0);
     r = rados_connect(ptr->cluster);
