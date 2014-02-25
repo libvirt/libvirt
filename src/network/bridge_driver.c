@@ -3936,7 +3936,8 @@ networkReleaseActualDevice(virDomainDefPtr dom,
     }
     netdef = network->def;
 
-    if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE ||
+    if (iface->data.network.actual &&
+        (netdef->forward.type == VIR_NETWORK_FORWARD_NONE ||
          netdef->forward.type == VIR_NETWORK_FORWARD_NAT ||
          netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) &&
         networkUnplugBandwidth(network, iface) < 0)
@@ -4029,15 +4030,15 @@ networkReleaseActualDevice(virDomainDefPtr dom,
    }
 
 success:
-    if (iface->data.network.actual)
+    if (iface->data.network.actual) {
         netdef->connections--;
+        VIR_DEBUG("Releasing network %s, %d connections",
+                  netdef->name, netdef->connections);
 
-    /* finally we can call the 'unplugged' hook script if any */
-    networkRunHook(network, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
-                   VIR_HOOK_SUBOP_BEGIN);
-
-    VIR_DEBUG("Releasing network %s, %d connections",
-              netdef->name, netdef->connections);
+        /* finally we can call the 'unplugged' hook script if any */
+        networkRunHook(network, dom, iface, VIR_HOOK_NETWORK_OP_IFACE_UNPLUGGED,
+                       VIR_HOOK_SUBOP_BEGIN);
+    }
     ret = 0;
 cleanup:
     if (network)
