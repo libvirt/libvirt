@@ -3662,36 +3662,35 @@ validate:
         }
     }
 
-    if (dev) {
-        /* mark the allocation */
-        dev->connections++;
-        if (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-            VIR_DEBUG("Using physical device %s, %d connections",
-                      dev->device.dev, dev->connections);
-        } else {
-            VIR_DEBUG("Using physical device %04x:%02x:%02x.%x, connections %d",
-                      dev->device.pci.domain, dev->device.pci.bus,
-                      dev->device.pci.slot, dev->device.pci.function,
-                      dev->connections);
-        }
-    }
-
     if (netdef) {
         netdef->connections++;
         VIR_DEBUG("Using network %s, %d connections",
                   netdef->name, netdef->connections);
-    }
 
-    /* finally we can call the 'plugged' hook script if any */
-    if (networkRunHook(network, dom, iface,
-                       VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
-                       VIR_HOOK_SUBOP_BEGIN) < 0) {
-        /* adjust for failure */
-        if (dev)
-            dev->connections--;
-        if (netdef)
+        if (dev) {
+            /* mark the allocation */
+            dev->connections++;
+            if (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+                VIR_DEBUG("Using physical device %s, %d connections",
+                          dev->device.dev, dev->connections);
+            } else {
+                VIR_DEBUG("Using physical device %04x:%02x:%02x.%x, connections %d",
+                          dev->device.pci.domain, dev->device.pci.bus,
+                          dev->device.pci.slot, dev->device.pci.function,
+                          dev->connections);
+            }
+        }
+
+        /* finally we can call the 'plugged' hook script if any */
+        if (networkRunHook(network, dom, iface,
+                           VIR_HOOK_NETWORK_OP_IFACE_PLUGGED,
+                           VIR_HOOK_SUBOP_BEGIN) < 0) {
+            /* adjust for failure */
             netdef->connections--;
-        goto error;
+            if (dev)
+                dev->connections--;
+            goto error;
+        }
     }
 
     ret = 0;
