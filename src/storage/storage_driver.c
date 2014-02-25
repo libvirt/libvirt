@@ -1446,42 +1446,66 @@ storageVolLookupByPath(virConnectPtr conn,
 
     storageDriverLock(driver);
     for (i = 0; i < driver->pools.count && !ret; i++) {
-        virStoragePoolObjLock(driver->pools.objs[i]);
-        if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
-            virStorageVolDefPtr vol;
-            char *stable_path;
+        virStoragePoolObjPtr pool = driver->pools.objs[i];
+        virStorageVolDefPtr vol;
+        char *stable_path = NULL;
 
-            stable_path = virStorageBackendStablePath(driver->pools.objs[i],
-                                                      cleanpath,
-                                                      false);
-            if (stable_path == NULL) {
-                /* Don't break the whole lookup process if it fails on
-                 * getting the stable path for some of the pools.
-                 */
-                VIR_WARN("Failed to get stable path for pool '%s'",
-                         driver->pools.objs[i]->def->name);
-                virStoragePoolObjUnlock(driver->pools.objs[i]);
-                continue;
-            }
+        virStoragePoolObjLock(pool);
 
-            vol = virStorageVolDefFindByPath(driver->pools.objs[i],
-                                             stable_path);
-            VIR_FREE(stable_path);
+        if (!virStoragePoolObjIsActive(pool)) {
+           virStoragePoolObjUnlock(pool);
+           continue;
+        }
 
-            if (vol) {
-                if (virStorageVolLookupByPathEnsureACL(conn, driver->pools.objs[i]->def, vol) < 0) {
-                    virStoragePoolObjUnlock(driver->pools.objs[i]);
+        switch ((enum virStoragePoolType) pool->def->type) {
+            case VIR_STORAGE_POOL_DIR:
+            case VIR_STORAGE_POOL_FS:
+            case VIR_STORAGE_POOL_NETFS:
+            case VIR_STORAGE_POOL_LOGICAL:
+            case VIR_STORAGE_POOL_DISK:
+            case VIR_STORAGE_POOL_ISCSI:
+            case VIR_STORAGE_POOL_SCSI:
+            case VIR_STORAGE_POOL_MPATH:
+                stable_path = virStorageBackendStablePath(pool,
+                                                          cleanpath,
+                                                          false);
+                if (stable_path == NULL) {
+                    /* Don't break the whole lookup process if it fails on
+                     * getting the stable path for some of the pools.
+                     */
+                    VIR_WARN("Failed to get stable path for pool '%s'",
+                             pool->def->name);
+                    virStoragePoolObjUnlock(pool);
+                    continue;
+                }
+                break;
+
+            case VIR_STORAGE_POOL_GLUSTER:
+            case VIR_STORAGE_POOL_RBD:
+            case VIR_STORAGE_POOL_SHEEPDOG:
+            case VIR_STORAGE_POOL_LAST:
+                if (VIR_STRDUP(stable_path, path) < 0) {
+                     virStoragePoolObjUnlock(pool);
                     goto cleanup;
                 }
-
-                ret = virGetStorageVol(conn,
-                                       driver->pools.objs[i]->def->name,
-                                       vol->name,
-                                       vol->key,
-                                       NULL, NULL);
-            }
+                break;
         }
-        virStoragePoolObjUnlock(driver->pools.objs[i]);
+
+        vol = virStorageVolDefFindByPath(pool, stable_path);
+        VIR_FREE(stable_path);
+
+        if (vol) {
+            if (virStorageVolLookupByPathEnsureACL(conn, pool->def, vol) < 0) {
+                virStoragePoolObjUnlock(pool);
+                goto cleanup;
+            }
+
+            ret = virGetStorageVol(conn, pool->def->name,
+                                   vol->name, vol->key,
+                                   NULL, NULL);
+        }
+
+        virStoragePoolObjUnlock(pool);
     }
 
     if (!ret)
