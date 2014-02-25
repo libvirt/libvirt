@@ -218,7 +218,7 @@ VIR_ENUM_IMPL(vshDomainPMSuspendedReason,
 static const char *
 vshDomainStateReasonToString(int state, int reason)
 {
-    const char *str;
+    const char *str = NULL;
     switch ((virDomainState) state) {
     case VIR_DOMAIN_NOSTATE:
         str = vshDomainNostateReasonTypeToString(reason);

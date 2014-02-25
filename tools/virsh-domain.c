@@ -10399,7 +10399,7 @@ VIR_ENUM_IMPL(vshDomainEventCrashed,
 static const char *
 vshDomainEventDetailToString(int event, int detail)
 {
-    const char *str;
+    const char *str = NULL;
     switch ((virDomainEventType) event) {
     case VIR_DOMAIN_EVENT_DEFINED:
         str = vshDomainEventDefinedTypeToString(detail);
