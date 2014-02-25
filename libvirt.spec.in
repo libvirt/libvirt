@@ -131,6 +131,7 @@
 %define with_firewalld     0%{!?_without_firewalld:0}
 %define with_libssh2       0%{!?_without_libssh2:0}
 %define with_wireshark     0%{!?_without_wireshark:0}
+%define with_systemd_daemon 0%{!?_without_systemd_daemon:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_sasl          0%{!?_without_sasl:1}
@@ -180,6 +181,7 @@
 # Fedora has systemd, libvirt still used sysvinit there.
 %if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
     %define with_systemd 1
+    %define with_systemd_daemon 1
 %endif
 
 # Fedora 18 / RHEL-7 are first where firewalld support is enabled
@@ -451,6 +453,9 @@ BuildRequires: /usr/bin/pod2man
 BuildRequires: python
 %if %{with_systemd}
 BuildRequires: systemd-units
+%endif
+%if %{with_systemd_daemon}
+BuildRequires: systemd-devel
 %endif
 %if %{with_xen} || %{with_libxl}
 BuildRequires: xen-devel
@@ -1386,6 +1391,10 @@ driver
     %define _without_wireshark --without-wireshark-dissector
 %endif
 
+%if ! %{with_systemd_daemon}
+    %define _without_systemd_daemon --without-systemd-daemon
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1460,6 +1469,7 @@ driver
            %{?_without_driver_modules} \
            %{?_with_firewalld} \
            %{?_without_wireshark} \
+           %{?_without_systemd_daemon} \
            %{with_packager} \
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
