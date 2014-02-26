@@ -155,7 +155,7 @@ VIR_ENUM_IMPL(vshDomainNostateReason,
 VIR_ENUM_DECL(vshDomainRunningReason)
 VIR_ENUM_IMPL(vshDomainRunningReason,
               VIR_DOMAIN_RUNNING_LAST,
-              N_("unkown"),
+              N_("unknown"),
               N_("booted"),
               N_("migrated"),
               N_("restored"),

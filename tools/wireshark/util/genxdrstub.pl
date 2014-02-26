@@ -67,7 +67,7 @@ for my $proto (@ARGV) {
                 # Top level of name path is type identification of itself
                 $lex->define_dissector($lex->idstrip);
             } else {
-                die "Unkown lexical appeared: $lex";
+                die "Unknown lexical appeared: $lex";
             }
         }
 
