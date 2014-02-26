@@ -23,7 +23,7 @@
 #include "virfile.h"
 #include "testutils.h"
 
-#if HAVE_DLFCN_H
+#if HAVE_DLFCN_H && defined(RTLD_NEXT)
 
 # ifdef MOCK_HELPER
 #  include "internal.h"
