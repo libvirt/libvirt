@@ -386,35 +386,11 @@ error:
     libxl_event_free(priv->ctx, (libxl_event *)event);
 }
 
-static const struct libxl_event_hooks ev_hooks = {
+const struct libxl_event_hooks ev_hooks = {
     .event_occurs_mask = LIBXL_EVENTMASK_ALL,
     .event_occurs = libxlEventHandler,
     .disaster = NULL,
 };
-
-/*
- * Register for domain events emitted by libxl.
- */
-static int
-libxlDomEventsRegister(virDomainObjPtr vm)
-{
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-
-    libxl_event_register_callbacks(priv->ctx, &ev_hooks, vm);
-
-    /* Always enable domain death events */
-    if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
-        goto error;
-
-    return 0;
-
-error:
-    if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
-        priv->deathW = NULL;
-    }
-    return -1;
-}
 
 static int
 libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
@@ -633,7 +609,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
      * be cleaned up if there are any subsequent failures.
      */
     vm->def->id = domid;
-    if (libxlDomEventsRegister(vm) < 0)
+    if (libxlDomainEventsRegister(vm) < 0)
         goto cleanup_dom;
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
@@ -741,7 +717,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
     /* Re-register domain death et. al. events */
-    libxlDomEventsRegister(vm);
+    libxlDomainEventsRegister(vm);
     virObjectUnlock(vm);
     return 0;
 

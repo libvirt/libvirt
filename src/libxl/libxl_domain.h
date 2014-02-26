@@ -75,7 +75,7 @@ struct _libxlDomainObjPrivate {
 
 extern virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks;
 extern virDomainDefParserConfig libxlDomainDefParserConfig;
-
+extern const struct libxl_event_hooks ev_hooks;
 
 int
 libxlDomainObjPrivateInitCtx(virDomainObjPtr vm);
@@ -116,5 +116,7 @@ bool
 libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
                       virDomainObjPtr vm,
                       virDomainShutoffReason reason);
+int
+libxlDomainEventsRegister(virDomainObjPtr vm);
 
 #endif /* LIBXL_DOMAIN_H */

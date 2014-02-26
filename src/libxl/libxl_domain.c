@@ -732,3 +732,27 @@ libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
 
     return libxlDomainObjEndJob(driver, vm);
 }
+
+/*
+ * Register for domain events emitted by libxl.
+ */
+int
+libxlDomainEventsRegister(virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+
+    libxl_event_register_callbacks(priv->ctx, &ev_hooks, vm);
+
+    /* Always enable domain death events */
+    if (libxl_evenable_domain_death(priv->ctx, vm->def->id, 0, &priv->deathW))
+        goto error;
+
+    return 0;
+
+error:
+    if (priv->deathW) {
+        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        priv->deathW = NULL;
+    }
+    return -1;
+}
