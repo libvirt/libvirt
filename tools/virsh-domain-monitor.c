@@ -495,12 +495,12 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (details)
-        vshPrint(ctl, "%-10s %-10s %-10s %s\n", _("Type"),
-                 _("Device"), _("Target"), _("Source"));
+        vshPrintExtra(ctl, "%-10s %-10s %-10s %s\n", _("Type"),
+                      _("Device"), _("Target"), _("Source"));
     else
-        vshPrint(ctl, "%-10s %s\n", _("Target"), _("Source"));
+        vshPrintExtra(ctl, "%-10s %s\n", _("Target"), _("Source"));
 
-    vshPrint(ctl, "------------------------------------------------\n");
+    vshPrintExtra(ctl, "------------------------------------------------\n");
 
     for (i = 0; i < ndisks; i++) {
         char *type = NULL;
@@ -609,9 +609,9 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     if (ninterfaces < 0)
         goto cleanup;
 
-    vshPrint(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Interface"), _("Type"),
-             _("Source"), _("Model"), _("MAC"));
-    vshPrint(ctl, "-------------------------------------------------------\n");
+    vshPrintExtra(ctl, "%-10s %-10s %-10s %-11s %s\n", _("Interface"),
+                  _("Type"), _("Source"), _("Model"), _("MAC"));
+    vshPrintExtra(ctl, "-------------------------------------------------------\n");
 
     for (i = 0; i < ninterfaces; i++) {
         char *type = NULL;

@@ -5815,8 +5815,8 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         if ((ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
                                              cpumaps, cpumaplen, flags)) >= 0) {
 
-            vshPrint(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
-            vshPrint(ctl, "----------------------------------\n");
+            vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
+            vshPrintExtra(ctl, "----------------------------------\n");
             for (i = 0; i < ncpus; i++) {
                if (vcpu != -1 && i != vcpu)
                    continue;
@@ -5944,9 +5944,9 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
         cpumaps = vshMalloc(ctl, cpumaplen);
         if (virDomainGetEmulatorPinInfo(dom, cpumaps,
                                         cpumaplen, flags) >= 0) {
-            vshPrint(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
-            vshPrint(ctl, "----------------------------------\n");
-            vshPrint(ctl, "       *: ");
+            vshPrintExtra(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
+            vshPrintExtra(ctl, "----------------------------------\n");
+            vshPrintExtra(ctl, "       *: ");
             ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, 0);
             vshPrint(ctl, "\n");
         }
