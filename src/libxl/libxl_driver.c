@@ -214,96 +214,6 @@ cleanup:
 }
 
 /*
- * Cleanup function for domain that has reached shutoff state.
- *
- * virDomainObjPtr should be locked on invocation
- */
-static void
-libxlVmCleanup(libxlDriverPrivatePtr driver,
-               virDomainObjPtr vm,
-               virDomainShutoffReason reason)
-{
-    libxlDomainObjPrivatePtr priv = vm->privateData;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    int vnc_port;
-    char *file;
-    size_t i;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-
-    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
-                                    vm->def, VIR_HOSTDEV_SP_PCI, NULL);
-
-    vm->def->id = -1;
-
-    if (priv->deathW) {
-        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
-        priv->deathW = NULL;
-    }
-
-    if (vm->persistent)
-        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
-
-    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
-        driver->inhibitCallback(false, driver->inhibitOpaque);
-
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport) {
-        vnc_port = vm->def->graphics[0]->data.vnc.port;
-        if (vnc_port >= LIBXL_VNC_PORT_MIN) {
-            if (virPortAllocatorRelease(driver->reservedVNCPorts,
-                                        vnc_port) < 0)
-                VIR_DEBUG("Could not mark port %d as unused", vnc_port);
-        }
-    }
-
-    /* Remove any cputune settings */
-    if (vm->def->cputune.nvcpupin) {
-        for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
-            virBitmapFree(vm->def->cputune.vcpupin[i]->cpumask);
-            VIR_FREE(vm->def->cputune.vcpupin[i]);
-        }
-        VIR_FREE(vm->def->cputune.vcpupin);
-        vm->def->cputune.nvcpupin = 0;
-    }
-
-    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) > 0) {
-        if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
-            VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
-        VIR_FREE(file);
-    }
-
-    if (vm->newDef) {
-        virDomainDefFree(vm->def);
-        vm->def = vm->newDef;
-        vm->def->id = -1;
-        vm->newDef = NULL;
-    }
-
-    virObjectUnref(cfg);
-}
-
-/*
- * Cleanup function for domain that has reached shutoff state.
- * Executed in the context of a job.
- *
- * virDomainObjPtr should be locked on invocation
- * Returns true if references remain on virDomainObjPtr, false otherwise.
- */
-static bool
-libxlVmCleanupJob(libxlDriverPrivatePtr driver,
-                  virDomainObjPtr vm,
-                  virDomainShutoffReason reason)
-{
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_DESTROY) < 0)
-        return true;
-
-    libxlVmCleanup(driver, vm, reason);
-
-    return libxlDomainObjEndJob(driver, vm);
-}
-
-/*
  * Handle previously registered event notification from libxenlight.
  *
  * Note: Xen 4.3 removed the const from the event handler signature.
@@ -401,7 +311,7 @@ destroy:
         dom_event = NULL;
     }
     libxl_domain_destroy(ctx, vm->def->id, NULL);
-    if (libxlVmCleanupJob(driver, vm, reason)) {
+    if (libxlDomainCleanupJob(driver, vm, reason)) {
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
@@ -415,7 +325,7 @@ restart:
         dom_event = NULL;
     }
     libxl_domain_destroy(ctx, vm->def->id, NULL);
-    libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     libxlVmStart(driver, vm, 0, -1);
 
 cleanup:
@@ -836,7 +746,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     return 0;
 
 out:
-    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
+    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
     if (!vm->persistent)
         virDomainObjListRemoveLocked(driver->domains, vm);
     else
@@ -1638,7 +1548,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (libxlVmCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED)) {
+    if (libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED)) {
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
@@ -1980,7 +1890,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED);
+    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED);
     vm->hasManagedSave = true;
     ret = 0;
 
@@ -2173,7 +2083,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
             goto unpause;
         }
 
-        libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
+        libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
         if (!vm->persistent)

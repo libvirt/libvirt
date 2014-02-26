@@ -107,4 +107,14 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
                          libxlSavefileHeaderPtr ret_hdr)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
+void
+libxlDomainCleanup(libxlDriverPrivatePtr driver,
+                   virDomainObjPtr vm,
+                   virDomainShutoffReason reason);
+
+bool
+libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
+                      virDomainObjPtr vm,
+                      virDomainShutoffReason reason);
+
 #endif /* LIBXL_DOMAIN_H */

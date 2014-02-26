@@ -28,6 +28,7 @@
 #include "libxl_domain.h"
 
 #include "viralloc.h"
+#include "viratomic.h"
 #include "virfile.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -640,4 +641,94 @@ error:
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return -1;
+}
+
+/*
+ * Cleanup function for domain that has reached shutoff state.
+ *
+ * virDomainObjPtr must be locked on invocation
+ */
+void
+libxlDomainCleanup(libxlDriverPrivatePtr driver,
+                   virDomainObjPtr vm,
+                   virDomainShutoffReason reason)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    int vnc_port;
+    char *file;
+    size_t i;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                    vm->def, VIR_HOSTDEV_SP_PCI, NULL);
+
+    vm->def->id = -1;
+
+    if (priv->deathW) {
+        libxl_evdisable_domain_death(priv->ctx, priv->deathW);
+        priv->deathW = NULL;
+    }
+
+    if (vm->persistent)
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
+
+    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics[0]->data.vnc.autoport) {
+        vnc_port = vm->def->graphics[0]->data.vnc.port;
+        if (vnc_port >= LIBXL_VNC_PORT_MIN) {
+            if (virPortAllocatorRelease(driver->reservedVNCPorts,
+                                        vnc_port) < 0)
+                VIR_DEBUG("Could not mark port %d as unused", vnc_port);
+        }
+    }
+
+    /* Remove any cputune settings */
+    if (vm->def->cputune.nvcpupin) {
+        for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
+            virBitmapFree(vm->def->cputune.vcpupin[i]->cpumask);
+            VIR_FREE(vm->def->cputune.vcpupin[i]);
+        }
+        VIR_FREE(vm->def->cputune.vcpupin);
+        vm->def->cputune.nvcpupin = 0;
+    }
+
+    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) > 0) {
+        if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
+            VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
+        VIR_FREE(file);
+    }
+
+    if (vm->newDef) {
+        virDomainDefFree(vm->def);
+        vm->def = vm->newDef;
+        vm->def->id = -1;
+        vm->newDef = NULL;
+    }
+
+    virObjectUnref(cfg);
+}
+
+/*
+ * Cleanup function for domain that has reached shutoff state.
+ * Executed in the context of a job.
+ *
+ * virDomainObjPtr should be locked on invocation
+ * Returns true if references remain on virDomainObjPtr, false otherwise.
+ */
+bool
+libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
+                      virDomainObjPtr vm,
+                      virDomainShutoffReason reason)
+{
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_DESTROY) < 0)
+        return true;
+
+    libxlDomainCleanup(driver, vm, reason);
+
+    return libxlDomainObjEndJob(driver, vm);
 }
