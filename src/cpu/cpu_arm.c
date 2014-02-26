@@ -26,6 +26,7 @@
 
 #include "viralloc.h"
 #include "cpu.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -45,15 +46,18 @@ ArmNodeData(virArch arch)
 }
 
 static int
-ArmDecode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
+ArmDecode(virCPUDefPtr cpu,
           const virCPUData *data ATTRIBUTE_UNUSED,
           const char **models ATTRIBUTE_UNUSED,
           unsigned int nmodels ATTRIBUTE_UNUSED,
           const char *preferred ATTRIBUTE_UNUSED,
           unsigned int flags)
 {
-
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
+
+    if (cpu->model == NULL &&
+        VIR_STRDUP(cpu->model, "host") < 0)
+        return -1;
 
     return 0;
 }
@@ -62,6 +66,24 @@ static void
 ArmDataFree(virCPUDataPtr data)
 {
     VIR_FREE(data);
+}
+
+static int
+ArmUpdate(virCPUDefPtr guest,
+          const virCPUDef *host)
+{
+    guest->match = VIR_CPU_MATCH_EXACT;
+    virCPUDefFreeModel(guest);
+    return virCPUDefCopyModel(guest, host, true);
+}
+
+static virCPUCompareResult
+ArmGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
+             virCPUDefPtr guest ATTRIBUTE_UNUSED,
+             virCPUDataPtr *data ATTRIBUTE_UNUSED,
+             char **message ATTRIBUTE_UNUSED)
+{
+    return VIR_CPU_COMPARE_IDENTICAL;
 }
 
 struct cpuArchDriver cpuDriverArm = {
@@ -73,8 +95,8 @@ struct cpuArchDriver cpuDriverArm = {
     .encode = NULL,
     .free = ArmDataFree,
     .nodeData = ArmNodeData,
-    .guestData = NULL,
+    .guestData = ArmGuestData,
     .baseline = NULL,
-    .update = NULL,
+    .update = ArmUpdate,
     .hasFeature = NULL,
 };
