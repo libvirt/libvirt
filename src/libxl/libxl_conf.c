@@ -61,7 +61,7 @@ struct guest_arch {
     int ia64_be;
 };
 
-#define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64|powerpc64)(p|be)?"
+#define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
 
 static virClassPtr libxlDriverConfigClass;
@@ -320,8 +320,11 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
             }
             else if (STRPREFIX(&token[subs[2].rm_so], "powerpc64")) {
                 arch = VIR_ARCH_PPC64;
+            } else if (STRPREFIX(&token[subs[2].rm_so], "armv7l")) {
+                arch = VIR_ARCH_ARMV7L;
+            } else if (STRPREFIX(&token[subs[2].rm_so], "aarch64")) {
+                arch = VIR_ARCH_AARCH64;
             } else {
-                /* XXX arm ? */
                 continue;
             }
 
