@@ -1,7 +1,7 @@
 /*
  * vircgroup.c: methods for managing control cgroups
  *
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2014 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * This library is free software; you can redistribute it and/or
@@ -4377,6 +4377,31 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("Control groups not supported on this platform");
     return false;
+}
+
+
+int
+virCgroupGetPercpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
+                        virTypedParameterPtr params ATTRIBUTE_UNUSED,
+                        unsigned int nparams ATTRIBUTE_UNUSED,
+                        int start_cpu ATTRIBUTE_UNUSED,
+                        unsigned int ncpus ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupSetOwner(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
+                  uid_t uid ATTRIBUTE_UNUSED,
+                  gid_t gid ATTRIBUTE_UNUSED,
+                  int controllers ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
 }
 
 #endif /* !VIR_CGROUP_SUPPORTED */
