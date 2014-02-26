@@ -99,4 +99,12 @@ char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,
                            virDomainObjPtr vm);
 
+int
+libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
+                         libxlDriverConfigPtr cfg,
+                         const char *from,
+                         virDomainDefPtr *ret_def,
+                         libxlSavefileHeaderPtr ret_hdr)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+
 #endif /* LIBXL_DOMAIN_H */

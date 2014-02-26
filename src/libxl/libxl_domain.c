@@ -23,6 +23,8 @@
 
 #include <config.h>
 
+#include <fcntl.h>
+
 #include "libxl_domain.h"
 
 #include "viralloc.h"
@@ -564,4 +566,78 @@ libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm) {
     ignore_value(virAsprintf(&ret, "%s/%s.save", cfg->saveDir, vm->def->name));
     virObjectUnref(cfg);
     return ret;
+}
+
+/*
+ * Open a saved image file and initialize domain definition from the header.
+ *
+ * Returns the opened fd on success, -1 on failure.
+ */
+int
+libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
+                         libxlDriverConfigPtr cfg,
+                         const char *from,
+                         virDomainDefPtr *ret_def,
+                         libxlSavefileHeaderPtr ret_hdr)
+{
+    int fd;
+    virDomainDefPtr def = NULL;
+    libxlSavefileHeader hdr;
+    char *xml = NULL;
+
+    if ((fd = virFileOpenAs(from, O_RDONLY, 0, -1, -1, 0)) < 0) {
+        virReportSystemError(-fd,
+                             _("Failed to open domain image file '%s'"), from);
+        goto error;
+    }
+
+    if (saferead(fd, &hdr, sizeof(hdr)) != sizeof(hdr)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("failed to read libxl header"));
+        goto error;
+    }
+
+    if (memcmp(hdr.magic, LIBXL_SAVE_MAGIC, sizeof(hdr.magic))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("image magic is incorrect"));
+        goto error;
+    }
+
+    if (hdr.version > LIBXL_SAVE_VERSION) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("image version is not supported (%d > %d)"),
+                       hdr.version, LIBXL_SAVE_VERSION);
+        goto error;
+    }
+
+    if (hdr.xmlLen <= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("invalid XML length: %d"), hdr.xmlLen);
+        goto error;
+    }
+
+    if (VIR_ALLOC_N(xml, hdr.xmlLen) < 0)
+        goto error;
+
+    if (saferead(fd, xml, hdr.xmlLen) != hdr.xmlLen) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("failed to read XML"));
+        goto error;
+    }
+
+    if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto error;
+
+    VIR_FREE(xml);
+
+    *ret_def = def;
+    *ret_hdr = hdr;
+
+    return fd;
+
+error:
+    VIR_FREE(xml);
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(fd);
+    return -1;
 }
