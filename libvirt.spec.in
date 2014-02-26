@@ -99,7 +99,7 @@
 %else
     %define with_storage_sheepdog 0
 %endif
-%if 0%{?fedora} >= 19 || 0%{?rhel >= 6}
+%if 0%{?fedora} >= 19 || 0%{?rhel} >= 6
     %define with_storage_gluster 0%{!?_without_storage_gluster:%{server_drivers}}
 %else
     %define with_storage_gluster 0
@@ -157,7 +157,7 @@
 
 # libgfapi is built only on x86_64 on rhel
 %ifnarch x86_64
-    %if 0%{?rhel >= 6}
+    %if 0%{?rhel} >= 6
         %define with_storage_gluster 0
     %endif
 %endif
