@@ -138,6 +138,10 @@ libxlDriverConfigNew(void);
 libxlDriverConfigPtr
 libxlDriverConfigGet(libxlDriverPrivatePtr driver);
 
+int
+libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver,
+                       virNodeInfoPtr info);
+
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 

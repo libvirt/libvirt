@@ -132,43 +132,6 @@ cleanup:
     return ret;
 }
 
-static int
-libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
-{
-    libxl_physinfo phy_info;
-    virArch hostarch = virArchFromHost();
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    int ret = -1;
-
-    if (libxl_get_physinfo(cfg->ctx, &phy_info)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libxl_get_physinfo_info failed"));
-        goto cleanup;
-    }
-
-    if (virStrcpyStatic(info->model, virArchToString(hostarch)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("machine type %s too big for destination"),
-                       virArchToString(hostarch));
-        goto cleanup;
-    }
-
-    info->memory = phy_info.total_pages * (cfg->verInfo->pagesize / 1024);
-    info->cpus = phy_info.nr_cpus;
-    info->nodes = phy_info.nr_nodes;
-    info->cores = phy_info.cores_per_socket;
-    info->threads = phy_info.threads_per_core;
-    info->sockets = 1;
-    info->mhz = phy_info.cpu_khz / 1000;
-
-    ret = 0;
-
-cleanup:
-    virObjectUnref(cfg);
-    return ret;
-}
-
-
 /*
  * Handle previously registered event notification from libxenlight.
  *
@@ -362,7 +325,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     size_t i;
     int ret = -1;
 
-    if (libxlDoNodeGetInfo(driver, &nodeinfo) < 0)
+    if (libxlDriverNodeGetInfo(driver, &nodeinfo) < 0)
         goto cleanup;
 
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
@@ -1070,7 +1033,7 @@ libxlNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
-    return libxlDoNodeGetInfo(conn->privateData, info);
+    return libxlDriverNodeGetInfo(conn->privateData, info);
 }
 
 static char *
