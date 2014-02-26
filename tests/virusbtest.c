@@ -135,6 +135,105 @@ cleanup:
 
 
 static int
+testCheckNdevs(const char* occasion,
+               size_t got,
+               size_t expected) {
+    if (got != expected) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s: got %zu devices, expected %zu",
+                       occasion, got, expected);
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
+testUSBList(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virUSBDeviceListPtr list = NULL;
+    virUSBDeviceListPtr devlist = NULL;
+    virUSBDevicePtr dev = NULL;
+    int ret = -1;
+    size_t i, ndevs;
+
+    if (!(list = virUSBDeviceListNew()))
+        goto cleanup;
+
+#define EXPECTED_NDEVS_ONE 3
+    if (virUSBDeviceFindByVendor(0x1d6b, 0x0002, NULL, true, &devlist) < 0)
+        goto cleanup;
+
+    ndevs = virUSBDeviceListCount(devlist);
+    if (testCheckNdevs("After first find", ndevs, EXPECTED_NDEVS_ONE) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndevs; i++) {
+        dev = virUSBDeviceListGet(devlist, 0);
+        dev = virUSBDeviceListSteal(devlist, dev);
+
+        if (virUSBDeviceListAdd(list, dev) < 0)
+            goto cleanup;
+        dev = NULL;
+    }
+
+    virObjectUnref(devlist);
+    devlist = NULL;
+
+    ndevs = virUSBDeviceListCount(list);
+    if (testCheckNdevs("After first loop", ndevs, EXPECTED_NDEVS_ONE) < 0)
+        goto cleanup;
+
+#define EXPECTED_NDEVS_TWO 3
+    if (virUSBDeviceFindByVendor(0x18d1, 0x4e22, NULL, true, &devlist) < 0)
+        goto cleanup;
+
+    ndevs = virUSBDeviceListCount(devlist);
+    if (testCheckNdevs("After second find", ndevs, EXPECTED_NDEVS_TWO) < 0)
+        goto cleanup;
+    for (i = 0; i < ndevs; i++) {
+        dev = virUSBDeviceListGet(devlist, 0);
+        dev = virUSBDeviceListSteal(devlist, dev);
+
+        if (virUSBDeviceListAdd(list, dev) < 0)
+            goto cleanup;
+        dev = NULL;
+    }
+
+    if (testCheckNdevs("After second loop",
+                       virUSBDeviceListCount(list),
+                       EXPECTED_NDEVS_ONE + EXPECTED_NDEVS_TWO) < 0)
+        goto cleanup;
+
+    if (virUSBDeviceFind(0x18d1, 0x4e22, 1, 20, NULL, true, &dev) < 0)
+        goto cleanup;
+
+    if (!virUSBDeviceListFind(list, dev)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Device '%s' not in list when it should be",
+                       virUSBDeviceGetName(dev));
+        goto cleanup;
+    }
+
+    virUSBDeviceListDel(list, dev);
+    dev = NULL;
+
+    if (testCheckNdevs("After deleting one",
+                       virUSBDeviceListCount(list),
+                       EXPECTED_NDEVS_ONE + EXPECTED_NDEVS_TWO - 1) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virObjectUnref(list);
+    virObjectUnref(devlist);
+    virUSBDeviceFree(dev);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int rv = 0;
@@ -181,6 +280,9 @@ mymain(void)
     DO_TEST_FIND_BY_VENDOR("Nexus (multiple results)", 0x18d1, 0x4e22);
     DO_TEST_FIND_BY_VENDOR_FAIL("Bogus vendor and product", 0xf00d, 0xbeef);
     DO_TEST_FIND_BY_VENDOR_FAIL("Valid vendor", 0x1d6b, 0xbeef);
+
+    if (virtTestRun("USB List test", testUSBList, NULL) < 0)
+        rv = -1;
 
     if (rv < 0)
         return EXIT_FAILURE;
