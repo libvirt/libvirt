@@ -119,4 +119,8 @@ libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
 int
 libxlDomainEventsRegister(virDomainObjPtr vm);
 
+int
+libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
+                        virDomainObjPtr vm);
+
 #endif /* LIBXL_DOMAIN_H */

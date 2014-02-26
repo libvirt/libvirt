@@ -756,3 +756,47 @@ error:
     }
     return -1;
 }
+
+/*
+ * Core dump domain to default dump path.
+ *
+ * virDomainObjPtr must be locked on invocation
+ */
+int
+libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
+                        virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    time_t curtime = time(NULL);
+    char timestr[100];
+    struct tm time_info;
+    char *dumpfile = NULL;
+    int ret = -1;
+
+    localtime_r(&curtime, &time_info);
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+
+    if (virAsprintf(&dumpfile, "%s/%s-%s",
+                    cfg->autoDumpDir,
+                    vm->def->name,
+                    timestr) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    /* Unlock virDomainObj while dumping core */
+    virObjectUnlock(vm);
+    libxl_domain_core_dump(priv->ctx, vm->def->id, dumpfile, NULL);
+    virObjectLock(vm);
+
+    ignore_value(libxlDomainObjEndJob(driver, vm));
+    ret = 0;
+
+cleanup:
+    VIR_FREE(dumpfile);
+    virObjectUnref(cfg);
+
+    return ret;
+}
