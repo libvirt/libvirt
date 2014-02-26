@@ -106,12 +106,6 @@ libxlDomObjFromDomain(virDomainPtr dom)
     return vm;
 }
 
-static void
-libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
-{
-    virObjectEventStateQueue(driver->domainEventState, event);
-}
-
 static int
 libxlAutostartDomain(virDomainObjPtr vm,
                      void *opaque)

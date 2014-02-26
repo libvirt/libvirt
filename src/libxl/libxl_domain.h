@@ -91,4 +91,8 @@ libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
                      virDomainObjPtr obj)
     ATTRIBUTE_RETURN_CHECK;
 
+void
+libxlDomainEventQueue(libxlDriverPrivatePtr driver,
+                      virObjectEventPtr event);
+
 #endif /* LIBXL_DOMAIN_H */

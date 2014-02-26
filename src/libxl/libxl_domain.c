@@ -549,3 +549,9 @@ cleanup:
     VIR_FREE(log_file);
     return ret;
 }
+
+void
+libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
+{
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
