@@ -21,15 +21,18 @@
 #include <config.h>
 #include <stdlib.h>
 #include "virfile.h"
+#include "testutils.h"
 
-#ifdef MOCK_HELPER
-# include "internal.h"
-# include <sys/socket.h>
-# include <errno.h>
-# include <arpa/inet.h>
-# include <netinet/in.h>
-# include <stdio.h>
-# include <dlfcn.h>
+#if HAVE_DLFCN_H
+
+# ifdef MOCK_HELPER
+#  include "internal.h"
+#  include <sys/socket.h>
+#  include <errno.h>
+#  include <arpa/inet.h>
+#  include <netinet/in.h>
+#  include <stdio.h>
+#  include <dlfcn.h>
 
 static bool host_has_ipv6 = false;
 static int (*realsocket)(int domain, int type, int protocol);
@@ -102,17 +105,16 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
     return 0;
 }
 
-#else
+# else
 
-# include "testutils.h"
-# include "virutil.h"
-# include "virerror.h"
-# include "viralloc.h"
-# include "virlog.h"
-# include "virportallocator.h"
-# include "virstring.h"
+#  include "virutil.h"
+#  include "virerror.h"
+#  include "viralloc.h"
+#  include "virlog.h"
+#  include "virportallocator.h"
+#  include "virstring.h"
 
-# define VIR_FROM_THIS VIR_FROM_RPC
+#  define VIR_FROM_THIS VIR_FROM_RPC
 
 
 static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
@@ -261,4 +263,12 @@ mymain(void)
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libvirportallocatormock.so")
+# endif
+
+#else /* ! HAVE_DLFCN_H */
+int
+main(void)
+{
+    return EXIT_AM_SKIP;
+}
 #endif

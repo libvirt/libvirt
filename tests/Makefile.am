@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2014 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -333,10 +333,11 @@ test_libraries = libshunload.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
 		virpcimock.la \
-		qemuxml2argvmock.la \
 		$(NULL)
 if WITH_QEMU
-test_libraries += libqemumonitortestutils.la
+test_libraries += libqemumonitortestutils.la \
+		qemuxml2argvmock.la \
+		$(NULL)
 endif WITH_QEMU
 
 if WITH_DBUS
