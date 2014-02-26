@@ -3,6 +3,7 @@
 *.a
 *.cov
 *.exe
+*.exe.manifest
 *.gcda
 *.gcno
 *.gcov
