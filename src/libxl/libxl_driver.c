@@ -152,11 +152,11 @@ struct libxlShutdownThreadInfo
 static void
 libxlDomainShutdownThread(void *opaque)
 {
-    libxlDriverPrivatePtr driver = libxl_driver;
     struct libxlShutdownThreadInfo *shutdown_info = opaque;
     virDomainObjPtr vm = shutdown_info->vm;
     libxlDomainObjPrivatePtr priv = vm->privateData;
     libxl_event *ev = shutdown_info->event;
+    libxlDriverPrivatePtr driver = priv->driver;
     libxl_ctx *ctx = priv->ctx;
     virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
@@ -357,7 +357,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
     /* Re-register domain death et. al. events */
-    libxlDomainEventsRegister(vm);
+    libxlDomainEventsRegister(driver, vm);
     virObjectUnlock(vm);
     return 0;
 

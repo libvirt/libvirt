@@ -68,6 +68,7 @@ struct _libxlDomainObjPrivate {
     /* console */
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
+    libxlDriverPrivatePtr driver;
 
     struct libxlDomainJobObj job;
 };
@@ -117,7 +118,8 @@ libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
                       virDomainObjPtr vm,
                       virDomainShutoffReason reason);
 int
-libxlDomainEventsRegister(virDomainObjPtr vm);
+libxlDomainEventsRegister(libxlDriverPrivatePtr driver,
+                          virDomainObjPtr vm);
 
 int
 libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
