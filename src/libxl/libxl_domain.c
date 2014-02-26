@@ -854,3 +854,42 @@ cleanup:
     VIR_FREE(cpumap);
     return ret;
 }
+
+int
+libxlDomainFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
+{
+    uint32_t needed_mem;
+    uint32_t free_mem;
+    size_t i;
+    int ret = -1;
+    int tries = 3;
+    int wait_secs = 10;
+
+    if ((ret = libxl_domain_need_memory(priv->ctx, &d_config->b_info,
+                                        &needed_mem)) >= 0) {
+        for (i = 0; i < tries; ++i) {
+            if ((ret = libxl_get_free_memory(priv->ctx, &free_mem)) < 0)
+                break;
+
+            if (free_mem >= needed_mem) {
+                ret = 0;
+                break;
+            }
+
+            if ((ret = libxl_set_memory_target(priv->ctx, 0,
+                                               free_mem - needed_mem,
+                                               /* relative */ 1, 0)) < 0)
+                break;
+
+            ret = libxl_wait_for_free_memory(priv->ctx, 0, needed_mem,
+                                             wait_secs);
+            if (ret == 0 || ret != ERROR_NOMEM)
+                break;
+
+            if ((ret = libxl_wait_for_memory_target(priv->ctx, 0, 1)) < 0)
+                break;
+        }
+    }
+
+    return ret;
+}

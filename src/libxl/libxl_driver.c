@@ -311,45 +311,6 @@ const struct libxl_event_hooks ev_hooks = {
     .disaster = NULL,
 };
 
-static int
-libxlFreeMem(libxlDomainObjPrivatePtr priv, libxl_domain_config *d_config)
-{
-    uint32_t needed_mem;
-    uint32_t free_mem;
-    size_t i;
-    int ret = -1;
-    int tries = 3;
-    int wait_secs = 10;
-
-    if ((ret = libxl_domain_need_memory(priv->ctx, &d_config->b_info,
-                                        &needed_mem)) >= 0) {
-        for (i = 0; i < tries; ++i) {
-            if ((ret = libxl_get_free_memory(priv->ctx, &free_mem)) < 0)
-                break;
-
-            if (free_mem >= needed_mem) {
-                ret = 0;
-                break;
-            }
-
-            if ((ret = libxl_set_memory_target(priv->ctx, 0,
-                                               free_mem - needed_mem,
-                                               /* relative */ 1, 0)) < 0)
-                break;
-
-            ret = libxl_wait_for_free_memory(priv->ctx, 0, needed_mem,
-                                             wait_secs);
-            if (ret == 0 || ret != ERROR_NOMEM)
-                break;
-
-            if ((ret = libxl_wait_for_memory_target(priv->ctx, 0, 1)) < 0)
-                break;
-        }
-    }
-
-    return ret;
-}
-
 /*
  * Start a domain through libxenlight.
  *
@@ -429,7 +390,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (libxlBuildDomainConfig(driver, vm, &d_config) < 0)
         goto endjob;
 
-    if (cfg->autoballoon && libxlFreeMem(priv, &d_config) < 0) {
+    if (cfg->autoballoon && libxlDomainFreeMem(priv, &d_config) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to get free memory for domain '%s'"),
                        d_config.c_info.name);
