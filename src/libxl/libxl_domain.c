@@ -800,3 +800,57 @@ cleanup:
 
     return ret;
 }
+
+int
+libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
+{
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    libxl_bitmap map;
+    virBitmapPtr cpumask = NULL;
+    uint8_t *cpumap = NULL;
+    virNodeInfo nodeinfo;
+    size_t cpumaplen;
+    int vcpu;
+    size_t i;
+    int ret = -1;
+
+    if (libxlDriverNodeGetInfo(driver, &nodeinfo) < 0)
+        goto cleanup;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+
+    for (vcpu = 0; vcpu < def->cputune.nvcpupin; ++vcpu) {
+        if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
+            continue;
+
+        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
+            goto cleanup;
+
+        cpumask = def->cputune.vcpupin[vcpu]->cpumask;
+
+        for (i = 0; i < virBitmapSize(cpumask); ++i) {
+            bool bit;
+            ignore_value(virBitmapGetBit(cpumask, i, &bit));
+            if (bit)
+                VIR_USE_CPU(cpumap, i);
+        }
+
+        map.size = cpumaplen;
+        map.map = cpumap;
+
+        if (libxl_set_vcpuaffinity(priv->ctx, def->id, vcpu, &map) != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
+            goto cleanup;
+        }
+
+        VIR_FREE(cpumap);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
+}

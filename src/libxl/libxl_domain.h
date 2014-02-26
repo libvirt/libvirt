@@ -123,4 +123,8 @@ int
 libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
                         virDomainObjPtr vm);
 
+int
+libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver,
+                             virDomainObjPtr vm);
+
 #endif /* LIBXL_DOMAIN_H */
