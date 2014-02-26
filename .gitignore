@@ -219,6 +219,7 @@
 /tests/virsystemdtest
 /tests/virtimetest
 /tests/viruritest
+/tests/virusbtest
 /tests/vmwarevertest
 /tests/vmx2xmltest
 /tests/xencapstest

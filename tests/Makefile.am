@@ -115,6 +115,7 @@ EXTRA_DIST =		\
 	virfiledata \
 	virpcitestdata \
 	virscsidata \
+	virusbtestdata \
 	vmx2xmldata \
 	xencapsdata \
 	xmconfigdata \
@@ -263,6 +264,10 @@ test_programs += metadatatest
 
 test_programs += secretxml2xmltest
 
+if WITH_LINUX
+test_programs += virusbtest
+endif WITH_LINUX
+
 test_scripts = \
 	capabilityschematest \
 	interfaceschematest \
@@ -343,6 +348,10 @@ endif WITH_QEMU
 if WITH_DBUS
 test_libraries += virsystemdmock.la
 endif WITH_DBUS
+
+if WITH_LINUX
+test_libraries += virusbmock.la
+endif WITH_LINUX
 
 if WITH_TESTS
 noinst_PROGRAMS = $(test_programs) $(test_helpers)
@@ -814,6 +823,19 @@ virpcimock_la_LIBADD = $(GNULIB_LIBS) \
 					   ../src/libvirt.la
 virpcimock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+if WITH_LINUX
+virusbtest_SOURCES = \
+	virusbtest.c testutils.h testutils.c
+virusbtest_LDADD = $(LDADDS)
+
+virusbmock_la_SOURCES = virusbmock.c
+virusbmock_la_CFLAGS = $(AM_CFLAGS)
+virusbmock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+else ! WITH_LINUX
+	EXTRA_DIST += virusbtest.c virusbmock.c
+endif ! WITH_LINUX
 
 if WITH_DBUS
 virdbustest_SOURCES = \
