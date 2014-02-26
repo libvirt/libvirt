@@ -499,6 +499,185 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
 };
 
+
+struct libxlShutdownThreadInfo
+{
+    virDomainObjPtr vm;
+    libxl_event *event;
+};
+
+
+static void
+libxlDomainShutdownThread(void *opaque)
+{
+    struct libxlShutdownThreadInfo *shutdown_info = opaque;
+    virDomainObjPtr vm = shutdown_info->vm;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxl_event *ev = shutdown_info->event;
+    libxlDriverPrivatePtr driver = priv->driver;
+    libxl_ctx *ctx = priv->ctx;
+    virObjectEventPtr dom_event = NULL;
+    libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
+    virDomainShutoffReason reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+
+    virObjectLock(vm);
+
+    if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        switch ((enum virDomainLifecycleAction) vm->def->onPoweroff) {
+        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_LAST:
+            goto cleanup;
+        }
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+        switch ((enum virDomainLifecycleCrashAction) vm->def->onCrash) {
+        case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_CRASHED;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
+            goto cleanup;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+            libxlDomainAutoCoreDump(driver, vm);
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+            libxlDomainAutoCoreDump(driver, vm);
+            goto restart;
+        }
+    } else if (xl_reason == LIBXL_SHUTDOWN_REASON_REBOOT) {
+        dom_event = virDomainEventLifecycleNewFromObj(vm,
+                                           VIR_DOMAIN_EVENT_STOPPED,
+                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        switch ((enum virDomainLifecycleAction) vm->def->onReboot) {
+        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+            reason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
+            goto destroy;
+        case VIR_DOMAIN_LIFECYCLE_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+            goto restart;
+        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_LAST:
+            goto cleanup;
+        }
+    } else {
+        VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
+        goto cleanup;
+    }
+
+destroy:
+    if (dom_event) {
+        libxlDomainEventQueue(driver, dom_event);
+        dom_event = NULL;
+    }
+    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    if (libxlDomainCleanupJob(driver, vm, reason)) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
+    }
+    goto cleanup;
+
+restart:
+    if (dom_event) {
+        libxlDomainEventQueue(driver, dom_event);
+        dom_event = NULL;
+    }
+    libxl_domain_destroy(ctx, vm->def->id, NULL);
+    libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    libxlDomainStart(driver, vm, 0, -1);
+
+cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    if (dom_event)
+        libxlDomainEventQueue(driver, dom_event);
+    libxl_event_free(ctx, ev);
+    VIR_FREE(shutdown_info);
+}
+
+/*
+ * Handle previously registered domain event notification from libxenlight.
+ *
+ * Note: Xen 4.3 removed the const from the event handler signature.
+ * Detect which signature to use based on
+ * LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG.
+ */
+#ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
+# define VIR_LIBXL_EVENT_CONST /* empty */
+#else
+# define VIR_LIBXL_EVENT_CONST const
+#endif
+
+static void
+libxlEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
+{
+    virDomainObjPtr vm = data;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
+    libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
+    struct libxlShutdownThreadInfo *shutdown_info;
+    virThread thread;
+
+    if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
+        VIR_INFO("Unhandled event type %d", event->type);
+        goto error;
+    }
+
+    /*
+     * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
+     * after calling libxl_domain_suspend() are handled by it's callers.
+     */
+    if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
+        goto error;
+
+    /*
+     * Start a thread to handle shutdown.  We don't want to be tying up
+     * libxl's event machinery by doing a potentially lengthy shutdown.
+     */
+    if (VIR_ALLOC(shutdown_info) < 0)
+        goto error;
+
+    shutdown_info->vm = data;
+    shutdown_info->event = (libxl_event *)event;
+    if (virThreadCreate(&thread, false, libxlDomainShutdownThread,
+                        shutdown_info) < 0) {
+        /*
+         * Not much we can do on error here except log it.
+         */
+        VIR_ERROR(_("Failed to create thread to handle domain shutdown"));
+        goto error;
+    }
+
+    /*
+     * libxl_event freed in shutdown thread
+     */
+    return;
+
+error:
+    /* Cast away any const */
+    libxl_event_free(priv->ctx, (libxl_event *)event);
+}
+
+const struct libxl_event_hooks ev_hooks = {
+    .event_occurs_mask = LIBXL_EVENTMASK_ALL,
+    .event_occurs = libxlEventHandler,
+    .disaster = NULL,
+};
+
 static const libxl_childproc_hooks libxl_child_hooks = {
 #ifdef LIBXL_HAVE_SIGCHLD_OWNER_SELECTIVE_REAP
     .chldowner = libxl_sigchld_owner_libxl_always_selective_reap,
