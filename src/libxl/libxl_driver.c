@@ -168,16 +168,6 @@ cleanup:
     return ret;
 }
 
-static char *
-libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm) {
-    char *ret;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-
-    ignore_value(virAsprintf(&ret, "%s/%s.save", cfg->saveDir, vm->def->name));
-    virObjectUnref(cfg);
-    return ret;
-}
-
 /*
  * This internal function expects the driver lock to already be held on
  * entry.

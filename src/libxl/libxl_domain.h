@@ -95,4 +95,8 @@ void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver,
                       virObjectEventPtr event);
 
+char *
+libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,
+                           virDomainObjPtr vm);
+
 #endif /* LIBXL_DOMAIN_H */

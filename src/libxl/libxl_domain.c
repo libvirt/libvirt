@@ -555,3 +555,13 @@ libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->domainEventState, event);
 }
+
+char *
+libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm) {
+    char *ret;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+
+    ignore_value(virAsprintf(&ret, "%s/%s.save", cfg->saveDir, vm->def->name));
+    virObjectUnref(cfg);
+    return ret;
+}
