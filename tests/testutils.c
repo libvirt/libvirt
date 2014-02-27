@@ -584,7 +584,7 @@ struct virtTestLogData {
 static struct virtTestLogData testLog = { VIR_BUFFER_INITIALIZER };
 
 static void
-virtTestLogOutput(virLogSource source ATTRIBUTE_UNUSED,
+virtTestLogOutput(virLogSourcePtr source ATTRIBUTE_UNUSED,
                   virLogPriority priority ATTRIBUTE_UNUSED,
                   const char *filename ATTRIBUTE_UNUSED,
                   int lineno ATTRIBUTE_UNUSED,

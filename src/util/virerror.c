@@ -719,7 +719,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
      */
     if (virLogGetNbOutputs() > 0 ||
         virErrorLogPriorityFilter)
-        virLogMessage(VIR_LOG_FROM_ERROR,
+        virLogMessage(&virLogSelf,
                       priority,
                       filename, linenr, funcname,
                       meta, "%s", str);

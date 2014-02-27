@@ -24,6 +24,7 @@
 # define __LIBVIRT_AUDIT_H__
 
 # include "internal.h"
+# include "virlog.h"
 
 enum virAuditRecordType {
     VIR_AUDIT_RECORD_MACHINE_CONTROL,
@@ -35,22 +36,23 @@ int virAuditOpen(void);
 
 void virAuditLog(int enabled);
 
-void virAuditSend(const char *filename, size_t linenr, const char *funcname,
+void virAuditSend(virLogSourcePtr source,
+                  const char *filename, size_t linenr, const char *funcname,
                   const char *clienttty, const char *clientaddr,
                   enum virAuditRecordType type, bool success,
                   const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(8, 9);
+    ATTRIBUTE_FMT_PRINTF(9, 10);
 
 char *virAuditEncode(const char *key, const char *value);
 
 void virAuditClose(void);
 
 # define VIR_AUDIT(type, success, ...)				\
-    virAuditSend(__FILE__, __LINE__, __func__,                  \
+    virAuditSend(&virLogSelf, __FILE__, __LINE__, __func__,     \
                  NULL, NULL, type, success, __VA_ARGS__);
 
 # define VIR_AUDIT_USER(type, success, clienttty, clientaddr, ...)	\
-    virAuditSend(__FILE__, __LINE__, __func__,                          \
+    virAuditSend(&virLogSelf, __FILE__, __LINE__, __func__,             \
                  clienttty, clientaddr, type, success, __VA_ARGS__);
 
 # define VIR_AUDIT_STR(str) \

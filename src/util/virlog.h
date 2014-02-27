@@ -44,15 +44,14 @@ typedef enum {
     VIR_LOG_TO_JOURNALD,
 } virLogDestination;
 
-typedef enum {
-    VIR_LOG_FROM_FILE,    /* General debugging */
-    VIR_LOG_FROM_ERROR,   /* Errors reported */
-    VIR_LOG_FROM_AUDIT,   /* Audit operations */
-    VIR_LOG_FROM_TRACE,   /* DTrace probe pointers */
-    VIR_LOG_FROM_LIBRARY, /* 3rd party libraries */
+typedef struct _virLogSource virLogSource;
+typedef virLogSource *virLogSourcePtr;
 
-    VIR_LOG_FROM_LAST,
-} virLogSource;
+struct _virLogSource {
+    const char *name;
+};
+
+extern virLogSource virLogSelf;
 
 /*
  * If configured with --enable-debug=yes then library calls
@@ -68,7 +67,7 @@ typedef enum {
  *
  * Do nothing but eat parameters.
  */
-static inline void virLogEatParams(virLogSource unused, ...)
+static inline void virLogEatParams(virLogSourcePtr unused, ...)
 {
     /* Silence gcc */
     unused = unused;
@@ -85,13 +84,13 @@ static inline void virLogEatParams(virLogSource unused, ...)
     virLogMessage(src, VIR_LOG_ERROR, filename, linenr, funcname, NULL, __VA_ARGS__)
 
 # define VIR_DEBUG(...)                                                 \
-    VIR_DEBUG_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    VIR_DEBUG_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_INFO(...)                                                  \
-    VIR_INFO_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    VIR_INFO_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_WARN(...)                                                  \
-    VIR_WARN_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    VIR_WARN_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_ERROR(...)                                                 \
-    VIR_ERROR_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    VIR_ERROR_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
 
 struct _virLogMetadata {
@@ -105,7 +104,7 @@ typedef struct _virLogMetadata *virLogMetadataPtr;
 
 /**
  * virLogOutputFunc:
- * @src: the src for the message
+ * @src: the source of the log message
  * @priority: the priority for the message
  * @filename: file where the message was emitted
  * @linenr: line where the message was emitted
@@ -119,7 +118,7 @@ typedef struct _virLogMetadata *virLogMetadataPtr;
  *
  * Callback function used to output messages
  */
-typedef void (*virLogOutputFunc) (virLogSource src,
+typedef void (*virLogOutputFunc) (virLogSourcePtr src,
                                   virLogPriority priority,
                                   const char *filename,
                                   int linenr,
@@ -172,14 +171,14 @@ extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
 extern int virLogPriorityFromSyslog(int priority);
-extern void virLogMessage(virLogSource src,
+extern void virLogMessage(virLogSourcePtr source,
                           virLogPriority priority,
                           const char *filename,
                           int linenr,
                           const char *funcname,
                           virLogMetadataPtr metadata,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
-extern void virLogVMessage(virLogSource src,
+extern void virLogVMessage(virLogSourcePtr source,
                            virLogPriority priority,
                            const char *filename,
                            int linenr,

@@ -374,7 +374,7 @@ udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
 
     format = virBufferContentAndReset(&buf);
 
-    virLogVMessage(VIR_LOG_FROM_LIBRARY,
+    virLogVMessage(&virLogSelf,
                    virLogPriorityFromSyslog(priority),
                    file, line, fn, NULL, format ? format : fmt, args);
 

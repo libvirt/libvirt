@@ -60,14 +60,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-VIR_ENUM_DECL(virLogSource)
-VIR_ENUM_IMPL(virLogSource, VIR_LOG_FROM_LAST,
-              "file",
-              "error",
-              "audit",
-              "trace",
-              "library");
-
 /*
  * A logging buffer to keep some history over logs
  */
@@ -104,6 +96,8 @@ typedef virLogFilter *virLogFilterPtr;
 static virLogFilterPtr virLogFilters = NULL;
 static int virLogNbFilters = 0;
 
+virLogSource virLogSelf = { .name = "util.log" };
+
 /*
  * Outputs are used to emit the messages retained
  * after filtering, multiple output can be used simultaneously
@@ -130,7 +124,7 @@ static virLogPriority virLogDefaultPriority = VIR_LOG_DEFAULT;
 
 static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
-static void virLogOutputToFd(virLogSource src,
+static void virLogOutputToFd(virLogSourcePtr src,
                              virLogPriority priority,
                              const char *filename,
                              int linenr,
@@ -141,6 +135,7 @@ static void virLogOutputToFd(virLogSource src,
                              const char *rawstr,
                              const char *str,
                              void *data);
+
 
 /*
  * Logs accesses must be serialized though a mutex
@@ -765,7 +760,7 @@ virLogVersionString(const char **rawmsg,
  * the message may be stored, sent to output or just discarded
  */
 void
-virLogMessage(virLogSource source,
+virLogMessage(virLogSourcePtr source,
               virLogPriority priority,
               const char *filename,
               int linenr,
@@ -797,7 +792,7 @@ virLogMessage(virLogSource source,
  * the message may be stored, sent to output or just discarded
  */
 void
-virLogVMessage(virLogSource source,
+virLogVMessage(virLogSourcePtr source,
                virLogPriority priority,
                const char *filename,
                int linenr,
@@ -869,7 +864,7 @@ virLogVMessage(virLogSource source,
                 const char *rawver;
                 char *ver = NULL;
                 if (virLogVersionString(&rawver, &ver) >= 0)
-                    virLogOutputs[i].f(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
+                    virLogOutputs[i].f(&virLogSelf, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
                                        timestamp, NULL, 0, rawver, ver,
                                        virLogOutputs[i].data);
@@ -887,7 +882,7 @@ virLogVMessage(virLogSource source,
             const char *rawver;
             char *ver = NULL;
             if (virLogVersionString(&rawver, &ver) >= 0)
-                virLogOutputToFd(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
+                virLogOutputToFd(&virLogSelf, VIR_LOG_INFO,
                                  __FILE__, __LINE__, __func__,
                                  timestamp, NULL, 0, rawver, ver,
                                  (void *) STDERR_FILENO);
@@ -929,7 +924,7 @@ virLogStackTraceToFd(int fd)
 }
 
 static void
-virLogOutputToFd(virLogSource source ATTRIBUTE_UNUSED,
+virLogOutputToFd(virLogSourcePtr source ATTRIBUTE_UNUSED,
                  virLogPriority priority ATTRIBUTE_UNUSED,
                  const char *filename ATTRIBUTE_UNUSED,
                  int linenr ATTRIBUTE_UNUSED,
@@ -1033,7 +1028,7 @@ virLogPrioritySyslog(virLogPriority priority)
 
 #if HAVE_SYSLOG_H
 static void
-virLogOutputToSyslog(virLogSource source ATTRIBUTE_UNUSED,
+virLogOutputToSyslog(virLogSourcePtr source ATTRIBUTE_UNUSED,
                      virLogPriority priority,
                      const char *filename ATTRIBUTE_UNUSED,
                      int linenr ATTRIBUTE_UNUSED,
@@ -1160,7 +1155,7 @@ journalAddInt(struct journalState *state, const char *field, int value)
 static int journalfd = -1;
 
 static void
-virLogOutputToJournald(virLogSource source,
+virLogOutputToJournald(virLogSourcePtr source,
                        virLogPriority priority,
                        const char *filename,
                        int linenr,
@@ -1202,8 +1197,7 @@ virLogOutputToJournald(virLogSource source,
     journalAddString(&state, "MESSAGE", rawstr);
     journalAddInt(&state, "PRIORITY",
                   virLogPrioritySyslog(priority));
-    journalAddString(&state, "LIBVIRT_SOURCE",
-                     virLogSourceTypeToString(source));
+    journalAddString(&state, "LIBVIRT_SOURCE", source->name);
     if (filename)
         journalAddString(&state, "CODE_FILE", filename);
     journalAddInt(&state, "CODE_LINE", linenr);

@@ -3178,7 +3178,7 @@ virQEMUCapsLogProbeFailure(const char *binary)
     };
     virErrorPtr err = virGetLastError();
 
-    virLogMessage(VIR_LOG_FROM_FILE,
+    virLogMessage(&virLogSelf,
                   VIR_LOG_WARN,
                   __FILE__, __LINE__, __func__,
                   meta,
