@@ -1798,6 +1798,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
     qemuDomainObjPrivatePtr priv;
     bool useAgent = false, agentRequested, acpiRequested;
     bool isReboot = false;
+    bool agentForced;
     int agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
@@ -1824,25 +1825,11 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (priv->agentError) {
-        if (agentRequested && !acpiRequested) {
-            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
+    agentForced = agentRequested && !acpiRequested;
+    if (!qemuDomainAgentAvailable(priv, agentForced)) {
+        if (agentForced)
             goto cleanup;
-        } else {
-            useAgent = false;
-        }
-    }
-
-    if (!priv->agent) {
-        if (agentRequested && !acpiRequested) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-            goto cleanup;
-        } else {
-            useAgent = false;
-        }
+        useAgent = false;
     }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -1930,18 +1917,8 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
          priv->agent))
         useAgent = true;
 
-    if (useAgent) {
-        if (priv->agentError) {
-            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
-            goto cleanup;
-        }
-        if (!priv->agent) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-            goto cleanup;
-        }
+    if (useAgent && !qemuDomainAgentAvailable(priv, true)) {
+        goto cleanup;
     } else {
 #if WITH_YAJL
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
@@ -4187,18 +4164,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
         }
 
-        if (priv->agentError) {
-            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
+        if (!qemuDomainAgentAvailable(priv, true))
             goto endjob;
-        }
-
-        if (!priv->agent) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-            goto endjob;
-        }
 
         if (nvcpus > vm->def->vcpus) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -4925,18 +4892,8 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             goto cleanup;
 
-        if (priv->agentError) {
-            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
+        if (!qemuDomainAgentAvailable(priv, true))
             goto endjob;
-        }
-
-        if (!priv->agent) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-            goto endjob;
-        }
 
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -12044,17 +12001,8 @@ qemuDomainSnapshotFSFreeze(virDomainObjPtr vm) {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int freezed;
 
-    if (priv->agentError) {
-        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                       _("QEMU guest agent is not "
-                         "available due to an error"));
+    if (!qemuDomainAgentAvailable(priv, true))
         return -1;
-    }
-    if (!priv->agent) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU guest agent is not configured"));
-        return -1;
-    }
 
     qemuDomainObjEnterAgent(vm);
     freezed = qemuAgentFSFreeze(priv->agent);
@@ -12070,19 +12018,8 @@ qemuDomainSnapshotFSThaw(virDomainObjPtr vm, bool report)
     int thawed;
     virErrorPtr err = NULL;
 
-    if (priv->agentError) {
-        if (report)
-            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
+    if (!qemuDomainAgentAvailable(priv, report))
         return -1;
-    }
-    if (!priv->agent) {
-        if (report)
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-        return -1;
-    }
 
     qemuDomainObjEnterAgent(vm);
     if (!report)
@@ -16227,18 +16164,8 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
         }
     }
 
-    if (priv->agentError) {
-        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                       _("QEMU guest agent is not "
-                         "available due to an error"));
+    if (!qemuDomainAgentAvailable(priv, true))
         goto cleanup;
-    }
-
-    if (!priv->agent) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU guest agent is not configured"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -16360,18 +16287,8 @@ qemuDomainQemuAgentCommand(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (priv->agentError) {
-        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                       _("QEMU guest agent is not "
-                         "available due to an error"));
+    if (!qemuDomainAgentAvailable(priv, true))
         goto cleanup;
-    }
-
-    if (!priv->agent) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU guest agent is not configured"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -16432,18 +16349,8 @@ qemuDomainFSTrim(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!priv->agent) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU guest agent is not configured"));
+    if (!qemuDomainAgentAvailable(priv, true))
         goto cleanup;
-    }
-
-    if (priv->agentError) {
-        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                       _("QEMU guest agent is not "
-                         "available due to an error"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;

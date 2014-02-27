@@ -376,4 +376,8 @@ int qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
 bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                     virDomainDefPtr src,
                                     virDomainDefPtr dst);
+
+bool qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
+                              bool reportError);
+
 #endif /* __QEMU_DOMAIN_H__ */

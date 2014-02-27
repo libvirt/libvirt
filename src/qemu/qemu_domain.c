@@ -2465,3 +2465,25 @@ cleanup:
     virDomainDefFree(migratableDefDst);
     return ret;
 }
+
+bool
+qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
+                         bool reportError)
+{
+    if (priv->agentError) {
+        if (reportError) {
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("QEMU guest agent is not "
+                             "available due to an error"));
+        }
+        return false;
+    }
+    if (!priv->agent) {
+        if (reportError) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("QEMU guest agent is not configured"));
+        }
+        return false;
+    }
+    return true;
+}
