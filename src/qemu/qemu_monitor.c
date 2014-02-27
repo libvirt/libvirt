@@ -40,6 +40,7 @@
 #include "virfile.h"
 #include "virprocess.h"
 #include "virobject.h"
+#include "virprobe.h"
 #include "virstring.h"
 
 #ifdef WITH_DTRACE_PROBES

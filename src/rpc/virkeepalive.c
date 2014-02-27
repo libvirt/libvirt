@@ -30,6 +30,7 @@
 #include "virnetsocket.h"
 #include "virkeepaliveprotocol.h"
 #include "virkeepalive.h"
+#include "virprobe.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

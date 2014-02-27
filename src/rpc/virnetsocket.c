@@ -51,6 +51,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virthread.h"
+#include "virprobe.h"
 #include "virprocess.h"
 #include "virstring.h"
 #include "passfd.h"

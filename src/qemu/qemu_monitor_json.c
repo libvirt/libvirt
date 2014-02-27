@@ -41,6 +41,7 @@
 #include "datatypes.h"
 #include "virerror.h"
 #include "virjson.h"
+#include "virprobe.h"
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
 

@@ -52,6 +52,7 @@
 #include "object_event.h"
 #include "domain_conf.h"
 #include "network_conf.h"
+#include "virprobe.h"
 #include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

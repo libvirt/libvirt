@@ -40,6 +40,7 @@
 #include "datatypes.h"
 #include "virerror.h"
 #include "virbuffer.h"
+#include "virprobe.h"
 #include "virstring.h"
 
 #ifdef WITH_DTRACE_PROBES

@@ -39,6 +39,7 @@
 #include "virfile.h"
 #include "virutil.h"
 #include "virlog.h"
+#include "virprobe.h"
 #include "virthread.h"
 #include "configmake.h"
 

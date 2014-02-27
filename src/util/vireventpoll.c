@@ -38,6 +38,7 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "virerror.h"
+#include "virprobe.h"
 #include "virtime.h"
 
 #define EVENT_DEBUG(fmt, ...) VIR_DEBUG(fmt, __VA_ARGS__)
