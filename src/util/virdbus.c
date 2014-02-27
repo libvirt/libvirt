@@ -1319,6 +1319,21 @@ int virDBusIsServiceEnabled(const char *name)
     return ret;
 }
 
+/**
+ * virDBusIsServiceRegistered
+ * @name: service name
+ *
+ * Retruns 0 if service is registered, -1 on fatal error, or -2 if service is not registered
+ */
+int virDBusIsServiceRegistered(const char *name)
+{
+    int ret = virDBusIsServiceInList("ListNames", name);
+
+    VIR_DEBUG("Service %s is %s", name, ret ? "not registered" : "registered");
+
+    return ret;
+}
+
 #else /* ! WITH_DBUS */
 void virDBusSetSharedBus(bool shared ATTRIBUTE_UNUSED)
 {
@@ -1392,6 +1407,12 @@ int virDBusMessageDecode(DBusMessage* msg ATTRIBUTE_UNUSED,
 }
 
 int virDBusIsServiceEnabled(const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("DBus support not compiled into this binary");
+    return -2;
+}
+
+int virDBusIsServiceRegistered(const char *name ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("DBus support not compiled into this binary");
     return -2;

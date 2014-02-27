@@ -135,6 +135,40 @@ static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static int testCreateSystemdNotRunning(const void *opaque ATTRIBUTE_UNUSED)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN] = {
+        1, 1, 1, 1,
+        2, 2, 2, 2,
+        3, 3, 3, 3,
+        4, 4, 4, 4
+    };
+    int rv;
+
+    setenv("FAIL_NOT_REGISTERED", "1", 1);
+
+    if ((rv = virSystemdCreateMachine("demo",
+                                      "qemu",
+                                      true,
+                                      uuid,
+                                      NULL,
+                                      123,
+                                      false,
+                                      NULL)) == 0) {
+        unsetenv("FAIL_NOT_REGISTERED");
+        fprintf(stderr, "%s", "Unexpected create machine success\n");
+        return -1;
+    }
+    unsetenv("FAIL_NOT_REGISTERED");
+
+    if (rv != -2) {
+        fprintf(stderr, "%s", "Unexpected create machine error\n");
+        return -1;
+    }
+
+    return 0;
+}
+
 static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
@@ -215,6 +249,9 @@ mymain(void)
     if (virtTestRun("Test terminate machine ", testTerminateMachine, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test create no systemd ", testCreateNoSystemd, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test create systemd not running ",
+                    testCreateSystemdNotRunning, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
         ret = -1;

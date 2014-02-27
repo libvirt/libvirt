@@ -49,4 +49,5 @@ int virDBusMessageRead(DBusMessage *msg,
                        const char *types, ...);
 
 int virDBusIsServiceEnabled(const char *name);
+int virDBusIsServiceRegistered(const char *name);
 #endif /* __VIR_DBUS_H__ */

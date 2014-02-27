@@ -173,6 +173,9 @@ int virSystemdCreateMachine(const char *name,
     if (ret < 0)
         return ret;
 
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
+        return ret;
+
     if (!(conn = virDBusGetSystemBus()))
         return -1;
 
@@ -272,6 +275,9 @@ int virSystemdTerminateMachine(const char *name,
 
     ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
     if (ret < 0)
+        return ret;
+
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
         return ret;
 
     if (!(conn = virDBusGetSystemBus()))
