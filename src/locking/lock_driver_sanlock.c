@@ -81,7 +81,7 @@ static virLockManagerSanlockDriver *driver = NULL;
 
 struct _virLockManagerSanlockPrivate {
     const char *vm_uri;
-    char vm_name[SANLK_NAME_LEN];
+    char *vm_name;
     unsigned char vm_uuid[VIR_UUID_BUFLEN];
     unsigned int vm_id;
     unsigned int vm_pid;
@@ -474,12 +474,8 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
         if (STREQ(param->key, "uuid")) {
             memcpy(priv->vm_uuid, param->value.uuid, 16);
         } else if (STREQ(param->key, "name")) {
-            if (!virStrcpy(priv->vm_name, param->value.str, SANLK_NAME_LEN)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Domain name '%s' exceeded %d characters"),
-                               param->value.str, SANLK_NAME_LEN);
+            if (VIR_STRDUP(priv->vm_name, param->value.str) < 0)
                 goto error;
-            }
         } else if (STREQ(param->key, "pid")) {
             priv->vm_pid = param->value.ui;
         } else if (STREQ(param->key, "id")) {
@@ -505,6 +501,7 @@ static void virLockManagerSanlockFree(virLockManagerPtr lock)
     if (!priv)
         return;
 
+    VIR_FREE(priv->vm_name);
     for (i = 0; i < priv->res_count; i++)
         VIR_FREE(priv->res_args[i]);
     VIR_FREE(priv);
@@ -909,12 +906,10 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
     if (VIR_ALLOC(opt) < 0)
         return -1;
 
-    if (!virStrcpy(opt->owner_name, priv->vm_name, SANLK_NAME_LEN)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Domain name '%s' exceeded %d characters"),
-                       priv->vm_name, SANLK_NAME_LEN);
-        goto error;
-    }
+    /* sanlock doesn't use owner_name for anything, so it's safe to take just
+     * the first SANLK_NAME_LEN - 1 characters from vm_name */
+    ignore_value(virStrncpy(opt->owner_name, priv->vm_name,
+                            SANLK_NAME_LEN - 1, SANLK_NAME_LEN));
 
     if (state && STRNEQ(state, "")) {
         if ((rv = sanlock_state_to_args((char *)state,
