@@ -7432,6 +7432,8 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     char *ret = NULL;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -7440,6 +7442,13 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
 
     if (virDomainGetSchedulerTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("CPU tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     /* Domain not running, thus no cgroups - return defaults */
     if (!virDomainObjIsActive(vm)) {
@@ -7467,6 +7476,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
 cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -7681,6 +7691,12 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     if (virDomainSetBlkioParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Block I/O tuning is not available in session mode"));
+        goto cleanup;
+    }
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -7861,6 +7877,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
     int ret = -1;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -7878,6 +7895,13 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
 
     if (virDomainGetBlkioParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Block I/O tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8267,6 +8291,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -8313,6 +8338,12 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
     if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
+
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Memory tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8421,6 +8452,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     int ret = -1;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -8436,6 +8468,13 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
     if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Memory tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8548,6 +8587,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -8973,6 +9013,13 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainSetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("CPU tuning is not available in session mode"));
+        goto cleanup;
+    }
+
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -9208,6 +9255,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -9223,6 +9271,13 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
     if (virDomainGetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("CPU tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (*nparams > 1)
         cpu_bw_status = virCgroupSupportsCpuBW(priv->cgroup);
@@ -9318,6 +9373,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -15523,11 +15579,17 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Block I/O tuning is not available in session mode"));
+        goto cleanup;
+    }
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto endjob;
@@ -15670,6 +15732,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     int ret = -1;
     size_t i;
     virCapsPtr caps = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -15683,6 +15746,13 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
 
     if (virDomainGetBlockIoTuneEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Block I/O tuning is not available in session mode"));
+        goto cleanup;
+    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -15786,6 +15856,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 

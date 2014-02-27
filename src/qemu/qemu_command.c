@@ -7762,6 +7762,32 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     emulator = def->emulator;
 
+    if (!cfg->privileged) {
+        /* If we have no cgroups than we can have no tunings that
+         * require them */
+
+        if (def->mem.hard_limit || def->mem.soft_limit ||
+            def->mem.min_guarantee || def->mem.swap_hard_limit) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Memory tuning is not available in session mode"));
+            goto error;
+        }
+
+        if (def->blkio.weight || def->blkio.ndevices) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Block I/O tuning is not available in session mode"));
+            goto error;
+        }
+
+        if (def->cputune.shares || def->cputune.period ||
+            def->cputune.quota || def->cputune.emulator_period ||
+            def->cputune.emulator_quota) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CPU tuning is not available in session mode"));
+            goto error;
+        }
+    }
+
     for (i = 0; i < def->ngraphics; ++i) {
         switch (def->graphics[i]->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
