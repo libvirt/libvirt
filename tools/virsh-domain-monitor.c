@@ -957,7 +957,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
         params = vshCalloc(ctl, nparams, sizeof(*params));
 
         if (virDomainBlockStatsFlags(dom, device, params, &nparams, 0) < 0) {
-            vshError(ctl, _("Failed to get block stats %s %s"), name, device);
+            vshError(ctl, _("Failed to get block stats for domain '%s' device '%s'"), name, device);
             goto cleanup;
         }
 
