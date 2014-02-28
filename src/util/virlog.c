@@ -95,6 +95,7 @@ struct _virLogFilter {
 typedef struct _virLogFilter virLogFilter;
 typedef virLogFilter *virLogFilterPtr;
 
+static int virLogFiltersSerial = 1;
 static virLogFilterPtr virLogFilters = NULL;
 static int virLogNbFilters = 0;
 
@@ -514,6 +515,7 @@ virLogResetFilters(void)
         VIR_FREE(virLogFilters[i].match);
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
+    virLogFiltersSerial++;
     return i;
 }
 
@@ -569,43 +571,13 @@ virLogDefineFilter(const char *match,
     virLogFilters[i].priority = priority;
     virLogFilters[i].flags = flags;
     virLogNbFilters++;
+    virLogFiltersSerial++;
 cleanup:
     virLogUnlock();
     if (ret < 0)
         virReportOOMError();
     return ret;
 }
-
-
-/**
- * virLogFiltersCheck:
- * @input: the input string
- *
- * Check the input of the message against the existing filters. Currently
- * the match is just a substring check of the category used as the input
- * string, a more subtle approach could be used instead
- *
- * Returns 0 if not matched or the new priority if found.
- */
-static int
-virLogFiltersCheck(const char *input,
-                   unsigned int *flags)
-{
-    int ret = 0;
-    size_t i;
-
-    virLogLock();
-    for (i = 0; i < virLogNbFilters; i++) {
-        if (strstr(input, virLogFilters[i].match)) {
-            ret = virLogFilters[i].priority;
-            *flags = virLogFilters[i].flags;
-            break;
-        }
-    }
-    virLogUnlock();
-    return ret;
-}
-
 
 /**
  * virLogResetOutputs:
@@ -745,6 +717,30 @@ virLogVersionString(const char **rawmsg,
 }
 
 
+static void
+virLogSourceUpdate(virLogSourcePtr source)
+{
+    virLogLock();
+    if (source->serial < virLogFiltersSerial) {
+        unsigned int priority = virLogDefaultPriority;
+        unsigned int flags = 0;
+        size_t i;
+
+        for (i = 0; i < virLogNbFilters; i++) {
+            if (strstr(source->name, virLogFilters[i].match)) {
+                priority = virLogFilters[i].priority;
+                flags = virLogFilters[i].flags;
+                break;
+            }
+        }
+
+        source->priority = priority;
+        source->flags = flags;
+        source->serial = virLogFiltersSerial;
+    }
+    virLogUnlock();
+}
+
 /**
  * virLogMessage:
  * @source: where is that message coming from
@@ -805,31 +801,30 @@ virLogVMessage(virLogSourcePtr source,
     char *str = NULL;
     char *msg = NULL;
     char timestamp[VIR_TIME_STRING_BUFLEN];
-    int fprio, ret;
+    int ret;
     size_t i;
     int saved_errno = errno;
-    bool emit = true;
     unsigned int filterflags = 0;
 
     if (virLogInitialize() < 0)
         return;
 
     if (fmt == NULL)
-        goto cleanup;
+        return;
 
     /*
-     * check against list of specific logging patterns
+     * 3 intentionally non-thread safe variable reads.
+     * Since writes to the variable are serialized on
+     * virLogLock, worst case result is a log message
+     * is accidentally dropped or emitted, if another
+     * thread is updating log filter list concurrently
+     * with a log message emission.
      */
-    fprio = virLogFiltersCheck(filename, &filterflags);
-    if (fprio == 0) {
-        if (priority < virLogDefaultPriority)
-            emit = false;
-    } else if (priority < fprio) {
-        emit = false;
-    }
-
-    if (!emit)
+    if (source->serial < virLogFiltersSerial)
+        virLogSourceUpdate(source);
+    if (priority < source->priority)
         goto cleanup;
+    filterflags = source->flags;
 
     /*
      * serialize the error message, add level and timestamp

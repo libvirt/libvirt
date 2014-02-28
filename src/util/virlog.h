@@ -49,6 +49,9 @@ typedef virLogSource *virLogSourcePtr;
 
 struct _virLogSource {
     const char *name;
+    unsigned int priority;
+    unsigned int serial;
+    unsigned int flags;
 };
 
 /*
@@ -59,6 +62,9 @@ struct _virLogSource {
 # define VIR_LOG_INIT(n)                                \
     static ATTRIBUTE_UNUSED virLogSource virLogSelf = { \
         .name = "" n "",                                \
+        .priority = VIR_LOG_ERROR,                      \
+        .serial = 0,                                    \
+        .flags = 0,                                     \
     };
 
 /*
