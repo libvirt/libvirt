@@ -256,6 +256,44 @@ cleanup:
     return ret;
 }
 
+static int
+bhyveDomainIsActive(virDomainPtr domain)
+{
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    if (!(obj = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainIsActiveEnsureACL(domain->conn, obj->def) < 0)
+        goto cleanup;
+
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    virObjectUnlock(obj);
+    return ret;
+}
+
+static int
+bhyveDomainIsPersistent(virDomainPtr domain)
+{
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    if (!(obj = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainIsPersistentEnsureACL(domain->conn, obj->def) < 0)
+        goto cleanup;
+
+    ret = obj->persistent;
+
+cleanup:
+    virObjectUnlock(obj);
+    return ret;
+}
+
 static char *
 bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
@@ -310,6 +348,44 @@ cleanup:
     virObjectUnlock(vm);
 
     return dom;
+}
+
+static int
+bhyveDomainUndefine(virDomainPtr domain)
+{
+    bhyveConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainUndefineEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Cannot undefine transient domain"));
+        goto cleanup;
+    }
+
+    if (virDomainDeleteConfig(BHYVE_CONFIG_DIR,
+                              BHYVE_AUTOSTART_DIR,
+                              vm) < 0)
+        goto cleanup;
+
+    if (virDomainObjIsActive(vm)) {
+        vm->persistent = 0;
+    } else {
+        virDomainObjListRemove(privconn->domains, vm);
+        vm = NULL;
+    }
+
+    ret = 0;
+
+cleanup:
+    virObjectUnlock(vm);
+    return ret;
 }
 
 static int
@@ -620,7 +696,10 @@ static virDriver bhyveDriver = {
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
+    .domainUndefine = bhyveDomainUndefine, /* 1.2.2 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
+    .domainIsActive = bhyveDomainIsActive, /* 1.2.2 */
+    .domainIsPersistent = bhyveDomainIsPersistent, /* 1.2.2 */
     .nodeGetCPUStats = bhyveNodeGetCPUStats, /* 1.2.2 */
     .nodeGetMemoryStats = bhyveNodeGetMemoryStats, /* 1.2.2 */
 };
