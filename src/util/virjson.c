@@ -45,6 +45,7 @@
 /* XXX fixme */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.json");
 
 typedef struct _virJSONParserState virJSONParserState;
 typedef virJSONParserState *virJSONParserStatePtr;

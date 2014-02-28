@@ -35,6 +35,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_SYSTEMD
 
+VIR_LOG_INIT("util.systemd");
 
 static void virSystemdEscapeName(virBufferPtr buf,
                                  const char *name)

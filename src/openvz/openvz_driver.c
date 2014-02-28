@@ -61,6 +61,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
+VIR_LOG_INIT("openvz.openvz_driver");
+
 #define OPENVZ_MAX_ARG 28
 #define CMDBUF_LEN 1488
 #define CMDOP_LEN 288

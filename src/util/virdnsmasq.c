@@ -52,6 +52,9 @@
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
+
+VIR_LOG_INIT("util.dnsmasq");
+
 #define DNSMASQ_HOSTSFILE_SUFFIX "hostsfile"
 #define DNSMASQ_ADDNHOSTSFILE_SUFFIX "addnhosts"
 

@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.storagetest");
+
 #define datadir abs_builddir "/virstoragedata"
 
 /* This test creates the following files, all in datadir:

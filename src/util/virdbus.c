@@ -30,6 +30,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_DBUS
 
+VIR_LOG_INIT("util.dbus");
+
 #ifdef WITH_DBUS
 
 static bool sharedBus = true;

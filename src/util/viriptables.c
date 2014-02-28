@@ -50,6 +50,8 @@
 #include "virstring.h"
 #include "virutil.h"
 
+VIR_LOG_INIT("util.iptables");
+
 bool iptables_supports_xlock = false;
 
 #if HAVE_FIREWALLD

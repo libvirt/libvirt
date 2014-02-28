@@ -55,6 +55,8 @@
 
 #include "nodeinfo.h"
 
+VIR_LOG_INIT("util.cgroup");
+
 #define CGROUP_MAX_VAL 512
 
 #define VIR_FROM_THIS VIR_FROM_CGROUP

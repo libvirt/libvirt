@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.hash");
+
 #define MAX_HASH_LEN 8
 
 /* #define DEBUG_GROW */

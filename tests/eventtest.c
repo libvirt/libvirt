@@ -34,6 +34,8 @@
 #include "virutil.h"
 #include "vireventpoll.h"
 
+VIR_LOG_INIT("tests.eventtest");
+
 #define NUM_FDS 31
 #define NUM_TIME 31
 

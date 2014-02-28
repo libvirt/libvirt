@@ -1462,7 +1462,6 @@ virLogParseOutputs;
 virLogPriorityFromSyslog;
 virLogProbablyLogMessage;
 virLogReset;
-virLogSelf;
 virLogSetBufferSize;
 virLogSetDefaultPriority;
 virLogSetFromEnv;

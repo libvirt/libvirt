@@ -44,6 +44,8 @@
 #include "virfile.h"
 #include "virrandom.h"
 
+VIR_LOG_INIT("util.uuid");
+
 #ifndef ENODATA
 # define ENODATA EIO
 #endif

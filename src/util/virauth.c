@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_AUTH
 
+VIR_LOG_INIT("util.auth");
+
 int
 virAuthGetConfigFilePathURI(virURIPtr uri,
                             char **path)

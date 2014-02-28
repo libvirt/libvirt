@@ -37,6 +37,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
+VIR_LOG_INIT("daemon.libvirtd-config");
+
 /* Allocate an array of malloc'd strings from the config file, filename
  * (used only in diagnostics), using handle "conf".  Upon error, return -1
  * and free any allocated memory.  Otherwise, save the array in *list_arg

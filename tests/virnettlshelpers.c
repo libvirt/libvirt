@@ -34,6 +34,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.nettlshelpers");
+
 /*
  * These store some static data that is needed when
  * encoding extensions in the x509 certs

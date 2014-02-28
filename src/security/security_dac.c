@@ -36,6 +36,9 @@
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
+
+VIR_LOG_INIT("security.security_dac");
+
 #define SECURITY_DAC_NAME "dac"
 
 typedef struct _virSecurityDACData virSecurityDACData;

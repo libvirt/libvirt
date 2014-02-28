@@ -44,6 +44,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 
+VIR_LOG_INIT("fdstream");
+
 /* Tunnelled migration stream support */
 struct virFDStreamData {
     int fd;

@@ -83,6 +83,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
+VIR_LOG_INIT("xen.xen_hypervisor");
+
 /*
  * so far there is 2 versions of the structures usable for doing
  * hypervisor calls.

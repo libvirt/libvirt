@@ -44,6 +44,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN_INOTIFY
 
+VIR_LOG_INIT("xen.xen_inotify");
+
 static int
 xenInotifyXenCacheLookup(virConnectPtr conn,
                          const char *filename,

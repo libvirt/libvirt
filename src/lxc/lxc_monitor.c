@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_monitor");
+
 struct _virLXCMonitor {
     virObjectLockable parent;
 

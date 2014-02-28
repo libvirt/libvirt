@@ -34,6 +34,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
+VIR_LOG_INIT("libxl.libxl_domain");
 
 VIR_ENUM_IMPL(libxlDomainJob, LIBXL_JOB_LAST,
               "none",

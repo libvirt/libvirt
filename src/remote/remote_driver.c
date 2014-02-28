@@ -52,6 +52,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
+VIR_LOG_INIT("remote.remote_driver");
+
 #if SIZEOF_LONG < 8
 # define HYPER_TO_TYPE(_type, _to, _from)                                     \
     do {                                                                      \

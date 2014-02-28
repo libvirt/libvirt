@@ -26,7 +26,6 @@
 #include "md5.h"
 #include "internal.h"
 #include "viralloc.h"
-#include "virlog.h"
 #include "viruuid.h"
 #include "network_conf.h"
 #include "esx_private.h"

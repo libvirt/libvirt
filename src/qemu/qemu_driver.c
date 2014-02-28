@@ -98,6 +98,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_driver");
+
 #define QEMU_NB_MEM_PARAM  3
 
 #define QEMU_NB_BLOCK_IO_TUNE_PARAM  6

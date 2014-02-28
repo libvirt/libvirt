@@ -48,6 +48,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+VIR_LOG_INIT("nwfilter.nwfilter_ebiptables_driver");
+
 #define EBTABLES_CHAIN_INCOMING "PREROUTING"
 #define EBTABLES_CHAIN_OUTGOING "POSTROUTING"
 

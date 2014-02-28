@@ -41,6 +41,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_hostdev");
+
+
 int
 qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
                             virDomainDefPtr def)

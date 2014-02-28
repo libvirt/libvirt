@@ -37,6 +37,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.cgrouptest");
+
 static int validateCgroup(virCgroupPtr cgroup,
                           const char *expectPath,
                           const char **expectMountPoint,

@@ -29,6 +29,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
+VIR_LOG_INIT("locking.domain_lock");
+
 
 static int virDomainLockManagerAddLease(virLockManagerPtr lock,
                                         virDomainLeaseDefPtr lease)

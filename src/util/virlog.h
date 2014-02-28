@@ -51,7 +51,15 @@ struct _virLogSource {
     const char *name;
 };
 
-extern virLogSource virLogSelf;
+/*
+ * ATTRIBUTE_UNUSED is to make gcc keep quiet if all the
+ * log statements in a file are conditionally disabled
+ * at compile time due to configure options.
+ */
+# define VIR_LOG_INIT(n)                                \
+    static ATTRIBUTE_UNUSED virLogSource virLogSelf = { \
+        .name = "" n "",                                \
+    };
 
 /*
  * If configured with --enable-debug=yes then library calls

@@ -37,7 +37,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-
+VIR_LOG_INIT("esx.esx_util");
 
 int
 esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)

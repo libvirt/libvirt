@@ -60,6 +60,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.log");
+
 /*
  * A logging buffer to keep some history over logs
  */
@@ -95,8 +97,6 @@ typedef virLogFilter *virLogFilterPtr;
 
 static virLogFilterPtr virLogFilters = NULL;
 static int virLogNbFilters = 0;
-
-virLogSource virLogSelf = { .name = "util.log" };
 
 /*
  * Outputs are used to emit the messages retained

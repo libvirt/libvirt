@@ -29,6 +29,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.alloc");
+
 #if TEST_OOM
 static int testMallocNext = 0;
 static int testMallocFailFirst = 0;

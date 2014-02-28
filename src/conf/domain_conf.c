@@ -56,6 +56,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
+VIR_LOG_INIT("conf.domain_conf");
+
 /* virDomainVirtType is used to set bits in the expectedVirtTypes bitmask,
  * verify that it doesn't overflow an unsigned int when shifting */
 verify(VIR_DOMAIN_VIRT_LAST <= 32);

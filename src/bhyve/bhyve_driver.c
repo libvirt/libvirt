@@ -56,6 +56,8 @@
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
 
+VIR_LOG_INIT("bhyve.bhyve_driver");
+
 bhyveConnPtr bhyve_driver = NULL;
 
 void

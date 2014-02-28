@@ -40,6 +40,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.pidfile");
+
 char *virPidFileBuildPath(const char *dir, const char* name)
 {
     char *pidfile;

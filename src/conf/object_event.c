@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("conf.object_event");
+
 struct _virObjectEventCallbackList {
     unsigned int nextID;
     size_t count;

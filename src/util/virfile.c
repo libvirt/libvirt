@@ -63,6 +63,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.file");
+
 int virFileClose(int *fdptr, virFileCloseFlags flags)
 {
     int saved_errno = 0;

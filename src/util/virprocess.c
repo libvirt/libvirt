@@ -55,6 +55,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.process");
+
 /**
  * virProcessTranslateStatus:
  * @status: child exit status to translate

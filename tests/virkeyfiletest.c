@@ -32,6 +32,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.keyfiletest");
 
 static int testParse(const void *args ATTRIBUTE_UNUSED)
 {

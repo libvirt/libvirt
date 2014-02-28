@@ -43,6 +43,9 @@
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("util.hostdev");
+
 #define HOSTDEV_STATE_DIR LOCALSTATEDIR "/run/libvirt/hostdevmgr"
 
 static virHostdevManagerPtr manager; /* global hostdev manager, never freed */

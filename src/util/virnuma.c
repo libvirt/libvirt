@@ -43,6 +43,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.numa");
+
 VIR_ENUM_IMPL(virDomainNumatuneMemMode,
               VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "strict",

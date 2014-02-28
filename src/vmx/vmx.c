@@ -35,6 +35,8 @@
 #include "viruri.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("vmx.vmx");
+
 /*
 
 mapping:

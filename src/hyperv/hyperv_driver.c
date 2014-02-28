@@ -44,7 +44,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
-
+VIR_LOG_INIT("hyperv.hyperv_driver");
 
 static void
 hypervFreePrivate(hypervPrivate **priv)

@@ -55,6 +55,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("rpc.nettlscontext");
+
 struct _virNetTLSContext {
     virObjectLockable parent;
 

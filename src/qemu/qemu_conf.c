@@ -56,6 +56,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_conf");
+
 static virClassPtr virQEMUDriverConfigClass;
 static void virQEMUDriverConfigDispose(void *obj);
 

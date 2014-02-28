@@ -61,6 +61,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
+VIR_LOG_INIT("phyp.phyp_driver");
+
+
 /*
  * URI: phyp://user@[hmc|ivm]/managed_system
  * */

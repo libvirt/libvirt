@@ -52,6 +52,9 @@
 #include "virscsi.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
+
+VIR_LOG_INIT("security.security_apparmor");
+
 #define SECURITY_APPARMOR_VOID_DOI      "0"
 #define SECURITY_APPARMOR_NAME          "apparmor"
 #define VIRT_AA_HELPER LIBEXECDIR "/virt-aa-helper"

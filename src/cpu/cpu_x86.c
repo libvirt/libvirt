@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
+VIR_LOG_INIT("cpu.cpu_x86");
+
 #define VENDOR_STRING_LENGTH    12
 
 static const virCPUx86CPUID cpuidNull = { 0, 0, 0, 0, 0 };

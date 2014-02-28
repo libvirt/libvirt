@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_mpath");
+
 static int
 virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                           unsigned long long *allocation,

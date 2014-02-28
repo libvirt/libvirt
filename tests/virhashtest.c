@@ -15,6 +15,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.hashtest");
+
 #define testError(...)                                          \
     do {                                                        \
         char *str;                                              \

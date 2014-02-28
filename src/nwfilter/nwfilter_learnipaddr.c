@@ -58,6 +58,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+VIR_LOG_INIT("nwfilter.nwfilter_learnipaddr");
+
 #define IFINDEX2STR(VARNAME, ifindex) \
     char VARNAME[INT_BUFSIZE_BOUND(ifindex)]; \
     snprintf(VARNAME, sizeof(VARNAME), "%d", ifindex);

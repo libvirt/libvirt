@@ -25,7 +25,6 @@
 
 #include "internal.h"
 #include "viralloc.h"
-#include "virlog.h"
 #include "viruuid.h"
 #include "interface_conf.h"
 #include "virsocketaddr.h"

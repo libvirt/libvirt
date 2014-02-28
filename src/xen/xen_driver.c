@@ -69,6 +69,9 @@
 #include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
+
+VIR_LOG_INIT("xen.xen_driver");
+
 #define XEN_SAVE_DIR LOCALSTATEDIR "/lib/libvirt/xen/save"
 
 static int

@@ -46,6 +46,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
+VIR_LOG_INIT("secret.secret_driver");
+
 enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
  /* Internal driver state */

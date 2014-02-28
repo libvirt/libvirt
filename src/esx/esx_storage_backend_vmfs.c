@@ -45,6 +45,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
+VIR_LOG_INIT("esx.esx_storage_backend_vmfs");
+
 /*
  * The UUID of a storage pool is the MD5 sum of it's mount path. Therefore,
  * verify that UUID and MD5 sum match in size, because we rely on that.

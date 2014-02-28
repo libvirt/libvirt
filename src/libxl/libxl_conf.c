@@ -48,6 +48,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
+VIR_LOG_INIT("libxl.libxl_conf");
+
 /* see xen-unstable.hg/xen/include/asm-x86/cpufeature.h */
 #define LIBXL_X86_FEATURE_PAE_MASK 0x40
 

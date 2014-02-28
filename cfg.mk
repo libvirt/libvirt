@@ -1068,3 +1068,6 @@ exclude_file_name_regexp--sc_prohibit_int_ijk = \
 
 exclude_file_name_regexp--sc_prohibit_getenv = \
   ^tests/.*\.[ch]$$
+
+exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
+  ^src/util/virlog\.h$$

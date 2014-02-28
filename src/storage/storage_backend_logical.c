@@ -42,6 +42,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_logical");
+
 #define PV_BLANK_SECTOR_SIZE 512
 
 

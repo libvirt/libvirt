@@ -26,6 +26,8 @@
 #include "virlog.h"
 #include "viruuid.h"
 
+VIR_LOG_INIT("locking.lock_driver_nop");
+
 
 static int virLockManagerNopInit(unsigned int version ATTRIBUTE_UNUSED,
                                  const char *configFile ATTRIBUTE_UNUSED,

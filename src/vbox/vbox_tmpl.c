@@ -89,6 +89,9 @@
 
 
 #define VIR_FROM_THIS                   VIR_FROM_VBOX
+
+VIR_LOG_INIT("vbox.vbox_tmpl");
+
 #define VBOX_UTF16_FREE(arg)                                            \
     do {                                                                \
         if (arg) {                                                      \

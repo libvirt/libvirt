@@ -37,6 +37,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKSPACE
 
+VIR_LOG_INIT("util.lockspace");
+
 #define VIR_LOCKSPACE_TABLE_SIZE 10
 
 typedef struct _virLockSpaceResource virLockSpaceResource;

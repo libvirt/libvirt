@@ -32,7 +32,6 @@
 #include "lxc_fuse.h"
 #include "lxc_cgroup.h"
 #include "virerror.h"
-#include "virlog.h"
 #include "virfile.h"
 #include "virbuffer.h"
 #include "virstring.h"

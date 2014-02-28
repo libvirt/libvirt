@@ -28,7 +28,6 @@
 #include "internal.h"
 #include "md5.h"
 #include "viralloc.h"
-#include "virlog.h"
 #include "viruuid.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"

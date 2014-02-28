@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.nodesuspend");
+
 #define SUSPEND_DELAY 10 /* in seconds */
 
 /* Give sufficient time for performing the suspend operation on the host */

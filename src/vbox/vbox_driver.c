@@ -42,6 +42,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
+VIR_LOG_INIT("vbox.vbox_driver");
 
 extern virDriver vbox22Driver;
 extern virNetworkDriver vbox22NetworkDriver;

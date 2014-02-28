@@ -41,6 +41,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("conf.chrdev");
+
 /* structure holding information about character devices
  * open in a given domain */
 struct _virChrdevs {

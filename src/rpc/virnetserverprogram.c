@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("rpc.netserverprogram");
+
 struct _virNetServerProgram {
     virObject object;
 

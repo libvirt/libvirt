@@ -38,6 +38,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_disk");
+
 #define PARTHELPER LIBEXECDIR "/libvirt_parthelper"
 
 #define SECTOR_SIZE 512

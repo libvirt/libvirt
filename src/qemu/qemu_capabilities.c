@@ -48,6 +48,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_capabilities");
+
 /* While not public, these strings must not change. They
  * are used in domain status files which are read on
  * daemon restarts

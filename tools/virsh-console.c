@@ -46,6 +46,8 @@
 # include "virthread.h"
 # include "virerror.h"
 
+VIR_LOG_INIT("tools.virsh-console");
+
 /*
  * Convert given character to control character.
  * Basically, we assume ASCII, and take lower 6 bits.

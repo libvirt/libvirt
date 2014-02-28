@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "viralloc.h"
-#include "virlog.h"
 #include "viruuid.h"
 #include "hyperv_nwfilter_driver.h"
 

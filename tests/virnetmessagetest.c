@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.netmessagetest");
+
 static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
 {
     virNetMessagePtr msg = virNetMessageNew(true);

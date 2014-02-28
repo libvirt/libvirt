@@ -41,6 +41,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("rpc.netserverclient");
+
 /* Allow for filtering of incoming messages to a custom
  * dispatch processing queue, instead of the workers.
  * This allows for certain types of messages to be handled

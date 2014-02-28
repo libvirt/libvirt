@@ -65,6 +65,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # include "virnetdev.h"
 # include "virpidfile.h"
 
+VIR_LOG_INIT("util.netdevmacvlan");
 
 # define MACVTAP_NAME_PREFIX	"macvtap"
 # define MACVTAP_NAME_PATTERN	"macvtap%d"

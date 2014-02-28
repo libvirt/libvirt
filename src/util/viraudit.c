@@ -34,6 +34,8 @@
 #include "viralloc.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("util.audit");
+
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */
 #ifndef AUDIT_VIRT_CONTROL

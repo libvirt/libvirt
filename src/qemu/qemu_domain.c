@@ -46,6 +46,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_domain");
+
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
 VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,

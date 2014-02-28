@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.fdstreamtest");
+
 #define PATTERN_LEN 256
 
 static int testFDStreamReadCommon(const char *scratchdir, bool blocking)

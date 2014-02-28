@@ -35,6 +35,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.domain_event");
 
 static virClassPtr virDomainEventClass;
 static virClassPtr virDomainEventLifecycleClass;

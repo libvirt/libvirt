@@ -39,6 +39,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
+VIR_LOG_INIT("util.identity");
 
 struct _virIdentity {
     virObject parent;

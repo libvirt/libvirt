@@ -49,6 +49,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
+VIR_LOG_INIT("esx.esx_driver");
+
 static int esxDomainGetMaxVcpus(virDomainPtr domain);
 
 typedef struct _esxVMX_Data esxVMX_Data;

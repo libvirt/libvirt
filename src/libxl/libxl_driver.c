@@ -57,6 +57,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
+VIR_LOG_INIT("libxl.libxl_driver");
+
 #define LIBXL_DOM_REQ_POWEROFF 0
 #define LIBXL_DOM_REQ_REBOOT   1
 #define LIBXL_DOM_REQ_SUSPEND  2

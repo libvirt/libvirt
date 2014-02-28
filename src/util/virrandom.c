@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.random");
+
 /* The algorithm of virRandomBits relies on gnulib's guarantee that
  * 'random_r' matches the POSIX requirements on 'random' of being
  * evenly distributed among exactly [0, 2**31) (that is, we always get

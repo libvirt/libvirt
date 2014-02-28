@@ -38,7 +38,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-
+VIR_LOG_INIT("esx.esx_vi");
 
 #define ESX_VI__SOAP__RESPONSE_XPATH(_type)                                   \
     ((char *)"/soapenv:Envelope/soapenv:Body/"                                \

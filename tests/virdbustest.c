@@ -26,6 +26,8 @@
 #include "virlog.h"
 #include "testutils.h"
 
+VIR_LOG_INIT("tests.dbustest");
+
 #define VERIFY(typname, valorig, valnew, fmt)                           \
     do {                                                                \
         VIR_DEBUG("Compare " typname " '" fmt "' to '"                  \

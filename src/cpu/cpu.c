@@ -40,6 +40,8 @@
 #define NR_DRIVERS ARRAY_CARDINALITY(drivers)
 #define VIR_FROM_THIS VIR_FROM_CPU
 
+VIR_LOG_INIT("cpu.cpu");
+
 static struct cpuArchDriver *drivers[] = {
     &cpuDriverX86,
     &cpuDriverPowerPC,

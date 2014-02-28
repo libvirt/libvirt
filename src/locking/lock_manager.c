@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
+VIR_LOG_INIT("locking.lock_manager");
+
 #define CHECK_DRIVER(field, errret)                                  \
     if (!driver->field) {                                            \
         virReportError(VIR_ERR_INTERNAL_ERROR,                       \

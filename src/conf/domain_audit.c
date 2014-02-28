@@ -33,6 +33,8 @@
 #include "viralloc.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("conf.domain_audit");
+
 /* Return nn:mm in hex for block and character devices, and NULL
  * for other file types, stat failure, or allocation failure.  */
 #if defined major && defined minor

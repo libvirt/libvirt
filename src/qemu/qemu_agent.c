@@ -45,6 +45,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_agent");
+
 #define LINE_ENDING "\n"
 
 #define DEBUG_IO 0

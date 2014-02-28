@@ -54,6 +54,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.netdev");
+
 #if defined(HAVE_STRUCT_IFREQ)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,

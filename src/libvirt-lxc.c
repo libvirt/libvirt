@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("libvirt-lxc");
+
 /**
  * virDomainLxcOpenNamespace:
  * @domain: a domain object

@@ -38,6 +38,8 @@
 
 #ifdef __linux__
 
+VIR_LOG_INIT("node_device.node_device_linux_sysfs");
+
 int
 detect_scsi_host_caps(union _virNodeDevCapData *d)
 {

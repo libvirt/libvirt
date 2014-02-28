@@ -59,6 +59,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_command");
+
 #define VIO_ADDR_NET 0x1000ul
 #define VIO_ADDR_SCSI 0x2000ul
 #define VIO_ADDR_SERIAL 0x30000000ul

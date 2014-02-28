@@ -25,7 +25,6 @@
 # define __VIR_BRIDGE_DRIVER_PLATFORM_H__
 
 # include "internal.h"
-# include "virlog.h"
 # include "virthread.h"
 # include "virdnsmasq.h"
 # include "network_conf.h"

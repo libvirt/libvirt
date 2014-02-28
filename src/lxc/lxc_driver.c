@@ -75,6 +75,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_driver");
 
 #define LXC_NB_MEM_PARAM  3
 #define LXC_NB_DOMAIN_BLOCK_STAT_PARAM 4

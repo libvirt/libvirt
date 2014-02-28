@@ -48,6 +48,8 @@
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.usb");
+
 struct _virUSBDevice {
     unsigned int      bus;
     unsigned int      dev;

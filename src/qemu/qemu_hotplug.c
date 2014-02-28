@@ -51,6 +51,9 @@
 #include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
+
+VIR_LOG_INIT("qemu.qemu_hotplug");
+
 #define CHANGE_MEDIA_RETRIES 10
 
 /* Wait up to 5 seconds for device removal to finish. */

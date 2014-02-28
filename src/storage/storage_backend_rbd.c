@@ -37,6 +37,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_rbd");
+
 struct _virStorageBackendRBDState {
     rados_t cluster;
     rados_ioctx_t ioctx;

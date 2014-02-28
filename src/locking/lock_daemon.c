@@ -54,6 +54,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
+VIR_LOG_INIT("locking.lock_daemon");
+
 #define VIR_LOCK_DAEMON_NUM_LOCKSPACES 3
 
 struct _virLockDaemon {

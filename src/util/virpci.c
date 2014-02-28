@@ -46,6 +46,8 @@
 #include "virstring.h"
 #include "virutil.h"
 
+VIR_LOG_INIT("util.pci");
+
 #define PCI_SYSFS "/sys/bus/pci/"
 #define PCI_ID_LEN 10   /* "XXXX XXXX" */
 #define PCI_ADDR_LEN 13 /* "XXXX:XX:XX.X" */

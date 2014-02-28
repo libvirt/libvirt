@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.string");
+
 /*
  * The following virStringSplit & virStringJoin methods
  * are derived from g_strsplit / g_strjoin in glib2,

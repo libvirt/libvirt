@@ -52,6 +52,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_driver");
+
 static virStorageDriverStatePtr driverState;
 
 static int storageStateCleanup(void);

@@ -54,6 +54,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.ebtables");
+
 #if HAVE_FIREWALLD
 static char *firewall_cmd_path = NULL;
 

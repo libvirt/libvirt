@@ -29,6 +29,9 @@
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ACCESS
+
+VIR_LOG_INIT("access.accessdriverpolkit");
+
 #define virAccessError(code, ...)                                       \
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
                          __FUNCTION__, __LINE__, __VA_ARGS__)

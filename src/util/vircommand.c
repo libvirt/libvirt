@@ -55,6 +55,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.command");
+
 /* Flags for virExec */
 enum {
     VIR_EXEC_NONE       = 0,

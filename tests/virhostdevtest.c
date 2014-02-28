@@ -35,6 +35,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.hostdevtest");
+
 # define CHECK_LIST_COUNT(list, cnt)                                    \
     if ((count = virPCIDeviceListCount(list)) != cnt) {                 \
         virReportError(VIR_ERR_INTERNAL_ERROR,                          \

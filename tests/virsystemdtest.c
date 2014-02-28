@@ -31,6 +31,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.systemdtest");
+
 static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {

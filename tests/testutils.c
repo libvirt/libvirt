@@ -60,6 +60,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.testutils");
+
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U)                                 \
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \

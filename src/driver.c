@@ -31,6 +31,8 @@
 #include "configmake.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("driver");
+
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
 #ifdef WITH_DRIVER_MODULES

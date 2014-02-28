@@ -69,6 +69,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
+VIR_LOG_INIT("uml.uml_driver");
+
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCALSTATEDIR "/cache/libvirt"
 

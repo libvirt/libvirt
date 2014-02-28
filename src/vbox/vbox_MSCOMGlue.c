@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
+VIR_LOG_INIT("vbox.vbox_MSCOMGlue");
+
 #define VBOX_REGKEY_ORACLE "Software\\Oracle\\VirtualBox"
 #define VBOX_REGKEY_SUN "Software\\Sun\\xVM VirtualBox"
 

@@ -27,6 +27,8 @@
 #include "virarch.h"
 #include "verify.h"
 
+VIR_LOG_INIT("util.arch");
+
 /* The canonical names are used in XML documents. ie ABI sensitive */
 static const struct virArchData {
     const char *name;

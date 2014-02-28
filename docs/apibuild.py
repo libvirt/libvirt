@@ -1446,6 +1446,24 @@ class CParser:
 
         return token
 
+    def parseVirLogInit(self, token):
+        if token[0] != "string":
+            self.error("parsing VIR_LOG_INIT: expecting string", token)
+
+        token = self.token()
+
+        if token[0] != "sep":
+            self.error("parsing VIR_LOG_INIT: expecting ')'", token)
+
+        if token[1] != ')':
+            self.error("parsing VIR_LOG_INIT: expecting ')'", token)
+
+        token = self.token()
+        if token[0] == "sep" and token[1] == ';':
+            token = self.token()
+
+        return token
+
      #
      # Parse a C definition block, used for structs or unions it parse till
      # the balancing }
@@ -1615,6 +1633,18 @@ class CParser:
             if token is not None:
                 self.lexer.push(token)
                 token = ("name", "virenumimpl")
+            return token
+
+        elif token[0] == "name" and token[1] == "VIR_LOG_INIT":
+            token = self.token()
+            if token is not None and token[0] == "sep" and token[1] == "(":
+                token = self.token()
+                token = self.parseVirLogInit(token)
+            else:
+                self.error("parsing VIR_LOG_INIT: expecting '('", token)
+            if token is not None:
+                self.lexer.push(token)
+                token = ("name", "virloginit")
             return token
 
         elif token[0] == "name":

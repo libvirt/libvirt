@@ -36,7 +36,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-
+VIR_LOG_INIT("esx.esx_vi_types");
 
 #define ESX_VI__TEMPLATE__ALLOC(__type)                                       \
     int                                                                       \

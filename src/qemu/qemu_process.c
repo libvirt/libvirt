@@ -69,6 +69,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_process");
+
 #define START_POSTFIX ": starting up\n"
 #define ATTACH_POSTFIX ": attaching\n"
 #define SHUTDOWN_POSTFIX ": shutting down\n"

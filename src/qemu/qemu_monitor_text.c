@@ -49,6 +49,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_monitor_text");
+
 #define QEMU_CMD_PROMPT "\n(qemu) "
 #define QEMU_PASSWD_PROMPT "Password: "
 

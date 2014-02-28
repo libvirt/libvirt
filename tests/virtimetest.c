@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.timetest");
+
 struct testTimeFieldsData {
     unsigned long long when;
     struct tm fields;

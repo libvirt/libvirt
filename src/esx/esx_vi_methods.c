@@ -24,7 +24,6 @@
 
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virlog.h"
 #include "viruuid.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"

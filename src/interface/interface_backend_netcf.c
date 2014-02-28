@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
+VIR_LOG_INIT("interface.interface_backend_netcf");
+
 #define INTERFACE_DRIVER_NAME "netcf"
 
 /* Main driver state */

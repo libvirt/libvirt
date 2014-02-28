@@ -43,6 +43,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
+VIR_LOG_INIT("node_device.node_device_udev");
+
 #ifndef TYPE_RAID
 # define TYPE_RAID 12
 #endif

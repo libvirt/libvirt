@@ -41,6 +41,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
+VIR_LOG_INIT("util.conf");
+
 /************************************************************************
  *									*
  *	Structures and macros used by the mini parser			*

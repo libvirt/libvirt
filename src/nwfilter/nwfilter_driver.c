@@ -50,6 +50,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+VIR_LOG_INIT("nwfilter.nwfilter_driver");
+
 #define DBUS_RULE_FWD_NAMEOWNERCHANGED \
     "type='signal'" \
     ",interface='"DBUS_INTERFACE_DBUS"'" \

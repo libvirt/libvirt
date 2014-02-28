@@ -49,6 +49,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
+VIR_LOG_INIT("security.security_selinux");
+
 #define MAX_CONTEXT 1024
 
 typedef struct _virSecuritySELinuxData virSecuritySELinuxData;

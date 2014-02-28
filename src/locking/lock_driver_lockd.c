@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
+VIR_LOG_INIT("locking.lock_driver_lockd");
+
 #define virLockError(code, ...)                                     \
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,             \
                          __FUNCTION__, __LINE__, __VA_ARGS__)

@@ -31,6 +31,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.stringtest");
+
 struct testSplitData {
     const char *string;
     const char *delim;

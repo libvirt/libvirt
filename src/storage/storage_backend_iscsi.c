@@ -48,6 +48,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_iscsi");
+
 #define ISCSI_DEFAULT_TARGET_PORT 3260
 
 static char *

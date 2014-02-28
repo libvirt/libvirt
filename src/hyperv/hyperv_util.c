@@ -32,7 +32,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
-
+VIR_LOG_INIT("hyperv.hyperv_util");
 
 int
 hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)

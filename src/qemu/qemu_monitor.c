@@ -49,6 +49,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.qemu_monitor");
+
 #define DEBUG_IO 0
 #define DEBUG_RAW_IO 0
 

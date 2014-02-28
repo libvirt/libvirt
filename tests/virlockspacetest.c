@@ -35,6 +35,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.lockspacetest");
+
 #define LOCKSPACE_DIR abs_builddir "/virlockspacedata"
 
 static int testLockSpaceCreate(const void *args ATTRIBUTE_UNUSED)

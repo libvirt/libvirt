@@ -57,6 +57,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("daemon.remote");
+
 #if SIZEOF_LONG < 8
 # define HYPER_TO_TYPE(_type, _to, _from)                               \
     do {                                                                \

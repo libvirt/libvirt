@@ -34,6 +34,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.keycodetest");
 
 static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
 {

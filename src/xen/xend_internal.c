@@ -63,6 +63,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEND
 
+VIR_LOG_INIT("xen.xend_internal");
+
 /*
  * The number of Xen scheduler parameters
  */

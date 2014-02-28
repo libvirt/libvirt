@@ -35,6 +35,8 @@
 #include "virutil.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("util.error");
+
 virThreadLocal virLastErr;
 
 virErrorFunc virErrorHandler = NULL;     /* global error handler */

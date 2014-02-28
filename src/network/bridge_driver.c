@@ -75,6 +75,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
+VIR_LOG_INIT("network.bridge_driver");
+
 static void networkDriverLock(virNetworkDriverStatePtr driver)
 {
     virMutexLock(&driver->lock);

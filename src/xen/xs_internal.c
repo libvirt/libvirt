@@ -54,6 +54,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
+VIR_LOG_INIT("xen.xs_internal");
+
 static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 

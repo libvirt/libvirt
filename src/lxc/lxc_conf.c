@@ -41,6 +41,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_conf");
+
 static virClassPtr virLXCDriverConfigClass;
 static void virLXCDriverConfigDispose(void *obj);
 

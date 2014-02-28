@@ -50,6 +50,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
+VIR_LOG_INIT("uml.uml_conf");
 
 virCapsPtr umlCapsInit(void) {
     virCapsPtr caps;

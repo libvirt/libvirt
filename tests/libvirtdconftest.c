@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.libvirtdconftest");
+
 struct testCorruptData {
     size_t *params;
     const char *filedata;

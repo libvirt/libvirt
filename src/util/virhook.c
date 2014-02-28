@@ -41,6 +41,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
+VIR_LOG_INIT("util.hook");
+
 #define LIBVIRT_HOOK_DIR SYSCONFDIR "/libvirt/hooks"
 
 VIR_ENUM_DECL(virHookDriver)

@@ -35,6 +35,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+VIR_LOG_INIT("conf.nwfilter_params");
+
 static bool isValidVarValue(const char *value);
 static void virNWFilterVarAccessSetIntIterId(virNWFilterVarAccessPtr,
                                              unsigned int);

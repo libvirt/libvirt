@@ -48,6 +48,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
+VIR_LOG_INIT("util.netlink");
+
 #define NETLINK_ACK_TIMEOUT_S  (2*1000)
 
 #if defined(__linux__) && defined(HAVE_LIBNL)

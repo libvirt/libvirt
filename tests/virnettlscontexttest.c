@@ -40,6 +40,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.nettlscontexttest");
+
 # define KEYFILE "key-ctx.pem"
 
 struct testTLSContextData {

@@ -30,6 +30,8 @@
 
 #include <stdlib.h>
 
+VIR_LOG_INIT("util.event");
+
 static virEventAddHandleFunc addHandleImpl = NULL;
 static virEventUpdateHandleFunc updateHandleImpl = NULL;
 static virEventRemoveHandleFunc removeHandleImpl = NULL;

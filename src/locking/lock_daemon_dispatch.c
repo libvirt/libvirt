@@ -28,10 +28,13 @@
 #include "virstring.h"
 #include "lock_daemon.h"
 #include "lock_protocol.h"
-#include "lock_daemon_dispatch_stubs.h"
 #include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
+
+VIR_LOG_INIT("locking.lock_daemon_dispatch");
+
+#include "lock_daemon_dispatch_stubs.h"
 
 static int
 virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server ATTRIBUTE_UNUSED,

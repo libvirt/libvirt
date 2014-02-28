@@ -50,6 +50,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT
 
+VIR_LOG_INIT("conf.snapshot_conf");
+
 VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
               "default",
               "no",

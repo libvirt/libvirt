@@ -34,6 +34,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
+VIR_LOG_INIT("conf.secret_conf");
+
 VIR_ENUM_IMPL(virSecretUsageType, VIR_SECRET_USAGE_TYPE_LAST,
               "none", "volume", "ceph", "iscsi")
 

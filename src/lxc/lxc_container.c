@@ -71,6 +71,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_container");
+
 /*
  * GLibc headers are behind the kernel, so we define these
  * constants if they're not present already.

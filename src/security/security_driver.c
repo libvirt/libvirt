@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
+VIR_LOG_INIT("security.security_driver");
+
 static virSecurityDriverPtr security_drivers[] = {
 #ifdef WITH_SECDRIVER_SELINUX
     &virSecurityDriverSELinux,

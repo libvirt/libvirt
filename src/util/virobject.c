@@ -33,6 +33,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.object");
+
 static unsigned int magicCounter = 0xCAFE0000;
 
 struct _virClass {

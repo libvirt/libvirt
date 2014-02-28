@@ -35,6 +35,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
+VIR_LOG_INIT("locking.lock_daemon_config");
+
 
 /* A helper function used by each of the following macros.  */
 static int

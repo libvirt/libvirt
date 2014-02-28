@@ -46,6 +46,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
+VIR_LOG_INIT("vbox.vbox_XPCOMCGlue");
 
 /*******************************************************************************
 *   Defined Constants And Macros                                               *

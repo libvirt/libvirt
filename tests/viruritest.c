@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.uritest");
+
 struct URIParseData {
     const char *uri;
     const char *uri_out;

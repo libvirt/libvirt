@@ -38,6 +38,8 @@
 #include "xenapi_utils.h"
 #include "virstring.h"
 
+VIR_LOG_INIT("xenapi.xenapi_utils");
+
 void
 xenSessionFree(xen_session *session)
 {

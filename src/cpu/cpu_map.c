@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
+VIR_LOG_INIT("cpu.cpu_map");
+
 #define CPUMAPFILE PKGDATADIR "/cpu_map.xml"
 
 static char *cpumap;

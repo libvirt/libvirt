@@ -63,6 +63,8 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 # include "virlog.h"
 # include "virnetdev.h"
 
+VIR_LOG_INIT("util.netdevvportprofile");
+
 # define MICROSEC_PER_SEC       (1000 * 1000)
 
 # define NLMSGBUF_SIZE  256

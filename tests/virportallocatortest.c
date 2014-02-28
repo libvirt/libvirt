@@ -118,6 +118,7 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
 
 #  define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.portallocatortest");
 
 static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 {

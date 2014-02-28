@@ -30,6 +30,8 @@
 #include "virlog.h"
 #include "viralloc.h"
 
+VIR_LOG_INIT("tests.sockettest");
+
 static int testParse(virSocketAddr *addr, const char *addrstr, int family, bool pass)
 {
     int rc;

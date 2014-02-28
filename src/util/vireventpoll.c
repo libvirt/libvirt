@@ -45,6 +45,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_EVENT
 
+VIR_LOG_INIT("util.eventpoll");
+
 static int virEventPollInterruptLocked(void);
 
 /* State for a single file handle being monitored */

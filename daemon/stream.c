@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 
+VIR_LOG_INIT("daemon.stream");
+
 struct daemonClientStream {
     daemonClientPrivatePtr priv;
     int refs;

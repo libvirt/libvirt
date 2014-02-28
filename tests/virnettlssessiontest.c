@@ -38,6 +38,8 @@
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 
+VIR_LOG_INIT("tests.nettlssessiontest");
+
 # define KEYFILE "key-sess.pem"
 
 struct testTLSSessionData {

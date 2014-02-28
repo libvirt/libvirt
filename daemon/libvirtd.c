@@ -35,6 +35,7 @@
 #include "libvirt_internal.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virlog.h"
 #include "virpidfile.h"
 #include "virprocess.h"
 
@@ -104,6 +105,8 @@
 
 #include "virdbus.h"
 #include "cpu/cpu_map.h"
+
+VIR_LOG_INIT("daemon.libvirtd");
 
 #if WITH_SASL
 virNetSASLContextPtr saslCtxt = NULL;

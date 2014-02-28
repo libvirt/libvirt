@@ -62,6 +62,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
+VIR_LOG_INIT("test.test_driver");
+
 /* Driver specific info to carry with a domain */
 struct _testDomainObjPrivate {
     virVcpuInfoPtr vcpu_infos;

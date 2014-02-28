@@ -70,6 +70,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_controller");
+
 typedef struct _virLXCControllerConsole virLXCControllerConsole;
 typedef virLXCControllerConsole *virLXCControllerConsolePtr;
 struct _virLXCControllerConsole {

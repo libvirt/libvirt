@@ -72,6 +72,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
+VIR_LOG_INIT("nwfilter.nwfilter_dhcpsnoop");
+
 #ifdef HAVE_LIBPCAP
 
 # define LEASEFILE_DIR LOCALSTATEDIR "/run/libvirt/network/"

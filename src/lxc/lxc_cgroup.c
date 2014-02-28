@@ -32,6 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+VIR_LOG_INIT("lxc.lxc_cgroup");
+
 static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {

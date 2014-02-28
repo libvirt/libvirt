@@ -40,6 +40,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_SSH
 
+VIR_LOG_INIT("rpc.netsshsession");
+
 static const char
 vir_libssh2_key_comment[] = "added by libvirt ssh transport";
 #define VIR_NET_SSH_BUFFER_SIZE  1024

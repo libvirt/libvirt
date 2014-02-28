@@ -56,6 +56,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 
+VIR_LOG_INIT("parallels.parallels_driver");
+
 #define PRLCTL                      "prlctl"
 #define PRLSRVCTL                   "prlsrvctl"
 

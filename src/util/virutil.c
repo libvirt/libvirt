@@ -90,6 +90,8 @@ verify(sizeof(gid_t) <= sizeof(unsigned int) &&
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.util");
+
 #ifndef WIN32
 
 int virSetInherit(int fd, bool inherit) {

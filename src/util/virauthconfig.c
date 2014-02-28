@@ -37,6 +37,7 @@ struct _virAuthConfig {
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.authconfig");
 
 virAuthConfigPtr virAuthConfigNew(const char *path)
 {

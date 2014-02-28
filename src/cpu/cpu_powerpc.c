@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
+VIR_LOG_INIT("cpu.cpu_powerpc");
+
 static const virArch archs[] = { VIR_ARCH_PPC64 };
 
 struct ppc_vendor {

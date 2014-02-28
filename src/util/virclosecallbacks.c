@@ -31,6 +31,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("util.closecallbacks");
+
 typedef struct _virDriverCloseDef virDriverCloseDef;
 typedef virDriverCloseDef *virDriverCloseDefPtr;
 struct _virDriverCloseDef {

@@ -38,6 +38,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+VIR_LOG_INIT("storage.storage_backend_scsi");
+
 /* Function to check if the type file in the given sysfs_path is a
  * Direct-Access device (i.e. type 0).  Return -1 on failure, type of
  * the device otherwise.
