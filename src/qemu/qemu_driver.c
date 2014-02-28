@@ -9434,6 +9434,12 @@ qemuDomainBlockStats(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     qemuDomainObjPrivatePtr priv;
 
+    if (!*path) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("summary statistics are not supported yet"));
+        return ret;
+    }
+
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -9506,6 +9512,12 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     virTypedParameterPtr param;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (!*path) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("summary statistics are not supported yet"));
+        return ret;
+    }
 
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;

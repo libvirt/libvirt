@@ -3362,6 +3362,12 @@ static int testDomainBlockStats(virDomainPtr domain,
     unsigned long long statbase;
     int ret = -1;
 
+    if (!*path) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("summary statistics are not supported yet"));
+        return ret;
+    }
+
     testDriverLock(privconn);
     privdom = virDomainObjListFindByName(privconn->domains,
                                          domain->name);
