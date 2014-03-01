@@ -65,7 +65,7 @@ uml+ssh://root@example.com/system    (remote access, SSH tunnelled)
     </p>
 
     <p>
-      Once booted the primary console is connected toa PTY, and
+      Once booted the primary console is connected to a PTY, and
       thus accessible with "virsh console" or equivalent tools
     </p>
 
