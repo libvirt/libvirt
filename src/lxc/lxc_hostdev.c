@@ -60,7 +60,7 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
             continue;
         }
 
-        virUSBDeviceSetUsedBy(usb, def->name);
+        virUSBDeviceSetUsedBy(usb, LXC_DRIVER_NAME, def->name);
 
         virObjectLock(driver->activeUsbHostdevs);
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
@@ -90,12 +90,16 @@ virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
     for (i = 0; i < count; i++) {
         virUSBDevicePtr usb = virUSBDeviceListGet(list, i);
         if ((tmp = virUSBDeviceListFind(driver->activeUsbHostdevs, usb))) {
-            const char *other_name = virUSBDeviceGetUsedBy(tmp);
+            const char *other_drvname;
+            const char *other_domname;
 
-            if (other_name)
+            virUSBDeviceGetUsedBy(tmp, &other_drvname, &other_domname);
+            if (other_drvname && other_domname)
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("USB device %s is in use by domain %s"),
-                               virUSBDeviceGetName(tmp), other_name);
+                               _("USB device %s is in use by "
+                                 "driver %s, domain %s"),
+                               virUSBDeviceGetName(tmp),
+                               other_drvname, other_domname);
             else
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("USB device %s is already in use"),
@@ -103,7 +107,7 @@ virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
             goto error;
         }
 
-        virUSBDeviceSetUsedBy(usb, name);
+        virUSBDeviceSetUsedBy(usb, LXC_DRIVER_NAME, name);
         VIR_DEBUG("Adding %03d.%03d dom=%s to activeUsbHostdevs",
                   virUSBDeviceGetBus(usb), virUSBDeviceGetDevno(usb), name);
         /*
@@ -351,7 +355,8 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virUSBDevicePtr usb, tmp;
-        const char *used_by = NULL;
+        const char *usedby_domname = NULL;
+        const char *usedby_drvname = NULL;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -389,8 +394,9 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
             continue;
         }
 
-        used_by = virUSBDeviceGetUsedBy(tmp);
-        if (STREQ_NULLABLE(used_by, name)) {
+        virUSBDeviceGetUsedBy(tmp, &usedby_drvname, &usedby_domname);
+        if (STREQ_NULLABLE(LXC_DRIVER_NAME, usedby_drvname) &&
+            STREQ_NULLABLE(name, usedby_domname)) {
             VIR_DEBUG("Removing %03d.%03d dom=%s from activeUsbHostdevs",
                       hostdev->source.subsys.u.usb.bus,
                       hostdev->source.subsys.u.usb.device,

@@ -91,13 +91,13 @@ test2(const void *data ATTRIBUTE_UNUSED)
     if (!virSCSIDeviceIsAvailable(dev))
         goto cleanup;
 
-    if (virSCSIDeviceSetUsedBy(dev, "fc18") < 0)
+    if (virSCSIDeviceSetUsedBy(dev, "QEMU", "fc18") < 0)
         goto cleanup;
 
     if (virSCSIDeviceIsAvailable(dev))
         goto cleanup;
 
-    if (virSCSIDeviceSetUsedBy(dev, "fc20") < 0)
+    if (virSCSIDeviceSetUsedBy(dev, "QEMU", "fc20") < 0)
         goto cleanup;
 
     if (virSCSIDeviceIsAvailable(dev))
@@ -117,7 +117,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
     if (!virSCSIDeviceListFind(list, dev))
         goto cleanup;
 
-    virSCSIDeviceListDel(list, dev, "fc20");
+    virSCSIDeviceListDel(list, dev, "QEMU", "fc20");
 
     if (!virSCSIDeviceListFind(list, dev))
         goto cleanup;

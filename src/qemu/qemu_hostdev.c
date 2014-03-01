@@ -177,7 +177,7 @@ qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                 goto cleanup;
 
         }
-        virPCIDeviceSetUsedBy(dev, def->name);
+        virPCIDeviceSetUsedBy(dev, QEMU_DRIVER_NAME, def->name);
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);
@@ -230,7 +230,7 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
             continue;
         }
 
-        virUSBDeviceSetUsedBy(usb, def->name);
+        virUSBDeviceSetUsedBy(usb, QEMU_DRIVER_NAME, def->name);
 
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
             virUSBDeviceFree(usb);
@@ -274,13 +274,13 @@ qemuUpdateActiveScsiHostdevs(virQEMUDriverPtr driver,
             goto cleanup;
 
         if ((tmp = virSCSIDeviceListFind(driver->activeScsiHostdevs, scsi))) {
-            if (virSCSIDeviceSetUsedBy(tmp, def->name) < 0) {
+            if (virSCSIDeviceSetUsedBy(tmp, QEMU_DRIVER_NAME, def->name) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;
             }
             virSCSIDeviceFree(scsi);
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, def->name) < 0 ||
+            if (virSCSIDeviceSetUsedBy(scsi, QEMU_DRIVER_NAME, def->name) < 0 ||
                 virSCSIDeviceListAdd(driver->activeScsiHostdevs, scsi) < 0) {
                 virSCSIDeviceFree(scsi);
                 goto cleanup;
@@ -693,12 +693,16 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
          * the dev is in list driver->activePciHostdevs.
          */
         if ((other = virPCIDeviceListFind(driver->activePciHostdevs, dev))) {
-            const char *other_name = virPCIDeviceGetUsedBy(other);
+            const char *other_drvname;
+            const char *other_domname;
 
-            if (other_name)
+            virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
+            if (other_drvname && other_domname)
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("PCI device %s is in use by domain %s"),
-                               virPCIDeviceGetName(dev), other_name);
+                               _("PCI device %s is in use by "
+                                 "driver %s, domain %s"),
+                               virPCIDeviceGetName(dev),
+                               other_drvname, other_domname);
             else
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("PCI device %s is already in use"),
@@ -766,7 +770,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
         activeDev = virPCIDeviceListFind(driver->activePciHostdevs, dev);
 
         if (activeDev)
-            virPCIDeviceSetUsedBy(activeDev, name);
+            virPCIDeviceSetUsedBy(activeDev, QEMU_DRIVER_NAME, name);
     }
 
     /* Loop 8: Now set the original states for hostdev def */
@@ -857,12 +861,16 @@ qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
     for (i = 0; i < count; i++) {
         virUSBDevicePtr usb = virUSBDeviceListGet(list, i);
         if ((tmp = virUSBDeviceListFind(driver->activeUsbHostdevs, usb))) {
-            const char *other_name = virUSBDeviceGetUsedBy(tmp);
+            const char *other_drvname;
+            const char *other_domname;
 
-            if (other_name)
+            virUSBDeviceGetUsedBy(tmp, &other_drvname, &other_domname);
+            if (other_drvname && other_domname)
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("USB device %s is in use by domain %s"),
-                               virUSBDeviceGetName(tmp), other_name);
+                               _("USB device %s is in use by "
+                                 "driver %s, domain %s"),
+                               virUSBDeviceGetName(tmp),
+                               other_drvname, other_domname);
             else
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("USB device %s is already in use"),
@@ -870,7 +878,7 @@ qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
             goto error;
         }
 
-        virUSBDeviceSetUsedBy(usb, name);
+        virUSBDeviceSetUsedBy(usb, QEMU_DRIVER_NAME, name);
         VIR_DEBUG("Adding %03d.%03d dom=%s to activeUsbHostdevs",
                   virUSBDeviceGetBus(usb), virUSBDeviceGetDevno(usb), name);
         /*
@@ -1140,10 +1148,10 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
                 goto error;
             }
 
-            if (virSCSIDeviceSetUsedBy(tmp, name) < 0)
+            if (virSCSIDeviceSetUsedBy(tmp, QEMU_DRIVER_NAME, name) < 0)
                 goto error;
         } else {
-            if (virSCSIDeviceSetUsedBy(scsi, name) < 0)
+            if (virSCSIDeviceSetUsedBy(scsi, QEMU_DRIVER_NAME, name) < 0)
                 goto error;
 
             VIR_DEBUG("Adding %s to activeScsiHostdevs", virSCSIDeviceGetName(scsi));
@@ -1275,10 +1283,15 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
          * been used by this domain.
          */
         activeDev = virPCIDeviceListFind(driver->activePciHostdevs, dev);
-        if (activeDev &&
-            STRNEQ_NULLABLE(name, virPCIDeviceGetUsedBy(activeDev))) {
-            virPCIDeviceListDel(pcidevs, dev);
-            continue;
+        if (activeDev) {
+            const char *usedby_drvname;
+            const char *usedby_domname;
+            virPCIDeviceGetUsedBy(activeDev, &usedby_drvname, &usedby_domname);
+            if (STRNEQ_NULLABLE(QEMU_DRIVER_NAME, usedby_drvname) ||
+                STRNEQ_NULLABLE(name, usedby_domname)) {
+                    virPCIDeviceListDel(pcidevs, dev);
+                    continue;
+                }
         }
 
         virPCIDeviceListDel(driver->activePciHostdevs, dev);
@@ -1332,7 +1345,8 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virUSBDevicePtr usb, tmp;
-        const char *used_by = NULL;
+        const char *usedby_drvname;
+        const char *usedby_domname;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -1370,8 +1384,9 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
             continue;
         }
 
-        used_by = virUSBDeviceGetUsedBy(tmp);
-        if (STREQ_NULLABLE(used_by, name)) {
+        virUSBDeviceGetUsedBy(tmp, &usedby_drvname, &usedby_domname);
+        if (STREQ_NULLABLE(QEMU_DRIVER_NAME, usedby_drvname) &&
+            STREQ_NULLABLE(name, usedby_domname)) {
             VIR_DEBUG("Removing %03d.%03d dom=%s from activeUsbHostdevs",
                       hostdev->source.subsys.u.usb.bus,
                       hostdev->source.subsys.u.usb.device,
@@ -1445,7 +1460,7 @@ qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
                    hostdev->source.subsys.u.scsi.unit,
                    name);
 
-        virSCSIDeviceListDel(driver->activeScsiHostdevs, tmp, name);
+        virSCSIDeviceListDel(driver->activeScsiHostdevs, tmp, QEMU_DRIVER_NAME, name);
         virSCSIDeviceFree(scsi);
     }
     virObjectUnlock(driver->activeScsiHostdevs);

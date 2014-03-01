@@ -55,7 +55,10 @@ struct _virUSBDevice {
     char          name[USB_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[USB_ID_LEN];     /* product vendor */
     char          *path;
-    const char    *used_by;           /* name of the domain using this dev */
+
+    /* driver:domain using this dev */
+    char          *used_by_drvname;
+    char          *used_by_domname;
 };
 
 struct _virUSBDeviceList {
@@ -375,19 +378,33 @@ virUSBDeviceFree(virUSBDevicePtr dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev->path);
+    VIR_FREE(dev->used_by_drvname);
+    VIR_FREE(dev->used_by_domname);
     VIR_FREE(dev);
 }
 
-
-void virUSBDeviceSetUsedBy(virUSBDevicePtr dev,
-                           const char *name)
+int
+virUSBDeviceSetUsedBy(virUSBDevicePtr dev,
+                      const char *drv_name,
+                      const char *dom_name)
 {
-    dev->used_by = name;
+    VIR_FREE(dev->used_by_drvname);
+    VIR_FREE(dev->used_by_domname);
+    if (VIR_STRDUP(dev->used_by_drvname, drv_name) < 0)
+        return -1;
+    if (VIR_STRDUP(dev->used_by_domname, dom_name) < 0)
+        return -1;
+
+    return 0;
 }
 
-const char * virUSBDeviceGetUsedBy(virUSBDevicePtr dev)
+void
+virUSBDeviceGetUsedBy(virUSBDevicePtr dev,
+                      const char **drv_name,
+                      const char **dom_name)
 {
-    return dev->used_by;
+    *drv_name = dev->used_by_drvname;
+    *dom_name = dev->used_by_domname;
 }
 
 const char *virUSBDeviceGetName(virUSBDevicePtr dev)

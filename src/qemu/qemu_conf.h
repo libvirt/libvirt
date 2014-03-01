@@ -53,6 +53,8 @@
 #  error "Port me"
 # endif
 
+# define QEMU_DRIVER_NAME "QEMU"
+
 typedef struct _virQEMUDriver virQEMUDriver;
 typedef virQEMUDriver *virQEMUDriverPtr;
 

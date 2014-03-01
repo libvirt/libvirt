@@ -59,7 +59,10 @@ struct _virPCIDevice {
     char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
     char          *path;
-    const char    *used_by;           /* The domain which uses the device */
+
+    /* The driver:domain which uses the device */
+    char          *used_by_drvname;
+    char          *used_by_domname;
 
     unsigned int  pcie_cap_pos;
     unsigned int  pci_pm_cap_pos;
@@ -1615,8 +1618,11 @@ virPCIDeviceCopy(virPCIDevicePtr dev)
     /* shallow copy to take care of most attributes */
     *copy = *dev;
     copy->path = copy->stubDriver = NULL;
+    copy->used_by_drvname = copy->used_by_domname = NULL;
     if (VIR_STRDUP(copy->path, dev->path) < 0 ||
-        VIR_STRDUP(copy->stubDriver, dev->stubDriver) < 0) {
+        VIR_STRDUP(copy->stubDriver, dev->stubDriver) < 0 ||
+        VIR_STRDUP(copy->used_by_drvname, dev->used_by_drvname) < 0 ||
+        VIR_STRDUP(copy->used_by_domname, dev->used_by_domname) < 0) {
         goto error;
     }
     return copy;
@@ -1635,6 +1641,8 @@ virPCIDeviceFree(virPCIDevicePtr dev)
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev->path);
     VIR_FREE(dev->stubDriver);
+    VIR_FREE(dev->used_by_drvname);
+    VIR_FREE(dev->used_by_domname);
     VIR_FREE(dev);
 }
 
@@ -1704,16 +1712,28 @@ virPCIDeviceSetReprobe(virPCIDevicePtr dev, bool reprobe)
     dev->reprobe = reprobe;
 }
 
-void
-virPCIDeviceSetUsedBy(virPCIDevicePtr dev, const char *name)
+int
+virPCIDeviceSetUsedBy(virPCIDevicePtr dev,
+                      const char *drv_name,
+                      const char *dom_name)
 {
-    dev->used_by = name;
+    VIR_FREE(dev->used_by_drvname);
+    VIR_FREE(dev->used_by_domname);
+    if (VIR_STRDUP(dev->used_by_drvname, drv_name) < 0)
+        return -1;
+    if (VIR_STRDUP(dev->used_by_domname, dom_name) < 0)
+        return -1;
+
+    return 0;
 }
 
-const char *
-virPCIDeviceGetUsedBy(virPCIDevicePtr dev)
+void
+virPCIDeviceGetUsedBy(virPCIDevicePtr dev,
+                      const char **drv_name,
+                      const char **dom_name)
 {
-    return dev->used_by;
+    *drv_name = dev->used_by_drvname;
+    *dom_name = dev->used_by_domname;
 }
 
 void virPCIDeviceReattachInit(virPCIDevicePtr pci)

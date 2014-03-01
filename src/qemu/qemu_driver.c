@@ -98,8 +98,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-#define QEMU_DRIVER_NAME "QEMU"
-
 #define QEMU_NB_MEM_PARAM  3
 
 #define QEMU_NB_BLOCK_IO_TUNE_PARAM  6
@@ -11352,12 +11350,16 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     virObjectLock(driver->inactivePciHostdevs);
     other = virPCIDeviceListFind(driver->activePciHostdevs, pci);
     if (other) {
-        const char *other_name = virPCIDeviceGetUsedBy(other);
+        const char *other_drvname = NULL;
+        const char *other_domname = NULL;
+        virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
 
-        if (other_name)
+        if (other_drvname && other_domname)
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("PCI device %s is still in use by domain %s"),
-                           virPCIDeviceGetName(pci), other_name);
+                           _("PCI device %s is still in use by "
+                             "driver %s, domain %s"),
+                           virPCIDeviceGetName(pci),
+                           other_drvname, other_domname);
         else
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is still in use"),
@@ -16766,7 +16768,7 @@ static virDriver qemuDriver = {
 
 
 static virStateDriver qemuStateDriver = {
-    .name = "QEMU",
+    .name = QEMU_DRIVER_NAME,
     .stateInitialize = qemuStateInitialize,
     .stateAutoStart = qemuStateAutoStart,
     .stateCleanup = qemuStateCleanup,
