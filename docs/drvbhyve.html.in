@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Bhyve driver</h1>
+
+    <ul id="toc"></ul>
+
+<p>
+Bhyve is a FreeBSD hypervisor. It first appeared in FreeBSD 10.0. However, it's
+recommended to keep tracking FreeBSD 10-STABLE to make sure all new features
+of bhyve are supported.
+
+In order to enable bhyve on your FreeBSD host, you'll need to load the <code>vmm</code>
+kernel module. Additionally, <code>if_tap</code> and <code>if_bridge</code> modules
+should be loaded for networking support.
+</p>
+
+<p>
+Additional information on bhyve could be obtained on <a href="http://bhyve.org/">bhyve.org</a>.
+</p>
+
+<h2><a name="uri">Connections to the Bhyve driver</a></h2>
+<p>
+The libvirt bhyve driver is a single-instance privileged driver. Some sample
+connection URIs are:
+</p>
+
+<pre>
+bhyve:///system                     (local access)
+bhyve+unix:///system                (local access)
+bhyve+ssh://root@example.com/system (remote access, SSH tunnelled)
+</pre>
+
+<h2><a name="exconfig">Example guest domain XML configurations</a></h2>
+
+<h3>Example config</h3>
+<p>
+The bhyve driver in libvirt is in its early stage and under active development. So it supports
+only limited number of features bhyve provides. All the supported features could be found
+in this sample domain XML.
+</p>
+
+<p>
+A limitation that is not obvious from this sample domain XML is that currently only a
+single network and a single disk device are supported for each domain (as PCI slot allocation code
+in libvirt bhyve driver is yet to be implemented).
+</p>
+
+<pre>
+&lt;domain type='bhyve'&gt;
+  &lt;name&gt;bhyve&lt;/name&gt;
+  &lt;uuid&gt;df3be7e7-a104-11e3-aeb0-50e5492bd3dc&lt;/uuid&gt;
+    &lt;memory&gt;219136&lt;/memory&gt;
+    &lt;currentMemory&gt;219136&lt;/currentMemory&gt;
+    &lt;vcpu&gt;1&lt;/vcpu&gt;
+    &lt;os&gt;
+       &lt;type&gt;hvm&lt;/type&gt;
+    &lt;/os&gt;
+    &lt;features&gt;
+      &lt;apic/&gt;
+      &lt;acpi/&gt;
+    &lt;/features&gt;
+    &lt;clock offset='utc'/&gt;
+    &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+    &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+    &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+    &lt;devices&gt;
+      &lt;disk type='file'&gt;
+        &lt;driver name='file' type='raw'/&gt;
+        &lt;source file='/path/to/bhyve_freebsd.img'/&gt;
+        &lt;target dev='hda' bus='sata'/&gt;
+      &lt;/disk&gt;
+      &lt;interface type='bridge'&gt;
+        &lt;model type='virtio'/&gt;
+        &lt;source bridge="virbr0"/&gt;
+      &lt;/interface&gt;
+    &lt;/devices&gt;
+&lt;/domain&gt;
+</pre>
+
+  </body>
+</html>

@@ -248,6 +248,10 @@
                 <a href="drvparallels.html">Parallels</a>
                 <span>Driver for Parallels Cloud Server</span>
               </li>
+              <li>
+                <a href="drvbhyve.html">Bhyve</a>
+                <span>Driver for bhyve</span>
+              </li>
             </ul>
           </li>
           <li>

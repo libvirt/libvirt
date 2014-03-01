@@ -25,6 +25,7 @@ There are two core shared modules to be aware of:
 
 Then there are the hypervisor implementations:
 
+ * bhyve         - bhyve - The BSD Hypervisor
  * esx/          - VMware ESX and GSX support using vSphere API over SOAP
  * hyperv/       - Microsoft Hyper-V support using WinRM
  * lxc/          - Linux Native Containers
