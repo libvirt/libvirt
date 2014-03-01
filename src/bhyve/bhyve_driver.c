@@ -335,6 +335,7 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
                                    0, &oldDef)))
         goto cleanup;
     def = NULL;
+    vm->persistent = 1;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
