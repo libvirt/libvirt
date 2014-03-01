@@ -1292,6 +1292,10 @@ virHookInitialize;
 virHookPresent;
 
 
+#util/virhostdev.h
+virHostdevManagerGetDefault;
+
+
 # util/viridentity.h
 virIdentityGetAttr;
 virIdentityGetCurrent;
