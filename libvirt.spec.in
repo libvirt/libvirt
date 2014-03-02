@@ -2214,6 +2214,13 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Sun Mar  2 2014 Daniel Veillard <veillard@redhat.com> - 1.2.2-1
+- add LXC from native conversion tool
+- vbox: add support for v4.2.20+ and v4.3.4+
+- Introduce Libvirt Wireshark dissector
+- Fix CVE-2013-6456: Avoid unsafe use of /proc/$PID/root in LXC
+- a lot of various improvements and bug fixes
+
 * Thu Jan 16 2014 Daniel Veillard <veillard@redhat.com> - 1.2.1-1
 - Fix s CVE-2014-0028 event: filter global events by domain:getattr ACL
 - Fix CVE-2014-1447 Don't crash if a connection closes early
