@@ -60,8 +60,16 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         vshCommandOptStringReq(ctl, cmd, pooloptname, &p) < 0)
         return NULL;
 
-    if (p)
-        pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flags);
+    if (p) {
+        if (!(pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flags)))
+            return NULL;
+
+        if (virStoragePoolIsActive(pool) != 1) {
+            vshError(ctl, _("pool '%s' is not active"), p);
+            virStoragePoolFree(pool);
+            return NULL;
+        }
+    }
 
     vshDebug(ctl, VSH_ERR_DEBUG, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
