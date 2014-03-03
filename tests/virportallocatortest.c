@@ -23,8 +23,11 @@
 #include "virfile.h"
 #include "testutils.h"
 
-#if HAVE_DLFCN_H && defined(RTLD_NEXT)
+#if HAVE_DLFCN_H
+# include <dlfcn.h>
+#endif
 
+#if defined(RTLD_NEXT)
 # ifdef MOCK_HELPER
 #  include "internal.h"
 #  include <sys/socket.h>
@@ -32,7 +35,6 @@
 #  include <arpa/inet.h>
 #  include <netinet/in.h>
 #  include <stdio.h>
-#  include <dlfcn.h>
 
 static bool host_has_ipv6 = false;
 static int (*realsocket)(int domain, int type, int protocol);
@@ -265,7 +267,7 @@ mymain(void)
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libvirportallocatormock.so")
 # endif
 
-#else /* ! HAVE_DLFCN_H */
+#else /* ! defined(RTLD_NEXT) */
 int
 main(void)
 {
