@@ -882,7 +882,7 @@ virLogVMessage(virLogSource source,
                                str, msg, virLogOutputs[i].data);
         }
     }
-    if ((virLogNbOutputs == 0) && (source != VIR_LOG_FROM_ERROR)) {
+    if (virLogNbOutputs == 0) {
         if (logVersionStderr) {
             const char *rawver;
             char *ver = NULL;
