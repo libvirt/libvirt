@@ -92,7 +92,7 @@ DBusMessage *dbus_connection_send_with_reply_and_block(DBusConnection *connectio
                                          "s", &sub);
 
         if (!dbus_message_iter_append_basic(&sub,
-                                       DBUS_TYPE_STRING,
+                                            DBUS_TYPE_STRING,
                                             &svc1))
             goto error;
         if (!getenv("FAIL_NO_SERVICE") &&
