@@ -1113,8 +1113,9 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     if (pcap_set_snaplen(handle, PCAP_PBUFSIZE) < 0 ||
         pcap_set_buffer_size(handle, PCAP_BUFFERSIZE) < 0 ||
         pcap_activate(handle) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("setup of pcap handle failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("setup of pcap handle failed: %s"),
+                       pcap_geterr(handle));
         goto cleanup;
     }
 
