@@ -2,7 +2,7 @@
  * nwfilter_dhcpsnoop.c: support for DHCP snooping used by a VM
  *                       on an interface
  *
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  * Copyright (C) 2011,2012 IBM Corp.
  *
  * Authors:
@@ -269,7 +269,7 @@ struct _virNWFilterSnoopRateLimitConf {
     const unsigned int burstRate;
     const unsigned int burstInterval;
 };
-#define SNOOP_POLL_MAX_TIMEOUT_MS  (10 * 1000) /* milliseconds */
+# define SNOOP_POLL_MAX_TIMEOUT_MS  (10 * 1000) /* milliseconds */
 
 typedef struct _virNWFilterSnoopPcapConf virNWFilterSnoopPcapConf;
 typedef virNWFilterSnoopPcapConf *virNWFilterSnoopPcapConfPtr;
