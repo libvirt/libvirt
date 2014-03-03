@@ -311,8 +311,10 @@
       <dd>Providing a name for the volume which is unique to the pool.
         This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
       <dt><code>key</code></dt>
-      <dd>Providing an identifier for the volume which is globally unique.
-          This cannot be set when creating a volume: it is always generated.
+      <dd>Providing an identifier for the volume which identifies a
+          single volume. In some cases it's possible to have two distinct keys
+          identifying a single volume. This field cannot be set when creating
+          a volume: it is always generated.
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>allocation</code></dt>
       <dd>Providing the total storage allocation for the volume. This
