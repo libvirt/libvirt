@@ -343,7 +343,7 @@ virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapter adapter)
         VIR_FREE(adapter.data.fchost.parent);
     } else if (adapter.type ==
                VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-        VIR_FREE(adapter.data.name);
+        VIR_FREE(adapter.data.scsi_host.name);
     }
 }
 
@@ -576,7 +576,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 virXPathString("string(./adapter/@wwpn)", ctxt);
         } else if (source->adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            source->adapter.data.name =
+            source->adapter.data.scsi_host.name =
                 virXPathString("string(./adapter/@name)", ctxt);
         }
     } else {
@@ -601,7 +601,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         /* To keep back-compat, 'type' is not required to specify
          * for scsi_host adapter.
          */
-        if ((source->adapter.data.name =
+        if ((source->adapter.data.scsi_host.name =
              virXPathString("string(./adapter/@name)", ctxt)))
             source->adapter.type =
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST;
@@ -854,7 +854,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                 goto error;
         } else if (ret->source.adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            if (!ret->source.adapter.data.name) {
+            if (!ret->source.adapter.data.scsi_host.name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing storage pool source adapter name"));
                 goto error;
@@ -1021,7 +1021,8 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                               src->adapter.data.fchost.wwpn);
         } else if (src->adapter.type ==
                  VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            virBufferAsprintf(buf, " name='%s'/>\n", src->adapter.data.name);
+            virBufferAsprintf(buf, " name='%s'/>\n",
+                              src->adapter.data.scsi_host.name);
         }
     }
 
@@ -2028,8 +2029,8 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                     matchpool = pool;
             } else if (pool->def->source.adapter.type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST){
-                if (STREQ(pool->def->source.adapter.data.name,
-                          def->source.adapter.data.name))
+                if (STREQ(pool->def->source.adapter.data.scsi_host.name,
+                          def->source.adapter.data.scsi_host.name))
                     matchpool = pool;
             }
             break;

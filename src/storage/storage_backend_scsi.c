@@ -548,7 +548,7 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
     char *name = NULL;
 
     if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-        ignore_value(VIR_STRDUP(name, adapter.data.name));
+        ignore_value(VIR_STRDUP(name, adapter.data.scsi_host.name));
     } else if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
         if (!(name = virGetFCHostNameByWWN(NULL,
                                            adapter.data.fchost.wwnn,

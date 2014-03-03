@@ -179,7 +179,9 @@ struct _virStoragePoolSourceAdapter {
     int type; /* virStoragePoolSourceAdapterType */
 
     union {
-        char *name;
+        struct {
+            char *name;
+        } scsi_host;
         struct {
             char *parent;
             char *wwnn;
