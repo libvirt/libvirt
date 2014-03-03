@@ -5,5 +5,5 @@
 #include <tunables/global>
 
 profile LIBVIRT_TEMPLATE {
-  #include <abstractions/libvirt-qemu>
+  #include <abstractions/libvirt-driver>
 }

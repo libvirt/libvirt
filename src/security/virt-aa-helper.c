@@ -328,18 +328,24 @@ update_include_file(const char *include_file, const char *included_files,
  */
 static int
 create_profile(const char *profile, const char *profile_name,
-               const char *profile_files)
+               const char *profile_files, int virtType)
 {
     char *template;
     char *tcontent = NULL;
     char *pcontent = NULL;
     char *replace_name = NULL;
     char *replace_files = NULL;
+    char *replace_driver = NULL;
     const char *template_name = "\nprofile LIBVIRT_TEMPLATE";
     const char *template_end = "\n}";
+    const char *template_driver = "libvirt-driver";
     int tlen, plen;
     int fd;
     int rc = -1;
+    const char *driver_name = "qemu";
+
+    if (virtType == VIR_DOMAIN_VIRT_LXC)
+        driver_name = "lxc";
 
     if (virFileExists(profile)) {
         vah_error(NULL, 0, _("profile exists"));
@@ -371,6 +377,11 @@ create_profile(const char *profile, const char *profile_name,
         goto clean_tcontent;
     }
 
+    if (strstr(tcontent, template_driver) == NULL) {
+        vah_error(NULL, 0, _("no replacement string in template"));
+        goto clean_tcontent;
+    }
+
     /* '\nprofile <profile_name>\0' */
     if (virAsprintfQuiet(&replace_name, "\nprofile %s", profile_name) == -1) {
         vah_error(NULL, 0, _("could not allocate memory for profile name"));
@@ -378,14 +389,26 @@ create_profile(const char *profile, const char *profile_name,
     }
 
     /* '\n<profile_files>\n}\0' */
-    if (virAsprintfQuiet(&replace_files, "\n%s\n}", profile_files) == -1) {
+    if ((virtType != VIR_DOMAIN_VIRT_LXC) &&
+            virAsprintfQuiet(&replace_files, "\n%s\n}", profile_files) == -1) {
         vah_error(NULL, 0, _("could not allocate memory for profile files"));
         VIR_FREE(replace_name);
         goto clean_tcontent;
     }
 
+    /* 'libvirt-<driver_name>\0' */
+    if (virAsprintfQuiet(&replace_driver, "libvirt-%s", driver_name) == -1) {
+        vah_error(NULL, 0, _("could not allocate memory for profile driver"));
+        VIR_FREE(replace_driver);
+        goto clean_tcontent;
+    }
+
     plen = tlen + strlen(replace_name) - strlen(template_name) +
-           strlen(replace_files) - strlen(template_end) + 1;
+           strlen(replace_driver) - strlen(template_driver) + 1;
+
+    if (virtType != VIR_DOMAIN_VIRT_LXC)
+        plen += strlen(replace_files) - strlen(template_end);
+
     if (plen > MAX_FILE_LEN || plen < tlen) {
         vah_error(NULL, 0, _("invalid length for new profile"));
         goto clean_replace;
@@ -398,10 +421,14 @@ create_profile(const char *profile, const char *profile_name,
     pcontent[0] = '\0';
     strcpy(pcontent, tcontent);
 
+    if (replace_string(pcontent, plen, template_driver, replace_driver) < 0)
+        goto clean_all;
+
     if (replace_string(pcontent, plen, template_name, replace_name) < 0)
         goto clean_all;
 
-    if (replace_string(pcontent, plen, template_end, replace_files) < 0)
+    if ((virtType != VIR_DOMAIN_VIRT_LXC) &&
+            replace_string(pcontent, plen, template_end, replace_files) < 0)
         goto clean_all;
 
     /* write the file */
@@ -427,6 +454,7 @@ create_profile(const char *profile, const char *profile_name,
   clean_replace:
     VIR_FREE(replace_name);
     VIR_FREE(replace_files);
+    VIR_FREE(replace_driver);
   clean_tcontent:
     VIR_FREE(tcontent);
   end:
@@ -666,8 +694,8 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
         goto cleanup;
 
     ctl->hvm = virXPathString("string(./os/type[1])", ctxt);
-    if (!ctl->hvm || STRNEQ(ctl->hvm, "hvm")) {
-        vah_error(ctl, 0, _("os.type is not 'hvm'"));
+    if (!ctl->hvm) {
+        vah_error(ctl, 0, _("os.type is not defined"));
         goto cleanup;
     }
     arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
@@ -1234,18 +1262,20 @@ main(int argc, char **argv)
             if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
                 goto cleanup;
         } else {
-            virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
-                              LOCALSTATEDIR, ctl->def->name);
-            virBufferAsprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
-                              LOCALSTATEDIR, ctl->def->name);
-            virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
-                              LOCALSTATEDIR, ctl->def->name);
-            virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
-                              ctl->def->name);
-            virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
-                              LOCALSTATEDIR, ctl->def->name);
-            virBufferAsprintf(&buf, "  \"/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
-                              ctl->def->name);
+            if (ctl->def->virtType == VIR_DOMAIN_VIRT_QEMU) {
+                virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
+                                  LOCALSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
+                                  LOCALSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
+                                  LOCALSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
+                                  ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
+                                  LOCALSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
+                                  ctl->def->name);
+            }
             if (ctl->files)
                 virBufferAdd(&buf, ctl->files, -1);
         }
@@ -1282,7 +1312,8 @@ main(int argc, char **argv)
                 vah_info(ctl->uuid);
                 vah_info(tmp);
                 rc = 0;
-            } else if ((rc = create_profile(profile, ctl->uuid, tmp)) != 0) {
+            } else if ((rc = create_profile(profile, ctl->uuid, tmp,
+                                            ctl->def->virtType)) != 0) {
                 vah_error(ctl, 0, _("could not create profile"));
                 unlink(include_file);
             }

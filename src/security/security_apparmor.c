@@ -246,6 +246,11 @@ use_apparmor(void)
         return rc;
     }
 
+    /* If libvirt_lxc is calling us, then consider apparmor is used
+     * and enforced. */
+    if (strstr(libvirt_daemon, "libvirt_lxc"))
+        return 1;
+
     if (access(APPARMOR_PROFILES_PATH, R_OK) != 0)
         goto cleanup;
 
@@ -341,15 +346,12 @@ AppArmorSetSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 /* Called on libvirtd startup to see if AppArmor is available */
 static int
-AppArmorSecurityManagerProbe(const char *virtDriver)
+AppArmorSecurityManagerProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 {
     char *template = NULL;
     int rc = SECURITY_DRIVER_DISABLE;
 
     if (use_apparmor() < 0)
-        return rc;
-
-    if (virtDriver && STREQ(virtDriver, "LXC"))
         return rc;
 
     /* see if template file exists */
