@@ -547,18 +547,17 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 {
     char *name = NULL;
 
-    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+    if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
         ignore_value(VIR_STRDUP(name, adapter.data.name));
-        return name;
-    }
-
-    if (!(name = virGetFCHostNameByWWN(NULL,
-                                       adapter.data.fchost.wwnn,
-                                       adapter.data.fchost.wwpn))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Failed to find SCSI host with wwnn='%s', "
-                         "wwpn='%s'"), adapter.data.fchost.wwnn,
-                       adapter.data.fchost.wwpn);
+    } else if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        if (!(name = virGetFCHostNameByWWN(NULL,
+                                           adapter.data.fchost.wwnn,
+                                           adapter.data.fchost.wwpn))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Failed to find SCSI host with wwnn='%s', "
+                             "wwpn='%s'"), adapter.data.fchost.wwnn,
+                           adapter.data.fchost.wwpn);
+        }
     }
 
     return name;
