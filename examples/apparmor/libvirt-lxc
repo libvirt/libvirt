@@ -2,6 +2,13 @@
 
   #include <abstractions/base>
 
+  # Needed for lxc-enter-namespace
+  capability sys_admin,
+  capability sys_chroot,
+
+  # Added for lxc-enter-namespace --cmd /bin/bash
+  /bin/bash PUx,
+
   /usr/sbin/cron PUx,
   /usr/lib/systemd/systemd PUx,
 
