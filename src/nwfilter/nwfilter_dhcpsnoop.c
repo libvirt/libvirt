@@ -265,6 +265,7 @@ struct _virNWFilterSnoopRateLimitConf {
     const unsigned int burstRate;
     const unsigned int burstInterval;
 };
+#define SNOOP_POLL_MAX_TIMEOUT_MS  (10 * 1000) /* milliseconds */
 
 typedef struct _virNWFilterSnoopPcapConf virNWFilterSnoopPcapConf;
 typedef virNWFilterSnoopPcapConf *virNWFilterSnoopPcapConfPtr;
@@ -1418,6 +1419,10 @@ virNWFilterDHCPSnoopThread(void *req0)
                                        fds, &pollTo) < 0) {
             break;
         }
+
+        /* cap pollTo so we don't hold up the join for too long */
+        if (pollTo < 0 || pollTo > SNOOP_POLL_MAX_TIMEOUT_MS)
+            pollTo = SNOOP_POLL_MAX_TIMEOUT_MS;
 
         n = poll(fds, ARRAY_CARDINALITY(fds), pollTo);
 
