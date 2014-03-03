@@ -417,7 +417,8 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (!secdef)
         return -1;
 
-    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+    if ((secdef->type == VIR_DOMAIN_SECLABEL_STATIC) ||
+        (secdef->type == VIR_DOMAIN_SECLABEL_NONE))
         return 0;
 
     if (secdef->baselabel) {
@@ -580,6 +581,9 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (!secdef)
         return -1;
 
+    if (secdef->label == NULL)
+        return 0;
+
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
 
@@ -625,6 +629,9 @@ AppArmorSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
     if (!secdef)
         goto cleanup;
+
+    if (secdef->label == NULL)
+        return 0;
 
     if (STRNEQ(SECURITY_APPARMOR_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
