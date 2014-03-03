@@ -86,6 +86,29 @@ ArmGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
     return VIR_CPU_COMPARE_IDENTICAL;
 }
 
+static virCPUDefPtr
+ArmBaseline(virCPUDefPtr *cpus,
+            unsigned int ncpus ATTRIBUTE_UNUSED,
+            const char **models ATTRIBUTE_UNUSED,
+            unsigned int nmodels ATTRIBUTE_UNUSED,
+            unsigned int flags)
+{
+    virCPUDefPtr cpu = NULL;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
+
+    if (VIR_ALLOC(cpu) < 0 ||
+        VIR_STRDUP(cpu->model, cpus[0]->model) < 0) {
+        virCPUDefFree(cpu);
+        return NULL;
+    }
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+
+    return cpu;
+}
+
 struct cpuArchDriver cpuDriverArm = {
     .name = "arm",
     .arch = archs,
@@ -96,7 +119,7 @@ struct cpuArchDriver cpuDriverArm = {
     .free = ArmDataFree,
     .nodeData = ArmNodeData,
     .guestData = ArmGuestData,
-    .baseline = NULL,
+    .baseline = ArmBaseline,
     .update = ArmUpdate,
     .hasFeature = NULL,
 };
