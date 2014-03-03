@@ -74,7 +74,6 @@ struct daemonConfig {
     int log_level;
     char *log_filters;
     char *log_outputs;
-    int log_buffer_size;
 
     int audit_level;
     int audit_logging;

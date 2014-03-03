@@ -1448,7 +1448,6 @@ virLockSpaceReleaseResourcesForOwner;
 # util/virlog.h
 virLogDefineFilter;
 virLogDefineOutput;
-virLogEmergencyDumpAll;
 virLogGetDefaultPriority;
 virLogGetFilters;
 virLogGetNbFilters;
@@ -1462,7 +1461,6 @@ virLogParseOutputs;
 virLogPriorityFromSyslog;
 virLogProbablyLogMessage;
 virLogReset;
-virLogSetBufferSize;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
 virLogUnlock;

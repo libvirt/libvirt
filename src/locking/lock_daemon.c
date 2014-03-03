@@ -478,8 +478,6 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
 
     virLogSetFromEnv();
 
-    virLogSetBufferSize(config->log_buffer_size);
-
     if (virLogGetNbFilters() == 0)
         virLogParseFilters(config->log_filters);
 

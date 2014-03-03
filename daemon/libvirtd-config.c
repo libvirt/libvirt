@@ -268,8 +268,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->max_requests = 20;
     data->max_client_requests = 5;
 
-    data->log_buffer_size = 64;
-
     data->audit_level = 1;
     data->audit_logging = 0;
 
@@ -433,7 +431,6 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     GET_CONF_INT(conf, filename, log_level);
     GET_CONF_STR(conf, filename, log_filters);
     GET_CONF_STR(conf, filename, log_outputs);
-    GET_CONF_INT(conf, filename, log_buffer_size);
 
     GET_CONF_INT(conf, filename, keepalive_interval);
     GET_CONF_INT(conf, filename, keepalive_count);

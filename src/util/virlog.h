@@ -200,8 +200,6 @@ extern void virLogVMessage(virLogSourcePtr source,
                            virLogMetadataPtr metadata,
                            const char *fmt,
                            va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
-extern int virLogSetBufferSize(int size);
-extern void virLogEmergencyDumpAll(int signum);
 
 bool virLogProbablyLogMessage(const char *str);
 

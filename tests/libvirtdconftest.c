@@ -225,6 +225,9 @@ mymain(void)
     VIR_DEBUG("Initial config [%s]", filedata);
     for (i = 0; params[i] != 0; i++) {
         const struct testCorruptData data = { params, filedata, filename, i };
+        /* Skip now ignored config param */
+        if (STRPREFIX(filedata + params[i], "log_buffer_size"))
+            continue;
         if (virtTestRun("Test corruption", testCorrupt, &data) < 0)
             ret = -1;
     }

@@ -33,7 +33,6 @@ struct _virLockDaemonConfig {
     int log_level;
     char *log_filters;
     char *log_outputs;
-    int log_buffer_size;
     int max_clients;
 };
 

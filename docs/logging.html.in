@@ -38,12 +38,6 @@
           all messages to a debugging file but only allow errors to be
           logged through syslog.</li>
     </ul>
-    <p>Note that the logging module saves all logs to a <b>debug buffer</b>
-       filled in a round-robin fashion as to keep a full log of the
-       recent logs including all debug. The debug buffer can be resized
-       or deactivated in the daemon using the log_buffer_size variable,
-       default is 64 kB. This can be used when debugging the library
-       (see the virLogBuffer variable content).</p>
 
     <h2>
       <a name="log_config">Configuring logging in the library</a>
@@ -245,9 +239,5 @@ log_outputs="1:file:/var/log/libvirt/libvirtd.log"</pre>
     <p>in libvirtd.conf and restart the daemon will allow to
     gather a copious amount of debugging traces for the operations done
     in those areas.</p>
-    <p>On the other hand to deactivate the logbuffer in the daemon
-    for stable high load servers, set</p>
-    <pre>log_buffer_size=0</pre>
-    <p>in the libvirtd.conf.</p>
   </body>
 </html>

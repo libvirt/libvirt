@@ -341,34 +341,6 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
 }
 
 
-static void
-virNetServerFatalSignal(int sig, siginfo_t *siginfo ATTRIBUTE_UNUSED,
-                        void *context ATTRIBUTE_UNUSED)
-{
-    struct sigaction sig_action;
-    int origerrno;
-
-    origerrno = errno;
-    virLogEmergencyDumpAll(sig);
-
-    /*
-     * If the signal is fatal, avoid looping over this handler
-     * by deactivating it
-     */
-#ifdef SIGUSR2
-    if (sig != SIGUSR2) {
-#endif
-        memset(&sig_action, 0, sizeof(sig_action));
-        sig_action.sa_handler = SIG_DFL;
-        sigaction(sig, &sig_action, NULL);
-        raise(sig);
-#ifdef SIGUSR2
-    }
-#endif
-    errno = origerrno;
-}
-
-
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
@@ -428,23 +400,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     memset(&sig_action, 0, sizeof(sig_action));
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
-
-    /*
-     * catch fatal errors to dump a log, also hook to USR2 for dynamic
-     * debugging purposes or testing
-     */
-    sig_action.sa_sigaction = virNetServerFatalSignal;
-    sig_action.sa_flags = SA_SIGINFO;
-    sigaction(SIGFPE, &sig_action, NULL);
-    sigaction(SIGSEGV, &sig_action, NULL);
-    sigaction(SIGILL, &sig_action, NULL);
-    sigaction(SIGABRT, &sig_action, NULL);
-#ifdef SIGBUS
-    sigaction(SIGBUS, &sig_action, NULL);
-#endif
-#ifdef SIGUSR2
-    sigaction(SIGUSR2, &sig_action, NULL);
-#endif
 
     return srv;
 
