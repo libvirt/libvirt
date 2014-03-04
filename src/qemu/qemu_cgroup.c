@@ -655,9 +655,15 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
        }
     }
 
-    if (vm->def->cputune.sharesSpecified &&
-        virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
-        return -1;
+    if (vm->def->cputune.sharesSpecified) {
+        unsigned long long val;
+        if (virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
+            return -1;
+
+        if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
+            return -1;
+        vm->def->cputune.shares = val;
+    }
 
     return 0;
 }

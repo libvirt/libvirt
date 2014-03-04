@@ -9085,9 +9085,14 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                unsigned long long val;
                 if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
                     goto cleanup;
-                vm->def->cputune.shares = value_ul;
+
+                if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
+                    goto cleanup;
+
+                vm->def->cputune.shares = val;
                 vm->def->cputune.sharesSpecified = true;
             }
 

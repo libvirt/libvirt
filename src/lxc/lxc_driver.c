@@ -1898,10 +1898,14 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                unsigned long long val;
                 if (virCgroupSetCpuShares(priv->cgroup, params[i].value.ul) < 0)
                     goto cleanup;
 
-                vm->def->cputune.shares = params[i].value.ul;
+                if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
+                    goto cleanup;
+
+                vm->def->cputune.shares = val;
                 vm->def->cputune.sharesSpecified = true;
             }
 
