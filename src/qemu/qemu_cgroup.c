@@ -646,7 +646,7 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-       if (vm->def->cputune.shares) {
+       if (vm->def->cputune.sharesSpecified) {
            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                           _("CPU tuning is not available on this host"));
            return -1;
@@ -655,7 +655,7 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
        }
     }
 
-    if (vm->def->cputune.shares &&
+    if (vm->def->cputune.sharesSpecified &&
         virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
         return -1;
 

@@ -9088,10 +9088,14 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                 if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
                     goto cleanup;
                 vm->def->cputune.shares = value_ul;
+                vm->def->cputune.sharesSpecified = true;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.shares = value_ul;
+                vmdef->cputune.sharesSpecified = true;
+            }
+
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,

@@ -11543,11 +11543,13 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     /* Extract cpu tunables. */
-    if (virXPathULong("string(./cputune/shares[1])", ctxt,
-                      &def->cputune.shares) < -1) {
+    if ((n = virXPathULong("string(./cputune/shares[1])", ctxt,
+                           &def->cputune.shares)) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune shares value"));
         goto error;
+    } else if (n == 0) {
+        def->cputune.sharesSpecified = true;
     }
 
     if (virXPathULongLong("string(./cputune/period[1])", ctxt,
@@ -17276,7 +17278,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 
-    if (def->cputune.shares ||
+    if (def->cputune.sharesSpecified ||
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
@@ -17284,7 +17286,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "<cputune>\n");
 
     virBufferAdjustIndent(buf, 2);
-    if (def->cputune.shares)
+    if (def->cputune.sharesSpecified)
         virBufferAsprintf(buf, "<shares>%lu</shares>\n",
                           def->cputune.shares);
     if (def->cputune.period)
@@ -17339,7 +17341,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         VIR_FREE(cpumask);
     }
     virBufferAdjustIndent(buf, -2);
-    if (def->cputune.shares ||
+    if (def->cputune.sharesSpecified ||
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||

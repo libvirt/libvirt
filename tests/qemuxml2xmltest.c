@@ -260,6 +260,7 @@ mymain(void)
     DO_TEST("blkiotune");
     DO_TEST("blkiotune-device");
     DO_TEST("cputune");
+    DO_TEST("cputune-zero-shares");
 
     DO_TEST("smp");
     DO_TEST("lease");

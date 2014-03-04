@@ -1511,6 +1511,7 @@ virVMXParseConfig(virVMXContext *ctx,
                              "found '%s'"), sched_cpu_shares);
             goto cleanup;
         }
+        def->cputune.sharesSpecified = true;
     }
 
     /* def:lifecycle */
@@ -3196,7 +3197,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     }
 
     /* def:cputune.shares -> vmx:sched.cpu.shares */
-    if (def->cputune.shares > 0) {
+    if (def->cputune.sharesSpecified) {
         /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
         if (def->cputune.shares == def->vcpus * 500) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"low\"\n");

@@ -7784,7 +7784,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        if (def->cputune.shares || def->cputune.period ||
+        if (def->cputune.sharesSpecified || def->cputune.period ||
             def->cputune.quota || def->cputune.emulator_period ||
             def->cputune.emulator_quota) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

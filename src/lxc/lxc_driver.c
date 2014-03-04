@@ -1902,10 +1902,12 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto cleanup;
 
                 vm->def->cputune.shares = params[i].value.ul;
+                vm->def->cputune.sharesSpecified = true;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.shares = params[i].value.ul;
+                vmdef->cputune.sharesSpecified = true;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {

@@ -2011,6 +2011,7 @@ struct _virDomainDef {
 
     struct {
         unsigned long shares;
+        bool sharesSpecified;
         unsigned long long period;
         long long quota;
         unsigned long long emulator_period;

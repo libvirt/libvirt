@@ -2051,6 +2051,7 @@ parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr n
     }
 
     if (old->cputune.shares != new->cputune.shares ||
+        old->cputune.sharesSpecified != new->cputune.sharesSpecified ||
         old->cputune.period != new->cputune.period ||
         old->cputune.quota != new->cputune.quota ||
         old->cputune.nvcpupin != new->cputune.nvcpupin) {
