@@ -64,6 +64,7 @@ struct daemonConfig {
     int max_workers;
     int max_clients;
     int max_queued_clients;
+    int max_anonymous_clients;
 
     int prio_workers;
 

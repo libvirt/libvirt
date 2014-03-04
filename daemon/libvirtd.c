@@ -1383,6 +1383,7 @@ int main(int argc, char **argv) {
                                 config->max_workers,
                                 config->prio_workers,
                                 config->max_clients,
+                                config->max_anonymous_clients,
                                 config->keepalive_interval,
                                 config->keepalive_count,
                                 !!config->keepalive_required,

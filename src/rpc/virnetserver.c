@@ -92,6 +92,7 @@ struct _virNetServer {
     virNetServerClientPtr *clients;     /* Clients */
     size_t nclients_max;                /* Max allowed clients count */
     size_t nclients_unauth;             /* Unauthenticated clients count */
+    size_t nclients_unauth_max;         /* Max allowed unauth clients count */
 
     int keepaliveInterval;
     unsigned int keepaliveCount;
@@ -279,6 +280,14 @@ static int virNetServerAddClient(virNetServerPtr srv,
     if (virNetServerClientNeedAuth(client))
         virNetServerTrackPendingAuthLocked(srv);
 
+    if (srv->nclients_unauth_max &&
+        srv->nclients_unauth == srv->nclients_unauth_max) {
+        /* Temporarily stop accepting new clients */
+        VIR_DEBUG("Temporarily suspending services "
+                  "due to max_anonymous_clients");
+        virNetServerUpdateServicesLocked(srv, false);
+    }
+
     if (srv->nclients == srv->nclients_max) {
         /* Temporarily stop accepting new clients */
         VIR_DEBUG("Temporarily suspending services due to max_clients");
@@ -362,6 +371,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
                                 size_t max_clients,
+                                size_t max_anonymous_clients,
                                 int keepaliveInterval,
                                 unsigned int keepaliveCount,
                                 bool keepaliveRequired,
@@ -388,6 +398,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
         goto error;
 
     srv->nclients_max = max_clients;
+    srv->nclients_unauth_max = max_anonymous_clients;
     srv->keepaliveInterval = keepaliveInterval;
     srv->keepaliveCount = keepaliveCount;
     srv->keepaliveRequired = keepaliveRequired;
@@ -457,6 +468,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     unsigned int max_workers;
     unsigned int priority_workers;
     unsigned int max_clients;
+    unsigned int max_anonymous_clients;
     unsigned int keepaliveInterval;
     unsigned int keepaliveCount;
     bool keepaliveRequired;
@@ -480,6 +492,13 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     if (virJSONValueObjectGetNumberUint(object, "max_clients", &max_clients) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing max_clients data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectHasKey(object, "max_anonymous_clients") &&
+        virJSONValueObjectGetNumberUint(object, "max_anonymous_clients",
+                                        &max_anonymous_clients) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed max_anonymous_clients data in JSON document"));
         goto error;
     }
     if (virJSONValueObjectGetNumberUint(object, "keepaliveInterval", &keepaliveInterval) < 0) {
@@ -507,6 +526,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
 
     if (!(srv = virNetServerNew(min_workers, max_clients,
                                 priority_workers, max_clients,
+                                max_anonymous_clients,
                                 keepaliveInterval, keepaliveCount,
                                 keepaliveRequired, mdnsGroupName,
                                 clientPrivNew, clientPrivPreExecRestart,
@@ -623,6 +643,12 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
     if (virJSONValueObjectAppendNumberUint(object, "max_clients", srv->nclients_max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set max_clients data in JSON document"));
+        goto error;
+    }
+    if (virJSONValueObjectAppendNumberUint(object, "max_anonymous_clients",
+                                           srv->nclients_unauth_max) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set max_anonymous_clients data in JSON document"));
         goto error;
     }
     if (virJSONValueObjectAppendNumberUint(object, "keepaliveInterval", srv->keepaliveInterval) < 0) {
@@ -1068,6 +1094,34 @@ void virNetServerUpdateServices(virNetServerPtr srv,
     virObjectUnlock(srv);
 }
 
+/**
+ * virNetServerCheckLimits:
+ * @srv: server to check limits on
+ *
+ * Check if limits like max_clients or max_anonymous_clients
+ * are satisfied and if so, re-enable accepting new clients.
+ * The @srv must be locked when this function is called.
+ */
+static void
+virNetServerCheckLimits(virNetServerPtr srv)
+{
+    /* Enable services if we can accept a new client.
+     * The new client can be accepted if both max_clients and
+     * max_anonymous_clients wouldn't get overcommitted by
+     * accepting it. */
+    VIR_DEBUG("Considering re-enabling services: "
+              "nclients=%zu nclients_max=%zu "
+              "nclients_unauth=%zu nclients_unauth_max=%zu",
+              srv->nclients, srv->nclients_max,
+              srv->nclients_unauth, srv->nclients_unauth_max);
+    if (srv->nclients < srv->nclients_max &&
+        (!srv->nclients_unauth_max ||
+         srv->nclients_unauth < srv->nclients_unauth_max)) {
+        /* Now it makes sense to accept() a new client. */
+        VIR_DEBUG("Re-enabling services");
+        virNetServerUpdateServicesLocked(srv, true);
+    }
+}
 
 void virNetServerRun(virNetServerPtr srv)
 {
@@ -1142,13 +1196,7 @@ void virNetServerRun(virNetServerPtr srv)
                 if (virNetServerClientNeedAuth(client))
                     virNetServerTrackCompletedAuthLocked(srv);
 
-                /* Enable services if we can accept a new client.
-                 * The new client can be accepted if we are at the limit. */
-                if (srv->nclients == srv->nclients_max - 1) {
-                    /* Now it makes sense to accept() a new client. */
-                    VIR_DEBUG("Re-enabling services");
-                    virNetServerUpdateServicesLocked(srv, true);
-                }
+                virNetServerCheckLimits(srv);
 
                 virObjectUnlock(srv);
                 virObjectUnref(client);
@@ -1265,6 +1313,7 @@ size_t virNetServerTrackCompletedAuth(virNetServerPtr srv)
     size_t ret;
     virObjectLock(srv);
     ret = virNetServerTrackCompletedAuthLocked(srv);
+    virNetServerCheckLimits(srv);
     virObjectUnlock(srv);
     return ret;
 }

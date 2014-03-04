@@ -57,6 +57,7 @@ module Libvirtd =
                         | int_entry "max_workers"
                         | int_entry "max_clients"
                         | int_entry "max_queued_clients"
+                        | int_entry "max_anonymous_clients"
                         | int_entry "max_requests"
                         | int_entry "max_client_requests"
                         | int_entry "prio_workers"
