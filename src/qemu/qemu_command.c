@@ -5036,8 +5036,8 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     }
     if (usingVirtio && vhostfdSize > 1) {
         /* As advised at http://www.linux-kvm.org/page/Multiqueue
-         * we should add vectors=2*N+1 where N is the vhostfdSize */
-        virBufferAsprintf(&buf, ",mq=on,vectors=%d", 2 * vhostfdSize + 1);
+         * we should add vectors=2*N+2 where N is the vhostfdSize */
+        virBufferAsprintf(&buf, ",mq=on,vectors=%d", 2 * vhostfdSize + 2);
     }
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
