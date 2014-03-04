@@ -1220,13 +1220,13 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         int thread;
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("character device information was missing array element"));
+                           _("cpu information was missing an array element"));
             goto cleanup;
         }
 
         if (virJSONValueObjectGetNumberInt(entry, "thread_id", &thread) < 0) {
-            /* Only qemu-kvm tree includs thread_id, so treat this as
-               non-fatal, simply returning no data */
+            /* Some older qemu versions don't report the thread_id,
+             * so treat this as non-fatal, simply returning no data */
             ret = 0;
             goto cleanup;
         }
