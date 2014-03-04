@@ -361,9 +361,27 @@
               <value>scsi_host</value>
             </attribute>
           </optional>
-          <attribute name='name'>
-            <text/>
-          </attribute>
+          <choice>
+            <group>
+              <attribute name='name'>
+                <text/>
+              </attribute>
+            </group>
+            <group>
+              <interleave>
+                <element name="parentaddr">
+                  <optional>
+                    <attribute name='unique_id'>
+                      <ref name='positiveInteger'/>
+                    </attribute>
+                  </optional>
+                  <element name="address">
+                    <ref name="pciaddress"/>
+                  </element>
+                </element>
+              </interleave>
+            </group>
+          </choice>
         </group>
         <group>
           <attribute name='type'>

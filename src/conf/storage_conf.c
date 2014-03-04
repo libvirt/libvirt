@@ -576,14 +576,43 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 virXPathString("string(./adapter/@wwpn)", ctxt);
         } else if (source->adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+
             source->adapter.data.scsi_host.name =
                 virXPathString("string(./adapter/@name)", ctxt);
+            if (virXPathNode("./adapter/parentaddr", ctxt)) {
+                xmlNodePtr addrnode = virXPathNode("./adapter/parentaddr/address",
+                                                   ctxt);
+                virDevicePCIAddressPtr addr =
+                    &source->adapter.data.scsi_host.parentaddr;
+
+                if (!addrnode) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("Missing scsi_host PCI address element"));
+                    goto cleanup;
+                }
+                source->adapter.data.scsi_host.has_parent = true;
+                if (virDevicePCIAddressParseXML(addrnode, addr) < 0)
+                    goto cleanup;
+                if ((virXPathInt("string(./adapter/parentaddr/@unique_id)",
+                                 ctxt,
+                                 &source->adapter.data.scsi_host.unique_id) < 0) ||
+                    (source->adapter.data.scsi_host.unique_id < 0)) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("Missing or invalid scsi adapter "
+                                     "'unique_id' value"));
+                    goto cleanup;
+                }
+            }
         }
     } else {
         char *wwnn = NULL;
         char *wwpn = NULL;
         char *parent = NULL;
 
+        /* "type" was not specified in the XML, so we must verify that
+         * "wwnn", "wwpn", "parent", or "parentaddr" are also not in the
+         * XML. If any are found, then we cannot just use "name" alone".
+         */
         wwnn = virXPathString("string(./adapter/@wwnn)", ctxt);
         wwpn = virXPathString("string(./adapter/@wwpn)", ctxt);
         parent = virXPathString("string(./adapter/@parent)", ctxt);
@@ -594,7 +623,14 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             VIR_FREE(parent);
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Use of 'wwnn', 'wwpn', and 'parent' attributes "
-                             "requires the 'fc_host' adapter 'type'"));
+                             "requires use of the adapter 'type'"));
+            goto cleanup;
+        }
+
+        if (virXPathNode("./adapter/parentaddr", ctxt)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Use of 'parent' element requires use "
+                             "of the adapter 'type'"));
             goto cleanup;
         }
 
@@ -854,9 +890,19 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                 goto error;
         } else if (ret->source.adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            if (!ret->source.adapter.data.scsi_host.name) {
+            if (!ret->source.adapter.data.scsi_host.name &&
+                !ret->source.adapter.data.scsi_host.has_parent) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing storage pool source adapter name"));
+                               _("Either 'name' or 'parent' must be specified "
+                                 "for the 'scsi_host' adapter"));
+                goto error;
+            }
+
+            if (ret->source.adapter.data.scsi_host.name &&
+                ret->source.adapter.data.scsi_host.has_parent) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Both 'name' and 'parent' cannot be specified "
+                                 "for the 'scsi_host' adapter"));
                 goto error;
             }
         }
@@ -1020,9 +1066,24 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                               src->adapter.data.fchost.wwnn,
                               src->adapter.data.fchost.wwpn);
         } else if (src->adapter.type ==
-                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            virBufferAsprintf(buf, " name='%s'/>\n",
-                              src->adapter.data.scsi_host.name);
+                   VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+            if (src->adapter.data.scsi_host.name) {
+                virBufferAsprintf(buf, " name='%s'/>\n",
+                                  src->adapter.data.scsi_host.name);
+            } else {
+                virDevicePCIAddress addr;
+                virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 2);
+                virBufferAsprintf(buf, "<parentaddr unique_id='%d'>\n",
+                                  src->adapter.data.scsi_host.unique_id);
+                virBufferAdjustIndent(buf, 2);
+                addr = src->adapter.data.scsi_host.parentaddr;
+                ignore_value(virDevicePCIAddressFormat(buf, addr, false));
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</parentaddr>\n");
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</adapter>\n");
+            }
         }
     }
 
@@ -1987,6 +2048,28 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
     return ret;
 }
 
+static bool
+matchSCSIAdapterParent(virStoragePoolObjPtr pool,
+                       virStoragePoolDefPtr def)
+{
+    virDevicePCIAddressPtr pooladdr =
+        &pool->def->source.adapter.data.scsi_host.parentaddr;
+    virDevicePCIAddressPtr defaddr =
+        &def->source.adapter.data.scsi_host.parentaddr;
+    int pool_unique_id =
+        pool->def->source.adapter.data.scsi_host.unique_id;
+    int def_unique_id =
+        def->source.adapter.data.scsi_host.unique_id;
+    if (pooladdr->domain == defaddr->domain &&
+        pooladdr->bus == defaddr->bus &&
+        pooladdr->slot == defaddr->slot &&
+        pooladdr->function == defaddr->function &&
+        pool_unique_id == def_unique_id) {
+        return true;
+    }
+    return false;
+}
+
 int
 virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                                   virStoragePoolDefPtr def)
@@ -2029,9 +2112,14 @@ virStoragePoolSourceFindDuplicate(virStoragePoolObjListPtr pools,
                     matchpool = pool;
             } else if (pool->def->source.adapter.type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST){
-                if (STREQ(pool->def->source.adapter.data.scsi_host.name,
-                          def->source.adapter.data.scsi_host.name))
-                    matchpool = pool;
+                if (pool->def->source.adapter.data.scsi_host.name) {
+                    if (STREQ(pool->def->source.adapter.data.scsi_host.name,
+                              def->source.adapter.data.scsi_host.name))
+                        matchpool = pool;
+                } else {
+                    if (matchSCSIAdapterParent(pool, def))
+                        matchpool = pool;
+                }
             }
             break;
         case VIR_STORAGE_POOL_ISCSI:

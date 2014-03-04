@@ -1,0 +1,19 @@
+<pool type="scsi">
+  <name>hba0</name>
+  <uuid>e9392370-2917-565e-692b-d057f46512d6</uuid>
+  <source>
+    <adapter type='scsi_host'>
+      <parentaddr unique_id='5'>
+        <address domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+      </parentaddr>
+    </adapter>
+  </source>
+  <target>
+    <path>/dev/disk/by-path</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>

@@ -29,6 +29,7 @@
 # include "virstoragefile.h"
 # include "virbitmap.h"
 # include "virthread.h"
+# include "device_conf.h"
 
 # include <libxml/tree.h>
 
@@ -181,6 +182,9 @@ struct _virStoragePoolSourceAdapter {
     union {
         struct {
             char *name;
+            virDevicePCIAddress parentaddr; /* host address */
+            int unique_id;
+            bool has_parent;
         } scsi_host;
         struct {
             char *parent;

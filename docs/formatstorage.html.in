@@ -89,6 +89,24 @@
     <pre>
         ...
         &lt;source&gt;
+          &lt;adapter type='scsi_host' name='scsi_host1'/&gt;
+        &lt;/source&gt;
+        ...</pre>
+
+    <pre>
+        ...
+        &lt;source&gt;
+          &lt;adapter type='scsi_host'&gt;
+            &lt;parentaddr unique_id='1'&gt;
+              &lt;address domain='0x0000' bus='0x00' slot='0x1f' addr='0x2'/&gt;
+            &lt;/parentaddr&gt;
+          &lt;/adapter&gt;
+        &lt;/source&gt;
+        ...</pre>
+
+    <pre>
+        ...
+        &lt;source&gt;
           &lt;adapter type='fc_host' parent='scsi_host5' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/&gt;
         &lt;/source&gt;
         ...</pre>
@@ -111,25 +129,109 @@
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>adapter</code></dt>
       <dd>Provides the source for pools backed by SCSI adapters (pool
-        type <code>scsi</code>). May
-        only occur once. Attribute <code>name</code> is the SCSI adapter
-        name (ex. "scsi_host1".  NB, although a name such as "host1" is
-        still supported for backwards compatibility, it is not recommended).
-        Attribute <code>type</code> (<span class="since">1.0.5</span>)
-        specifies the adapter type.  Valid values are "fc_host" and "scsi_host".
-        If omitted and the <code>name</code> attribute is specified, then it
-        defaults to "scsi_host". To keep backwards compatibility, the attribute
-        <code>type</code> is optional for the "scsi_host" adapter, but
-        mandatory for the "fc_host" adapter.  Attributes <code>wwnn</code>
-        (Word Wide Node Name) and <code>wwpn</code> (Word Wide Port Name)
-        (<span class="since">1.0.4</span>) are used by the "fc_host" adapter
-        to uniquely identify the device in the Fibre Channel storage fabric
-        (the device can be either a HBA or vHBA). Both wwnn and wwpn should
-        be specified (See command 'virsh nodedev-dumpxml' to known how to get
-        wwnn/wwpn of a (v)HBA). The optional attribute <code>parent</code>
-        (<span class="since">1.0.4</span>) specifies the parent device for
-        the "fc_host" adapter.
-        <span class="since">Since 0.6.2</span></dd>
+        type <code>scsi</code>). May only occur once.
+        <dl>
+          <dt><code>name</code></dt>
+          <dd>The SCSI adapter name (e.g. "scsi_host1", although a name
+            such as "host1" is still supported for backwards compatibility,
+            it is not recommended). The scsi_host name to be used can be
+            determined from the output of a <code>virsh nodedev-list
+            scsi_host</code> command followed by a combination of
+            <code>lspci</code> and <code>virsh nodedev-dumpxml
+            scsi_hostN</code> commands to find the <code>scsi_hostN</code>
+            to be used. <span class="since">Since 0.6.2</span>
+            <p>
+            It is further recommended to utilize the
+            <code>parentaddr</code> element since it's possible to have
+            the path to which the scsi_hostN uses change between system
+            reboots. <span class="since">Since 1.2.7</span>
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt><code>type</code></dt>
+          <dd>Specifies the adapter type. Valid values are "scsi_host" or
+            "fc_host". If omitted and the <code>name</code> attribute is
+            specified, then it defaults to "scsi_host". To keep backwards
+            compatibility, this attribute is optional <b>only</b> for the
+            "scsi_host" adapter, but is mandatory for the "fc_host" adapter.
+            <span class="since">Since 1.0.5</span>
+            </dd>
+        </dl>
+        <dl>
+          <dt><code>wwwn</code> and <code>wwpn</code></dt>
+          <dd>The "World Wide Node Name" (<code>wwnn</code>) and "World Wide
+            Port Name" (<code>wwpn</code>) are used by the "fc_host" adapter
+            to uniquely identify the device in the Fibre Channel storage fabric
+            (the device can be either a HBA or vHBA). Both wwnn and wwpn should
+            be specified. Use the command 'virsh nodedev-dumpxml' to determine
+            how to set the values for the wwnn/wwpn of a (v)HBA.
+            <span class="since">Since 1.0.4</span>
+          </dd>
+        </dl>
+        <dl>
+          <dt><code>parent</code></dt>
+          <dd>Used by the "fc_host" adapter type to optionally specify the
+            parent scsi_host device defined in the
+            <a href="formatnode.html">Node Device</a> database as the
+            <a href="http://wiki.libvirt.org/page/NPIV_in_libvirt">NPIV</a>
+            virtual Host Bus Adapter (vHBA).
+            <span class="since">Since 1.0.4</span>
+          </dd>
+        </dl>
+        <dl>
+          <dt><code>parentaddr</code></dt>
+          <dd>Used by the "scsi_host" adapter type instead of the
+            <code>name</code> attribute to more uniquely identify the
+            SCSI host. Using a combination of the <code>unique_id</code>
+            attribute and the <code>address</code> element to formulate
+            a PCI address, a search will be performed of the
+            <code>/sys/class/scsi_host/hostNN</code> links for a
+            matching PCI address with a matching <code>unique_id</code>
+            value in the <code>/sys/class/scsi_host/hostNN/unique_id</code>
+            file. The value in the "unique_id" file will be unique enough
+            for the specific PCI address. The <code>hostNN</code> will be
+            used by libvirt as the basis to define which SCSI host is to
+            be used for the currently booted system.
+            <span class="since">Since 1.2.7</span>
+            <dl>
+              <dt><code>address</code></dt>
+              <dd>The PCI address of the scsi_host device to be used. Using
+                a PCI address provides consistent naming across system reboots
+                and kernel reloads. The address will have four attributes:
+                <code>domain</code> (a 2-byte hex integer, not currently used
+                by qemu), <code>bus</code> (a hex value between 0 and 0xff,
+                inclusive), <code>slot</code> (a hex value between 0x0 and
+                0x1f, inclusive), and <code>function</code> (a value between
+                0 and 7, inclusive). The PCI address can be determined by
+                listing the <code>/sys/bus/pci/devices</code> and the
+                <code>/sys/class/scsi_host</code> directories in order to
+                find the expected scsi_host device. The address will be
+                provided in a format such as "0000:00:1f:2" which can be
+                used to generate the expected PCI address
+                "domain='0x0000' bus='0x00' slot='0x1f' function='0x0'".
+                Optionally, using the combination of the commands 'virsh
+                nodedev-list scsi_host' and 'virsh nodedev-dumpxml' for a
+                specific list entry and converting the resulting
+                <code>path</code> element as the basis to formulate the
+                correctly formatted PCI address.
+              </dd>
+            </dl>
+            <dl>
+              <dt><code>unique_id</code></dt>
+              <dd>Required <code>parentaddr</code> attribute used to determine
+                which of the scsi_host adapters for the provided PCI address
+                should be used. The value is determine by contents of the
+                <code>unique_id</code> file for the specific scsi_host adapter.
+                For a PCI address of "0000:00:1f:2", the unique identifer files
+                can be found using the command
+                <code>find -H /sys/class/scsi_host/host*/unique_id |
+                xargs grep '[0-9]'</code>.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+      </dd>
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
         remote server (pool types <code>netfs</code>, <code>iscsi</code>,

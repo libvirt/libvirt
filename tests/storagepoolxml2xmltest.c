@@ -104,6 +104,7 @@ mymain(void)
     DO_TEST("pool-sheepdog");
     DO_TEST("pool-gluster");
     DO_TEST("pool-gluster-sub");
+    DO_TEST("pool-scsi-type-scsi-host-stable");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
