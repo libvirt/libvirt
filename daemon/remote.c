@@ -2619,7 +2619,7 @@ cleanup:
 /*-------------------------------------------------------------*/
 
 static int
-remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthList(virNetServerPtr server,
                        virNetServerClientPtr client,
                        virNetMessagePtr msg ATTRIBUTE_UNUSED,
                        virNetMessageErrorPtr rerr,
@@ -2649,6 +2649,7 @@ remoteDispatchAuthList(virNetServerPtr server ATTRIBUTE_UNUSED,
                 goto cleanup;
             VIR_INFO("Bypass polkit auth for privileged client %s", ident);
             virNetServerClientSetAuth(client, 0);
+            virNetServerTrackCompletedAuth(server);
             auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
             VIR_FREE(ident);
         }
@@ -2764,7 +2765,8 @@ authfail:
  * Returns 0 if ok, -1 on error, -2 if rejected
  */
 static int
-remoteSASLFinish(virNetServerClientPtr client)
+remoteSASLFinish(virNetServerPtr server,
+                 virNetServerClientPtr client)
 {
     const char *identity;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
@@ -2789,6 +2791,7 @@ remoteSASLFinish(virNetServerClientPtr client)
         return -2;
 
     virNetServerClientSetAuth(client, 0);
+    virNetServerTrackCompletedAuth(server);
     virNetServerClientSetSASLSession(client, priv->sasl);
 
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
@@ -2810,7 +2813,7 @@ error:
  * This starts the SASL authentication negotiation.
  */
 static int
-remoteDispatchAuthSaslStart(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthSaslStart(virNetServerPtr server,
                             virNetServerClientPtr client,
                             virNetMessagePtr msg ATTRIBUTE_UNUSED,
                             virNetMessageErrorPtr rerr,
@@ -2868,7 +2871,7 @@ remoteDispatchAuthSaslStart(virNetServerPtr server ATTRIBUTE_UNUSED,
         ret->complete = 0;
     } else {
         /* Check username whitelist ACL */
-        if ((err = remoteSASLFinish(client)) < 0) {
+        if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;
             else
@@ -2908,7 +2911,7 @@ error:
 
 
 static int
-remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthSaslStep(virNetServerPtr server,
                            virNetServerClientPtr client,
                            virNetMessagePtr msg ATTRIBUTE_UNUSED,
                            virNetMessageErrorPtr rerr,
@@ -2966,7 +2969,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
         ret->complete = 0;
     } else {
         /* Check username whitelist ACL */
-        if ((err = remoteSASLFinish(client)) < 0) {
+        if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;
             else
@@ -3051,7 +3054,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
 
 #if WITH_POLKIT1
 static int
-remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthPolkit(virNetServerPtr server,
                          virNetServerClientPtr client,
                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
                          virNetMessageErrorPtr rerr,
@@ -3142,6 +3145,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     ret->complete = 1;
 
     virNetServerClientSetAuth(client, 0);
+    virNetServerTrackCompletedAuth(server);
     virMutexUnlock(&priv->lock);
     virCommandFree(cmd);
     VIR_FREE(pkout);
@@ -3182,7 +3186,7 @@ authdeny:
 }
 #elif WITH_POLKIT0
 static int
-remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchAuthPolkit(virNetServerPtr server,
                          virNetServerClientPtr client,
                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
                          virNetMessageErrorPtr rerr,
@@ -3297,6 +3301,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     ret->complete = 1;
 
     virNetServerClientSetAuth(client, 0);
+    virNetServerTrackCompletedAuth(server);
     virMutexUnlock(&priv->lock);
     VIR_FREE(ident);
     return 0;

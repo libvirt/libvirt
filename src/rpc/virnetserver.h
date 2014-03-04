@@ -97,4 +97,7 @@ void virNetServerClose(virNetServerPtr srv);
 
 bool virNetServerKeepAliveRequired(virNetServerPtr srv);
 
+size_t virNetServerTrackPendingAuth(virNetServerPtr srv);
+size_t virNetServerTrackCompletedAuth(virNetServerPtr srv);
+
 #endif

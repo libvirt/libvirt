@@ -88,9 +88,10 @@ struct _virNetServer {
     size_t nprograms;
     virNetServerProgramPtr *programs;
 
-    size_t nclients;
-    size_t nclients_max;
-    virNetServerClientPtr *clients;
+    size_t nclients;                    /* Current clients count */
+    virNetServerClientPtr *clients;     /* Clients */
+    size_t nclients_max;                /* Max allowed clients count */
+    size_t nclients_unauth;             /* Unauthenticated clients count */
 
     int keepaliveInterval;
     unsigned int keepaliveCount;
@@ -118,6 +119,8 @@ static virClassPtr virNetServerClass;
 static void virNetServerDispose(void *obj);
 static void virNetServerUpdateServicesLocked(virNetServerPtr srv,
                                              bool enabled);
+static inline size_t virNetServerTrackPendingAuthLocked(virNetServerPtr srv);
+static inline size_t virNetServerTrackCompletedAuthLocked(virNetServerPtr srv);
 
 static int virNetServerOnceInit(void)
 {
@@ -272,6 +275,9 @@ static int virNetServerAddClient(virNetServerPtr srv,
         goto error;
     srv->clients[srv->nclients-1] = client;
     virObjectRef(client);
+
+    if (virNetServerClientNeedAuth(client))
+        virNetServerTrackPendingAuthLocked(srv);
 
     if (srv->nclients == srv->nclients_max) {
         /* Temporarily stop accepting new clients */
@@ -1133,6 +1139,9 @@ void virNetServerRun(virNetServerPtr srv)
 
                 VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
 
+                if (virNetServerClientNeedAuth(client))
+                    virNetServerTrackCompletedAuthLocked(srv);
+
                 /* Enable services if we can accept a new client.
                  * The new client can be accepted if we are at the limit. */
                 if (srv->nclients == srv->nclients_max - 1) {
@@ -1228,4 +1237,34 @@ bool virNetServerKeepAliveRequired(virNetServerPtr srv)
     required = srv->keepaliveRequired;
     virObjectUnlock(srv);
     return required;
+}
+
+static inline size_t
+virNetServerTrackPendingAuthLocked(virNetServerPtr srv)
+{
+    return ++srv->nclients_unauth;
+}
+
+static inline size_t
+virNetServerTrackCompletedAuthLocked(virNetServerPtr srv)
+{
+    return --srv->nclients_unauth;
+}
+
+size_t virNetServerTrackPendingAuth(virNetServerPtr srv)
+{
+    size_t ret;
+    virObjectLock(srv);
+    ret = virNetServerTrackPendingAuthLocked(srv);
+    virObjectUnlock(srv);
+    return ret;
+}
+
+size_t virNetServerTrackCompletedAuth(virNetServerPtr srv)
+{
+    size_t ret;
+    virObjectLock(srv);
+    ret = virNetServerTrackCompletedAuthLocked(srv);
+    virObjectUnlock(srv);
+    return ret;
 }
