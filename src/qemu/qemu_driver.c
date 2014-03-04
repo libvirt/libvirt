@@ -13921,12 +13921,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                          "to revert to inactive snapshot"));
         goto cleanup;
     }
-    if (snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT) {
+
+    if (virDomainSnapshotIsExternal(snap)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("revert to external disk snapshot not supported "
-                         "yet"));
+                       _("revert to external snapshot not supported yet"));
         goto cleanup;
     }
+
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
         if (!snap->def->dom) {
             virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
