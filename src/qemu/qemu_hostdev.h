@@ -41,12 +41,6 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs,
                                  virQEMUCapsPtr qemuCaps);
-int qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
-                             bool mandatory,
-                             virUSBDevicePtr *usb);
-int qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virUSBDeviceListPtr list);
 int
 qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
                           const char *name,
@@ -70,18 +64,11 @@ void qemuDomainReAttachHostScsiDevices(virQEMUDriverPtr driver,
                                        const char *name,
                                        virDomainHostdevDefPtr *hostdevs,
                                        int nhostdevs);
-void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver);
 void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
                                       const char *name,
                                       virDomainHostdevDefPtr *hostdevs,
                                       int nhostdevs);
 void qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
                                    virDomainDefPtr def);
-int qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev);
-int qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
-                                      const unsigned char *uuid,
-                                      char *stateDir);
-int qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
-                                      char *stateDir);
 
 #endif /* __QEMU_HOSTDEV_H__ */

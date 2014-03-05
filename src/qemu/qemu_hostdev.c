@@ -310,7 +310,7 @@ qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev,
 }
 
 
-int
+static int
 qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 {
     char *sysfs_path = NULL;
@@ -396,7 +396,7 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
 }
 
 
-int
+static int
 qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                                   const unsigned char *uuid,
                                   char *stateDir)
@@ -465,7 +465,7 @@ cleanup:
 }
 
 
-int
+static int
 qemuDomainHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
                                   char *stateDir)
 {
@@ -846,7 +846,7 @@ cleanup:
 }
 
 
-int
+static int
 qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
                              const char *name,
                              virUSBDeviceListPtr list)
@@ -903,7 +903,7 @@ error:
 }
 
 
-int
+static int
 qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                          bool mandatory,
                          virUSBDevicePtr *usb)
@@ -1217,7 +1217,7 @@ qemuPrepareHostDevices(virQEMUDriverPtr driver,
  * Pre-condition: driver->inactivePciHostdevs & driver->activePciHostdevs
  * are locked
  */
-void
+static void
 qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver)
 {
     int retries = 100;
