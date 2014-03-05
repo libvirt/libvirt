@@ -1283,18 +1283,18 @@ qemuReattachPciDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
     virPCIDeviceFree(dev);
 }
 
-
-void
-qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs)
+/* @oldStateDir:
+ * For upgrade purpose: see virHostdevNetConfigRestore
+ */
+static void
+virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *name,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs,
+                             char *oldStateDir)
 {
     virPCIDeviceListPtr pcidevs;
     size_t i;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *oldStateDir = cfg->stateDir;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virObjectLock(hostdev_mgr->activePciHostdevs);
     virObjectLock(hostdev_mgr->inactivePciHostdevs);
@@ -1369,6 +1369,21 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 cleanup:
     virObjectUnlock(hostdev_mgr->activePciHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePciHostdevs);
+}
+
+void
+qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
+                                 const char *name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *oldStateDir = cfg->stateDir;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachPCIDevices(hostdev_mgr, name,
+                                 hostdevs, nhostdevs, oldStateDir);
+
     virObjectUnref(cfg);
 }
 
