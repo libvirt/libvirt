@@ -218,6 +218,7 @@ virQEMUCapsPtr virQEMUCapsNew(void);
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
                                        const char *libDir,
+                                       const char *cacheDir,
                                        uid_t runUid,
                                        gid_t runGid);
 
@@ -262,6 +263,7 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps);
 
 
 virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
+                                        const char *cacheDir,
                                         uid_t uid, gid_t gid);
 virQEMUCapsPtr virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
                                       const char *binary);

@@ -744,6 +744,7 @@ qemuStateInitialize(bool privileged,
     }
 
     qemu_driver->qemuCapsCache = virQEMUCapsCacheNew(cfg->libDir,
+                                                     cfg->cacheDir,
                                                      run_uid,
                                                      run_gid);
     if (!qemu_driver->qemuCapsCache)
