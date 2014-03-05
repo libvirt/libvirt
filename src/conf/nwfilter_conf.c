@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2014 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010-2011 IBM Corporation
@@ -3216,7 +3216,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
         enum virNWFilterEntryItemFlags flags = item->flags;
         if ((flags & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)) {
             if (!typeShown) {
-                virBufferAsprintf(buf, "    <%s", type);
+                virBufferAsprintf(buf, "<%s", type);
                 typeShown = true;
                 neverShown = false;
             }
@@ -3327,95 +3327,59 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
     if (neverShown)
        virBufferAsprintf(buf,
-                         "    <%s/>\n", type);
+                         "<%s/>\n", type);
 
 err_exit:
     return;
 }
 
 
-static char *
-virNWFilterRuleDefFormat(virNWFilterRuleDefPtr def)
+static int
+virNWFilterRuleDefFormat(virBufferPtr buf, virNWFilterRuleDefPtr def)
 {
     size_t i;
-    virBuffer buf  = VIR_BUFFER_INITIALIZER;
-    virBuffer buf2 = VIR_BUFFER_INITIALIZER;
-    char *data;
+    bool subelement = false;
 
-    virBufferAsprintf(&buf, "  <rule action='%s' direction='%s' priority='%d'",
+    virBufferAsprintf(buf, "<rule action='%s' direction='%s' priority='%d'",
                       virNWFilterRuleActionTypeToString(def->action),
                       virNWFilterRuleDirectionTypeToString(def->tt),
                       def->priority);
 
     if ((def->flags & RULE_FLAG_NO_STATEMATCH))
-        virBufferAddLit(&buf, " statematch='false'");
+        virBufferAddLit(buf, " statematch='false'");
 
+    virBufferAdjustIndent(buf, 2);
     i = 0;
     while (virAttr[i].id) {
         if (virAttr[i].prtclType == def->prtclType) {
-            virNWFilterRuleDefDetailsFormat(&buf2,
+            if (!subelement)
+                virBufferAddLit(buf, ">\n");
+            virNWFilterRuleDefDetailsFormat(buf,
                                             virAttr[i].id,
                                             virAttr[i].att,
                                             def);
+            subelement = true;
             break;
         }
         i++;
     }
 
-    if (virBufferError(&buf2))
-        goto no_memory;
-
-    data = virBufferContentAndReset(&buf2);
-
-    if (data) {
-        virBufferAddLit(&buf, ">\n");
-        virBufferAsprintf(&buf, "%s  </rule>\n", data);
-        VIR_FREE(data);
-    } else
-        virBufferAddLit(&buf, "/>\n");
-
-    if (virBufferError(&buf))
-        goto no_memory;
-
-    return virBufferContentAndReset(&buf);
-
-no_memory:
-    virReportOOMError();
-    virBufferFreeAndReset(&buf);
-    virBufferFreeAndReset(&buf2);
-
-    return NULL;
+    virBufferAdjustIndent(buf, -2);
+    if (subelement)
+        virBufferAddLit(buf, "</rule>\n");
+    else
+        virBufferAddLit(buf, "/>\n");
+    return 0;
 }
 
 
-static char *
-virNWFilterIncludeDefFormat(virNWFilterIncludeDefPtr inc)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAdjustIndent(&buf, 2);
-    if (virNWFilterFormatParamAttributes(&buf, inc->params,
-                                         inc->filterref) < 0) {
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
-    virBufferAdjustIndent(&buf, -2);
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
-
-    return virBufferContentAndReset(&buf);
-}
-
-
-static char *
-virNWFilterEntryFormat(virNWFilterEntryPtr entry)
+static int
+virNWFilterEntryFormat(virBufferPtr buf, virNWFilterEntryPtr entry)
 {
     if (entry->rule)
-        return virNWFilterRuleDefFormat(entry->rule);
-    return virNWFilterIncludeDefFormat(entry->include);
+        return virNWFilterRuleDefFormat(buf, entry->rule);
+    return virNWFilterFormatParamAttributes(buf, entry->include->params,
+                                            entry->include->filterref);
 }
 
 
@@ -3425,7 +3389,6 @@ virNWFilterDefFormat(const virNWFilterDef *def)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuid[VIR_UUID_STRING_BUFLEN];
     size_t i;
-    char *xml;
 
     virBufferAsprintf(&buf, "<filter name='%s' chain='%s'",
                       def->name,
@@ -3434,18 +3397,17 @@ virNWFilterDefFormat(const virNWFilterDef *def)
         virBufferAsprintf(&buf, " priority='%d'",
                           def->chainPriority);
     virBufferAddLit(&buf, ">\n");
+    virBufferAdjustIndent(&buf, 2);
 
     virUUIDFormat(def->uuid, uuid);
-    virBufferAsprintf(&buf, "  <uuid>%s</uuid>\n", uuid);
+    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuid);
 
     for (i = 0; i < def->nentries; i++) {
-        xml = virNWFilterEntryFormat(def->filterEntries[i]);
-        if (!xml)
+        if (virNWFilterEntryFormat(&buf, def->filterEntries[i]) < 0)
             goto err_exit;
-        virBufferAdd(&buf, xml, -1);
-        VIR_FREE(xml);
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filter>\n");
 
     if (virBufferError(&buf))

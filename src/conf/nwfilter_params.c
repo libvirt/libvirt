@@ -1,7 +1,7 @@
 /*
  * nwfilter_params.c: parsing and data maintenance of filter parameters
  *
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2014 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -901,6 +901,7 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
     virBufferAsprintf(buf, "<filterref filter='%s'", filterref);
     if (numKeys) {
         virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
         for (i = 0; i < numKeys; i++) {
             const virNWFilterVarValue *value = items[i].value;
 
@@ -908,11 +909,12 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
 
             for (j = 0; j < card; j++)
                 virBufferAsprintf(buf,
-                                  "  <parameter name='%s' value='%s'/>\n",
+                                  "<parameter name='%s' value='%s'/>\n",
                                   (const char *)items[i].key,
                                   virNWFilterVarValueGetNthValue(value, j));
 
         }
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</filterref>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
