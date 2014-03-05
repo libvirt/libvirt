@@ -2797,17 +2797,17 @@ virNetworkObjFormat(virNetworkObjPtr net,
         goto no_memory;
 
     virBufferAddLit(&buf, "<networkstatus>\n");
-    virBufferAsprintf(&buf, "  <class_id bitmap='%s'/>\n", class_id);
-    virBufferAsprintf(&buf, "  <floor sum='%llu'/>\n", net->floor_sum);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAsprintf(&buf, "<class_id bitmap='%s'/>\n", class_id);
+    virBufferAsprintf(&buf, "<floor sum='%llu'/>\n", net->floor_sum);
     VIR_FREE(class_id);
 
     for (i = 0; i < VIR_NETWORK_TAINT_LAST; i++) {
         if (net->taint & (1 << i))
-            virBufferAsprintf(&buf, "  <taint flag='%s'/>\n",
+            virBufferAsprintf(&buf, "<taint flag='%s'/>\n",
                               virNetworkTaintTypeToString(i));
     }
 
-    virBufferAdjustIndent(&buf, 2);
     if (virNetworkDefFormatBuf(&buf, net->def, flags) < 0)
         goto error;
 
