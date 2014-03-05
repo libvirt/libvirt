@@ -1401,8 +1401,10 @@ if test "$with_chrdev_lock_files" != "no"; then
     AC_MSG_ERROR([You must specify path for the lock files on this
 platform])
   fi
-  AC_DEFINE_UNQUOTED([VIR_CHRDEV_LOCK_FILE_PATH], "$with_chrdev_lock_files",
-                      [path to directory containing UUCP device lock files])
+  if test "$with_chrdev_lock_files" != "no"; then
+    AC_DEFINE_UNQUOTED([VIR_CHRDEV_LOCK_FILE_PATH], "$with_chrdev_lock_files",
+                       [path to directory containing UUCP device lock files])
+  fi
 fi
 AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "no"])
 
