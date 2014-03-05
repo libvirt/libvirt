@@ -659,6 +659,7 @@ qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
 
 static int
 virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
+                            const char *drv_name,
                             const char *name,
                             const unsigned char *uuid,
                             virDomainHostdevDefPtr *hostdevs,
@@ -780,7 +781,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         activeDev = virPCIDeviceListFind(hostdev_mgr->activePciHostdevs, dev);
 
         if (activeDev)
-            virPCIDeviceSetUsedBy(activeDev, QEMU_DRIVER_NAME, name);
+            virPCIDeviceSetUsedBy(activeDev, drv_name, name);
     }
 
     /* Loop 8: Now set the original states for hostdev def */
@@ -869,7 +870,8 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
         goto out;
 
-    ret = virHostdevPreparePCIDevices(hostdev_mgr, name, uuid, hostdevs,
+    ret = virHostdevPreparePCIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                      name, uuid, hostdevs,
                                       nhostdevs, flags);
 out:
     return ret;
