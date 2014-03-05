@@ -71,6 +71,7 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "viraccessapichecklxc.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -1557,7 +1558,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->securityManager = lxcSecurityInit(cfg)))
         goto cleanup;
 
-    if ((lxc_driver->activeUsbHostdevs = virUSBDeviceListNew()) == NULL)
+    if (!(lxc_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto cleanup;
 
     if ((virLXCDriverGetCapabilities(lxc_driver, true)) == NULL)
@@ -1674,7 +1675,7 @@ static int lxcStateCleanup(void)
 
     virSysinfoDefFree(lxc_driver->hostsysinfo);
 
-    virObjectUnref(lxc_driver->activeUsbHostdevs);
+    virObjectUnref(lxc_driver->hostdevMgr);
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
     virObjectUnref(lxc_driver->xmlopt);
@@ -4697,6 +4698,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     int idx, ret = -1;
     char *dst = NULL;
     virUSBDevicePtr usb = NULL;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     if ((idx = virDomainHostdevFind(vm->def,
                                     dev->data.hostdev,
@@ -4733,9 +4735,9 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         VIR_WARN("cannot deny device %s for domain %s",
                  dst, vm->def->name);
 
-    virObjectLock(driver->activeUsbHostdevs);
-    virUSBDeviceListDel(driver->activeUsbHostdevs, usb);
-    virObjectUnlock(driver->activeUsbHostdevs);
+    virObjectLock(hostdev_mgr->activeUsbHostdevs);
+    virUSBDeviceListDel(hostdev_mgr->activeUsbHostdevs, usb);
+    virObjectUnlock(hostdev_mgr->activeUsbHostdevs);
 
     virDomainHostdevRemove(vm->def, idx);
     virDomainHostdevDefFree(def);
