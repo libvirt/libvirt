@@ -1149,6 +1149,10 @@ virConfWriteFile;
 virConfWriteMem;
 
 
+# util/vircrypto.h
+virCryptoHashString;
+
+
 # util/virdbus.h
 virDBusCallMethod;
 virDBusCloseSystemBus;

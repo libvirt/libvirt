@@ -158,6 +158,7 @@ src/util/vircgroup.c
 src/util/virclosecallbacks.c
 src/util/vircommand.c
 src/util/virconf.c
+src/util/vircrypto.c
 src/util/virdbus.c
 src/util/virdnsmasq.c
 src/util/vireventpoll.c

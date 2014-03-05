@@ -125,6 +125,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Access Manager", /* 55 */
               "Systemd",
               "Bhyve",
+              "Crypto",
     )
 
 

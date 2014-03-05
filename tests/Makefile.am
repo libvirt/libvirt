@@ -135,6 +135,7 @@ test_programs = virshtest sockettest \
 	virauthconfigtest \
 	virbitmaptest \
 	vircgrouptest \
+	vircryptotest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
@@ -815,6 +816,10 @@ vircgroupmock_la_SOURCES = \
 vircgroupmock_la_CFLAGS = $(AM_CFLAGS)
 vircgroupmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+vircryptotest_SOURCES = \
+	vircryptotest.c testutils.h testutils.c
+vircryptotest_LDADD = $(LDADDS)
 
 virpcitest_SOURCES = \
 	virpcitest.c testutils.h testutils.c

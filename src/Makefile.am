@@ -93,6 +93,7 @@ UTIL_SOURCES =							\
 		util/virclosecallbacks.c util/virclosecallbacks.h		\
 		util/vircommand.c util/vircommand.h		\
 		util/virconf.c util/virconf.h			\
+		util/vircrypto.c util/vircrypto.h		\
 		util/virdbus.c util/virdbus.h util/virdbuspriv.h	\
 		util/virdnsmasq.c util/virdnsmasq.h		\
 		util/virebtables.c util/virebtables.h		\
